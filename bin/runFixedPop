@@ -1,0 +1,454 @@
+#! /usr/bin/env python
+
+# Code: runFixedPop.py
+# Version: 1
+# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE; 
+#                  COMPUTE RATES AND NUMBERS FOR EACH POPULATION ACCORDING
+#                  TO FLAGS SET BY USER
+#
+# Edited on:  8 SEP 2015
+
+
+##############################################################################
+#  IMPORT ALL NECESSARY PYTHON PACKAGES
+##############################################################################
+import math
+import random
+import time
+from time import sleep
+import multiprocessing as mp
+from multiprocessing import Process, Lock, Pool
+import numpy as np
+import string
+import os.path
+import scipy.special as ss
+import sampleBinaries
+import MatchKnuth as Match 
+import warnings
+
+##################################################################################
+# BEGIN MAIN FUNCTION
+##################################################################################
+if __name__ == '__main__':
+
+
+    # SET TIME TO TRACK COMPUTATION TIME
+    ##############################################################################
+    start_time = time.time()
+    
+    # CONSTANTS
+    ##############################################################################
+    G = 6.67384*math.pow(10, -11.0)
+    c = 2.99792458*math.pow(10, 8.0)
+    parsec = 3.08567758*math.pow(10, 16)
+    Rsun = 6.955*math.pow(10, 8)
+    Msun = 1.9891*math.pow(10,30)
+    day = 86400.0
+    rsun_in_au = 215.0954
+    day_in_year = 365.242
+    sec_in_day = 86400.0
+    sec_in_hour = 3600.0
+    hrs_in_day = 24.0
+    sec_in_year = 3.15569*10**7.0
+    Tobs = 3.15569*10**7.0
+    geo_mass = G/c**2
+    
+
+    # DEFINE THE PARAMETER FILE 
+    ##############################################################################
+    paramFile = "Params.in"
+    
+    # OPEN SIMULATION PARAMETER FILE & PARSE PARAMETERS
+    ##############################################################################
+    with open(paramFile, "r") as infile:
+        for i in range(1,34):
+            infile.readline()
+            
+        line1 = infile.readline().rstrip()
+        line2 = infile.readline().rstrip()
+        line3 = infile.readline().rstrip()
+        line4 = infile.readline().rstrip()
+
+    # Parse the parameters into variables    
+    nBin, Nepochs, epochLength, Ncores, Ngalaxies, GxFlag = line1.split(",")
+    metallicity, SFH, SFR, binwidth, LISAflag, saveFileFlag = line2.split(",")
+    HeHe, HeCO, HeONe, COCO, ONeCO, ONeONe, NSHe, NSCO, NSONe =  line3.split(",")
+    NSNS, NSBH, BHBH, BHHe, BHCO, BHONe = line4.split(",")
+
+    # Recast the variables
+    nBin = float(nBin)
+    Nepochs = int(Nepochs)
+    epochLength = float(epochLength)
+    Ncores = int(Ncores)
+    Ngalaxies = float(Ngalaxies)
+    GxFlag = float(GxFlag)
+    print GxFlag
+    LISAflag = float(LISAflag)
+
+    metallicity = float(metallicity)
+    
+    if GxFlag == 0.0:
+        import sampleBinariesThinDisk as sampleBinaries
+        import _popbinTD as _popbin 
+        tmpLoc = 'thinDiskTmp/lambda1'
+        metallicity = 0.02
+
+    elif GxFlag == 1.0:
+        print 'bulge fixed pop'
+        import sampleBinariesBulge as sampleBinaries
+        print 'sample imported yo'
+        metallicity = 0.02
+        tmpLoc = 'bulgeTmp/lambda01'
+        epochPerCore = 1
+        import _popbinB as _popbin
+
+
+    elif GxFlag == 2.0:
+        import sampleBinariesThickDisk as sampleBinaries
+        metallicity = 0.00332
+    
+    # If the Gx component has constant SFR read it in, else if SFR=inf the component is
+    # taken to have a delta function burst of star formation
+    if SFH == " burst":
+        # Each core will have a a single epoch but all epochs will evolve for the given
+        # epoch length
+        epochPerCore = 1
+        startTime = 0
+        maxTime = epochLength
+    
+    else:
+        # Each core will have a given set of epochs to evolve
+        
+        ##############################################################################        
+        # COMPUTE THE # OF EPOCHS PER CORE
+        ##############################################################################
+        epochPerCore = Nepochs
+        SFR = float(SFR)
+        maxTime = Nepochs*epochLength
+        startTime = 0
+    
+    binwidth = float(binwidth)
+    HeHe = int(HeHe)
+    HeCO = int(HeCO)
+    HeONe = int(HeONe)
+    COCO = int(COCO)
+    ONeCO = int(ONeCO)
+    ONeONe = int(ONeONe) 
+    NSHe = int(NSHe)
+    NSCO = int(NSCO)
+    NSONe = int(NSONe)
+    NSNS = int(NSNS)
+    NSBH = int(NSBH)
+    BHBH = int(BHBH)
+    BHHe = int(BHHe)
+    BHCO = int(BHCO)
+    BHONe = int(BHONe)
+    
+    binFlag = [HeHe, HeCO, HeONe, COCO, ONeCO, ONeONe, NSHe, NSCO, NSONe,\
+               NSNS, NSBH, BHBH, BHHe, BHCO, BHONe]
+    binID = ["HeHe", "HeCO", "HeON", "COCO", "ONCO", "ONON", "NSHe", \
+               "NSCO", "NSON", "NSNS", "NSBH", "BHBH", "BHBH", "BHHe", "BHCO", "BHON"]
+    
+    # ASSIGN BINARY IDs ACCORDING TO LOOPING VARIABLE ii
+    ############################################################################## 
+    # ii    binID     binFlag    
+    ##############################################################################
+    #  0    HeHe      0 or 1    
+    #  1    HeCO      0 or 1
+    #  2    HeONe     0 or 1
+    #  3    COCO      0 or 1
+    #  4    COONe     0 or 1
+    #  5    ONeONe    0 or 1
+    #  6    NSHe      0 or 1            
+    #  7    NSCO      0 or 1  
+    #  8    NSONe     0 or 1
+    #  9    NSNS      0 or 1
+    #  10   NSBH      0 or 1
+    #  11   BHBH      0 or 1
+    #  12   BHHe      0 or 1
+    #  13   BHCO      0 or 1
+    #  14   BHONe     0 or 1
+    
+    
+    numberLog = open('numberLog.dat', 'a')
+
+    nLog = []
+
+    # DEFINE THE INITIAL BINARY FILENAMES TO FEED TO EVOLUTION CODE
+    ##############################################################################
+    for ii in range(15):
+        # DEFINE LISTS TO HOLD DATA FROM FIXED POP
+        ##############################################################################
+        binBornList = []
+        binMergedList = []
+        fixedPopLogs = []
+        MTonsetList = []
+
+        matchMin = 0.0
+        run = 0
+        mChirpCm = []
+        m1Cm = []
+        m2Cm = []
+        porbCm = []
+        eccCm = []
+        MTonsetTotCm = []
+
+        # IF THE USER HAS SET THE BINARY FLAG RUN THE FIXED POPULATION FOR THAT TYPE:
+        #############################################################################
+        if binFlag[ii] > 0:
+            print "Running: "+binID[ii]
+            binaryFile = []
+             
+            # SET THE INITIAL MATCH CRITERIA
+            ##############################################################################       
+            matchMinOld = 0.0
+            matchDiff = 10.0
+            NmtOnset = 0
+
+            # CREATE THE SUCCESSIVE LISTS TO COMPUTE MATCHES
+            ##############################################################################
+            porbOld = []
+            mass1Old = []
+            mass2Old = []
+            eccOld = []
+            MTonsetTotOld = []
+
+
+            # EVOLVE BINARIES IN THE FIXED POPULATION UNTIL ALL PARAMETERS SATISFY MATCH CRITERIA
+            ##############################################################################                  
+            while matchMin < 0.999 and NmtOnset < 50000: 
+                successfulRuns = []
+
+                if run > 1:
+                    print 'match min: '+str(matchMin) 
+                    print 'number in MTonset: '+str(NmtOnset)
+                if run > 2:    
+                    print 'match difference: '+str(matchDiff)
+                print 'run: '+str(run)
+                
+                print 'The epoch range is: '+str(range(epochPerCore))
+                # SET UP THE PROCESSES TO SAMPLE THE INITIAL BINARIES
+                ##############################################################################
+               
+                sampleProcesses = [mp.Process(target = sampleBinaries.sample, \
+                                      args   = (x, ii, binID[ii], nBin, range(epochPerCore),\
+                                                epochLength, SFH, maxTime, startTime, metallicity))\
+                                   for x in range(Ncores)]
+                # RUN THE PROCESSES
+                ##############################################################################             
+                for p in sampleProcesses:
+                    p.start()
+                
+                for p in sampleProcesses:
+                    p.join()
+                    
+                jj = 0
+                for p in sampleProcesses:
+                    if p.exitcode == 0:
+                        successfulRuns.append(jj)
+                    else:
+                        print p.exitcode
+                    jj+=1
+                print successfulRuns
+                
+                
+                # COMBINE THE FILES WRITTEN BY THE EVOLUTION PROCESSES
+                ##############################################################################
+                binBorn = []
+                binMerged = []
+                MTonset = []
+                fixedPopLog = []
+
+                for jj in successfulRuns:
+                    fixedPopLogRead = np.genfromtxt(tmpLoc+"/fixedPopLog_"+binID[ii]+"_"+str(jj)+".dat", delimiter = ',')
+                    fixedPopLog.append(fixedPopLogRead)
+                    os.remove(tmpLoc+"/fixedPopLog_"+binID[ii]+"_"+str(jj)+".dat")
+
+                for jj in successfulRuns:
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        binBornRead = np.genfromtxt(tmpLoc+"/born"+binID[ii]+"_"+str(jj).zfill(2)+".dat")
+                        if len(binBornRead) > 0:
+                            binBorn.append(binBornRead)
+
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        binMergedRead = np.genfromtxt(tmpLoc+"/merged"+binID[ii]+"_"+str(jj).zfill(2)+".dat")
+                        if len(binMergedRead) > 0:
+                            binMerged.append(binMergedRead)
+
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        MTonsetRead = np.genfromtxt(tmpLoc+"/MTonset"+binID[ii]+"_"+str(jj).zfill(2)+".dat")
+                        if len(MTonsetRead) > 0:
+                            MTonset.append(MTonsetRead)
+                    
+                 
+                for jj in range(Ncores):
+                    os.remove(tmpLoc+"/born"+binID[ii]+"_"+str(jj).zfill(2)+".dat")
+                    os.remove(tmpLoc+"/merged"+binID[ii]+"_"+str(jj).zfill(2)+".dat")
+                    os.remove(tmpLoc+"/binaries_"+binID[ii]+"_"+str(jj)+".in")
+                    os.remove(tmpLoc+"/MTonset"+binID[ii]+"_"+str(jj).zfill(2)+".dat")
+
+                # REWRITE THE COMBINED FILES CONTAINING BINARY PARAMETERS TODAY, BIRTHS & MERGERS
+                ##############################################################################
+                if len(binBorn)>0:
+                    binBornSave = np.vstack(binBorn)
+                    binBornList.append(binBornSave)
+                    np.savetxt(thinDiskTmp/binID[ii]+"born.dat", binBornSave, delimiter = ",")
+                else:
+                    print "There were no "+binID[ii]+" binaries born"
+            
+                if len(binMerged)>0:
+                    binMergedSave = np.vstack(binMerged)
+                    binMergedList.append(binMergedSave)
+                    np.savetxt(thinDiskTmp/binID[ii]+"merged.dat", binMergedSave, delimiter = ",")
+                else:
+                    print "There were no "+binID[ii]+" binaries merged"
+
+                if len(MTonset)>0:
+                    MTonsetSave = np.vstack(MTonset)
+                    MTonsetList.append(MTonsetSave)
+                else:
+                    print "There are no "+binID[ii]+" that start mass transfer"
+                    
+                if len(fixedPopLog)>0:
+                    fixedPopLogSave = np.vstack(fixedPopLog)
+                    fixedPopLogs.append(fixedPopLogSave)
+                
+                # LOG THE TOTAL SIMULATION TIME
+                ##############################################################################
+                print "The "+binID[ii]+" fixed population cumulative time is: ", time.time()-start_time, "seconds"
+                
+                binBornTot = []
+                binMergedTot = []
+                FixedPopLogTot = []
+                MTonsetTot = []
+                eccentric = 0
+
+                for binList in binBornList:
+                    for line in binList:
+                        binBornTot.append(line)
+
+                for binList in binMergedList:
+                    for line in binList:
+                        binMergedTot.append(line)
+
+                for binList in fixedPopLogs:
+                    for line in binList:
+                        FixedPopLogTot.append(line)
+                
+                for binList in MTonsetList:
+                    for line in binList:
+                        MTonsetTot.append(line)
+                    
+                binBornTot = np.array(binBornTot)
+                binMergedTot = np.array(binMergedTot)
+                FixedPopLogTot = np.array(FixedPopLogTot)
+                MTonsetTot = np.array(MTonsetTot)
+                
+                
+                
+                mass1 = MTonsetTot[:,2]
+                mass2 = MTonsetTot[:,3]
+                porb = np.log10(MTonsetTot[:,4]*sec_in_year)
+                ecc = MTonsetTot[:,5]
+
+
+                # CHECK TO SEE IF ALL THE BINARIES ARE CIRCULAR
+                ##########################################################################
+                for jj in range(len(ecc)):
+                    if ecc[jj] != 0.0:
+                        eccentric += 1.0
+                
+                # LOGIT(0) = -INF and LOGIT(1) = INF; CONTROL FOR THIS IN KDE FIT
+                ##########################################################################
+                if eccentric < 1.0:
+                    for jj in range(len(ecc)):    
+                        if ecc[jj] == 0.0:
+                            ecc[jj] = 0.00000001
+                        if ecc[jj] == 1.0:
+                            ecc[jj] = 0.99999999
+                    ecc = ss.logit(ecc)
+                
+                # DEFINE THE CHIRP MASS
+                ##########################################################################
+                mchirp = np.log10((mass1*mass2)**(3./5.)/(mass1+mass2)**(1./5.))
+                
+                if run > 0 and len(mchirp) > 10:
+    
+                    # APPEND TO THE CUMULATIVE PARAMETER LISTS
+                    ##########################################################################
+                    porbCm = [porbOld, np.hstack([porb,porbOld])]
+                    m1Cm = [mass1Old, np.hstack([mass1,mass1Old])]
+                    m2Cm = [mass2Old, np.hstack([mass2,mass2Old])]
+                    eccCm = [eccOld, np.hstack([ecc,eccOld])]
+                    MTonsetTotCm = [MTonsetTotOld, np.vstack([MTonsetTot, MTonsetTotOld])]
+
+                    NmtOnset = len(MTonsetTotCm[len(MTonsetTotCm)-1])
+
+                    matchMass1 = Match.match(m1Cm, len(m1Cm))
+                    matchMass2 = Match.match(m2Cm, len(m2Cm))
+                    matchPorb = Match.match(porbCm, len(porbCm))
+                    if eccentric < 1.0:
+                        matchEcc = np.ones(run)
+                        matchArray = np.vstack(( matchMass1, matchMass2, matchPorb))
+
+                    else:
+                        matchEcc = Match.match(eccCm, len(eccCm))
+                        matchArray = np.vstack((matchEcc, matchMass1, matchMass2, matchPorb))
+                
+
+                    matchMin = np.min([matchEcc[len(matchEcc)-1], matchMass1[len(matchMass1)-1], matchMass2[len(matchMass2)-1], matchPorb[len(matchPorb)-1]])
+                    run += 1
+                    
+                    matchDiff = abs(matchMin-matchMinOld)
+                    matchMinOld = matchMin
+                   
+                    np.savetxt(tmpLoc+"/fixedPopLogCm_"+binID[ii]+".dat", FixedPopLogTot, delimiter = ",")
+                    np.savetxt(tmpLoc+"/MTonset_"+binID[ii]+".dat", MTonsetTotCm[len(MTonsetTotCm)-1], delimiter = ",")
+
+                else:
+                    matchMin = 0.0
+                    run += 1
+             
+                if len(porbCm) > 1:
+                    if len(MTonset)>2:
+                        porbOld = porbCm[len(porbCm)-1]
+                        mass1Old = m1Cm[len(m1Cm)-1]
+                        mass2Old = m2Cm[len(m2Cm)-1]
+                        if eccentric > 1.0:
+                            eccOld = eccCm[len(eccCm)-1]
+                        MTonsetTotOld = MTonsetTotCm[len(MTonsetTotCm)-1]
+                else:
+                    
+                    porbOld = porb
+                    mass1Old = mass1
+                    mass2Old = mass2
+                    if eccentric > 1.0:
+                        eccOld = ecc
+                    MTonsetTotOld = MTonsetTot
+
+
+            binMTonsetTot = np.array(MTonsetTotCm[len(MTonsetTotCm)-1])
+            print len(binMTonsetTot)
+            np.savetxt(tmpLoc+"/MatchEvolution_"+binID[ii]+".dat", matchArray, delimiter = ",")
+
+            # COMPUTE THE SIZE OF THE FULL & LISA BAND FIXED POP
+            ##########################################################################
+            NmtOnsetFinal = len(binMTonsetTot)
+            
+            print 'The total number of  '+binID[ii]+' binaries that start mass transfer is: '+str(NmtOnset)
+            if LISAflag > 0:
+                print 'The total number of  '+binID[ii]+' binaries in the LISA band in the fixed population is: '+str(NfixedPopDat)
+            print 'The final match is: '+str(matchMin)
+            print 'The final match Diff is: '+str(matchDiff)
+                       
+            np.savetxt(tmpLoc+"/fixedPopLogCm_"+binID[ii]+".dat", FixedPopLogTot, delimiter = ",")
+            np.savetxt(tmpLoc+"/MTonset_"+binID[ii]+".dat", binMTonsetTot, delimiter = ",")
+          
+      
+            
+    print "I'm finished"
+
+                

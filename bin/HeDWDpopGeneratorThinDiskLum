@@ -1,0 +1,502 @@
+#! /usr/bin/env python
+
+# Code: HeDWDpopGenerator.py
+# Version: 1
+# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE UP TO MASS
+#                  TRANSFER; USE LOOK-UP TABLE OF TIME INTERPOLATION OF BINARY PARAMS
+#                  FROM KYLE KREMER'S MASS TRANSFER CODE TO FIND BINARY STATE TODAY;
+#                  RETAIN ALL BINARIES W/ SNR>1 AND LOG CHIRPS
+#
+# Edited on:  4 DEC 2016
+
+##############################################################################
+#  IMPORT ALL NECESSARY PYTHON PACKAGES
+##############################################################################
+import math
+import scipy.special as ss
+from scipy.interpolate import interp1d
+import scipy.stats
+import multiprocessing as mp
+import numpy as np
+import astropy.stats as astroStats
+
+
+##############################################################################
+#  DEFINE THE MONTE CARLO SAMPLE FUNCTION
+##############################################################################
+def sampleMassTransferPop(nCore,sensInterp,KDElist,interpArray,RLinterp,nBin,output):
+    x_sun = 8500.0
+    y_sun = 0.0
+    z_sun = 16.5
+    gxDatList = []
+    np.random.seed()
+   
+    ii = 0
+    LISAdatList = []
+    tList = []
+    for kde in KDElist:
+        kdeDat = np.array(kde)
+
+        bestBinSizeT = astroStats.knuth_bin_width(kdeDat[:,0])
+        bestBinSizeM1 = astroStats.knuth_bin_width(kdeDat[:,1])
+        bestBinSizeM2 = astroStats.knuth_bin_width(kdeDat[:,2])
+        bestBinSizetBorn1 = astroStats.knuth_bin_width(kdeDat[:,3])
+        bestBinSizetBorn2 = astroStats.knuth_bin_width(kdeDat[:,4])
+
+        #nBinsBestT, bestBinSizeT = MISE.costMin(kdeDat[:,0])
+        #nBinsBestM1, bestBinSizeM1 = MISE.costMin(kdeDat[:,1])
+        #nBinsBestM2, bestBinSizeM2 = MISE.costMin(kdeDat[:,2])
+        
+        #nBinsBest = max(nBinsBestT,nBinsBestM1,nBinsBestM1)
+        binSizeBest = min(bestBinSizeT,bestBinSizeM1,bestBinSizeM1,bestBinSizetBorn1,bestBinSizetBorn2)
+    
+        KDE = scipy.stats.gaussian_kde(kdeDat.T, bw_method=binSizeBest)
+        nDraw = 0
+        nSample = int(nBin[ii]/float(nCore))
+        #nSample = 10000
+    
+        LISAdat = []
+        tTotList = []
+        
+        while nDraw < nSample:
+            if nDraw > 1e7:
+                print 'The number of binaries drawn so far is '+str(nDraw)
+            DiskOnly = 0
+            binSample = KDE.resample(1)
+            nDraw += 1
+            tMT = 10**binSample[0][0]
+            m1 = 10**binSample[1][0]
+            m2 = 10**binSample[2][0]
+            tBorn1 = 10**binSample[3][0]
+            tBorn2 = 10**binSample[4][0]
+            
+            #The amount of time the binary transfers mass is: tTot
+            #The time the binary begins mass transfer is tMT             
+            tTot = (10-tMT)*10**9
+            if tTot > 0 and tTot < 10**8:
+                #print tTot
+                #LOOK UP WHAT THE MASSES ARE FROM KYLE'S FILE INTERPOLATION
+                
+                #First see if the donor (m2) has enough mass to undergo direct impact accretion
+                #(see Eq 5 of Sepinsky, & Kalogera (2012)) ***m1 == accretor; m2 == donor
+                mCritical = (1-9.24*m1+4.75*m1**2)/(36.*m1-54.)
+                index1, = np.where(m1<interpArray[:,2])
+                interpArrayCut1 = interpArray[index1]
+                    
+                index2, = np.where(m2<interpArrayCut1[:,3])
+                
+                #At this point, we should have the proper interpolation selected given 
+                #the masses of the donor and accretor
+                if len(index2)<1:
+                    continue
+                    #print tMT, m1,m2
+                else: 
+                    yIndex = min(index2)
+                    if tTot > interpArrayCut1[yIndex,0]:
+                        ### check what this does!
+                        tTotList.append(tTot)
+                        
+                    elif tTot < interpArrayCut1[yIndex,0]:
+                        tEndDI = interpArrayCut1[yIndex,1]
+                        mDonorInterp = interpArrayCut1[yIndex,4]
+                        mAccretorInterp = interpArrayCut1[yIndex,5]
+                        fgwInterp = interpArrayCut1[yIndex,6]
+                        fdot_GRInterp = interpArrayCut1[yIndex,7]
+                        fdot_MTInterp = interpArrayCut1[yIndex,8]
+                        fdot_tidesInterp = interpArrayCut1[yIndex,9]
+                        fdot_totalInterp = interpArrayCut1[yIndex,10]
+                        dSpinInterp = interpArrayCut1[yIndex,11]
+                        aSpinInterp = interpArrayCut1[yIndex,12]
+                        MdotPlusExcessInterp = interpArrayCut1[yIndex,13]
+                        MdotInterp = interpArrayCut1[yIndex,14]
+                        MdotEddInterp = interpArrayCut1[yIndex,15]
+
+
+                        mDonorToday = mDonorInterp(tTot)
+                        mAccretorToday = mAccretorInterp(tTot)
+                        fgwToday = fgwInterp(tTot)
+                        fdot_GRtoday = fdot_GRInterp(tTot)
+                        fdot_MTtoday = fdot_MTInterp(tTot)
+                        fdot_tidesToday = fdot_tidesInterp(tTot)
+                        fdot_totalToday = fdot_totalInterp(tTot)
+                        dSpinToday = dSpinInterp(tTot)
+                        aSpinToday = aSpinInterp(tTot)
+                        MdotPlusExcessToday = MdotPlusExcessInterp(tTot)
+                        MdotToday = MdotInterp(tTot)
+                        MdotEddToday = MdotEddInterp(tTot)
+
+                        #print porbToday,fdot_MTtoday,fdot_tidesToday,fdot_totalToday
+                        
+                        fgw = fgwToday
+                        forb = fgw/2.
+                        porbYr = 1/(forb*sec_in_year)
+                        sepAU = (porbYr**2*(mDonorToday+mAccretorToday))**(1./3.)
+
+                        #COMPUTE THE DISTANCE
+                        # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
+                        ##############################################################################
+                        # First assign the position relative to the galactic center
+                        a_0_r = []
+                        a_0_zr = []
+                        phiGX = []
+                        xGx = []
+                        yGX = []
+                        zGX = []
+                
+                        # Assign the radial position of the binary
+                        norm_r = 1/2.5
+                        a_0_r = np.random.uniform(0, 1.0)
+                        r = -2.5*np.log(1-a_0_r)
+                
+                        # Assign the azimuthal position of the star
+                        phi = np.random.uniform(0, 2*np.pi)
+                
+                        # Assign the z position of the star with r as a parameter
+                        norm_zr = 1/0.704
+                        a_0_zr = np.random.uniform(0, 1.0)
+                        z = 1/2.84091*np.arctanh(a_0_zr/(norm_zr*0.352)-1)
+                
+                        # convert to cartesian and parsecs (from kpc)
+                        xGX = r*np.cos(phi)*10**3
+                        yGX = r*np.sin(phi)*10**3
+                        zGX = z*10**3
+                
+                        # compute the distance to Earth/LISA/us in parsecs and kiloparsecs
+                        dist = ((xGX-x_sun)**2+(yGX-y_sun)**2+(zGX-z_sun)**2)**(1/2.0)
+                        dist_kpc = dist/1000.0
+                        
+                        #CHECK LISA DETECTABILITY
+                        mchirp = (mDonorToday*mAccretorToday)**(3./5.)/(mDonorToday+mAccretorToday)**(1./5.)
+                        h0 = 4*G**(5./3.)/c**4*math.pi**(2./3.)*(mchirp*Msun)**(5./3.)*(fgw)**(2./3.)/(dist*parsec)
+                        hf = h0*math.sqrt(Tobs)
+                        hfLISA = sensInterp(fgw)
+                        fdot_GR = fdot_GRtoday
+                        
+                        SNR = hf/hfLISA
+                        if SNR > 1:
+                            Rfac = RLinterp(mDonorToday/mAccretorToday)
+                            RocheLobeAU = Rfac*sepAU
+                            #print SNR, h0, mchirp, dist/1000., tMT
+                            LISAdat.append((DiskOnly,m1,m2,mDonorToday,mAccretorToday,tBorn1,tBorn2,tMT,tEndDI,\
+                                            fgw,fdot_GR,fdot_MTtoday,fdot_tidesToday,fdot_totalToday,\
+                                            sepAU,RocheLobeAU,dSpinToday,aSpinToday,\
+                                            MdotPlusExcessToday,MdotToday,MdotEddToday,\
+                                            xGX,yGX,zGX,SNR))
+                        
+                        else:
+                            continue
+            else:
+                tTotList.append(tTot)
+                continue
+                
+        LISAdat = np.array(LISAdat)
+        tTotDat = np.array(tTotList)
+        tList.append(tTotDat)
+        #print len(tTotList), len(LISAdat)         
+        if len(LISAdat) > 0:
+            LISAdatList.append(LISAdat)
+                
+        ii+=1
+    if len(LISAdatList) > 0:
+        gxDatList = np.vstack(LISAdatList)
+    else:
+        gxDatList = [[],[],[]]
+    output.put(gxDatList)
+        
+
+##################################################################################
+# BEGIN MAIN FUNCTION
+##################################################################################
+if __name__ == '__main__':
+
+
+    # CONSTANTS
+    ##############################################################################
+    G = 6.67384*math.pow(10, -11.0)
+    c = 2.99792458*math.pow(10, 8.0)
+    parsec = 3.08567758*math.pow(10, 16)
+    Rsun = 6.955*math.pow(10, 8)
+    Msun = 1.9891*math.pow(10,30)
+    day = 86400.0
+    rsun_in_au = 215.0954
+    day_in_year = 365.242
+    sec_in_day = 86400.0
+    sec_in_hour = 3600.0
+    hrs_in_day = 24.0
+    sec_in_year = 3.15569*10**7.0
+    Tobs = 3.15569*10**7.0
+    geo_mass = G/c**2
+    m_in_AU = 1.496*10**11.0
+    
+    # GENERATE LISA SENSITIVITY CURVE INTERPOLATION TO COMPUTE SNRs
+    ##############################################################################
+    sensData = np.genfromtxt("sensitivityCurve.in", delimiter = ",")
+    sensInterp = interp1d(sensData[:,0],sensData[:,1])
+
+    # READ IN DWD POPS WITH HELIUM DONOR
+    ##############################################################################
+    dts = {'names':('binNum','Time','m1','m2','sep','ecc','rRL1','rRL2','tBorn1','tBorn2','DWDborn'),
+           'formats':('i','f','f','f','f','f','f','f','f','f','f')}
+
+    HeHe = np.genfromtxt('thinDiskLum/lambda1/MTonset_HeHe.dat',delimiter = ',',dtype=dts)
+    HeCO = np.genfromtxt('thinDiskLum/lambda1/MTonset_HeCO.dat',delimiter = ',',dtype=dts)
+    HeON = np.genfromtxt('thinDiskLum/lambda1/MTonset_HeON.dat',delimiter = ',',dtype=dts)
+    
+    #datList = [HeHe,HeCO]
+    #datChar = ['HeHe','HeCO']
+
+    datList = [HeHe,HeCO,HeON]
+    datChar = ['HeHe','HeCO','HeON']
+    
+    # MAKE SURE THE PRIMARY IS THE MOST MASSIVE OF THE PAIR
+    ##############################################################################
+    for b in HeHe:
+        if b['m2']>b['m1']:
+            print 'uh oh'
+            print b['m2']/b['m1']
+            m2Hold = b['m2']
+            m1Hold = b['m1']
+            b['m1'] = m2Hold
+            b['m2'] = m1Hold 
+            print 'switch'
+            print b['m2']/b['m1']
+    for b in HeCO:
+        if b['m2']>b['m1']:
+            print 'uh oh'
+            print b['m2']/b['m1']
+            m2Hold = b['m2']
+            m1Hold = b['m1']
+            b['m1'] = m2Hold
+            b['m2'] = m1Hold
+            print 'switch'
+            print b['m2']/b['m1']
+    for b in HeON:
+        if b['m2']>b['m1']:
+            print 'uh oh'
+            print b['m2']/b['m1']
+            m2Hold = b['m2']
+            m1Hold = b['m1']
+            b['m1'] = m2Hold
+            b['m2'] = m1Hold
+            print 'switch'
+            print b['m2']/b['m1']
+            
+    # COMPUTE THE NUMBER OF BINARIES IN THE POPULATION ASSUMING:
+    # SFR=5 MSUN/YR == CONSTANT OVER 10 GYRS
+    ##############################################################################
+    ii = 0
+    SFR = 5.0
+    totalTime = 10**10.
+    nEpochs = 1.
+    epochTime = totalTime/nEpochs
+    nBin = []
+    for dat in datChar:
+        fixedPopLog = np.genfromtxt('thinDiskLum/lambda1/fixedPopLogCm_'+dat+'.dat', delimiter = ',')
+        mTotFixed = sum(fixedPopLog[:,2])
+        #nPerEpoch = int(len(datList[ii])*(8*10**10)/(mTotFixed))
+        nPerEpoch = int(len(datList[ii])*(SFR*epochTime)/(mTotFixed))
+        Ntot = int(nPerEpoch*nEpochs)
+        
+        nBin.append(Ntot)
+        ii+=1
+    nBin = np.array(nBin)
+    print 'The number of binaries to enter mass transfer are: '+str(nBin)
+        
+    # GENERATE 3D KDE FROM MASSES AND TIME TO MASS TRANSFER ONSET
+    # NOTE: PORB IS NOT NECESSARY, IS SET BY ONSET OF MASS TRANSFER 
+    ##############################################################################
+    KDElist = []
+    for dat in datList:
+        KDEdat = []
+        for d in dat:
+            KDEdat.append((np.log10(d['Time']/10.**3),np.log10(d['m1']),np.log10(d['m2']),\
+                           np.log10(d['tBorn1']),np.log10(d['tBorn2'])))
+        KDElist.append(np.array(KDEdat))
+    KDElist = np.array(KDElist) 
+    
+    # READ IN THE MASS TRANSFER DATA
+    ##############################################################################
+    # 0) time
+    # 1) a (AU)
+    # 2) MD (Msun)
+    # 3) MA (Msun)
+    # 4) donor spin 
+    # 5) accretor spin
+    # 6) grav. wave frequency
+    # 7) donor tidal timescale
+    # 8) accretor tidal timescale 
+    # 9) Mdot+excess_MT
+    # 10) Mdot
+    # 11) Mdot_Edd
+    # 12) fdot_GR
+    # 13) fdot_tides
+    # 14) fdot_MT
+    # 15) fdot_astro
+    # 16) fdot_total
+    # 17) End type (1 for disc, 3 for unstable, 4 for super-Chandra accretor)
+    # 18) Time of transition from DI to disc
+
+    mDvals = np.arange(0.025, 0.525, 0.025)
+    mAvals = np.arange(0.3, 1.45, 0.05)
+    
+    dts = np.dtype({'names':['time','sep', 'MD', 'MA', 'dSpin', 'aSpin', 'fgw', 'tTideD',\
+                              'tTideA', 'MdEMT', 'Mdot', 'MdotE', 'fdotGR', 'fdotTide',\
+                              'fdotMT', 'fdotAstro', 'fdotTot', 'endType', 'tDItoDisk'],
+                    'formats':['f','f','f','f','f','f','f','f','f','f',\
+                                'f','f','f','f','f','f','f','f','f']})
+    
+    datList = []
+    for d in mDvals:
+        for a in mAvals:
+            try:
+                datRead = np.genfromtxt('massTransferEvolution/2_DWD_10_'+str(d)+'_'+str(a)+'.dat', dtype=dts)
+                if len(datRead) > 0:
+                    datList.append(datRead)
+            except IOError:
+                print 'There are no 2_DWD_10_'+str(d)+'_'+str(a)+' binaries'
+                pass
+            
+            
+
+    
+    # GENERATE INTERPOLATION LIST FOR THE MASS TRANSFER DATA
+    ##############################################################################    
+    interpList = []
+    tDItoDisk = []
+    for d in datList:
+        time = d['time']
+        mDonor = d['MD']
+        mAccretor = d['MA']
+        dSpin = d['dSpin']
+        aSpin = d['aSpin']
+        MdotPlusExcess = d['MdEMT']
+        Mdot = d['Mdot']
+        MdotEdd = d['MdotE']
+        fgw = d['fgw']
+        fdot_GR = d['fdotGR']
+        fdot_MT = d['fdotMT']
+        fdot_tides = d['fdotTide']
+        fdot_total = d['fdotTot']
+
+        tDItoDisk.append(d['tDItoDisk'][0])
+        
+        interpIndex, = np.where(time>0.0)
+        time_dat = time[interpIndex]
+        mDonor_dat = mDonor[interpIndex]
+        mAccretor_dat = mAccretor[interpIndex]
+        dSpin_dat = dSpin[interpIndex]
+        aSpin_dat = aSpin[interpIndex]
+        MdotPlusExcess_dat = MdotPlusExcess[interpIndex]
+        Mdot_dat = Mdot[interpIndex]
+        MdotEdd_dat = MdotEdd[interpIndex]
+        fgw_dat = fgw[interpIndex]
+        fdot_GR_dat = fdot_GR[interpIndex]
+        fdot_MT_dat = fdot_MT[interpIndex]
+        fdot_tides_dat = fdot_tides[interpIndex]
+        fdot_total_dat = fdot_total[interpIndex]
+
+
+
+        mDonorInterp = interp1d(time_dat, mDonor_dat)
+        mAccretorInterp = interp1d(time_dat, mAccretor_dat)
+        fgwInterp = interp1d(time_dat, fgw_dat)
+        fdotGRinterp = interp1d(time_dat, fdot_GR_dat)
+        fdotMTinterp = interp1d(time_dat, fdot_MT_dat)
+        fdotTidesInterp = interp1d(time_dat, fdot_tides_dat)
+        fdotTotInterp = interp1d(time_dat, fdot_total_dat)
+        dSpinInterp = interp1d(time_dat, dSpin_dat)
+        aSpinInterp = interp1d(time_dat, aSpin_dat)
+        MdotPlusExcessInterp = interp1d(time_dat, MdotPlusExcess_dat)
+        MdotInterp = interp1d(time_dat, Mdot_dat)
+        MdotEddInterp = interp1d(time_dat, MdotEdd_dat)
+        
+        interpList.append((max(time_dat),d['tDItoDisk'][0],mAccretor_dat[0],mDonor_dat[0],\
+                                   mDonorInterp,mAccretorInterp,fgwInterp,fdotGRinterp,fdotMTinterp,\
+                                   fdotTidesInterp,fdotTotInterp,dSpinInterp,aSpinInterp,MdotPlusExcessInterp,\
+                                   MdotInterp,MdotEddInterp))
+        
+        
+    
+    interpArray = np.array(interpList)
+    
+    # GENERATE INTERPOLATION FOR THE ROCHE LOBE FROM LOOKUP_TABLE2;
+    # SEE KYLE KREMER PAPER (2015); CAN'T USE EGGLETON ROCHE LOBE FOR NON-SYNCHRONIZED SYSTEMS
+    ###########################################################################################
+    dtsRoche = np.dtype({'names':['massRatio','dSpin2p','R'],
+                    'formats':['f','f','f']})
+
+    RLlookup = np.genfromtxt('Lookup_table2.dat', dtype=dtsRoche)
+    RLinterp = interp1d(RLlookup['massRatio'],RLlookup['R'])
+
+    # RUN THE MONTE CARLO SAMPLE WITH MULTIPROCESSING
+    ##############################################################################   
+    nGx = 2
+    nSamples = 0
+    while nSamples < nGx:
+
+        nCores = 20
+        GxChirpData = []
+        
+
+        for i in range(600):
+            output = mp.Queue()
+            print i
+            processes = [mp.Process(target = sampleMassTransferPop, \
+                                        args   = (nCores,sensInterp,KDElist,interpArray,\
+                                                  RLinterp,nBin/600.0,output)) \
+                             for x in range(nCores)]
+            for p in processes:
+                p.start()
+            
+            for p in processes:
+                p.join()
+            
+            # GATHER THE DATA FROM THE MULTIPROCESSING AND GROUP EACH POPULATION TO ITS
+            # GALAXY REALIZATION (i.e. combine HeHe, HeCO, HeON pops into one list of data)
+            ##############################################################################       
+            GxList = [output.get() for p in processes]
+            for pop in GxList:
+                for g in pop:
+                    if len(g) > 1:
+                        GxChirpData.append(g)
+                
+        #print GxChirpData
+        
+        # SAVE THE GX DATA
+        ##############################################################################         
+        if len(np.array(GxChirpData))>0:
+            gSave = np.vstack(np.array(GxChirpData))
+            np.savetxt('thinDiskGxSampleTmp/lambda1/GxDat_'+str(nSamples)+'_CONST.dat', gSave, delimiter = ',')
+        
+            # COUNT THE NUMBER OF POSITIVELY/NEGATIVELY CHIRPING BINARIES
+            ##############################################################################             
+
+            #GxChirpData has length(total # of sampled galaxies)
+            negativeChirp = []
+            nonNegativeChirp = []
+            if len(gSave)> 1:
+                for i in gSave:
+                    #i has length 11 for the 11 parameters we save from the Gx MC sample
+                    #DiskOnly,mchirp,tMT,tEndDI,fgw,fdot_GR,fdot_MTtoday,fdot_tidesToday,\
+                    #fdot_totalToday,xGX,yGX,zGX,SNR
+                    #print i
+                    if i[8]<0:
+                        negativeChirp.append(i)
+                    else:
+                        nonNegativeChirp.append(i)
+                negativeChirp = np.array(negativeChirp)
+                nonNegativeChirp = np.array(nonNegativeChirp)
+                
+                #if np.max(abs(negativeChirp[:,8]))>=0.1:
+                #    nCmeasuredIndex, = np.where(abs(negativeChirp[:,8])>=0.1)
+                #    nCmeasured = negativeChirp[nCmeasuredIndex]
+                #
+                #    print 'The number of measurable negatively chirping binaries for gx: '+str(nSamples)+' is: '+str(len(nCmeasured))
+        else:
+            print 'There are no detectable binaries for gx:  '+str(nSamples)
+        nSamples += 1
+        print nSamples,' sampled!'
+        
+    print 'I"m finished!'
+        
+        
