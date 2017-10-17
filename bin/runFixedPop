@@ -22,14 +22,29 @@ import numpy as np
 import string
 import os.path
 import scipy.special as ss
-import sampleBinaries
-import MatchKnuth as Match 
+from aCOSMIC import MatchKnuth as Match 
 import warnings
+import argparse
+
+##################################################################################
+# DEFINE COMMANDLINE ARGUMENTS
+##################################################################################
+def parse_commandline():
+    """Parse the arguments given on the command-line.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    args = parser.parse_args()
+
+    return args
 
 ##################################################################################
 # BEGIN MAIN FUNCTION
 ##################################################################################
 if __name__ == '__main__':
+
+    # READ COMMANDLINE ARGUMENTS
+    ##############################################################################
+    args = parse_commandline()
 
 
     # SET TIME TO TRACK COMPUTATION TIME
@@ -88,23 +103,22 @@ if __name__ == '__main__':
     metallicity = float(metallicity)
     
     if GxFlag == 0.0:
-        import sampleBinariesThinDisk as sampleBinaries
-        import _popbinTD as _popbin 
+        from aCOSMIC import sampleBinariesThinDisk as sampleBinaries
+
         tmpLoc = 'thinDiskTmp/lambda1'
         metallicity = 0.02
 
     elif GxFlag == 1.0:
         print 'bulge fixed pop'
-        import sampleBinariesBulge as sampleBinaries
+        from aCOSMIC import sampleBinariesBulge as sampleBinaries
         print 'sample imported yo'
         metallicity = 0.02
         tmpLoc = 'bulgeTmp/lambda01'
         epochPerCore = 1
-        import _popbinB as _popbin
 
 
     elif GxFlag == 2.0:
-        import sampleBinariesThickDisk as sampleBinaries
+        from aCOSMIC import sampleBinariesThickDisk as sampleBinaries
         metallicity = 0.00332
     
     # If the Gx component has constant SFR read it in, else if SFR=inf the component is
