@@ -1,17 +1,17 @@
 .. _command-line:
 
-###################################
-Running ``dwd`` on the command line
-###################################
+###########################################
+Running ``runFixedPop`` on the command line
+###########################################
 
-As described on the home page, the main interface to the dwd algorithm is the command-line executable ``dwd``.
+As described on the home page, the main interface to the aCOSMIC algorithm is the command-line executable ``runFixedPop``.
 
 Basic instructions
 ==================
 
-Basic instructions on running ``ded`` can be gained by looking at the ``--help`` menu:
+Basic instructions on running ``runFixedPop`` can be gained by looking at the ``--help`` menu:
 
-.. command-output:: dwd --help
+.. command-output:: runFixedPop --help
 
 Detailed instructions
 =====================

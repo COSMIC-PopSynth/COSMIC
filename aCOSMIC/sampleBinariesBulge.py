@@ -14,7 +14,8 @@ import numpy as np
 import math
 import random
 import time
-import _popbinB as _popbin
+from aCOSMIC import _popbinB as _popbin
+
 
 ##################################################################################
 # FUNCTION TO SAMPLE THE INITIAL BINARIES
