@@ -14,7 +14,7 @@ The easiest method to install aCOSMIC is using `pip <https://pip.pypa.io/en/stab
 
 .. code-block:: bash
 
-   $ pip install git+https://github.com/astro-traj/astro-traj
+   $ pip install git+https://github.com/aCOSMIC/aCOSMIC.git
 
 
 Table of Contents
