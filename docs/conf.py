@@ -36,6 +36,8 @@ extensions = [
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinxfortran.fortran_domain',
+    'sphinxfortran.fortran_autodoc',
     'sphinx.ext.autosummary',
     'numpydoc',
     'sphinxcontrib.programoutput',
@@ -48,6 +50,9 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
+
+fortran_ext = ['f']
+fortran_src = '../aCOSMIC/src/'
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'

@@ -79,6 +79,7 @@ if sys.version_info < (2, 7):
 extras_require = {
     'doc': [
         'sphinx',
+        'sphinx-fortran',
         'numpydoc',
         'sphinx_rtd_theme',
         'sphinxcontrib_programoutput',
@@ -87,9 +88,9 @@ extras_require = {
 }
 # fortran compile
 
-wrapperTD = Extension('aCOSMIC._popbinTD', sources=['aCOSMIC/src/popbinTD.f', 'aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
+wrapperTD = Extension('aCOSMIC._popbintd', sources=['aCOSMIC/src/popbintd.f', 'aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
 
-wrapperB = Extension('aCOSMIC._popbinB', sources=['aCOSMIC/src/popbinB.f', 'aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
+wrapperB = Extension('aCOSMIC._popbinb', sources=['aCOSMIC/src/popbinb.f', 'aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
 
 
 # -- run setup ----------------------------------------------------------------

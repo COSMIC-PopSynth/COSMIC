@@ -14,7 +14,7 @@ import numpy as np
 import math
 import random
 import time
-from aCOSMIC import _popbinB as _popbin
+from aCOSMIC import _popbinb as _popbin
 
 
 ##################################################################################
