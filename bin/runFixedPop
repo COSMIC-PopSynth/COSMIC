@@ -25,6 +25,7 @@ import scipy.special as ss
 from aCOSMIC import MatchKnuth as Match 
 import warnings
 import argparse
+import ConfigParser
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -33,6 +34,7 @@ def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     args = parser.parse_args()
 
     return args
@@ -69,26 +71,40 @@ if __name__ == '__main__':
     geo_mass = G/c**2
     
 
-    # DEFINE THE PARAMETER FILE 
-    ##############################################################################
-    paramFile = "Params.in"
-    
-    # OPEN SIMULATION PARAMETER FILE & PARSE PARAMETERS
-    ##############################################################################
-    with open(paramFile, "r") as infile:
-        for i in range(1,34):
-            infile.readline()
-            
-        line1 = infile.readline().rstrip()
-        line2 = infile.readline().rstrip()
-        line3 = infile.readline().rstrip()
-        line4 = infile.readline().rstrip()
+    # ---- Create configuration-file-parser object and read parameters file.
+    cp = ConfigParser.ConfigParser()
+    #cp.optionxform = str
+    cp.read(args.inifile)
 
-    # Parse the parameters into variables    
-    nBin, Nepochs, epochLength, Ncores, Ngalaxies, GxFlag = line1.split(",")
-    metallicity, SFH, SFR, binwidth, LISAflag, saveFileFlag = line2.split(",")
-    HeHe, HeCO, HeONe, COCO, ONeCO, ONeONe, NSHe, NSCO, NSONe =  line3.split(",")
-    NSNS, NSBH, BHBH, BHHe, BHCO, BHONe = line4.split(",")
+    # ---- Read needed variables from [parameters] and [system] sections.
+    nBin = cp.getint('parameters', 'Nbin')
+    Nepochs = cp.getint('parameters', 'Nepochs')
+    epochLength = cp.getfloat('parameters', 'epochLength')
+    Ncores = cp.getint('parameters', 'Ncores')
+    Ngalaxies = cp.getint('parameters', 'Ngalaxies')
+    Ncores = cp.getint('parameters', 'Ncores')
+    GxFlag = cp.getint('parameters', 'GxFlag')
+    metallicity = cp.getfloat('parameters', 'metallicity')
+    SFH = cp.get('parameters', 'SFH')
+    SFR = cp.getfloat('parameters', 'SFR')
+    binwidth = cp.getfloat('parameters', 'binwidth')
+    saveFileFlag = cp.getint('parameters', 'saveFileFlag')
+    LISAflag = cp.getint('parameters', 'LISAflag')
+    HeHe = cp.getint('system', 'HeHe')
+    HeCO  = cp.getint('system', 'HeCO')
+    HeONe = cp.getint('system', 'HeONe')
+    COCO = cp.getint('system', 'COCO')
+    ONeCO = cp.getint('system', 'ONeCO')
+    ONeONe = cp.getint('system', 'ONeONe')
+    NSHe = cp.getint('system', 'NSHe')
+    NSCO = cp.getint('system', 'NSCO')
+    NSONe = cp.getint('system', 'NSONe')
+    NSNS = cp.getint('system', 'NSNS')
+    NSBH = cp.getint('system', 'NSBH')
+    BHBH = cp.getint('system', 'BHBH')
+    BHHe = cp.getint('system', 'BHHe')
+    BHCO = cp.getint('system', 'BHCO')
+    BHONe = cp.getint('system', 'BHONe')
 
     # Recast the variables
     nBin = float(nBin)
@@ -96,19 +112,18 @@ if __name__ == '__main__':
     epochLength = float(epochLength)
     Ncores = int(Ncores)
     Ngalaxies = float(Ngalaxies)
-    GxFlag = float(GxFlag)
     print GxFlag
     LISAflag = float(LISAflag)
 
     metallicity = float(metallicity)
     
-    if GxFlag == 0.0:
+    if GxFlag == 0:
         from aCOSMIC import sampleBinariesThinDisk as sampleBinaries
 
         tmpLoc = 'thinDiskTmp/lambda1'
         metallicity = 0.02
 
-    elif GxFlag == 1.0:
+    elif GxFlag == 1:
         print 'bulge fixed pop'
         from aCOSMIC import sampleBinariesBulge as sampleBinaries
         print 'sample imported yo'
@@ -117,7 +132,7 @@ if __name__ == '__main__':
         epochPerCore = 1
 
 
-    elif GxFlag == 2.0:
+    elif GxFlag == 2:
         from aCOSMIC import sampleBinariesThickDisk as sampleBinaries
         metallicity = 0.00332
     
@@ -140,23 +155,6 @@ if __name__ == '__main__':
         SFR = float(SFR)
         maxTime = Nepochs*epochLength
         startTime = 0
-    
-    binwidth = float(binwidth)
-    HeHe = int(HeHe)
-    HeCO = int(HeCO)
-    HeONe = int(HeONe)
-    COCO = int(COCO)
-    ONeCO = int(ONeCO)
-    ONeONe = int(ONeONe) 
-    NSHe = int(NSHe)
-    NSCO = int(NSCO)
-    NSONe = int(NSONe)
-    NSNS = int(NSNS)
-    NSBH = int(NSBH)
-    BHBH = int(BHBH)
-    BHHe = int(BHHe)
-    BHCO = int(BHCO)
-    BHONe = int(BHONe)
     
     binFlag = [HeHe, HeCO, HeONe, COCO, ONeCO, ONeONe, NSHe, NSCO, NSONe,\
                NSNS, NSBH, BHBH, BHHe, BHCO, BHONe]
