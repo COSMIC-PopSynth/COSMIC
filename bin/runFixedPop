@@ -17,6 +17,7 @@ import random
 import time
 from time import sleep
 import multiprocessing as mp
+from collections import OrderedDict
 from multiprocessing import Process, Lock, Pool
 import numpy as np
 import string
@@ -35,6 +36,8 @@ def parse_commandline():
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
+    parser.add_argument("--galaxy-component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
     return args
@@ -73,10 +76,11 @@ if __name__ == '__main__':
 
     # ---- Create configuration-file-parser object and read parameters file.
     cp = ConfigParser.ConfigParser()
-    #cp.optionxform = str
+    cp.optionxform = str
     cp.read(args.inifile)
 
-    # ---- Read needed variables from [parameters] and [system] sections.
+    # ---- Read needed variables from [parameters], [system], and [bse] sections.
+    # -- Parameters
     nBin = cp.getint('parameters', 'Nbin')
     Nepochs = cp.getint('parameters', 'Nepochs')
     epochLength = cp.getfloat('parameters', 'epochLength')
@@ -90,77 +94,17 @@ if __name__ == '__main__':
     binwidth = cp.getfloat('parameters', 'binwidth')
     saveFileFlag = cp.getint('parameters', 'saveFileFlag')
     LISAflag = cp.getint('parameters', 'LISAflag')
-    HeHe = cp.getint('system', 'HeHe')
-    HeCO  = cp.getint('system', 'HeCO')
-    HeONe = cp.getint('system', 'HeONe')
-    COCO = cp.getint('system', 'COCO')
-    ONeCO = cp.getint('system', 'ONeCO')
-    ONeONe = cp.getint('system', 'ONeONe')
-    NSHe = cp.getint('system', 'NSHe')
-    NSCO = cp.getint('system', 'NSCO')
-    NSONe = cp.getint('system', 'NSONe')
-    NSNS = cp.getint('system', 'NSNS')
-    NSBH = cp.getint('system', 'NSBH')
-    BHBH = cp.getint('system', 'BHBH')
-    BHHe = cp.getint('system', 'BHHe')
-    BHCO = cp.getint('system', 'BHCO')
-    BHONe = cp.getint('system', 'BHONe')
 
-    # Recast the variables
-    nBin = float(nBin)
-    Nepochs = int(Nepochs)
-    epochLength = float(epochLength)
-    Ncores = int(Ncores)
-    Ngalaxies = float(Ngalaxies)
-    print GxFlag
-    LISAflag = float(LISAflag)
+    # -- system
 
-    metallicity = float(metallicity)
-    
-    if GxFlag == 0:
-        from aCOSMIC import sampleBinariesThinDisk as sampleBinaries
+    system_flags = OrderedDict(cp.items('system'))
 
-        tmpLoc = 'thinDiskTmp/lambda1'
-        metallicity = 0.02
+    if args.verbose:
+        print 'You have selected the following combination of system flags: '.format(system_flags)
 
-    elif GxFlag == 1:
-        print 'bulge fixed pop'
-        from aCOSMIC import sampleBinariesBulge as sampleBinaries
-        print 'sample imported yo'
-        metallicity = 0.02
-        tmpLoc = 'bulgeTmp/lambda01'
-        epochPerCore = 1
+    binFlag = [int(i) for i in system_flags.values()]
+    binID = system_flags.keys()
 
-
-    elif GxFlag == 2:
-        from aCOSMIC import sampleBinariesThickDisk as sampleBinaries
-        metallicity = 0.00332
-    
-    # If the Gx component has constant SFR read it in, else if SFR=inf the component is
-    # taken to have a delta function burst of star formation
-    if SFH == " burst":
-        # Each core will have a a single epoch but all epochs will evolve for the given
-        # epoch length
-        epochPerCore = 1
-        startTime = 0
-        maxTime = epochLength
-    
-    else:
-        # Each core will have a given set of epochs to evolve
-        
-        ##############################################################################        
-        # COMPUTE THE # OF EPOCHS PER CORE
-        ##############################################################################
-        epochPerCore = Nepochs
-        SFR = float(SFR)
-        maxTime = Nepochs*epochLength
-        startTime = 0
-    
-    binFlag = [HeHe, HeCO, HeONe, COCO, ONeCO, ONeONe, NSHe, NSCO, NSONe,\
-               NSNS, NSBH, BHBH, BHHe, BHCO, BHONe]
-    binID = ["HeHe", "HeCO", "HeON", "COCO", "ONCO", "ONON", "NSHe", \
-               "NSCO", "NSON", "NSNS", "NSBH", "BHBH", "BHBH", "BHHe", "BHCO", "BHON"]
-    
     # ASSIGN BINARY IDs ACCORDING TO LOOPING VARIABLE ii
     ############################################################################## 
     # ii    binID     binFlag    
@@ -180,7 +124,85 @@ if __name__ == '__main__':
     #  12   BHHe      0 or 1
     #  13   BHCO      0 or 1
     #  14   BHONe     0 or 1
+
+    # -- bse
+
+    neta = cp.getfloat('parameters', 'neta')
+    bwind = cp.getfloat('parameters', 'bwind')
+    hewind = cp.getfloat('parameters', 'hewind')
+    alpha1 = cp.getfloat('parameters', 'alpha1')
+    lambdaf = cp.getfloat('parameters', 'lambdaf')
+    ceflag = cp.getint('parameters', 'ceflag')
+    tflag = cp.getint('parameters', 'tflag')
+    ifflag = cp.getint('parameters', 'ifflag')
+    wdflag = cp.getint('parameters', 'wdflag')
+    bhflag = cp.getint('parameters', 'bhflag')
+    nsflag = cp.getint('parameters', 'nsflag')
+    mxns = cp.getfloat('parameters', 'mxns')
+    pts1 = cp.getfloat('parameters', 'pts1')
+    pts2 = cp.getfloat('parameters', 'pts2')
+    pts3 = cp.getfloat('parameters', 'pts3')
+    sigma = cp.getfloat('parameters', 'sigma')
+    beta = cp.getfloat('parameters', 'beta')
+    xi = cp.getfloat('parameters', 'xi')
+    acc2 = cp.getfloat('parameters', 'acc2')
+    epsnov = cp.getfloat('parameters', 'epsnov')
+    eddfac = cp.getfloat('parameters', 'eddfac')
+    gamma = cp.getfloat('parameters', 'gamma')
+    bconst = cp.getint('parameters', 'bconst')
+    CK = cp.getint('parameters', 'CK')
+    merger = cp.getint('parameters', 'merger')
+    windflag = cp.getint('parameters', 'windflag')
+    fbkickswitch = cp.getint('parameters', 'fbkickswitch')
+
+    # Recast the variables
+    nBin = float(nBin)
+    Nepochs = int(Nepochs)
+    epochLength = float(epochLength)
+    Ncores = int(Ncores)
+    Ngalaxies = float(Ngalaxies)
+    print GxFlag
+    LISAflag = float(LISAflag)
+
+    metallicity = float(metallicity)
     
+    if args.galaxy_component == 'ThinDisk':
+        from aCOSMIC import sampleBinariesThinDisk as sampleBinaries
+    elif args.galaxy_component == 'Bulge':
+        from aCOSMIC import sampleBinariesBulge as sampleBinaries
+    elif args.galaxy_component == 'ThickDisk':
+        from aCOSMIC import sampleBinariesThickDisk as sampleBinaries
+    else:
+        raise ValueError('You have provdided a galaxy component that is invalid. '
+                         'Options include: ThinDisk, ThickDisk, and Bulge.')
+
+    if args.verbose:
+        print 'Galaxy Component selected is: {0}'.format(args.galaxy_component)
+
+    tmpLoc = args.galaxy_component + '/lambda1/'
+
+    if not os.path.isdir(tmpLoc):
+        os.makedirs(tmpLoc)
+
+    # If the Gx component has constant SFR read it in, else if SFR=inf the component is
+    # taken to have a delta function burst of star formation
+    if SFH == "burst":
+        # Each core will have a a single epoch but all epochs will evolve for the given
+        # epoch length
+        epochPerCore = 1
+        startTime = 0
+        maxTime = epochLength
+    
+    else:
+        # Each core will have a given set of epochs to evolve
+        
+        ##############################################################################        
+        # COMPUTE THE # OF EPOCHS PER CORE
+        ##############################################################################
+        epochPerCore = Nepochs
+        SFR = float(SFR)
+        maxTime = Nepochs*epochLength
+        startTime = 0
     
     numberLog = open('numberLog.dat', 'a')
 
@@ -188,7 +210,7 @@ if __name__ == '__main__':
 
     # DEFINE THE INITIAL BINARY FILENAMES TO FEED TO EVOLUTION CODE
     ##############################################################################
-    for ii in range(15):
+    for ii in range(len(binID)):
         # DEFINE LISTS TO HOLD DATA FROM FIXED POP
         ##############################################################################
         binBornList = []
@@ -272,9 +294,9 @@ if __name__ == '__main__':
                 fixedPopLog = []
 
                 for jj in successfulRuns:
-                    fixedPopLogRead = np.genfromtxt(tmpLoc+"/fixedPopLog_"+binID[ii]+"_"+str(jj)+".dat", delimiter = ',')
+                    fixedPopLogRead = np.genfromtxt(tmpLoc + "/fixedPopLog_" + binID[ii] + "_" + str(jj) + ".dat", delimiter = ',')
                     fixedPopLog.append(fixedPopLogRead)
-                    os.remove(tmpLoc+"/fixedPopLog_"+binID[ii]+"_"+str(jj)+".dat")
+                    os.remove(tmpLoc + "/fixedPopLog_" + binID[ii] + "_" + str(jj) + ".dat")
 
                 for jj in successfulRuns:
                     with warnings.catch_warnings():
@@ -307,14 +329,14 @@ if __name__ == '__main__':
                 if len(binBorn)>0:
                     binBornSave = np.vstack(binBorn)
                     binBornList.append(binBornSave)
-                    np.savetxt(thinDiskTmp/binID[ii]+"born.dat", binBornSave, delimiter = ",")
+                    np.savetxt(tmpLoc + binID[ii]+"born.dat", binBornSave, delimiter = ",")
                 else:
                     print "There were no "+binID[ii]+" binaries born"
             
                 if len(binMerged)>0:
                     binMergedSave = np.vstack(binMerged)
                     binMergedList.append(binMergedSave)
-                    np.savetxt(thinDiskTmp/binID[ii]+"merged.dat", binMergedSave, delimiter = ",")
+                    np.savetxt(tmpLoc + binID[ii]+"merged.dat", binMergedSave, delimiter = ",")
                 else:
                     print "There were no "+binID[ii]+" binaries merged"
 
