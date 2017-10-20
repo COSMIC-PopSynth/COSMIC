@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) Scott Coughlin (2017)
 #
-# This file is part of astro-traj.
+# This file is part of aCOSMIC.
 #
-# astro-traj is free software: you can redistribute it and/or modify
+# aCOSMIC is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# astro-traj is distributed in the hope that it will be useful,
+# aCOSMIC is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -76,5 +76,38 @@ class Sample:
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
-    
+    def sample_separation(self, size=None):
+        '''
+        Separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        '''
+
+        a_0 = np.random.uniform(0, 1, size)
+        low_cutoff = 0.0583333
+        lowIdx, = np.where(a_0 <= low_cutoff)
+        hiIdx, = np.where(a_0 > low_cutoff)
+        
+        a_0[lowIdx] = (a_0/0.00368058)**(5/6.0)
+        a_0[hiIdx] = np.exp(a_0/0.07+math.log(10.0))
+        
+        # convert to meters
+        a_0 = a_0*Rsun
+        
+        return a_0
+
+    def sep_to_porb(mass1, mass2, sep):
+        '''
+        Use KEPLER III to convert from separation in meters to orbital period in seconds
+        with masses given in solar masses
+        '''
+        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(sep**3.0))**0.5
+     
+        return porb_sec
+
+    def sample_ecc(self, size=None):
+        '''
+        Thermal eccentricity distribution following `Heggie (1975)<http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_ 
+        '''
+        a_0 = np.random.uniform(0.0, 1.0, size)
+ 
+        return a_0**0.5 
      
