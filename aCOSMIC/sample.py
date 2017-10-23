@@ -52,7 +52,7 @@ class Sample:
         self.zpars = zpars
 
 
-    # sample primary and secondary masses
+    # sample primary masses
     def sample_kroupa93(self, size=None):
         '''
         Primary mass follows Kroupa (1993), normalization comes from
@@ -74,7 +74,8 @@ class Sample:
         return a_0
 
 
-    def sample_massRatio(self, size=None):
+    # sample secondary mass
+    def sample_secondary(self, primary_mass, size=None):
         '''
         Secondary mass is computed from uniform mass ratio distribution draws motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
@@ -82,8 +83,9 @@ class Sample:
         '''
         
         a_0 = np.random.uniform(0.001, 1, size)
-        
-        return a_0 
+        secondary_mass = primary_mass*a_0        
+
+        return secondary_mass
 
 
     def binary_select(self, primary_mass):
