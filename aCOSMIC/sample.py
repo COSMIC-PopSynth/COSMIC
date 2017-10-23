@@ -69,7 +69,7 @@ class Sample:
         Binary fraction is set by `van Haaften et al.(2009)<http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         '''
         binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-        binary_choose =  np.random.uniform(0, 1.0, len(binaryfraction)
+        binary_choose =  np.random.uniform(0, 1.0, len(binaryfraction))
 
         binaryIdx, = np.where(binary_fraction > binary_choose)
         singleIdx, = np.where(binary_fraction < binary_choose)
