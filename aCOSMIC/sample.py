@@ -28,10 +28,29 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = 'Sample'
 
 class Sample:
-    def __init__(self):   
+    def __init__(self, B_0, bacc, bhflag, bkick, dtp, epoch, massc, menv, ospin, radc, renv, tacc, tms, tphys, tphysf, z, zpars):
         '''
         initialize samples
         '''
+        self.B_0 = B_0
+        self.bacc = bacc
+        self.bhflag = bhflag
+        self.bkick = bkick
+        self.dtp = dtp
+        self.epoch = epoch
+        self.kstar = kstar
+        self.massc = massc
+        self.menv = menv
+        self.ospin = ospin
+        self.radc = radc
+        self.renv = renv
+        self.tacc = tacc
+        self.tms = tms
+        self.tphys = tphys
+        self.tphysf = tphysf
+        self.z = z
+        self.zpars = zpars
+
 
     # sample primary and secondary masses
     def sample_kroupa93(self, size=None):
@@ -54,6 +73,7 @@ class Sample:
         
         return a_0
 
+
     def sample_massRatio(self, size=None):
         '''
         Secondary mass is computed from uniform mass ratio distribution draws motivated by
@@ -64,6 +84,7 @@ class Sample:
         a_0 = np.random.uniform(0.001, 1, size)
         
         return a_0 
+
 
     def binary_select(self, primary_mass):
         '''
@@ -95,6 +116,7 @@ class Sample:
         
         return a_0
 
+
     def sep_to_porb(mass1, mass2, sep):
         '''
         Use KEPLER III to convert from separation in meters to orbital period in seconds
@@ -103,6 +125,7 @@ class Sample:
         porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(sep**3.0))**0.5
      
         return porb_sec
+
 
     def sample_ecc(self, size=None):
         '''

@@ -28,34 +28,10 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = 'Evolve'
 
 class Evolve:
-    def __init__(self, kstar, mass0, mass, rad, lumin, massc, radc, menv, renv, ospin, B_0, bacc, tacc, epoch, tms, tphys, tphysf, dtp, z, zpars, tb, ecc, bkick, bhflag):
+    def __init__(self):
         '''
-        initialize samples
+        initialize Evolve
         '''
-        self.kstar = kstar
-        self.mass0 = mass0
-        self.mass = mass
-        self.rad = rad
-        self.lumin = lumin
-        self.massc = massc
-        self.radc = radc
-        self.menv = menv
-        self.renv = renv
-        self.ospin = ospin
-        self.B_0 = B_0
-        self.bacc = bacc
-        self.tacc = tacc
-        self.epoch = epoch
-        self.tms = tms
-        self.tphys = tphys
-        self.tphysf = tphysf
-        self.dtp = dtp
-        self.z = z
-        self.zpars = zpars
-        self.tb = tb
-        self.ecc = ecc
-        self.bkick = bkick
-        self.bhflag = bhflag
 
 
     def evolve(self, **kwargs):
