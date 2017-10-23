@@ -110,4 +110,3 @@ class Sample:
         a_0 = np.random.uniform(0.0, 1.0, size)
  
         return a_0**0.5 
-     

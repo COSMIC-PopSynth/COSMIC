@@ -27,6 +27,8 @@ from aCOSMIC import MatchKnuth as Match
 import warnings
 import argparse
 import ConfigParser
+from aCOSMIC import _popbintd
+from gwpy.utils import mp as mp_utils
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -179,7 +181,7 @@ if __name__ == '__main__':
     if args.verbose:
         print 'Galaxy Component selected is: {0}'.format(args.galaxy_component)
 
-    tmpLoc = args.galaxy_component + '/lambda1/'
+    tmpLoc = args.galaxy_component + '/lambda' + str(lambdaf) + '/'
 
     if not os.path.isdir(tmpLoc):
         os.makedirs(tmpLoc)
@@ -203,10 +205,6 @@ if __name__ == '__main__':
         SFR = float(SFR)
         maxTime = Nepochs*epochLength
         startTime = 0
-    
-    numberLog = open('numberLog.dat', 'a')
-
-    nLog = []
 
     # DEFINE THE INITIAL BINARY FILENAMES TO FEED TO EVOLUTION CODE
     ##############################################################################
