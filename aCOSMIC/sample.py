@@ -154,5 +154,18 @@ class Sample:
         tphys = t_component - np.uniform.random(0,1000, size)
         return tphys
 
+     
+    def set_kstar(self, mass):
+        '''
+        Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
+        '''
+         
+        kstar = np.zeros(size)
+        low_cutoff = 0.7
+        lowIdx, = np.where(mass < low_cutoff)
+        hiIdx, = np.where(mass >= low_cutoff)
 
- 
+        kstar[lowIdx] = 0
+        kstar[hiIdx] = 1
+
+        return kstar
