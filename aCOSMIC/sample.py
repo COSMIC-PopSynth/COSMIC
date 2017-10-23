@@ -27,6 +27,23 @@ __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = 'Sample'
 
+
+G = 6.67384*math.pow(10, -11.0)
+c = 2.99792458*math.pow(10, 8.0)
+parsec = 3.08567758*math.pow(10, 16)
+Rsun = 6.955*math.pow(10, 8)
+Msun = 1.9891*math.pow(10,30)
+day = 86400.0
+rsun_in_au = 215.0954
+day_in_year = 365.242
+sec_in_day = 86400.0
+sec_in_hour = 3600.0
+hrs_in_day = 24.0
+sec_in_year = 3.15569*10**7.0
+Tobs = 3.15569*10**7.0
+geo_mass = G/c**2
+
+
 class Sample:
     def __init__(self, B_0, bacc, bkick, epoch, massc, ospin, tacc, tphys, size):
         '''
@@ -90,6 +107,7 @@ class Sample:
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
+
     def sample_separation(self, size=None):
         '''
         Separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
@@ -100,8 +118,8 @@ class Sample:
         lowIdx, = np.where(a_0 <= low_cutoff)
         hiIdx, = np.where(a_0 > low_cutoff)
         
-        a_0[lowIdx] = (a_0/0.00368058)**(5/6.0)
-        a_0[hiIdx] = np.exp(a_0/0.07+math.log(10.0))
+        a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
+        a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
         
         # convert to meters
         a_0 = a_0*Rsun
@@ -127,12 +145,13 @@ class Sample:
  
         return a_0**0.5
 
+
     def sample_constant_SFH(self, t_component, size=None):
         '''
         Assign an evolution time assuming a constant star formation rate over the age: t_component which is specified in [Myr]
         '''
 
-        tphys = np.uniform.random(0, t_component, size)
+        tphys = np.random.uniform(0, t_component, size)
         return tphys
 
      
@@ -141,7 +160,7 @@ class Sample:
         Assign an evolution time assuming constant star formation rate for 1Gyr starting at 't_component' Myr in the past
         '''
 
-        tphys = t_component - np.uniform.random(0,1000, size)
+        tphys = t_component - np.random.uniform(0,1000, size)
         return tphys
 
      
@@ -150,7 +169,7 @@ class Sample:
         Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
         '''
          
-        kstar = np.zeros(size)
+        kstar = np.zeros(mass.size)
         low_cutoff = 0.7
         lowIdx, = np.where(mass < low_cutoff)
         hiIdx, = np.where(mass >= low_cutoff)

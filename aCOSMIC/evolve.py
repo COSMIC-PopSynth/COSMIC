@@ -28,10 +28,11 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = 'Evolve'
 
 class Evolve:
-    def __init__(self):
+    def __init__(self, sample):
         '''
         initialize Evolve
         '''
+        self.initial_conditons = sample
 
 
     def evolve(self, **kwargs):
@@ -43,13 +44,11 @@ class Evolve:
         nproc : `int`, optional, default: 1
             number of CPUs to use for parallel file reading
 
-        kwargs: Optional TrainingSet and LabelledSamples args
-            that will download images in a specila way
-            ./"Label"/"SampleType"/"image"
+        kwargs: 
 
         Returns
         -------
-        An evolve binary
+        An evolved binary
         """
 
         # define multiprocessing method
