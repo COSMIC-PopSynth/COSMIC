@@ -90,6 +90,7 @@ class Sample:
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
+
     def sample_separation(self, size=None):
         '''
         Separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
@@ -100,8 +101,8 @@ class Sample:
         lowIdx, = np.where(a_0 <= low_cutoff)
         hiIdx, = np.where(a_0 > low_cutoff)
         
-        a_0[lowIdx] = (a_0/0.00368058)**(5/6.0)
-        a_0[hiIdx] = np.exp(a_0/0.07+math.log(10.0))
+        a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
+        a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
         
         # convert to meters
         a_0 = a_0*Rsun
@@ -126,6 +127,7 @@ class Sample:
         a_0 = np.random.uniform(0.0, 1.0, size)
  
         return a_0**0.5
+
 
     def sample_constant_SFH(self, t_component, size=None):
         '''
