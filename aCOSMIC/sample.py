@@ -135,4 +135,24 @@ class Sample:
         '''
         a_0 = np.random.uniform(0.0, 1.0, size)
  
-        return a_0**0.5 
+        return a_0**0.5
+
+    def sample_constant_SFH(self, t_component, size=None):
+        '''
+        Assign an evolution time assuming a constant star formation rate over the age: t_component which is specified in [Myr]
+        '''
+
+        tphys = np.uniform.random(0, t_component, size)
+        return tphys
+
+     
+    def sample_gyr_burst(self, t_component, size=None):
+        '''
+        Assign an evolution time assuming constant star formation rate for 1Gyr starting at 't_component' Myr in the past
+        '''
+
+        tphys = t_component - np.uniform.random(0,1000, size)
+        return tphys
+
+
+ 
