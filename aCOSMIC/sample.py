@@ -72,7 +72,7 @@ class Sample:
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
         '''
         
-        a_0 = np.random.uniform(0.001, 1, len(primary_mass))
+        a_0 = np.random.uniform(0.001, 1, primary_mass.size)
         secondary_mass = primary_mass*a_0        
 
         return secondary_mass
@@ -83,7 +83,7 @@ class Sample:
         Binary fraction is set by `van Haaften et al.(2009)<http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         '''
         binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-        binary_choose =  np.random.uniform(0, 1.0, len(binaryfraction))
+        binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
 
         binaryIdx, = np.where(binary_fraction > binary_choose)
         singleIdx, = np.where(binary_fraction < binary_choose)
