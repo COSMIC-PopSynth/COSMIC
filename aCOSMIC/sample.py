@@ -40,7 +40,8 @@ class Sample:
         `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
         '''
         a_0 = np.random.uniform(0.0, 0.9999797, size)
-        low_cutoff = 0.740074, high_cutoff=0.908422
+        low_cutoff = 0.740074
+        high_cutoff=0.908422
 
 
         lowIdx, = np.where(a_0 <= low_cutoff)
