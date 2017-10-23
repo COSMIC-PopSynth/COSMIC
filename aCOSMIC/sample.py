@@ -28,28 +28,18 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = 'Sample'
 
 class Sample:
-    def __init__(self, B_0, bacc, bhflag, bkick, dtp, epoch, massc, menv, ospin, radc, renv, tacc, tms, tphys, tphysf, z, zpars):
+    def __init__(self, B_0, bacc, bkick, epoch, massc, ospin, tacc, tphys, size):
         '''
         initialize samples
         '''
-        self.B_0 = B_0
-        self.bacc = bacc
-        self.bhflag = bhflag
-        self.bkick = bkick
-        self.dtp = dtp
-        self.epoch = epoch
-        self.kstar = kstar
-        self.massc = massc
-        self.menv = menv
-        self.ospin = ospin
-        self.radc = radc
-        self.renv = renv
-        self.tacc = tacc
-        self.tms = tms
-        self.tphys = tphys
-        self.tphysf = tphysf
-        self.z = z
-        self.zpars = zpars
+        self.B_0 = np.asarray(B_0).repeat(size).reshape(size, 2)
+        self.bacc = np.asarray(bacc).repeat(size).reshape(size, 2)
+        self.bkick = np.asarray(bkick).repeat(size).reshape(size, 12)
+        self.epoch = np.asarray(epoch).repeat(size).reshape(size, 2)
+        self.massc = np.asarray(massc).repeat(size).reshape(size, 2)
+        self.ospin = np.asarray(ospin).repeat(size).reshape(size, 2)
+        self.tacc = np.asarray(tacc).repeat(size).reshape(size, 2)
+        self.tphys = np.asarray(tphys).repeat(size)
 
 
     # sample primary masses
