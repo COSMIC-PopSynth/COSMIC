@@ -1,7 +1,5 @@
 ***
-      SUBROUTINE evolv2(kstar,mass0,mass,rad,lumin,massc,radc,
-     &                  menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     &                  tphys,tphysf,dtp,z,zpars,tb,ecc,bkick,bhflag)
+      SUBROUTINE evolv2(mass,tb,ecc,z,tphysf)
       implicit none
 ***
 *
@@ -221,6 +219,9 @@
       REAL*8 merger
       COMMON /cmcpass/ merger,id1_pass,id2_pass
       LOGICAL output
+
+      
+
 *
 * Save the initial state.
 *
@@ -229,8 +230,8 @@
 *      commonEnv = 0.0
       tBorn1 = 0.0
       tBorn2 = 0.0
-      mass1i = mass0(1)
-      mass2i = mass0(2)
+      mass1i = mass(1)
+      mass2i = mass(2)
       tbi = tb
       ecci = ecc
 *
@@ -279,7 +280,66 @@
 *
 * Initialize the parameters.
 *
+
+     &                  tphys,tphysf,dtp,z,zpars,tb,ecc,bkick,bhflagi
       
+      B_0(1) = 0.d0
+      B_0(2) = 0.d0
+
+      bacc(1) = 0.d0
+      bacc(2) = 0.d0
+
+      tacc(1) = 0.d0
+      tacc(2) = 0.d0
+  
+      tms(0) = 0.0
+      tms(1) = 0.0
+
+      DO jj = 1,12
+         bkick(jj) = 0
+      ENDDO
+
+      mass0(1) = mass(1)
+      massc(1) = 0.0
+      ospin(1) = 0.0
+      epoch(1) = 0.0
+      rad(1) = 0.0
+      lumin(1) = 0.0
+      massc(1) = 0.0
+      radc(1) = 0.0
+      menv(1) = 0.0
+      renv(1) = 0.0
+      ospin(1) = 0.0
+  
+      mass0(2) = mass(2)
+      massc(2) = 0.0
+      ospin(2) = 0.0
+      epoch(2) = 0.0
+      rad(2) = 0.0
+      lumin(2) = 0.0
+      massc(2) = 0.0
+      radc(2) = 0.0
+      menv(2) = 0.0
+      renv(2) = 0.0
+      ospin(2) = 0.0
+
+
+      tphys = 0.0
+      dtp = tphysf
+
+*
+* Set the seed for the random number generator. 
+*
+      idum = 3234
+      if(idum.gt.0) idum = -idum
+
+*
+* Set the collision matrix.
+*
+      CALL instar
+      CALL zcnsts(z,zpars)
+
+
       kmin = 1
       kmax = 2
       sgl = .false.
