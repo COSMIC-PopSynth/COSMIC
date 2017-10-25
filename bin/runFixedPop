@@ -12,23 +12,25 @@
 ##############################################################################
 #  IMPORT ALL NECESSARY PYTHON PACKAGES
 ##############################################################################
+from collections import OrderedDict
+import warnings
+import argparse
+import ConfigParser
+
 import math
 import random
 import time
 from time import sleep
-import multiprocessing as mp
-from collections import OrderedDict
-from multiprocessing import Process, Lock, Pool
-import numpy as np
 import string
 import os.path
+
+import numpy as np
 import scipy.special as ss
-from aCOSMIC import MatchKnuth as Match 
-import warnings
-import argparse
-import ConfigParser
-from aCOSMIC import _popbintd
-from gwpy.utils import mp as mp_utils
+
+
+from aCOSMIC.sample import Sample
+from aCOSMIC import MatchKnuth as Match
+from aCOSMIC.evolve import Evolve
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -165,8 +167,21 @@ if __name__ == '__main__':
     Ngalaxies = float(Ngalaxies)
     print GxFlag
     LISAflag = float(LISAflag)
-
     metallicity = float(metallicity)
+
+
+    # Sample Initial Conditions
+    initconditions = Sample(B_0 = [0,0], bacc = [0,0], bkick = [0,0,0,0,0,0,0,0,0,0,0,0], epoch = [0, 0], massc = [0, 0], ospin = [0, 0], tacc = [0,0], tphys = 0, size = 100)
+    initconditions.mass1 = initconditions.sample_kroupa93(size=100)
+    initconditions.mass_bin1, initconditions.mass_sing1 = initconditions.binary_select(initconditions.mass1)
+    initconditions.mass2 = initconditions.sample_secondary(initconditions.mass_bin1)
+    initconditions.sep =  initconditions.sample_separation(size = initconditions.mass_bin1.size)
+    initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass_bin1.size)
+    initconditions.tphysf = initconditions.sample_constant_SFH(t_component = 10000, size = initconditions.mass_bin1.size)
+    initconditions.kstar1 = initconditions.set_kstar(initconditions.mass_bin1)
+    initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2)
+    initconditions.mass0_1 = initconditions.mass_bin1
+    initconditions.kstar = np.asarray([initconditions.kstar1, initconditions.kstar2]).T
     
     if args.galaxy_component == 'ThinDisk':
         from aCOSMIC import sampleBinariesThinDisk as sampleBinaries
