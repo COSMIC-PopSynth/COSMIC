@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) Scott Coughlin (2017)
 #
-# This file is part of astro-traj.
+# This file is part of aCOSMIC.
 #
-# astro-traj is free software: you can redistribute it and/or modify
+# aCOSMIC is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# astro-traj is distributed in the hope that it will be useful,
+# aCOSMIC is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with astro-traj.  If not, see <http://www.gnu.org/licenses/>.
+# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
 """`sample`
 """
@@ -54,7 +54,7 @@ class Evolve:
         # define multiprocessing method
         def _evolve_single_system(f):
             try:
-                return f, _popbintd.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19], f[20], f[21], f[22], f[23])
+                return f, _popbintd.evolv2(f[0], f[1], f[2], f[3], f[4])
             except Exception as e:
                 if nproc == 1:
                     raise
