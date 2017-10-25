@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE evolv2(mass,tb,ecc,z,tphysf)
+      SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf)
       implicit none
 ***
 *
