@@ -149,7 +149,7 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
-      INTEGER loop,iter,intpol,k,ip,jp,j1,j2
+      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
       INTEGER fb,kcomp1,kcomp2,idum,formation(2) !PDK
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
