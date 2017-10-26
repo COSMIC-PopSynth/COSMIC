@@ -171,17 +171,23 @@ if __name__ == '__main__':
 
 
     # Sample Initial Conditions
-    initconditions = Sample(size = 100)
+    initconditions = Sample(metalicity = metallicity, size = 100)
     initconditions.mass1 = initconditions.sample_kroupa93(size=100)
     initconditions.mass_bin1, initconditions.mass_sing1 = initconditions.binary_select(initconditions.mass1)
     initconditions.mass2 = initconditions.sample_secondary(initconditions.mass_bin1)
+    # Outputs in meters
     initconditions.sep =  initconditions.sample_separation(size = initconditions.mass_bin1.size)
+    initconditions.porb =  initconditions.sep_to_porb(initconditions.mass_bin1, initconditions.mass2, initconditions.sep)
     initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass_bin1.size)
     initconditions.tphysf = initconditions.sample_constant_SFH(t_component = 10000, size = initconditions.mass_bin1.size)
     initconditions.kstar1 = initconditions.set_kstar(initconditions.mass_bin1)
     initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2)
-    initconditions.mass0_1 = initconditions.mass_bin1
     initconditions.kstar = np.asarray([initconditions.kstar1, initconditions.kstar2]).T
+
+
+    # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
+    evolve = Evolve(initconditions)
+    evolve.evolve()
     
     if args.galaxy_component == 'ThinDisk':
         from aCOSMIC import sampleBinariesThinDisk as sampleBinaries

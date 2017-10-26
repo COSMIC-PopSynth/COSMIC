@@ -45,18 +45,11 @@ geo_mass = G/c**2
 
 
 class Sample:
-    def __init__(self, size):
+    def __init__(self, metallicity, size=None):
         '''
         initialize samples
         '''
-        self.B_0 = np.asarray(B_0).repeat(size).reshape(size, 2)
-        self.bacc = np.asarray(bacc).repeat(size).reshape(size, 2)
-        self.bkick = np.asarray(bkick).repeat(size).reshape(size, 12)
-        self.epoch = np.asarray(epoch).repeat(size).reshape(size, 2)
-        self.massc = np.asarray(massc).repeat(size).reshape(size, 2)
-        self.ospin = np.asarray(ospin).repeat(size).reshape(size, 2)
-        self.tacc = np.asarray(tacc).repeat(size).reshape(size, 2)
-        self.tphys = np.asarray(tphys).repeat(size)
+        self.metallicity = np.asarray(metallicity).repeat(size)
 
 
     # sample primary masses
@@ -127,7 +120,7 @@ class Sample:
         return a_0
 
 
-    def sep_to_porb(mass1, mass2, sep):
+    def sep_to_porb(self, mass1, mass2, sep):
         '''
         Use KEPLER III to convert from separation in meters to orbital period in seconds
         with masses given in solar masses
@@ -160,7 +153,7 @@ class Sample:
         Assign an evolution time assuming constant star formation rate for 1Gyr starting at 't_component' Myr in the past
         '''
 
-        tphys = t_component - np.random.uniform(0,1000, size)
+        tphys = t_component - np.random.uniform(0, 1000, size)
         return tphys
 
      

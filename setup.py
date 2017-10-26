@@ -88,9 +88,7 @@ extras_require = {
 }
 # fortran compile
 
-wrapperTD = Extension('aCOSMIC._popbintd', sources=['aCOSMIC/src/popbintd.f', 'aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
-
-wrapperB = Extension('aCOSMIC._popbinb', sources=['aCOSMIC/src/popbinb.f', 'aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
+wrapper = Extension('aCOSMIC._evolvebin', sources=['aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
 
 
 # -- run setup ----------------------------------------------------------------
@@ -103,7 +101,7 @@ setup(name=DISTNAME,
       version=__version__,
       description=None,
       long_description=None,
-      ext_modules = [wrapperTD, wrapperB],
+      ext_modules = [wrapper],
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,

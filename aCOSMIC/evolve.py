@@ -21,7 +21,7 @@
 
 import numpy as np
 from gwpy.utils import mp as mp_utils
-from aCOSMIC import _popbintd
+from aCOSMIC import _evolvebin
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -50,11 +50,21 @@ class Evolve:
         -------
         An evolved binary
         """
+        import pdb
+        pdb.set_trace()
+        self.initial_conditons.kstar
+        self.initial_conditons.mass_bin1
+        self.initial_conditons.mass2
+        self.initial_conditons.ecc
+        self.initial_conditions.porb
+        self.initial_conditons.metallicity
+        self.initial_conditons.tphysf
 
         # define multiprocessing method
         def _evolve_single_system(f):
             try:
-                return f, _popbintd.evolv2(f[0], f[1], f[2], f[3], f[4])
+                # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
+                return f, _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5])
             except Exception as e:
                 if nproc == 1:
                     raise
