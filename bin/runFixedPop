@@ -171,7 +171,7 @@ if __name__ == '__main__':
 
 
     # Sample Initial Conditions
-    initconditions = Sample(B_0 = [0,0], bacc = [0,0], bkick = [0,0,0,0,0,0,0,0,0,0,0,0], epoch = [0, 0], massc = [0, 0], ospin = [0, 0], tacc = [0,0], tphys = 0, size = 100)
+    initconditions = Sample(size = 100)
     initconditions.mass1 = initconditions.sample_kroupa93(size=100)
     initconditions.mass_bin1, initconditions.mass_sing1 = initconditions.binary_select(initconditions.mass1)
     initconditions.mass2 = initconditions.sample_secondary(initconditions.mass_bin1)

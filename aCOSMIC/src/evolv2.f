@@ -281,7 +281,6 @@
 * Initialize the parameters.
 *
 
-     &                  tphys,tphysf,dtp,z,zpars,tb,ecc,bkick,bhflagi
       
       B_0(1) = 0.d0
       B_0(2) = 0.d0
@@ -292,8 +291,8 @@
       tacc(1) = 0.d0
       tacc(2) = 0.d0
   
-      tms(0) = 0.0
       tms(1) = 0.0
+      tms(2) = 0.0
 
       DO jj = 1,12
          bkick(jj) = 0

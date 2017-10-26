@@ -45,7 +45,7 @@ geo_mass = G/c**2
 
 
 class Sample:
-    def __init__(self, B_0, bacc, bkick, epoch, massc, ospin, tacc, tphys, size):
+    def __init__(self, size):
         '''
         initialize samples
         '''
