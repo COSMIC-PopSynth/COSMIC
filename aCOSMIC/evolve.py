@@ -32,7 +32,7 @@ class Evolve:
         '''
         initialize Evolve
         '''
-        self.initial_conditons = sample
+        self.initial_conditions = sample
 
 
     def evolve(self, **kwargs):
@@ -50,21 +50,19 @@ class Evolve:
         -------
         An evolved binary
         """
+        initial_conditions = np.vstack([self.initial_conditions.kstar1, self.initial_conditions.kstar2, self.initial_conditions.mass1_binary, self.initial_conditions.mass2_binary, self.initial_conditions.porb, self.initial_conditions.ecc, self.initial_conditions.metallicity[0:self.initial_conditions.mass1_binary.size], self.initial_conditions.tphysf]).T
         import pdb
         pdb.set_trace()
-        self.initial_conditons.kstar
-        self.initial_conditons.mass_bin1
-        self.initial_conditons.mass2
-        self.initial_conditons.ecc
-        self.initial_conditions.porb
-        self.initial_conditons.metallicity
-        self.initial_conditons.tphysf
+
+
+        # calculate maximum number of processes
+        nproc = min(kwargs.pop('nproc', 1), len(initial_conditions))
 
         # define multiprocessing method
         def _evolve_single_system(f):
             try:
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                return f, _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5])
+                return f, _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7])
             except Exception as e:
                 if nproc == 1:
                     raise
