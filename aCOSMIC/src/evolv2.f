@@ -23,8 +23,6 @@
 * Fully revised on 4th July 1998 to include eccentricity, tidal 
 * circularization, wind accretion, velocity kicks for supernovae and all
 * associated orbital momentum changes.
-* Revised on 31st October 2000 to upgrade restrictions imposed on the 
-* timestep owing to magnetic braking and orbital angular momentum changes. 
 *
 ***
 *
@@ -149,7 +147,7 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
-      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
+      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj,j
       INTEGER fb,kcomp1,kcomp2,idum,formation(2) !PDK
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
@@ -200,6 +198,9 @@
       COMMON /VALUE1/ neta,bwind,hewind,mxns
       REAL*8 beta,xi,acc2,epsnov,eddfac,gamma
       COMMON /VALUE5/ beta,xi,acc2,epsnov,eddfac,gamma
+
+      REAL*8 pts1,pts2,pts3
+      COMMON /POINTS/ pts1,pts2,pts3
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -220,7 +221,7 @@
       COMMON /cmcpass/ merger,id1_pass,id2_pass
       LOGICAL output
 
-      
+      CALL instar
 
 *
 * Save the initial state.
@@ -228,6 +229,10 @@
      
 *      CE2flag = 0
 *      commonEnv = 0.0
+      pts1 = 0.05
+      pts2 = 0.01
+      pts3 = 0.02      
+
       mass(1) = mass1
       mass(2) = mass2
 
@@ -239,7 +244,7 @@
       tBorn2 = 0.0
       mass1i = mass(1)
       mass2i = mass(2)
-      tbi = tb
+      tbi = tb/yearsc
       ecci = ecc
 *
       zero = 0.d0
@@ -341,10 +346,7 @@
 *
 * Set the collision matrix.
 *
-      CALL instar
       CALL zcnsts(z,zpars)
-
-
 
       kmin = 1
       kmax = 2
@@ -473,7 +475,7 @@
 *
 * On the first entry the previous timestep is zero to prevent mass loss.
 *
-      dtm = 0.d0
+      dtm = 1.d0
       delet = 0.d0
       djorb = 0.d0
       bss = .false.
@@ -516,6 +518,8 @@
 *
  5    kw1 = kstar(1)
       kw2 = kstar(2)
+*      WRITE(*,*)iter,dt,dtm,dtmi
+
 *
       dt = 1.0d+06*dtm
       eqspin = 0.d0
@@ -568,8 +572,6 @@
      &                    /(2.d0*sep*sep*omv2)
                dmt(3-k) = MIN(dmt(3-k),0.8d0*dmr(k))
                beta = betahold
-               if(output) write(*,*)'wind1:',k,dmt(3-k),dmr(k),beta,
-     & ivsqm,acc1,acc2,vwind2
             else
                dmr(k) = 0.d0
                dmt(3-k) = 0.d0
@@ -605,10 +607,10 @@
                   endif
                endif
                if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then
-       	       	  if(tBorn2.lt.1)then
+                  if(tBorn2.lt.1)then
                      tBorn2 = bpp(jp,1)
-       	       	  endif
-       	       endif
+                  endif
+               endif
 *               if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
 *                  WRITE(*,*)bpp(jp,11),bpp(jp,12)
 *               endif
@@ -1473,20 +1475,20 @@
             bpp(jp,9) = rad(2)/rol(2)
             bpp(jp,10) = 14.0
             if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-       	       if(tBorn1.lt.1)then
+               if(tBorn1.lt.1)then
                   tBorn1 = bpp(jp,1)
                endif
-       	    endif
+            endif
             if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then
                if(tBorn2.lt.1)then
                   tBorn2 = bpp(jp,1)
                endif
-       	    endif
+            endif
 *            if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
 *               WRITE(*,*)bpp(jp,11),bpp(jp,12)
 *            endif
             bpp(jp,11) = tBorn1
-       	    bpp(jp,12) = tBorn2
+            bpp(jp,12) = tBorn2
          endif
 *
  6    continue
@@ -1514,6 +1516,9 @@
             rol(k) = 10000.d0*rad(k)
  508     continue
       endif
+      if(jp.lt.80)then
+         WRITE(*,*)jp,bpp(jp,1),bpp(jp,2),bpp(jp,3),bpp(jp,4)
+      end if
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
@@ -1617,6 +1622,7 @@
 * If not interpolating set the next timestep.
 *
       if(intpol.eq.0)then
+*         WRITE(*,*)'you should see this to advance the time'
          if(output) write(*,*)'nxt t, prior:',tphys,dtm,dtmi(1),dtmi(2)
          dtm = MAX(1.0d-07*tphys,MIN(dtmi(1),dtmi(2)))
          dtm = MIN(dtm,tsave-tphys)
@@ -3693,10 +3699,9 @@
          tb = -1.d0
       endif
       tb = tb*yeardy
+
       if(jp.ge.80)then
-         WRITE(99,*)' EVOLV2 ARRAY ERROR ',mass1i,mass2i,tbi,ecci,
-     & id1_pass,id2_pass,mass(1),mass(2)
-*         WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
+         WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
          STOP
       elseif(jp.ge.40)then
