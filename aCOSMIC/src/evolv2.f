@@ -228,6 +228,13 @@
      
 *      CE2flag = 0
 *      commonEnv = 0.0
+      mass(1) = mass1
+      mass(2) = mass2
+
+      kstar(1) = kstar1
+      kstar(2) = kstar2
+      
+
       tBorn1 = 0.0
       tBorn2 = 0.0
       mass1i = mass(1)
@@ -297,11 +304,6 @@
       DO jj = 1,12
          bkick(jj) = 0
       ENDDO
-      mass(1) = mass1
-      mass(2) = mass2
-
-      kstar(1) = kstar1
-      kstar(2) = kstar2
 
       mass0(1) = mass(1)
       massc(1) = 0.0
@@ -327,7 +329,6 @@
       renv(2) = 0.0
       ospin(2) = 0.0
 
-
       tphys = 0.0
       dtp = tphysf
 
@@ -342,6 +343,7 @@
 *
       CALL instar
       CALL zcnsts(z,zpars)
+
 
 
       kmin = 1
