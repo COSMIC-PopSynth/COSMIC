@@ -88,7 +88,7 @@ extras_require = {
 }
 # fortran compile
 
-wrapper = Extension('aCOSMIC._evolvebin', sources=['aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'])
+wrapper = Extension('aCOSMIC._evolvebin', sources=['aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'], extra_compile_args = ["-O -g"])
 
 
 # -- run setup ----------------------------------------------------------------
