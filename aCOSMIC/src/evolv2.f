@@ -403,6 +403,7 @@
          rol(1) = 1.0d+10
          rol(2) = 1.0d+10
       else
+         tb = tb/86400.0
          tb = tb/yeardy
          sep = aursun*(tb*tb*(mass(1) + mass(2)))**(1.d0/3.d0)
          oorb = twopi/tb
