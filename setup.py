@@ -67,9 +67,9 @@ setup_requires = [
 install_requires = [
     'numpy',
     'scipy',
-    'scikit-learn>=0.18',
     'astropy',
     'matplotlib',
+    'gwpy',
 ]
 tests_require = [
     'pytest'
