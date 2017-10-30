@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf)
+      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf)
       implicit none
 ***
 *
@@ -152,14 +152,14 @@
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
       INTEGER fb,kcomp1,kcomp2,idum,formation(2) !PDK
       PARAMETER(loop=20000)
-      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
+      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
       INTEGER ceflag,tflag,ifflag,nsflag,wdflag,CE2flag
       COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag,CE2flag
 *
       REAL*8 km,km0,tphys,tphys0,dtm0,tphys00,tphysfhold
-      REAL*8 tphysf,dtp,tsave
+      REAL*8 tphysf,dtp,tsave,mass1,mass2
       REAL*8 aj(2),aj0(2),epoch(2),tms(2),tbgb(2),tkh(2),dtmi(2)
       REAL*8 mass0(2),mass(2),massc(2),menv(2),mass00(2),mcxx(2)
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
@@ -297,6 +297,11 @@
       DO jj = 1,12
          bkick(jj) = 0
       ENDDO
+      mass(1) = mass1
+      mass(2) = mass2
+
+      kstar(1) = kstar1
+      kstar(2) = kstar2
 
       mass0(1) = mass(1)
       massc(1) = 0.0
