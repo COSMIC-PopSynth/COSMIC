@@ -1516,9 +1516,6 @@
             rol(k) = 10000.d0*rad(k)
  508     continue
       endif
-      if(jp.lt.80)then
-         WRITE(*,*)jp,bpp(jp,1),bpp(jp,2),bpp(jp,3),bpp(jp,4)
-      end if
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
