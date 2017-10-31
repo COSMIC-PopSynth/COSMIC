@@ -7,8 +7,8 @@
       COMMON /RAND3/ idum2,iy,ir
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,CE2flag
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag,CE2flag
+      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,CE2flag,bhflag
+      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag,CE2flag,bhflag
 *
       REAL*8 neta,bwind,hewind,mxns,alpha1,lambda
       REAL*8 sigma,beta,xi,acc2,epsnov,eddfac,gamma
@@ -20,7 +20,7 @@
       COMMON /VALUE5/ beta,xi,acc2,epsnov,eddfac,gamma
       INTEGER*8 id1_pass,id2_pass
       REAL*8 merger
-      COMMON /cmcpass/ merger
+      COMMON /cmcpass/ merger, id1_pass,id2_pass
       REAL*8 pts1,pts2,pts3
       COMMON /POINTS/ pts1,pts2,pts3
       REAL*8 dmmax,drmax

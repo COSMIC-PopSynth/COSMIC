@@ -1,6 +1,12 @@
 ***
-      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bpp)
+      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
+     \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
+     \ tflagtmp,ifflagtmp,wdflagtmp,
+     \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
+     \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
+     \ bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp,bppout)
       implicit none
+      INCLUDE 'const_bse.h'
 ***
 *
 *           B I N A R Y
@@ -147,14 +153,12 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
+      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,wdflagtmp
+      INTEGER CE2flagtmp,bhflagtmp
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj,j
       INTEGER fb,kcomp1,kcomp2,idum,formation(2) !PDK
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
-      INTEGER ktype(0:14,0:14)
-      COMMON /TYPES/ ktype
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,CE2flag
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag,CE2flag
 *
       REAL*8 km,km0,tphys,tphys0,dtm0,tphys00,tphysfhold
       REAL*8 tphysf,dtp,tsave,mass1,mass2
@@ -177,7 +181,6 @@
       REAL*8 jspin(2),ospin(2),jorb,oorb,jspbru,ospbru
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
-      COMMON /fall/fallback
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
       INTEGER mergemsp,merge_mem,notamerger
@@ -186,21 +189,11 @@
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bconst,CK,bacc(2),tacc(2),xip,xihold,diskxi,diskxip
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim
-      INTEGER bhflag
-      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
-      COMMON /VALUE3/ idum
-      INTEGER idum2,iy,ir(32)
-      COMMON /RAND3/ idum2,iy,ir
+      COMMON /fall/fallback
       REAL ran3
       EXTERNAL ran3
 *
-      REAL*8 neta,bwind,hewind,mxns
-      COMMON /VALUE1/ neta,bwind,hewind,mxns
-      REAL*8 beta,xi,acc2,epsnov,eddfac,gamma
-      COMMON /VALUE5/ beta,xi,acc2,epsnov,eddfac,gamma
 
-      REAL*8 pts1,pts2,pts3
-      COMMON /POINTS/ pts1,pts2,pts3
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -211,19 +204,22 @@
       LOGICAL isave,iplot
       REAL*8 rl,mlwind,vrotf,corerd,tBorn1,tBorn2
       EXTERNAL rl,mlwind,vrotf,corerd
-      REAL bcm(50000,37),bpp(80,12),commonEnv
-      COMMON /BINARY/ bcm,bpp,commonEnv
 *
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
-      integer*8 id1_pass,id2_pass
-      REAL*8 merger
-      COMMON /cmcpass/ merger,id1_pass,id2_pass
       LOGICAL output
+      REAL bppout(80,12)
 
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
-Cf2py intent(out) bpp
+Cf2py intent(out) bppout
+      ceflag = ceflagtmp
+      tflag = tflagtmp
+      ifflag = ifflagtmp
+      nsflag = nsflagtmp
+      wdflag = wdflagtmp
+      CE2flag = CE2flagtmp 
+      bhflag = bhflagtmp
 
 
       CALL instar
@@ -3717,7 +3713,7 @@ Cf2py intent(out) bpp
       endif
       bcm(ip+1,1) = -1.0
       bpp(jp+1,1) = -1.0
+      bppout = bpp
 *
-      RETURN
-      END
+      END SUBROUTINE evolv2 
 ***
