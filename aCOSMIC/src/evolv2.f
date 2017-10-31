@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf)
+      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bpp)
       implicit none
 ***
 *
@@ -220,6 +220,11 @@
       REAL*8 merger
       COMMON /cmcpass/ merger,id1_pass,id2_pass
       LOGICAL output
+
+
+Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
+Cf2py intent(out) bpp
+
 
       CALL instar
 
