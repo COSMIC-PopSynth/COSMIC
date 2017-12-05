@@ -210,6 +210,12 @@
       LOGICAL output
       REAL bppout(80,12)
 
+      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
+      REAL*8 tflagtmp,ifflagtmp,wdflagtmp
+      REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
+      REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
+      REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp
+
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
 Cf2py intent(out) bppout
@@ -220,7 +226,23 @@ Cf2py intent(out) bppout
       wdflag = wdflagtmp
       CE2flag = CE2flagtmp 
       bhflag = bhflagtmp
-
+      nsflag = nsflagtmp
+      msxns = mxnstmp
+      pts1 = pts1tmp
+      pts2 = pts2tmp
+      pts3 = pts3tmp
+      sigma = sigmatmp
+      beta = betatmp
+      xi = xitmp 
+      acc2 = acc2tmp
+      epsnov = epsnovtmp
+      eddfac = eddfactmp
+      gamma = gammatmp
+      bconst = bconsttmp
+      CK = CKtmp
+      merger = mergertmp
+      windflag = windflagtmp
+      fbkickswitch = fbkickswitchtmp
 
       CALL instar
 
@@ -336,7 +358,6 @@ Cf2py intent(out) bppout
       ospin(2) = 0.0
 
       tphys = 0.0
-      dtp = tphysf
 
 *
 * Set the seed for the random number generator. 
