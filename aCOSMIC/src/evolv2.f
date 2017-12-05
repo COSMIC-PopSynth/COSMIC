@@ -4,7 +4,7 @@
      \ tflagtmp,ifflagtmp,wdflagtmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp,bppout)
+     \ bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp)
       implicit none
       INCLUDE 'const_bse.h'
 ***
@@ -153,10 +153,8 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
-      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,wdflagtmp
-      INTEGER CE2flagtmp,bhflagtmp
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj,j
-      INTEGER fb,kcomp1,kcomp2,idum,formation(2) !PDK
+      INTEGER fb,kcomp1,kcomp2,formation(2) !PDK
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
 *
@@ -184,10 +182,10 @@
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
       INTEGER mergemsp,merge_mem,notamerger
-      REAL*8 fallback,sigma,sigmahold,sigmadiv,ecsnp,ecsn_mlow
+      REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 bhsigmafrac
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
-      REAL*8 B_0(2),bconst,CK,bacc(2),tacc(2),xip,xihold,diskxi,diskxip
+      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim
       COMMON /fall/fallback
       REAL ran3
@@ -224,15 +222,19 @@ Cf2py intent(out) bppout
       ifflag = ifflagtmp
       nsflag = nsflagtmp
       wdflag = wdflagtmp
-      CE2flag = CE2flagtmp 
       bhflag = bhflagtmp
       nsflag = nsflagtmp
-      msxns = mxnstmp
+      mxns = mxnstmp
+      alpha1 = alpha1tmp
       pts1 = pts1tmp
       pts2 = pts2tmp
       pts3 = pts3tmp
       sigma = sigmatmp
       beta = betatmp
+      neta = netatmp
+      lambda = lambdatmp
+      hewind = hewindtmp
+      bwind = bwindtmp
       xi = xitmp 
       acc2 = acc2tmp
       epsnov = epsnovtmp
