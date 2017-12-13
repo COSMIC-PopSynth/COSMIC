@@ -33,7 +33,7 @@ bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' , 'sep', 'ecc',
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1', 'teff_1', 'massc_1',
 'radc_1', 'menv_1', 'renv_1', 'epoch_1', 'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
 'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2', 'renv_2', 'epoch_2', 'ospin_2', 'deltam_1', 'RROL_2',
-'tb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation2', 'commonEnv']
+'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation2', 'commonEnv']
 
 class Evolve:
     def __init__(self, sample):
@@ -60,6 +60,7 @@ class Evolve:
         """
         # Populate BSEDict
         BSEDict = kwargs.pop('BSEDict')
+        idx = kwargs.pop('idx', 0)
         self.initial_conditions.neta = np.repeat(BSEDict['neta'], self.initial_conditions.kstar1.size)
         self.initial_conditions.bwind = np.repeat(BSEDict['bwind'], self.initial_conditions.kstar1.size)
         self.initial_conditions.hewind = np.repeat(BSEDict['hewind'], self.initial_conditions.kstar1.size)
@@ -89,7 +90,7 @@ class Evolve:
         self.initial_conditions.fbkickswitch = np.repeat(BSEDict['fbkickswitch'], self.initial_conditions.kstar1.size)
         
 
-        initial_conditions = np.vstack([self.initial_conditions.kstar1, self.initial_conditions.kstar2, self.initial_conditions.mass1_binary, self.initial_conditions.mass2_binary, self.initial_conditions.porb, self.initial_conditions.ecc, self.initial_conditions.metallicity[0:self.initial_conditions.mass1_binary.size], self.initial_conditions.tphysf, self.initial_conditions.neta, self.initial_conditions.bwind, self.initial_conditions.hewind, self.initial_conditions.alpha1, self.initial_conditions.lambdaf, self.initial_conditions.ceflag, self.initial_conditions.tflag, self.initial_conditions.ifflag, self.initial_conditions.wdflag, self.initial_conditions.bhflag, self.initial_conditions.nsflag, self.initial_conditions.mxns, self.initial_conditions.pts1, self.initial_conditions.pts2, self.initial_conditions.pts3, self.initial_conditions.sigma, self.initial_conditions.beta, self.initial_conditions.xi, self.initial_conditions.acc2, self.initial_conditions.epsnov, self.initial_conditions.eddfac, self.initial_conditions.gamma, self.initial_conditions.bconst, self.initial_conditions.CK, self.initial_conditions.merger, self.initial_conditions.windflag, self.initial_conditions.fbkickswitch, self.initial_conditions.tphysf, np.arange(self.initial_conditions.kstar1.size)]).T
+        initial_conditions = np.vstack([self.initial_conditions.kstar1, self.initial_conditions.kstar2, self.initial_conditions.mass1_binary, self.initial_conditions.mass2_binary, self.initial_conditions.porb, self.initial_conditions.ecc, self.initial_conditions.metallicity[0:self.initial_conditions.mass1_binary.size], self.initial_conditions.tphysf, self.initial_conditions.neta, self.initial_conditions.bwind, self.initial_conditions.hewind, self.initial_conditions.alpha1, self.initial_conditions.lambdaf, self.initial_conditions.ceflag, self.initial_conditions.tflag, self.initial_conditions.ifflag, self.initial_conditions.wdflag, self.initial_conditions.bhflag, self.initial_conditions.nsflag, self.initial_conditions.mxns, self.initial_conditions.pts1, self.initial_conditions.pts2, self.initial_conditions.pts3, self.initial_conditions.sigma, self.initial_conditions.beta, self.initial_conditions.xi, self.initial_conditions.acc2, self.initial_conditions.epsnov, self.initial_conditions.eddfac, self.initial_conditions.gamma, self.initial_conditions.bconst, self.initial_conditions.CK, self.initial_conditions.merger, self.initial_conditions.windflag, self.initial_conditions.fbkickswitch, self.initial_conditions.tphysf, np.arange(idx, idx + self.initial_conditions.kstar1.size)]).T
 
         # calculate maximum number of processes
         nproc = min(kwargs.pop('nproc', 1), len(initial_conditions))
@@ -101,7 +102,9 @@ class Evolve:
                                         f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                         f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
                                         f[30], f[31], f[32], f[33], f[34], f[35])
-                return f, pd.DataFrame(tmp1[np.argwhere(tmp1[:,0]>0),:][0], columns=bpp_columns, index=[int(f[36])]), pd.DataFrame(tmp2[np.argwhere(tmp2[:,0]>0),:][0], columns=bcm_columns, index=[int(f[36])])
+                bpp_tmp = tmp1[np.argwhere(tmp1[:,0]>0),:].squeeze(1)
+                bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>0),:].squeeze(1)
+                return f, pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[36])] * len(bpp_tmp)), pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[36])] * len(bcm_tmp))
             except Exception as e:
                 if nproc == 1:
                     raise
@@ -125,7 +128,7 @@ class Evolve:
         output_bpp = pd.DataFrame()
         output_bcm = pd.DataFrame()
         for f, x, y in output:
-            output_bpp = output_bpp.append(x.reset_index())
-            output_bcm = output_bcm.append(y.reset_index())
+            output_bpp = output_bpp.append(x)
+            output_bcm = output_bcm.append(y)
 
         return output_bpp, output_bcm

@@ -26,6 +26,7 @@ import os.path
 
 import numpy as np
 import scipy.special as ss
+import pandas as pd
 
 
 from aCOSMIC.sample import Sample
@@ -39,10 +40,14 @@ def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     parser.add_argument("--galaxy-component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--final-kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True)
+    parser.add_argument("--final-kstar2", help="Specify the final condition of kstar2, you want systems to end at for your sampl    es", required=True)
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=100)
+    parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
@@ -190,7 +195,8 @@ if __name__ == '__main__':
     BSEDict['windflag'] = windflag
     BSEDict['fbkickswitch'] = fbkickswitch
 
-    evolvedsystemsall = []
+    bcm_save = pd.DataFrame()
+    idx = 0
     while args.Nstep < args.Niter:
         initconditions = Sample(metallicity = metallicity, size = args.Nstep)
         initconditions.mass1 = initconditions.sample_kroupa93(size=args.Nstep)
@@ -206,6 +212,16 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
-        bpp, bcm = evolve.evolve(nproc=1, BSEDict=BSEDict)
-        import pdb
-        pdb.set_trace()
+        bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
+        bcm_filtered = bcm.loc[bcm.tphys > 1.0]
+        idx = bcm.index.max()
+        bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.kstar1) & (bcm_filtered.kstar_2 == args.kstar2)])
+        bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
+        match_all = []
+        for i_convergence_parameter in args.convergence_params:
+            match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
+            match_all.append(match)
+
+        if (np.array(match_all) > 0.999).all():
+            import pdb
+            pdb.set_trace()
