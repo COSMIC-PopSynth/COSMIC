@@ -206,5 +206,6 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
-        tmp = evolve.evolve(nproc=1, BSEDict=BSEDict)
-        evolvedsystemsall.append(tmp)
+        bpp, bcm = evolve.evolve(nproc=1, BSEDict=BSEDict)
+        import pdb
+        pdb.set_trace()

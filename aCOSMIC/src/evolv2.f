@@ -4,7 +4,8 @@
      \ tflagtmp,ifflagtmp,wdflagtmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp)
+     \ bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp,dtptmp,
+     \ bppout,bcmout)
       implicit none
       INCLUDE 'const_bse.h'
 ***
@@ -207,16 +208,17 @@
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
       REAL bppout(80,12)
+      REAL bcmout(50000,37)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
-      REAL*8 tflagtmp,ifflagtmp,wdflagtmp
+      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,dtptmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
       REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp
 
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
-Cf2py intent(out) bppout
+Cf2py intent(out) bppout,bcmout
       ceflag = ceflagtmp
       tflag = tflagtmp
       ifflag = ifflagtmp
@@ -245,6 +247,7 @@ Cf2py intent(out) bppout
       merger = mergertmp
       windflag = windflagtmp
       fbkickswitch = fbkickswitchtmp
+      dtp = dtptmp
 
       CALL instar
 
@@ -254,10 +257,6 @@ Cf2py intent(out) bppout
      
 *      CE2flag = 0
 *      commonEnv = 0.0
-      pts1 = 0.05
-      pts2 = 0.01
-      pts3 = 0.02      
-
       mass(1) = mass1
       mass(2) = mass2
 
@@ -3737,6 +3736,7 @@ Cf2py intent(out) bppout
       bcm(ip+1,1) = -1.0
       bpp(jp+1,1) = -1.0
       bppout = bpp
+      bcmout = bcm
 *
       END SUBROUTINE evolv2 
 ***
