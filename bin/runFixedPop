@@ -215,7 +215,7 @@ if __name__ == '__main__':
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         idx = bcm.index.max()
-        bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.kstar1) & (bcm_filtered.kstar_2 == args.kstar2)])
+        bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)])
         bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
         match_all = []
         for i_convergence_parameter in args.convergence_params:
