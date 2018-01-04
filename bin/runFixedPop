@@ -200,7 +200,8 @@ if __name__ == '__main__':
 
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
-    while args.Nstep < args.Niter and (len(bcm_save) < 500 or (np.array(match_all) < 0.999).all()):
+    Nstep = args.Nstep
+    while Nstep < args.Niter and (len(bcm_save) < 500 or (np.array(match_all) < 0.999).all()):
         initconditions = Sample(metallicity = metallicity, size = args.Nstep)
         initconditions.mass1, total_mass1 = initconditions.sample_kroupa93(args.final_kstar1, size=args.Nstep)
         total_sampled_mass += np.sum(total_mass1)
@@ -234,4 +235,4 @@ if __name__ == '__main__':
         if (np.array(match_all) > 0.999).all():
             print bcm_save
             
-        args.Nstep += args.Nstep
+        Nstep += args.Nstep
