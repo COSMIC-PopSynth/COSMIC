@@ -53,12 +53,21 @@ class Sample:
 
 
     # sample primary masses
-    def sample_kroupa93(self, size=None):
+    def sample_kroupa93(self, kstar1_final, size=None):
         '''
         Primary mass follows Kroupa (1993), normalization comes from
         `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
         '''
-        a_0 = np.random.uniform(0.0, 0.9999797, size)
+
+        # If the final binary contains a compact object (BH or NS),
+        # we want to evolve 'size' binaries that could form a compact
+        # object so we over sample the initial population
+        if kstar1_final > 12.0:
+            a_0 = np.random.uniform(0.0, 0.9999797, size*500)
+        else:   
+            a_0 = np.random.uniform(0.0, 0.9999797, size)
+
+        
         low_cutoff = 0.740074
         high_cutoff=0.908422
 
@@ -71,9 +80,15 @@ class Sample:
         a_0[midIdx] = ((0.5) ** (-6.0/5.0) - ((a_0[midIdx] - low_cutoff) / 0.129758)) ** (-5.0/6.0)
         a_0[highIdx] = (1 - ((a_0[highIdx] - high_cutoff) / 0.0915941)) ** (-10.0/17.0)
         
-        return a_0
+        total_sampled_mass = np.sum(a_0)
+        if kstar1_final > 13.0:
+            a_0 = a_0[a_0 > 10.0]
+        elif kstar_final > 12.0: 
+            a_0 = a_0[a_0 > 8.0]
+        print 'number of primary stars', len(a_0)     
+        return a_0, total_sampled_mass
 
-
+        
     # sample secondary mass
     def sample_secondary(self, primary_mass):
         '''

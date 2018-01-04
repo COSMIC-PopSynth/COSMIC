@@ -197,11 +197,16 @@ if __name__ == '__main__':
 
     bcm_save = pd.DataFrame()
     idx = 0
-    while args.Nstep < args.Niter:
+
+    total_sampled_mass = 0.0
+    match_all = np.zeros(len(args.convergence_params))
+    while args.Nstep < args.Niter and (len(bcm_save) < 500 or (np.array(match_all) < 0.999).all()):
         initconditions = Sample(metallicity = metallicity, size = args.Nstep)
-        initconditions.mass1 = initconditions.sample_kroupa93(size=args.Nstep)
+        initconditions.mass1, total_mass1 = initconditions.sample_kroupa93(args.final_kstar1, size=args.Nstep)
+        total_sampled_mass += np.sum(total_mass1)
         initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1)
         initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
+        total_sampled_mass += np.sum(initconditions.mass2_binary)
         # Outputs in meters
         initconditions.sep =  initconditions.sample_separation(size = initconditions.mass1_binary.size)
         initconditions.porb =  initconditions.sep_to_porb(initconditions.mass1_binary, initconditions.mass2_binary, initconditions.sep)
@@ -210,10 +215,14 @@ if __name__ == '__main__':
         initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
         initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
+        print "The total mass sampled so far is: ",total_sampled_mass
+        
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
+        # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
         idx = bcm.index.max()
         bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)])
         bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
@@ -221,7 +230,8 @@ if __name__ == '__main__':
         for i_convergence_parameter in args.convergence_params:
             match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
             match_all.append(match)
-
+        
         if (np.array(match_all) > 0.999).all():
-            import pdb
-            pdb.set_trace()
+            print bcm_save
+            
+        args.Nstep += args.Nstep
