@@ -165,7 +165,7 @@
       REAL*8 mass0(2),mass(2),massc(2),menv(2),mass00(2),mcxx(2)
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
-      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,bkick(12)
+      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,bkick(14)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
@@ -330,8 +330,8 @@ Cf2py intent(out) bppout,bcmout
       tms(1) = 0.0
       tms(2) = 0.0
 
-      DO jj = 1,12
-         bkick(jj) = 0
+      DO jj = 1,14
+         bkick(jj) = 0.0
       ENDDO
 
       mass0(1) = mass(1)

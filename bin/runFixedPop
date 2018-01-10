@@ -231,7 +231,8 @@ if __name__ == '__main__':
         for i_convergence_parameter in args.convergence_params:
             match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
             match_all.append(match)
-        
+        print 'matches: ',np.array(match_all)
+        print 'Length of bcm array: ', len(bcm_save) 
         if (np.array(match_all) > 0.999).all():
             print bcm_save
             
