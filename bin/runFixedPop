@@ -84,7 +84,8 @@ if __name__ == '__main__':
     sec_in_year = 3.15569*10**7.0
     Tobs = 3.15569*10**7.0
     geo_mass = G/c**2
-    
+
+    metallicity = 0.02    
 
     # ---- Create configuration-file-parser object and read parameters file.
     cp = ConfigParser.ConfigParser()
@@ -164,9 +165,9 @@ if __name__ == '__main__':
         initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1, model='vanHaaften')
         initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
         total_sampled_mass += np.sum(initconditions.mass2_binary)
-        initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han')
+        initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
         initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
-        initconditions.tphysf = initconditions.sample_constant_SFH(t_component = 10000, size = initconditions.mass1_binary.size)
+        initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
         initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
         initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
@@ -188,7 +189,9 @@ if __name__ == '__main__':
         print 'matches: ',np.array(match_all)
         print 'Length of bcm array: ', len(bcm_save) 
         Nstep += args.Nstep
-    sampled_realization = process.sample(bcm_save, total_sampled_mass, 2.0e10)
-    print sampled_realization.shape()
 
+    # save the bcm array to an hdf5 
+    bcm_save.to_hdf('fixedDat_'+str(args.final_kstar1)+'_'+str(args.final_kstar2), format='table', data_columns=True)
+
+    print 'All done friend!'
     

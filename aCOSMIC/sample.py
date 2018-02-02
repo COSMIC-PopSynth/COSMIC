@@ -138,17 +138,8 @@ class Sample:
      
             return primary_mass[binaryIdx], primary_mass[singleIdx]
 
-    def sep_to_porb(self, mass1, mass2, sep):
-        '''
-        Use KEPLER III to convert from separation in meters to orbital period in seconds
-        with masses given in solar masses
-        '''
-        
-        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(sep**3.0))**0.5
 
-        return porb_sec
-
-    def sample_porb(mass1, mass2, model='Han', size=None):
+    def sample_porb(self, mass1, mass2, model='Han', size=None):
         '''
         If model='Han', separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
         If model='log_normal', Use (ref from Aaron Geller) to sample a log normal distributed orbital period
@@ -168,11 +159,13 @@ class Sample:
             # convert to meters
             a_0 = a_0*Rsun
             
-            porb_sec = sep_to_porb(mass1, mass2, a_0)
+            # convert to orbital period in seconds
+            porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5           
             return porb_sec
      
         if model=='log_normal':
-            porb = np.random.lognormal(mean=1e5.03, sigma=1e2.28, size=size)
+            #sample orbital period in days, return in seconds
+            porb = np.random.lognormal(np.pow(10,5.03), np.pow(10.0,2.28), size)
 
             return porb*sec_in_day
 
@@ -200,12 +193,12 @@ class Sample:
         'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at 't_component' 10,000 [Myr] in the past
         '''
 
-        if model='const':
+        if model=='const':
 
             tphys = np.random.uniform(0, 10000.0, size)
             return tphys
  
-        if model='burst':
+        if model=='burst':
             tphys = 10000.0 - np.random.uniform(0, 1000, size)
             return tphys
      
