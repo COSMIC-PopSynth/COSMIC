@@ -159,13 +159,13 @@ if __name__ == '__main__':
     Nstep = args.Nstep
     while Nstep < args.Niter and (len(bcm_save) < 1000 or (np.array(match_all) < 0.9999).all()):
         initconditions = Sample(metallicity = metallicity, size = args.Nstep)
-        initconditions.mass1, total_mass1 = initconditions.sample_kroupa93(args.final_kstar1, size=args.Nstep)
+        initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
         total_sampled_mass += np.sum(total_mass1)
-        initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select_vanHaaften(initconditions.mass1)
+        initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1, model='vanHaaften')
         initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
         total_sampled_mass += np.sum(initconditions.mass2_binary)
-        initconditions.porb =  initconditions.sample_porb_Han(initconditions.mass1_binary, initconditions.mass2_binary)
-        initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size)
+        initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han')
+        initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
         initconditions.tphysf = initconditions.sample_constant_SFH(t_component = 10000, size = initconditions.mass1_binary.size)
         initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
         initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
