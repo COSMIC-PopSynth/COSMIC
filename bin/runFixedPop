@@ -30,8 +30,9 @@ import pandas as pd
 
 
 from aCOSMIC.sample import Sample
-from aCOSMIC import MatchKnuth as Match
+from aCOSMIC import Match
 from aCOSMIC.evolve import Evolve
+from aCOSMIC import process
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -90,53 +91,8 @@ if __name__ == '__main__':
     cp.optionxform = str
     cp.read(args.inifile)
 
-    # ---- Read needed variables from [parameters], [system], and [bse] sections.
-    # -- Parameters
-    nBin = cp.getint('parameters', 'Nbin')
-    Nepochs = cp.getint('parameters', 'Nepochs')
-    epochLength = cp.getfloat('parameters', 'epochLength')
-    Ncores = cp.getint('parameters', 'Ncores')
-    Ngalaxies = cp.getint('parameters', 'Ngalaxies')
-    Ncores = cp.getint('parameters', 'Ncores')
-    metallicity = cp.getfloat('parameters', 'metallicity')
-    SFH = cp.get('parameters', 'SFH')
-    SFR = cp.getfloat('parameters', 'SFR')
-    binwidth = cp.getfloat('parameters', 'binwidth')
-    saveFileFlag = cp.getint('parameters', 'saveFileFlag')
-    LISAflag = cp.getint('parameters', 'LISAflag')
-
-    # -- system
-
-    system_flags = OrderedDict(cp.items('system'))
-
-    if args.verbose:
-        print 'You have selected the following combination of system flags: '.format(system_flags)
-
-    binFlag = [int(i) for i in system_flags.values()]
-    binID = system_flags.keys()
-
-    # ASSIGN BINARY IDs ACCORDING TO LOOPING VARIABLE ii
-    ############################################################################## 
-    # ii    binID     binFlag    
-    ##############################################################################
-    #  0    HeHe      0 or 1    
-    #  1    HeCO      0 or 1
-    #  2    HeONe     0 or 1
-    #  3    COCO      0 or 1
-    #  4    COONe     0 or 1
-    #  5    ONeONe    0 or 1
-    #  6    NSHe      0 or 1            
-    #  7    NSCO      0 or 1  
-    #  8    NSONe     0 or 1
-    #  9    NSNS      0 or 1
-    #  10   NSBH      0 or 1
-    #  11   BHBH      0 or 1
-    #  12   BHHe      0 or 1
-    #  13   BHCO      0 or 1
-    #  14   BHONe     0 or 1
-
+    # ---- Read needed variables from [bse] section.
     # -- bse
-
     neta = cp.getfloat('bse', 'neta')
     bwind = cp.getfloat('bse', 'bwind')
     hewind = cp.getfloat('bse', 'hewind')
@@ -201,16 +157,14 @@ if __name__ == '__main__':
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
-    while Nstep < args.Niter and (len(bcm_save) < 500 or (np.array(match_all) < 0.999).all()):
+    while Nstep < args.Niter and (len(bcm_save) < 1000 or (np.array(match_all) < 0.9999).all()):
         initconditions = Sample(metallicity = metallicity, size = args.Nstep)
         initconditions.mass1, total_mass1 = initconditions.sample_kroupa93(args.final_kstar1, size=args.Nstep)
         total_sampled_mass += np.sum(total_mass1)
-        initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1)
+        initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select_vanHaaften(initconditions.mass1)
         initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
         total_sampled_mass += np.sum(initconditions.mass2_binary)
-        # Outputs in meters
-        initconditions.sep =  initconditions.sample_separation(size = initconditions.mass1_binary.size)
-        initconditions.porb =  initconditions.sep_to_porb(initconditions.mass1_binary, initconditions.mass2_binary, initconditions.sep)
+        initconditions.porb =  initconditions.sample_porb_Han(initconditions.mass1_binary, initconditions.mass2_binary)
         initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size)
         initconditions.tphysf = initconditions.sample_constant_SFH(t_component = 10000, size = initconditions.mass1_binary.size)
         initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
@@ -233,7 +187,8 @@ if __name__ == '__main__':
             match_all.append(match)
         print 'matches: ',np.array(match_all)
         print 'Length of bcm array: ', len(bcm_save) 
-        if (np.array(match_all) > 0.999).all():
-            print bcm_save
-            
         Nstep += args.Nstep
+    sampled_realization = process.sample(bcm_save, total_sampled_mass, 2.0e10)
+    print sampled_realization.shape()
+
+    

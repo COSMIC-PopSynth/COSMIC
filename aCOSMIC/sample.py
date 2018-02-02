@@ -82,9 +82,9 @@ class Sample:
         
         total_sampled_mass = np.sum(a_0)
         if kstar1_final > 13.0:
+            a_0 = a_0[a_0 > 20.0]
+        elif kstar1_final > 12.0: 
             a_0 = a_0[a_0 > 10.0]
-        elif kstar_final > 12.0: 
-            a_0 = a_0[a_0 > 8.0]
         print 'number of primary stars', len(a_0)     
         return a_0, total_sampled_mass
 
@@ -103,7 +103,7 @@ class Sample:
         return secondary_mass
 
 
-    def binary_select(self, primary_mass):
+    def binary_select_vanHaaften(self, primary_mass):
         '''
         Binary fraction is set by `van Haaften et al.(2009)<http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         '''
@@ -115,10 +115,20 @@ class Sample:
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
+    def sep_to_porb(self, mass1, mass2, sep):
+        '''
+        Use KEPLER III to convert from separation in meters to orbital period in seconds
+        with masses given in solar masses
+        '''
+        
+        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(sep**3.0))**0.5
 
-    def sample_separation(self, size=None):
+        return porb_sec
+
+    def sample_porb_Han(mass1, mass2, size=None):
         '''
         Separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        Separation is then converted to orbital period in seconds
         '''
 
         a_0 = np.random.uniform(0, 1, size)
@@ -132,26 +142,38 @@ class Sample:
         # convert to meters
         a_0 = a_0*Rsun
         
-        return a_0
-
-
-    def sep_to_porb(self, mass1, mass2, sep):
-        '''
-        Use KEPLER III to convert from separation in meters to orbital period in seconds
-        with masses given in solar masses
-        '''
-        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(sep**3.0))**0.5
-     
+        porb_sec = sep_to_porb(mass1, mass2, a_0)
         return porb_sec
 
 
-    def sample_ecc(self, size=None):
+    def sample_porb_lognormal(self, size=None):
+        '''
+        Use (ref from Aaron Geller) to sample a log normal distributed orbital period
+        with mu=1e5.03 days and sigma=1e2.28 days; converts period from days to seconds.
+        '''
+
+        tb = np.random.lognormal(mean=1e5.03, sigma=1e2.28, size=size)
+
+        return tb*sec_in_day
+
+
+    def sample_thermal_ecc(self, size=None):
         '''
         Thermal eccentricity distribution following `Heggie (1975)<http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_ 
         '''
+        
         a_0 = np.random.uniform(0.0, 1.0, size)
  
         return a_0**0.5
+
+    def sample_thermal_ecc(self, size=None):
+        '''
+        Sample eccentricities uniformly between 0 and 1 following ref ref from Aaron Geller
+        '''
+        
+        ecc = np.random.uniform(0.0, 1.0, size)
+
+        return ecc
 
 
     def sample_constant_SFH(self, t_component, size=None):
