@@ -30,6 +30,7 @@ import pandas as pd
 
 
 from aCOSMIC.sample import Sample
+from aCOSMIC.sample import MultiDimSample
 from aCOSMIC import Match
 from aCOSMIC.evolve import Evolve
 from aCOSMIC import process
@@ -44,12 +45,13 @@ def parse_commandline():
     parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     parser.add_argument("--galaxy-component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
-    parser.add_argument("--final-kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
-    parser.add_argument("--final-kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=100)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
+    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
     args = parser.parse_args()
 
     return args
@@ -159,20 +161,36 @@ if __name__ == '__main__':
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
     while Nstep < args.Niter and (len(bcm_save) < 1000 or (np.array(match_all) < 0.9999).all()):
-        initconditions = Sample(metallicity = metallicity, size = args.Nstep)
-        initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
-        total_sampled_mass += np.sum(total_mass1)
-        initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1, model='vanHaaften')
-        initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
-        total_sampled_mass += np.sum(initconditions.mass2_binary)
-        initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
-        initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
-        initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
-        initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
-        initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
+        if args.initial_samp == 'ind':
+            initconditions = Sample(metallicity = metallicity, size = args.Nstep)
+            initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
+            total_sampled_mass += np.sum(total_mass1)
+            initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1, model='vanHaaften')
+            initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
+            total_sampled_mass += np.sum(initconditions.mass2_binary)
+            initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
+            initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
+            initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
+            initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
+            initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
+
+
+        if args.initial_samp == 'Moe':
+            if args.final_kstar1 > 13:
+                primaryMin = 15.0
+            elif args.final_kstar1 > 12:
+                primaryMin = 8.0
+            else:
+                primaryMin = 0.08
+
+            initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
+            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, total_sampled_mass = initconditions.initial_sample(primaryMin, size=args.Nstep)
+            initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
+            initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
+            initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary) 
 
         print "The total mass sampled so far is: ",total_sampled_mass
-        
+
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)

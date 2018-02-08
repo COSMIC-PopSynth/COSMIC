@@ -22,6 +22,7 @@
 import numpy as np
 import math
 import random
+import scipy.integrate
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -42,6 +43,18 @@ hrs_in_day = 24.0
 sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
+
+def idl_tabulate(x, f, p=5) :
+    def newton_cotes(x, f) :
+        if x.shape[0] < 2 :
+            return 0
+        rn = (x.shape[0] - 1) * (x - x[0]) / (x[-1] - x[0])
+        weights = scipy.integrate.newton_cotes(rn)[0]
+        return (x[-1] - x[0]) / (x.shape[0] - 1) * np.dot(weights, f)
+    ret = 0
+    for idx in xrange(0, x.shape[0], p - 1) :
+        ret += newton_cotes(x[idx:idx + p], f[idx:idx + p])
+    return ret
 
 
 class Sample:
@@ -265,26 +278,20 @@ class MultiDimSample:
     #
     #
 
-    def idl_tabulate(x, f, p=5) :
-        def newton_cotes(x, f) :
-            if x.shape[0] < 2 :
-                return 0
-            rn = (x.shape[0] - 1) * (x - x[0]) / (x[-1] - x[0])
-            weights = scipy.integrate.newton_cotes(rn)[0]
-            return (x[-1] - x[0]) / (x.shape[0] - 1) * numpy.dot(weights, f)
-        ret = 0
-        for idx in xrange(0, x.shape[0], p - 1) :
-            ret += newton_cotes(x[idx:idx + p], f[idx:idx + p])
-        return ret
 
-    def populate_pdfs():
-        '''Tabulate probably density functions of periods,
-        mass ratios, and eccentricities based on
-        analytic fits to corrected binary star populations.
+    def initial_sample(self, M1min=0.08, size=None):
         '''
+        Sample initial binary distribution according to Moe & Di Stefano (2017)   
+        <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
+        '''
+        
 
+        #Tabulate probably density functions of periods,
+        #mass ratios, and eccentricities based on
+        #analytic fits to corrected binary star populations.
+        
         numM1 = 101 
-        numlogP=158
+        numlogP = 158
         numq = 91
         nume = 100
 
@@ -295,16 +302,18 @@ class MultiDimSample:
         M1_lo = 0.8
         M1_hi = 40
        
-        M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), num1M1)
+        M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), numM1)
        
         #; 0.15 < log P < 8.0
         log10_porb_lo = 0.15
         log10_porb_hi = 8.0
-        logP = np.linspace(log10_porb_lo, log10_porb_hi, numlogP)
+        logPv = np.linspace(log10_porb_lo, log10_porb_hi, numlogP)
+       
         #; 0.10 < q < 1.00
         q_lo = 0.1
         q_hi = 1.0
         qv = np.linspace(q_lo, q_hi, numq)
+       
         #; 0.0001 < e < 0.9901
         #; set minimum to non-zero value to avoid numerical errors
         e_lo = 0.0
@@ -554,14 +563,6 @@ class MultiDimSample:
                             idl_tabulate(logPv, flogP_sq[:,i]*probbin[:,i])
             cumPbindist[:,i] = mycumPbindist  #;save to grid
 
-        return cumqdist, cumedist, cumPbindist
-
-    def initial_sample(self, M1min=0.08, size=None):
-        '''
-        Sample initial binary distribution according to Moe & Di Stefano (2017)   
-        <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-        '''
-        
         #; Step 2
         #; Implement Monte Carlo method / random number generator to select
         #; single stars and binaries from the grids of distributions
@@ -577,7 +578,6 @@ class MultiDimSample:
         porb_list = []
         ecc_list = []
 
-        cumqdist, cumedist, cumPbindist = populate_pdfs()
 
         #; Full primary mass vector across 0.08 < M1 < 150
         M1 = np.linspace(0,150,150000) + 0.08
@@ -618,52 +618,52 @@ class MultiDimSample:
             if(myM1 <= 0.8):
                 mycumPbindist = mycumPbindist() * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
 
-             # ; Given M1, determine the binary star fraction
-             mybinfrac = np.max(mycumPbindist())
+            # ; Given M1, determine the binary star fraction
+            mybinfrac = np.max(mycumPbindist())
          
          
-             # ; Generate random number myrand between 0 and 1
-             myrand = np.random.rand()
-             #; If random number < binary star fraction, generate a binary
-             if(myrand < mybinfrac):
-                 #; Given myrand, select P and corresponding index in logPv
-                 mylogP = np.interp(myrand, mycumPbindist(), logPv)
-                 indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
-                 indlogP = indlogP[0]
+            # ; Generate random number myrand between 0 and 1
+            myrand = np.random.rand()
+            #; If random number < binary star fraction, generate a binary
+            if(myrand < mybinfrac):
+                #; Given myrand, select P and corresponding index in logPv
+                mylogP = np.interp(myrand, mycumPbindist(), logPv)
+                indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
+                indlogP = indlogP[0]
          
          
-                 #; Given M1 & P, select e from eccentricity distribution
-                 mye = np.interp(np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev)
+                #; Given M1 & P, select e from eccentricity distribution
+                mye = np.interp(np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev)
          
          
-                 #; Given M1 & P, determine mass ratio distribution.
-                 #; If M1 < 0.8 Msun, truncate q distribution and consider
-                 #; only mass ratios q > q_min = 0.08 / M1
-                 mycumqdist = cumqdist[:, indlogP, indM1].flatten()
-                 if(myM1 < 0.8):
-                     q_min = 0.08 / myM1
-                     #; Calculate cumulative probability at q = q_min
-                     cum_qmin = np.interp(q_min, qv, mycumqdist)
-                     #; Rescale and renormalize cumulative distribution for q > q_min
-                     mycumqdist = mycumqdist - cum_qmin
-                     mycumqdist = mycumqdist / max(mycumqdist)
-                     #; Set probability = 0 where q < q_min
-                     indq = np.where(qv <= q_min)
-                     mycumqdist[indq] = 0.0
+                #; Given M1 & P, determine mass ratio distribution.
+                #; If M1 < 0.8 Msun, truncate q distribution and consider
+                #; only mass ratios q > q_min = 0.08 / M1
+                mycumqdist = cumqdist[:, indlogP, indM1].flatten()
+                if(myM1 < 0.8):
+                    q_min = 0.08 / myM1
+                    #; Calculate cumulative probability at q = q_min
+                    cum_qmin = np.interp(q_min, qv, mycumqdist)
+                    #; Rescale and renormalize cumulative distribution for q > q_min
+                    mycumqdist = mycumqdist - cum_qmin
+                    mycumqdist = mycumqdist / max(mycumqdist)
+                    #; Set probability = 0 where q < q_min
+                    indq = np.where(qv <= q_min)
+                    mycumqdist[indq] = 0.0
          
-                 #; Given M1 & P, select q from cumulative mass ratio distribution
-                 myq = np.interp(np.random.rand(), mycumqdist, qv)
+                #; Given M1 & P, select q from cumulative mass ratio distribution
+                myq = np.interp(np.random.rand(), mycumqdist, qv)
          
          
-                 primary_mass_list.append(myM1)
-                 secondary_mass_list.append(myq * myM1)
-                 porb_list.append(10**logP * sec_in_day)
-                 ecc_list.append(mye)
-         
-                 total_mass += myM1
-                 total_mass += myq * myM1 
-             else:
-                 total_mass += myM1    
+                primary_mass_list.append(myM1)
+                secondary_mass_list.append(myq * myM1)
+                porb_list.append(10**mylogP * sec_in_day)
+                ecc_list.append(mye)
+        
+                total_mass += myM1
+                total_mass += myq * myM1 
+            else:
+                total_mass += myM1    
         return np.array(primary_mass_list), np.array(secondary_mass_list), porb_list, ecc_list, total_mass      
                    
     def sample_SFH(self, model='const', size=None):
