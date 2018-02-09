@@ -597,6 +597,7 @@ class MultiDimSample:
         #; Minimum primary mass to generate (must be >0.080 Msun
         cumf_M1min = np.interp(M1min, M1, cumfM1)
 
+        total_mass = 0.0
         for i in range(0,int(size)):
 
             #; Select primary M1 > M1min from primary mass function
@@ -613,13 +614,13 @@ class MultiDimSample:
 
 
             # ; Given M1, determine cumulative binary period distribution
-            mycumPbindist = (cumPbindist[:, indM1]).flatten
+            mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
             #; If M1 < 0.8 Msun, rescale to appropriate binary star fraction
             if(myM1 <= 0.8):
-                mycumPbindist = mycumPbindist() * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
+                mycumPbindist = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
 
             # ; Given M1, determine the binary star fraction
-            mybinfrac = np.max(mycumPbindist())
+            mybinfrac = np.max(mycumPbindist)
          
          
             # ; Generate random number myrand between 0 and 1
@@ -627,7 +628,7 @@ class MultiDimSample:
             #; If random number < binary star fraction, generate a binary
             if(myrand < mybinfrac):
                 #; Given myrand, select P and corresponding index in logPv
-                mylogP = np.interp(myrand, mycumPbindist(), logPv)
+                mylogP = np.interp(myrand, mycumPbindist, logPv)
                 indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
                 indlogP = indlogP[0]
          

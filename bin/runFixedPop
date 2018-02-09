@@ -201,6 +201,7 @@ if __name__ == '__main__':
         bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)])
         bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
         match_all = []
+        print len(bcm_save)
         for i_convergence_parameter in args.convergence_params:
             match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
             match_all.append(match)
