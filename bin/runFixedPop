@@ -185,7 +185,7 @@ if __name__ == '__main__':
                 primaryMin = 0.08
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
-            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primaryMin, size=args.Nstep)
+            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primaryMin, size=args.Nstep, nproc = args.nproc)
             initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary) 
@@ -196,6 +196,7 @@ if __name__ == '__main__':
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
+        
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]

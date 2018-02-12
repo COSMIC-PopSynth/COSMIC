@@ -20,6 +20,7 @@
 """
 
 import numpy as np
+from gwpy.utils import mp as mp_utils
 import math
 import random
 import scipy.integrate
@@ -279,18 +280,12 @@ class MultiDimSample:
     #
 
 
-    def initial_sample(self, M1min=0.08, size=None):
+    def initial_sample(self, M1min=0.08, size=None, nproc=1):
         '''
         Sample initial binary distribution according to Moe & Di Stefano (2017)   
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
         '''
         
-        #Sample more binaries if M1min is bigger than 0.08
-        if M1min > 10.0:
-            size = size*500
-        elif M1min > 5.0:
-            size = size*50
-
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
         #analytic fits to corrected binary star populations.
@@ -602,75 +597,122 @@ class MultiDimSample:
         #; Minimum primary mass to generate (must be >0.080 Msun)
         cumf_M1min = np.interp(0.08, M1, cumfM1)
 
-        total_mass = 0.0
-        for i in range(0,int(size)):
+        def _sample_inital_pop(M1min, size):
+            total_mass = 0.0
+            primary_mass_list = []
+            secondary_mass_list = []
+            porb_list = []
+            ecc_list = []
 
-            #; Select primary M1 > M1min from primary mass function
-            myM1 = np.interp(cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1)
+            #; Full primary mass vector across 0.08 < M1 < 150
+            M1 = np.linspace(0,150,150000) + 0.08
+            #; Slope = -2.3 for M1 > 1 Msun
+            fM1 = M1**(-2.3)
+            #; Slope = -1.6 for M1 = 0.5 - 1.0 Msun
+            ind = np.where(M1 <= 1.0)
+            fM1[ind] = M1[ind]**(-1.6)
+            #; Slope = -0.8 for M1 = 0.15 - 0.5 Msun
+            ind = np.where(M1 <= 0.5)
+            fM1[ind] = M1[ind]**(-0.8) / 0.5**(1.6 - 0.8)
+            #; Cumulative primary mass distribution function
+            cumfM1 = np.cumsum(fM1) - fM1[0]
+            cumfM1 = cumfM1 / np.max(cumfM1)
+            #; Value of primary mass CDF where M1 = M1min
+            #; Minimum primary mass to generate (must be >0.080 Msun)
+            cumf_M1min = np.interp(0.08, M1, cumfM1)
 
-            
-            # ; Find index of M1v that is closest to myM1.
-            #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
-            #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
-            #     ; scale and interpolate the companion frequencies so that the
-            #     ; binary star fraction of M1 = 0.08 Msun primaries is zero,
-            #     ; and truncate the q distribution so that q > q_min = 0.08/M1
-            indM1 = np.where(abs(myM1 - M1v) == min(abs(myM1 - M1v)))
-            indM1 = indM1[0]
+            while len(primary_mass_list) < size:
+
+                #; Select primary M1 > M1min from primary mass function
+                myM1 = np.interp(cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1)
+
+                
+                # ; Find index of M1v that is closest to myM1.
+                #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
+                #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
+                #     ; scale and interpolate the companion frequencies so that the
+                #     ; binary star fraction of M1 = 0.08 Msun primaries is zero,
+                #     ; and truncate the q distribution so that q > q_min = 0.08/M1
+                indM1 = np.where(abs(myM1 - M1v) == min(abs(myM1 - M1v)))
+                indM1 = indM1[0]
 
 
-            # ; Given M1, determine cumulative binary period distribution
-            mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
-            #; If M1 < 0.8 Msun, rescale to appropriate binary star fraction
-            if(myM1 <= 0.8):
-                mycumPbindist = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
+                # ; Given M1, determine cumulative binary period distribution
+                mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
+                #; If M1 < 0.8 Msun, rescale to appropriate binary star fraction
+                if(myM1 <= 0.8):
+                    mycumPbindist = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
 
-            # ; Given M1, determine the binary star fraction
-            mybinfrac = np.max(mycumPbindist)
-         
-         
-            # ; Generate random number myrand between 0 and 1
-            myrand = np.random.rand()
-            #; If random number < binary star fraction, generate a binary
-            if(myrand < mybinfrac):
-                #; Given myrand, select P and corresponding index in logPv
-                mylogP = np.interp(myrand, mycumPbindist, logPv)
-                indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
-                indlogP = indlogP[0]
-         
-         
-                #; Given M1 & P, select e from eccentricity distribution
-                mye = np.interp(np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev)
-         
-         
-                #; Given M1 & P, determine mass ratio distribution.
-                #; If M1 < 0.8 Msun, truncate q distribution and consider
-                #; only mass ratios q > q_min = 0.08 / M1
-                mycumqdist = cumqdist[:, indlogP, indM1].flatten()
-                if(myM1 < 0.8):
-                    q_min = 0.08 / myM1
-                    #; Calculate cumulative probability at q = q_min
-                    cum_qmin = np.interp(q_min, qv, mycumqdist)
-                    #; Rescale and renormalize cumulative distribution for q > q_min
-                    mycumqdist = mycumqdist - cum_qmin
-                    mycumqdist = mycumqdist / max(mycumqdist)
-                    #; Set probability = 0 where q < q_min
-                    indq = np.where(qv <= q_min)
-                    mycumqdist[indq] = 0.0
-         
-                #; Given M1 & P, select q from cumulative mass ratio distribution
-                myq = np.interp(np.random.rand(), mycumqdist, qv)
-         
-                if myM1 > M1min:
-                    primary_mass_list.append(myM1)
-                    secondary_mass_list.append(myq * myM1)
-                    porb_list.append(10**mylogP * sec_in_day)
-                    ecc_list.append(mye)
-            
-                total_mass += myM1
-                total_mass += myq * myM1 
-            else:
-                total_mass += myM1    
+                # ; Given M1, determine the binary star fraction
+                mybinfrac = np.max(mycumPbindist)
+             
+             
+                # ; Generate random number myrand between 0 and 1
+                myrand = np.random.rand()
+                #; If random number < binary star fraction, generate a binary
+                if(myrand < mybinfrac):
+                    #; Given myrand, select P and corresponding index in logPv
+                    mylogP = np.interp(myrand, mycumPbindist, logPv)
+                    indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
+                    indlogP = indlogP[0]
+             
+             
+                    #; Given M1 & P, select e from eccentricity distribution
+                    mye = np.interp(np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev)
+             
+             
+                    #; Given M1 & P, determine mass ratio distribution.
+                    #; If M1 < 0.8 Msun, truncate q distribution and consider
+                    #; only mass ratios q > q_min = 0.08 / M1
+                    mycumqdist = cumqdist[:, indlogP, indM1].flatten()
+                    if(myM1 < 0.8):
+                        q_min = 0.08 / myM1
+                        #; Calculate cumulative probability at q = q_min
+                        cum_qmin = np.interp(q_min, qv, mycumqdist)
+                        #; Rescale and renormalize cumulative distribution for q > q_min
+                        mycumqdist = mycumqdist - cum_qmin
+                        mycumqdist = mycumqdist / max(mycumqdist)
+                        #; Set probability = 0 where q < q_min
+                        indq = np.where(qv <= q_min)
+                        mycumqdist[indq] = 0.0
+             
+                    #; Given M1 & P, select q from cumulative mass ratio distribution
+                    myq = np.interp(np.random.rand(), mycumqdist, qv)
+             
+                    if myM1 > M1min:
+                        primary_mass_list.append(myM1)
+                        secondary_mass_list.append(myq * myM1)
+                        porb_list.append(10**mylogP * sec_in_day)
+                        ecc_list.append(mye)
+                    total_mass += myM1
+                    total_mass += myq * myM1 
+                else:
+                    total_mass += myM1 
+            return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass
+
+        # evolve sysyems
+        output = mp_utils.multiprocess_with_queues(
+                 nproc, _sample_inital_pop, [M1min, size/nproc], raise_exceptions=False)
+        
+        primary_mass_list = []
+        secondary_mass_list = []
+        porb_list = []
+        ecc_list = []
+        total_mass = []
+        for m1, m2, porb, ecc, mtot in output:
+            primary_mass_list.append(m1)
+            secondary_mass_list.append(m2)
+            porb_list.append(porb)
+            ecc_list.append(ecc)
+            total_mass.append(mtot)
+
+        primary_mass_list = np.vstack(primary_mass_list)
+        secondary_mass_list = np.vstack(secondary_mass_list)
+        porb_list = np.vstack(porb_list)
+        ecc_list = np.vstack(ecc_list)
+        total_mass = np.sum(total_mass)
+
+
         return np.array(primary_mass_list), np.array(secondary_mass_list), porb_list, ecc_list, total_mass      
                    
     def sample_SFH(self, model='const', size=None):
