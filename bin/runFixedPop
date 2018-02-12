@@ -155,17 +155,18 @@ if __name__ == '__main__':
     BSEDict['fbkickswitch'] = fbkickswitch
 
     bcm_save = pd.DataFrame()
+    bpp_save = pd.DataFrame()
     idx = 0
 
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
-    while Nstep < args.Niter and (len(bcm_save) < 1000 or (np.array(match_all) < 0.9999).all()):
+    
+    match_list = []
+    while Nstep < args.Niter or (len(bcm_save) < 1000 or (np.array(match_all) < 0.9999).all()):
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
-            total_sampled_mass += np.sum(total_mass1)
-            initconditions.mass1_binary, initconditions.mass1_single = initconditions.binary_select(initconditions.mass1, model='vanHaaften')
             initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
             total_sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
@@ -200,17 +201,20 @@ if __name__ == '__main__':
         idx = bcm.index.max()
         bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)])
         bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
+        idxSave = bcm_save.index
+        bpp_save.append(bpp[~bpp.index.isin(bcm_save.index)])
+
         match_all = []
-        print len(bcm_save)
         for i_convergence_parameter in args.convergence_params:
             match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
             match_all.append(match)
         print 'matches: ',np.array(match_all)
         print 'Length of bcm array: ', len(bcm_save) 
         Nstep += args.Nstep
-
+        match_list.append(match_all)
     # save the bcm array to an hdf5 
-    bcm_save.to_hdf('fixedDat_'+str(args.final_kstar1)+'_'+str(args.final_kstar2), format='table', data_columns=True)
-
+    bcm_save.to_hdf('fixedDat_'+str(args.final_kstar1)+'_'+str(args.final_kstar2)+'.hdf','bcm_save')
+    bpp_save.to_hdf('evolutionDat_'+str(args.final_kstar1)+'_'+str(args.final_kstar2)+'.hdf', 'bpp_save')
+    np.savetxt('matchEvolution_'+str(args.final_kstar1)+'_'+str(args.final_kstar2), match_list, delimiter = ',')
     print 'All done friend!'
     
