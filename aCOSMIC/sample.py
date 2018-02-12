@@ -285,6 +285,11 @@ class MultiDimSample:
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
         '''
         
+        #Sample more binaries if M1min is bigger than 0.08
+        if M1min > 10.0:
+            size = size*500
+        elif M1min > 5.0:
+            size = size*50
 
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
@@ -594,8 +599,8 @@ class MultiDimSample:
         cumfM1 = cumfM1 / np.max(cumfM1)
 
         #; Value of primary mass CDF where M1 = M1min
-        #; Minimum primary mass to generate (must be >0.080 Msun
-        cumf_M1min = np.interp(M1min, M1, cumfM1)
+        #; Minimum primary mass to generate (must be >0.080 Msun)
+        cumf_M1min = np.interp(0.08, M1, cumfM1)
 
         total_mass = 0.0
         for i in range(0,int(size)):
@@ -603,6 +608,7 @@ class MultiDimSample:
             #; Select primary M1 > M1min from primary mass function
             myM1 = np.interp(cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1)
 
+            
             # ; Find index of M1v that is closest to myM1.
             #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
             #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
@@ -655,12 +661,12 @@ class MultiDimSample:
                 #; Given M1 & P, select q from cumulative mass ratio distribution
                 myq = np.interp(np.random.rand(), mycumqdist, qv)
          
-         
-                primary_mass_list.append(myM1)
-                secondary_mass_list.append(myq * myM1)
-                porb_list.append(10**mylogP * sec_in_day)
-                ecc_list.append(mye)
-        
+                if myM1 > M1min:
+                    primary_mass_list.append(myM1)
+                    secondary_mass_list.append(myq * myM1)
+                    porb_list.append(10**mylogP * sec_in_day)
+                    ecc_list.append(mye)
+            
                 total_mass += myM1
                 total_mass += myq * myM1 
             else:

@@ -185,11 +185,12 @@ if __name__ == '__main__':
                 primaryMin = 0.08
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
-            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, total_sampled_mass = initconditions.initial_sample(primaryMin, size=args.Nstep)
+            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primaryMin, size=args.Nstep)
             initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary) 
-
+ 
+            total_sampled_mass += sampled_mass
         print "The total mass sampled so far is: ",total_sampled_mass
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
