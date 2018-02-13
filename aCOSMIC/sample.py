@@ -21,6 +21,7 @@
 
 import numpy as np
 from gwpy.utils import mp as mp_utils
+import multiprocessing as mp
 import math
 import random
 import scipy.integrate
@@ -597,7 +598,7 @@ class MultiDimSample:
         #; Minimum primary mass to generate (must be >0.080 Msun)
         cumf_M1min = np.interp(0.08, M1, cumfM1)
 
-        def _sample_inital_pop(M1min, size):
+        def _sample_initial_pop(M1min, size, output):
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
@@ -641,10 +642,10 @@ class MultiDimSample:
                 mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
                 #; If M1 < 0.8 Msun, rescale to appropriate binary star fraction
                 if(myM1 <= 0.8):
-                    mycumPbindist = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
+                    mycumPbindist_flat = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
 
                 # ; Given M1, determine the binary star fraction
-                mybinfrac = np.max(mycumPbindist)
+                mybinfrac = np.max(mycumPbindist_flat)
              
              
                 # ; Generate random number myrand between 0 and 1
@@ -688,29 +689,43 @@ class MultiDimSample:
                     total_mass += myq * myM1 
                 else:
                     total_mass += myM1 
-            return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass
+            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass])
 
+      
         # evolve sysyems
-        output = mp_utils.multiprocess_with_queues(
-                 nproc, _sample_inital_pop, [M1min, size/nproc], raise_exceptions=False)
-        
+        output = mp.Queue()
+        #output = mp_utils.multiprocess_with_queues(
+        #         nproc, _sample_inital_pop, [M1min, size/nproc], raise_exceptions=False)
+        processes = [mp.Process(target = _sample_initial_pop, args = (M1min, size/nproc, output)) for x in range(nproc)]
+        for p in processes:
+            p.start()
+
+        for p in processes:
+            p.join()
+
+        results = [output.get() for p in processes]
+
         primary_mass_list = []
         secondary_mass_list = []
         porb_list = []
         ecc_list = []
         total_mass = []
-        for m1, m2, porb, ecc, mtot in output:
-            primary_mass_list.append(m1)
-            secondary_mass_list.append(m2)
-            porb_list.append(porb)
-            ecc_list.append(ecc)
-            total_mass.append(mtot)
+        dat_lists = [[],[],[],[],[]]
 
-        primary_mass_list = np.vstack(primary_mass_list)
-        secondary_mass_list = np.vstack(secondary_mass_list)
-        porb_list = np.vstack(porb_list)
-        ecc_list = np.vstack(ecc_list)
-        total_mass = np.sum(total_mass)
+        for output_list in results:
+            ii = 0
+            for dat_list in output_list:
+               dat_lists[ii].append(dat_list)
+               ii+=1
+
+        #print dat_lists
+        #print
+        #print dat_lists[0]
+        primary_mass_list = np.hstack(dat_lists[0])
+        secondary_mass_list = np.hstack(dat_lists[1])
+        porb_list = np.hstack(dat_lists[2])
+        ecc_list = np.hstack(dat_lists[3])
+        total_mass = np.sum(dat_lists[4])
 
 
         return np.array(primary_mass_list), np.array(secondary_mass_list), porb_list, ecc_list, total_mass      
