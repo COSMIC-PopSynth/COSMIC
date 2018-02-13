@@ -204,11 +204,15 @@ if __name__ == '__main__':
         bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)])
         bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
         idxSave = bcm_save.index
-        bpp_save_array = bpp[~bpp.index.isin(bcm_save.index)]
+        bpp_save_array = bpp[~bpp.index.isin(idxSave)]
         bpp_save_comenv = bpp_save_array.loc[bpp_save_array.evol_type == 7.0]
         bpp_comenv = bpp_save_array[~bpp_save_array.index.isin(bpp_save_comenv.index)]
         bpp_save.append(bpp_comenv)
 
+        #check to see if the eccentricities are all circular
+        if bcm_save.ecc.all() < 1e-4:
+            args.convergece_params = args.convergence_params[len(args.convergence_params)-2]
+            print args.convergece_params
         match_all = []
         for i_convergence_parameter in args.convergence_params:
             match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
