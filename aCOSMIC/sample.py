@@ -690,7 +690,7 @@ class MultiDimSample:
                 else:
                     total_mass += myM1 
             output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass])
-
+            return
       
         # evolve sysyems
         output = mp.Queue()
@@ -698,12 +698,12 @@ class MultiDimSample:
         #         nproc, _sample_inital_pop, [M1min, size/nproc], raise_exceptions=False)
         processes = [mp.Process(target = _sample_initial_pop, args = (M1min, size/nproc, output)) for x in range(nproc)]
         for p in processes:
+            p.daemon = True
             p.start()
-
+        results = [output.get() for p in processes]
         for p in processes:
             p.join()
-
-        results = [output.get() for p in processes]
+        #results = [output.get() for p in processes]
 
         primary_mass_list = []
         secondary_mass_list = []
