@@ -1,0 +1,98 @@
+#! /usr/bin/env python
+
+# Code: gxRealization
+# Version: 1
+# Version changes: GENERATE KDE FROM FIXED POPULATION TO MONTE CARLO 
+#                  A GALACTIC REALIZATION OF THE POPULATION ACCORDING 
+#                  TO FLAGS SET BY USER
+#
+# Edited on:  13 FEB 2018
+
+
+##############################################################################
+#  IMPORT ALL NECESSARY PYTHON PACKAGES
+##############################################################################
+from collections import OrderedDict
+import warnings
+import argparse
+import ConfigParser
+
+import math
+import random
+import time
+from time import sleep
+import string
+import os.path
+
+import numpy as np
+import scipy.special as ss
+import pandas as pd
+
+import aCOSMIC.MC_samp as MC_samp 
+
+##################################################################################
+# DEFINE COMMANDLINE ARGUMENTS
+##################################################################################
+def parse_commandline():
+    """Parse the arguments given on the command-line.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--dist_model", help="Galaxy distribution model. should just use 'fiducial'", required=True, default='fiducial')
+    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--N_realizations", help="Number of Galactic realziations to sample", type=int, default=100)
+    parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
+    parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
+    args = parser.parse_args()
+
+    return args
+
+
+##################################################################################
+# BEGIN MAIN FUNCTION
+##################################################################################
+if __name__ == '__main__':
+
+    # READ COMMANDLINE ARGUMENTS
+    ##############################################################################
+    args = parse_commandline()
+
+    # CONSTANTS
+    ##############################################################################
+    G = 6.67384*math.pow(10, -11.0)
+    c = 2.99792458*math.pow(10, 8.0)
+    parsec = 3.08567758*math.pow(10, 16)
+    Rsun = 6.955*math.pow(10, 8)
+    Msun = 1.9891*math.pow(10,30)
+    day = 86400.0
+    rsun_in_au = 215.0954
+    day_in_year = 365.242
+    sec_in_day = 86400.0
+    sec_in_hour = 3600.0
+    hrs_in_day = 24.0
+    sec_in_year = 3.15569*10**7.0
+    Tobs = 3.15569*10**7.0
+    geo_mass = G/c**2
+
+    # NEED TO GET TOTAL MASS
+    ###########################################################################
+    ###
+    ### CODE GOES HERE ###
+    ###
+    total_sampled_mass = 1.0e10
+
+    # SET GALACTIC COMPONENT MASS ACCORDING TO ROBIN ET AL 2003
+    ###########################################################################
+    if args.galaxy_component == 'ThinDisk':
+        gx_component_mass = 2.15e10
+    elif args.galaxy_component == 'Bulge':
+        gx_component_mass = 2.03e10
+    elif args.galaxy_component == 'ThickDisk':
+        gx_component_mass = 3.91e9
+
+    # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
+    ###########################################################################
+    gx_realization = MC_sample.sample(fixed_dat, gx_component_mass, args.galaxy_component, model=args.dist_model)
+
+
