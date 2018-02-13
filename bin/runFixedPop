@@ -33,7 +33,6 @@ from aCOSMIC.sample import Sample
 from aCOSMIC.sample import MultiDimSample
 from aCOSMIC import Match
 from aCOSMIC.evolve import Evolve
-from aCOSMIC import process
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -182,7 +181,7 @@ if __name__ == '__main__':
             elif args.final_kstar1 > 12:
                 primaryMin = 8.0
             else:
-                primaryMin = 0.08
+                primaryMin = 0.8
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
             initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primaryMin, size=args.Nstep, nproc = args.nproc)
@@ -204,13 +203,15 @@ if __name__ == '__main__':
         bcm_save = bcm_save.append(bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)])
         bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
         idxSave = bcm_save.index
+        print bcm_save
         bpp_save_array = bpp[~bpp.index.isin(idxSave)]
         bpp_save_comenv = bpp_save_array.loc[bpp_save_array.evol_type == 7.0]
         bpp_comenv = bpp_save_array[~bpp_save_array.index.isin(bpp_save_comenv.index)]
         bpp_save.append(bpp_comenv)
 
         #check to see if the eccentricities are all circular
-        if bcm_save.ecc.all() < 1e-4:
+        print bcm_save.ecc
+        if len(bcm_save.loc[bcm_save.ecc < 0.0001]) > 0.5*len(bcm_save) :
             args.convergece_params = args.convergence_params[len(args.convergence_params)-2]
             print args.convergece_params
         match_all = []
