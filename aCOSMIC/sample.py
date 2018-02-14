@@ -176,13 +176,13 @@ class Sample:
             
             # convert to orbital period in seconds
             porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5           
-            return porb_sec
+            return porb_sec/sec_in_day
      
         if model=='log_normal':
             #sample orbital period in days, return in seconds
             porb = np.random.lognormal(np.pow(10,5.03), np.pow(10.0,2.28), size)
 
-            return porb*sec_in_day
+            return porb
 
 
     def sample_ecc(self, model='thermal', size=None):
@@ -580,24 +580,6 @@ class MultiDimSample:
         ecc_list = []
 
 
-        #; Full primary mass vector across 0.08 < M1 < 150
-        M1 = np.linspace(0,150,150000) + 0.08
-        #; Slope = -2.3 for M1 > 1 Msun
-        fM1 = M1**(-2.3)
-        #; Slope = -1.6 for M1 = 0.5 - 1.0 Msun
-        ind = np.where(M1 <= 1.0)
-        fM1[ind] = M1[ind]**(-1.6)
-        #; Slope = -0.8 for M1 = 0.15 - 0.5 Msun
-        ind = np.where(M1 <= 0.5)
-        fM1[ind] = M1[ind]**(-0.8) / 0.5**(1.6 - 0.8)
-        #; Cumulative primary mass distribution function
-        cumfM1 = np.cumsum(fM1) - fM1[0]
-        cumfM1 = cumfM1 / np.max(cumfM1)
-
-        #; Value of primary mass CDF where M1 = M1min
-        #; Minimum primary mass to generate (must be >0.080 Msun)
-        cumf_M1min = np.interp(0.08, M1, cumfM1)
-
         def _sample_initial_pop(M1min, size, output):
             total_mass = 0.0
             primary_mass_list = []
@@ -653,7 +635,7 @@ class MultiDimSample:
                 #; If random number < binary star fraction, generate a binary
                 if(myrand < mybinfrac):
                     #; Given myrand, select P and corresponding index in logPv
-                    mylogP = np.interp(myrand, mycumPbindist, logPv)
+                    mylogP = np.interp(myrand, mycumPbindist_flat, logPv)
                     indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
                     indlogP = indlogP[0]
              
@@ -683,7 +665,7 @@ class MultiDimSample:
                     if myM1 > M1min and myq * myM1 > M2min:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
-                        porb_list.append(10**mylogP * sec_in_day)
+                        porb_list.append(10**mylogP)
                         ecc_list.append(mye)
                     total_mass += myM1
                     total_mass += myq * myM1 

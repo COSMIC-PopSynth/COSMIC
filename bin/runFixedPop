@@ -181,8 +181,6 @@ if __name__ == '__main__':
                 primaryMin = 15.0
             elif args.final_kstar1 > 12:
                 primaryMin = 8.0
-            elif args.final_kstar1 > 9:
-                primaryMin = 1.0
             else:
                 primaryMin = 0.08
 
@@ -190,8 +188,8 @@ if __name__ == '__main__':
                 secondaryMin = 15.0
             elif args.final_kstar2 > 12:
                 secondaryMin = 8.0
-            elif args.final_kstar2 > 9:
-                secondaryMin = 1.0
+            else:
+                secondaryMin = 0.08
 
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
@@ -223,9 +221,11 @@ if __name__ == '__main__':
 
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.all() == 0.0:
-                args.convergece_params = args.convergence_params[:len(args.convergence_params)-2]
+                print bcm_save.ecc.all()
+                args.convergece_params = args.convergence_params[:len(args.convergence_params)-1]
                 print args.convergece_params
             match_all = []
+            print args.convergence_params
             for i_convergence_parameter in args.convergence_params:
                 match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
                 match_all.append(match)
