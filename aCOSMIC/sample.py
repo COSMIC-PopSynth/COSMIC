@@ -281,7 +281,7 @@ class MultiDimSample:
     #
 
 
-    def initial_sample(self, M1min=0.08, size=None, nproc=1):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, size=None, nproc=1):
         '''
         Sample initial binary distribution according to Moe & Di Stefano (2017)   
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
@@ -680,7 +680,7 @@ class MultiDimSample:
                     #; Given M1 & P, select q from cumulative mass ratio distribution
                     myq = np.interp(np.random.rand(), mycumqdist, qv)
              
-                    if myM1 > M1min:
+                    if myM1 > M1min and myq * myM1 > M2min:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP * sec_in_day)
