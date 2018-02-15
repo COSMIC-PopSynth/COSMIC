@@ -4,7 +4,7 @@
      \ tflagtmp,ifflagtmp,wdflagtmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp,dtptmp,
+     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,
      \ bppout,bcmout)
       implicit none
       INCLUDE 'const_bse.h'
@@ -184,7 +184,6 @@
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
       INTEGER mergemsp,merge_mem,notamerger
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
-      REAL*8 bhsigmafrac
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim
@@ -201,20 +200,20 @@
       LOGICAL coel,com,prec,inttry,change,snova,sgl,bsymb,esymb,bss
       LOGICAL supedd,novae,disk
       LOGICAL isave,iplot
-      REAL*8 rl,mlwind,vrotf,corerd,tBorn1,tBorn2
+      REAL*8 rl,mlwind,vrotf,corerd
       EXTERNAL rl,mlwind,vrotf,corerd
 *
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL bppout(80,12)
-      REAL bcmout(50000,37)
+      REAL bppout(80,10)
+      REAL bcmout(50000,36)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,dtptmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
       REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp,fbkickswitchtmp
+      REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
 
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
@@ -246,7 +245,6 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       merger = mergertmp
       windflag = windflagtmp
-      fbkickswitch = fbkickswitchtmp
       dtp = dtptmp
 
       CALL instar
@@ -256,7 +254,6 @@ Cf2py intent(out) bppout,bcmout
 *
      
 *      CE2flag = 0
-*      commonEnv = 0.0
       mass(1) = mass1
       mass(2) = mass2
 
@@ -264,8 +261,6 @@ Cf2py intent(out) bppout,bcmout
       kstar(2) = kstar2
       
 
-      tBorn1 = 0.0
-      tBorn2 = 0.0
       mass1i = mass(1)
       mass2i = mass(2)
       tbi = tb/yearsc
@@ -623,21 +618,6 @@ Cf2py intent(out) bppout,bcmout
                else
                   bpp(jp,10) = 12.0
                   bsymb = .true.
-               if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-                  if(tBorn1.lt.1)then
-                     tBorn1 = bpp(jp,1)
-                  endif
-               endif
-               if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then
-                  if(tBorn2.lt.1)then
-                     tBorn2 = bpp(jp,1)
-                  endif
-               endif
-*               if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*                  WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*               endif
-               bpp(jp,11) = tBorn1
-               bpp(jp,12) = tBorn2
                endif
             endif
          endif
@@ -1340,11 +1320,11 @@ Cf2py intent(out) bppout,bcmout
             endif
             if(sgl)then
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,bhflag)
+     &                   0.d0,fallback,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
             else
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(k-3),fallback,bkick,bhflag)
+     &                   rad(k-3),fallback,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
                if(mass(3-k).lt.0.d0)then
                   if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k) !ignore TZ object
@@ -1496,21 +1476,6 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,8) = rad(1)/rol(1)
             bpp(jp,9) = rad(2)/rol(2)
             bpp(jp,10) = 14.0
-            if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-               if(tBorn1.lt.1)then
-                  tBorn1 = bpp(jp,1)
-               endif
-            endif
-            if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then
-               if(tBorn2.lt.1)then
-                  tBorn2 = bpp(jp,1)
-               endif
-            endif
-*            if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*               WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*            endif
-            bpp(jp,11) = tBorn1
-            bpp(jp,12) = tBorn2
          endif
 *
  6    continue
@@ -1557,21 +1522,6 @@ Cf2py intent(out) bppout,bcmout
             dtm = 0.d0
             goto 4
          endif
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2 
       endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
@@ -1630,7 +1580,6 @@ Cf2py intent(out) bppout,bcmout
             endif
             bcm(ip,35) = float(formation(1))
             bcm(ip,36) = float(formation(2))
-            bcm(ip,37) = commonEnv
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1755,21 +1704,6 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 2.0
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2 
       endif
 *
       iter = iter + 1
@@ -1835,21 +1769,6 @@ Cf2py intent(out) bppout,bcmout
       bpp(jp,8) = rad(1)/rol(1)
       bpp(jp,9) = rad(2)/rol(2)
       bpp(jp,10) = 3.0
-      if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-         if(tBorn1.lt.1)then
-            tBorn1 = bpp(jp,1)
-         endif
-      endif
-      if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-         if(tBorn2.lt.1)then
-            tBorn2 = bpp(jp,1)
-         endif
-      endif
-*      if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*         WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*      endif
-      bpp(jp,11) = tBorn1
-      bpp(jp,12) = tBorn2      
 *
       if(iplot.and.tphys.gt.tiny)then
          ip = ip + 1
@@ -1905,7 +1824,6 @@ Cf2py intent(out) bppout,bcmout
          endif
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
-         bcm(ip,37) = commonEnv
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
@@ -2084,21 +2002,6 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 7.0
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2
 *
          epoch(j1) = tphys - aj(j1)
          if(coel)then
@@ -2388,22 +2291,6 @@ Cf2py intent(out) bppout,bcmout
                      bpp(jp,4) = float(kst)
                      bpp(jp,5) = float(kstar(j1))
                   endif
-                  if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-                     if(tBorn1.lt.1)then
-                        tBorn1 = bpp(jp,1)
-                     endif
-                  endif
-                  if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-                     if(tBorn2.lt.1)then
-                        tBorn2 = bpp(jp,1)
-                     endif
-                  endif
-*                  if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*                     WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*                  endif
-                  bpp(jp,11) = tBorn1
-                  bpp(jp,12) = tBorn2
-*
                endif
             endif            
          elseif(kstar(j1).le.6.and. 
@@ -2460,22 +2347,6 @@ Cf2py intent(out) bppout,bcmout
                      bpp(jp,4) = float(kst)
                      bpp(jp,5) = float(kstar(j1))
                   endif
-                  if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-                     if(tBorn1.lt.1)then
-                        tBorn1 = bpp(jp,1)
-                     endif
-                  endif
-                  if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-                     if(tBorn2.lt.1)then
-                        tBorn2 = bpp(jp,1)
-                     endif
-                  endif
-*                  if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*                     WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*                  endif
-                  bpp(jp,11) = tBorn1
-                  bpp(jp,12) = tBorn2 
-* 
                endif
 *
             endif
@@ -3067,7 +2938,7 @@ Cf2py intent(out) bppout,bcmout
                endif
             endif
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick,bhflag)
+     &                rad(3-k),fallback,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
             if(mass(3-k).lt.0.d0)then
                if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k)
@@ -3146,21 +3017,6 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,8) = rad(1)/rol(1)
             bpp(jp,9) = rad(2)/rol(2)
             bpp(jp,10) = 14.0
-            if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-               if(tBorn1.lt.1)then
-                  tBorn1 = bpp(jp,1)
-               endif
-            endif
-            if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-               if(tBorn2.lt.1)then
-                  tBorn2 = bpp(jp,1)
-               endif
-            endif
-*            if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*               WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*            endif
-            bpp(jp,11) = tBorn1
-            bpp(jp,12) = tBorn2
          endif
 *
  90   continue
@@ -3236,7 +3092,6 @@ Cf2py intent(out) bppout,bcmout
          endif
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
-         bcm(ip,37) = commonEnv
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3258,21 +3113,6 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 2.0
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2
       endif
 *
 * Test whether the primary still fills its Roche lobe.
@@ -3296,21 +3136,6 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 4.0
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2
          dtm = 0.d0
          goto 4
       endif
@@ -3339,21 +3164,6 @@ Cf2py intent(out) bppout,bcmout
       bpp(jp,8) = rrl1
       bpp(jp,9) = rrl2
       bpp(jp,10) = 5.0
-      if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-         if(tBorn1.lt.1)then
-            tBorn1 = bpp(jp,1)
-         endif
-      endif
-      if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-         if(tBorn2.lt.1)then
-            tBorn2 = bpp(jp,1)
-         endif
-      endif
-*      if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*         WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*      endif
-      bpp(jp,11) = tBorn1
-      bpp(jp,12) = tBorn2
 *
       kcomp1 = kstar(j1)
       kcomp2 = kstar(j2)
@@ -3382,20 +3192,6 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-*        commonEnv = commonEnv + 1.0
-*        if(commonEnv.gt.1)then
-*           if(bpp(jp-1,4).eq.7.or.bpp(jp-1,4).eq.8)then
-*              if(mass(1).gt.3.5)then
-*                  CE2flag = 1
-*                   WRITE(*,*)kstar,mass
-*              endif 
-*           elseif(bpp(jp-1,5).eq.7.or.bpp(jp-1,5).eq.8)then
-*              if(mass(2).gt.3.5)then
-*                  CE2flag = 1 
-*                   WRITE(*,*)kstar,mass
-*              endif
-*           endif
-*        endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
@@ -3417,20 +3213,6 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-*         commonEnv = commonEnv + 1.0
-*        if(commonEnv.gt.1)then
-*           if(bpp(jp-1,4).eq.7.or.bpp(jp-1,4).eq.8)then
-*              if(mass(1).gt.3.5)then
-*                  CE2flag = 1
-*                   WRITE(*,*)kstar,mass
-*              endif 
-*           elseif(bpp(jp-1,5).eq.7.or.bpp(jp-1,5).eq.8)then
-*              if(mass(2).gt.3.5)then
-*                  CE2flag = 1 
-*                   WRITE(*,*)kstar,mass
-*              endif
-*           endif
-*        endif
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
       endif
@@ -3450,21 +3232,6 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rrl1
          bpp(jp,9) = rrl2
          bpp(jp,10) = 7.0
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2
       endif
       epoch(1) = tphys - aj(1)
       epoch(2) = tphys - aj(2)
@@ -3528,7 +3295,6 @@ Cf2py intent(out) bppout,bcmout
             if(coel)then
                bpp(jp,10) = 6.0
             elseif(ecc.gt.1.d0)then
-               bpp(jp,11) = commonEnv
 *
 * Binary dissolved by a supernova or tides.
 *
@@ -3539,21 +3305,6 @@ Cf2py intent(out) bppout,bcmout
             else
                bpp(jp,10) = 9.0
             endif
-            if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-               if(tBorn1.lt.1)then
-                  tBorn1 = bpp(jp,1)
-               endif
-            endif
-            if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-               if(tBorn2.lt.1)then
-                  tBorn2 = bpp(jp,1)
-               endif
-            endif
-*            if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*               WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*            endif
-            bpp(jp,11) = tBorn1
-            bpp(jp,12) = tBorn2
          endif
          if(kstar(2).eq.15)then
             kmax = 1
@@ -3602,7 +3353,6 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,6) = zero
          bpp(jp,7) = zero
          bpp(jp,8) = zero
-         bpp(jp,11) = commonEnv
          if(coel)then
             bpp(jp,9) = ngtv
             bpp(jp,10) = 6.0
@@ -3620,21 +3370,6 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,9) = rad(2)/rol(2)
             bpp(jp,10) = 10.0
          endif
-         if(bpp(jp,4).gt.9.and.bpp(jp,4).lt.13)then
-            if(tBorn1.lt.1)then
-               tBorn1 = bpp(jp,1)
-            endif
-         endif
-         if(bpp(jp,5).gt.9.and.bpp(jp,5).lt.13)then               
-            if(tBorn2.lt.1)then
-               tBorn2 = bpp(jp,1)
-            endif
-         endif
-*         if(tBorn1.eq.tBorn2.and.tBorn1.gt.1)then
-*            WRITE(*,*)bpp(jp,11),bpp(jp,12)
-*         endif
-         bpp(jp,11) = tBorn1
-         bpp(jp,12) = tBorn2
       endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
@@ -3697,7 +3432,6 @@ Cf2py intent(out) bppout,bcmout
          endif
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
-         bcm(ip,37) = commonEnv
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf

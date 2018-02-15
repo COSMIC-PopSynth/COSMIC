@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,bhflag)
+     &                r2,fallback,bkick)
       implicit none
 *
 * Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
@@ -17,9 +17,6 @@
 * survived) then the array will be full and will look like:
 * bkick[1] = 1, bkick[2-4] = vx, vy, vz, bkick[5] = 2, bkick[6-8] = vx, vy, vz
 * of star 2, bkick[9] = 2, bkick[10-12] = vx, vy, vz of star 1.
-
-* ADDED BY K BREIVIK: bkick[13] = natal kick magnitude of first explosion
-*                     bkick[14] = natal kick magnitude of second explosion
 * Therefore, to update the Galactic or cluster stellar velocities we will need
 * to add bkick[2-4] to both stars and then bkick[6-8] to star 2 and 
 * bkick[10-12] to star 1. Here, star 1 is the star that was passed first to
@@ -33,14 +30,15 @@
 * Perhaps move wdaflag to COMMON /VALUE4/ with bhflag etc?
 *
       integer kw,k,l,snstar
-      INTEGER idum,fbkickswitch
+      INTEGER idum
       COMMON /VALUE3/ idum
       INTEGER idum2,iy,ir(32)
       COMMON /RAND3/ idum2,iy,ir
-      integer wdaflag
+      integer bhflag,wdaflag
       real*8 tphys,m1,m2,m1n,mbi,mbf,mtilda,mdif
       real*8 ecc,sep,sepn,jorb,ecc2,bb,angle
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
+      real*8 omega,sino,coso,cosmu,sinmu,x_tilt,y_tilt,z_tilt
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mm,em,dif,der,del,r
       real*8 u1,u2,vk,v(4),s,theta,phi,alpha,beta,gamma
@@ -53,26 +51,26 @@
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
       real*8 csigns,ssigns,csigc,ssigc
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
-      real*8 fallback,kickscale
+      real*8 fallback,kickscale,bound,phi_old
 * Output
       real*8 v1out,v2out,v3out,vkout
       logical output
 *
-      real*8 bconst,CK
-      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK,fbkickswitch 
+      real*8 bconst,CK,opening_angle
+      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK,bhflag,opening_angle
       real*8 mxns,neta,bwind,hewind
       COMMON /VALUE1/ neta,bwind,hewind,mxns
-      real*8 bkick(14)
+      real*8 bkick(16)
 *      COMMON /VKICK/ bkick
       real ran3,xx
       external ran3
       integer*8 id1_pass,id2_pass
       real*8 merger
       COMMON /cmcpass/ merger,id1_pass,id2_pass
-      integer bhflag
 *
-*      fbkickswitch = 0
-      output = .true. !useful for debugging...
+      output = .false. !useful for debugging...
+*       write(91,49)kw,m1,m1n,m2,ecc,sep,snstar,fallback,
+*    &               bhflag,sigma,mxns,id1_pass,id2_pass
       v1out = 0.d0
       v2out = 0.d0
       v3out = 0.d0
@@ -87,22 +85,19 @@
       endif
       sigmah = sigma
 *Test: Checking if we can make customized sigma for blackholes only
-*      if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
-*          sigma = sigmah*bhsigmafrac
-*      endif
-*      write(*,*)bhsigmafrac
+      if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
+          sigma = sigmah*bhsigmafrac
+      endif
       if(output)then
 
-*        if(kw.eq.14) write(48,49)kw,m1,m1n,m2,ecc,sep,snstar,fallback,
-*     &               bhflag,sigma,mxns,id1_pass,id2_pass
+        if(kw.eq.14) write(48,49)kw,m1,m1n,m2,ecc,sep,snstar,fallback,
+     &               bhflag,sigma,mxns,id1_pass,id2_pass
       endif
 *      if(kw.lt.0)then
 *         sigma = 20.d0
 *         kw = ABS(kw)
 *      endif
-*      bhflag=1
-      if((kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns))
-     &    .and.bhflag.eq.2))then
+*      if(kw.eq.14.and.bhflag.eq.2)then
 * Voss & Tauris (2003) method of limiting BH kick momentum.
 * Here 3.d0 is the maximum mass of a NS - in future should be
 * generalised, i.e. pass through value of Mns,max, rather than
@@ -110,10 +105,8 @@
 *
 * Also should implement kick mag. inv. propto. fall back fraction.
 * Done, see fallback below.
-*         write(*,*)'new sigma',sigma
-         sigma = (mxns/m1n)*sigma
-*         write(*,*)'old sigma',sigma
-      endif
+*         sigma = (mxns/m1n)*sigma
+*      endif
       do k = 1,3
          vs(k) = 0.d0
       enddo
@@ -182,41 +175,52 @@
 * Limit BH kick with fallback mass fraction.
 *      if(kw.eq.14)then
 *Limit BH kick with fallback only if wanted
-*      write(*,*)'fallback switch',fbkickswitch
-      if (fbkickswitch.gt.0.and.(kw.eq.14.or.
-     &    (m1n.ge.mxns)))then
+*      write(20,*)'BH FORM', m1,vk,fallback,kw
+      if(kickscale.gt.0.d0)then
+         vk = vk/kickscale
+         vk2 = vk2/kickscale/kickscale
+      endif
+      if(kw.eq.14.and.bhflag.eq.0)then
+         vk2 = 0.d0
+         vk = 0.d0
+      elseif(kw.eq.14.and.bhflag.eq.1)then
           fallback = MIN(fallback,1.d0)
           vk = MAX((1.d0-fallback)*vk,0.d0)
           vk2 = vk*vk
-      endif
-*      if(kw.eq.14.and.vk.lt.10) write(20,*)'BH FORM', m1,vk,fallback
-      if(kickscale.gt.0.d0)then
-         vk = vk/kickscale
-         vk2 = vk2/kickscale
-      endif
-*      endif
-*      write(15,*)'kick 4:',vk,theta,s
-      if((kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))                     
-     &    .and.bhflag.eq.0)then
-*         write(*,*)bhflag
-         vk2 = 0.d0
-         vk = 0.d0
-c$$$********BELOW HAS BEEN ADDED********\/
-c$$$      elseif((kw.ge.10.and.kw.le.12).and.wdaflag.ne.1)then !is this OK????
-c$$$         vk2 = 0.d0
-c$$$         vk = 0.d0
-c$$$********ABOVE HAS BEEN ADDED********/\
-      endif ! It means we can scrap this within the search routine...
-*      sigma = sigmah
-      sphi = -1.d0 + 2.d0*ran3(idum)
+      elseif(kw.eq.14.and.bhflag.eq.2)then
+         vk = vk * mxns / m1n
+         vk2 = vk*vk
+      endif 
+
+      sigma = sigmah
+* CLR - Allow for a restricted opening angle for SN kicks
+*       Only relevant for binaries, obviously
+      bound = SIN((90.d0 - opening_angle)*pi/180.d0)
+      sphi = (1.d0-bound)*ran3(idum) + bound
       phi = ASIN(sphi)
       cphi = COS(phi)
+* CLR - if the orbit has already been kicked, then any polar kick
+*       needs to be tilted as well (since L_hat and S_hat are no longer
+*       aligned).  Here we take the random kick from above and rotate it
+*       about the X axis by the angle mu from the last SN kick
+      if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
+        cosmu = bkick(13)
+        sinmu = sqrt(1 - bkick(13)*bkick(13))
+        z_tilt=cosmu*sphi + cphi*sinmu*stheta
+        phi = ASIN(z_tilt)
+        sphi = z_tilt
+        cphi = COS(phi)
+*       write(15,*) vk,theta,phi,bkick(13)
+      endif
       theta = twopi*ran3(idum)
       stheta = SIN(theta)
       ctheta = COS(theta)
+
       if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
 *
 * Determine the magnitude of the new relative velocity.
+* CLR - fixed a spurious minus sign in the parenthesis here; only
+*       relevant for eccentric orbits
       vn2 = vk2+vr2-2.d0*vk*vr*(ctheta*cphi*salpha+stheta*cphi*calpha)
 * Calculate the new semi-major axis.
       sep = 2.d0/r - vn2/(gmrkm*(m1n+m2))
@@ -225,10 +229,7 @@ c$$$********ABOVE HAS BEEN ADDED********/\
 * and the new relative velocity.
       v1 = vk2*sphi*sphi
       v2 = (vk*ctheta*cphi-vr*salpha)**2
-      
       hn2 = r*r*(v1 + v2)
-      
-      
 * Calculate the new eccentricity.
       ecc2 = 1.d0 - hn2/(gmrkm*sep*(m1n+m2))
       ecc2 = MAX(0.d0,ecc2)
@@ -239,6 +240,11 @@ c$$$********ABOVE HAS BEEN ADDED********/\
 * Determine the angle between the new and old orbital angular
 * momentum vectors.
       cmu = (vr*salpha-vk*ctheta*cphi)/SQRT(v1 + v2)
+      if(bkick(1).le.0.d0)then
+        bkick(13) = cmu
+      elseif(bkick(5).le.0.d0)then
+        bkick(14) = cmu
+      endif
       mu = ACOS(cmu)
 * Determine if orbit becomes hyperbolic.
  90   continue
@@ -247,10 +253,6 @@ c$$$********ABOVE HAS BEEN ADDED********/\
       vs(1) = mx1*ctheta*cphi + mx2*salpha
       vs(2) = mx1*stheta*cphi + mx2*calpha
       vs(3) = mx1*sphi
-      
-*      if(kw.eq.14)then
-*          write(*,*)kw,vk,vs,sigma
-*      endif
 *
 * Introduce random orientation of binary system to the Galaxy.
 * Not completed here but within binkin/cmc...
@@ -403,7 +405,6 @@ c$$$********ABOVE HAS BEEN ADDED********/\
             v1out = bkick(2)
             v2out = bkick(3)
             v3out = bkick(4)
-            bkick(13) = vk
 * 2nd time with kick.
          elseif(bkick(5).le.0.d0)then
             bkick(5) = float(snstar)
@@ -413,7 +414,6 @@ c$$$********ABOVE HAS BEEN ADDED********/\
             v1out = bkick(6)
             v2out = bkick(7)
             v3out = bkick(8)
-            bkick(14) = vk
 * 2nd time with kick if already disrupted.
          elseif(bkick(5).gt.0.d0)then
             bkick(9) = float(snstar)
@@ -426,7 +426,6 @@ c$$$********ABOVE HAS BEEN ADDED********/\
          endif
       endif
 *
-*      write(*,*)bkick
       if(ecc.eq.1.d0)then
 * 1st time with kick.
          if(bkick(1).le.0.d0)then
@@ -465,17 +464,14 @@ c$$$********ABOVE HAS BEEN ADDED********/\
       if(output)then
          if(sep.le.0.d0.or.ecc.ge.1.d0)then
             vkout = sqrt(v1out*v1out+v2out*v2out+v3out*v3out)
-*            write(44,43)kw,m1,m1n,sigma,vk,v1out,v2out,v3out,vkout,
-*     &                  (bkick(l),l=1,12),id1_pass,id2_pass
+            write(44,43)kw,m1,m1n,sigma,vk,v1out,v2out,v3out,vkout,
+     &                  (bkick(l),l=1,12),id1_pass,id2_pass
          else
             vkout = sqrt(v1out*v1out+v2out*v2out+v3out*v3out)
-*            write(45,47)kw,m1,m1n,sigma,vk,v1out,v2out,v3out,
-*     &                  vkout,id1_pass,id2_pass
+            write(45,47)kw,m1,m1n,sigma,vk,v1out,v2out,v3out,
+     &                  vkout,id1_pass,id2_pass
          endif
       endif
-*      if((kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns))))then 
-*          write(*,*)bkick(13),bkick(14)
-*      endif
  43   FORMAT(i3,1p,8e12.4,1x,12e12.4,1x,i10,i10)
  47   FORMAT(i3,1p,8e12.4,1x,i10,i10)
  49   FORMAT(i3,1p,5e12.4,1x,0p,i3,f12.4,1x,i3,f12.4,f12.4,1x,i10,i10)

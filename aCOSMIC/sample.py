@@ -281,7 +281,7 @@ class MultiDimSample:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, size=None, nproc=1):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, size=None, nproc=1):
         '''
         Sample initial binary distribution according to Moe & Di Stefano (2017)   
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
@@ -580,7 +580,7 @@ class MultiDimSample:
         ecc_list = []
 
 
-        def _sample_initial_pop(M1min, size, output):
+        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, output):
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
@@ -662,7 +662,7 @@ class MultiDimSample:
                     #; Given M1 & P, select q from cumulative mass ratio distribution
                     myq = np.interp(np.random.rand(), mycumqdist, qv)
              
-                    if myM1 > M1min and myq * myM1 > M2min:
+                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
@@ -678,7 +678,7 @@ class MultiDimSample:
         output = mp.Queue()
         #output = mp_utils.multiprocess_with_queues(
         #         nproc, _sample_inital_pop, [M1min, size/nproc], raise_exceptions=False)
-        processes = [mp.Process(target = _sample_initial_pop, args = (M1min, size/nproc, output)) for x in range(nproc)]
+        processes = [mp.Process(target = _sample_initial_pop, args = (M1min, M2min, M1max, M2max, size/nproc, output)) for x in range(nproc)]
         for p in processes:
             p.daemon = True
             p.start()
