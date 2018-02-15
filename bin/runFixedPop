@@ -153,6 +153,7 @@ if __name__ == '__main__':
 
     bcm_save = pd.DataFrame()
     bpp_save = pd.DataFrame()
+    match_save = pd.DataFrame()
     idx = 0
 
     total_sampled_mass = 0.0
@@ -160,7 +161,7 @@ if __name__ == '__main__':
     Nstep = args.Nstep
     
     match_list = []
-    while Nstep < args.Niter or (len(bcm_save) < 1000 or (np.array(match_all) < 0.999).all()):
+    while Nstep < args.Niter and (len(bcm_save) < 1000 or (np.array(match_all) < 0.999).all()):
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
@@ -204,7 +205,6 @@ if __name__ == '__main__':
             total_sampled_mass += sampled_mass
         print "The total mass sampled so far is: ",total_sampled_mass
 
-        np.savetxt('porb.dat', initconditions.porb, delimiter = ',')
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
@@ -218,11 +218,8 @@ if __name__ == '__main__':
             bcm_save = bcm_save.append(bcm_save_filtered)
             bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
             idxSave = bcm_save.index
-            print initconditions
             bpp_save_array = bpp[~bpp.index.isin(idxSave)]
-            bpp_save_comenv = bpp_save_array.loc[bpp_save_array.evol_type == 7.0]
-            bpp_comenv = bpp_save_array[~bpp_save_array.index.isin(bpp_save_comenv.index)]
-            bpp_save.append(bpp_comenv)
+            bpp_save.append(bpp_save_array)
 
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
@@ -233,13 +230,16 @@ if __name__ == '__main__':
                 match_all.append(match)
             print 'matches: ',np.array(match_all)
             print 'Length of bcm array: ', len(bcm_save) 
-            match_list.append(match_all)
+            match_save.append(match_all)
         Nstep += args.Nstep
+    # save the bcm array, bpp array, ad matches to an hdf5 
+    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
+
+    dat_store.append('bcm', bcm_save)
+    dat_store.append('bpp', bpp_save)
+    dat_store.append('match', match_save)
     
-    # save the bcm array to an hdf5 
-    bcm_save.to_hdf('fixedDat_'+str(args.final_kstar1)+'_'+str(args.final_kstar2)+'.hdf','bcm_save')
-    bpp_save.to_hdf('ComenvDat_'+str(args.final_kstar1)+'_'+str(args.final_kstar2)+'.hdf', 'bpp_save')
-    np.savetxt('matchEvolution_'+str(args.final_kstar1)+'_'+str(args.final_kstar2), match_list, delimiter = ',')
+    dat_store.close()
     
     print 'All done friend!'
     
