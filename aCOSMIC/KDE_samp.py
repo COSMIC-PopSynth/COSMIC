@@ -157,7 +157,7 @@ def galactic_position_sample(gx_component, size, model):
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         #######################################################################
         # Assign the radial and vertical positions:
-        if model == 'fiducial':
+        if model == 'double_exp':
             r = sample_exponential_radial(size, 2.5)
             z = sample_exponential_vertical(size, 0.3)
 
@@ -178,25 +178,51 @@ def galactic_position_sample(gx_component, size, model):
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         #######################################################################
         # Assign the radial positions:
-        if model == 'fiducial':
+        if model == 'exp_squared':
             r = sample_exponential_square(size, 0.5)
-         
-        # Assign the azimuthal positions:
-        phi = np.random.uniform(0, 2*np.pi , size)
-
-        # Assign the polar positions (uniform in cos(theta):
-        theta = np.pi - np.arccos(np.random.uniform(-1, 1, size))
+            # Assign the polar positions (uniform in cos(theta):
+            theta = np.pi - np.arccos(np.random.uniform(-1, 1, size))
         
-        # convert to cartesian and parsecs:
-        xGX = r * np.cos(phi) * np.sin(theta) * 1000.0
-        yGX = r * np.sin(phi) * np.sin(theta) * 1000.0
-        zGX = r * np.cos(theta) * 1000.0
+            # Assign the azimuthal positions:
+            phi = np.random.uniform(0, 2*np.pi , size)
+
+            # convert to cartesian and parsecs:
+            xGX = r * np.cos(phi) * np.sin(theta) * 1000.0
+            yGX = r * np.sin(phi) * np.sin(theta) * 1000.0
+            zGX = r * np.cos(theta) * 1000.0
+        
+        elif model == 'McMillan':
+            # sample double exp func and then rejection sample
+            while len(r_save) < size:
+                rcut = 2.1
+                q = 0.5
+                r0 = 0.075
+                r = sample_exponential_square(int(size/10.0), rcut)
+                z = sample_exponential_square(int(size/10.0), rcut*q)
+                
+                sample_func = np.exp((r^2 + (z/q)^2)/rcut^2)
+                actual_func = (1+np.sqrt((r^2 + (z/q)^2))/r0)**(-1.8)
+
+                indSave, = np.where(sample_fucn < actual_func)
+                for ii in indSave:
+                    r_save.append(r[ii])
+                    z_save.append(z[ii])
+            r = r_save[:size]
+            z = z_save[:size]
+
+            # Assign the azimuthal positions:
+            phi = np.random.uniform(0, 2*np.pi , size)
+            
+            # convert to cartesian and parsecs:
+            xGX = r * np.cos(phi) * 1000.0
+            yGX = r * np.sin(phi) * 1000.0
+            zGX = z * 1000.0
 
     elif galaxy_component == 'ThickDisk':
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         ###############################################################################
         # Assign the radial and vertical positions:
-        if model == 'fiducial':
+        if model == 'double_exp':
             r = sample_exponential_radial(size, 2.5)
             z = sample_exponential_vertical(size, 1.0)
 
