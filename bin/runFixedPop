@@ -154,14 +154,16 @@ if __name__ == '__main__':
     bcm_save = pd.DataFrame()
     bpp_save = pd.DataFrame()
     match_save = pd.DataFrame()
+    initConditions_save = pd.DataFrame(columns=['m1','m2','porb','ecc','tphysf'])
     idx = 0
-
+    idxOld = 0
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
     
     match_list = []
-    while Nstep < args.Niter and (len(bcm_save) < 1000 or (np.array(match_all) < 0.999).all()):
+    while Nstep < args.Niter and (len(bcm_save) < 1000 or np.min(np.array(match_all)) < 0.995):
+        print np.min(np.array(match_all)) < 0.999
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
@@ -218,9 +220,14 @@ if __name__ == '__main__':
             bcm_save = bcm_save.append(bcm_save_filtered)
             bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
             idxSave = bcm_save.index
+            idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
+            idxOld = idx
             bpp_save_array = bpp[~bpp.index.isin(idxSave)]
             bpp_save.append(bpp_save_array)
-
+            initConditions_save.append(pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
+                                                  initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],
+                                                  initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf']))
+ 
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
                 args.convergence_params = args.convergence_params[:len(args.convergence_params)-1]
@@ -238,7 +245,8 @@ if __name__ == '__main__':
     dat_store.append('bcm', bcm_save)
     dat_store.append('bpp', bpp_save)
     dat_store.append('match', match_save)
-    
+    dat_store.append('initCond', initConditions_save)
+    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
     dat_store.close()
     
     print 'All done friend!'

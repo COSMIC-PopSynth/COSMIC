@@ -75,24 +75,25 @@ if __name__ == '__main__':
     Tobs = 3.15569*10**7.0
     geo_mass = G/c**2
 
-    # NEED TO GET TOTAL MASS
+    # READ IN DATA
     ###########################################################################
-    ###
-    ### CODE GOES HERE ###
-    ###
-    total_sampled_mass = 1.0e10
+    dat_path = 'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5'
 
-    # SET GALACTIC COMPONENT MASS ACCORDING TO ROBIN ET AL 2003
+    total_sampled_mass = pd.read_hdf(dat_path, key='totalMass')
+    fixed_pop = pd.read_hdf(dat_path, key='bcm') 
+
+    # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
+    # FOLLOWING BEST FIT
     ###########################################################################
     if args.galaxy_component == 'ThinDisk':
-        gx_component_mass = 2.15e10
+        gx_component_mass = 4.32e10
     elif args.galaxy_component == 'Bulge':
-        gx_component_mass = 2.03e10
+        gx_component_mass = 8.9e9
     elif args.galaxy_component == 'ThickDisk':
-        gx_component_mass = 3.91e9
+        gx_component_mass = 1.44e10
 
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
-    gx_realization = MC_sample.sample(fixed_dat, gx_component_mass, args.galaxy_component, model=args.dist_model)
+    gx_realization = MC_sample.sample(fixed_pop, gx_component_mass, args.galaxy_component, model=args.dist_model)
 
 
