@@ -257,11 +257,9 @@ def sample(dat, total_sampled_mass, gx_component, model='fiducial'):
     Monte-Carlo samples a galactic realization
     '''
     component_mass = select_component_mass(gx_component)
-    print gx_component, component_mass
     nSystems = mass_weighted_number(dat, total_sampled_mass, component_mass)
     dat_trans = dat_transform_gw(dat)
     
-    print nSystems
     if nSystems < 1e7:
         # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
         # BY GENERATING A KDE FIT

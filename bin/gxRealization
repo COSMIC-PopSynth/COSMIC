@@ -81,6 +81,8 @@ if __name__ == '__main__':
 
     total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
+    fixed_pop_LISA = fixed_pop.loc[fixed_pop.porb*sec_in_year < 2.0e4]
+
 
     # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
     # FOLLOWING BEST FIT
@@ -94,6 +96,6 @@ if __name__ == '__main__':
 
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
-    gx_realization = MC_sample.sample(fixed_pop, total_sampled_mass, args.galaxy_component, model=args.dist_model)
+    gx_realization = MC_sample.sample(fixed_pop_LISA, total_sampled_mass, args.galaxy_component, model=args.dist_model)
 
 
