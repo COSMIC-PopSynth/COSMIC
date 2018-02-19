@@ -700,9 +700,6 @@ class MultiDimSample:
                dat_lists[ii].append(dat_list)
                ii+=1
 
-        #print dat_lists
-        #print
-        #print dat_lists[0]
         primary_mass_list = np.hstack(dat_lists[0])
         secondary_mass_list = np.hstack(dat_lists[1])
         porb_list = np.hstack(dat_lists[2])

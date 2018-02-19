@@ -51,9 +51,48 @@ def parse_commandline():
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
+    parser.add_argument("--pop", help="Place and upper orbital period cut if interested in GW systems. Options inlclude gw, general", default = "gw")
     args = parser.parse_args()
 
     return args
+
+##################################################################################
+# DEFINE MIN AND MAX MASS SELECTOR
+##################################################################################
+def mass_min_max_select(kstar_1, kstar_2):
+    primary_max = 150.0
+    secondary_max = 150.0
+
+    primary_min = 0.08
+    secondary_min = 0.08
+
+    kstar = [kstar_1, kstar_2]
+    
+    min_mass = [primary_min, secondary_min]
+    max_mass = [primary_max, secondary_max]
+    
+    ii = 0
+    for k in kstar:
+        if k > 13:
+            min_mass[ii] = 15.0
+        elif k > 12:
+            min_mass[ii] = 8.0
+            max_mass[ii] = 50.0
+        elif k > 11:
+            min_mass[ii] = 5.0
+            max_mass[ii] = 15.0
+        elif k > 10:
+            min_mass[ii] = 2.0
+            max_mass[ii] = 10.0
+        elif k > 9:
+            min_mass[ii] = 0.5
+            max_mass[ii] = 5.0
+        else:
+            max_mass[ii] = 5.0
+        ii += 1
+    
+    return min_mass[0], max_mass[0], min_mass[1], max_mass[1] 
+
 
 ##################################################################################
 # BEGIN MAIN FUNCTION
@@ -162,8 +201,7 @@ if __name__ == '__main__':
     Nstep = args.Nstep
     
     match_list = []
-    while Nstep < args.Niter and (len(bcm_save) < 1000 or np.min(np.array(match_all)) < 0.995):
-        print np.min(np.array(match_all)) < 0.999
+    while Nstep < args.Niter and (len(bcm_save) < 200 or np.min(np.array(match_all)) < 0.99):
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
@@ -176,30 +214,12 @@ if __name__ == '__main__':
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
 
-        primaryMax = 150.0
-        secondaryMax = 150.0
-
-        primaryMin = 0.08
-        secondaryMin = 0.08
         if args.initial_samp == 'Moe':
             # SET MINIMUM MASS SAMPLE   
-            if args.final_kstar1 > 13:
-                primaryMin = 15.0
-            elif args.final_kstar1 > 12:
-                primaryMin = 8.0
-            elif args.final_kstar1 > 9:
-                primaryMax = 10.0
-
-            if args.final_kstar2 > 13:
-                secondaryMin = 15.0
-            elif args.final_kstar2 > 12:
-                secondaryMin = 8.0
-            elif args.final_kstar2 > 9:
-                secondaryMax = 10.0
-
+            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)            
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
-            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primaryMin, secondaryMin, size=args.Nstep, nproc = args.nproc)
+            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
             initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary) 
@@ -216,7 +236,10 @@ if __name__ == '__main__':
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
         idx = bcm.index.max()
         bcm_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
-        bcm_save_filtered = bcm_filtered.loc[bcm_filtered.porb*sec_in_year < 1e5]
+        
+        # Filter out long period binaries if pop = gw
+        if args.pop == 'gw':
+            bcm_save_filtered = bcm_filtered.loc[bcm_filtered.porb*sec_in_year < 1e5]
         if bcm_save_filtered.size > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
             bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
@@ -235,7 +258,6 @@ if __name__ == '__main__':
             else:
                 conv_params = args.convergence_params
             match_all = []
-            print conv_params
             for i_convergence_parameter in conv_params:
                 match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
                 match_all.append(match)
