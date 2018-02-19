@@ -28,7 +28,7 @@ import numpy as np
 import scipy.special as ss
 import pandas as pd
 
-import aCOSMIC.MC_samp as MC_samp 
+import aCOSMIC.MC_samp as MC_sample 
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     ###########################################################################
     dat_path = 'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5'
 
-    total_sampled_mass = pd.read_hdf(dat_path, key='totalMass')
+    total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
 
     # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
@@ -94,6 +94,6 @@ if __name__ == '__main__':
 
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
-    gx_realization = MC_sample.sample(fixed_pop, gx_component_mass, args.galaxy_component, model=args.dist_model)
+    gx_realization = MC_sample.sample(fixed_pop, total_sampled_mass, args.galaxy_component, model=args.dist_model)
 
 

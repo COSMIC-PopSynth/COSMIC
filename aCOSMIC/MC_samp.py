@@ -63,9 +63,12 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     based on the total sampled mass of the simulated system and
     the total mass of a given galactic component
     '''
-        
-    nSystems = int(len(dat)*component_mass/total_sampled_mass)
-
+    print 'N DWD Fixed: ',dat.mass_1.size
+    print 'Gx component mass: ',component_mass
+    print 'Total sampled mass: ',total_sampled_mass 
+      
+    nSystems = int(dat.size*component_mass/total_sampled_mass)
+    print 'N DWDs in Gx: ',nSystems
     return nSystems
 
 def dat_transform_gw(dat):
@@ -84,13 +87,13 @@ def dat_transform_gw(dat):
 
     return dat_trans
 
-def dat_un_transform_gw(gx_sample, dat_set):
+def dat_un_transform(gx_sample, dat_set):
     m1_untrans = ss.expit(gx_sample[0, :]) *\
-                 (max(dat_set.mass1) - min(dat_set.mass1)) +\
-                 min(dat_set.mass1)
+                 (max(dat_set.mass_1) - min(dat_set.mass_1)) +\
+                 min(dat_set.mass_1)
     m2_untrans = ss.expit(gx_sample[1, :]) *\
-                 (max(dat_set.mass2) - min(dat_set.mass2)) +\
-                 min(dat_set.mass2)
+                 (max(dat_set.mass_2) - min(dat_set.mass_2)) +\
+                 min(dat_set.mass_2)
     porb_untrans = ss.expit(gx_sample[2, :]) *\
                    (max(dat_set.porb) - min(dat_set.porb)) +\
                    min(dat_set.porb)
@@ -104,11 +107,11 @@ def select_component_mass(gx_component):
     # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
     # FOLLOWING BEST FIT
     ###########################################################################
-    if args.galaxy_component == 'ThinDisk':
+    if gx_component == 'ThinDisk':
         gx_component_mass = 4.32e10
-    elif args.galaxy_component == 'Bulge':
+    elif gx_component == 'Bulge':
         gx_component_mass = 8.9e9
-    elif args.galaxy_component == 'ThickDisk':
+    elif gx_component == 'ThickDisk':
         gx_component_mass = 1.44e10
  
     return gx_component_mass
@@ -154,7 +157,7 @@ def sample_exponential_square(size, scale_height):
 def galactic_position_sample(gx_component, size, model):
     # SAMPLE FROM VERY SIMPLE DISTRIBUTION FUNCTIONS 
     ###########################################################################
-    if galaxy_component == 'ThinDisk':
+    if gx_component == 'ThinDisk':
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         #######################################################################
         # Assign the radial and vertical positions:
@@ -174,7 +177,7 @@ def galactic_position_sample(gx_component, size, model):
         yGX = r * np.sin(phi) * 1000.0
         zGX = z * 1000.0
     
-    elif galaxy_component == 'Bulge':
+    elif gx_component == 'Bulge':
 
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         #######################################################################
@@ -219,7 +222,7 @@ def galactic_position_sample(gx_component, size, model):
             yGX = r * np.sin(phi) * 1000.0
             zGX = z * 1000.0
 
-    elif galaxy_component == 'ThickDisk':
+    elif gx_component == 'ThickDisk':
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         ###############################################################################
         # Assign the radial and vertical positions:
@@ -254,6 +257,7 @@ def sample(dat, total_sampled_mass, gx_component, model='fiducial'):
     Monte-Carlo samples a galactic realization
     '''
     component_mass = select_component_mass(gx_component)
+    print gx_component, component_mass
     nSystems = mass_weighted_number(dat, total_sampled_mass, component_mass)
     dat_trans = dat_transform_gw(dat)
     
