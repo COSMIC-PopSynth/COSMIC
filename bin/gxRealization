@@ -26,6 +26,7 @@ import os.path
 
 import numpy as np
 import scipy.special as ss
+import scipy.stats as stats
 import pandas as pd
 
 import aCOSMIC.MC_samp as MC_sample 
@@ -81,21 +82,64 @@ if __name__ == '__main__':
 
     total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
-    fixed_pop_LISA = fixed_pop.loc[fixed_pop.porb*sec_in_year < 2.0e4]
-
-
-    # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
-    # FOLLOWING BEST FIT
-    ###########################################################################
-    if args.galaxy_component == 'ThinDisk':
-        gx_component_mass = 4.32e10
-    elif args.galaxy_component == 'Bulge':
-        gx_component_mass = 8.9e9
-    elif args.galaxy_component == 'ThickDisk':
-        gx_component_mass = 1.44e10
+    if np.sum(fixed_pop.ecc) == 0.0:
+        fixed_pop.ecc = np.random.uniform(1e-7, 1e-5, fixed_pop.ecc.size)
 
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
-    gx_realization = MC_sample.sample(fixed_pop_LISA, total_sampled_mass, args.galaxy_component, model=args.dist_model)
+    component_mass = MC_sample.select_component_mass(args.galaxy_component)
+    nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
+    dat_trans = MC_sample.dat_transform_gw(fixed_pop)
+    if np.sum(fixed_pop.ecc) == 0.0:
+        dat_trans.ecc = np.zeros(dat_trans.ecc.size)  
+
+    # LOOP OVER GALAXIES IN SAMPLE
+    ###########################################################################
+    for gx in range(args.N_realizations):
+      
+        # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
+        ###########################################################################
+        if nSystems > 1e6:
+            nLoop = int(nSystems/1.0e6)
+            for ii in range(nLoop):
+                nSample = int(nSystems/float(nLoop))
+                
+                # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
+                # BY GENERATING A KDE FIT
+                #####################################################################
+                dat_kernel = stats.gaussian_kde(dat_trans)
+                binary_sample_dat_trans = dat_kernel.resample(nSystems)
+                binary_sample_dat = MC_sample.dat_un_transform(binary_sample_dat_trans, fixed_pop)
+
+                # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
+                #####################################################################
+                binary_sample_positions = MC_sample.galactic_position_sample(args.galaxy_component, size = nSample, model=args.dist_model)
+                full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
+                full_sample = pd.DataFrame(full_sample,\
+                              columns = ['mass1', 'mass2', 'porb', 'ecc',\
+                                         'xGx', 'yGx', 'zGx', 'dist',\
+                                         'inc', 'OMEGA', 'omega'])
+ 
+                full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
+        else:
+            nSample = int(nSystems/float(nLoop))
+         
+            # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
+            # BY GENERATING A KDE FIT
+            #####################################################################
+            dat_kernel = stats.gaussian_kde(dat_trans)
+            binary_sample_dat_trans = dat_kernel.resample(nSystems)
+            binary_sample_dat = MC_sample.dat_un_transform(binary_sample_dat_trans, fixed_pop)
+
+            # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
+            #####################################################################
+            binary_sample_positions = MC_sample.galactic_position_sample(args.galaxy_component, size = nSample, model=args.dist_model)
+            full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
+            full_sample = pd.DataFrame(full_sample,\
+                          columns = ['mass1', 'mass2', 'porb', 'ecc',\
+                                     'xGx', 'yGx', 'zGx', 'dist',\
+                                     'inc', 'OMEGA', 'omega'])
+
+            full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True') 
 
 

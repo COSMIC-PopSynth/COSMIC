@@ -119,7 +119,7 @@ def select_component_mass(gx_component):
 def sample_sech_squared(size, scale_height=0.3):
     # SAMPLE FROM SECH^2 DIST W/ PROVIDED SCALE HEIGHT FROM -INF to INF
     ###########################################################################
-    rand_nums = np.uniform.random(0, 1, size)
+    rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = np.arctanh( 2*rand_nums ) * scale_height
 
     return distributed_nums
@@ -127,7 +127,7 @@ def sample_sech_squared(size, scale_height=0.3):
 def sample_exponential_radial(size, scale_height):
     # SAMPLE FROM EXP DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
     ###########################################################################
-    rand_nums = np.uniform.random(0, 1, size)
+    rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * np.log(1.0 - rand_nums)
 
     return distributed_nums
@@ -135,12 +135,12 @@ def sample_exponential_radial(size, scale_height):
 def sample_exponential_vertical(size, scale_height):
     # SAMPLE FROM EXP DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
     ###########################################################################
-    rand_nums = np.uniform.random(0, 1, size)
+    rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * np.log(1.0 - rand_nums)
 
     # CHOOSE A POSITION ABOVE AND BELOW THE DISK 
     ###########################################################################
-    pos_neg_choose = np.uniform.random(0, 1, size)
+    pos_neg_choose = np.random.uniform(0, 1, size)
     negInd, = np.where(pos_neg_choose < 0.5)
     distributed_nums[negInd] = distributed_nums[negInd] * (-1.0)
 
@@ -149,7 +149,7 @@ def sample_exponential_vertical(size, scale_height):
 def sample_exponential_square(size, scale_height):
     # SAMPLE FROM EXP((X/A)^2) DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
     ###########################################################################
-    rand_nums = np.uniform.random(0, 1, size)
+    rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * ss.erfinv(rand_nums)
 
     return distributed_nums
@@ -168,6 +168,10 @@ def galactic_position_sample(gx_component, size, model):
         if model == 'sech_squared':
             r = sample_exponential_radial(size, 2.5)
             z = sample_sech_squared(size, 0.3)
+
+        if model == 'McMillan':
+            r = sample_exponential_radial(size, 2.9)
+            z = sample_exponential_vertical(size, 0.3)
 
         # Assign the azimuthal positions:
         phi = np.random.uniform(0, 2*np.pi, size)
@@ -229,6 +233,10 @@ def galactic_position_sample(gx_component, size, model):
         if model == 'double_exp':
             r = sample_exponential_radial(size, 2.5)
             z = sample_exponential_vertical(size, 1.0)
+        
+        if model == 'McMillan':
+            r = sample_exponential_radial(size, 3.31)
+            z = sample_exponential_vertical(size, 0.9)
 
         # Assign the azimuthal position of the star
         phi = np.random.uniform(0, 2*np.pi, size)
@@ -252,7 +260,7 @@ def galactic_position_sample(gx_component, size, model):
     return np.vstack([xGX, yGX, zGX, dist_kpc, inc, OMEGA, omega])
 
 
-def sample(dat, total_sampled_mass, gx_component, model='fiducial'):
+def sample(dat, total_sampled_mass, gx_component, model='McMillan'):
     '''
     Monte-Carlo samples a galactic realization
     '''
@@ -260,20 +268,16 @@ def sample(dat, total_sampled_mass, gx_component, model='fiducial'):
     nSystems = mass_weighted_number(dat, total_sampled_mass, component_mass)
     dat_trans = dat_transform_gw(dat)
     
-    if nSystems < 1e7:
-        # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
-        # BY GENERATING A KDE FIT
-        #####################################################################
-        dat_kernel = stats.gaussian_kde(dat_trans)
-        binary_sample_dat_trans = dat_kernel.resample(nSystems)
-        binary_sample_dat = dat_un_transform(binary_sample_dat_trans, dat)
-        
-        # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
-        #####################################################################
-        binary_sample_positions = galactic_position_sample(gx_component, size = nSystems, model=model) 
+    # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
+    # BY GENERATING A KDE FIT
+    #####################################################################
+    dat_kernel = stats.gaussian_kde(dat_trans)
+    binary_sample_dat_trans = dat_kernel.resample(nSystems)
+    binary_sample_dat = dat_un_transform(binary_sample_dat_trans, dat)
+    
+    # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
+    #####################################################################
+    binary_sample_positions = galactic_position_sample(gx_component, size = nSystems, model=model) 
 
-        full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
-        return full_sample
-    else:
-        print 'NOT READY FOR THIS YET!'
-        return np.zeros(10)
+    full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
+    return full_sample
