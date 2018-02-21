@@ -31,6 +31,9 @@ Table of Contents
 How to run aCOSMIC
 ******************
 
+Here is an example commandline::
+    runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 100000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11
+
 For more details see :ref:`command-line`.
 
 *********************

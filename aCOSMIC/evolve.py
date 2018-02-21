@@ -132,7 +132,6 @@ class Evolve:
         output = mp_utils.multiprocess_with_queues(
             nproc, _evolve_single_system, initial_conditions, raise_exceptions=False)
 
-        print len(output)
         # raise exceptions (from multiprocessing, single process raises inline)
         for f, x, y in output:
             if isinstance(x, Exception):
