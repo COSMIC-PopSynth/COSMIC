@@ -18,8 +18,7 @@ np.random.seed(2)
 
 
 IDL_TABULATE_ANSWER = 0.5
-SAMPLE_PRIMARY_ANSWER = np.load(os.path.join(TEST_DATA_DIR, 'Kroupa93.npy'))
-print SAMPLE_PRIMARY_ANSWER
+TOTAL_SAMPLED_MASS = 2.138821630578966 
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the aCOSMIC
@@ -33,7 +32,12 @@ class TestSample(unittest2.TestCase):
         from aCOSMIC.sample import idl_tabulate
         self.assertAlmostEqual(idl_tabulate(x,f), IDL_TABULATE_ANSWER)
 
-    def test_sample_primary(self):
+    def test_sample_primary_kroupa93(self):
         # Check that the sample_primary function samples mass correctly
+        a_0, total_sampled_mass = tmp.sample_primary(10, size=10)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS)
 
-        self.assertAlmostEqual(tmp.sample_primary(10, size=10), SAMPLE_PRIMARY_ANSWER)
+    def test_sample_primary_salpeter55(self):
+        # Check that the sample_primary function samples mass correctly
+        a_0, total_sampled_mass = tmp.sample_primary(kstar1_final=10, model='salpeter55', size=10)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS)

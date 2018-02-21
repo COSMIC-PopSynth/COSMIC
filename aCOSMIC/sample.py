@@ -59,6 +59,13 @@ def idl_tabulate(x, f, p=5) :
     return ret
 
 
+def rndm(a, b, g, size):
+    """Power-law gen for pdf(x)\propto x^{g-1} for a<=x<=b"""
+    r = np.random.random(size=size)
+    ag, bg = a**g, b**g
+    return (ag + (bg - ag)*r)**(1./g)
+
+
 class Sample:
     def __init__(self, metallicity, size=None):
         '''
@@ -109,14 +116,13 @@ class Sample:
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
             if kstar1_final > 14.0:
-                mSamp = np.random.power(-1.3, size*500)
+                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size*500)
             elif kstar1_final > 12.0:
-                mSamp = np.random.power(-1.3, size*50)
+                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size*50)
             else:
-                mSamp = np.random.power(-1.3, size*500)
+                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size)
             
-            # Transform sample from 0 to 1 to be between 0.1 and 100 Msun
-            a_0 = mSamp*(100.0-0.1)+0.1
+            a_0 = mSamp
 
             total_sampled_mass = np.sum(a_0)
             if kstar1_final > 13.0:
