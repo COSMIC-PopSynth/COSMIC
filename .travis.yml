@@ -22,7 +22,7 @@ matrix:
 
 before_install:
 - pip install -q --upgrade pip
-- pip install ${PRE} -r requirements.txt
+- pip install -r requirements.txt
 
 install:
 - pip install --editable . 
@@ -31,7 +31,7 @@ before_script:
 - pip list installed
 
 script:
-- pip install ${PRE} unittest2 coveralls "pytest>=2.8"
+- pip install unittest2 coveralls "pytest>=2.8"
 
 after_success:
 - coveralls
