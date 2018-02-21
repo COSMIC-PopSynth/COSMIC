@@ -8,3 +8,4 @@ else
 fi
 
 coverage run --append `which runFixedPop` --help
+coverage run -m py.test -v -r s ${_strict} aCOSMIC/
