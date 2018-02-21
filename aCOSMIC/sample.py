@@ -26,6 +26,8 @@ import math
 import random
 import scipy.integrate
 
+from .utils import idl_tabulate, rndm
+
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = 'Sample'
@@ -45,25 +47,6 @@ hrs_in_day = 24.0
 sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
-
-def idl_tabulate(x, f, p=5) :
-    def newton_cotes(x, f) :
-        if x.shape[0] < 2 :
-            return 0
-        rn = (x.shape[0] - 1) * (x - x[0]) / (x[-1] - x[0])
-        weights = scipy.integrate.newton_cotes(rn)[0]
-        return (x[-1] - x[0]) / (x.shape[0] - 1) * np.dot(weights, f)
-    ret = 0
-    for idx in xrange(0, x.shape[0], p - 1) :
-        ret += newton_cotes(x[idx:idx + p], f[idx:idx + p])
-    return ret
-
-
-def rndm(a, b, g, size):
-    """Power-law gen for pdf(x)\propto x^{g-1} for a<=x<=b"""
-    r = np.random.random(size=size)
-    ag, bg = a**g, b**g
-    return (ag + (bg - ag)*r)**(1./g)
 
 
 class Sample:
