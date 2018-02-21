@@ -1,0 +1,41 @@
+language: python
+
+addons:
+  apt:
+    packages:
+    - gfortran
+    - swig
+
+python:
+- '2.7'
+- '3.5'
+
+env:
+  matrix:
+  - PIP_FLAGS="--quiet"
+  - PIP_FLAGS="--quiet --pre"
+
+matrix:
+  allow_failures:
+  - python: '3.5'
+  fast_finish: true
+
+before_install:
+- pip install -q --upgrade pip
+- pip install ${PRE} -r requirements.txt
+
+install:
+- pip install --editable . 
+
+before_script:
+- pip list installed
+
+script:
+- pip install ${PRE} unittest2 coveralls "pytest>=2.8"
+
+after_success:
+- coveralls
+
+cache:
+  apt: true
+  pip: true
