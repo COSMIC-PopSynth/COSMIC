@@ -27,7 +27,7 @@ import scipy.stats as stats
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'KDE_samp'
+__all__ = 'MC_samp'
 
 
 G = 6.67384*math.pow(10, -11.0)

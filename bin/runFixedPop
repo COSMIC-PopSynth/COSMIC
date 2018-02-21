@@ -196,7 +196,7 @@ if __name__ == '__main__':
     BSEDict['windflag'] = windflag
 
     if args.rand_seed != 0:
-        np.random.see(rand_seed)
+        np.random.seed(rand_seed)
 
     bcm_save = pd.DataFrame()
     bpp_save = pd.DataFrame()
