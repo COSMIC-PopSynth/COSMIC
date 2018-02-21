@@ -87,7 +87,6 @@ class Evolve:
         self.initial_conditions.CK = np.repeat(BSEDict['CK'], self.initial_conditions.kstar1.size)
         self.initial_conditions.merger = np.repeat(BSEDict['merger'], self.initial_conditions.kstar1.size)
         self.initial_conditions.windflag = np.repeat(BSEDict['windflag'], self.initial_conditions.kstar1.size)
-        
 
         initial_conditions = np.vstack([self.initial_conditions.kstar1, self.initial_conditions.kstar2,\
                                         self.initial_conditions.mass1_binary, self.initial_conditions.mass2_binary,\
@@ -111,6 +110,7 @@ class Evolve:
 
         # calculate maximum number of processes
         nproc = min(kwargs.pop('nproc', 1), len(initial_conditions))
+
         # define multiprocessing method
         def _evolve_single_system(f):
             try:

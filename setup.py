@@ -71,6 +71,7 @@ install_requires = [
     'matplotlib',
     'gwpy',
     'pandas',
+    'tables',
 ]
 tests_require = [
     'pytest'

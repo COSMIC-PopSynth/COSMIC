@@ -176,6 +176,7 @@ if __name__ == '__main__':
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
+            initconditions.mass1_binary, mass_singles = initconditions.binary_select(initconditions.mass1)
             initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
             total_sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
