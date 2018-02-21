@@ -680,18 +680,16 @@ class MultiDimSample:
             output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass])
             return
       
-        # evolve sysyems
         output = mp.Queue()
-        #output = mp_utils.multiprocess_with_queues(
-        #         nproc, _sample_inital_pop, [M1min, size/nproc], raise_exceptions=False)
-        processes = [mp.Process(target = _sample_initial_pop, args = (M1min, M2min, M1max, M2max, size/nproc, output)) for x in range(nproc)]
+        processes = [mp.Process(target = _sample_initial_pop,\
+                                args = (M1min, M2min, M1max, M2max, size/nproc, output))\
+                                for x in range(nproc)]
         for p in processes:
             p.daemon = True
             p.start()
         results = [output.get() for p in processes]
         for p in processes:
             p.join()
-        #results = [output.get() for p in processes]
 
         primary_mass_list = []
         secondary_mass_list = []
@@ -713,7 +711,7 @@ class MultiDimSample:
         total_mass = np.sum(dat_lists[4])
 
 
-        return np.array(primary_mass_list), np.array(secondary_mass_list), porb_list, ecc_list, total_mass      
+        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass      
                    
     def sample_SFH(self, model='const', size=None):
         '''
