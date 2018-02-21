@@ -46,12 +46,12 @@ def parse_commandline():
     parser.add_argument("--galaxy-component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
     parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
-    parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000)
-    parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=100)
+    parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
+    parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
+    parser.add_argument("--rand_seed", help="Supply a random seed for unit tests and checks", type=int, default=0)
     parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
-    parser.add_argument("--pop", help="Place and upper orbital period cut if interested in GW systems. Options inlclude gw, general", default = "gw")
     args = parser.parse_args()
 
     return args
@@ -161,6 +161,11 @@ if __name__ == '__main__':
     merger = cp.getint('bse', 'merger')
     windflag = cp.getint('bse', 'windflag')
 
+    # ---- Read needed variables from [rand_seed] section.
+    # -- rand_seed
+    seed_int = cp.getint('rand_seed', 'seed')
+    np.random.seed(seed_int)
+
     # Make dictionary of all BSE parameters for readablility reasons
     BSEDict = {}
     BSEDict['neta'] = neta
@@ -189,6 +194,9 @@ if __name__ == '__main__':
     BSEDict['CK'] = CK
     BSEDict['merger'] = merger
     BSEDict['windflag'] = windflag
+
+    if args.rand_seed != 0:
+        np.random.see(rand_seed)
 
     bcm_save = pd.DataFrame()
     bpp_save = pd.DataFrame()
@@ -237,9 +245,6 @@ if __name__ == '__main__':
         idx = bcm.index.max()
         bcm_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
         
-        # Filter out long period binaries if pop = gw
-        if args.pop == 'gw':
-            bcm_save_filtered = bcm_filtered.loc[bcm_filtered.porb*sec_in_year < 1e5]
         if bcm_save_filtered.size > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
             bcm_save_test_conv1 = bcm_save.iloc[0:len(bcm_save)/2]
