@@ -157,8 +157,8 @@ if __name__ == '__main__':
     BSEDict['merger'] = merger
     BSEDict['windflag'] = windflag
 
-    if args.rand_seed != 0:
-        np.random.seed(rand_seed)
+    if seed_int != 0:
+        np.random.seed(seed_int)
 
     bcm_save = pd.DataFrame()
     bpp_save = pd.DataFrame()
