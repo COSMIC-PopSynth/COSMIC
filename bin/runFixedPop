@@ -51,7 +51,6 @@ def parse_commandline():
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
-    parser.add_argument("--rand_seed", help="Supply a random seed for unit tests and checks", type=int, default=0)
     parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
     args = parser.parse_args()
 
@@ -172,7 +171,7 @@ if __name__ == '__main__':
     Nstep = args.Nstep
     
     match_list = []
-    while Nstep < args.Niter and (len(bcm_save) < 200 or np.min(np.array(match_all)) < 0.99):
+    while Nstep < args.Niter and (len(bcm_save) < 1000 or np.min(np.array(match_all)) < 0.999):
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
