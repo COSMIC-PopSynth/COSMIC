@@ -30,7 +30,7 @@ import scipy.stats as stats
 import pandas as pd
 
 import aCOSMIC.MC_samp as MC_sample 
-
+import aCOSMIC.GW_calcs as GW_calcs
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
 ##################################################################################
@@ -44,6 +44,7 @@ def parse_commandline():
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
     parser.add_argument("--N_realizations", help="Number of Galactic realziations to sample", type=int, default=100)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
+    parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", type=bool, default=False)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
@@ -96,14 +97,13 @@ if __name__ == '__main__':
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
     for gx in range(args.N_realizations):
-        print gx      
+        psd_dat = pd.DataFrame(columns=['freq', 'power'])
+
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
         if nSystems > 1e6:
             nLoop = int(nSystems/1.0e6)
-            print nLoop
             for ii in range(nLoop):
-                print ii
                 nSample = int(nSystems/float(nLoop))
                 
                 # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
@@ -121,8 +121,17 @@ if __name__ == '__main__':
                               columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
- 
-                full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
+                if args.gx_save:
+                    full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
+        
+                # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
+                #####################################################################
+                psd_chunk = GW_calcs.power_spectral_density(full_sample['mass1'], full_sample['mass2'],\
+                                                            full_sample['porb']/(day_in_year * hr_in_day),\
+                                                            full_sample['ecc'], 200)
+           
+                psd_dat.append(psd_chunk)     
+
         else:
             nSample = nSystems
          
@@ -138,10 +147,20 @@ if __name__ == '__main__':
             binary_sample_positions = MC_sample.galactic_position_sample(args.galaxy_component, size = nSample, model=args.dist_model)
             full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
             full_sample = pd.DataFrame(full_sample,\
-                          columns = ['mass1', 'mass2', 'porb', 'ecc',\
-                                     'xGx', 'yGx', 'zGx', 'dist',\
-                                     'inc', 'OMEGA', 'omega'])
+                                       columns = ['mass1', 'mass2', 'porb', 'ecc',\
+                                                  'xGx', 'yGx', 'zGx', 'dist',\
+                                                  'inc', 'OMEGA', 'omega'])
+            if args.gx_save:
+                full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
+ 
 
-            full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True') 
+            # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
+            #####################################################################
+            psd_dat.append(GW_calcs.power_spectral_density(full_sample['mass1'], full_sample['mass2'],\
+                                                           full_sample['porb']/(day_in_year * hr_in_day),\
+                                                           full_sample['ecc'], 200))
+        GW_foreground = GW_calcs.compute_foreground(psd_dat['forb'], psd_dat['power'])
+        GW_foreground.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
+              
 
 
