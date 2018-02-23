@@ -22,7 +22,7 @@ def match(dataCm, nRuns):
     histoBinEdges = [[] for i in range(int(nRuns))]
     # COMPUTE THE BINWIDTH FOR THE MOST COMPLETE DATA SET:
     # NOTE: THIS WILL BE THE BINWIDTH FOR ALL THE HISTOGRAMS IN THE HISTO LIST
-    mainHisto, binEdges = astroStats.histogram(np.array(dataCm[len(dataCm)-1]), bins='scott')
+    mainHisto, binEdges = astroStats.histogram(np.array(dataCm[len(dataCm)-1]), bins='knuth')
     
     # BIN THE DATA:
     for i in range(nRuns):
@@ -51,7 +51,10 @@ def match(dataCm, nRuns):
     nominatorSum = np.array(nominatorSum, dtype=np.float128)
     denominator1Sum = np.array(denominator1Sum, dtype=np.float128)
     denominator2Sum = np.array(denominator2Sum, dtype=np.float128)
-    
+
+    import pdb
+    pdb.set_trace()
+
     for i in range(nRuns-1):
         match[i] = (nominatorSum[i]/np.sqrt(denominator1Sum[i]*denominator2Sum[i]))
         
