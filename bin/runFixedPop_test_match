@@ -214,7 +214,7 @@ if __name__ == '__main__':
         
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
-            bcm_save_test_conv1 = bcm_save.iloc[0:bcm_save.shape[0]/2.0]
+            bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             idxSave = bcm_save.index
             idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
             idxOld = idx
