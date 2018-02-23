@@ -52,19 +52,6 @@ x_sun = 8000.0
 y_sun = 0.0
 z_sun = 25
 
-
-def param_transform(dat):
-    '''
-    Transforms a data set to limits between zero and one
-    '''
-        
-    datMin = min(dat)-0.000001
-    datMax = max(dat)+0.000001
-    datZeroed = dat-datMin
-
-    datTransformed = datZeroed/((datMax-datMin)*1.000001)
-    return datTransformed
-
 def mass_weighted_number(dat, total_sampled_mass, component_mass): 
     '''
     Compute the total number of systems in the synthetic catalog
@@ -78,38 +65,6 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     nSystems = int(dat.size*component_mass/total_sampled_mass)
     print 'N DWDs in Gx: ',nSystems
     return nSystems
-
-def dat_transform_gw(dat):
-    '''
-    Transform a data set to have limits between zero and one using 
-    param_transform, then transform to logit space
-    '''
-
-    m1_trans = param_transform(dat.mass_1)
-    m2_trans = param_transform(dat.mass_2)
-    porb_trans = param_transform(dat.porb)
-    #note: ecc is between zero and one
-    ecc_trans = param_transform(dat.ecc)
-
-    dat_trans = ss.logit(np.vstack([m1_trans, m2_trans, porb_trans, ecc_trans]))
-
-    return dat_trans
-
-def dat_un_transform(gx_sample, dat_set):
-    m1_untrans = ss.expit(gx_sample[0, :]) *\
-                 (max(dat_set.mass_1) - min(dat_set.mass_1)) +\
-                 min(dat_set.mass_1)
-    m2_untrans = ss.expit(gx_sample[1, :]) *\
-                 (max(dat_set.mass_2) - min(dat_set.mass_2)) +\
-                 min(dat_set.mass_2)
-    porb_untrans = ss.expit(gx_sample[2, :]) *\
-                   (max(dat_set.porb) - min(dat_set.porb)) +\
-                   min(dat_set.porb)
-    ecc_untrans = ss.expit(gx_sample[3, :])
-
-    dat = np.vstack([m1_untrans, m2_untrans, porb_untrans, ecc_untrans]) 
-    
-    return dat
 
 def select_component_mass(gx_component):
     # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
@@ -274,7 +229,7 @@ def sample(dat, total_sampled_mass, gx_component, model='McMillan'):
     '''
     component_mass = select_component_mass(gx_component)
     nSystems = mass_weighted_number(dat, total_sampled_mass, component_mass)
-    dat_trans = dat_transform_gw(dat)
+    dat_trans = dat_transform(dat)
     
     # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
     # BY GENERATING A KDE FIT

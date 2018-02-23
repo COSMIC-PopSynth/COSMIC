@@ -31,6 +31,7 @@ import pandas as pd
 
 import aCOSMIC.MC_samp as MC_sample 
 import aCOSMIC.GW_calcs as GW_calcs
+import aCOSMIC.utils as utils
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
 ##################################################################################
@@ -90,7 +91,7 @@ if __name__ == '__main__':
     ###########################################################################
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
     nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
-    dat_trans = MC_sample.dat_transform_gw(fixed_pop)
+    dat_trans = utils.dat_transform(fixed_pop)
     if np.sum(fixed_pop.ecc) == 0.0:
         dat_trans.ecc = np.zeros(dat_trans.ecc.size)  
 
@@ -113,7 +114,7 @@ if __name__ == '__main__':
                 #####################################################################
                 dat_kernel = stats.gaussian_kde(dat_trans)
                 binary_sample_dat_trans = dat_kernel.resample(nSample)
-                binary_sample_dat = MC_sample.dat_un_transform(binary_sample_dat_trans, fixed_pop)
+                binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop)
 
                 # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
                 #####################################################################
@@ -142,7 +143,7 @@ if __name__ == '__main__':
             #####################################################################
             dat_kernel = stats.gaussian_kde(dat_trans)
             binary_sample_dat_trans = dat_kernel.resample(nSample)
-            binary_sample_dat = MC_sample.dat_un_transform(binary_sample_dat_trans, fixed_pop)
+            binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop)
 
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
             #####################################################################
