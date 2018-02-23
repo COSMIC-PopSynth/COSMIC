@@ -169,10 +169,10 @@ if __name__ == '__main__':
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
-    save_9995 = 0
-    save_999 = 0
-    save_995 = 0
-    save_99 = 0
+    save_9995 = 0.0
+    save_999 = 0.0
+    save_995 = 0.0
+    save_99 = 0.0
 
     match_list = []
     while Nstep < args.Niter and (len(bcm_save) < 1000 or np.min(np.array(match_all)) < 0.9999):
@@ -231,9 +231,6 @@ if __name__ == '__main__':
                 conv_params = args.convergence_params
             match_all = []
             if bcm_save_test_conv1.shape[0] > 3:
-                import pdb
-                pdb.set_trace()
-
                 for i_convergence_parameter in conv_params:
                     match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
                     match_all.append(match)
@@ -241,53 +238,53 @@ if __name__ == '__main__':
                 print 'Length of bcm array: ', len(bcm_save) 
                 match_save.append(match_all)
 
-            if min(match_all) > 0.99 & save_99 < 1:
-                save_99 = 1
-                # save the bcm array, bpp array, ad matches to an hdf5 
-                dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match99.h5')
+                if min(match_all) > 0.99 & save_99 < 1:
+                    save_99 = 1
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match99.h5')
 
-                dat_store.append('bcm', bcm_save)
-                dat_store.append('bpp', bpp_save)
-                dat_store.append('match', match_save)
-                dat_store.append('initCond', initConditions_save)
-                dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
-                dat_store.close()
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
 
-            elif min(match_all) > 0.995 & save_995 < 1:
-                save_995 = 1
-                # save the bcm array, bpp array, ad matches to an hdf5 
-                dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match995.h5')
-                
-                dat_store.append('bcm', bcm_save)
-                dat_store.append('bpp', bpp_save)
-                dat_store.append('match', match_save)
-                dat_store.append('initCond', initConditions_save)
-                dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
-                dat_store.close()
+                elif min(match_all) > 0.995 & save_995 < 1:
+                    save_995 = 1
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match995.h5')
+                    
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
 
-            elif min(match_all) > 0.999 & save_999 < 1:
-                save_999 = 1
-                # save the bcm array, bpp array, ad matches to an hdf5 
-                dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match999.h5')
-                                                                                
-                dat_store.append('bcm', bcm_save)
-                dat_store.append('bpp', bpp_save)   
-                dat_store.append('match', match_save)
-                dat_store.append('initCond', initConditions_save)
-                dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
-                dat_store.close()
+                elif min(match_all) > 0.999 & save_999 < 1:
+                    save_999 = 1
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match999.h5')
+                                                                                    
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)   
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
 
-            elif min(match_all) > 0.9995 & save_9995 < 1:
-                save_9995 = 1 
-                # save the bcm array, bpp array, ad matches to an hdf5 
-                dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match9995.h5')
-               
-                dat_store.append('bcm', bcm_save)
-                dat_store.append('bpp', bpp_save)
-                dat_store.append('match', match_save)
-                dat_store.append('initCond', initConditions_save)
-                dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
-                dat_store.close()
+                elif min(match_all) > 0.9995 & save_9995 < 1:
+                    save_9995 = 1 
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match9995.h5')
+                   
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
 
 
         Nstep += args.Nstep
