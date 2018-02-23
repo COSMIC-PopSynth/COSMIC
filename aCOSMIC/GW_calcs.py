@@ -46,18 +46,13 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 4*sec_in_year
 geo_mass = G/c**2
 
-def LISA_curve(f_gw):
-    sensitivity_curve_dat = 
-    sens_interp = interp1d(sensitivity_curve_dat[0], sensitivity_curve_dat[1])
-    return sens_interp
-
 def m_chirp(m1, m2):
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
 
 def peters_gfac(ecc, n_harmonic):
     # Note this is: g(n,e)/n**2 that is being calculated
     g_fac_squared = np.zeros(n_harmonic)
-    for n in range(1,nHarmonic):
+    for n in range(1,n_harmonic):
         g_fac_squared[n] = (n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
                               2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
                               ss.jv((n+2), (n*ecc)))**2 +\
@@ -93,8 +88,8 @@ def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
             psd.append(1.0e-42 * peters_gfac(ecc, n_harmonic) * Tobs *\
                        ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2)
             freq.append(n / (porb * sec_in_hour))
-         ii += 1
-     psd_dat = pd.DataFrame(np.vstack([freq, psd]), columns=['freq', 'psd'])
+        ii += 1
+    psd_dat = pd.DataFrame(np.vstack([freq, psd]), columns=['freq', 'psd'])
     return psd_dat
     
 def moving_average(interval, window_size):
@@ -113,5 +108,5 @@ def compute_foreground(forb, power):
         else:
             binValue.append(0.0)
     foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA, binValue]),\
-                                  columns=['freq', 'psd']
+                                  columns=['freq', 'psd'])
     return foreground_dat
