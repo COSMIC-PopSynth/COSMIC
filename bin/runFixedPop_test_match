@@ -34,6 +34,7 @@ from aCOSMIC.sample import MultiDimSample
 from aCOSMIC import Match
 from aCOSMIC.evolve import Evolve
 from aCOSMIC.utils import mass_min_max_select
+from aCOSMIC.utils import param_transform
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -209,21 +210,29 @@ if __name__ == '__main__':
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
-        
+        print bcm_save_filtered.shape[0]
+
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
-            bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
+            print idx, Nstep
+            if idx < 2 * args.Nstep:
+                bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
+            else:
+                bcm_save_test_conv1 = bcm_save.iloc[0:idxOld]
+            print 'bcm tot length: ',bcm_save.shape[0]
+            print 'bcm previous length: ',bcm_save_test_conv1.shape[0]
+            
             idxSave = bcm_save.index
-            idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
-            idxOld = idx
+            idxInitCond = bcm_save_filtered.index - idxOld
             bpp_save_array = bpp[~bpp.index.isin(idxSave)]
-            bpp_save.append(bpp_save_array)
-            initConditions_save.append(pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
-                                                  initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],
-                                                  initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf']))
- 
+            bpp_save = bpp_save.append(bpp_save_array)
+            initC_save = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
+                                                 initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
+                                                 initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
+            initConditions_save = initConditions_save.append(initC_save)
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
                 conv_params = args.convergence_params[:len(args.convergence_params)-1]
@@ -231,14 +240,17 @@ if __name__ == '__main__':
                 conv_params = args.convergence_params
             match_all = []
             if bcm_save_test_conv1.shape[0] > 3:
+                
                 for i_convergence_parameter in conv_params:
-                    match = Match.match([bcm_save[i_convergence_parameter].tolist(), bcm_save_test_conv1[i_convergence_parameter].tolist()], 2)
+                    match, binwidth = Match.match([np.tan(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
+                                                   np.tan(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
+                    print binwidth
                     match_all.append(match)
                 print 'matches: ',np.array(match_all)
                 print 'Length of bcm array: ', len(bcm_save) 
-                match_save.append(match_all)
+                match_save = match_save.append(match_all)
 
-                if min(match_all) > 0.99 & save_99 < 1:
+                if np.min(match_all) > 0.99 and save_99 < 1:
                     save_99 = 1
                     # save the bcm array, bpp array, ad matches to an hdf5 
                     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match99.h5')
@@ -250,7 +262,7 @@ if __name__ == '__main__':
                     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
                     dat_store.close()
 
-                elif min(match_all) > 0.995 & save_995 < 1:
+                elif np.min(match_all) > 0.995 and save_995 < 1:
                     save_995 = 1
                     # save the bcm array, bpp array, ad matches to an hdf5 
                     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match995.h5')
@@ -262,7 +274,7 @@ if __name__ == '__main__':
                     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
                     dat_store.close()
 
-                elif min(match_all) > 0.999 & save_999 < 1:
+                elif np.min(match_all) > 0.999 and save_999 < 1:
                     save_999 = 1
                     # save the bcm array, bpp array, ad matches to an hdf5 
                     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match999.h5')
@@ -274,7 +286,7 @@ if __name__ == '__main__':
                     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
                     dat_store.close()
 
-                elif min(match_all) > 0.9995 & save_9995 < 1:
+                elif np.min(match_all) > 0.9995 and save_9995 < 1:
                     save_9995 = 1 
                     # save the bcm array, bpp array, ad matches to an hdf5 
                     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match9995.h5')
@@ -288,13 +300,17 @@ if __name__ == '__main__':
 
 
         Nstep += args.Nstep
+        idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5 
     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
 
     dat_store.append('bcm', bcm_save)
+
     dat_store.append('bpp', bpp_save)
+    print 'stored bpp'
     dat_store.append('match', match_save)
     dat_store.append('initCond', initConditions_save)
+    print 'stored init conditions', initConditions_save
     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
     dat_store.close()
     
