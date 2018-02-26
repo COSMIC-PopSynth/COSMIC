@@ -213,17 +213,13 @@ if __name__ == '__main__':
         bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
-        print bcm_save_filtered.shape[0]
 
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
-            print idx, Nstep
-            if idx < 2 * args.Nstep:
+            if idx < args.Nstep:
                 bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             else:
-                bcm_save_test_conv1 = bcm_save.iloc[0:idxOld]
-            print 'bcm tot length: ',bcm_save.shape[0]
-            print 'bcm previous length: ',bcm_save_test_conv1.shape[0]
+                bcm_save_test_conv1 = bcm_save.iloc[-bcm_save_filtered.shape[0]:]
             
             idxSave = bcm_save.index
             idxInitCond = bcm_save_filtered.index - idxOld
@@ -244,7 +240,6 @@ if __name__ == '__main__':
                 for i_convergence_parameter in conv_params:
                     match, binwidth = Match.match([np.tan(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
                                                    np.tan(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
-                    print binwidth
                     match_all.append(match)
                 print 'matches: ',np.array(match_all)
                 print 'Length of bcm array: ', len(bcm_save) 
@@ -307,10 +302,8 @@ if __name__ == '__main__':
     dat_store.append('bcm', bcm_save)
 
     dat_store.append('bpp', bpp_save)
-    print 'stored bpp'
     dat_store.append('match', match_save)
     dat_store.append('initCond', initConditions_save)
-    print 'stored init conditions', initConditions_save
     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
     dat_store.close()
     

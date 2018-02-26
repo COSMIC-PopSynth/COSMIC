@@ -210,15 +210,19 @@ if __name__ == '__main__':
         
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
-            bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
+            if idx < args.Nstep:
+                bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
+            else:
+                bcm_save_test_conv1 = bcm_save.iloc[-bcm_save_filtered.shape[0]:]
             idxSave = bcm_save.index
             idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
             idxOld = idx
             bpp_save_array = bpp[~bpp.index.isin(idxSave)]
-            bpp_save.append(bpp_save_array)
-            initConditions_save.append(pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
-                                                               initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
-                                                               initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf']))
+            bpp_save = bpp_save.append(bpp_save_array)
+            initC = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
+                                            initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
+                                            initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
+            initConditions_save = initConditions_save.append(initC)
              
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
