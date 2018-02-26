@@ -210,16 +210,17 @@ if __name__ == '__main__':
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
+        #bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
 
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
+            print bcm_save.index.shape[0], bcm_save_filtered.shape[0]
             if idx < args.Nstep:
                 bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             else:
-                bcm_save_test_conv1 = bcm_save.iloc[-bcm_save_filtered.shape[0]:]
+                bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
             
             idxSave = bcm_save.index
             idxInitCond = bcm_save_filtered.index - idxOld
