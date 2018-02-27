@@ -176,7 +176,7 @@ if __name__ == '__main__':
     save_99 = 0.0
 
     match_list = []
-    while Nstep < args.Niter and (len(bcm_save) < 1000 or np.min(np.array(match_all)) < 0.9999):
+    while Nstep < args.Niter and (len(bcm_save) < 10000 or np.min(np.array(match_all)) < 0.9999):
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
