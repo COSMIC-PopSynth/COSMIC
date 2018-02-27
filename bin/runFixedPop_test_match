@@ -172,7 +172,7 @@ if __name__ == '__main__':
     Nstep = args.Nstep
     save_9995 = 0.0
     save_999 = 0.0
-    save_995 = 0.0
+    save_80 = 0.0
     save_99 = 0.0
 
     match_list = []
@@ -250,8 +250,8 @@ if __name__ == '__main__':
                 print 'Length of bcm array: ', len(bcm_save) 
                 match_save = match_save.append(match_all)
 
-                if np.min(match_all) > 0.99 and save_99 < 1:
-                    save_99 = 1
+                if np.min(match_all) > 0.8 and save_80 < 1:
+                    save_80 = 1
                     # save the bcm array, bpp array, ad matches to an hdf5 
                     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match99.h5')
 
@@ -262,8 +262,8 @@ if __name__ == '__main__':
                     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
                     dat_store.close()
 
-                elif np.min(match_all) > 0.995 and save_995 < 1:
-                    save_995 = 1
+                elif np.min(match_all) > 0.99 and save_99 < 1:
+                    save_99 = 1
                     # save the bcm array, bpp array, ad matches to an hdf5 
                     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match995.h5')
                     
