@@ -22,7 +22,7 @@ def match(dataCm, nRuns):
     histoBinEdges = [[] for i in range(int(nRuns))]
     # COMPUTE THE BINWIDTH FOR THE MOST COMPLETE DATA SET:
     # NOTE: THIS WILL BE THE BINWIDTH FOR ALL THE HISTOGRAMS IN THE HISTO LIST
-    mainHisto, binEdges = astroStats.histogram(np.array(dataCm[len(dataCm)-1]), bins='knuth')
+    mainHisto, binEdges = astroStats.histogram(np.array(dataCm[len(dataCm)-1]), bins='scott')
     
     # BIN THE DATA:
     for i in range(nRuns):

@@ -50,10 +50,11 @@ geo_mass = G/c**2
 
 
 class Sample:
-    def __init__(self, size=None):
+    def __init__(self, metallicity, size=None):
         '''
         initialize samples
         '''
+        self.metallicity = np.asarray(metallicity).repeat(size)
 
     # sample primary masses
     def sample_primary(self, kstar1_final, model='kroupa93', size=None):
@@ -223,10 +224,11 @@ class Sample:
 
 class MultiDimSample:
 
-    def __init__(self, size=None):
+    def __init__(self, metallicity, size=None):
         '''
         initialize samples
         '''
+        self.metallicity = np.asarray(metallicity).repeat(size)
 
     #-----------------------------------
     # Belows is the adapted version of Maxwell Moe's IDL code 
@@ -271,8 +273,8 @@ class MultiDimSample:
         '''
         Sample initial binary distribution according to Moe & Di Stefano (2017)   
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-        '''
-        
+        '''        
+
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
         #analytic fits to corrected binary star populations.
