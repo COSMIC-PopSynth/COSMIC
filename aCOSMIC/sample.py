@@ -50,12 +50,10 @@ geo_mass = G/c**2
 
 
 class Sample:
-    def __init__(self, metallicity, size=None):
+    def __init__(self, size=None):
         '''
         initialize samples
         '''
-        self.metallicity = np.asarray(metallicity).repeat(size)
-
 
     # sample primary masses
     def sample_primary(self, kstar1_final, model='kroupa93', size=None):
@@ -191,19 +189,19 @@ class Sample:
             return ecc
 
 
-    def sample_SFH(self, model='const', size=None):
+    def sample_SFH(self, model='const', component_age=10000.0, size=None):
         '''
-        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: 10,000 [Myr]
-        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at 't_component' 10,000 [Myr] in the past
+        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
+        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at component_age [Myr] in the past
         '''
 
         if model=='const':
 
-            tphys = np.random.uniform(0, 10000.0, size)
+            tphys = np.random.uniform(0, component_age, size)
             return tphys
  
         if model=='burst':
-            tphys = 10000.0 - np.random.uniform(0, 1000, size)
+            tphys = component_age - np.random.uniform(0, 1000, size)
             return tphys
      
      
@@ -225,11 +223,10 @@ class Sample:
 
 class MultiDimSample:
 
-    def __init__(self, metallicity, size=None):
+    def __init__(self, size=None):
         '''
         initialize samples
         '''
-        self.metallicity = np.asarray(metallicity).repeat(size)
 
     #-----------------------------------
     # Belows is the adapted version of Maxwell Moe's IDL code 
@@ -696,19 +693,19 @@ class MultiDimSample:
 
         return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass      
                    
-    def sample_SFH(self, model='const', size=None):
+    def sample_SFH(self, model='const', component_age=10000.0, size=None):
         '''
-        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: 10,000 [Myr]
-        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at 't_component' 10,000 [Myr] in the past
+        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
+        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at component_age [Myr] in the past
         '''
 
         if model=='const':
 
-            tphys = np.random.uniform(0, 10000.0, size)
+            tphys = np.random.uniform(0, component_age, size)
             return tphys
 
         if model=='burst':
-            tphys = 10000.0 - np.random.uniform(0, 1000, size)
+            tphys = component_age - np.random.uniform(0, 1000, size)
             return tphys
 
     def set_kstar(self, mass):
