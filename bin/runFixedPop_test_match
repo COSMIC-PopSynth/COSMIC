@@ -230,6 +230,10 @@ if __name__ == '__main__':
                                                  initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
                                                  initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
             initConditions_save = initConditions_save.append(initC_save)
+
+            print 'bcm tot, bcm last run'
+            print bcm_save.shape[0], bcm_save_test_conv1.shape[0]
+            
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
                 conv_params = args.convergence_params[:len(args.convergence_params)-1]
