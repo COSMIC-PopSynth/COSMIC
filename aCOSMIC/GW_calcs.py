@@ -49,17 +49,15 @@ geo_mass = G/c**2
 def m_chirp(m1, m2):
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
 
-def peters_gfac(ecc, n_harmonic):
+def peters_gfac(ecc, n):
     # Note this is: g(n,e)/n**2 that is being calculated
-    g_fac_squared = np.zeros(n_harmonic)
-    for n in range(1,n_harmonic):
-        g_fac_squared[n] = (n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
-                              2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
-                              ss.jv((n+2), (n*ecc)))**2 +\
-                             (1-ecc**2)*(ss.jv((n-2), (n*ecc)) - 2*ss.jv((n), (n*ecc)) +\
-                              ss.jv((n+2), (n*ecc)))**2 +\
-                             (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
-                            )/n**2.0
+    g_fac_squared = (n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
+                        2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
+                        ss.jv((n+2), (n*ecc)))**2 +\
+                       (1-ecc**2)*(ss.jv((n-2), (n*ecc)) - 2*ss.jv((n), (n*ecc)) +\
+                       ss.jv((n+2), (n*ecc)))**2 +\
+                       (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
+                       )/n**2.0
 
     return g_fac_squared
 
@@ -82,14 +80,12 @@ def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
     # chirp mass in Msun, porb in hr, dist in kpc
     psd = []
     freq = []
-    ii = 0
     for mChirp, porb, ecc, dist in zip(mChirpList, porbList, eccList, distList):
-        for n in range(n_harmonic):
-            psd.append(1.0e-42 * peters_gfac(ecc, n_harmonic) * Tobs *\
+        for n in range(1, n_harmonic):
+            psd.append(1.0e-42 * peters_gfac(ecc, n) * Tobs *\
                        ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2)
             freq.append(n / (porb * sec_in_hour))
-        ii += 1
-    psd_dat = pd.DataFrame(np.vstack([freq, psd]), columns=['freq', 'psd'])
+    psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'psd'])
     return psd_dat
     
 def moving_average(interval, window_size):
@@ -97,16 +93,22 @@ def moving_average(interval, window_size):
     return np.convolve(interval, window, 'same')
 
 def compute_foreground(forb, power):
-    nBinsLISA = (1-1e-5)*Tobs/10
+    nBinsLISA = (1-1e-5)*Tobs/5000
     freqBinsLISA =np.logspace(-6,0,nBinsLISA)
+    print 'nmber of bins in foreground', nBinsLISA
     binIndices = np.digitize(forb,freqBinsLISA)
-    binValue = []
-    for ii in range(len(freqBinsLISA)):
-        binIndex, =np.where(binIndices==ii)
-        if len(binIndex) > 0:
-            binValue.append(sum(power[binIndex]))
-        else:
-            binValue.append(0.0)
-    foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA, binValue]),\
+
+    power_tot = [power[binIndices == ii].sum() for ii in range(1, len(freqBinsLISA))]
+    
+    #binValue = []
+    #for ii in range(len(freqBinsLISA)):
+    #    binIndex, =np.where(binIndices==ii)
+    #    if len(binIndex) > 0:
+    #        binValue.append(sum(power[binIndex]))
+    #    else:
+    #        binValue.append(0.0)
+
+    print np.shape(power_tot), np.shape(freqBinsLISA)
+    foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA[1:], power_tot]).T,\
                                   columns=['freq', 'psd'])
     return foreground_dat
