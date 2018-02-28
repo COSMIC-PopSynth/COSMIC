@@ -45,7 +45,7 @@ def parse_commandline():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
-    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--galaxy-component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
     parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
@@ -86,7 +86,9 @@ if __name__ == '__main__':
     hrs_in_day = 24.0
     sec_in_year = 3.15569*10**7.0
     Tobs = 3.15569*10**7.0
-    geo_mass = G/c**2    
+    geo_mass = G/c**2
+
+    metallicity = 0.02    
 
     # ---- Create configuration-file-parser object and read parameters file.
     cp = ConfigParser.ConfigParser()
@@ -168,22 +170,13 @@ if __name__ == '__main__':
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
-    
-    match_list = []
-    while Nstep < args.Niter and (len(bcm_save) < 5000 or np.min(np.array(match_all)) < 0.9999):
-        if args.galaxy_component == 'ThinDisk':
-            metallicity = 0.02
-            SFH_model='const' 
-            component_age=10000.0
-        elif args.galaxy_component == 'Bulge':
-            metallicity = 0.02
-            SFH_model='burst'
-            component_age=10000.0           
-        elif args.galaxy_component == 'ThickDisk':
-            metallicity = 0.02*0.15
-            SFH_model='burst'
-            component_age=11000.0
+    save_9995 = 0.0
+    save_999 = 0.0
+    save_80 = 0.0
+    save_99 = 0.0
 
+    match_list = []
+    while Nstep < args.Niter and (len(bcm_save) < 10000 or np.min(np.array(match_all)) < 0.9999):
         if args.initial_samp == 'ind':
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
@@ -192,7 +185,7 @@ if __name__ == '__main__':
             total_sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
             initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
-            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)            
+            initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
@@ -203,12 +196,11 @@ if __name__ == '__main__':
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
             initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
-            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
+            initconditions.tphysf = initconditions.sample_SFH(model='const', size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
-            initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
-
-        # LOG THE TOTAL SAMPLED MASS
-	total_sampled_mass += sampled_mass
+            initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary) 
+ 
+            total_sampled_mass += sampled_mass
         print "The total mass sampled so far is: ",total_sampled_mass
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
@@ -218,24 +210,30 @@ if __name__ == '__main__':
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
+        #bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
-        
+
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
+            print bcm_save.index.shape[0], bcm_save_filtered.shape[0]
             if idx < args.Nstep:
                 bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             else:
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
+            
             idxSave = bcm_save.index
-            idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
+            idxInitCond = bcm_save_filtered.index - idxOld
             bpp_save_array = bpp[~bpp.index.isin(idxSave)]
             bpp_save = bpp_save.append(bpp_save_array)
-            initC = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
-                                            initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
-                                            initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
-            initConditions_save = initConditions_save.append(initC)
-             
+            initC_save = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
+                                                 initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
+                                                 initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
+            initConditions_save = initConditions_save.append(initC_save)
+
+            print 'bcm tot, bcm last run'
+            print bcm_save.shape[0], bcm_save_test_conv1.shape[0]
+            
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
                 conv_params = args.convergence_params[:len(args.convergence_params)-1]
@@ -243,19 +241,71 @@ if __name__ == '__main__':
                 conv_params = args.convergence_params
             match_all = []
             if bcm_save_test_conv1.shape[0] > 3:
+                
                 for i_convergence_parameter in conv_params:
                     match, binwidth = Match.match([np.tan(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
                                                    np.tan(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
                     match_all.append(match)
                 print 'matches: ',np.array(match_all)
                 print 'Length of bcm array: ', len(bcm_save) 
-                match_save.append(match_all)
-	Nstep += args.Nstep
+                match_save = match_save.append(match_all)
+
+                if np.min(match_all) > 0.8 and save_80 < 1:
+                    save_80 = 1
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match99.h5')
+
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
+
+                elif np.min(match_all) > 0.99 and save_99 < 1:
+                    save_99 = 1
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match995.h5')
+                    
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
+
+                elif np.min(match_all) > 0.999 and save_999 < 1:
+                    save_999 = 1
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match999.h5')
+                                                                                    
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)   
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
+
+                elif np.min(match_all) > 0.9995 and save_9995 < 1:
+                    save_9995 = 1 
+                    # save the bcm array, bpp array, ad matches to an hdf5 
+                    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'_match9995.h5')
+                   
+                    dat_store.append('bcm', bcm_save)
+                    dat_store.append('bpp', bpp_save)
+                    dat_store.append('match', match_save)
+                    dat_store.append('initCond', initConditions_save)
+                    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+                    dat_store.close()
+
+
+        Nstep += args.Nstep
         idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5 
     dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
 
     dat_store.append('bcm', bcm_save)
+
     dat_store.append('bpp', bpp_save)
     dat_store.append('match', match_save)
     dat_store.append('initCond', initConditions_save)

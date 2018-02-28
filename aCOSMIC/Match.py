@@ -51,8 +51,12 @@ def match(dataCm, nRuns):
     nominatorSum = np.array(nominatorSum, dtype=np.float128)
     denominator1Sum = np.array(denominator1Sum, dtype=np.float128)
     denominator2Sum = np.array(denominator2Sum, dtype=np.float128)
-    
+
+
     for i in range(nRuns-1):
-        match[i] = (nominatorSum[i]/np.sqrt(denominator1Sum[i]*denominator2Sum[i]))
+        if binEdges[1]-binEdges[0] < 1e-7:
+            match[i] = 1.0
+        else:
+            match[i] = (nominatorSum[i]/np.sqrt(denominator1Sum[i]*denominator2Sum[i]))
         
-    return match;
+    return match, binEdges[1]-binEdges[0];
