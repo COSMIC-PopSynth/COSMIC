@@ -244,8 +244,8 @@ if __name__ == '__main__':
             match_all = []
             if bcm_save_test_conv1.shape[0] > 3:
                 for i_convergence_parameter in conv_params:
-                    match, binwidth = Match.match([np.tan(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
-                                                   np.tan(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
+                    match, binwidth = Match.match([ss.logit(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
+                                                   ss.logit(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
                     match_all.append(match)
                 print 'matches: ',np.array(match_all)
                 print 'Length of bcm array: ', len(bcm_save) 
