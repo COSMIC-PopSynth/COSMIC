@@ -58,12 +58,12 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     based on the total sampled mass of the simulated system and
     the total mass of a given galactic component
     '''
-    print 'N DWD Fixed: ',dat.mass_1.size
+    print 'N binaries Fixed: ',dat.mass_1.size
     print 'Gx component mass: ',component_mass
     print 'Total sampled mass: ',total_sampled_mass 
       
     nSystems = int(dat.size*component_mass/total_sampled_mass)
-    print 'N DWDs in Gx: ',nSystems
+    print 'N binaries in Gx: ',nSystems
     return nSystems
 
 def select_component_mass(gx_component):
