@@ -257,7 +257,7 @@ if __name__ == '__main__':
         idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5 
     dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+\
-                                                         +'_'+str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5')
+                                                          '_'+str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5')
 
     dat_store.append('bcm', bcm_save)
     dat_store.append('bpp', bpp_save)
