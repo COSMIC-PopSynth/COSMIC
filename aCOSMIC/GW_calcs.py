@@ -49,47 +49,60 @@ geo_mass = G/c**2
 def m_chirp(m1, m2):
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
 
-def peters_gfac(ecc, n_harmonic):
+def peters_gfac(ecc, n):
     # Note this is: g(n,e)/n**2 that is being calculated
-    g_fac_squared = np.zeros(n_harmonic)
-    for n in range(1,n_harmonic):
-        g_fac_squared[n] = (n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
-                              2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
-                              ss.jv((n+2), (n*ecc)))**2 +\
-                             (1-ecc**2)*(ss.jv((n-2), (n*ecc)) - 2*ss.jv((n), (n*ecc)) +\
-                              ss.jv((n+2), (n*ecc)))**2 +\
-                             (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
-                            )/n**2.0
+    g_fac_squared = (n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
+                        2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
+                        ss.jv((n+2), (n*ecc)))**2 +\
+                       (1-ecc**2)*(ss.jv((n-2), (n*ecc)) - 2*ss.jv((n), (n*ecc)) +\
+                       ss.jv((n+2), (n*ecc)))**2 +\
+                       (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
+                       )/n**2.0
 
     return g_fac_squared
 
 def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     # chirp mass in Msun, porb in hr, dist in kpc
     LISA_root_psd = lisa_sensitivity.lisa_sensitivity()
-    SNR_array = np.zeros(len(mChirpList))
-    ii = 0
-    for mChirp, porb, ecc, dist in zip(mChirpList, porbList, eccList, distList):
-        SNR_squared = np.zeros(n_harmonic)
-        for n in range(n_harmonic):
-            h_0_squared = 1.0e-42 * peters_gfac(ecc, n_harmonic) * \
-                          ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
-            SNR_squared[n] = h_0_squared * Tobs / LISA_root_psd(n / (porb * sec_in_hour))**2
-        SNR_array[ii] = np.sum(SNR_squared)
-        ii += 1
+    h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
+    
+    if eccList.max() < 0.01:
+        SNR_squared = h_0_squared * Tobs / LISA_root_psd(n / (porb * sec_in_hour))**2
+        SNR_array = SNR_squared**0.5
+    
+    else:
+        SNR_array = np.zeros(len(mChirpList))
+        ii = 0
+        for mChirp, porb, ecc, dist in zip(mChirpList, porbList, eccList, distList):
+            SNR_squared = np.zeros(n_harmonic)
+            for n in range(1, n_harmonic):
+                SNR_squared[n] = h_0_squared[ii] * peters_gfac(ecc, n) *\
+                                 Tobs / LISA_root_psd(n / (porb * sec_in_hour))**2
+                SNR_array[ii] = np.sum(SNR_squared)**0.5
+            ii += 1
     return SNR_array
 
 def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
     # chirp mass in Msun, porb in hr, dist in kpc
     psd = []
     freq = []
-    ii = 0
-    for mChirp, porb, ecc, dist in zip(mChirpList, porbList, eccList, distList):
-        for n in range(n_harmonic):
-            psd.append(1.0e-42 * peters_gfac(ecc, n_harmonic) * Tobs *\
-                       ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2)
-            freq.append(n / (porb * sec_in_hour))
-        ii += 1
-    psd_dat = pd.DataFrame(np.vstack([freq, psd]), columns=['freq', 'psd'])
+
+    # chirp mass in Msun, porb in hr, dist in kpc
+    LISA_root_psd = lisa_sensitivity.lisa_sensitivity()
+    h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
+
+    if eccList.max() < 0.01:
+        psd = h_0_squared * Tobs / LISA_root_psd(2 / (porbList * sec_in_hour))**2
+        freq = 2.0 / (porbList * sec_in_hour)
+                                        
+    else:
+        SNR_array = np.zeros(len(mChirpList))
+        for mChirp, porb, ecc, dist in zip(mChirpList, porbList, eccList, distList):
+            for n in range(1, n_harmonic):
+                psd.append(1.0e-42 * peters_gfac(ecc, n) * Tobs *\
+                           ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2)
+                freq.append(n / (porb * sec_in_hour))
+    psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'psd'])
     return psd_dat
     
 def moving_average(interval, window_size):
@@ -97,16 +110,22 @@ def moving_average(interval, window_size):
     return np.convolve(interval, window, 'same')
 
 def compute_foreground(forb, power):
-    nBinsLISA = (1-1e-5)*Tobs/10
-    freqBinsLISA =np.logspace(-6,0,nBinsLISA)
+    nBinsLISA = 50000
+    freqBinsLISA =np.logspace(-6,-2.5,nBinsLISA)
+    print 'nmber of bins in foreground', nBinsLISA
     binIndices = np.digitize(forb,freqBinsLISA)
-    binValue = []
-    for ii in range(len(freqBinsLISA)):
-        binIndex, =np.where(binIndices==ii)
-        if len(binIndex) > 0:
-            binValue.append(sum(power[binIndex]))
-        else:
-            binValue.append(0.0)
-    foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA, binValue]),\
+    print 'bins digitized'
+    power_tot = [power[binIndices == ii].sum() for ii in range(1, len(freqBinsLISA))]
+    
+    #binValue = []
+    #for ii in range(len(freqBinsLISA)):
+    #    binIndex, =np.where(binIndices==ii)
+    #    if len(binIndex) > 0:
+    #        binValue.append(sum(power[binIndex]))
+    #    else:
+    #        binValue.append(0.0)
+
+    print np.shape(power_tot), np.shape(freqBinsLISA)
+    foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA[1:], power_tot]).T,\
                                   columns=['freq', 'psd'])
     return foreground_dat

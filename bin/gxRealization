@@ -28,6 +28,7 @@ import numpy as np
 import scipy.special as ss
 import scipy.stats as stats
 import pandas as pd
+import multiprocessing as mp
 
 import aCOSMIC.MC_samp as MC_sample 
 import aCOSMIC.GW_calcs as GW_calcs
@@ -89,9 +90,10 @@ if __name__ == '__main__':
     ###########################################################################
     fixed_pop = fixed_pop.loc[fixed_pop.porb < 5.0e4/sec_in_year]
 
+    print fixed_pop.loc[fixed_pop.ecc > 0.5].shape[0]
     if np.sum(fixed_pop.ecc) == 0.0:
         fixed_pop.ecc = np.random.uniform(1e-7, 1e-5, fixed_pop.ecc.size)
-
+    
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
@@ -102,17 +104,22 @@ if __name__ == '__main__':
 
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    for gx in range(args.N_realizations):
+    def _gx_realization(gx, n_systems, dat_trans, fixed_pop, output):
         psd_dat = pd.DataFrame(columns=['freq', 'power'])
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
-        if nSystems > 1e6:
-            nLoop = int(nSystems/1.0e6)
-            print nLoop
+        if n_systems > 1e6:
+            nLoop = int(n_systems/1.0e6)
             for ii in range(nLoop):
                 print ii
-                nSample = int(nSystems/float(nLoop))
+                if ii == 25:
+                    print ii
+                elif ii == 50:
+                    print ii
+                elif ii ==100:
+                    print ii
+                nSample = int(n_systems/float(nLoop))
                 
                 # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
                 # BY GENERATING A KDE FIT
@@ -130,20 +137,19 @@ if __name__ == '__main__':
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
 
-                print full_sample.porb.iloc[:1000]
                 if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
         
                 # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
                 #####################################################################
-                psd_chunk = GW_calcs.power_spectral_density(full_sample.mass1, full_sample.mass2,\
+                psd_chunk = GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                             full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, 200)
+                                                            full_sample.ecc, full_sample.dist, 5)
            
-                psd_dat.append(psd_chunk)     
+                psd_dat = psd_dat.append(psd_chunk)     
 
         else:
-            nSample = nSystems
+            nSample = n_systems
          
             # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
             # BY GENERATING A KDE FIT
@@ -155,7 +161,7 @@ if __name__ == '__main__':
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
             #####################################################################
             binary_sample_positions = MC_sample.galactic_position_sample(args.galaxy_component, size = nSample, model=args.dist_model)
-            full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
+            full_sample = np.concatenate([binary_sample_dat, binary_sample_positions]).T
             full_sample = pd.DataFrame(full_sample,\
                                        columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                                   'xGx', 'yGx', 'zGx', 'dist',\
@@ -166,12 +172,31 @@ if __name__ == '__main__':
 
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
             #####################################################################
-            psd_dat.append(GW_calcs.power_spectral_density(full_sample.mass1, full_sample.mass2,\
+            print 'psd'
+            psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                            full_sample.porb * (day_in_year * hrs_in_day),\
-                                                           full_sample.ecc, 200))
+                                                           full_sample.ecc, full_sample.dist, 5))
+
+        print 'psd computed'
 
         GW_foreground = GW_calcs.compute_foreground(psd_dat.freq, psd_dat.power)
-        GW_foreground.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
-              
+        GW_foreground.to_hdf('gx_real_'+str(gx)+'.h5', key='gw_fg', append='True')
+        output.put('done')
+        return
 
 
+    n_loops = args.N_realizations / args.nproc
+    for n in range(n_loops):
+        output = mp.Queue()
+        processes = [mp.Process(target = _gx_realization,\
+                                args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop, output))\
+                    for x in range(args.nproc)]
+        
+        for p in processes:
+            p.daemon = True
+            p.start()
+        
+        for p in processes:
+            p.join()
+        
+    print 'All done friend!'
