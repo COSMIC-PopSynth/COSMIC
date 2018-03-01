@@ -1,0 +1,270 @@
+#! /usr/bin/env python
+
+# Code: runFixedPop.py
+# Version: 1
+# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE; 
+#                  COMPUTE RATES AND NUMBERS FOR EACH POPULATION ACCORDING
+#                  TO FLAGS SET BY USER
+#
+# Edited on:  8 SEP 2015
+
+
+##############################################################################
+#  IMPORT ALL NECESSARY PYTHON PACKAGES
+##############################################################################
+from collections import OrderedDict
+import warnings
+import argparse
+import ConfigParser
+
+import math
+import random
+import time
+from time import sleep
+import string
+import os.path
+
+import numpy as np
+import scipy.special as ss
+import pandas as pd
+
+
+from aCOSMIC.sample import Sample
+from aCOSMIC.sample import MultiDimSample
+from aCOSMIC import Match
+from aCOSMIC.evolve import Evolve
+from aCOSMIC.utils import mass_min_max_select
+from aCOSMIC.utils import param_transform
+
+##################################################################################
+# DEFINE COMMANDLINE ARGUMENTS
+##################################################################################
+def parse_commandline():
+    """Parse the arguments given on the command-line.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
+    parser.add_argument("--inifile", help="Name of ini file of params", required=True)
+    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--final_kstar1_lo", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar1_hi", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar2_lo", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar2_hi", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float) 
+    parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
+    parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
+    parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
+    parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
+    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
+    args = parser.parse_args()
+
+    return args
+
+##################################################################################
+# BEGIN MAIN FUNCTION
+##################################################################################
+if __name__ == '__main__':
+
+    # READ COMMANDLINE ARGUMENTS
+    ##############################################################################
+    args = parse_commandline()
+
+
+    # SET TIME TO TRACK COMPUTATION TIME
+    ##############################################################################
+    start_time = time.time()
+    
+    # CONSTANTS
+    ##############################################################################
+    G = 6.67384*math.pow(10, -11.0)
+    c = 2.99792458*math.pow(10, 8.0)
+    parsec = 3.08567758*math.pow(10, 16)
+    Rsun = 6.955*math.pow(10, 8)
+    Msun = 1.9891*math.pow(10,30)
+    day = 86400.0
+    rsun_in_au = 215.0954
+    day_in_year = 365.242
+    sec_in_day = 86400.0
+    sec_in_hour = 3600.0
+    hrs_in_day = 24.0
+    sec_in_year = 3.15569*10**7.0
+    Tobs = 3.15569*10**7.0
+    geo_mass = G/c**2    
+
+    # ---- Create configuration-file-parser object and read parameters file.
+    cp = ConfigParser.ConfigParser()
+    cp.optionxform = str
+    cp.read(args.inifile)
+
+    # ---- Read needed variables from [bse] section.
+    # -- bse
+    neta = cp.getfloat('bse', 'neta')
+    bwind = cp.getfloat('bse', 'bwind')
+    hewind = cp.getfloat('bse', 'hewind')
+    alpha1 = cp.getfloat('bse', 'alpha1')
+    lambdaf = cp.getfloat('bse', 'lambdaf')
+    ceflag = cp.getint('bse', 'ceflag')
+    tflag = cp.getint('bse', 'tflag')
+    ifflag = cp.getint('bse', 'ifflag')
+    wdflag = cp.getint('bse', 'wdflag')
+    bhflag = cp.getint('bse', 'bhflag')
+    nsflag = cp.getint('bse', 'nsflag')
+    mxns = cp.getfloat('bse', 'mxns')
+    pts1 = cp.getfloat('bse', 'pts1')
+    pts2 = cp.getfloat('bse', 'pts2')
+    pts3 = cp.getfloat('bse', 'pts3')
+    sigma = cp.getfloat('bse', 'sigma')
+    beta = cp.getfloat('bse', 'beta')
+    xi = cp.getfloat('bse', 'xi')
+    acc2 = cp.getfloat('bse', 'acc2')
+    epsnov = cp.getfloat('bse', 'epsnov')
+    eddfac = cp.getfloat('bse', 'eddfac')
+    gamma = cp.getfloat('bse', 'gamma')
+    bconst = cp.getint('bse', 'bconst')
+    CK = cp.getint('bse', 'CK')
+    merger = cp.getint('bse', 'merger')
+    windflag = cp.getint('bse', 'windflag')
+
+    # ---- Read needed variables from [rand_seed] section.
+    # -- rand_seed
+    seed_int = cp.getint('rand_seed', 'seed')
+    np.random.seed(seed_int)
+
+    # Make dictionary of all BSE parameters for readablility reasons
+    BSEDict = {}
+    BSEDict['neta'] = neta
+    BSEDict['bwind'] = bwind
+    BSEDict['hewind'] = hewind
+    BSEDict['alpha1'] = alpha1
+    BSEDict['lambdaf'] = lambdaf
+    BSEDict['ceflag'] = ceflag
+    BSEDict['tflag'] = tflag
+    BSEDict['ifflag'] = ifflag
+    BSEDict['wdflag'] = wdflag
+    BSEDict['bhflag'] = bhflag
+    BSEDict['nsflag'] = nsflag
+    BSEDict['mxns'] = mxns
+    BSEDict['pts1'] = pts1
+    BSEDict['pts2'] = pts2
+    BSEDict['pts3'] = pts3
+    BSEDict['sigma'] = sigma
+    BSEDict['beta'] = beta
+    BSEDict['xi'] = xi
+    BSEDict['acc2'] = acc2
+    BSEDict['epsnov'] = epsnov
+    BSEDict['eddfac'] = eddfac
+    BSEDict['gamma'] = gamma
+    BSEDict['bconst'] = bconst
+    BSEDict['CK'] = CK
+    BSEDict['merger'] = merger
+    BSEDict['windflag'] = windflag
+
+    if seed_int != 0:
+        np.random.seed(seed_int)
+
+    bcm_save = pd.DataFrame()
+    bpp_save = pd.DataFrame()
+    match_save = pd.DataFrame()
+    initConditions_save = pd.DataFrame(columns=['m1','m2','porb','ecc','tphysf'])
+    idx = 0
+    idxOld = 0
+    total_sampled_mass = 0.0
+    match_all = np.zeros(len(args.convergence_params))
+    Nstep = args.Nstep
+    
+    match_list = []
+    while Nstep < args.Niter and (len(bcm_save) < 5000 or np.min(np.array(match_all)) < 0.9999):
+        if args.galaxy_component == 'ThinDisk':
+            metallicity = 0.02
+            SFH_model='const' 
+            component_age=10000.0
+        elif args.galaxy_component == 'Bulge':
+            metallicity = 0.02
+            SFH_model='burst'
+            component_age=10000.0           
+        elif args.galaxy_component == 'ThickDisk':
+            metallicity = 0.02*0.15
+            SFH_model='burst'
+            component_age=11000.0
+
+        if args.initial_samp == 'ind':
+            initconditions = Sample(metallicity = metallicity, size = args.Nstep)
+            initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
+            initconditions.mass1_binary, mass_singles = initconditions.binary_select(initconditions.mass1)
+            initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
+            total_sampled_mass += np.sum(initconditions.mass2_binary)
+            initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
+            initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
+            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)            
+            initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
+            initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
+
+
+        if args.initial_samp == 'Moe':
+            # SET MINIMUM MASS SAMPLE   
+            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)            
+
+            initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
+            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
+            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
+            initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
+            initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
+
+        # LOG THE TOTAL SAMPLED MASS
+	total_sampled_mass += sampled_mass
+        print "The total mass sampled so far is: ",total_sampled_mass
+
+        # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
+        evolve = Evolve(initconditions)
+        bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
+        
+        # Select the state of the binary today and filter out any disrupted binaries
+        bcm_filtered = bcm.loc[bcm.tphys > 1.0]
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
+        idx = bcm.index.max()
+        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 <= args.final_kstar1_hi) & (bcm_filtered.kstar_1 >= args.final_kstar1_lo) &\
+                                             (bcm_filtered.kstar_2 <= args.final_kstar2_hi) & (bcm_filtered.kstar_2 >= args.final_kstar2_lo)]
+        
+        if bcm_save_filtered.shape[0] > 0:
+            bcm_save = bcm_save.append(bcm_save_filtered)
+            if idx < args.Nstep:
+                bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
+            else:
+                bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
+            idxSave = bcm_save.index
+            idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
+            bpp_save_array = bpp[~bpp.index.isin(idxSave)]
+            bpp_save = bpp_save.append(bpp_save_array)
+            initC = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
+                                            initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
+                                            initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
+            initConditions_save = initConditions_save.append(initC)
+             
+            #check to see if the eccentricities are all circular
+            if bcm_save.ecc.sum() == 0.0:
+                conv_params = args.convergence_params[:len(args.convergence_params)-1]
+            else:
+                conv_params = args.convergence_params
+            match_all = []
+            if bcm_save_test_conv1.shape[0] > 3:
+                for i_convergence_parameter in conv_params:
+                    match, binwidth = Match.match([ss.logit(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
+                                                   ss.logit(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
+                    match_all.append(match)
+                print 'matches: ',np.array(match_all)
+                print 'Length of bcm array: ', len(bcm_save) 
+                match_save.append(match_all)
+	Nstep += args.Nstep
+        idxOld = idx
+    # save the bcm array, bpp array, ad matches to an hdf5 
+    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+\
+                                                         +'_'+str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5')
+
+    dat_store.append('bcm', bcm_save)
+    dat_store.append('bpp', bpp_save)
+    dat_store.append('match', match_save)
+    dat_store.append('initCond', initConditions_save)
+    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+    dat_store.close()
+    
+    print 'All done friend!'
+    
