@@ -33,7 +33,7 @@ from aCOSMIC.sample import Sample
 from aCOSMIC.sample import MultiDimSample
 from aCOSMIC import Match
 from aCOSMIC.evolve import Evolve
-from aCOSMIC.utils import mass_min_max_select
+from aCOSMIC.utils import mass_min_max_select_range
 from aCOSMIC.utils import param_transform
 
 ##################################################################################
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
         if args.initial_samp == 'Moe':
             # SET MINIMUM MASS SAMPLE   
-            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)            
+            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select_range(args.final_kstar1_lo, args.final_kstar1_hi, args.final_kstar2_lo, args.final_kstar2_hi) 
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
             initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)

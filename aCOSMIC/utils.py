@@ -38,6 +38,48 @@ def mass_min_max_select(kstar_1, kstar_2):
 
     return min_mass[0], max_mass[0], min_mass[1], max_mass[1]
 
+def mass_min_max_select_range(kstar_1_lo, kstar_1_hi, kstar_2_lo, kstar_2_hi):
+    primary_max = 150.0
+    secondary_max = 150.0
+
+    primary_min = 0.08
+    secondary_min = 0.08
+
+    kstar_lo = [kstar_1_lo, kstar_2_lo]
+    kstar_hi = [kstar_1_hi, kstar_2_hi]
+   
+    min_mass = [primary_min, secondary_min]
+    max_mass = [primary_max, secondary_max]
+   
+    ii = 0
+    for k in kstar_lo:
+        if k == 14:
+            min_mass[ii] = 15.0
+        elif k == 13:
+            min_mass[ii] = 8.0
+        elif k == 12:
+            min_mass[ii] = 5.0
+        elif k == 11:
+            min_mass[ii] = 2.0
+        elif k == 10:
+            min_mass[ii] = 0.5
+        ii += 1
+
+    ii = 0
+    for k in kstar_hi:
+        if k == 13:
+            max_mass[ii] = 20.0
+        elif k == 12:
+            max_mass[ii] = 12.0
+        elif k== 11:
+            max_mass[ii] = 8.0
+        elif k == 10:
+            max_mass[ii] = 5.0
+        ii += 1 
+
+    return min_mass[0], max_mass[0], min_mass[1], max_mass[1]
+
+
 
 def idl_tabulate(x, f, p=5) :
     def newton_cotes(x, f) :
