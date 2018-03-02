@@ -84,7 +84,7 @@ if __name__ == '__main__':
     # READ IN DATA
     ###########################################################################
     dat_path = '/Users/katie/Desktop/COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
-                str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+\
+                str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+'_'+\
                 str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5'
 
     total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
@@ -102,13 +102,19 @@ if __name__ == '__main__':
     ###########################################################################
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
     nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
+
+    # DOWN SAMPLE FOR NOW FOR TESTING!!!
+    nSystems = 100000
+
     dat_trans = utils.dat_transform(fixed_pop)
     if np.sum(fixed_pop.ecc) == 0.0:
         dat_trans.ecc = np.zeros(dat_trans.ecc.size)  
 
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    def _gx_realization(gx, n_systems, dat_trans, fixed_pop, output):
+    def _gx_realization(gx, n_systems, dat_trans, fixed_pop):
+        print 'sampling data!'
+        
         psd_dat = pd.DataFrame(columns=['freq', 'power'])
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
@@ -143,7 +149,7 @@ if __name__ == '__main__':
 
                 if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
-                                        str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+\
+                                        str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+'_'+\
                                         str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5', key='gx', append='True')
         
                 # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
@@ -174,7 +180,7 @@ if __name__ == '__main__':
                                                   'inc', 'OMEGA', 'omega'])
             if args.gx_save:
                 full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
-                                    str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+\
+                                    str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+'_'+\
                                     str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5', key='gx', append='True')
 
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
@@ -187,25 +193,28 @@ if __name__ == '__main__':
         print 'psd computed'
 
         GW_foreground = GW_calcs.compute_foreground(psd_dat.freq, psd_dat.power)
-        GW_foreground.to_hdf('gx_real_'+str(gx)+,rgs.galaxy_component+'_'+\
-                              str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+\
+        GW_foreground.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                              str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+'_'+\
                               str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5', key='gw_psd', append='True')
-        output.put('done')
         return
 
 
-    n_loops = args.N_realizations / args.nproc
-    for n in range(n_loops):
-        output = mp.Queue()
-        processes = [mp.Process(target = _gx_realization,\
-                                args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop, output))\
-                    for x in range(args.nproc)]
-        
-        for p in processes:
-            p.daemon = True
-            p.start()
-        
-        for p in processes:
-            p.join()
-        
-    print 'All done friend!'
+    if args.nproc > 1:
+        n_loops = args.N_realizations / args.nproc
+        for n in range(n_loops):
+            output = mp.Queue()
+            processes = [mp.Process(target = _gx_realization,\
+                                    args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop))\
+                        for x in range(args.nproc)]
+            
+            for p in processes:
+                p.daemon = True
+                p.start()
+            
+            for p in processes:
+                p.join()
+    else:
+        _gx_realization(1, nSystems, dat_trans, fixed_pop)
+
+
+    print'All done friend!'
