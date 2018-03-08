@@ -2,7 +2,7 @@
 
 # Code: runFixedPop.py
 # Version: 1
-# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE; 
+# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE;
 #                  COMPUTE RATES AND NUMBERS FOR EACH POPULATION ACCORDING
 #                  TO FLAGS SET BY USER
 #
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # SET TIME TO TRACK COMPUTATION TIME
     ##############################################################################
     start_time = time.time()
-    
+
     # CONSTANTS
     ##############################################################################
     G = 6.67384*math.pow(10, -11.0)
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     hrs_in_day = 24.0
     sec_in_year = 3.15569*10**7.0
     Tobs = 3.15569*10**7.0
-    geo_mass = G/c**2    
+    geo_mass = G/c**2
 
     # ---- Create configuration-file-parser object and read parameters file.
     cp = ConfigParser.ConfigParser()
@@ -168,17 +168,17 @@ if __name__ == '__main__':
     total_sampled_mass = 0.0
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
-    
+
     match_list = []
     while Nstep < args.Niter and (len(bcm_save) < 5000 or np.min(np.array(match_all)) < 0.9999):
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
-            SFH_model='const' 
+            SFH_model='const'
             component_age=10000.0
         elif args.galaxy_component == 'Bulge':
             metallicity = 0.02
             SFH_model='burst'
-            component_age=10000.0           
+            component_age=10000.0
         elif args.galaxy_component == 'ThickDisk':
             metallicity = 0.02*0.15
             SFH_model='burst'
@@ -192,14 +192,14 @@ if __name__ == '__main__':
             total_sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
             initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
-            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)            
+            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
 
         if args.initial_samp == 'Moe':
-            # SET MINIMUM MASS SAMPLE   
-            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)            
+            # SET MINIMUM MASS SAMPLE
+            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
             initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
@@ -208,8 +208,8 @@ if __name__ == '__main__':
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
         # LOG THE TOTAL SAMPLED MASS
-	total_sampled_mass += sampled_mass
-        print "The total mass sampled so far is: ",total_sampled_mass
+        total_sampled_mass += sampled_mass
+        print("The total mass sampled so far is: {0}".format(total_sampled_mass))
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
-        
+
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
             if idx < args.Nstep:
@@ -235,7 +235,7 @@ if __name__ == '__main__':
                                             initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
                                             initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
             initConditions_save = initConditions_save.append(initC)
-             
+
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
                 conv_params = args.convergence_params[:len(args.convergence_params)-1]
@@ -247,12 +247,12 @@ if __name__ == '__main__':
                     match, binwidth = Match.match([ss.logit(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
                                                    ss.logit(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
                     match_all.append(match)
-                print 'matches: ',np.array(match_all)
-                print 'Length of bcm array: ', len(bcm_save) 
+                print('matches: {0}'.format(np.array(match_all)))
+                print('Length of bcm array: {0}'.format(len(bcm_save)))
                 match_save.append(match_all)
 	Nstep += args.Nstep
         idxOld = idx
-    # save the bcm array, bpp array, ad matches to an hdf5 
+    # save the bcm array, bpp array, ad matches to an hdf5
     dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
 
     dat_store.append('bcm', bcm_save)
@@ -261,6 +261,6 @@ if __name__ == '__main__':
     dat_store.append('initCond', initConditions_save)
     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
     dat_store.close()
-    
-    print 'All done friend!'
-    
+
+    print('All done friend!')
+
