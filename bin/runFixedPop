@@ -46,14 +46,27 @@ def parse_commandline():
     parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
-    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
-    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float, nargs='+')
+    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float, nargs='+')
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
     args = parser.parse_args()
+
+    if len(args.final_kstar1) > 2 or len(args.final_kstar2) > 2:
+        raise parser.error('final kstar1 and final kstar2 '
+                           'must be either a single value or '
+                           'a range between two values.')
+
+    if (len(args.final_kstar1) == 2):
+        if (args.final_kstar1[0] >= args.final_kstar1[1]):
+            raise parser.error('Range provided for kstar1 invalid')
+
+    if (len(args.final_kstar2) == 2):
+        if (args.final_kstar2[0] >= args.final_kstar2[1]):
+            raise parser.error('Range provided for kstar2 invalid')
 
     return args
 
