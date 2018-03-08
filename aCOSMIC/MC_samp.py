@@ -110,7 +110,7 @@ def sample_exponential_vertical(size, scale_height):
     return distributed_nums
 
 def sample_exponential_square(size, scale_height):
-    # SAMPLE FROM EXP((X/A)^2) DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
+    # SAMPLE FROM EXP(-(X/A)^2) DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
     ###########################################################################
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * ss.erfinv(rand_nums)
@@ -161,25 +161,27 @@ def galactic_position_sample(gx_component, size, model):
             xGX = r * np.cos(phi) * np.sin(theta) * 1000.0
             yGX = r * np.sin(phi) * np.sin(theta) * 1000.0
             zGX = r * np.cos(theta) * 1000.0
-        
         elif model == 'McMillan':
+            r_save = []
+            z_save = []
             # sample double exp func and then rejection sample
             while len(r_save) < size:
                 rcut = 2.1
                 q = 0.5
                 r0 = 0.075
-                r = sample_exponential_square(int(size/10.0), rcut)
-                z = sample_exponential_square(int(size/10.0), rcut*q)
-                
-                sample_func = np.exp((r^2 + (z/q)^2)/rcut^2)
-                actual_func = (1+np.sqrt((r^2 + (z/q)^2))/r0)**(-1.8)
-
-                indSave, = np.where(sample_fucn < actual_func)
+                alpha = -1.8
+                r = np.random.uniform(0,1,size)
+                z = np.random.uniform(0,1,size)
+                prob = np.random.uniform(0,1,size)
+                sample_func = np.exp(-(r**2 + (z/q)**2)/rcut**2)
+                actual_func = (1+np.sqrt((r**2 + (z/q)**2))/r0)**(alpha)*sample_func
+                indSave, = np.where(prob < actual_func)
                 for ii in indSave:
                     r_save.append(r[ii])
                     z_save.append(z[ii])
-            r = r_save[:size]
-            z = z_save[:size]
+                print 'length of sample: ',len(r_save)
+            r = np.array(r_save[:size])
+            z = np.array(z_save[:size])
 
             # Assign the azimuthal positions:
             phi = np.random.uniform(0, 2*np.pi , size)

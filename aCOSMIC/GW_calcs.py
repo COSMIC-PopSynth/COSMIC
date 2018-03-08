@@ -110,9 +110,9 @@ def moving_average(interval, window_size):
     return np.convolve(interval, window, 'same')
 
 def compute_foreground(forb, power):
-    nBinsLISA = 50000
-    freqBinsLISA =np.logspace(-6,-2.5,nBinsLISA)
-    print 'nmber of bins in foreground', nBinsLISA
+    nBinsLISA = 5000
+    freqBinsLISA = np.logspace(-6,-2.5,nBinsLISA)
+    print 'number of bins in foreground', nBinsLISA
     binIndices = np.digitize(forb,freqBinsLISA)
     print 'bins digitized'
     power_tot = [power[binIndices == ii].sum() for ii in range(1, len(freqBinsLISA))]
