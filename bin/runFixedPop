@@ -176,9 +176,27 @@ if __name__ == '__main__':
     bpp_save = pd.DataFrame()
     match_save = pd.DataFrame()
     initConditions_save = pd.DataFrame(columns=['m1','m2','porb','ecc','tphysf'])
+    
     idx = 0
     idxOld = 0
+    
     total_sampled_mass = 0.0
+    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)   
+
+    if len(args.final_kstar1) == 2: 
+        kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1])
+        kstar1_range_string = str(int(args.final_kstar1[0]))+'_'+str(int(args.final_kstar1[1]))
+    else:
+        kstar1_range = args.final_kstar1
+        kstar1_range_string = str(int(args.final_kstar1[0]))
+
+    if len(args.final_kstar2) == 2:
+        kstar2_range = np.arange(args.final_kstar2[0], args.final_kstar2[1])
+        kstar2_range_string = str(int(args.final_kstar2[0]))+'_'+str(int(args.final_kstar2[1]))
+    else:
+        kstar2_range = args.final_kstar2
+        kstar2_range_string = str(int(args.final_kstar2[0]))
+
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
 
@@ -200,11 +218,11 @@ if __name__ == '__main__':
         if args.initial_samp == 'ind':
             sampled_mass = 0.0
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
-            initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
+            initconditions.mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, model='kroupa93', size=args.Nstep)
             # add in the total sampled primary mass
             sampled_mass += total_mass1
             initconditions.mass1_binary, mass_singles = initconditions.binary_select(initconditions.mass1)
-            initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
+            initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary, secondary_min, secondary_max)
             # add in the sampled secondary mass
             sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
@@ -236,8 +254,8 @@ if __name__ == '__main__':
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
         idx = bcm.index.max()
-        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
-
+        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
+        
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
             if idx < args.Nstep:
@@ -270,7 +288,7 @@ if __name__ == '__main__':
         Nstep += args.Nstep
         idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5
-    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
+    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
 
     dat_store.append('bcm', bcm_save)
     dat_store.append('bpp', bpp_save)

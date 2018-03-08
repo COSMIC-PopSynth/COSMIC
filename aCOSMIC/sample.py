@@ -57,7 +57,7 @@ class Sample:
         self.metallicity = np.asarray(metallicity).repeat(size)
 
     # sample primary masses
-    def sample_primary(self, kstar1_final, model='kroupa93', size=None):
+    def sample_primary(self, primary_min, primary_max, model='kroupa93', size=None):
         '''
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
@@ -68,9 +68,9 @@ class Sample:
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if kstar1_final > 14.0:
+            if primary_max == 150.0:
                 a_0 = np.random.uniform(0.0, 0.9999797, size*500)
-            elif kstar1_final > 12.0:
+            elif primary_max == 50.0:
                 a_0 = np.random.uniform(0.0, 0.9999797, size*50)
             else:   
                 a_0 = np.random.uniform(0.0, 0.9999797, size)
@@ -87,34 +87,32 @@ class Sample:
             a_0[highIdx] = (1 - ((a_0[highIdx] - high_cutoff) / 0.0915941)) ** (-10.0/17.0)
             
             total_sampled_mass = np.sum(a_0)
-            if kstar1_final > 13.0:
-                a_0 = a_0[a_0 > 15.0]
-            elif kstar1_final > 12.0: 
-                a_0 = a_0[a_0 > 8.0]
+            
+            a_0 = a_0[a_0 >= primary_min]
+            a_0 = a_0[a_0 <= primary_max]
+            
             return a_0, total_sampled_mass
         
         elif model=='salpeter55':
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if kstar1_final > 14.0:
-                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size*500)
-            elif kstar1_final > 12.0:
-                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size*50)
+            if primary_max == 150.0:
+                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*500)
+            if primary_max == 50.0:
+                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*50)
             else:
-                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size)
-            
-            a_0 = mSamp
+                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size)
 
             total_sampled_mass = np.sum(a_0)
-            if kstar1_final > 13.0:
-                a_0 = a_0[a_0 > 15.0]
-            elif kstar1_final > 12.0:
-                a_0 = a_0[a_0 > 8.0]
+
+            a_0 = a_0[a_0 >= primary_min]
+            a_0 = a_0[a_0 <= primary_max]            
+
             return a_0, total_sampled_mass 
                    
     # sample secondary mass
-    def sample_secondary(self, primary_mass):
+    def sample_secondary(self, primary_mass, secondary_min, secondary_max):
         '''
         Secondary mass is computed from uniform mass ratio distribution draws motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
@@ -123,6 +121,9 @@ class Sample:
         
         a_0 = np.random.uniform(0.001, 1, primary_mass.size)
         secondary_mass = primary_mass*a_0        
+
+        secondary_mass = secondary_mass[secondary_mass >= secondary_min]
+        secondary_mass = secondary_mass[secondary_mass <= secondary_max]
 
         return secondary_mass
 
