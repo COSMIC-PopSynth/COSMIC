@@ -229,7 +229,7 @@ if __name__ == '__main__':
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
             idxSave = bcm_save.index
             idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
-            bpp_save_array = bpp[~bpp.index.isin(idxSave)]
+            bpp_save_array = bpp[bpp.index.isin(idxSave)]
             bpp_save = bpp_save.append(bpp_save_array)
             initC = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
                                             initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
@@ -253,7 +253,7 @@ if __name__ == '__main__':
 	Nstep += args.Nstep
         idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5 
-    dat_store = pd.HDFStore(r'dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
+    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
 
     dat_store.append('bcm', bcm_save)
     dat_store.append('bpp', bpp_save)

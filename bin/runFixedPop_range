@@ -232,7 +232,7 @@ if __name__ == '__main__':
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
             idxSave = bcm_save.index
             idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
-            bpp_save_array = bpp[~bpp.index.isin(idxSave)]
+            bpp_save_array = bpp[bpp.index.isin(idxSave)]
             bpp_save = bpp_save.append(bpp_save_array)
             initC = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
                                             initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
