@@ -10,21 +10,66 @@ from aCOSMIC.sample import Sample
 
 SAMPLECLASS = Sample(0.02, size=10)
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
-TOTAL_SAMPLED_MASS_KROUPA93 = 2.138821630578966 
-TOTAL_SAMPLED_MASS_SALPETER55 = 1.4513692733524741
+TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
+TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
+TOTAL_SAMPLED_MASS_KROUPA93 = 41.585324999945854 
+TOTAL_SAMPLED_MASS_150_SALPETER55 = 17593.2866338113
+TOTAL_SAMPLED_MASS_50_SALPETER55 = 1615.8593881185334
+TOTAL_SAMPLED_MASS_SALPETER55 = 28.182278678238717 
+TOTAL_SECONDARY_MASS = 16.15470927770034
+N_BINARY_SELECT = 92
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the aCOSMIC
     """
 
+    def test_sample_primary_150_kroupa93(self):
+        np.random.seed(2)
+        # Check that the sample_primary function samples mass correctly
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, model='kroupa93', size=100)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_KROUPA93)
+
+    def test_sample_primary_50_kroupa93(self):
+        np.random.seed(2)
+        # Check that the sample_primary function samples mass correctly
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, model='kroupa93', size=100)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_KROUPA93)
+
     def test_sample_primary_kroupa93(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(10, size=10)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_KROUPA93)
+
+    def test_sample_primary_150_salpeter55(self):
+        np.random.seed(2)
+        # Check that the sample_primary function samples mass correctly
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, model='salpeter55', size=100)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
+
+    def test_sample_primary_50_salpeter55(self):
+        np.random.seed(2)
+        # Check that the sample_primary function samples mass correctly
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, model='salpeter55', size=100)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
 
     def test_sample_primary_salpeter55(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(kstar1_final=10, model='salpeter55', size=10)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
+
+    def test_sample_secondary(self):
+        np.random.seed(2)
+        # Check that the sample_secondary function samples secondary mass correctly
+        a_0 = SAMPLECLASS.sample_secondary(primary_mass = np.arange(10))
+        self.assertEqual(np.sum(a_0), TOTAL_SECONDARY_MASS)
+
+    def test_binary_select(self):
+        np.random.seed(2)
+        # Check that the binary select function chooses binarity properly
+        np.random.seed(2)
+        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100))
+        self.assertEqual(len(m1_b), N_BINARY_SELECT)
+ 
+

@@ -99,11 +99,11 @@ class Sample:
             # object so we over sample the initial population
             if primary_max == 150.0:
                 a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*500)
-            if primary_max == 50.0:
+            elif primary_max == 50.0:
                 a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*50)
             else:
                 a_0 = rndm(a=0.1, b=100, g=-1.35, size=size)
-
+            
             total_sampled_mass = np.sum(a_0)
 
             a_0 = a_0[a_0 >= primary_min]
@@ -144,8 +144,8 @@ class Sample:
         '''
         If model='Han', separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
         If model='log_normal', Use (ref from Aaron Geller) to sample a log normal distributed orbital period
-        with mu=1e5.03 days and sigma=1e2.28 days; converts period from days to seconds.
-        Separation is then converted to orbital period in seconds
+        with mu=1e5.03 days and sigma=1e2.28 days
+        Separation is then converted to orbital period in days
         '''
         
         if model=='Han': 
@@ -165,7 +165,7 @@ class Sample:
             return porb_sec/sec_in_day
      
         if model=='log_normal':
-            #sample orbital period in days, return in seconds
+            #sample orbital period in days
             porb = np.random.lognormal(np.pow(10,5.03), np.pow(10.0,2.28), size)
 
             return porb
