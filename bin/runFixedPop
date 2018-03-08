@@ -185,11 +185,15 @@ if __name__ == '__main__':
             component_age=11000.0
 
         if args.initial_samp == 'ind':
+            sampled_mass = 0.0
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
             initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
+            # add in the total sampled primary mass
+            sampled_mass += total_mass1
             initconditions.mass1_binary, mass_singles = initconditions.binary_select(initconditions.mass1)
             initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
-            total_sampled_mass += np.sum(initconditions.mass2_binary)
+            # add in the sampled secondary mass
+            sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
             initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
             initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
