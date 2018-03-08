@@ -112,7 +112,7 @@ class Sample:
             return a_0, total_sampled_mass 
                    
     # sample secondary mass
-    def sample_secondary(self, primary_mass, secondary_min, secondary_max):
+    def sample_secondary(self, primary_mass):
         '''
         Secondary mass is computed from uniform mass ratio distribution draws motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
@@ -121,9 +121,6 @@ class Sample:
         
         a_0 = np.random.uniform(0.001, 1, primary_mass.size)
         secondary_mass = primary_mass*a_0        
-
-        secondary_mass = secondary_mass[secondary_mass >= secondary_min]
-        secondary_mass = secondary_mass[secondary_mass <= secondary_max]
 
         return secondary_mass
 
