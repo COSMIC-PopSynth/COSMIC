@@ -313,6 +313,11 @@ Cf2py intent(out) bppout,bcmout
 *
 
       
+      bpp = 0.d0
+      bcm = 0.d0
+      bppout = 0.d0
+      bcmout = 0.d0
+
       B_0(1) = 0.d0
       B_0(2) = 0.d0
 
