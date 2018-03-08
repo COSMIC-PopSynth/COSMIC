@@ -250,7 +250,7 @@ if __name__ == '__main__':
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
                 match_save.append(match_all)
-	Nstep += args.Nstep
+        Nstep += args.Nstep
         idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5
     dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
