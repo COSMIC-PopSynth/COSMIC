@@ -112,5 +112,5 @@ class TestSample(unittest2.TestCase):
 
     def test_set_kstar(self):
         # Check that the kstar is selected properly
-        kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0]))
-        self.assertEqual(kstar, SOLAR_KSTAR)
+        kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
+        self.assertEqual(np.mean(kstar), SOLAR_KSTAR)
