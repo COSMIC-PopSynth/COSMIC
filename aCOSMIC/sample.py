@@ -143,8 +143,6 @@ class Sample:
     def sample_porb(self, mass1, mass2, model='Han', size=None):
         '''
         If model='Han', separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
-        If model='log_normal', Use (ref from Aaron Geller) to sample a log normal distributed orbital period
-        with mu=1e5.03 days and sigma=1e2.28 days
         Separation is then converted to orbital period in days
         '''
         
@@ -164,12 +162,6 @@ class Sample:
             porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5           
             return porb_sec/sec_in_day
      
-        if model=='log_normal':
-            #sample orbital period in days
-            porb = np.random.lognormal(np.pow(10,5.03), np.pow(10.0,2.28), size)
-
-            return porb
-
 
     def sample_ecc(self, model='thermal', size=None):
         '''
