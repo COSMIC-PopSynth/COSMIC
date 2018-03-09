@@ -6,6 +6,7 @@ __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 import os
 import unittest2
 import numpy as np
+import pandas as pd
 from aCOSMIC.sample import Sample
 
 SAMPLECLASS = Sample(0.02, size=10)
@@ -111,5 +112,5 @@ class TestSample(unittest2.TestCase):
 
     def test_set_kstar(self):
         # Check that the kstar is selected properly
-        kstar = SAMPLECLASS.set_kstar([1.0])
+        kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0]))
         self.assertEqual(kstar, SOLAR_KSTAR)
