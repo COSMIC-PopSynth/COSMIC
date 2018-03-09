@@ -45,7 +45,7 @@ class TestSample(unittest2.TestCase):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
         a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, model='salpeter55', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_SALPETER55)
 
     def test_sample_primary_50_salpeter55(self):
         np.random.seed(2)
@@ -57,7 +57,7 @@ class TestSample(unittest2.TestCase):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
         a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, model='salpeter55', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_SALPETER55)
+        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
 
     def test_sample_secondary(self):
         np.random.seed(2)
