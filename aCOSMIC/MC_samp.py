@@ -179,7 +179,6 @@ def galactic_position_sample(gx_component, size, model):
                 for ii in indSave:
                     r_save.append(r[ii])
                     z_save.append(z[ii])
-                print 'length of sample: ',len(r_save)
             r = np.array(r_save[:size])
             z = np.array(z_save[:size])
 

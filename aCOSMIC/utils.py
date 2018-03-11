@@ -95,35 +95,34 @@ def param_transform(dat):
     return datTransformed
 
 
-def dat_transform(dat):
+def dat_transform(dat, dat_list):
     '''
     Transform a data set to have limits between zero and one using 
     param_transform, then transform to logit space
     '''
 
-    m1_trans = param_transform(dat.mass_1)
-    m2_trans = param_transform(dat.mass_2)
-    porb_trans = param_transform(dat.porb)
-    #note: ecc is between zero and one
-    ecc_trans = dat.ecc
-    ecc_trans[ecc_trans < 1.0e-6] = 1.0e-6
-    dat_trans = ss.logit(np.vstack([m1_trans, m2_trans, porb_trans, ecc_trans]))
+    dat_trans = []
+    for column in dat_list:
+        dat_trans.append(param_transform(dat[column]))
+    
+    dat_trans = ss.logit(np.vstack([dat_trans]))
 
     return dat_trans
 
-def dat_un_transform(gx_sample, dat_set):
-    m1_untrans = ss.expit(gx_sample[0, :]) *\
-                 (max(dat_set.mass_1) - min(dat_set.mass_1)) +\
-                 min(dat_set.mass_1)
-    m2_untrans = ss.expit(gx_sample[1, :]) *\
-                 (max(dat_set.mass_2) - min(dat_set.mass_2)) +\
-                 min(dat_set.mass_2)
-    porb_untrans = ss.expit(gx_sample[2, :]) *\
-                   (max(dat_set.porb) - min(dat_set.porb)) +\
-                   min(dat_set.porb)
-    ecc_untrans = ss.expit(gx_sample[3, :])
+def dat_un_transform(gx_sample, dat_set, dat_list):
+    '''
+    Un-transform data that was transformed in dat_transform
+    '''
+    
+    dat = []
+    ii = 0
+    for column in dat_list:
+        dat.append(ss.expit(gx_sample[ii, :])*\
+                   (max(dat_set[column]) - min(dat_set[column])) +\
+                    min(dat_set[column]))
+        ii += 0
 
-    dat = np.vstack([m1_untrans, m2_untrans, porb_untrans, ecc_untrans])
+    dat = np.vstack(dat)
 
     return dat
 
