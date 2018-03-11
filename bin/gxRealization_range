@@ -92,7 +92,8 @@ if __name__ == '__main__':
 
     # Filter out non-LISA sources
     ###########################################################################
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 5.0e4/sec_in_year]
+    # filter out binaries with orbital periods longer than a year
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
 
     print fixed_pop.loc[fixed_pop.ecc > 0.5].shape[0]
     if np.sum(fixed_pop.ecc) == 0.0:
@@ -103,19 +104,16 @@ if __name__ == '__main__':
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
     nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
 
-    # DOWN SAMPLE FOR NOW FOR TESTING!!!
-    nSystems = 100000
-
     dat_trans = utils.dat_transform(fixed_pop)
+    
     if np.sum(fixed_pop.ecc) == 0.0:
         dat_trans.ecc = np.zeros(dat_trans.ecc.size)  
-
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
     def _gx_realization(gx, n_systems, dat_trans, fixed_pop):
         print 'sampling data!'
         
-        psd_dat = pd.DataFrame(columns=['freq', 'power'])
+        psd_dat = pd.DataFrame(columns=['freq', 'psd'])
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
@@ -151,12 +149,12 @@ if __name__ == '__main__':
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                         str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+'_'+\
                                         str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5', key='gx', append='True')
-        
+
                 # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
                 #####################################################################
                 psd_chunk = GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                             full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 5)
+                                                            full_sample.ecc, full_sample.dist, 50)
            
                 psd_dat = psd_dat.append(psd_chunk)     
 
@@ -188,11 +186,12 @@ if __name__ == '__main__':
             print 'psd'
             psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                            full_sample.porb * (day_in_year * hrs_in_day),\
-                                                           full_sample.ecc, full_sample.dist, 5))
+                                                           full_sample.ecc, full_sample.dist, 50))
 
         print 'psd computed'
 
-        GW_foreground = GW_calcs.compute_foreground(psd_dat.freq, psd_dat.power)
+        GW_foreground = GW_calcs.compute_foreground(psd_dat)
+        print GW_foreground
         GW_foreground.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                               str(int(args.final_kstar1_hi))+'_'+str(int(args.final_kstar1_lo))+'_'+\
                               str(int(args.final_kstar2_hi))+'_'+str(int(args.final_kstar2_lo))+'.h5', key='gw_psd', append='True')

@@ -58,11 +58,11 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     based on the total sampled mass of the simulated system and
     the total mass of a given galactic component
     '''
-    print 'N binaries Fixed: ',dat.mass_1.size
+    print 'N binaries Fixed: ',len(dat.mass_1)
     print 'Gx component mass: ',component_mass
     print 'Total sampled mass: ',total_sampled_mass 
       
-    nSystems = int(dat.size*component_mass/total_sampled_mass)
+    nSystems = int(len(dat.mass_1)*component_mass/total_sampled_mass)
     print 'N binaries in Gx: ',nSystems
     return nSystems
 
@@ -170,9 +170,9 @@ def galactic_position_sample(gx_component, size, model):
                 q = 0.5
                 r0 = 0.075
                 alpha = -1.8
-                r = np.random.uniform(0,1,size)
-                z = np.random.uniform(0,1,size)
-                prob = np.random.uniform(0,1,size)
+                r = np.random.uniform(0,1,size*10)
+                z = np.random.uniform(0,1,size*10)
+                prob = np.random.uniform(0,1,size*10)
                 sample_func = np.exp(-(r**2 + (z/q)**2)/rcut**2)
                 actual_func = (1+np.sqrt((r**2 + (z/q)**2))/r0)**(alpha)*sample_func
                 indSave, = np.where(prob < actual_func)

@@ -43,7 +43,7 @@ def parse_commandline():
     parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
     parser.add_argument("--dist_model", help="Galaxy distribution model. fiducial is McMillan (2010)", required=True, default='McMillan')
     parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
-    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
     parser.add_argument("--N_realizations", help="Number of Galactic realziations to sample", type=int, default=100)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", type=bool, default=False)
@@ -81,14 +81,16 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = '/Users/katie/Desktop/COSMIC_paper_data/'+args.galaxy_component+'/dat_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5'
+    dat_path = '/Users/katie/Desktop/COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
+                str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5'
 
     total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
 
     # Filter out non-LISA sources
     ###########################################################################
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 5.0e4/sec_in_year]
+    # filter out binaries with orbital periods longer than a year
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
 
     print fixed_pop.loc[fixed_pop.ecc > 0.5].shape[0]
     if np.sum(fixed_pop.ecc) == 0.0:
@@ -98,14 +100,17 @@ if __name__ == '__main__':
     ###########################################################################
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
     nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
+
     dat_trans = utils.dat_transform(fixed_pop)
+    
     if np.sum(fixed_pop.ecc) == 0.0:
         dat_trans.ecc = np.zeros(dat_trans.ecc.size)  
-
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    def _gx_realization(gx, n_systems, dat_trans, fixed_pop, output):
-        psd_dat = pd.DataFrame(columns=['freq', 'power'])
+    def _gx_realization(gx, n_systems, dat_trans, fixed_pop):
+        print 'sampling data!'
+        
+        psd_dat = pd.DataFrame(columns=['freq', 'psd'])
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
@@ -137,14 +142,16 @@ if __name__ == '__main__':
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
 
+                #full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year]
                 if args.gx_save:
-                    full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
-        
+                    full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                                        str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5', key='gx', append='True')
+
                 # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
                 #####################################################################
                 psd_chunk = GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                             full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 5)
+                                                            full_sample.ecc, full_sample.dist, 50)
            
                 psd_dat = psd_dat.append(psd_chunk)     
 
@@ -167,36 +174,41 @@ if __name__ == '__main__':
                                                   'xGx', 'yGx', 'zGx', 'dist',\
                                                   'inc', 'OMEGA', 'omega'])
             if args.gx_save:
-                full_sample.to_hdf('gx_real_'+str(gx)+'.h5', key='gx', append='True')
- 
+                full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                                   str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5', key='gx', append='True')
 
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
             #####################################################################
             print 'psd'
             psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                            full_sample.porb * (day_in_year * hrs_in_day),\
-                                                           full_sample.ecc, full_sample.dist, 5))
+                                                           full_sample.ecc, full_sample.dist, 50))
 
         print 'psd computed'
 
-        GW_foreground = GW_calcs.compute_foreground(psd_dat.freq, psd_dat.power)
-        GW_foreground.to_hdf('gx_real_'+str(gx)+'.h5', key='gw_fg', append='True')
-        output.put('done')
+        GW_foreground = GW_calcs.compute_foreground(psd_dat)
+        print GW_foreground
+        GW_foreground.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                              str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5', key='gw_psd', append='True')
         return
 
 
-    n_loops = args.N_realizations / args.nproc
-    for n in range(n_loops):
-        output = mp.Queue()
-        processes = [mp.Process(target = _gx_realization,\
-                                args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop, output))\
-                    for x in range(args.nproc)]
-        
-        for p in processes:
-            p.daemon = True
-            p.start()
-        
-        for p in processes:
-            p.join()
-        
-    print 'All done friend!'
+    if args.nproc > 1:
+        n_loops = args.N_realizations / args.nproc
+        for n in range(n_loops):
+            output = mp.Queue()
+            processes = [mp.Process(target = _gx_realization,\
+                                    args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop))\
+                        for x in range(args.nproc)]
+            
+            for p in processes:
+                p.daemon = True
+                p.start()
+            
+            for p in processes:
+                p.join()
+    else:
+        _gx_realization(1, nSystems, dat_trans, fixed_pop)
+
+
+    print'All done friend!'

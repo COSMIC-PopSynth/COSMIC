@@ -928,6 +928,17 @@ def lisa_sensitivity():
     ldata = numpy.asarray(_LISA_DATA).reshape(-1, 2).T
     return interp1d(ldata[0], ldata[1])
 
+def lisa_root_psd(freq, L_arm):
+    # note: freq [Hz], L_arm [m], S_n [Hz^-0.5]
+    S_a = 9.0e-30 * (1.0 + 16.0 * ( (1.0e-4/freq)**2 + (2.0e-5/freq)**10 ) )
+    S_p = 8.9e-23
+    
+    f_star = 3.0e8 / (2*np.pi * L_arm)
+
+    S_n = 200.0/3.0 * 1/L_arm**2 * (1 + (freq / (1.29 * f_star))**2) * (S_p + 4*S_a/(2*np.pi*freq**4))
+
+    return S_n
+
 if __name__ == "__main__":
     ldata = numpy.asarray(_LISA_DATA).reshape(-1, 2).T
     sens_fcn = lisa_sensitivity()

@@ -1,5 +1,6 @@
 import scipy.integrate
 import numpy as np
+import scipy.special as ss
 
 ##################################################################################
 # DEFINE MIN AND MAX MASS SELECTOR
@@ -124,7 +125,7 @@ def dat_transform(dat):
     porb_trans = param_transform(dat.porb)
     #note: ecc is between zero and one
     ecc_trans = dat.ecc
-
+    ecc_trans[ecc_trans < 1.0e-6] = 1.0e-6
     dat_trans = ss.logit(np.vstack([m1_trans, m2_trans, porb_trans, ecc_trans]))
 
     return dat_trans

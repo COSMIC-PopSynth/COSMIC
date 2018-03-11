@@ -63,7 +63,8 @@ def peters_gfac(ecc, n):
 
 def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     # chirp mass in Msun, porb in hr, dist in kpc
-    LISA_root_psd = lisa_sensitivity.lisa_sensitivity()
+    # LISA mission: 2.5 million km arms
+    LISA_root_psd = lisa_sensitivity.lisa_root_psd(np.logspace(-7, 1, 1000), 2.5e9)
     h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
     
     if eccList.max() < 0.01:
@@ -88,44 +89,46 @@ def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
     freq = []
 
     # chirp mass in Msun, porb in hr, dist in kpc
-    LISA_root_psd = lisa_sensitivity.lisa_sensitivity()
     h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
 
+    ind_ecc, = np.where(eccList > 0.1)
+    ind_circ, = np.where(eccList <= 0.1)
+
+    print 'number ecc: ', len(ind_ecc)
+    print 'number circ: ', len(ind_circ)
+  
     if eccList.max() < 0.01:
-        psd = h_0_squared * Tobs / LISA_root_psd(2 / (porbList * sec_in_hour))**2
-        freq = 2.0 / (porbList * sec_in_hour)
+        psds = h_0_squared[ind_circ] * Tobs / 4.0
+        freqs = 2.0 / (porbList[ind_circ] * sec_in_hour)
+        
+        psd.extend(psds)
+        freq.extend(freqs)
                                         
     else:
-        SNR_array = np.zeros(len(mChirpList))
-        for mChirp, porb, ecc, dist in zip(mChirpList, porbList, eccList, distList):
-            for n in range(1, n_harmonic):
-                psd.append(1.0e-42 * peters_gfac(ecc, n) * Tobs *\
-                           ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2)
-                freq.append(n / (porb * sec_in_hour))
+        ii = 0
+        for ecc, porb in zip(eccList[ind_ecc], porbList[ind_ecc]):
+            psd.extend(h_0_squared[ii] * peters_gfac(ecc, np.arange(1,n_harmonic)) * Tobs)
+            freq.extend(np.arange(1,n_harmonic) / (porb * sec_in_hour))
+            ii += 1
     psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'psd'])
-    return psd_dat
+    return psd_dat.sort_values(by=['freq'])
     
 def moving_average(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
 
-def compute_foreground(forb, power):
-    nBinsLISA = 5000
-    freqBinsLISA = np.logspace(-6,-2.5,nBinsLISA)
-    print 'number of bins in foreground', nBinsLISA
-    binIndices = np.digitize(forb,freqBinsLISA)
+def compute_foreground(psd_dat):
+    binwidth = 4.0/Tobs
+    freqBinsLISA = np.arange(1e-6,1e-1,binwidth)
+    print 'number of bins in foreground', len(freqBinsLISA)
+    binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
-    power_tot = [power[binIndices == ii].sum() for ii in range(1, len(freqBinsLISA))]
-    
-    #binValue = []
-    #for ii in range(len(freqBinsLISA)):
-    #    binIndex, =np.where(binIndices==ii)
-    #    if len(binIndex) > 0:
-    #        binValue.append(sum(power[binIndex]))
-    #    else:
-    #        binValue.append(0.0)
-
-    print np.shape(power_tot), np.shape(freqBinsLISA)
-    foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA[1:], power_tot]).T,\
+    psd_dat['digits'] = binIndices
+    power_sum = psd_dat[['psd', 'digits']].groupby('digits').sum()['psd']
+    power_tot = np.zeros(len(freqBinsLISA))
+    power_tot[power_sum.index[:len(freqBinsLISA)]] = power_sum
+    # average the bins to make nice plot
+    #power_tot = moving_average(power_tot, 5.0)
+    foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA, power_tot]).T,\
                                   columns=['freq', 'psd'])
     return foreground_dat
