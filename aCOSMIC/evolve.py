@@ -127,7 +127,8 @@ class Evolve:
                     raise
                 else:
                     return f, e
-
+        import pdb
+        pdb.set_trace()
         # evolve sysyems
         output = mp_utils.multiprocess_with_queues(
             nproc, _evolve_single_system, initial_conditions, raise_exceptions=False)
@@ -146,5 +147,5 @@ class Evolve:
         for f, x, y in output:
             output_bpp = output_bpp.append(x)
             output_bcm = output_bcm.append(y)
-
+        print output_bcm
         return output_bpp, output_bcm

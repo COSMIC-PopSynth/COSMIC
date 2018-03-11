@@ -235,7 +235,6 @@ if __name__ == '__main__':
         if args.initial_samp == 'Moe':
             # SET MINIMUM MASS SAMPLE
             primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)
-
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
             initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
             initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
@@ -246,16 +245,20 @@ if __name__ == '__main__':
         total_sampled_mass += sampled_mass
         print("The total mass sampled so far is: {0}".format(total_sampled_mass))
 
+        print initconditions
+
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
 
+        print bcm
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
-        
+
+        print bcm_save_filtered
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
             if idx < args.Nstep:

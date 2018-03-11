@@ -17,16 +17,16 @@ def mass_min_max_select(kstar_1, kstar_2):
 
     if len(kstar_1) == 1:
         # there is a range of final kstar_1s to save
-        kstar_1_lo = kstar_1
-        kstar_1_hi = kstar_1
+        kstar_1_lo = kstar_1[0]
+        kstar_1_hi = kstar_1[0]
     else:
         kstar_1_lo = kstar_1[0]
         kstar_1_hi = kstar_1[1]
 
     if len(kstar_2) == 1:
         # there is a range of final kstar_1s to save
-        kstar_2_lo = kstar_2
-        kstar_2_hi = kstar_2
+        kstar_2_lo = kstar_2[0]
+        kstar_2_hi = kstar_2[0]
     else:
         kstar_2_lo = kstar_2[0]
         kstar_2_hi = kstar_2[1]
@@ -36,27 +36,27 @@ def mass_min_max_select(kstar_1, kstar_2):
 
     ii = 0
     for k in kstar_lo:
-        if k == 14:
+        if k == 14.0:
             min_mass[ii] = 15.0
-        elif k == 13:
+        elif k == 13.0:
             min_mass[ii] = 8.0
-        elif k == 12:
+        elif k == 12.0:
             min_mass[ii] = 5.0
-        elif k == 11:
+        elif k == 11.0:
             min_mass[ii] = 2.0
-        elif k == 10:
+        elif k == 10.0:
             min_mass[ii] = 0.5
         ii += 1
 
     ii = 0
     for k in kstar_hi:
-        if k == 13:
+        if k == 13.0:
             max_mass[ii] = 20.0
-        elif k == 12:
+        elif k == 12.0:
             max_mass[ii] = 12.0
-        elif k== 11:
+        elif k== 11.0:
             max_mass[ii] = 8.0
-        elif k == 10:
+        elif k == 10.0:
             max_mass[ii] = 5.0
         ii += 1
 

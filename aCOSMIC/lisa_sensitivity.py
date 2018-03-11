@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 from scipy.interpolate import interp1d
 
 # Code: cgiSensePlot.c v4.0 (sll - 13 February 2009 Build)
@@ -925,7 +925,7 @@ _LISA_DATA = map(float, """
 """.split())
 
 def lisa_sensitivity():
-    ldata = numpy.asarray(_LISA_DATA).reshape(-1, 2).T
+    ldata = np.asarray(_LISA_DATA).reshape(-1, 2).T
     return interp1d(ldata[0], ldata[1])
 
 def lisa_root_psd(freq, L_arm):
@@ -940,7 +940,7 @@ def lisa_root_psd(freq, L_arm):
     return S_n
 
 if __name__ == "__main__":
-    ldata = numpy.asarray(_LISA_DATA).reshape(-1, 2).T
+    ldata = np.asarray(_LISA_DATA).reshape(-1, 2).T
     sens_fcn = lisa_sensitivity()
     for freq in ldata[0,::100]:
         print "LISA sensitivity at {0:.2e} Hz is {1:.2e} Hz^(-1/2)".format(

@@ -264,7 +264,6 @@ class MultiDimSample:
         Sample initial binary distribution according to Moe & Di Stefano (2017)   
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
         '''        
-
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
         #analytic fits to corrected binary star populations.
