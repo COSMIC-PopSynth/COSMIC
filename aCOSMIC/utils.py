@@ -11,47 +11,29 @@ def mass_min_max_select(kstar_1, kstar_2):
 
     primary_min = 0.08
     secondary_min = 0.08
-
-    kstar = [kstar_1, kstar_2]
-   
+    
     min_mass = [primary_min, secondary_min]
     max_mass = [primary_max, secondary_max]
-   
-    ii = 0
-    for k in kstar:
-        if k > 13:
-            min_mass[ii] = 15.0
-        elif k > 12:
-            min_mass[ii] = 8.0
-            max_mass[ii] = 50.0
-        elif k > 11:
-            min_mass[ii] = 5.0
-            max_mass[ii] = 15.0
-        elif k > 10:
-            min_mass[ii] = 2.0
-            max_mass[ii] = 10.0
-        elif k > 9:
-            min_mass[ii] = 0.5
-            max_mass[ii] = 5.0
-        else:
-            max_mass[ii] = 5.0
-        ii += 1
 
-    return min_mass[0], max_mass[0], min_mass[1], max_mass[1]
+    if len(kstar_1) == 1:
+        # there is a range of final kstar_1s to save
+        kstar_1_lo = kstar_1
+        kstar_1_hi = kstar_1
+    else:
+        kstar_1_lo = kstar_1[0]
+        kstar_1_hi = kstar_1[1]
 
-def mass_min_max_select_range(kstar_1_lo, kstar_1_hi, kstar_2_lo, kstar_2_hi):
-    primary_max = 150.0
-    secondary_max = 150.0
-
-    primary_min = 0.08
-    secondary_min = 0.08
+    if len(kstar_2) == 1:
+        # there is a range of final kstar_1s to save
+        kstar_2_lo = kstar_2
+        kstar_2_hi = kstar_2
+    else:
+        kstar_2_lo = kstar_2[0]
+        kstar_2_hi = kstar_2[1]
 
     kstar_lo = [kstar_1_lo, kstar_2_lo]
     kstar_hi = [kstar_1_hi, kstar_2_hi]
-   
-    min_mass = [primary_min, secondary_min]
-    max_mass = [primary_max, secondary_max]
-   
+
     ii = 0
     for k in kstar_lo:
         if k == 14:
@@ -76,10 +58,9 @@ def mass_min_max_select_range(kstar_1_lo, kstar_1_hi, kstar_2_lo, kstar_2_hi):
             max_mass[ii] = 8.0
         elif k == 10:
             max_mass[ii] = 5.0
-        ii += 1 
+        ii += 1
 
     return min_mass[0], max_mass[0], min_mass[1], max_mass[1]
-
 
 
 def idl_tabulate(x, f, p=5) :

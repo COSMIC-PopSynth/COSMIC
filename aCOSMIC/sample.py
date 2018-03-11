@@ -57,7 +57,7 @@ class Sample:
         self.metallicity = np.asarray(metallicity).repeat(size)
 
     # sample primary masses
-    def sample_primary(self, kstar1_final, model='kroupa93', size=None):
+    def sample_primary(self, primary_min, primary_max, model='kroupa93', size=None):
         '''
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
@@ -68,9 +68,9 @@ class Sample:
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if kstar1_final > 14.0:
+            if primary_max == 150.0:
                 a_0 = np.random.uniform(0.0, 0.9999797, size*500)
-            elif kstar1_final > 12.0:
+            elif primary_max == 50.0:
                 a_0 = np.random.uniform(0.0, 0.9999797, size*50)
             else:   
                 a_0 = np.random.uniform(0.0, 0.9999797, size)
@@ -87,30 +87,28 @@ class Sample:
             a_0[highIdx] = (1 - ((a_0[highIdx] - high_cutoff) / 0.0915941)) ** (-10.0/17.0)
             
             total_sampled_mass = np.sum(a_0)
-            if kstar1_final > 13.0:
-                a_0 = a_0[a_0 > 15.0]
-            elif kstar1_final > 12.0: 
-                a_0 = a_0[a_0 > 8.0]
+            
+            a_0 = a_0[a_0 >= primary_min]
+            a_0 = a_0[a_0 <= primary_max]
+            
             return a_0, total_sampled_mass
         
         elif model=='salpeter55':
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if kstar1_final > 14.0:
-                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size*500)
-            elif kstar1_final > 12.0:
-                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size*50)
+            if primary_max == 150.0:
+                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*500)
+            elif primary_max == 50.0:
+                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*50)
             else:
-                mSamp = rndm(a=0.1, b=100, g=-1.35, size=size)
+                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size)
             
-            a_0 = mSamp
-
             total_sampled_mass = np.sum(a_0)
-            if kstar1_final > 13.0:
-                a_0 = a_0[a_0 > 15.0]
-            elif kstar1_final > 12.0:
-                a_0 = a_0[a_0 > 8.0]
+
+            a_0 = a_0[a_0 >= primary_min]
+            a_0 = a_0[a_0 <= primary_max]            
+
             return a_0, total_sampled_mass 
                    
     # sample secondary mass
@@ -145,9 +143,7 @@ class Sample:
     def sample_porb(self, mass1, mass2, model='Han', size=None):
         '''
         If model='Han', separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
-        If model='log_normal', Use (ref from Aaron Geller) to sample a log normal distributed orbital period
-        with mu=1e5.03 days and sigma=1e2.28 days; converts period from days to seconds.
-        Separation is then converted to orbital period in seconds
+        Separation is then converted to orbital period in days
         '''
         
         if model=='Han': 
@@ -166,12 +162,6 @@ class Sample:
             porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5           
             return porb_sec/sec_in_day
      
-        if model=='log_normal':
-            #sample orbital period in days, return in seconds
-            porb = np.random.lognormal(np.pow(10,5.03), np.pow(10.0,2.28), size)
-
-            return porb
-
 
     def sample_ecc(self, model='thermal', size=None):
         '''

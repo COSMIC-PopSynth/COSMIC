@@ -313,6 +313,11 @@ Cf2py intent(out) bppout,bcmout
 *
 
       
+      bpp = 0.d0
+      bcm = 0.d0
+      bppout = 0.d0
+      bcmout = 0.d0
+
       B_0(1) = 0.d0
       B_0(2) = 0.d0
 
@@ -501,6 +506,7 @@ Cf2py intent(out) bppout,bcmout
 *
       ip = 0
       jp = 0
+
       tsave = tphys
       isave = .true.
       iplot = .false.
@@ -3471,5 +3477,6 @@ Cf2py intent(out) bppout,bcmout
       bppout = bpp
       bcmout = bcm
 *
+
       END SUBROUTINE evolv2 
 ***

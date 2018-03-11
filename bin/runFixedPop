@@ -2,7 +2,7 @@
 
 # Code: runFixedPop.py
 # Version: 1
-# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE; 
+# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE;
 #                  COMPUTE RATES AND NUMBERS FOR EACH POPULATION ACCORDING
 #                  TO FLAGS SET BY USER
 #
@@ -46,14 +46,27 @@ def parse_commandline():
     parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
-    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float)
-    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float)
+    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float, nargs='+')
+    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float, nargs='+')
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: ind, or following Moe & Di Stefano (2017): Moe", default='Moe')
     args = parser.parse_args()
+
+    if len(args.final_kstar1) > 2 or len(args.final_kstar2) > 2:
+        raise parser.error('final kstar1 and final kstar2 '
+                           'must be either a single value or '
+                           'a range between two values.')
+
+    if (len(args.final_kstar1) == 2):
+        if (args.final_kstar1[0] >= args.final_kstar1[1]):
+            raise parser.error('Range provided for kstar1 invalid')
+
+    if (len(args.final_kstar2) == 2):
+        if (args.final_kstar2[0] >= args.final_kstar2[1]):
+            raise parser.error('Range provided for kstar2 invalid')
 
     return args
 
@@ -70,7 +83,7 @@ if __name__ == '__main__':
     # SET TIME TO TRACK COMPUTATION TIME
     ##############################################################################
     start_time = time.time()
-    
+
     # CONSTANTS
     ##############################################################################
     G = 6.67384*math.pow(10, -11.0)
@@ -86,7 +99,7 @@ if __name__ == '__main__':
     hrs_in_day = 24.0
     sec_in_year = 3.15569*10**7.0
     Tobs = 3.15569*10**7.0
-    geo_mass = G/c**2    
+    geo_mass = G/c**2
 
     # ---- Create configuration-file-parser object and read parameters file.
     cp = ConfigParser.ConfigParser()
@@ -163,43 +176,65 @@ if __name__ == '__main__':
     bpp_save = pd.DataFrame()
     match_save = pd.DataFrame()
     initConditions_save = pd.DataFrame(columns=['m1','m2','porb','ecc','tphysf'])
+    
     idx = 0
     idxOld = 0
+    
     total_sampled_mass = 0.0
+    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)   
+
+    if len(args.final_kstar1) == 2: 
+        kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1])
+        kstar1_range_string = str(int(args.final_kstar1[0]))+'_'+str(int(args.final_kstar1[1]))
+    else:
+        kstar1_range = args.final_kstar1
+        kstar1_range_string = str(int(args.final_kstar1[0]))
+
+    if len(args.final_kstar2) == 2:
+        kstar2_range = np.arange(args.final_kstar2[0], args.final_kstar2[1])
+        kstar2_range_string = str(int(args.final_kstar2[0]))+'_'+str(int(args.final_kstar2[1]))
+    else:
+        kstar2_range = args.final_kstar2
+        kstar2_range_string = str(int(args.final_kstar2[0]))
+
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
-    
+
     match_list = []
     while Nstep < args.Niter and (len(bcm_save) < 5000 or np.min(np.array(match_all)) < 0.9999):
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
-            SFH_model='const' 
+            SFH_model='const'
             component_age=10000.0
         elif args.galaxy_component == 'Bulge':
             metallicity = 0.02
             SFH_model='burst'
-            component_age=10000.0           
+            component_age=10000.0
         elif args.galaxy_component == 'ThickDisk':
             metallicity = 0.02*0.15
             SFH_model='burst'
             component_age=11000.0
 
         if args.initial_samp == 'ind':
+            sampled_mass = 0.0
             initconditions = Sample(metallicity = metallicity, size = args.Nstep)
-            initconditions.mass1, total_mass1 = initconditions.sample_primary(args.final_kstar1, model='kroupa93', size=args.Nstep)
+            initconditions.mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, model='kroupa93', size=args.Nstep)
+            # add in the total sampled primary mass
+            sampled_mass += total_mass1
             initconditions.mass1_binary, mass_singles = initconditions.binary_select(initconditions.mass1)
             initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
-            total_sampled_mass += np.sum(initconditions.mass2_binary)
+            # add in the sampled secondary mass
+            sampled_mass += np.sum(initconditions.mass2_binary)
             initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, model='Han', size=initconditions.mass1_binary.size)
             initconditions.ecc =  initconditions.sample_ecc(size = initconditions.mass1_binary.size, model='thermal')
-            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)            
+            initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
 
         if args.initial_samp == 'Moe':
-            # SET MINIMUM MASS SAMPLE   
-            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)            
+            # SET MINIMUM MASS SAMPLE
+            primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)
 
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
             initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
@@ -208,8 +243,8 @@ if __name__ == '__main__':
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
 
         # LOG THE TOTAL SAMPLED MASS
-	total_sampled_mass += sampled_mass
-        print "The total mass sampled so far is: ",total_sampled_mass
+        total_sampled_mass += sampled_mass
+        print("The total mass sampled so far is: {0}".format(total_sampled_mass))
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
@@ -219,7 +254,7 @@ if __name__ == '__main__':
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
         idx = bcm.index.max()
-        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1 == args.final_kstar1) & (bcm_filtered.kstar_2 == args.final_kstar2)]
+        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
         
         if bcm_save_filtered.shape[0] > 0:
             bcm_save = bcm_save.append(bcm_save_filtered)
@@ -235,7 +270,7 @@ if __name__ == '__main__':
                                             initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
                                             initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
             initConditions_save = initConditions_save.append(initC)
-             
+
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
                 conv_params = args.convergence_params[:len(args.convergence_params)-1]
@@ -247,13 +282,13 @@ if __name__ == '__main__':
                     match, binwidth = Match.match([ss.logit(param_transform(bcm_save[i_convergence_parameter])).tolist(),\
                                                    ss.logit(param_transform(bcm_save_test_conv1[i_convergence_parameter])).tolist()], 2)
                     match_all.append(match)
-                print 'matches: ',np.array(match_all)
-                print 'Length of bcm array: ', len(bcm_save) 
+                print('matches: {0}'.format(np.array(match_all)))
+                print('Length of bcm array: {0}'.format(len(bcm_save)))
                 match_save.append(match_all)
-	Nstep += args.Nstep
+        Nstep += args.Nstep
         idxOld = idx
-    # save the bcm array, bpp array, ad matches to an hdf5 
-    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+str(int(args.final_kstar1))+'_'+str(int(args.final_kstar2))+'.h5')
+    # save the bcm array, bpp array, ad matches to an hdf5
+    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
 
     dat_store.append('bcm', bcm_save)
     dat_store.append('bpp', bpp_save)
@@ -261,6 +296,6 @@ if __name__ == '__main__':
     dat_store.append('initCond', initConditions_save)
     dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
     dat_store.close()
-    
-    print 'All done friend!'
-    
+
+    print('All done friend!')
+
