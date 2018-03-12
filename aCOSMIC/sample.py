@@ -200,11 +200,10 @@ class Sample:
         '''
         Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
         '''
-         
         kstar = np.zeros(mass.size)
         low_cutoff = 0.7
-        lowIdx, = np.where(mass < low_cutoff)
-        hiIdx, = np.where(mass >= low_cutoff)
+        lowIdx = np.where(mass < low_cutoff)[0]
+        hiIdx = np.where(mass >= low_cutoff)[0]
 
         kstar[lowIdx] = 0
         kstar[hiIdx] = 1
