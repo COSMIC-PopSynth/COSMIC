@@ -127,8 +127,6 @@ class Evolve:
                     raise
                 else:
                     return f, e
-        import pdb
-        pdb.set_trace()
         # evolve sysyems
         output = mp_utils.multiprocess_with_queues(
             nproc, _evolve_single_system, initial_conditions, raise_exceptions=False)

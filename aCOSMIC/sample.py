@@ -558,6 +558,7 @@ class MultiDimSample:
 
 
         def _sample_initial_pop(M1min, M2min, M1max, M2max, size, output):
+            np.random.seed()
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
