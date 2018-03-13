@@ -39,7 +39,7 @@ def mass_min_max_select(kstar_1, kstar_2):
         if k == 14.0:
             min_mass[ii] = 15.0
         elif k == 13.0:
-            min_mass[ii] = 8.0
+            min_mass[ii] = 6.0
         elif k == 12.0:
             min_mass[ii] = 5.0
         elif k == 11.0:
@@ -51,7 +51,7 @@ def mass_min_max_select(kstar_1, kstar_2):
     ii = 0
     for k in kstar_hi:
         if k == 13.0:
-            max_mass[ii] = 20.0
+            max_mass[ii] = 40.0
         elif k == 12.0:
             max_mass[ii] = 12.0
         elif k== 11.0:

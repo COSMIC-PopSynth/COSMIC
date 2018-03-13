@@ -145,5 +145,4 @@ class Evolve:
         for f, x, y in output:
             output_bpp = output_bpp.append(x)
             output_bcm = output_bcm.append(y)
-        print output_bcm
         return output_bpp, output_bcm

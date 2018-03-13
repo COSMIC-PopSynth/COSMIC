@@ -121,16 +121,17 @@ if __name__ == '__main__':
 
     # Filter out non-LISA sources
     ###########################################################################
-    # filter out binaries with orbital periods longer than a year
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
+    # filter out binaries with orbital periods longer than 1000 years
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1000.0]
 
     
     # Filter out systems which undergo Common Envelope w/ HG star secondary
     ###########################################################################
     if not args.HG_save:
-        bpp_ce = bpp.loc[bpp.evol_type == 7.0]
-        bpp_ce_save = bpp_ce.loc[bpp_ce.kstar_2 != 2.0]
-        bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 2.0]
+        comenv_index, = np.where(bpp.evol_type==7.0)
+        bpp_pre_ce = bpp.iloc[comenv_index-1]
+        bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
+        bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
         index_save = bpp_ce_save.index
 
         fixed_pop = fixed_pop.loc[fixed_pop.index.isin(index_save)]
@@ -162,13 +163,6 @@ if __name__ == '__main__':
         if n_systems > 1e6:
             nLoop = int(n_systems/1.0e6)
             for ii in range(nLoop):
-                print ii
-                if ii == 25:
-                    print ii
-                elif ii == 50:
-                    print ii
-                elif ii ==100:
-                    print ii
                 nSample = int(n_systems/float(nLoop))
                 
                 # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION

@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     bcm_save = pd.DataFrame()
     bpp_save = pd.DataFrame()
-    match_save = pd.DataFrame()
+    match_save = pd.DataFrame(columns = args.convergence_params)
     initConditions_save = pd.DataFrame(columns=['m1','m2','porb','ecc','tphysf'])
     
     idx = 0
@@ -283,12 +283,11 @@ if __name__ == '__main__':
                     match_all.append(match)
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
-                match_save.append(match_all)
+                match_save = match_save.append(pd.DataFrame(np.array(match_all).T, columns = args.convergence_params))
         Nstep += args.Nstep
         idxOld = idx
     # save the bcm array, bpp array, ad matches to an hdf5
     dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
-
     dat_store.append('bcm', bcm_save)
     dat_store.append('bpp', bpp_save)
     dat_store.append('match', match_save)
