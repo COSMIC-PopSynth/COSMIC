@@ -263,7 +263,7 @@ Cf2py intent(out) bppout,bcmout
 
       mass1i = mass(1)
       mass2i = mass(2)
-      tbi = tb/yearsc
+      tbi = tb
       ecci = ecc
 *
       zero = 0.d0
