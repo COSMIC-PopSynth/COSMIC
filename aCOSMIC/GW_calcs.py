@@ -108,7 +108,7 @@ def moving_average(interval, window_size):
 
 def compute_foreground(psd_dat):
     binwidth = 4.0/Tobs
-    freqBinsLISA = np.arange(1e-6,1e-1,binwidth)
+    freqBinsLISA = np.arange(1e-7,1e-1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
