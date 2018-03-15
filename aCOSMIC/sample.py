@@ -68,9 +68,9 @@ class Sample:
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if primary_max == 150.0:
+            if primary_max >= 150.0:
                 a_0 = np.random.uniform(0.0, 0.9999797, size*500)
-            elif primary_max == 50.0:
+            elif primary_max >= 30.0:
                 a_0 = np.random.uniform(0.0, 0.9999797, size*50)
             else:   
                 a_0 = np.random.uniform(0.0, 0.9999797, size)
@@ -90,7 +90,6 @@ class Sample:
             
             a_0 = a_0[a_0 >= primary_min]
             a_0 = a_0[a_0 <= primary_max]
-            
             return a_0, total_sampled_mass
         
         elif model=='salpeter55':
