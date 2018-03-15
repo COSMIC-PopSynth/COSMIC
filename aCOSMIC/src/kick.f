@@ -172,6 +172,7 @@
  20   continue
       vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
       vk = SQRT(vk2)
+
 * Limit BH kick with fallback mass fraction.
 *      if(kw.eq.14)then
 *Limit BH kick with fallback only if wanted

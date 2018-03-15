@@ -249,6 +249,8 @@ if __name__ == '__main__':
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
 
+        import pdb
+        pdb.set_trace()
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]

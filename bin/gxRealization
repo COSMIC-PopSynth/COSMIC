@@ -223,11 +223,11 @@ if __name__ == '__main__':
             if psd_calc:
                 psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                            full_sample.porb * (day_in_year * hrs_in_day),\
-                                                           full_sample.ecc, full_sample.dist, 50))
+                                                           full_sample.ecc, full_sample.dist, 150))
             if SNR_calc:
                 SNR = SNR.append(GW_calcs.LISA_SNR(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                             full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 50))
+                                                            full_sample.ecc, full_sample.dist, 150))
                 SNR.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                            kstar1_range_string+'_'+kstar2_range_string+'.h5', key='SNR', append='True')
                    

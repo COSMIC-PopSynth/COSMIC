@@ -26,6 +26,7 @@ import scipy.special as ss
 import scipy.stats as stats
 import lisa_sensitivity
 import pandas as pd
+from scipy.interpolate import interp1d 
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -49,18 +50,33 @@ geo_mass = G/c**2
 def m_chirp(m1, m2):
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
 
-def peters_gfac(ecc, n):
-    # Note this is: g(n,e)/n**2 that is being calculated
-    g_fac_squared = (n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
-                        2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
-                        ss.jv((n+2), (n*ecc)))**2 +\
-                       (1-ecc**2)*(ss.jv((n-2), (n*ecc)) - 2*ss.jv((n), (n*ecc)) +\
-                       ss.jv((n+2), (n*ecc)))**2 +\
-                       (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
-                       )/n**2.0
+def peters_gfac_interp(nHarmonic):
+    # Note this is: g(n,e)/n**2 that is being calculatedi
+    g_fac_squared = []
+    ecc = np.linspace(0.0, 0.999, 10000)
+    for n in range(1,nHarmonic):
+        g_fac_squared.append((n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
+                             2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
+                             ss.jv((n+2), (n*ecc)))**2 +\
+                             (1-ecc**2)*(ss.jv((n-2), (n*ecc)) - 2*ss.jv((n), (n*ecc)) +\
+                             ss.jv((n+2), (n*ecc)))**2 +\
+                             (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
+                             )/n**2.0)
 
-    return g_fac_squared
+    interp_list = []
+    for n in range(nHarmonic-1):
+        interp_list.append(interp1d(ecc, g_fac_squared[n]))
+    
+    return interp_list
 
+def peters_gfac(eccentricities, n_harmonic):
+    interp_list = peters_gfac_interp(n_harmonic)
+    peters_g = []
+    for interp in interp_list:
+        peters_g.append(interp(eccentricities))
+
+    return np.array(peters_g)
+ 
 def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     # chirp mass in Msun, porb in hr, dist in kpc
     # LISA mission: 2.5 million km arms
@@ -74,10 +90,13 @@ def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     
     SNR[ind_circ] = (h_0_squared[ind_circ] * Tobs / LISA_root_psd(2 / (porbList[ind_circ] * sec_in_hour))**2)**0.5
     
-    for ecc, porb, ind in zip(eccList[ind_ecc], porbList[ind_ecc], ind_ecc):
+    peters_g_factor = peters_gfac(eccList[ind_ecc], h_harmonic)
+    import pdb
+    pdb.set_trace()
+    for porb, ind in zip(porbList[ind_ecc], ind_ecc):
         SNR_squared = np.zeros(n_harmonic)
         for n in range(1, n_harmonic):
-            SNR_squared[n] = h_0_squared[ind] * peters_gfac(ecc, n) *\
+            SNR_squared[n] = h_0_squared[ind] * peters_g_factor[n, ind] *\
                              Tobs / LISA_root_psd(n / (porb * sec_in_hour))**2
         SNR[ind] = np.sum(SNR_squared)**0.5
     
@@ -86,7 +105,6 @@ def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
 def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
     psd = []
     freq = []
-    
     # chirp mass in Msun, porb in hr, dist in kpc
     h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
 
@@ -96,9 +114,10 @@ def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
     psd.extend(h_0_squared[ind_circ] * Tobs)
     freq.extend(2.0 / (porbList[ind_circ] * sec_in_hour))
 
-    for ecc, porb, ind in zip(eccList[ind_ecc], porbList[ind_ecc], ind_ecc):
-        psd.extend(h_0_squared[ind] * peters_gfac(ecc, np.arange(1,n_harmonic)) * Tobs)
-        freq.extend(np.arange(1,n_harmonic) / (porb * sec_in_hour))
+    peters_g_factor = peters_gfac(eccList[ind_ecc], n_harmonic)
+    for n in range(n_harmonic-1):
+        psd.extend(h_0_squared[ind_ecc] * peters_g_factor[n, :] * Tobs)
+        freq.extend(n / (porbList[ind_ecc] * sec_in_hour))
     psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'psd'])
     return psd_dat.sort_values(by=['freq'])
     
