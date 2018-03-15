@@ -8,8 +8,10 @@ import unittest2
 import numpy as np
 import pandas as pd
 from aCOSMIC.sample import Sample
+from aCOSMIC.sample import MultiDimSample
 
 SAMPLECLASS = Sample(0.02, size=10)
+MULTIDIMSAMPLECLASS = MultiDimSample(0.02, size=10)
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
 TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
@@ -25,7 +27,7 @@ UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
 KSTAR_SOLAR = 1.0
-
+MOE_TOTAL_MASS = 62.735163577852106
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the aCOSMIC Sample class, which generates several 
@@ -114,3 +116,9 @@ class TestSample(unittest2.TestCase):
         # Check that the kstar is selected properly
         kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
+
+
+    def test_Moe_sample(self):
+        np.random.seed(2)
+        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(size=50, nproc=1)
+        self.assertEqual(total_mass, MOE_TOTAL_MASS)
