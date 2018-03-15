@@ -27,7 +27,7 @@ UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
 KSTAR_SOLAR = 1.0
-MOE_TOTAL_MASS = 62.735163577852106
+MOE_TOTAL_MASS = 31.134712126322306 
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the aCOSMIC Sample class, which generates several 
@@ -119,8 +119,7 @@ class TestSample(unittest2.TestCase):
 
 
     def test_Moe_sample(self):
-        np.random.seed(2)
-        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(size=10, nproc=1)
+        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(total_mass, MOE_TOTAL_MASS)
 
     def test_sample_SFH_const(self):
