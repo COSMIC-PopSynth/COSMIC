@@ -120,5 +120,22 @@ class TestSample(unittest2.TestCase):
 
     def test_Moe_sample(self):
         np.random.seed(2)
-        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(size=50, nproc=1)
+        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(size=10, nproc=1)
         self.assertEqual(total_mass, MOE_TOTAL_MASS)
+
+    def test_sample_SFH_const(self):
+        np.random.seed(2)
+        # Check that the sample SFH function samples SFH correctly
+        times = MULTIDIMSAMPLECLASS.sample_SFH(model='const', component_age=10000.0, size=100)
+        self.assertEqual(times.sum(), CONST_SFR_SUM)
+
+    def test_sample_SFH_burst(self):
+        np.random.seed(2)
+        # Check that the sample SFH function samples SFH correctly
+        times = MULTIDIMSAMPLECLASS.sample_SFH(model='burst', component_age=10000.0, size=100)
+        self.assertEqual(times.sum(), BURST_SFR_SUM)
+
+    def test_set_kstar(self):
+        # Check that the kstar is selected properly
+        kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
+        self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
