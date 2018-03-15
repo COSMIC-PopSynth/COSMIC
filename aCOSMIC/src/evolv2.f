@@ -5,7 +5,7 @@
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,
-     \ bppout,bcmout)
+     \ bppout,bcmout,idumtmp)
       implicit none
       INCLUDE 'const_bse.h'
 ***
@@ -210,7 +210,7 @@
       REAL bcmout(50000,36)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
-      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,dtptmp
+      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,dtptmp,idumtmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
       REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
@@ -246,6 +246,7 @@ Cf2py intent(out) bppout,bcmout
       merger = mergertmp
       windflag = windflagtmp
       dtp = dtptmp
+      idum = idumtmp
 
       CALL instar
 
@@ -363,7 +364,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Set the seed for the random number generator. 
 *
-      idum = 3234
+*      idum = INT(sep*100)
       if(idum.gt.0) idum = -idum
 
 *
