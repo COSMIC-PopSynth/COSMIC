@@ -925,18 +925,23 @@ _LISA_DATA = map(float, """
 """.split())
 
 def lisa_sensitivity():
+    '''Computes LISA sensitivity curve according to `Larson, Hiscock, and Hellings (2000) <http://adsabs.harvard.edu/abs/2000PhRvD..62f2001L>`_
+    '''
+
     ldata = np.asarray(_LISA_DATA).reshape(-1, 2).T
     return interp1d(ldata[0], ldata[1])
 
-def lisa_root_psd(freq, L_arm):
+def lisa_root_psd(freq):
+    '''Computes LISA sensitivity curve according to `Cornish and Robson 2018 <https://arxiv.org/pdf/1803.01944.pdf>`_
+    ''' 
     # note: freq [Hz], L_arm [m], S_n [Hz^-0.5]
-    S_a = 9.0e-30 * (1.0 + 16.0 * ( (1.0e-4/freq)**2 + (2.0e-5/freq)**10 ) )
-    S_p = 8.9e-23
+    L_arm = 2.5e9
+    f_star = 19.09*1e-3
     
-    f_star = 3.0e8 / (2*np.pi * L_arm)
-
-    S_n = 200.0/3.0 * 1/L_arm**2 * (1 + (freq / (1.29 * f_star))**2) * (S_p + 4*S_a/(2*np.pi*freq**4))
-
+    P_OMS = (1.5e-11)**2 * (1.0 + (2.0e-3 / freq)**4)
+    P_acc = (3.0e-15)**2 * (1.0 + (0.4e-3 / freq)**4) * (1.0 + (freq/8.0e-3)**4)
+    S_n = 10.0/(3 * L_arm**2)*(P_OMS + 2.0 * (1.0 + (np.cos(freq/f_star)**2) * P_acc/((2*np.pi*freq)**4) * (1 + 6.0/10.0*(freq/f_star)**2)
+    
     return S_n
 
 if __name__ == "__main__":
