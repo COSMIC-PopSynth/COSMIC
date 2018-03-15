@@ -257,7 +257,7 @@ class MultiDimSample:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, size=None, nproc=1):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
         '''
         Sample initial binary distribution according to Moe & Di Stefano (2017)   
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
@@ -555,8 +555,11 @@ class MultiDimSample:
         ecc_list = []
 
 
-        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, output):
-            np.random.seed()
+        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, seed, output):
+            if seed > 0:
+                np.random.seed(seed)
+            else:
+                np.random.seed()
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
@@ -652,7 +655,7 @@ class MultiDimSample:
       
         output = mp.Queue()
         processes = [mp.Process(target = _sample_initial_pop,\
-                                args = (M1min, M2min, M1max, M2max, size/nproc, output))\
+                                args = (M1min, M2min, M1max, M2max, size/nproc, rand_seed, output))\
                                 for x in range(nproc)]
         for p in processes:
             p.daemon = True
@@ -702,11 +705,10 @@ class MultiDimSample:
         '''
         Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
         '''
-
         kstar = np.zeros(mass.size)
         low_cutoff = 0.7
-        lowIdx, = np.where(mass < low_cutoff)
-        hiIdx, = np.where(mass >= low_cutoff)
+        lowIdx = np.where(mass < low_cutoff)[0]
+        hiIdx = np.where(mass >= low_cutoff)[0]
 
         kstar[lowIdx] = 0
         kstar[hiIdx] = 1
