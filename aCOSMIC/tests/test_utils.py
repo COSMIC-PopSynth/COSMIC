@@ -29,7 +29,7 @@ class TestUtils(unittest2.TestCase):
     
     def test_idl_tabulate_Err(self):
         # Force an error by sending in x = [0] 
-        self.assertEqual(utils.idl_tabulate([0],f), 0.0)
+        self.assertEqual(utils.idl_tabulate(np.array([0]),f), 0)
 
     def test_min_max_mass_single_kstar(self):
         # Send in a single typed binary with both components
