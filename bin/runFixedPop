@@ -236,7 +236,7 @@ if __name__ == '__main__':
             # SET MINIMUM MASS SAMPLE
             primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)
             initconditions = MultiDimSample(metallicity = metallicity, size=args.Nstep)
-            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, size=args.Nstep, nproc = args.nproc)
+            initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed = 0, size=args.Nstep, nproc = args.nproc)
             initconditions.tphysf = initconditions.sample_SFH(model=SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
             initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
             initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)

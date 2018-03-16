@@ -8,8 +8,10 @@ import unittest2
 import numpy as np
 import pandas as pd
 from aCOSMIC.sample import Sample
+from aCOSMIC.sample import MultiDimSample
 
 SAMPLECLASS = Sample(0.02, size=10)
+MULTIDIMSAMPLECLASS = MultiDimSample(0.02, size=10)
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
 TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
@@ -25,7 +27,7 @@ UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
 KSTAR_SOLAR = 1.0
-
+MOE_TOTAL_MASS = 31.134712126322306 
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the aCOSMIC Sample class, which generates several 
@@ -113,4 +115,26 @@ class TestSample(unittest2.TestCase):
     def test_set_kstar(self):
         # Check that the kstar is selected properly
         kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
+        self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
+
+
+    def test_Moe_sample(self):
+        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
+        self.assertEqual(total_mass, MOE_TOTAL_MASS)
+
+    def test_sample_SFH_const(self):
+        np.random.seed(2)
+        # Check that the sample SFH function samples SFH correctly
+        times = MULTIDIMSAMPLECLASS.sample_SFH(model='const', component_age=10000.0, size=100)
+        self.assertEqual(times.sum(), CONST_SFR_SUM)
+
+    def test_sample_SFH_burst(self):
+        np.random.seed(2)
+        # Check that the sample SFH function samples SFH correctly
+        times = MULTIDIMSAMPLECLASS.sample_SFH(model='burst', component_age=10000.0, size=100)
+        self.assertEqual(times.sum(), BURST_SFR_SUM)
+
+    def test_set_kstar(self):
+        # Check that the kstar is selected properly
+        kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
