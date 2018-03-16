@@ -940,7 +940,7 @@ def lisa_root_psd(freq):
     
     P_OMS = (1.5e-11)**2 * (1.0 + (2.0e-3 / freq)**4)
     P_acc = (3.0e-15)**2 * (1.0 + (0.4e-3 / freq)**4) * (1.0 + (freq/8.0e-3)**4)
-    S_n = 10.0/(3 * L_arm**2)*(P_OMS + 2.0 * (1.0 + (np.cos(freq/f_star)**2) * P_acc/((2*np.pi*freq)**4) * (1 + 6.0/10.0*(freq/f_star)**2)
+    S_n = 10.0/(3 * L_arm**2)*(P_OMS + 2.0 * (1.0 + (np.cos(freq/f_star)**2) * P_acc/((2*np.pi*freq)**4) * (1 + 6.0/10.0*(freq/f_star)**2) ))
     
     return S_n
 
