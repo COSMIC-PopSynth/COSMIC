@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = '/Users/katie/Desktop/COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
+    dat_path = 'dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
 
     total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
@@ -121,8 +121,8 @@ if __name__ == '__main__':
 
     # Filter out non-LISA sources
     ###########################################################################
-    # filter out binaries with orbital periods longer than 1000 years
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1000.0]
+    # filter out binaries with orbital periods longer than 1 years
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
 
     
     # Filter out systems which undergo Common Envelope w/ HG star secondary
@@ -163,6 +163,7 @@ if __name__ == '__main__':
         if n_systems > 1e6:
             nLoop = int(n_systems/1.0e6)
             for ii in range(nLoop):
+                print ii
                 nSample = int(n_systems/float(nLoop))
                 
                 # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
@@ -182,6 +183,7 @@ if __name__ == '__main__':
                               columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
+                full_sample = full_sample.loc[full_sample.porb < 1e5]
 
                 #full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year]
                 if args.gx_save:
