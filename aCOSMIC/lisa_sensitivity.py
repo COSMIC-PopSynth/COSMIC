@@ -931,9 +931,11 @@ def lisa_sensitivity():
     ldata = np.asarray(_LISA_DATA).reshape(-1, 2).T
     return interp1d(ldata[0], ldata[1])
 
-def lisa_root_psd(freq):
+def lisa_root_psd():
     '''Computes LISA sensitivity curve according to `Cornish and Robson 2018 <https://arxiv.org/pdf/1803.01944.pdf>`_
     ''' 
+
+    freq = np.logspace(-6,1)
     # note: freq [Hz], L_arm [m], S_n [Hz^-0.5]
     L_arm = 2.5e9
     f_star = 19.09*1e-3
@@ -942,11 +944,5 @@ def lisa_root_psd(freq):
     P_acc = (3.0e-15)**2 * (1.0 + (0.4e-3 / freq)**4) * (1.0 + (freq/8.0e-3)**4)
     S_n = 10.0/(3 * L_arm**2)*(P_OMS + 2.0 * (1.0 + (np.cos(freq/f_star)**2) * P_acc/((2*np.pi*freq)**4) * (1 + 6.0/10.0*(freq/f_star)**2) ))
     
-    return S_n
+    return interp1d(freq, S_n)
 
-if __name__ == "__main__":
-    ldata = np.asarray(_LISA_DATA).reshape(-1, 2).T
-    sens_fcn = lisa_sensitivity()
-    for freq in ldata[0,::100]:
-        print "LISA sensitivity at {0:.2e} Hz is {1:.2e} Hz^(-1/2)".format(
-                freq, sens_fcn(freq))
