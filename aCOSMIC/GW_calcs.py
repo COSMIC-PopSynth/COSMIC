@@ -91,8 +91,6 @@ def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     SNR[ind_circ] = (h_0_squared[ind_circ] * Tobs / LISA_root_psd(2 / (porbList[ind_circ] * sec_in_hour))**2)**0.5
     
     peters_g_factor = peters_gfac(eccList[ind_ecc], h_harmonic)
-    import pdb
-    pdb.set_trace()
     for porb, ind in zip(porbList[ind_ecc], ind_ecc):
         SNR_squared = np.zeros(n_harmonic)
         for n in range(1, n_harmonic):
@@ -100,7 +98,7 @@ def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
                              Tobs / LISA_root_psd(n / (porb * sec_in_hour))**2
         SNR[ind] = np.sum(SNR_squared)**0.5
     
-    return SNR
+    return SNR[SNR > 1.0]
 
 def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
     psd = []
@@ -126,8 +124,8 @@ def moving_average(interval, window_size):
     return np.convolve(interval, window, 'same')
 
 def compute_foreground(psd_dat):
-    binwidth = 4.0/Tobs
-    freqBinsLISA = np.arange(1e-7,1e-1,binwidth)
+    binwidth = 40.0/Tobs
+    freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
