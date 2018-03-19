@@ -944,9 +944,3 @@ def lisa_root_psd(freq):
     
     return S_n
 
-if __name__ == "__main__":
-    ldata = np.asarray(_LISA_DATA).reshape(-1, 2).T
-    sens_fcn = lisa_sensitivity()
-    for freq in ldata[0,::100]:
-        print "LISA sensitivity at {0:.2e} Hz is {1:.2e} Hz^(-1/2)".format(
-                freq, sens_fcn(freq))
