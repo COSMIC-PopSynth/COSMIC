@@ -185,10 +185,9 @@ if __name__ == '__main__':
                                          'inc', 'OMEGA', 'omega'])
                 full_sample = full_sample.loc[full_sample.porb < 1e5]
 
-                #full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year]
-                #if args.gx_save:
-                #    full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
-                #                        kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
+                if args.gx_save:
+                    full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                                        kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
 
                 # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
                 #####################################################################
@@ -206,7 +205,7 @@ if __name__ == '__main__':
             #####################################################################
             dat_kernel = stats.gaussian_kde(dat_trans)
             binary_sample_dat_trans = dat_kernel.resample(nSample)
-            binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop)
+            binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop, dat_list)
 
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
             #####################################################################
