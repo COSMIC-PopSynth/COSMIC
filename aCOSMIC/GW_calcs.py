@@ -80,7 +80,7 @@ def peters_gfac(eccentricities, n_harmonic):
 def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     # chirp mass in Msun, porb in hr, dist in kpc
     # LISA mission: 2.5 million km arms
-    LISA_root_psd = lisa_sensitivity.lisa_root_psd(np.logspace(-7, 1, 1000))
+    LISA_root_psd = lisa_sensitivity.lisa_root_psd()
     h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
     
     ind_ecc, = np.where(eccList > 0.1)

@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = 'dat_'+args.galaxy_component+'_'+\
+    dat_path = '../COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
 
     total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
@@ -206,7 +206,8 @@ if __name__ == '__main__':
             dat_kernel = stats.gaussian_kde(dat_trans)
             binary_sample_dat_trans = dat_kernel.resample(nSample)
             binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop, dat_list)
-
+            if len(dat_list) == 3:
+                binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
             #####################################################################
             binary_sample_positions = MC_sample.galactic_position_sample(args.galaxy_component, size = nSample, model=args.dist_model)
