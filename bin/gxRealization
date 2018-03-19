@@ -186,15 +186,15 @@ if __name__ == '__main__':
                 full_sample = full_sample.loc[full_sample.porb < 1e5]
 
                 #full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year]
-                if args.gx_save:
-                    full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
-                                        kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
+                #if args.gx_save:
+                #    full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                #                        kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
 
                 # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
                 #####################################################################
                 psd_chunk = GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                             full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 50)
+                                                            full_sample.ecc, full_sample.dist, 150)
            
                 psd_dat = psd_dat.append(psd_chunk)     
 
