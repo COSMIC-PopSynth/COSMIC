@@ -6,6 +6,12 @@ import scipy.special as ss
 # DEFINE MIN AND MAX MASS SELECTOR
 ##################################################################################
 def mass_min_max_select(kstar_1, kstar_2):
+    '''
+    Select a minimum and maximum mass to filter out binaries in the initial
+    parameter sample to reduce the number of unneccessary binaries evolved
+    in BSE
+    '''
+
     primary_max = 150.0
     secondary_max = 150.0
 
@@ -77,7 +83,10 @@ def idl_tabulate(x, f, p=5) :
 
 
 def rndm(a, b, g, size):
-    """Power-law gen for pdf(x)\propto x^{g-1} for a<=x<=b"""
+    '''
+    Power-law gen for pdf(x)\propto x^{g-1} for a<=x<=b
+    '''
+
     r = np.random.random(size=size)
     ag, bg = a**g, b**g
     return (ag + (bg - ag)*r)**(1./g)
