@@ -934,8 +934,7 @@ def lisa_sensitivity():
 def lisa_root_psd():
     '''Computes LISA sensitivity curve according to `Cornish and Robson 2018 <https://arxiv.org/pdf/1803.01944.pdf>`_
     ''' 
-
-    freq = np.logspace(-7,1)
+    freq = np.logspace(-6,1)
     # note: freq [Hz], L_arm [m], S_n [Hz^-0.5]
     L_arm = 2.5e9
     f_star = 19.09*1e-3

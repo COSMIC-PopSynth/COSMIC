@@ -156,14 +156,13 @@ if __name__ == '__main__':
         print 'sampling data!'
         
         psd_dat = pd.DataFrame(columns=['freq', 'psd'])
-        SNR = pd.DataFrame(columns=['SNR'])
+        SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
         if n_systems > 1e5:
             nLoop = int(n_systems/1.0e5)
             for ii in range(nLoop):
-                print ii
                 nSample = int(n_systems/float(nLoop))
                 
                 # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
@@ -183,19 +182,23 @@ if __name__ == '__main__':
                               columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
-                full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year]
+                full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year]
 
                 if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                         kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
 
-                # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
+                # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
                 #####################################################################
-                psd_chunk = GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
+                psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
                                                             full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 150)
+                                                            full_sample.ecc, full_sample.dist, 150))
            
-                psd_dat = psd_dat.append(psd_chunk)     
+                SNR = SNR.append(GW_calcs.LISA_SNR(full_sample.mass1, full_sample.mass2,\
+                                                   full_sample.porb * (day_in_year * hrs_in_day),\
+                                                   full_sample.ecc, full_sample.dist, 150))
+
+            
 
         else:
             nSample = n_systems
@@ -217,8 +220,7 @@ if __name__ == '__main__':
                                                   'xGx', 'yGx', 'zGx', 'dist',\
                                                   'inc', 'OMEGA', 'omega'])
 
-            full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year] 
-
+            full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year] 
             if args.gx_save:
                 full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                    kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
@@ -230,9 +232,9 @@ if __name__ == '__main__':
                                                            full_sample.porb * (day_in_year * hrs_in_day),\
                                                            full_sample.ecc, full_sample.dist, 150))
             if SNR_calc:
-                SNR = SNR.append(GW_calcs.LISA_SNR(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
-                                                            full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 150))
+                SNR = SNR.append(GW_calcs.LISA_SNR(full_sample.mass1, full_sample.mass2,\
+                                                   full_sample.porb * (day_in_year * hrs_in_day),\
+                                                   full_sample.ecc, full_sample.dist, 150))
                 SNR.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                            kstar1_range_string+'_'+kstar2_range_string+'.h5', key='SNR', append='True')
                    
