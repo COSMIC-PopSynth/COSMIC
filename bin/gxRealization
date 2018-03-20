@@ -160,8 +160,8 @@ if __name__ == '__main__':
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
-        if n_systems > 5e5:
-            nLoop = int(n_systems/5.0e5)
+        if n_systems > 1e5:
+            nLoop = int(n_systems/1.0e5)
             for ii in range(nLoop):
                 print ii
                 nSample = int(n_systems/float(nLoop))
