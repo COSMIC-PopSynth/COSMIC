@@ -183,7 +183,7 @@ if __name__ == '__main__':
                               columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
-                full_sample = full_sample.loc[full_sample.porb < 1e5]
+                full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year]
 
                 if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
@@ -217,7 +217,7 @@ if __name__ == '__main__':
                                                   'xGx', 'yGx', 'zGx', 'dist',\
                                                   'inc', 'OMEGA', 'omega'])
 
-            full_sample = full_sample.loc[full_sample.porb < 1e5]          
+            full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year] 
 
             if args.gx_save:
                 full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
