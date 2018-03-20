@@ -90,7 +90,7 @@ def LISA_SNR(mChirpList, porbList, eccList, distList, n_harmonic):
     
     SNR[ind_circ] = (h_0_squared[ind_circ] * Tobs / LISA_root_psd(2 / (porbList[ind_circ] * sec_in_hour))**2)**0.5
     
-    peters_g_factor = peters_gfac(eccList[ind_ecc], h_harmonic)
+    peters_g_factor = peters_gfac(eccList[ind_ecc], n_harmonic)
     for porb, ind in zip(porbList[ind_ecc], ind_ecc):
         SNR_squared = np.zeros(n_harmonic)
         for n in range(1, n_harmonic):
