@@ -85,29 +85,39 @@ def peters_gfac(eccentricities, n_harmonic):
 
     return np.array(peters_g)
  
-def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic):
-    # chirp mass in Msun, porb in hr, dist in kpc
+def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
+    # mass in Msun, porb in hr, dist in kpc
     # LISA mission: 2.5 million km arms
     LISA_root_psd = lisa_sensitivity.lisa_root_psd()
-
+    
     mChirp = m_chirp(m1, m2)
     h_0_squared = 1.0e-42 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
     
+    freq = []
+    psd = []
+
+    SNR = np.zeros(len(mChirp))
+    gw_freq = np.zeros(len(mChirp))
+
     ind_ecc, = np.where(ecc > 0.1)
     ind_circ, = np.where(ecc <= 0.1)
    
-    SNR = np.zeros(len(mChirp))
-    gw_freq = np.zeros(len(mChirp))
-     
     SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * Tobs / LISA_root_psd(2 / (porb.iloc[ind_circ] * sec_in_hour))**2)**0.5
     gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ] * sec_in_hour)
+
+    psd.extend(h_0_squared.iloc[ind_circ] * Tobs)
+    freq.extend(2.0 / (porbList.iloc[ind_circ] * sec_in_hour))
 
     peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
     for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
         SNR_squared = np.zeros(n_harmonic)
+        
         for n in range(1, n_harmonic):
             SNR_squared[n] = h_0_squared.iloc[ind] * peters_g_factor[n, ind] *\
                              Tobs / LISA_root_psd(n / (p * sec_in_hour))**2
+            psd.extend(h_0_squared.iloc[ind_ecc] * peters_g_factor[n, :] * Tobs)
+            freq.extend(n / (porbList.iloc[ind_ecc] * sec_in_hour))
+
         SNR[ind] = np.sum(SNR_squared)**0.5
         gw_freq[ind] = peak_gw_freq(M1, M2, p, e)
 
@@ -116,30 +126,10 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic):
         SNR_dat = SNR_dat.loc[SNR_dat.SNR > 1.0]
     else:
         SNR_dat = pd.DataFrame(columns=['gw_freq', 'SNR']) 
-    return SNR_dat
-
-def power_spectral_density(mChirpList, porbList, eccList, distList, n_harmonic):
-    psd = []
-    freq = []
-    # chirp mass in Msun, porb in hr, dist in kpc
-    h_0_squared = 1.0e-42 * ((mChirpList)**(5.0/3.0) * (porbList)**(-2.0/3.0) * distList**(-1.0))**2
-
-    ind_ecc, = np.where(eccList > 0.1)
-    ind_circ, = np.where(eccList <= 0.1)
-
-    psd.extend(h_0_squared.iloc[ind_circ] * Tobs)
-    freq.extend(2.0 / (porbList.iloc[ind_circ] * sec_in_hour))
-
-    peters_g_factor = peters_gfac(eccList.iloc[ind_ecc], n_harmonic)
-    for n in range(n_harmonic-1):
-        psd.extend(h_0_squared.iloc[ind_ecc] * peters_g_factor[n, :] * Tobs)
-        freq.extend(n / (porbList.iloc[ind_ecc] * sec_in_hour))
+        
     psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'psd'])
-    return psd_dat.sort_values(by=['freq'])
-    
-def moving_average(interval, window_size):
-    window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'same')
+
+    return SNR_dat, psd_dat.sort_values(by=['freq'])
 
 def compute_foreground(psd_dat):
     binwidth = 40.0/Tobs
