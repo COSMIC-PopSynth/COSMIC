@@ -48,8 +48,7 @@ def parse_commandline():
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", type=bool, default=False)
     parser.add_argument("--HG_save", help="Save systems which undergo common envelope w/ HG star secondary", type=bool, default = False)
-    parser.add_argument("--PSD", help="Save the PSD of the population in the LISA band", type=bool, default = True)
-    parser.add_argument("--SNR", help="Save the SNR of the population following SNR curve in Robson & Cornish (2017)", type=bool, default = True)
+    parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", type=bool, default = True)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
@@ -152,16 +151,17 @@ if __name__ == '__main__':
     #    dat_trans.ecc = np.zeros(dat_trans.ecc.size)  
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    def _gx_realization(gx, n_systems, dat_trans, fixed_pop, psd_calc, SNR_calc):
+    def _gx_realization(gx, n_systems, dat_trans, fixed_pop, LISA_calc):
         print 'sampling data!'
+        np.random.seed(gx)
         
-        psd_dat = pd.DataFrame(columns=['freq', 'psd'])
+        PSD = pd.DataFrame(columns=['freq', 'psd'])
         SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
 
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
-        if n_systems > 1e5:
-            nLoop = int(n_systems/1.0e5)
+        if n_systems > 5e5:
+            nLoop = int(n_systems/5.0e5)
             for ii in range(nLoop):
                 nSample = int(n_systems/float(nLoop))
                 
@@ -190,16 +190,14 @@ if __name__ == '__main__':
 
                 # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
                 #####################################################################
-                psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
-                                                            full_sample.porb * (day_in_year * hrs_in_day),\
-                                                            full_sample.ecc, full_sample.dist, 150))
-           
-                SNR = SNR.append(GW_calcs.LISA_SNR(full_sample.mass1, full_sample.mass2,\
-                                                   full_sample.porb * (day_in_year * hrs_in_day),\
-                                                   full_sample.ecc, full_sample.dist, 150))
-
-            
-
+                if LISA_calc:
+                    SNR_dat, psd_dat = GW_calcs.LISA_calcs(full_sample.mass1, full_sample.mass2,\
+                                                           full_sample.porb * (day_in_year * hrs_in_day),\
+                                                           full_sample.ecc, full_sample.dist, 150)
+                    if SNR_dat.shape[0] > 1:
+                        SNR = SNR.append(SNR_dat)
+                    PSD = PSD.append(psd_dat) 
+          
         else:
             nSample = n_systems
          
@@ -227,18 +225,19 @@ if __name__ == '__main__':
 
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
             #####################################################################
-            if psd_calc:
-                psd_dat = psd_dat.append(GW_calcs.power_spectral_density(GW_calcs.m_chirp(full_sample.mass1, full_sample.mass2),\
-                                                           full_sample.porb * (day_in_year * hrs_in_day),\
-                                                           full_sample.ecc, full_sample.dist, 150))
-            if SNR_calc:
-                SNR = SNR.append(GW_calcs.LISA_SNR(full_sample.mass1, full_sample.mass2,\
-                                                   full_sample.porb * (day_in_year * hrs_in_day),\
-                                                   full_sample.ecc, full_sample.dist, 150))
-                SNR.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
-                           kstar1_range_string+'_'+kstar2_range_string+'.h5', key='SNR', append='True')
-                   
-        if psd_calc:
+            if LISA_calc:
+                SNR_dat, psd_dat = GW_calcs.LISA_calcs(full_sample.mass1, full_sample.mass2,\
+                                                       full_sample.porb * (day_in_year * hrs_in_day),\
+                                                       full_sample.ecc, full_sample.dist, 150)
+                if SNR_dat.shape[0] > 1:
+                    SNR = SNR.append(SNR_dat)
+                PSD = PSD.append(psd_dat)           
+                
+        
+        if LISA_calc:
+            SNR.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
+                        kstar1_range_string+'_'+kstar2_range_string+'.h5', key='SNR', append='True')            
+
             GW_foreground = GW_calcs.compute_foreground(psd_dat)
             GW_foreground.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                   kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gw_psd', append='True')
@@ -251,7 +250,7 @@ if __name__ == '__main__':
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop, args.PSD, args.SNR))\
+                                    args = (x + n*args.nproc + 50, nSystems, dat_trans, fixed_pop, args.PSD, args.SNR))\
                         for x in range(args.nproc)]
             
             for p in processes:
@@ -261,6 +260,6 @@ if __name__ == '__main__':
             for p in processes:
                 p.join()
     else:
-        _gx_realization(1, nSystems, dat_trans, fixed_pop, args.PSD, args.SNR)
+        _gx_realization(1, nSystems, dat_trans, fixed_pop, args.LISA_calc)
 
     print'All done friend!'
