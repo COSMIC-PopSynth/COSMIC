@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#/usr/bin/env python
 
 # Code: runFixedPop.py
 # Version: 1
@@ -172,15 +172,9 @@ if __name__ == '__main__':
     if seed_int != 0:
         np.random.seed(seed_int)
 
-    bcm_save = pd.DataFrame()
-    bpp_save = pd.DataFrame()
-    match_save = pd.DataFrame(columns = args.convergence_params)
-    initConditions_save = pd.DataFrame(columns=['m1','m2','porb','ecc','tphysf'])
-    
     idx = 0
     idxOld = 0
     
-    total_sampled_mass = 0.0
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)   
 
     if len(args.final_kstar1) == 2: 
@@ -197,10 +191,25 @@ if __name__ == '__main__':
         kstar2_range = args.final_kstar2
         kstar2_range_string = str(int(args.final_kstar2[0]))
 
+    try:
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        bcm_save = pd.read_hdf(dat_store, 'bcm')
+        print 'There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved'
+        bpp_save = pd.read_hdf(dat_store, 'bpp')
+        total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
+        total_sampled_mass = np.max(total_mass)
+    except:
+        bcm_save = pd.DataFrame()
+        bpp_save = pd.DataFrame()
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        total_sampled_mass = 0.0
+
+
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
 
     match_list = []
+
     while Nstep < args.Niter and (len(bcm_save) < 5000 or np.min(np.array(match_all)) < 0.9999):
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
@@ -244,6 +253,8 @@ if __name__ == '__main__':
         # LOG THE TOTAL SAMPLED MASS
         total_sampled_mass += sampled_mass
         print("The total mass sampled so far is: {0}".format(total_sampled_mass))
+        # save the total_sampled_mass so far
+        dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
@@ -256,6 +267,8 @@ if __name__ == '__main__':
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
 
         if bcm_save_filtered.shape[0] > 0:
+            #save the bcm dataframe
+            dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
             if idx < args.Nstep:
                 bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
@@ -264,11 +277,14 @@ if __name__ == '__main__':
             idxSave = bcm_save.index
             idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
             bpp_save_array = bpp[bpp.index.isin(idxSave)]
+            #save the bpp dataframe
+            dat_store.append('bpp', bpp_save_array)
             bpp_save = bpp_save.append(bpp_save_array)
             initC = pd.DataFrame(np.vstack([initconditions.mass1_binary[idxInitCond], initconditions.mass2_binary[idxInitCond],\
                                             initconditions.porb[idxInitCond], initconditions.ecc[idxInitCond],\
                                             initconditions.tphysf[idxInitCond]]).T, columns=['m1','m2','porb','ecc','tphysf'])
-            initConditions_save = initConditions_save.append(initC)
+            # save the initial conditions of the bcm/bpp saved dataframes            
+            dat_store.append('initCond', initC)
 
             #check to see if the eccentricities are all circular
             if bcm_save.ecc.sum() == 0.0:
@@ -283,16 +299,11 @@ if __name__ == '__main__':
                     match_all.append(match)
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
-                match_save = match_save.append(pd.DataFrame(np.array(match_all).T, columns = args.convergence_params))
+                match_save = pd.DataFrame(np.array(match_all).T, columns = args.convergence_params)
+                dat_store.append('match', match_save)
         Nstep += args.Nstep
         idxOld = idx
-    # save the bcm array, bpp array, ad matches to an hdf5
-    dat_store = pd.HDFStore(r'dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
-    dat_store.append('bcm', bcm_save)
-    dat_store.append('bpp', bpp_save)
-    dat_store.append('match', match_save)
-    dat_store.append('initCond', initConditions_save)
-    dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+    # close the data storage file hdf5
     dat_store.close()
 
     print('All done friend!')
