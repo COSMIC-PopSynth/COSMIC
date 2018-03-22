@@ -106,7 +106,7 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ] * sec_in_hour)
 
     psd.extend(h_0_squared.iloc[ind_circ] * Tobs)
-    freq.extend(2.0 / (porbList.iloc[ind_circ] * sec_in_hour))
+    freq.extend(2.0 / (porb.iloc[ind_circ] * sec_in_hour))
 
     peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
     for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
