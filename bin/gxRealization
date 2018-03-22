@@ -154,6 +154,7 @@ if __name__ == '__main__':
     ###########################################################################
     def _gx_realization(gx, n_systems, dat_trans, fixed_pop, psd_calc, SNR_calc):
         print 'sampling data!'
+        np.random.seed(gx)
         
         psd_dat = pd.DataFrame(columns=['freq', 'psd'])
         SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
@@ -251,7 +252,7 @@ if __name__ == '__main__':
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop, args.PSD, args.SNR))\
+                                    args = (x + n*args.nproc + 50, nSystems, dat_trans, fixed_pop, args.PSD, args.SNR))\
                         for x in range(args.nproc)]
             
             for p in processes:
