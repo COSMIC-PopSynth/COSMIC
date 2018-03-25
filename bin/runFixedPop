@@ -253,12 +253,13 @@ if __name__ == '__main__':
         # LOG THE TOTAL SAMPLED MASS
         total_sampled_mass += sampled_mass
         print("The total mass sampled so far is: {0}".format(total_sampled_mass))
-        # save the total_sampled_mass so far
-        dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
         # Now that we have all these initial conditions let's create an Evolve class and evolve these systems
         evolve = Evolve(initconditions)
         bpp, bcm = evolve.evolve(nproc=args.nproc, idx=idx, BSEDict=BSEDict)
+
+        # save the total_sampled_mass so far
+        dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
