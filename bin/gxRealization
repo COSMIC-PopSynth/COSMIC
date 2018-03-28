@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = 'NS_4/dat_'+args.galaxy_component+'_'+\
+    dat_path = 'dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
 
     sampled_mass = pd.read_hdf(dat_path, key='totalMass')
@@ -185,7 +185,7 @@ if __name__ == '__main__':
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
 
-                if args.gx_save == True:
+                if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                         kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
 
