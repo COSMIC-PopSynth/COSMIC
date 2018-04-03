@@ -111,17 +111,17 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = '../COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
+    dat_path = 'dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
 
-    total_sampled_mass = pd.read_hdf(dat_path, key='totalMass').iloc[0][0]
+    total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
     # Filter out non-LISA sources
     ###########################################################################
     # filter out binaries with orbital periods longer than 1 years
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1e5/sec_in_year]
 
     
     # Filter out systems which undergo Common Envelope w/ HG star secondary
@@ -182,7 +182,7 @@ if __name__ == '__main__':
                               columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
-                full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year]
+                full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year]
 
                 if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
@@ -218,7 +218,7 @@ if __name__ == '__main__':
                                                   'xGx', 'yGx', 'zGx', 'dist',\
                                                   'inc', 'OMEGA', 'omega'])
 
-            full_sample = full_sample.loc[full_sample.porb < 1e6/sec_in_year] 
+            full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year] 
             if args.gx_save:
                 full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                    kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
@@ -250,7 +250,7 @@ if __name__ == '__main__':
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc + 50, nSystems, dat_trans, fixed_pop, args.PSD, args.SNR))\
+                                    args = (x + n*args.nproc, nSystems, dat_trans, fixed_pop, args.LISA_calc))\
                         for x in range(args.nproc)]
             
             for p in processes:
@@ -260,6 +260,8 @@ if __name__ == '__main__':
             for p in processes:
                 p.join()
     else:
-        _gx_realization(1, nSystems, dat_trans, fixed_pop, args.LISA_calc)
+        n_loops = args.N_realizations / args.nproc
+        for n in range(n_loops):
+            _gx_realization(n, nSystems, dat_trans, fixed_pop, args.LISA_calc)
 
     print'All done friend!'
