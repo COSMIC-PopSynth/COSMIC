@@ -92,7 +92,6 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     
     mChirp = m_chirp(m1, m2)
     h_0_squared = 1.0e-42 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
-    
     freq = []
     psd = []
 
