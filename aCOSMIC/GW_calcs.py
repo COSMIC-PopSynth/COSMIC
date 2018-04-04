@@ -111,12 +111,15 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
     for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
         SNR_squared = np.zeros(n_harmonic)
-        
+        import pdb
+        pdb.set_trace()
         for n in range(1, n_harmonic):
             SNR_squared[n] = h_0_squared.iloc[ind] * peters_g_factor[n, ind] *\
                              Tobs / LISA_root_psd(n / (p * sec_in_hour))**2
             psd.extend(h_0_squared.iloc[ind_ecc] * peters_g_factor[n, :] * Tobs)
-            freq.extend(n / (porbList.iloc[ind_ecc] * sec_in_hour))
+
+            freq.extend(n / (porb.iloc[ind] * sec_in_hour))
+            
 
         SNR[ind] = np.sum(SNR_squared)**0.5
         gw_freq[ind] = peak_gw_freq(M1, M2, p, e)
