@@ -48,7 +48,7 @@ def parse_commandline():
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", default=False)
     parser.add_argument("--HG_save", help="Save systems which undergo common envelope w/ HG star secondary", default=False)
-    parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", default=False)
+    parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", default=True)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
@@ -112,26 +112,16 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = 'dat_'+args.galaxy_component+'_'+\
+    dat_path = '../COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
 
-<<<<<<< HEAD
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
-=======
-    sampled_mass = pd.read_hdf(dat_path, key='totalMass')
-    total_sampled_mass = np.max(sampled_mass)[0]
->>>>>>> 21b0448633d15df7940b93b381b258c2814ef11f
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
-    # Filter out non-LISA sources
+    # Filter out long period binaries
     ###########################################################################
-<<<<<<< HEAD
-    # filter out binaries with orbital periods longer than 1 years
-=======
-    # filter out binaries with orbital periods longer than 10^5 seconds
->>>>>>> 21b0448633d15df7940b93b381b258c2814ef11f
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1e5/sec_in_year]
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
 
     
     # Filter out systems which undergo Common Envelope w/ HG star secondary
@@ -200,13 +190,13 @@ if __name__ == '__main__':
 
                 # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
                 #####################################################################
-                if LISA_calc == True:
+                if LISA_calc:
                     SNR_dat, psd_dat = GW_calcs.LISA_calcs(full_sample.mass1, full_sample.mass2,\
                                                            full_sample.porb * (day_in_year * hrs_in_day),\
                                                            full_sample.ecc, full_sample.dist, 150)
                     if SNR_dat.shape[0] > 1:
                         SNR = SNR.append(SNR_dat)
-                    PSD = PSD.append(psd_dat) 
+                    PSD = PSD.append(psd_dat)
           
         else:
             nSample = n_systems
@@ -235,7 +225,7 @@ if __name__ == '__main__':
 
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
             #####################################################################
-            if LISA_calc == True:
+            if LISA_calc:
                 SNR_dat, psd_dat = GW_calcs.LISA_calcs(full_sample.mass1, full_sample.mass2,\
                                                        full_sample.porb * (day_in_year * hrs_in_day),\
                                                        full_sample.ecc, full_sample.dist, 150)
@@ -244,7 +234,7 @@ if __name__ == '__main__':
                 PSD = PSD.append(psd_dat)           
                 
         
-        if LISA_calc == True:
+        if LISA_calc:
             SNR.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                         kstar1_range_string+'_'+kstar2_range_string+'.h5', key='SNR', append='True')            
 
@@ -260,7 +250,7 @@ if __name__ == '__main__':
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc + 40, nSystems, dat_trans, fixed_pop, args.LISA_calc))\
+                                    args = (x + n*args.nproc + 0, nSystems, dat_trans, fixed_pop, args.LISA_calc))\
                         for x in range(args.nproc)]
             
             for p in processes:
