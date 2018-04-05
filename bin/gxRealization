@@ -75,7 +75,6 @@ if __name__ == '__main__':
     # READ COMMANDLINE ARGUMENTS
     ##############################################################################
     args = parse_commandline()
-    print args.LISA_calc
 
     # CONSTANTS
     ##############################################################################
@@ -154,7 +153,6 @@ if __name__ == '__main__':
     def _gx_realization(gx, n_systems, dat_trans, fixed_pop, LISA_calc):
         print 'sampling data!'
         np.random.seed(gx)
-        
         PSD = pd.DataFrame(columns=['freq', 'psd'])
         SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
 
