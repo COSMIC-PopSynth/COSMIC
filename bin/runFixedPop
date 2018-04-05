@@ -204,13 +204,13 @@ if __name__ == '__main__':
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
 
-
+    bcm_len_test = pd.DataFrame()
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
 
     match_list = []
 
-    while Nstep < args.Niter and (len(bcm_save) < 5000 or np.min(np.array(match_all)) < 0.9999):
+    while Nstep < args.Niter and (len(bcm_len_test) < 500 or np.min(np.array(match_all)) < 0.9999):
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
             SFH_model='const'
@@ -264,6 +264,7 @@ if __name__ == '__main__':
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
+        bcm_len_test = bcm_filtered.loc[bcm_filtered.porb < 1e3/sec_in_year]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
 
@@ -300,7 +301,7 @@ if __name__ == '__main__':
                     match_all.append(match)
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
-                match_save = pd.DataFrame(np.array(match_all).T, columns = args.convergence_params)
+                match_save = pd.DataFrame(np.array(match_all).T, columns = conv_params)
                 dat_store.append('match', match_save)
         Nstep += args.Nstep
         idxOld = idx
