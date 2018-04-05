@@ -29,6 +29,7 @@ import scipy.special as ss
 import scipy.stats as stats
 import pandas as pd
 import multiprocessing as mp
+import matplotlib.pyplot as plt
 
 import aCOSMIC.MC_samp as MC_sample 
 import aCOSMIC.GW_calcs as GW_calcs
@@ -113,16 +114,10 @@ if __name__ == '__main__':
     ###########################################################################
     dat_path = '../COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
-
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
-    # Filter out long period binaries
-    ###########################################################################
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1.0]
-
-    
     # Filter out systems which undergo Common Envelope w/ HG star secondary
     ###########################################################################
     if args.HG_save != True:
@@ -134,10 +129,15 @@ if __name__ == '__main__':
 
         fixed_pop = fixed_pop.loc[fixed_pop.index.isin(index_save)]
 
-    if np.sum(fixed_pop.ecc) == 0.0:
+    if fixed_pop.ecc.all() <= 1e-3:
         dat_list = ['mass_1', 'mass_2', 'porb']
     else:
         dat_list = ['mass_1', 'mass_2', 'porb', 'ecc']
+    
+    # Filter out long period binaries
+    ###########################################################################
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 1e6/sec_in_year]
+
     
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
@@ -180,8 +180,6 @@ if __name__ == '__main__':
                               columns = ['mass1', 'mass2', 'porb', 'ecc',\
                                          'xGx', 'yGx', 'zGx', 'dist',\
                                          'inc', 'OMEGA', 'omega'])
-                full_sample = full_sample.loc[full_sample.porb < 1e5/sec_in_year]
-
                 if args.gx_save:
                     full_sample.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                         kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
@@ -195,7 +193,6 @@ if __name__ == '__main__':
                     if SNR_dat.shape[0] > 1:
                         SNR = SNR.append(SNR_dat)
                     PSD = PSD.append(psd_dat)
-          
         else:
             nSample = n_systems
          
@@ -230,13 +227,11 @@ if __name__ == '__main__':
                 if SNR_dat.shape[0] > 1:
                     SNR = SNR.append(SNR_dat)
                 PSD = PSD.append(psd_dat)           
-                
-        
         if LISA_calc:
             SNR.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                         kstar1_range_string+'_'+kstar2_range_string+'.h5', key='SNR', append='True')            
-
-            GW_foreground = GW_calcs.compute_foreground(psd_dat)
+            
+            GW_foreground = GW_calcs.compute_foreground(PSD)
             GW_foreground.to_hdf('gx_real_'+str(gx)+'_'+args.galaxy_component+'_'+\
                                   kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gw_psd', append='True')
 

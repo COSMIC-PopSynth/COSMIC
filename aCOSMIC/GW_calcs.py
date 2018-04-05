@@ -91,7 +91,7 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     LISA_root_psd = lisa_sensitivity.lisa_root_psd()
     
     mChirp = m_chirp(m1, m2)
-    h_0_squared = 1.0e-42 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
+    h_0_squared = (1.607e-21)**2 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
     freq = []
     psd = []
 
@@ -101,24 +101,26 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     ind_ecc, = np.where(ecc > 0.1)
     ind_circ, = np.where(ecc <= 0.1)
    
-    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * Tobs / LISA_root_psd(2 / (porb.iloc[ind_circ] * sec_in_hour))**2)**0.5
+    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 0.5 * Tobs / LISA_root_psd(2 / (porb.iloc[ind_circ] * sec_in_hour)))
     gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ] * sec_in_hour)
 
-    psd.extend(h_0_squared.iloc[ind_circ] * Tobs)
+    psd.extend(h_0_squared.iloc[ind_circ] * 0.5 * Tobs)
     freq.extend(2.0 / (porb.iloc[ind_circ] * sec_in_hour))
 
-    peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
-    for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
-        SNR_squared = np.zeros(n_harmonic)
-        
-        for n in range(1, n_harmonic):
-            SNR_squared[n] = h_0_squared.iloc[ind] * peters_g_factor[n, ind] *\
-                             Tobs / LISA_root_psd(n / (p * sec_in_hour))**2
-            psd.extend(h_0_squared.iloc[ind_ecc] * peters_g_factor[n, :] * Tobs)
-            freq.extend(n / (porbList.iloc[ind_ecc] * sec_in_hour))
+    if len(ind_ecc) > 0:
+        peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
+        for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
+            SNR_squared = np.zeros(n_harmonic)
+            for n in range(1, n_harmonic):
+                SNR_squared[n] = h_0_squared.iloc[ind] * peters_g_factor[n, ind] *\
+                                 Tobs / LISA_root_psd(n / (p * sec_in_hour))**2
+                psd.extend(h_0_squared.iloc[ind] * peters_g_factor[n, :] * Tobs)
 
-        SNR[ind] = np.sum(SNR_squared)**0.5
-        gw_freq[ind] = peak_gw_freq(M1, M2, p, e)
+                freq.extend(n / (porb.iloc[ind] * sec_in_hour))
+                
+
+            SNR[ind] = np.sum(SNR_squared)**0.5
+            gw_freq[ind] = peak_gw_freq(M1, M2, p, e)
 
     SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
     if len(SNR_dat.SNR > 1.0) > 1:
@@ -131,8 +133,8 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     return SNR_dat, psd_dat.sort_values(by=['freq'])
 
 def compute_foreground(psd_dat):
-    binwidth = 40.0/Tobs
-    freqBinsLISA = np.arange(1e-6,1e-1,binwidth)
+    binwidth = 1.0/Tobs
+    freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
