@@ -264,7 +264,7 @@ if __name__ == '__main__':
         # Select the state of the binary today and filter out any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_len_test = bcm_filtered.loc[bcm_filtered.porb < 1e3/sec_in_year]
+        bcm_len_test = bcm_len_test.append(bcm_filtered.loc[bcm_filtered.porb < 1e3/sec_in_year])
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
 
