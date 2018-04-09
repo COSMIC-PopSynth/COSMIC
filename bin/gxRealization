@@ -47,7 +47,7 @@ def parse_commandline():
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float, nargs='+')
     parser.add_argument("--N_realizations", help="Number of Galactic realziations to sample", type=int, default=100)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
-    parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", default=True)
+    parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", default=False)
     parser.add_argument("--HG_save", help="Save systems which undergo common envelope w/ HG star secondary", default=False)
     parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", default=True)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
@@ -118,9 +118,9 @@ if __name__ == '__main__':
                                                       'inc', 'OMEGA', 'omega'])
                                                       
                 full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e6]
-                full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
-                                   kstar1_range_string+'_'+kstar2_range_string+'.h5',
-                                   key='gx', append='True')
+                if gx_save:
+                    full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
+                                       kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
                 
                 
                 # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
@@ -160,8 +160,10 @@ if __name__ == '__main__':
                                                   'xGx', 'yGx', 'zGx', 'dist',
                                                   'inc', 'OMEGA', 'omega'])
             full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e6]
-            full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
-                               kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
+             
+            if gx_save:
+                full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
+                                   kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
             #####################################################################
             if LISA_calc:
