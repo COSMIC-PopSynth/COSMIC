@@ -58,11 +58,9 @@ def peak_gw_freq(m1, m2, ecc, porb):
     f_gw_peak = ((G*(m1+m2))**0.5/np.pi) * (1+ecc)**1.1954/(sep_m*(1-ecc)**2)**1.5
     return f_gw_peak
 
-def peters_gfac_interp(nHarmonic):
-    # Note this is: g(n,e)/n**2 that is being calculatedi
-    g_fac_squared = []
-    ecc = np.linspace(0.0, 0.999, 10000)
-    for n in range(1,nHarmonic):
+def peters_gfac(ecc, n_harmonic):
+    g_fac_squared = []    
+    for n in range(1,n_harmonic):
         g_fac_squared.append((n**4 / 32.0)*( (ss.jv((n-2), (n*ecc)) - 2*ecc*ss.jv((n-1), (n*ecc)) +\
                              2.0/n*ss.jv((n), (n*ecc)) + 2*ecc*ss.jv((n+1), (n*ecc)) -\
                              ss.jv((n+2), (n*ecc)))**2 +\
@@ -71,24 +69,12 @@ def peters_gfac_interp(nHarmonic):
                              (4/(3.0*n**2))*(ss.jv((n), (n*ecc)))**2
                              )/n**2.0)
 
-    interp_list = []
-    for n in range(nHarmonic-1):
-        interp_list.append(interp1d(ecc, g_fac_squared[n]))
-    
-    return interp_list
-
-def peters_gfac(eccentricities, n_harmonic):
-    interp_list = peters_gfac_interp(n_harmonic)
-    peters_g = []
-    for interp in interp_list:
-        peters_g.append(interp(eccentricities))
-
-    return np.array(peters_g)
+    return np.array(g_fac_squared)
  
 def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     # UNITS ARE IN SI!!
     # LISA mission: 2.5 million km arms
-    LISA_root_psd = lisa_sensitivity.lisa_root_psd()
+    LISA_psd = lisa_sensitivity.lisa_psd()
     
     mChirp = m_chirp(m1, m2)
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
@@ -103,33 +89,32 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     ind_ecc, = np.where(ecc > 0.1)
     ind_circ, = np.where(ecc <= 0.1)
     
-    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs / LISA_root_psd(2 / porb.iloc[ind_circ]))
+    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs / LISA_psd(2 / porb.iloc[ind_circ]))
     gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ])
     
     power = h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs
     # we want both the plus polarization and cross polarization
     power_tot = 2*power
     psd.extend(power_tot)
-    freq.extend(2.0 / (porb.iloc[ind_circ] * sec_in_hour))
-
+    freq.extend(2.0 / (porb.iloc[ind_circ]))
     if len(ind_ecc) > 0:
         peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
-        print np.shape(peters_g_factor)
-        for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
-            SNR_squared = np.zeros(n_harmonic)
-            for n in range(n_harmonic-1):
-                SNR_squared[n] = h_0_squared.iloc[ind] * peters_g_factor[n, ind] *\
-                                 Tobs / LISA_root_psd((n+1) / p)**2
-                power = h_0_squared.iloc[ind] * peters_g_factor[n, :] * Tobs
-                # we want both the plus polarization and cross polarization
-                power_tot = 2*power
-                psd.append(power_tot)
+        GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb.iloc[ind_ecc]]).T
+        GW_freq_flat = GW_freq_array.flatten()
+        LISA_curve_eval_flat = LISA_psd(GW_freq_flat)
+        LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,len(ind_ecc)))
 
-                freq.append((n+1) / p)
-                
-            #multiply by two again for plus and cross polarization
-            SNR[ind] = (2*np.sum(SNR_squared))**0.5
-            gw_freq[ind] = peak_gw_freq(M1, M2, p, e)
+        h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared.iloc[ind_ecc]]).T
+        SNR_squared = h_0_squared_ecc * Tobs * peters_g_factor / LISA_curve_eval
+
+        power = h_0_squared_ecc * Tobs * peters_g_factor
+        power_flat = power.flatten()
+
+        psd.extend(2*power_flat)
+        freq.extend(GW_freq_flat)
+
+        SNR[ind_ecc] = (2 * SNR_squared.sum(axis=0))**0.5
+        gw_freq[ind_ecc] = peak_gw_freq(m1.iloc[ind_ecc], m2.iloc[ind_ecc], ecc.iloc[ind_ecc], porb.iloc[ind_ecc])
 
     SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
     if len(SNR_dat.SNR > 1.0) > 1:
