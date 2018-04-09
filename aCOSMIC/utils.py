@@ -1,6 +1,7 @@
 import scipy.integrate
 import numpy as np
 import scipy.special as ss
+import astropy.stats as astrostats
 
 ##################################################################################
 # DEFINE MIN AND MAX MASS SELECTOR
@@ -94,13 +95,15 @@ def rndm(a, b, g, size):
 def param_transform(dat):
     '''
     Transforms a data set to limits between zero and one
+    Leaves some wiggle room on the edges of the data set
     '''
 
-    datMin = min(dat)-0.000001
-    datMax = max(dat)+0.000001
+    datMin = min(dat)
+    datMax = max(dat)
     datZeroed = dat-datMin
 
-    datTransformed = datZeroed/((datMax-datMin)*1.000001)
+    datTransformed = datZeroed/((datMax-datMin))
+    
     return datTransformed
 
 
@@ -114,11 +117,11 @@ def dat_transform(dat, dat_list):
     for column in dat_list:
         dat_trans.append(param_transform(dat[column]))
     
-    dat_trans = ss.logit(np.vstack([dat_trans]))
+    dat_trans = np.vstack([dat_trans])
 
     return dat_trans
 
-def dat_un_transform(gx_sample, dat_set, dat_list):
+def dat_un_transform(dat_sample, dat_set, dat_list):
     '''
     Un-transform data that was transformed in dat_transform
     '''
@@ -126,7 +129,8 @@ def dat_un_transform(gx_sample, dat_set, dat_list):
     dat = []
     ii = 0
     for column in dat_list:
-        dat.append(ss.expit(gx_sample[ii, :])*\
+        print column
+        dat.append(dat_sample[ii, :]*\
                    (max(dat_set[column]) - min(dat_set[column])) +\
                     min(dat_set[column]))
         ii += 0
@@ -134,4 +138,13 @@ def dat_un_transform(gx_sample, dat_set, dat_list):
     dat = np.vstack(dat)
 
     return dat
+
+def knuth_bw_selector(dat_list):
+    bw_list = []
+    for dat in dat_list:
+        bw_list.append(astrostats.knuth_bin_width(dat))
+    return np.mean(bw_list)
+                      
+        
+
 

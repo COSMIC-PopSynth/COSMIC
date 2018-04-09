@@ -51,11 +51,11 @@ def m_chirp(m1, m2):
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
 
 def peak_gw_freq(m1, m2, ecc, porb):
+    # UNITS ARE SI!!!
     # convert the orbital period into a separation using Kepler III
-    sep = (porb**2*(m1+m2))**(1./3.)
-    sep_m = sep*rsun_in_au*Rsun
+    sep_m = (G/(4*np.pi**2)*porb**2*(m1+m2))**(1./3.)
     
-    f_gw_peak = ((G*(m1+m2)*Msun)**0.5/np.pi) * (1+ecc)**1.1954/(sep_m*(1-ecc)**2)**1.5
+    f_gw_peak = ((G*(m1+m2))**0.5/np.pi) * (1+ecc)**1.1954/(sep_m*(1-ecc)**2)**1.5
     return f_gw_peak
 
 def peters_gfac_interp(nHarmonic):
@@ -86,12 +86,14 @@ def peters_gfac(eccentricities, n_harmonic):
     return np.array(peters_g)
  
 def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
-    # mass in Msun, porb in hr, dist in kpc
+    # UNITS ARE IN SI!!
     # LISA mission: 2.5 million km arms
     LISA_root_psd = lisa_sensitivity.lisa_root_psd()
     
     mChirp = m_chirp(m1, m2)
-    h_0_squared = (1.607e-21)**2 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
+    h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
+    h_0_squared = h_0**2
+    #h_0_squared = (1.607e-21)**2 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
     freq = []
     psd = []
 
@@ -100,26 +102,33 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
 
     ind_ecc, = np.where(ecc > 0.1)
     ind_circ, = np.where(ecc <= 0.1)
-   
-    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 0.5 * Tobs / LISA_root_psd(2 / (porb.iloc[ind_circ] * sec_in_hour)))
-    gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ] * sec_in_hour)
-
-    psd.extend(h_0_squared.iloc[ind_circ] * 0.5 * Tobs)
+    
+    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs / LISA_root_psd(2 / porb.iloc[ind_circ]))
+    gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ])
+    
+    power = h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs
+    # we want both the plus polarization and cross polarization
+    power_tot = 2*power
+    psd.extend(power_tot)
     freq.extend(2.0 / (porb.iloc[ind_circ] * sec_in_hour))
 
     if len(ind_ecc) > 0:
         peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
+        print np.shape(peters_g_factor)
         for M1, M2, p, e, ind in zip(m1.iloc[ind_ecc], m2.iloc[ind_ecc], porb.iloc[ind_ecc], ecc.iloc[ind_ecc], ind_ecc):
             SNR_squared = np.zeros(n_harmonic)
-            for n in range(1, n_harmonic):
+            for n in range(n_harmonic-1):
                 SNR_squared[n] = h_0_squared.iloc[ind] * peters_g_factor[n, ind] *\
-                                 Tobs / LISA_root_psd(n / (p * sec_in_hour))**2
-                psd.extend(h_0_squared.iloc[ind] * peters_g_factor[n, :] * Tobs)
+                                 Tobs / LISA_root_psd((n+1) / p)**2
+                power = h_0_squared.iloc[ind] * peters_g_factor[n, :] * Tobs
+                # we want both the plus polarization and cross polarization
+                power_tot = 2*power
+                psd.append(power_tot)
 
-                freq.extend(n / (porb.iloc[ind] * sec_in_hour))
+                freq.append((n+1) / p)
                 
-
-            SNR[ind] = np.sum(SNR_squared)**0.5
+            #multiply by two again for plus and cross polarization
+            SNR[ind] = (2*np.sum(SNR_squared))**0.5
             gw_freq[ind] = peak_gw_freq(M1, M2, p, e)
 
     SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
@@ -133,8 +142,8 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     return SNR_dat, psd_dat.sort_values(by=['freq'])
 
 def compute_foreground(psd_dat):
-    binwidth = 1.0/Tobs
-    freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
+    binwidth = 100.0/Tobs
+    freqBinsLISA = np.arange(1e-5,1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
