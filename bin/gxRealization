@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    def _gx_realization(gx, n_systems, fixed_pop, dat_list, gx_component, LISA_calc):
+    def _gx_realization(gx, n_systems, fixed_pop, dat_list, gx_component, LISA_calc, gx_save):
         np.random.seed(gx)
         PSD = pd.DataFrame(columns=['freq', 'PSD'])
         SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
@@ -262,7 +262,7 @@ if __name__ == '__main__':
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc + 0, nSystems, fixed_pop, dat_list, args.galaxy_component, args.LISA_calc)) for x in range(args.nproc)]
+                                    args = (x + n*args.nproc + 0, nSystems, fixed_pop, dat_list, args.galaxy_component, args.LISA_calc, args.gx_save)) for x in range(args.nproc)]
             
             for p in processes:
                 p.daemon = True
@@ -273,6 +273,6 @@ if __name__ == '__main__':
     else:
         n_loops = args.N_realizations
         for n in range(n_loops):
-            _gx_realization(n, nSystems, fixed_pop, dat_list, args.galaxy_component, args.LISA_calc)
+            _gx_realization(n, nSystems, fixed_pop, dat_list, args.galaxy_component, args.LISA_calc, args.gx_save)
 
     print'All done friend!'
