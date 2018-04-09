@@ -115,6 +115,8 @@ if __name__ == '__main__':
                                            columns = ['mass1', 'mass2', 'porb', 'ecc',
                                                       'xGx', 'yGx', 'zGx', 'dist',
                                                       'inc', 'OMEGA', 'omega'])
+                                                      
+                full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e5]
                 full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
                                    kstar1_range_string+'_'+kstar2_range_string+'.h5',
                                    key='gx', append='True')
@@ -156,7 +158,7 @@ if __name__ == '__main__':
                                        columns = ['mass1', 'mass2', 'porb', 'ecc',
                                                   'xGx', 'yGx', 'zGx', 'dist',
                                                   'inc', 'OMEGA', 'omega'])
-
+            full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e5]
             full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
                                kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
@@ -171,10 +173,13 @@ if __name__ == '__main__':
                 SNR = SNR.append(SNR_dat)
                 PSD = PSD.append(psd_dat)  
         
+        
+        GW_foreground = compute_foreground(PSD)
+        
         if LISA_calc:
             SNR.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+kstar1_range_string+
                    '_'+kstar2_range_string+'.h5', key='SNR', append='True')            
-            PSD.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+kstar1_range_string+
+            GW_foreground.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+kstar1_range_string+
                    '_'+kstar2_range_string+'.h5', key='PSD', append='True')      
             
         return

@@ -128,7 +128,7 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
 
 def compute_foreground(psd_dat):
     binwidth = 100.0/Tobs
-    freqBinsLISA = np.arange(1e-5,1,binwidth)
+    freqBinsLISA = np.linspace(1e-5,1e-1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
