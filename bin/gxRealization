@@ -104,7 +104,6 @@ if __name__ == '__main__':
                     #eccentricity out of logit space
                     binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
                     binary_sample_dat[3,:] = ss.expit(binary_sample_dat[3,:])
-                    binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
                 # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
                 #####################################################################
                 binary_sample_positions = MC_sample.galactic_position_sample(gx_component, 
@@ -146,7 +145,6 @@ if __name__ == '__main__':
                 #eccentricity out of logit space
                 binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
                 binary_sample_dat[3,:] = ss.expit(binary_sample_dat[3,:])
-                binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
 
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
             #####################################################################
