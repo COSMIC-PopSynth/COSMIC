@@ -77,7 +77,7 @@ if __name__ == '__main__':
     ###########################################################################
     def _gx_realization(gx, n_systems, fixed_pop, dat_list, gx_component, LISA_calc):
         np.random.seed(gx)
-        PSD = pd.DataFrame(columns=['freq', 'psd'])
+        PSD = pd.DataFrame(columns=['freq', 'PSD'])
         SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
         
         if len(dat_list) == 3:
@@ -85,6 +85,7 @@ if __name__ == '__main__':
         else:
             dat_kde = np.vstack([fixed_pop.mass_1, fixed_pop.mass_2, np.log10(fixed_pop.porb), ss.logit(fixed_pop.ecc)])
         bw = utils.knuth_bw_selector(dat_kde)
+        print np.min(fixed_pop.porb*sec_in_year), np.max(fixed_pop.porb*sec_in_year)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
@@ -116,7 +117,7 @@ if __name__ == '__main__':
                                                       'xGx', 'yGx', 'zGx', 'dist',
                                                       'inc', 'OMEGA', 'omega'])
                                                       
-                full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e5]
+                full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e6]
                 full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
                                    kstar1_range_string+'_'+kstar2_range_string+'.h5',
                                    key='gx', append='True')
@@ -129,7 +130,7 @@ if __name__ == '__main__':
                                                            full_sample.porb*sec_in_year,
                                                            full_sample.ecc, full_sample.dist*1000*parsec,
                                                            150)
-                    if SNR_dat.shape[0] > 5:
+                    if SNR_dat.shape[0] > 1:
                         SNR = SNR.append(SNR_dat)
                     PSD = PSD.append(psd_dat)
         else:
@@ -158,7 +159,7 @@ if __name__ == '__main__':
                                        columns = ['mass1', 'mass2', 'porb', 'ecc',
                                                   'xGx', 'yGx', 'zGx', 'dist',
                                                   'inc', 'OMEGA', 'omega'])
-            full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e5]
+            full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e6]
             full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
                                kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
@@ -169,8 +170,8 @@ if __name__ == '__main__':
                                                        full_sample.ecc, full_sample.dist*1000*parsec,
                                                        150)
                 
-                
-                SNR = SNR.append(SNR_dat)
+                if SNR_dat.shape[0] > 1:
+                    SNR = SNR.append(SNR_dat)
                 PSD = PSD.append(psd_dat)  
         
         

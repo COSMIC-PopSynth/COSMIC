@@ -122,20 +122,20 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     else:
         SNR_dat = pd.DataFrame(columns=['gw_freq', 'SNR']) 
         
-    psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'psd'])
+    psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'PSD'])
 
     return SNR_dat, psd_dat.sort_values(by=['freq'])
 
 def compute_foreground(psd_dat):
-    binwidth = 100.0/Tobs
-    freqBinsLISA = np.linspace(1e-5,1e-1,binwidth)
+    binwidth = 1.0/Tobs
+    freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     print 'bins digitized'
     psd_dat['digits'] = binIndices
-    power_sum = psd_dat[['psd', 'digits']].groupby('digits').sum()['psd']
+    power_sum = psd_dat[['PSD', 'digits']].groupby('digits').sum()['PSD']
     power_tot = np.zeros(len(freqBinsLISA)+1)
     power_tot[power_sum.index[:len(freqBinsLISA)-1]] = power_sum
     foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA, power_tot[1:]]).T,\
-                                  columns=['freq', 'psd'])
+                                  columns=['freq', 'PSD'])
     return foreground_dat
