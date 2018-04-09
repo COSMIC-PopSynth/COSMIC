@@ -142,7 +142,11 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
 def knuth_bw_selector(dat_list):
     bw_list = []
     for dat in dat_list:
-        bw_list.append(astrostats.knuth_bin_width(dat))
+        try:
+            bw = astrostats.knuth_bin_width(dat)
+        except:
+            bw = astrostats.scott_bin_width(dat)
+        bw_list.append(bw)
     return np.mean(bw_list)
                       
         
