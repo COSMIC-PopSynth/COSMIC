@@ -16,12 +16,12 @@ x = np.linspace(0,1,10)
 kstar_single = [[10], [11], [12], [13], [14]]
 kstar_double = [10, 14]
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
-x_sample = np.vstack([np.random.uniform(-1e6, 1e6, 10), np.random.uniform(-1e6, 1e6, 10)]).T
+x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [11.0, 20.0, 34.0, 112.0, 330.0]
 MASS_SUM_MULTIPLE = 301.0
-X_TRANS_SUM = -4.6151459971597895 
+X_TRANS_SUM = 5.0 
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
@@ -64,5 +64,4 @@ class TestUtils(unittest2.TestCase):
         # 0 and 10
         x_un_trans = utils.dat_un_transform(x_sample, x_dat, ['x_dat', 'f_dat'])
         self.assertTrue(np.min(x_un_trans[0]) >= np.min(x_dat.x_dat))
-        self.assertTrue(np.max(x_un_trans[0]) <= np.max(x_dat.x_dat))
-        
+        self.assertTrue(np.max(x_un_trans[0]) <= np.max(x_dat.x_dat))        
