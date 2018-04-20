@@ -72,6 +72,7 @@ install_requires = [
     'gwpy',
     'pandas',
     'tables',
+    'h5py',
 ]
 tests_require = [
     'pytest'
