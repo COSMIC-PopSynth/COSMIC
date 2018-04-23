@@ -20,11 +20,13 @@
 """
 
 import numpy as np
-from gwpy.utils import mp as mp_utils
 import multiprocessing as mp
 import math
 import random
 import scipy.integrate
+
+from astropy.table import Table, Column
+from astropy import units
 
 from .utils import idl_tabulate, rndm
 
@@ -49,168 +51,7 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-class Sample:
-    def __init__(self, metallicity, size=None):
-        '''
-        initialize samples
-        '''
-        self.metallicity = np.asarray(metallicity).repeat(size)
-
-    # sample primary masses
-    def sample_primary(self, primary_min, primary_max, model='kroupa93', size=None):
-        '''
-        kroupa93 follows Kroupa (1993), normalization comes from
-        `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
-        salpter55 follows Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_ between 0.1 and 100 Msun
-        '''
-
-        if model=='kroupa93':
-            # If the final binary contains a compact object (BH or NS),
-            # we want to evolve 'size' binaries that could form a compact
-            # object so we over sample the initial population
-            if primary_max >= 150.0:
-                a_0 = np.random.uniform(0.0, 0.9999797, size*500)
-            elif primary_max >= 30.0:
-                a_0 = np.random.uniform(0.0, 0.9999797, size*50)
-            else:   
-                a_0 = np.random.uniform(0.0, 0.9999797, size)
-            
-            low_cutoff = 0.740074
-            high_cutoff=0.908422
-     
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff)) 
-            highIdx, = np.where(a_0 >= high_cutoff)
-     
-            a_0[lowIdx] = ((0.1) ** (-3.0/10.0) - (a_0[lowIdx] / 0.968533)) ** (-10.0/3.0)
-            a_0[midIdx] = ((0.5) ** (-6.0/5.0) - ((a_0[midIdx] - low_cutoff) / 0.129758)) ** (-5.0/6.0)
-            a_0[highIdx] = (1 - ((a_0[highIdx] - high_cutoff) / 0.0915941)) ** (-10.0/17.0)
-            
-            total_sampled_mass = np.sum(a_0)
-            
-            a_0 = a_0[a_0 >= primary_min]
-            a_0 = a_0[a_0 <= primary_max]
-            return a_0, total_sampled_mass
-        
-        elif model=='salpeter55':
-            # If the final binary contains a compact object (BH or NS),
-            # we want to evolve 'size' binaries that could form a compact
-            # object so we over sample the initial population
-            if primary_max == 150.0:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*500)
-            elif primary_max == 50.0:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*50)
-            else:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size)
-            
-            total_sampled_mass = np.sum(a_0)
-
-            a_0 = a_0[a_0 >= primary_min]
-            a_0 = a_0[a_0 <= primary_max]            
-
-            return a_0, total_sampled_mass 
-                   
-    # sample secondary mass
-    def sample_secondary(self, primary_mass):
-        '''
-        Secondary mass is computed from uniform mass ratio distribution draws motivated by
-        `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
-        and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
-        '''
-        
-        a_0 = np.random.uniform(0.001, 1, primary_mass.size)
-        secondary_mass = primary_mass*a_0        
-
-        return secondary_mass
-
-
-    def binary_select(self, primary_mass, model='vanHaaften'):
-        '''
-        Binary fraction is set by `van Haaften et al.(2009)<http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
-        '''
-        
-        if model=='vanHaaften':
-            binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-            binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
-     
-            binaryIdx, = np.where(binary_fraction > binary_choose)
-            singleIdx, = np.where(binary_fraction < binary_choose)
-     
-            return primary_mass[binaryIdx], primary_mass[singleIdx]
-
-
-    def sample_porb(self, mass1, mass2, model='Han', size=None):
-        '''
-        If model='Han', separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
-        Separation is then converted to orbital period in days
-        '''
-        
-        if model=='Han': 
-            a_0 = np.random.uniform(0, 1, size)
-            low_cutoff = 0.0583333
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            hiIdx, = np.where(a_0 > low_cutoff)
-            
-            a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
-            a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
-            
-            # convert to meters
-            a_0 = a_0*Rsun
-            
-            # convert to orbital period in seconds
-            porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5           
-            return porb_sec/sec_in_day
-     
-
-    def sample_ecc(self, model='thermal', size=None):
-        '''
-        If model=='thermal', thermal eccentricity distribution following `Heggie (1975)<http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_ 
-        
-        If model=='uniform', Sample eccentricities uniformly between 0 and 1 following ref ref from Aaron Geller '''
-        
-        if model=='thermal':
-            a_0 = np.random.uniform(0.0, 1.0, size)
- 
-            return a_0**0.5
-
-        if model=='uniform':
-            ecc = np.random.uniform(0.0, 1.0, size)
-
-            return ecc
-
-
-    def sample_SFH(self, model='const', component_age=10000.0, size=None):
-        '''
-        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
-        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at component_age [Myr] in the past
-        '''
-
-        if model=='const':
-
-            tphys = np.random.uniform(0, component_age, size)
-            return tphys
- 
-        if model=='burst':
-            tphys = component_age - np.random.uniform(0, 1000, size)
-            return tphys
-     
-     
-    def set_kstar(self, mass):
-        '''
-        Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
-        '''
-        kstar = np.zeros(mass.size)
-        low_cutoff = 0.7
-        lowIdx = np.where(mass < low_cutoff)[0]
-        hiIdx = np.where(mass >= low_cutoff)[0]
-
-        kstar[lowIdx] = 0
-        kstar[hiIdx] = 1
-
-        return kstar
-
-
-class MultiDimSample:
+class MultiDim:
 
     def __init__(self, metallicity, size=None):
         '''
@@ -219,8 +60,8 @@ class MultiDimSample:
         self.metallicity = np.asarray(metallicity).repeat(size)
 
     #-----------------------------------
-    # Belows is the adapted version of Maxwell Moe's IDL code 
-    # that generates a population of single and binary stars 
+    # Belows is the adapted version of Maxwell Moe's IDL code
+    # that generates a population of single and binary stars
     # based on the paper Mind your P's and Q's
     # By Maxwell Moe and Rosanne Di Stefano
     #
@@ -259,14 +100,14 @@ class MultiDimSample:
 
     def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
         '''
-        Sample initial binary distribution according to Moe & Di Stefano (2017)   
+        Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-        '''        
+        '''
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
         #analytic fits to corrected binary star populations.
-        
-        numM1 = 101 
+
+        numM1 = 101
         numlogP = 158
         numq = 91
         nume = 100
@@ -277,19 +118,19 @@ class MultiDimSample:
         #; 0.8 < M1 < 40 (where we have statistics corrected for selection effects)
         M1_lo = 0.8
         M1_hi = 40
-       
+
         M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), numM1)
-       
+
         #; 0.15 < log P < 8.0
         log10_porb_lo = 0.15
         log10_porb_hi = 8.0
         logPv = np.linspace(log10_porb_lo, log10_porb_hi, numlogP)
-       
+
         #; 0.10 < q < 1.00
         q_lo = 0.1
         q_hi = 1.0
         qv = np.linspace(q_lo, q_hi, numq)
-       
+
         #; 0.0001 < e < 0.9901
         #; set minimum to non-zero value to avoid numerical errors
         e_lo = 0.0
@@ -300,23 +141,23 @@ class MultiDimSample:
         #; not considered.
 
         #; Distribution functions - define here, but evaluate within for loops.
-    
+
         #; Frequency of companions with q > 0.1 per decade of orbital period.
         #; Bottom panel in Fig. 37 of M+D17
         flogP_sq = np.zeros([numlogP, numM1])
-    
+
         #; Given M1 and P, the cumulative distribution of mass ratios q
         cumqdist = np.zeros([numq, numlogP, numM1])
-    
+
         #; Given M1 and P, the cumulative distribution of eccentricities e
         cumedist = np.zeros([nume, numlogP, numM1])
-    
+
         #; Given M1 and P, the probability that the companion
         #; is a member of the inner binary (currently an approximation).
         #; 100% for log P < 1.5, decreases with increasing P
         probbin = np.zeros([numlogP, numM1])
-    
-    
+
+
         #; Given M1, the cumulative period distribution of the inner binary
         #; Normalized so that max(cumPbindist) = total binary frac. (NOT unity)
         cumPbindist = np.zeros([numlogP, numM1])
@@ -325,19 +166,19 @@ class MultiDimSample:
         #; Slightly updated from version 1.
         alpha = 0.018
         DlogP = 0.7
-    
+
         #; Heaviside function for twins with 0.95 < q < 1.00
         H = np.zeros(numq)
         ind = np.where(qv >= 0.95)
         H[ind] = 1.0
         H= H / idl_tabulate(qv, H) #;normalize so that integral is unity
-    
-    
+
+
         #; Relevant indices with respect to mass ratio
         indlq = np.where(qv >= 0.3)
         indsq = np.where(qv < 0.3)
         indq0p3 = np.min(indlq)
-        
+
         # FILL IN THE MULTIDIMENSIONAL DISTRIBUTION FUNCTIONS
         #; Loop through primary mass
         for i in range(0, numM1):
@@ -365,14 +206,14 @@ class MultiDimSample:
                     Ftwin = FtwinlogPle1 * (1.0 - (mylogP - 1.0) / (logPtwin - 1.0))
                 if(mylogP >= logPtwin):
                     Ftwin = 0.0
-       
-       
+
+
                 #; Power-law slope gamma_largeq for M1 < 1.2 Msun and various P; Eqn. 9
                 if(mylogP <= 5.0):
                     gl_1p2 = -0.5
                 if(mylogP > 5.0):
                     gl_1p2 = -0.5 - 0.3 * (mylogP - 5.0)
-       
+
                 #; Power-law slope gamma_largeq for M1 = 3.5 Msun and various P; Eqn. 10
                 if(mylogP <= 1.0):
                     gl_3p5 = -0.5
@@ -382,7 +223,7 @@ class MultiDimSample:
                     gl_3p5 = -1.2 - 0.4 * (mylogP - 4.5)
                 if(mylogP > 6.5):
                     gl_3p5 = -2.0
-                
+
                 #; Power-law slope gamma_largeq for M1 > 6 Msun and various P; Eqn. 11
                 if(mylogP <= 1.0):
                     gl_6 = -0.5
@@ -393,7 +234,7 @@ class MultiDimSample:
 
                 if(mylogP > 4.0):
                     gl_6 = -2.0
-                
+
                 #; Given P, interpolate gamma_largeq w/ respect to M1 at myM1
                 if(myM1 <= 1.2):
                     gl = gl_1p2
@@ -403,10 +244,10 @@ class MultiDimSample:
                     gl = np.interp(np.log10(myM1), np.log10([3.5, 6.0]), [gl_3p5, gl_6])
                 if(myM1 > 6.0):
                     gl = gl_6
-                
+
                 #; Power-law slope gamma_smallq for M1 < 1.2 Msun and all P; Eqn. 13
                 gs_1p2 = 0.3
-                
+
                 #; Power-law slope gamma_smallq for M1 = 3.5 Msun and various P; Eqn. 14
                 if(mylogP <= 2.5):
                     gs_3p5 = 0.2
@@ -424,7 +265,7 @@ class MultiDimSample:
                     gs_6 = -0.2 - 0.50 * (mylogP - 3.0)
                 if(mylogP > 5.6):
                     gs_6 = -1.5
-                
+
                 #; Given P, interpolate gamma_smallq w/ respect to M1 at myM1
                 if(myM1 <= 1.2):
                     gs = gs_1p2
@@ -588,7 +429,7 @@ class MultiDimSample:
                 #; Select primary M1 > M1min from primary mass function
                 myM1 = np.interp(cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1)
 
-                
+
                 # ; Find index of M1v that is closest to myM1.
                 #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
                 #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
@@ -607,8 +448,8 @@ class MultiDimSample:
 
                 # ; Given M1, determine the binary star fraction
                 mybinfrac = np.max(mycumPbindist_flat)
-             
-             
+
+
                 # ; Generate random number myrand between 0 and 1
                 myrand = np.random.rand()
                 #; If random number < binary star fraction, generate a binary
@@ -617,12 +458,12 @@ class MultiDimSample:
                     mylogP = np.interp(myrand, mycumPbindist_flat, logPv)
                     indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
                     indlogP = indlogP[0]
-             
-             
+
+
                     #; Given M1 & P, select e from eccentricity distribution
                     mye = np.interp(np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev)
-             
-             
+
+
                     #; Given M1 & P, determine mass ratio distribution.
                     #; If M1 < 0.8 Msun, truncate q distribution and consider
                     #; only mass ratios q > q_min = 0.08 / M1
@@ -637,22 +478,22 @@ class MultiDimSample:
                         #; Set probability = 0 where q < q_min
                         indq = np.where(qv <= q_min)
                         mycumqdist[indq] = 0.0
-             
+
                     #; Given M1 & P, select q from cumulative mass ratio distribution
                     myq = np.interp(np.random.rand(), mycumqdist, qv)
-             
+
                     if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
                         ecc_list.append(mye)
                     total_mass += myM1
-                    total_mass += myq * myM1 
+                    total_mass += myq * myM1
                 else:
-                    total_mass += myM1 
+                    total_mass += myM1
             output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass])
             return
-      
+
         output = mp.Queue()
         processes = [mp.Process(target = _sample_initial_pop,\
                                 args = (M1min, M2min, M1max, M2max, size/nproc, rand_seed, output))\
@@ -684,8 +525,8 @@ class MultiDimSample:
         total_mass = np.sum(dat_lists[4])
 
 
-        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass      
-                   
+        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass
+
     def sample_SFH(self, model='const', component_age=10000.0, size=None):
         '''
         'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
@@ -715,4 +556,4 @@ class MultiDimSample:
 
         return kstar
 
-    
+
