@@ -28,7 +28,12 @@ import scipy.integrate
 from astropy.table import Table, Column
 from astropy import units
 
-from .utils import idl_tabulate, rndm
+from aCOSMIC.utils import mass_min_max_select
+
+from .sampler import register_sampler
+from .. import InitialBinaryTable
+
+from aCOSMIC.utils import idl_tabulate, rndm
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -51,13 +56,42 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-class MultiDim:
+def get_independent_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size, **kwargs):
+    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
+    initconditions = MultiDim()
+    initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    initconditions.tphysf = initconditions.sample_SFH(SFH_model, component_age, size = size)
+    initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
+    initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
+    initconditions.metallicity = initconditions.set_metallicity(component_age, size = initconditions.mass1_binary.size)
 
-    def __init__(self, metallicity, size=None):
-        '''
-        initialize samples
-        '''
-        self.metallicity = np.asarray(metallicity).repeat(size)
+    tab = Table()
+    tab['mass1_binary'] = Column(initconditions.mass1_binary, unit=units.Msun,
+                           description='Mass of larger object')
+    tab['mass2_binary'] = Column(initconditions.mass2_binary, unit=units.Msun,
+                           description='Mass of smaller object')
+    tab['porb'] = Column(initconditions.porb, unit=units.day,
+                           description='Orbital Period')
+    tab['ecc'] = Column(initconditions.ecc, unit=None,
+                           description='Eccentricity')
+    tab['tphysf'] = Column(initconditions.tphysf, unit=units.year*1000000,
+                           description='Binary Evolution Time')
+    tab['kstar1'] = Column(initconditions.kstar1, unit=None,
+                           description='Stellar type of larger object')
+    tab['kstar2'] = Column(initconditions.kstar2, unit=None,
+                           description='Stelar type of smaller object')
+    tab['metallicity'] = Column(initconditions.metallicity, unit=None,
+                           description='metallicity of the galaxy')
+
+    return tab, sampled_mass
+
+
+register_sampler('multidim', InitialBinaryTable, get_independent_sampler,
+                 usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size")
+
+
+
+class MultiDim:
 
     #-----------------------------------
     # Belows is the adapted version of Maxwell Moe's IDL code
@@ -556,4 +590,13 @@ class MultiDim:
 
         return kstar
 
+    def set_metallicity(self, component_age, size):
+        '''
+        As a stand in for now, set all systems with component age less that 10 Gyr to solar metallicity and systems with component age greater than 10 Gyr to 0.15 solar metallicity
+        '''
+        if component_age > 10000:
+            metallicity = 0.02*0.15*np.ones(size)
+        else:
+            metallicity = 0.02*np.ones(size)
 
+        return metallicity

@@ -19,5 +19,6 @@
 
 
 from . import (  # pylint: disable=unused-import
-    independent # Independent Model
+    independent, # Independent parameter distribution sample
+    multidim # Multidimensional parameter distribution sample`
 )

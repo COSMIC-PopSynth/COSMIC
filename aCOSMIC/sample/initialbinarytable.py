@@ -73,11 +73,13 @@ class InitialBinaryTable(Table):
                 tphysf (float) :
                     How long to evolve the binary in millions of years
 
-                kstar1 (int) :
-                    0-14 Stellar type of the larger object
+                kstar1 (array) :
+                    0-14 Initial stellar type of the larger object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
-                kstar2 (int) :
-                    0-14 Stellar type of the smaller object
+                kstar2 (array) :
+                    0-14 Initial stellar type of the smaller object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
                 metallicity (float):
                     metallicity of the galaxy where the binary lives.
@@ -128,10 +130,12 @@ class InitialBinaryTable(Table):
                     How long to evolve the binary in millions of years
 
                 kstar1 (array) :
-                    0-14 Stellar type of the larger object
+                    0-14 Initial stellar type of the larger object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
                 kstar2 (array) :
-                    0-14 Stellar type of the smaller object
+                    0-14 Initial stellar type of the smaller object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
                 metallicity (array):
                     metallicity of the galaxy where the binary lives.
