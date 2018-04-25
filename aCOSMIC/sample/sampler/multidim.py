@@ -56,37 +56,18 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size, **kwargs):
+def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size, **kwargs):
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    initconditions.mass1_binary, initconditions.mass2_binary, initconditions.porb, initconditions.ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
-    initconditions.tphysf = initconditions.sample_SFH(SFH_model, component_age, size = size)
-    initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
-    initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
-    initconditions.metallicity = initconditions.set_metallicity(component_age, size = initconditions.mass1_binary.size)
+    mass1_binary, mass2_binary, porb, ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    tphysf = initconditions.sample_SFH(SFH_model, component_age, size = size)
+    kstar1 = initconditions.set_kstar(mass1_binary)
+    kstar2 = initconditions.set_kstar(mass2_binary)
+    metallicity = initconditions.set_metallicity(component_age, size = mass1_binary.size)
 
-    tab = Table()
-    tab['mass1_binary'] = Column(initconditions.mass1_binary, unit=units.Msun,
-                           description='Mass of larger object')
-    tab['mass2_binary'] = Column(initconditions.mass2_binary, unit=units.Msun,
-                           description='Mass of smaller object')
-    tab['porb'] = Column(initconditions.porb, unit=units.day,
-                           description='Orbital Period')
-    tab['ecc'] = Column(initconditions.ecc, unit=None,
-                           description='Eccentricity')
-    tab['tphysf'] = Column(initconditions.tphysf, unit=units.year*1000000,
-                           description='Binary Evolution Time')
-    tab['kstar1'] = Column(initconditions.kstar1, unit=None,
-                           description='Stellar type of larger object')
-    tab['kstar2'] = Column(initconditions.kstar2, unit=None,
-                           description='Stelar type of smaller object')
-    tab['metallicity'] = Column(initconditions.metallicity, unit=None,
-                           description='metallicity of the galaxy')
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass) 
 
-    return tab, sampled_mass
-
-
-register_sampler('multidim', InitialBinaryTable, get_independent_sampler,
+register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
                  usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size")
 
 

@@ -58,39 +58,21 @@ def get_independent_sampler(primary_min, primary_max, primary_model, ecc_model, 
     sampled_mass = 0.0
 
     initconditions = Sample()    
-    initconditions.mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
+    mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
     # add in the total sampled primary mass
     sampled_mass += total_mass1
-    initconditions.mass1_binary, mass_singles = initconditions.binary_select(initconditions.mass1)
-    initconditions.mass2_binary = initconditions.sample_secondary(initconditions.mass1_binary)
+    mass1_binary, mass_singles = initconditions.binary_select(mass1)
+    mass2_binary = initconditions.sample_secondary(mass1_binary)
     # add in the sampled secondary mass
-    sampled_mass += np.sum(initconditions.mass2_binary)
-    initconditions.porb =  initconditions.sample_porb(initconditions.mass1_binary, initconditions.mass2_binary, size=initconditions.mass1_binary.size)
-    initconditions.ecc =  initconditions.sample_ecc(ecc_model, size = initconditions.mass1_binary.size)
-    initconditions.tphysf = initconditions.sample_SFH(SFH_model, component_age=component_age, size = initconditions.mass1_binary.size)
-    initconditions.kstar1 = initconditions.set_kstar(initconditions.mass1_binary)
-    initconditions.kstar2 = initconditions.set_kstar(initconditions.mass2_binary)
-    initconditions.metallicity = initconditions.set_metallicity(component_age, size = initconditions.mass1_binary.size)    
+    sampled_mass += np.sum(mass2_binary)
+    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, size=mass1_binary.size)
+    ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
+    tphysf = initconditions.sample_SFH(SFH_model, component_age=component_age, size = mass1_binary.size)
+    kstar1 = initconditions.set_kstar(mass1_binary)
+    kstar2 = initconditions.set_kstar(mass2_binary)
+    metallicity = initconditions.set_metallicity(component_age, size = mass1_binary.size)    
     
-    tab = Table()
-    tab['mass1_binary'] = Column(initconditions.mass1_binary, unit=units.Msun,
-                           description='Mass of larger object')
-    tab['mass2_binary'] = Column(initconditions.mass2_binary, unit=units.Msun,
-                           description='Mass of smaller object')
-    tab['porb'] = Column(initconditions.porb, unit=units.day,
-                           description='Orbital Period')
-    tab['ecc'] = Column(initconditions.ecc, unit=None,
-                           description='Eccentricity')
-    tab['tphysf'] = Column(initconditions.tphysf, unit=units.year*1000000,
-                           description='Binary Evolution Time')
-    tab['kstar1'] = Column(initconditions.kstar1, unit=None,
-                           description='Stellar type of larger object')
-    tab['kstar2'] = Column(initconditions.kstar2, unit=None,
-                           description='Stelar type of smaller object')
-    tab['metallicity'] = Column(initconditions.metallicity, unit=None,
-                           description='metallicity of the galaxy')
-
-    return tab, sampled_mass
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass)
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,

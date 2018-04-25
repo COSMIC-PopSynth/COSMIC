@@ -23,6 +23,7 @@ import numpy as np
 from gwpy.utils import mp as mp_utils
 from aCOSMIC import _evolvebin
 import pandas as pd
+from astropy.table import Table
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -35,15 +36,14 @@ bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1', 'tef
 'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2', 'renv_2', 'epoch_2', 'ospin_2', 'deltam_1', 'RROL_2',
 'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation2']
 
-class Evolve:
-    def __init__(self, sample):
+class Evolve(Table):
+    def __init__():
         '''
         initialize Evolve
         '''
-        self.initial_conditions = sample
 
-
-    def evolve(self, **kwargs):
+    @classmethod
+    def evolve(cls, initialbinarytable, BSEDict, **kwargs):
         """After setting a number of initial conditions
         we evolve the system.
 
@@ -58,59 +58,40 @@ class Evolve:
         -------
         An evolved binary
         """
-        # Populate BSEDict
-        BSEDict = kwargs.pop('BSEDict')
         idx = kwargs.pop('idx', 0)
-        self.initial_conditions.neta = np.repeat(BSEDict['neta'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.bwind = np.repeat(BSEDict['bwind'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.hewind = np.repeat(BSEDict['hewind'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.alpha1 = np.repeat(BSEDict['alpha1'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.lambdaf = np.repeat(BSEDict['lambdaf'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.ceflag = np.repeat(BSEDict['ceflag'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.tflag = np.repeat(BSEDict['tflag'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.ifflag = np.repeat(BSEDict['ifflag'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.wdflag = np.repeat(BSEDict['wdflag'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.bhflag = np.repeat(BSEDict['bhflag'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.nsflag = np.repeat(BSEDict['nsflag'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.mxns = np.repeat(BSEDict['mxns'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.pts1 = np.repeat(BSEDict['pts1'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.pts2 = np.repeat(BSEDict['pts2'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.pts3 = np.repeat(BSEDict['pts3'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.sigma = np.repeat(BSEDict['sigma'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.beta = np.repeat(BSEDict['beta'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.xi = np.repeat(BSEDict['xi'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.acc2 = np.repeat(BSEDict['acc2'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.epsnov = np.repeat(BSEDict['epsnov'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.eddfac = np.repeat(BSEDict['eddfac'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.gamma = np.repeat(BSEDict['gamma'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.bconst = np.repeat(BSEDict['bconst'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.CK = np.repeat(BSEDict['CK'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.merger = np.repeat(BSEDict['merger'], self.initial_conditions.kstar1.size)
-        self.initial_conditions.windflag = np.repeat(BSEDict['windflag'], self.initial_conditions.kstar1.size)
+        nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
 
-        initial_conditions = np.vstack([self.initial_conditions.kstar1, self.initial_conditions.kstar2,\
-                                        self.initial_conditions.mass1_binary, self.initial_conditions.mass2_binary,\
-                                        self.initial_conditions.porb, self.initial_conditions.ecc,\
-                                        self.initial_conditions.metallicity[0:self.initial_conditions.mass1_binary.size],\
-                                        self.initial_conditions.tphysf, self.initial_conditions.neta,\
-                                        self.initial_conditions.bwind, self.initial_conditions.hewind,\
-                                        self.initial_conditions.alpha1, self.initial_conditions.lambdaf,\
-                                        self.initial_conditions.ceflag, self.initial_conditions.tflag,\
-                                        self.initial_conditions.ifflag, self.initial_conditions.wdflag,\
-                                        self.initial_conditions.bhflag, self.initial_conditions.nsflag,\
-                                        self.initial_conditions.mxns, self.initial_conditions.pts1,\
-                                        self.initial_conditions.pts2, self.initial_conditions.pts3,\
-                                        self.initial_conditions.sigma, self.initial_conditions.beta,\
-                                        self.initial_conditions.xi, self.initial_conditions.acc2,\
-                                        self.initial_conditions.epsnov, self.initial_conditions.eddfac,\
-                                        self.initial_conditions.gamma, self.initial_conditions.bconst,\
-                                        self.initial_conditions.CK, self.initial_conditions.merger,\
-                                        self.initial_conditions.windflag, self.initial_conditions.tphysf,\
-                                        np.arange(idx, idx + self.initial_conditions.kstar1.size),\
-                                        np.random.randint(1,1000000,size=self.initial_conditions.kstar1.size)]).T
+        initialbinarytable['neta'] = BSEDict['neta']
+        initialbinarytable['bwind'] = BSEDict['bwind']
+        initialbinarytable['hewind'] = BSEDict['hewind']
+        initialbinarytable['alpha1'] = BSEDict['alpha1']
+        initialbinarytable['lambdaf'] = BSEDict['lambdaf']
+        initialbinarytable['ceflag'] = BSEDict['ceflag']
+        initialbinarytable['tflag'] = BSEDict['tflag']
+        initialbinarytable['ifflag'] = BSEDict['ifflag']
+        initialbinarytable['wdflag'] = BSEDict['wdflag']
+        initialbinarytable['bhflag'] = BSEDict['bhflag']
+        initialbinarytable['nsflag'] = BSEDict['nsflag']
+        initialbinarytable['mxns'] = BSEDict['mxns']
+        initialbinarytable['pts1'] = BSEDict['pts1']
+        initialbinarytable['pts2'] = BSEDict['pts2']
+        initialbinarytable['pts3'] = BSEDict['pts3']
+        initialbinarytable['sigma'] = BSEDict['sigma']
+        initialbinarytable['beta'] = BSEDict['beta']
+        initialbinarytable['xi'] = BSEDict['xi']
+        initialbinarytable['acc2'] = BSEDict['acc2']
+        initialbinarytable['epsnov'] = BSEDict['epsnov']
+        initialbinarytable['eddfac'] = BSEDict['eddfac']
+        initialbinarytable['gamma'] = BSEDict['gamma']
+        initialbinarytable['bconst'] = BSEDict['bconst']
+        initialbinarytable['CK'] = BSEDict['CK']
+        initialbinarytable['merger'] = BSEDict['merger']
+        initialbinarytable['windflag'] = BSEDict['windflag']
+        initialbinarytable['dtp'] = initialbinarytable['tphysf']
+        initialbinarytable['index'] = np.arange(idx, idx + len(initialbinarytable))
+        initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
 
-        # calculate maximum number of processes
-        nproc = min(kwargs.pop('nproc', 1), len(initial_conditions))
+        initial_conditions = initialbinarytable.as_array() 
 
         # define multiprocessing method
         def _evolve_single_system(f):
