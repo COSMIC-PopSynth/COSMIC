@@ -14,9 +14,9 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with astro-traj.  If not, see <http://www.gnu.org/licenses/>.
+# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
-"""`sample`
+"""`InitialBinaryTable`
 """
 
 import numpy as np
@@ -32,7 +32,7 @@ from aCOSMIC.utils import idl_tabulate, rndm
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'Sample'
+__all__ = 'InitialBinaryTable'
 
 
 G = 6.67384*math.pow(10, -11.0)
@@ -73,11 +73,13 @@ class InitialBinaryTable(Table):
                 tphysf (float) :
                     How long to evolve the binary in millions of years
 
-                kstar1 (int) :
-                    0-14 Stellar type of the larger object
+                kstar1 (array) :
+                    0-14 Initial stellar type of the larger object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
-                kstar2 (int) :
-                    0-14 Stellar type of the smaller object
+                kstar2 (array) :
+                    0-14 Initial stellar type of the smaller object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
                 metallicity (float):
                     metallicity of the galaxy where the binary lives.
@@ -87,6 +89,10 @@ class InitialBinaryTable(Table):
                 `SingleBinary`
         """
         tab = Table()
+        tab['kstar1'] = Column([kstar1], unit=None,
+                               description='Stellar type of larger object')
+        tab['kstar2'] = Column([kstar2], unit=None,
+                               description='Stelar type of smaller object')
         tab['mass1_binary'] = Column([m1], unit=units.Msun,
                                description='Mass of larger object')
         tab['mass2_binary'] = Column([m2], unit=units.Msun,
@@ -95,19 +101,15 @@ class InitialBinaryTable(Table):
                                description='Orbital Period')
         tab['ecc'] = Column([ecc], unit=None,
                                description='Eccentricity')
-        tab['tphysf'] = Column([tphysf], unit=units.year*1000000,
-                               description='Binary Evolution Time')
-        tab['kstar1'] = Column([kstar1], unit=None,
-                               description='Stellar type of larger object')
-        tab['kstar2'] = Column([kstar2], unit=None,
-                               description='Stelar type of smaller object')
         tab['metallicity'] = Column([metallicity], unit=None,
                                description='metallicity of the galaxy')
+        tab['tphysf'] = Column([tphysf], unit=units.year*1000000,
+                               description='Binary Evolution Time')
 
         return tab
 
     @classmethod
-    def BinaryGrid(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
+    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
         """Create a grid of binaries
 
             Parameters:
@@ -128,10 +130,12 @@ class InitialBinaryTable(Table):
                     How long to evolve the binary in millions of years
 
                 kstar1 (array) :
-                    0-14 Stellar type of the larger object
+                    0-14 Initial stellar type of the larger object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
                 kstar2 (array) :
-                    0-14 Stellar type of the smaller object
+                    0-14 Initial stellar type of the smaller object; 
+                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
 
                 metallicity (array):
                     metallicity of the galaxy where the binary lives.
@@ -140,7 +144,12 @@ class InitialBinaryTable(Table):
             Returns:
                 `BinaryGrid`
         """
+        sampled_mass = kwargs.pop("sampled_mass", None)
         tab = Table()
+        tab['kstar1'] = Column(kstar1, unit=None,
+                               description='Stellar type of larger object')
+        tab['kstar2'] = Column(kstar2, unit=None,
+                               description='Stelar type of smaller object')
         tab['mass1_binary'] = Column(m1, unit=units.Msun,
                                description='Mass of larger object')
         tab['mass2_binary'] = Column(m2, unit=units.Msun,
@@ -149,16 +158,14 @@ class InitialBinaryTable(Table):
                                description='Orbital Period')
         tab['ecc'] = Column(ecc, unit=None,
                                description='Eccentricity')
-        tab['tphysf'] = Column(tphysf, unit=units.year*1000000,
-                               description='Binary Evolution Time')
-        tab['kstar1'] = Column(kstar1, unit=None,
-                               description='Stellar type of larger object')
-        tab['kstar2'] = Column(kstar2, unit=None,
-                               description='Stelar type of smaller object')
         tab['metallicity'] = Column(metallicity, unit=None,
                                description='metallicity of the galaxy')
-
-        return tab
+        tab['tphysf'] = Column(tphysf, unit=units.year*1000000,
+                               description='Binary Evolution Time')
+        if sampled_mass:
+            return tab, sampled_mass
+        else:
+            return tab
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):

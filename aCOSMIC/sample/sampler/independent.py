@@ -54,25 +54,42 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-def get_independent_sampler(primary_min, primary_max, model, size, **kwargs):
-    return
+def get_independent_sampler(primary_min, primary_max, primary_model, ecc_model, SFH_model, component_age, size, **kwargs):
+    sampled_mass = 0.0
+
+    initconditions = Sample()    
+    mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
+    # add in the total sampled primary mass
+    sampled_mass += total_mass1
+    mass1_binary, mass_singles = initconditions.binary_select(mass1)
+    mass2_binary = initconditions.sample_secondary(mass1_binary)
+    # add in the sampled secondary mass
+    sampled_mass += np.sum(mass2_binary)
+    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, size=mass1_binary.size)
+    ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
+    tphysf = initconditions.sample_SFH(SFH_model, component_age=component_age, size = mass1_binary.size)
+    kstar1 = initconditions.set_kstar(mass1_binary)
+    kstar2 = initconditions.set_kstar(mass2_binary)
+    metallicity = initconditions.set_metallicity(component_age, size = mass1_binary.size)    
+    
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass)
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="primary_min, primary_max, model, size")
+                 usage="primary_min, primary_max, ecc_model, SFH_model, component_age, size")
 
 
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_min, primary_max, model='kroupa93', size=None):
+    def sample_primary(self, primary_min, primary_max, primary_model='kroupa93', size=None):
         '''
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
         salpter55 follows Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_ between 0.1 and 100 Msun
         '''
 
-        if model=='kroupa93':
+        if primary_model=='kroupa93':
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
@@ -100,7 +117,7 @@ class Sample(object):
             a_0 = a_0[a_0 <= primary_max]
             return a_0, total_sampled_mass
 
-        elif model=='salpeter55':
+        elif primary_model=='salpeter55':
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
@@ -132,73 +149,71 @@ class Sample(object):
         return secondary_mass
 
 
-    def binary_select(self, primary_mass, model='vanHaaften'):
+    def binary_select(self, primary_mass):
         '''
         Binary fraction is set by `van Haaften et al.(2009)<http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         '''
 
-        if model=='vanHaaften':
-            binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-            binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
+        binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
+        binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
 
-            binaryIdx, = np.where(binary_fraction > binary_choose)
-            singleIdx, = np.where(binary_fraction < binary_choose)
+        binaryIdx, = np.where(binary_fraction > binary_choose)
+        singleIdx, = np.where(binary_fraction < binary_choose)
 
-            return primary_mass[binaryIdx], primary_mass[singleIdx]
+        return primary_mass[binaryIdx], primary_mass[singleIdx]
 
 
-    def sample_porb(self, mass1, mass2, model='Han', size=None):
+    def sample_porb(self, mass1, mass2, size=None):
         '''
-        If model='Han', separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        Separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
         Separation is then converted to orbital period in days
         '''
 
-        if model=='Han':
-            a_0 = np.random.uniform(0, 1, size)
-            low_cutoff = 0.0583333
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            hiIdx, = np.where(a_0 > low_cutoff)
+        a_0 = np.random.uniform(0, 1, size)
+        low_cutoff = 0.0583333
+        lowIdx, = np.where(a_0 <= low_cutoff)
+        hiIdx, = np.where(a_0 > low_cutoff)
 
-            a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
-            a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
+        a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
+        a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
 
-            # convert to meters
-            a_0 = a_0*Rsun
+        # convert to meters
+        a_0 = a_0*Rsun
 
-            # convert to orbital period in seconds
-            porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5
-            return porb_sec/sec_in_day
+        # convert to orbital period in seconds
+        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5
+        return porb_sec/sec_in_day
 
 
-    def sample_ecc(self, model='thermal', size=None):
+    def sample_ecc(self, ecc_model='thermal', size=None):
         '''
         If model=='thermal', thermal eccentricity distribution following `Heggie (1975)<http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
 
         If model=='uniform', Sample eccentricities uniformly between 0 and 1 following ref ref from Aaron Geller '''
 
-        if model=='thermal':
+        if ecc_model=='thermal':
             a_0 = np.random.uniform(0.0, 1.0, size)
 
             return a_0**0.5
 
-        if model=='uniform':
+        if ecc_model=='uniform':
             ecc = np.random.uniform(0.0, 1.0, size)
 
             return ecc
 
 
-    def sample_SFH(self, model='const', component_age=10000.0, size=None):
+    def sample_SFH(self, SFH_model='const', component_age=10000.0, size=None):
         '''
         'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
         'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at component_age [Myr] in the past
         '''
 
-        if model=='const':
+        if SFH_model=='const':
 
             tphys = np.random.uniform(0, component_age, size)
             return tphys
 
-        if model=='burst':
+        if SFH_model=='burst':
             tphys = component_age - np.random.uniform(0, 1000, size)
             return tphys
 
@@ -216,3 +231,14 @@ class Sample(object):
         kstar[hiIdx] = 1
 
         return kstar
+
+    def set_metallicity(self, component_age, size):
+        '''
+        As a stand in for now, set all systems with component age less that 10 Gyr to solar metallicity and systems with component age greater than 10 Gyr to 0.15 solar metallicity
+        '''
+        if component_age > 10000:
+            metallicity = 0.02*0.15*np.ones(size)
+        else:
+            metallicity = 0.02*np.ones(size)
+        
+        return metallicity
