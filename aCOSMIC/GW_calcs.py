@@ -77,8 +77,8 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     LISA_psd = lisa_sensitivity.lisa_psd()
     
     mChirp = m_chirp(m1, m2)
-    h_0 = np.sqrt(32.0/5.0)*G/c**2*(mChirp)/(dist)*(G/c**3*np.pi*(1/(porb))*mChirp)**(2./3.)
-    h_0_squared = 2*h_0**2
+    h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
+    h_0_squared = h_0**2
     #h_0_squared = (1.607e-21)**2 * ((mChirp)**(5.0/3.0) * (porb)**(-2.0/3.0) * dist**(-1.0))**2
     freq = []
     psd = []
@@ -93,7 +93,9 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ])
     
     power = h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs
-    psd.extend(power)
+    # we want both the plus polarization and cross polarization
+    power_tot = 2*power
+    psd.extend(power_tot)
     freq.extend(2.0 / (porb.iloc[ind_circ]))
     if len(ind_ecc) > 0:
         peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
@@ -108,26 +110,24 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
         power = h_0_squared_ecc * Tobs * peters_g_factor
         power_flat = power.flatten()
 
-        psd.extend(power_flat)
+        psd.extend(2*power_flat)
         freq.extend(GW_freq_flat)
 
-        SNR[ind_ecc] = (SNR_squared.sum(axis=0))**0.5
+        SNR[ind_ecc] = (2 * SNR_squared.sum(axis=0))**0.5
         gw_freq[ind_ecc] = peak_gw_freq(m1.iloc[ind_ecc], m2.iloc[ind_ecc], ecc.iloc[ind_ecc], porb.iloc[ind_ecc])
 
-    SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR, m1, m2, ecc, porb, dist]).T, columns=['gw_freq', 'SNR', 'm1', 'm2', 'ecc', 'porb', 'dist'])
-    
-    SNR_dat = SNR_dat.loc[SNR_dat.dist > 5.0*parsec]
+    SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
     if len(SNR_dat.SNR > 1.0) > 1:
         SNR_dat = SNR_dat.loc[SNR_dat.SNR > 1.0]
     else:
-        SNR_dat = pd.DataFrame(columns=['gw_freq', 'SNR', 'm1', 'm2', 'ecc', 'porb', 'dist']) 
+        SNR_dat = pd.DataFrame(columns=['gw_freq', 'SNR']) 
         
     psd_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'PSD'])
 
     return SNR_dat, psd_dat.sort_values(by=['freq'])
 
 def compute_foreground(psd_dat):
-    binwidth = 40.0/Tobs
+    binwidth = 1.0/Tobs
     freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
     print 'number of bins in foreground', len(freqBinsLISA)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
