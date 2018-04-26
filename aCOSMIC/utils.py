@@ -98,8 +98,8 @@ def param_transform(dat):
     Leaves some wiggle room on the edges of the data set
     '''
 
-    datMin = min(dat)
-    datMax = max(dat)
+    datMin = min(dat)-0.000001
+    datMax = max(dat)+0.000001
     datZeroed = dat-datMin
 
     datTransformed = datZeroed/((datMax-datMin))
@@ -117,7 +117,7 @@ def dat_transform(dat, dat_list):
     for column in dat_list:
         dat_trans.append(param_transform(dat[column]))
     
-    dat_trans = np.vstack([dat_trans])
+    dat_trans = ss.logit(np.vstack([dat_trans]))
 
     return dat_trans
 
@@ -130,7 +130,7 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
     ii = 0
     for column in dat_list:
         print column
-        dat.append(dat_sample[ii, :]*\
+        dat.append(ss.expit(dat_sample[ii, :])*\
                    (max(dat_set[column]) - min(dat_set[column])) +\
                     min(dat_set[column]))
         ii += 0
@@ -147,6 +147,8 @@ def knuth_bw_selector(dat_list):
         except:
             bw = astrostats.scott_bin_width(dat)
         bw_list.append(bw)
+        
+    print 'binwidths are: ',bw_list
     return np.mean(bw_list)
                       
         
