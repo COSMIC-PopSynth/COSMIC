@@ -80,9 +80,9 @@ if __name__ == '__main__':
         PSD = pd.DataFrame(columns=['freq', 'PSD'])
         
         if len(dat_list) == 3:
-            dat_kde = np.vstack([fixed_pop.mass_1, fixed_pop.mass_2, np.log10(fixed_pop.porb)])
+            dat_kde = np.vstack([np.log10(fixed_pop.mass_1), np.log10(fixed_pop.mass_2), np.log10(fixed_pop.porb)])
         else:
-            dat_kde = np.vstack([fixed_pop.mass_1, fixed_pop.mass_2, np.log10(fixed_pop.porb), ss.logit(fixed_pop.ecc)])
+            dat_kde = np.vstack([np.log10(fixed_pop.mass_1), np.log10(fixed_pop.mass_2), np.log10(fixed_pop.porb), ss.logit(fixed_pop.ecc)])
         bw = utils.knuth_bw_selector(dat_kde)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
@@ -97,18 +97,24 @@ if __name__ == '__main__':
                 #####################################################################
                 binary_sample_dat = dat_kernel.resample(nSample)
                 if len(dat_list) == 3:
+                    binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
+                    binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
                     binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
                     binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
                 else:
-                    #convert the orbital period out of log-space and 
+                    #convert the masses and orbital period out of log-space and 
                     #eccentricity out of logit space
+                    binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
+                    binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
                     binary_sample_dat[2,:]= 10**binary_sample_dat[2,:]
                     binary_sample_dat[3,:] = ss.expit(binary_sample_dat[3,:])
+                
+                ind_save, = np.where(binary_sample_dat[2,:] < 1e5/sec_in_year)
+                binary_sample_dat = binary_sample_dat[:,ind_save]
                 # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
                 #####################################################################
                 binary_sample_positions = MC_sample.galactic_position_sample(gx_component, 
-                                                                             size = nSample, 
-                                                                             model='McMillan')
+                                                                             size = len(binary_sample_dat[0]),model='McMillan')
                 
                 full_sample = np.concatenate([binary_sample_dat,binary_sample_positions]).T
                 full_sample = pd.DataFrame(full_sample,\
@@ -143,19 +149,25 @@ if __name__ == '__main__':
             #####################################################################
             binary_sample_dat = dat_kernel.resample(nSample)
             if len(dat_list) == 3:
+                binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
+                binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
                 binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
                 binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
             else:
                 #convert the orbital period out of log-space and 
                 #eccentricity out of logit space
+                binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
+                binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
                 binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
                 binary_sample_dat[3,:] = ss.expit(binary_sample_dat[3,:])
-
+            
+            ind_save, = np.where(binary_sample_dat[2,:] < 1e5/sec_in_year)
+            binary_sample_dat = binary_sample_dat[:,ind_save]
+            
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
             #####################################################################            
             binary_sample_positions = MC_sample.galactic_position_sample(gx_component, 
-                                                                         size = nSample, 
-                                                                         model='McMillan')
+                                                                         size = len(binary_sample_dat[0]),model='McMillan')
             full_sample = np.concatenate([binary_sample_dat,binary_sample_positions]).T
             full_sample = pd.DataFrame(full_sample,
                                        columns = ['mass1', 'mass2', 'porb', 'ecc',
@@ -250,7 +262,7 @@ if __name__ == '__main__':
     
     # Filter out long period binaries
     ###########################################################################
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 7e5/sec_in_year]
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 10]
     
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
