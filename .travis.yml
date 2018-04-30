@@ -1,5 +1,11 @@
 language: python
 
+addons:
+  apt:
+    packages:
+    - gfortran
+    - swig
+
 python:
   - '2.7'
   - '3.4'
@@ -28,3 +34,4 @@ after_success:
 
 cache:
   pip: true
+  apt: true
