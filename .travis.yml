@@ -1,42 +1,30 @@
 language: python
 
-addons:
-  apt:
-    packages:
-    - gfortran
-    - swig
-
 python:
-- '2.7'
-- '3.5'
-
-env:
-  matrix:
-  - PIP_FLAGS="--quiet"
-  - PIP_FLAGS="--quiet --pre"
-
-matrix:
-  allow_failures:
-  - python: '3.5'
-  fast_finish: true
+  - '2.7'
+  - '3.4'
+  - '3.5'
+  - '3.6'
 
 before_install:
-- pip install -q --upgrade pip
-- pip install -r requirements.txt
+  - pip install pip setuptools --upgrade
 
 install:
-- pip install --editable . 
+  - python -m pip install .
 
 before_script:
-- pip list installed
+  - python -m pip install coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2
 
 script:
-- pip install unittest2 coveralls "pytest>=2.8"
-- . .travis/run-tests.sh
+  # run unit tests
+  - coverage run ./setup.py test
+  - coverage run --append `which runFixedPop` --help
+
+  # build documentation
+  - cd docs && make html; cd ../
 
 after_success:
 - coveralls
 
 cache:
-  apt: true
   pip: true

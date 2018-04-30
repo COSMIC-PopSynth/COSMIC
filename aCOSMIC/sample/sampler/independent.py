@@ -35,7 +35,7 @@ from aCOSMIC.utils import idl_tabulate, rndm
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'Sample'
+__all__ = ['get_independent_sampler', 'Sample']
 
 
 G = 6.67384*math.pow(10, -11.0)
@@ -83,11 +83,25 @@ class Sample(object):
 
     # sample primary masses
     def sample_primary(self, primary_min, primary_max, primary_model='kroupa93', size=None):
-        '''
+        """sample the larger mass object
+
         kroupa93 follows Kroupa (1993), normalization comes from
-        `Hurley (2002) <https://arxiv.org/abs/astro-ph/0201220>`_ between 0.1 and 100 Msun
-        salpter55 follows Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_ between 0.1 and 100 Msun
-        '''
+        `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
+        between 0.1 and 100 Msun
+        salpter55 follows
+        `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+        between 0.1 and 100 Msun
+
+        Parameters:
+            primary_min (float):
+                Something
+            primary_max (float):
+                Something
+            primary_model (str, optional):
+                Something Default kroupa93
+            size (int, optional):
+                Something
+        """
 
         if primary_model=='kroupa93':
             # If the final binary contains a compact object (BH or NS),
@@ -151,7 +165,7 @@ class Sample(object):
 
     def binary_select(self, primary_mass):
         '''
-        Binary fraction is set by `van Haaften et al.(2009)<http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
+        Binary fraction is set by `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         '''
 
         binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
@@ -165,7 +179,7 @@ class Sample(object):
 
     def sample_porb(self, mass1, mass2, size=None):
         '''
-        Separation is sampled according to `Han (1998)<http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        Separation is sampled according to `Han (1998) <http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
         Separation is then converted to orbital period in days
         '''
 
@@ -187,7 +201,7 @@ class Sample(object):
 
     def sample_ecc(self, ecc_model='thermal', size=None):
         '''
-        If model=='thermal', thermal eccentricity distribution following `Heggie (1975)<http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
+        If model=='thermal', thermal eccentricity distribution following `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
 
         If model=='uniform', Sample eccentricities uniformly between 0 and 1 following ref ref from Aaron Geller '''
 

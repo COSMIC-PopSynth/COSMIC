@@ -32,7 +32,7 @@ from aCOSMIC.utils import idl_tabulate, rndm
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'InitialBinaryTable'
+__all__ = ['InitialBinaryTable']
 
 
 G = 6.67384*math.pow(10, -11.0)

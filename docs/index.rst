@@ -31,7 +31,9 @@ Table of Contents
 How to run aCOSMIC
 ******************
 
-Here is an example commandline::
+Here is an example commandline:
+
+.. code-block:: bash
     runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 100000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11
 
 For more details see :ref:`command-line`.
@@ -51,13 +53,8 @@ Please consult these pages for more details on using aCOSMIC:
 Fortran
 *******
 
-Thin and Thick Disk
-===================
-.. f:autosubroutine:: _popbinb/runpopbin
-
-Bulge
-=====
-.. f:autosubroutine:: _popbintd/runpopbin
+evolv2
+======
 
 ******************
 Indices and tables

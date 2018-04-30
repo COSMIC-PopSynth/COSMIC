@@ -14,6 +14,7 @@
 
 import sys
 import os
+import re
 
 from aCOSMIC import __version__ as aCOSMIC_version
 
@@ -36,12 +37,35 @@ extensions = [
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'sphinxfortran.fortran_domain',
-    'sphinxfortran.fortran_autodoc',
+    #'sphinxfortran.fortran_domain',
+    #'sphinxfortran.fortran_autodoc',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
     'sphinx.ext.autosummary',
     'numpydoc',
     'sphinxcontrib.programoutput',
 ]
+
+# -- numpydoc -----------------------------------
+
+# fix numpydoc autosummary
+numpydoc_show_class_members = False
+
+# use blockquotes (numpydoc>=0.8 only)
+numpydoc_use_blockquotes = True
+
+# auto-insert plot directive in examples
+numpydoc_use_plots = True
+
+# try and update the plot detection to include .show() calls
+try:  # requires numpydoc >= 0.8
+    from numpydoc import docscrape_sphinx
+    parts = re.split('[\(\)|]', docscrape_sphinx.IMPORT_MATPLOTLIB_RE)[1:-1]
+except AttributeError:
+    pass
+else:
+    parts.extend(('fig.show()', 'plot.show()'))
+    docscrape_sphinx.IMPORT_MATPLOTLIB_RE = r'\b({})\b'.format('|'.join(parts))
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -305,9 +329,9 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python': ('http://docs.python.org/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
-    'matplotlib': ('http://matplotlib.sourceforge.net/', None),
+    'python': ('https://docs.python.org/', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'matplotlib': ('http://matplotlib.org/', None),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
 }
