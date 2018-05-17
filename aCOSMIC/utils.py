@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) Scott Coughlin (2017)
+#
+# This file is part of aCOSMIC.
+#
+# aCOSMIC is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# aCOSMIC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
+
+'''utils
+'''
 import scipy.integrate
 import numpy as np
 import scipy.special as ss
@@ -103,7 +123,6 @@ def param_transform(dat):
     datZeroed = dat-datMin
 
     datTransformed = datZeroed/((datMax-datMin))
-    
     return datTransformed
 
 
@@ -125,18 +144,17 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
     '''
     Un-transform data that was transformed in dat_transform
     '''
-    
     dat = []
-    ii = 0
-    for column in dat_list:
-        print column
-        dat.append(ss.expit(dat_sample[ii, :])*\
+    
+    dat_exp = ss.expit(dat_sample)
+    for ii,column in zip(range(len(dat_list)),dat_list):
+        dat_untrans = dat_exp[ii, :]*\
                    (max(dat_set[column]) - min(dat_set[column])) +\
-                    min(dat_set[column]))
-        ii += 0
-
+                    min(dat_set[column])
+        dat.append(dat_untrans)
     dat = np.vstack(dat)
-
+    if not np.any(['ecc' in x for x in dat_list]):
+        dat = np.vstack([dat, np.zeros(len(dat[0]))])
     return dat
 
 def knuth_bw_selector(dat_list):
@@ -149,7 +167,7 @@ def knuth_bw_selector(dat_list):
         bw_list.append(bw)
         
     print 'binwidths are: ',bw_list
-    return np.mean(bw_list)
+    return np.min(bw_list)
                       
         
 

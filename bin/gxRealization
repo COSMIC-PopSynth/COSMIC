@@ -80,38 +80,25 @@ if __name__ == '__main__':
         PSD = pd.DataFrame(columns=['freq', 'PSD'])
         SNR = pd.DataFrame(columns=['gw_freq', 'SNR'])
         
-        if len(dat_list) == 3:
-            dat_kde = np.vstack([np.log10(fixed_pop.mass_1), np.log10(fixed_pop.mass_2), np.log10(fixed_pop.porb)])
-        else:
-            dat_kde = np.vstack([np.log10(fixed_pop.mass_1), np.log10(fixed_pop.mass_2), np.log10(fixed_pop.porb), ss.logit(fixed_pop.ecc)])
+        dat_kde = utils.dat_transform(fixed_pop, dat_list)
         bw = utils.knuth_bw_selector(dat_kde)
-        print np.min(fixed_pop.porb*sec_in_year), np.max(fixed_pop.porb*sec_in_year)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
+        
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
         if n_systems > 1e5:
             nLoop = int(n_systems/1.0e5)
             for ii in range(nLoop):
                 nSample = int(n_systems/float(nLoop))
+                
                 # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
                 # BY GENERATING A KDE FIT
                 #####################################################################
-                binary_sample_dat = dat_kernel.resample(nSample)
-                if len(dat_list) == 3:
-                    binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
-                    binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
-                    binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
-                    binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
-                else:
-                    #convert the masses and orbital period out of log-space and 
-                    #eccentricity out of logit space
-                    binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
-                    binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
-                    binary_sample_dat[2,:]= 10**binary_sample_dat[2,:]
-                    binary_sample_dat[3,:] = ss.expit(binary_sample_dat[3,:])
-                
+                binary_sample_dat_trans = dat_kernel.resample(nSample)
+                binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop, dat_list)
                 ind_save, = np.where(binary_sample_dat[2,:] < 1e5/sec_in_year)
                 binary_sample_dat = binary_sample_dat[:,ind_save]
+                
                 # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
                 #####################################################################
                 binary_sample_positions = MC_sample.galactic_position_sample(gx_component, 
@@ -123,10 +110,9 @@ if __name__ == '__main__':
                                                       'xGx', 'yGx', 'zGx', 'dist',
                                                       'inc', 'OMEGA', 'omega'])
                                                       
-                full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e6]
-                if gx_save:
-                    full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
-                                       kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
+                #if gx_save:
+                #    full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
+                #                       kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
                 
                 
                 # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
@@ -145,20 +131,8 @@ if __name__ == '__main__':
             # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
             # BY GENERATING A KDE FIT
             #####################################################################
-            binary_sample_dat = dat_kernel.resample(nSample)
-            if len(dat_list) == 3:
-                binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
-                binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
-                binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
-                binary_sample_dat = np.vstack([binary_sample_dat, np.zeros(nSample)])
-            else:
-                #convert the orbital period out of log-space and 
-                #eccentricity out of logit space
-                binary_sample_dat[0,:] = 10**binary_sample_dat[0,:]
-                binary_sample_dat[1,:] = 10**binary_sample_dat[1,:]
-                binary_sample_dat[2,:] = 10**binary_sample_dat[2,:]
-                binary_sample_dat[3,:] = ss.expit(binary_sample_dat[3,:])
-            
+            binary_sample_dat_trans = dat_kernel.resample(nSample)
+            binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop, dat_list)
             ind_save, = np.where(binary_sample_dat[2,:] < 1e5/sec_in_year)
             binary_sample_dat = binary_sample_dat[:,ind_save]
             
@@ -171,11 +145,10 @@ if __name__ == '__main__':
                                        columns = ['mass1', 'mass2', 'porb', 'ecc',
                                                   'xGx', 'yGx', 'zGx', 'dist',
                                                   'inc', 'OMEGA', 'omega'])
-            full_sample = full_sample.loc[full_sample.porb*sec_in_year < 1e6]
              
-            if gx_save:
-                full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
-                                   kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
+            #if gx_save:
+            #    full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
+            #                       kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
             # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
             #####################################################################
             if LISA_calc:
@@ -187,10 +160,15 @@ if __name__ == '__main__':
                 if SNR_dat.shape[0] > 1:
                     SNR = SNR.append(SNR_dat)
                 PSD = PSD.append(psd_dat)  
-        
-        
-        GW_foreground = GW_calcs.compute_foreground(PSD)
-        
+        if len(PSD) > 1:           
+            GW_foreground = GW_calcs.compute_foreground(PSD)
+        else:
+            binwidth = 1/Tobs
+            freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
+            
+            PSD = np.zeros(len(freqBinsLISA))
+            GW_foreground = pd.DataFrame(np.vstack([freqBinsLISA, PSD]).T, columns = ['freq', 'PSD'])
+
         if LISA_calc:
             SNR.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+kstar1_range_string+
                    '_'+kstar2_range_string+'.h5', key='SNR', append='True')            
@@ -242,6 +220,8 @@ if __name__ == '__main__':
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
+    fixed_pop = fixed_pop.loc[fixed_pop.porb < 5]
+
     bpp = pd.read_hdf(dat_path, key='bpp')
 
     # Filter out systems which undergo Common Envelope w/ HG star secondary
@@ -262,13 +242,13 @@ if __name__ == '__main__':
     
     # Filter out long period binaries
     ###########################################################################
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 10]
+    #fixed_pop = fixed_pop.loc[fixed_pop.porb < 2e5/sec_in_year]
     
     # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
     ###########################################################################
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
     nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
-
+    nSystems = int(nSystems)
     if args.nproc > 1:
         n_loops = args.N_realizations / args.nproc
         for n in range(n_loops):

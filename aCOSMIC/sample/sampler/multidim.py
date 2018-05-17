@@ -114,10 +114,52 @@ class MultiDim:
 
 
     def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
-        '''
-        Sample initial binary distribution according to Moe & Di Stefano (2017)
+        """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-        '''
+        
+        Parameters:
+            M1min (float):
+                minimum primary mass to sample in Msun
+                DEFAULT: 0.08
+
+            M2min (float):
+                minimum secondary mass to sample in Msun
+                DEFAULT: 0.08
+
+            M1max (float):
+                maximum primary mass to sample in Msun
+                DEFAULT: 150.0
+
+            M2max (float):
+                maximum primary mass to sample in Msun
+                DEFAULT: 150.0
+
+            rand_seed (int):
+                random seed generator 
+                DEFAULT: 0
+
+            size (int, optional):
+                number of evolution times to sample
+                NOTE: this is set in runFixedPop call as Nstep
+
+        Returns:
+            primary_mass_list (array):
+                array of primary masses with size=size
+
+            secondary_mass_list (array):
+                array of secondary masses with size=size
+            
+            porb_list (array):
+                array of orbital periods in days with size=size
+            
+            ecc_list (array):
+                array of eccentricities with size=size
+            
+            total_mass (float):
+                total mass including single and binary stars 
+                required to generate the initial population
+         
+        """
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
         #analytic fits to corrected binary star populations.
@@ -542,25 +584,58 @@ class MultiDim:
 
         return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass
 
-    def sample_SFH(self, model='const', component_age=10000.0, size=None):
-        '''
-        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
-        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at component_age [Myr] in the past
-        '''
+    def sample_SFH(self, SFH_model='const', component_age=10000.0, size=None):
+        """Sample an evolution time for each binary based on a user-specified
+        star formation history (SFH) and Galactic component age. 
+        The default is a MW thin disk constant evolution over 10000 Myr
 
-        if model=='const':
+        Parameters:
+        SFH_model (string):
+        'const' assigns an evolution time assuming a constant star
+        formation rate over the age of the MW disk: component_age [Myr]
+
+        'burst' assigns an evolution time assuming a burst of constant
+        star formation for 1Gyr starting at component_age [Myr] in the past
+
+        DEFAULT: 'const'
+
+        component_age (float):
+        age of the Galactic component [Myr]
+
+        DEFAULT: 10000.0
+
+        size (int, optional):
+        number of evolution times to sample
+        NOTE: this is set in runFixedPop call as Nstep
+
+        Returns:
+        tphys (array):
+        array of evolution times of size=size
+        """
+
+
+        if SFH_model=='const':
 
             tphys = np.random.uniform(0, component_age, size)
             return tphys
 
-        if model=='burst':
+        if SFH_model=='burst':
             tphys = component_age - np.random.uniform(0, 1000, size)
             return tphys
 
     def set_kstar(self, mass):
-        '''
-        Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
-        '''
+        """Initialize stellar types according to BSE classification
+        kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
+                                
+        Parameters:
+            mass (array):
+                array of masses
+
+        Returns:
+            kstar (array):
+                array of initial stellar types
+        """
+        
         kstar = np.zeros(mass.size)
         low_cutoff = 0.7
         lowIdx = np.where(mass < low_cutoff)[0]
@@ -572,9 +647,23 @@ class MultiDim:
         return kstar
 
     def set_metallicity(self, component_age, size):
-        '''
-        As a stand in for now, set all systems with component age less that 10 Gyr to solar metallicity and systems with component age greater than 10 Gyr to 0.15 solar metallicity
-        '''
+        """Set metallicity for all systems with component age less 
+        than 10 Gyr to solar metallicity and systems with 
+        component age greater than 10 Gyr to 0.15 solar metallicity
+
+        Parameters:
+        component_age (float):
+        age of the Galactic component [Myr]
+
+        size (int, optional):
+        number of evolution times to sample
+        NOTE: this is set in runFixedPop call as Nstep
+
+        Returns:
+        metallicity (array):
+        array of metallicity values with size=size
+        """
+            
         if component_age > 10000:
             metallicity = 0.02*0.15*np.ones(size)
         else:

@@ -74,7 +74,7 @@ def peters_gfac(ecc, n_harmonic):
 def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     # UNITS ARE IN SI!!
     # LISA mission: 2.5 million km arms
-    LISA_psd = lisa_sensitivity.lisa_psd()
+    LISA_psd = lisa_sensitivity.lisa_root_psd()
     
     mChirp = m_chirp(m1, m2)
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
@@ -89,19 +89,19 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
     ind_ecc, = np.where(ecc > 0.1)
     ind_circ, = np.where(ecc <= 0.1)
     
-    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs / LISA_psd(2 / porb.iloc[ind_circ]))
+    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs / LISA_psd(2 / porb.iloc[ind_circ])**2)
     gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ])
     
     power = h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs
     # we want both the plus polarization and cross polarization
-    power_tot = 2*power
+    power_tot = power
     psd.extend(power_tot)
     freq.extend(2.0 / (porb.iloc[ind_circ]))
     if len(ind_ecc) > 0:
         peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
         GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb.iloc[ind_ecc]]).T
         GW_freq_flat = GW_freq_array.flatten()
-        LISA_curve_eval_flat = LISA_psd(GW_freq_flat)
+        LISA_curve_eval_flat = LISA_psd(GW_freq_flat)**2
         LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,len(ind_ecc)))
 
         h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared.iloc[ind_ecc]]).T
@@ -110,10 +110,10 @@ def LISA_calcs(m1, m2, porb, ecc, dist, n_harmonic):
         power = h_0_squared_ecc * Tobs * peters_g_factor
         power_flat = power.flatten()
 
-        psd.extend(2*power_flat)
+        psd.extend(power_flat)
         freq.extend(GW_freq_flat)
 
-        SNR[ind_ecc] = (2 * SNR_squared.sum(axis=0))**0.5
+        SNR[ind_ecc] = (SNR_squared.sum(axis=0))**0.5
         gw_freq[ind_ecc] = peak_gw_freq(m1.iloc[ind_ecc], m2.iloc[ind_ecc], ecc.iloc[ind_ecc], porb.iloc[ind_ecc])
 
     SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])

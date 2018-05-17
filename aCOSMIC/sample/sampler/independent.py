@@ -83,7 +83,8 @@ class Sample(object):
 
     # sample primary masses
     def sample_primary(self, primary_min, primary_max, primary_model='kroupa93', size=None):
-        """sample the larger mass object
+        """Sample the primary mass (always the most massive star) from 
+        a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
@@ -94,13 +95,32 @@ class Sample(object):
 
         Parameters:
             primary_min (float):
-                Something
+                minimum initial primary mass
             primary_max (float):
-                Something
+                maximum initial primary mass
             primary_model (str, optional):
-                Something Default kroupa93
+                model for mass distribution; choose from:
+                
+                kroupa93 follows Kroupa (1993), normalization comes from
+                `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
+                valid for masses between 0.1 and 100 Msun
+            
+                salpter55 follows
+                `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+                valid for masses between 0.1 and 100 Msun
+                
+                Default kroupa93
+            
             size (int, optional):
-                Something
+                number of initial primary masses to sample
+                NOTE: this is set in runFixedPop call as Nstep
+
+        Returns:
+            a_0 (array):
+                all sampled primary masses
+            total_sampled_mass:
+                the total amount of mass sampled
+            
         """
 
         if primary_model=='kroupa93':
@@ -151,12 +171,20 @@ class Sample(object):
 
     # sample secondary mass
     def sample_secondary(self, primary_mass):
-        '''
-        Secondary mass is computed from uniform mass ratio distribution draws motivated by
+        """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
-        '''
+        
+        Parameters:
+            primary_mass (array):
+                sets the maximum secondary mass (for a maximum mass ratio of 1)
 
+        Returns:
+            secondary_mass (array):
+                sampled secondary masses with array size matching size of
+                primary_mass
+        """
+        
         a_0 = np.random.uniform(0.001, 1, primary_mass.size)
         secondary_mass = primary_mass*a_0
 
@@ -164,9 +192,20 @@ class Sample(object):
 
 
     def binary_select(self, primary_mass):
-        '''
-        Binary fraction is set by `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
-        '''
+        """Select the which primary masses will have a compution using a 
+        primary-mass dependent binary fraction following 
+        `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
+        
+        Parameters:
+            primary_mass (array):
+                mass that determines the binary fraction
+
+        Returns:
+            primary_mass[binaryIdx] (array):
+                primary masses that will have a binary companion
+            primary_mass[singleIdx] (array):
+                primary masses that will be single stars
+        """
 
         binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
         binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
@@ -178,10 +217,21 @@ class Sample(object):
 
 
     def sample_porb(self, mass1, mass2, size=None):
-        '''
-        Separation is sampled according to `Han (1998) <http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
-        Separation is then converted to orbital period in days
-        '''
+        """Sample the semi-major axis according to 
+        `Han (1998) <http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        and then converted to orbital period in days using Kepler III
+
+        Parameters:
+            mass1 (array):
+                primary masses
+            mass2 (array):
+                secondary masses
+
+        Returns:
+            porb_sec/sec_in_day (array):
+                orbital period with array size equalling array size 
+                of mass1 and mass2
+        """
 
         a_0 = np.random.uniform(0, 1, size)
         low_cutoff = 0.0583333
@@ -200,15 +250,31 @@ class Sample(object):
 
 
     def sample_ecc(self, ecc_model='thermal', size=None):
-        '''
-        If model=='thermal', thermal eccentricity distribution following `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
+        """Sample the eccentricity according to a user specified model
 
-        If model=='uniform', Sample eccentricities uniformly between 0 and 1 following ref ref from Aaron Geller '''
+        Parameters:
+            ecc_model (string): 
+                'thermal' samples from a  thermal eccentricity distribution following 
+                `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
+
+                'uniform' samples from a uniform eccentricity distribution
+            
+                DEFAULT = 'thermal'
+            
+            size (int, optional):
+                number of eccentricities to sample
+                NOTE: this is set in runFixedPop call as Nstep
+
+        Returns:
+            ecc (array):
+                array of sampled eccentricities with size=size
+        """
 
         if ecc_model=='thermal':
             a_0 = np.random.uniform(0.0, 1.0, size)
+            ecc = a_0**0.5
 
-            return a_0**0.5
+            return ecc
 
         if ecc_model=='uniform':
             ecc = np.random.uniform(0.0, 1.0, size)
@@ -217,10 +283,33 @@ class Sample(object):
 
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, size=None):
-        '''
-        'const': Assign an evolution time assuming a constant star formation rate over the age of the MW disk: component_age [Myr]
-        'burst': Assign an evolution time assuming constant star formation rate for 1Gyr starting at component_age [Myr] in the past
-        '''
+        """Sample an evolution time for each binary based on a user-specified
+        star formation history (SFH) and Galactic component age. 
+        The default is a MW thin disk constant evolution over 10000 Myr
+
+        Parameters:
+            SFH_model (string):
+                'const' assigns an evolution time assuming a constant star
+                formation rate over the age of the MW disk: component_age [Myr]
+                
+                'burst' assigns an evolution time assuming a burst of constant
+                star formation for 1Gyr starting at component_age [Myr] in the past
+                
+                DEFAULT: 'const'
+
+            component_age (float):
+                age of the Galactic component [Myr]
+               
+                DEFAULT: 10000.0
+
+            size (int, optional):
+                number of evolution times to sample
+                NOTE: this is set in runFixedPop call as Nstep
+ 
+        Returns:
+            tphys (array):
+                array of evolution times of size=size
+        """
 
         if SFH_model=='const':
 
@@ -233,9 +322,18 @@ class Sample(object):
 
 
     def set_kstar(self, mass):
-        '''
-        Initialize all stars according to: kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7
-        '''
+        """Initialize stellar types according to BSE classification
+        kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
+        
+        Parameters:
+            mass (array):
+                array of masses
+
+        Returns:
+            kstar (array):
+                array of initial stellar types
+        """
+
         kstar = np.zeros(mass.size)
         low_cutoff = 0.7
         lowIdx = np.where(mass < low_cutoff)[0]
@@ -247,9 +345,23 @@ class Sample(object):
         return kstar
 
     def set_metallicity(self, component_age, size):
-        '''
-        As a stand in for now, set all systems with component age less that 10 Gyr to solar metallicity and systems with component age greater than 10 Gyr to 0.15 solar metallicity
-        '''
+        """Set metallicity for all systems with component age less 
+        than 10 Gyr to solar metallicity and systems with 
+        component age greater than 10 Gyr to 0.15 solar metallicity
+        
+        Parameters:
+            component_age (float):
+                age of the Galactic component [Myr]
+
+            size (int, optional):
+                number of evolution times to sample
+                NOTE: this is set in runFixedPop call as Nstep
+
+        Returns:
+            metallicity (array):
+                array of metallicity values with size=size
+        """
+
         if component_age > 10000:
             metallicity = 0.02*0.15*np.ones(size)
         else:
