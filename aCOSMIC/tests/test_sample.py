@@ -8,7 +8,7 @@ import unittest2
 import numpy as np
 import pandas as pd
 from aCOSMIC.sample.sampler.independent import Sample
-from aCOSMIC.sample.sampler.multidim import MultiDimSample
+from aCOSMIC.sample.sampler.multidim import MultiDim
 
 SAMPLECLASS = Sample(0.02, size=10)
 MULTIDIMSAMPLECLASS = MultiDimSample(0.02, size=10)
