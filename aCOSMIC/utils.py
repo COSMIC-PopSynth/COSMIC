@@ -23,14 +23,36 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
-##################################################################################
-# DEFINE MIN AND MAX MASS SELECTOR
-##################################################################################
 def mass_min_max_select(kstar_1, kstar_2):
     '''
     Select a minimum and maximum mass to filter out binaries in the initial
     parameter sample to reduce the number of unneccessary binaries evolved
     in BSE
+
+    Paramters
+    ---------
+        kstar_1 (int, list): 
+            BSE stellar type for the primary
+            or minimum and maximum stellar types for the primary
+
+        kstar_2 (int, list):
+            BSE stellar type for the secondary 
+            or minimum and maximum stellar types for the secondary
+
+    Returns
+    -------
+        min_mass[0] (float):
+            minimum primary mass for initial sample
+            
+        max_mass[0] (float):
+            maximum primary mass for initial sample
+
+        min_mass[1] (float):
+            minimum secondary mass for initial sample
+        
+        max_mass[1] (float):
+            maximum secondary mass for initial sample
+    
     '''
 
     primary_max = 150.0
@@ -91,6 +113,27 @@ def mass_min_max_select(kstar_1, kstar_2):
 
 
 def idl_tabulate(x, f, p=5) :
+    '''
+    Function that replicates the IDL int_tabulated function
+    which performs a p-point integration on a tabulated set of data
+
+    Paramters
+    ---------
+        x (array):
+            tabulated x-value data
+
+        f (array):
+            tabulated f-value data, same size as x
+        
+        p (int):
+            number of chunks to divide tabulated data into
+            Default: 5
+    Returns
+    -------
+        ret (float):
+            Integration result
+    '''
+
     def newton_cotes(x, f) :
         if x.shape[0] < 2 :
             return 0
