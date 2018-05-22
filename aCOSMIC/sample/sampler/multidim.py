@@ -14,9 +14,9 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with astro-traj.  If not, see <http://www.gnu.org/licenses/>.
+# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
-"""`sample`
+"""`multidim`
 """
 
 import numpy as np
@@ -75,7 +75,7 @@ register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
 class MultiDim:
 
     #-----------------------------------
-    # Belows is the adapted version of Maxwell Moe's IDL code
+    # Below is the adapted version of Maxwell Moe's IDL code
     # that generates a population of single and binary stars
     # based on the paper Mind your P's and Q's
     # By Maxwell Moe and Rosanne Di Stefano
@@ -117,7 +117,8 @@ class MultiDim:
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
         
-        Parameters:
+        Parameters
+        ----------
             M1min (float):
                 minimum primary mass to sample in Msun
                 DEFAULT: 0.08
@@ -142,7 +143,8 @@ class MultiDim:
                 number of evolution times to sample
                 NOTE: this is set in runFixedPop call as Nstep
 
-        Returns:
+        Returns
+        -------
             primary_mass_list (array):
                 array of primary masses with size=size
 
@@ -589,28 +591,30 @@ class MultiDim:
         star formation history (SFH) and Galactic component age. 
         The default is a MW thin disk constant evolution over 10000 Myr
 
-        Parameters:
-        SFH_model (string):
-        'const' assigns an evolution time assuming a constant star
-        formation rate over the age of the MW disk: component_age [Myr]
+        Parameters
+        ----------
+            SFH_model (string):
+                'const' assigns an evolution time assuming a constant star
+                formation rate over the age of the MW disk: component_age [Myr]
 
-        'burst' assigns an evolution time assuming a burst of constant
-        star formation for 1Gyr starting at component_age [Myr] in the past
+                'burst' assigns an evolution time assuming a burst of constant
+                star formation for 1Gyr starting at component_age [Myr] in the past
 
-        DEFAULT: 'const'
+                Default: 'const'
 
-        component_age (float):
-        age of the Galactic component [Myr]
+            component_age (float):
+                age of the Galactic component [Myr]
 
-        DEFAULT: 10000.0
+                Default: 10000.0
 
-        size (int, optional):
-        number of evolution times to sample
-        NOTE: this is set in runFixedPop call as Nstep
+            size (int, optional):
+                number of evolution times to sample
+                NOTE: this is set in runFixedPop call as Nstep
 
-        Returns:
-        tphys (array):
-        array of evolution times of size=size
+        Returns
+        -------
+            tphys (array):
+                array of evolution times of size=size
         """
 
 
@@ -627,11 +631,13 @@ class MultiDim:
         """Initialize stellar types according to BSE classification
         kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
                                 
-        Parameters:
+        Parameters
+        ----------
             mass (array):
                 array of masses
 
-        Returns:
+        Returns
+        -------
             kstar (array):
                 array of initial stellar types
         """
@@ -651,17 +657,19 @@ class MultiDim:
         than 10 Gyr to solar metallicity and systems with 
         component age greater than 10 Gyr to 0.15 solar metallicity
 
-        Parameters:
-        component_age (float):
-        age of the Galactic component [Myr]
+        Parameters
+        ----------
+            component_age (float):
+                age of the Galactic component [Myr]
 
-        size (int, optional):
-        number of evolution times to sample
-        NOTE: this is set in runFixedPop call as Nstep
+            size (int, optional):
+                number of evolution times to sample
+                NOTE: this is set in runFixedPop call as Nstep
 
-        Returns:
-        metallicity (array):
-        array of metallicity values with size=size
+        Returns
+        -------
+             metallicity (array):
+                array of metallicity values with size=size
         """
             
         if component_age > 10000:

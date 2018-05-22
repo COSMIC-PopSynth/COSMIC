@@ -14,9 +14,9 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with astro-traj.  If not, see <http://www.gnu.org/licenses/>.
+# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
-"""`sample`
+"""`independent`
 """
 
 import numpy as np
@@ -93,7 +93,8 @@ class Sample(object):
         `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
         between 0.1 and 100 Msun
 
-        Parameters:
+        Parameters
+        ----------
             primary_min (float):
                 minimum initial primary mass
             primary_max (float):
@@ -115,7 +116,8 @@ class Sample(object):
                 number of initial primary masses to sample
                 NOTE: this is set in runFixedPop call as Nstep
 
-        Returns:
+        Returns
+        -------
             a_0 (array):
                 all sampled primary masses
             total_sampled_mass:
@@ -175,11 +177,13 @@ class Sample(object):
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
         
-        Parameters:
+        Parameters
+        ----------
             primary_mass (array):
                 sets the maximum secondary mass (for a maximum mass ratio of 1)
 
-        Returns:
+        Returns
+        -------
             secondary_mass (array):
                 sampled secondary masses with array size matching size of
                 primary_mass
@@ -196,11 +200,13 @@ class Sample(object):
         primary-mass dependent binary fraction following 
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         
-        Parameters:
+        Parameters
+        ----------
             primary_mass (array):
                 mass that determines the binary fraction
 
-        Returns:
+        Returns
+        -------
             primary_mass[binaryIdx] (array):
                 primary masses that will have a binary companion
             primary_mass[singleIdx] (array):
@@ -221,13 +227,15 @@ class Sample(object):
         `Han (1998) <http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
         and then converted to orbital period in days using Kepler III
 
-        Parameters:
+        Parameters
+        ----------
             mass1 (array):
                 primary masses
             mass2 (array):
                 secondary masses
 
-        Returns:
+        Returns
+        -------
             porb_sec/sec_in_day (array):
                 orbital period with array size equalling array size 
                 of mass1 and mass2
@@ -252,7 +260,8 @@ class Sample(object):
     def sample_ecc(self, ecc_model='thermal', size=None):
         """Sample the eccentricity according to a user specified model
 
-        Parameters:
+        Parameters
+        ----------
             ecc_model (string): 
                 'thermal' samples from a  thermal eccentricity distribution following 
                 `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
@@ -265,7 +274,8 @@ class Sample(object):
                 number of eccentricities to sample
                 NOTE: this is set in runFixedPop call as Nstep
 
-        Returns:
+        Returns
+        -------
             ecc (array):
                 array of sampled eccentricities with size=size
         """
@@ -287,7 +297,8 @@ class Sample(object):
         star formation history (SFH) and Galactic component age. 
         The default is a MW thin disk constant evolution over 10000 Myr
 
-        Parameters:
+        Parameters
+        ----------
             SFH_model (string):
                 'const' assigns an evolution time assuming a constant star
                 formation rate over the age of the MW disk: component_age [Myr]
@@ -306,7 +317,8 @@ class Sample(object):
                 number of evolution times to sample
                 NOTE: this is set in runFixedPop call as Nstep
  
-        Returns:
+        Returns
+        -------
             tphys (array):
                 array of evolution times of size=size
         """
@@ -325,11 +337,13 @@ class Sample(object):
         """Initialize stellar types according to BSE classification
         kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
         
-        Parameters:
+        Parameters
+        ----------
             mass (array):
                 array of masses
 
-        Returns:
+        Returns
+        -------
             kstar (array):
                 array of initial stellar types
         """
@@ -349,7 +363,8 @@ class Sample(object):
         than 10 Gyr to solar metallicity and systems with 
         component age greater than 10 Gyr to 0.15 solar metallicity
         
-        Parameters:
+        Parameters
+        ----------
             component_age (float):
                 age of the Galactic component [Myr]
 
@@ -357,7 +372,8 @@ class Sample(object):
                 number of evolution times to sample
                 NOTE: this is set in runFixedPop call as Nstep
 
-        Returns:
+        Returns
+        -------
             metallicity (array):
                 array of metallicity values with size=size
         """
