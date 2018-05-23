@@ -10,8 +10,8 @@ import pandas as pd
 from aCOSMIC.sample.sampler.independent import Sample
 from aCOSMIC.sample.sampler.multidim import MultiDim
 
-SAMPLECLASS = Sample(0.02, size=10)
-MULTIDIMSAMPLECLASS = MultiDimSample(0.02, size=10)
+SAMPLECLASS = Sample()
+MULTIDIMSAMPLECLASS = MultiDim()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
 TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
