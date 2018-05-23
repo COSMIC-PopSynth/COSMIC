@@ -21,7 +21,7 @@ x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)])
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [11.0, 20.0, 34.0, 112.0, 330.0]
 MASS_SUM_MULTIPLE = 301.0
-X_TRANS_SUM = -2.82029688492e-09  
+X_TRANS_SUM = -2.820297e-09  
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
@@ -56,7 +56,7 @@ class TestUtils(unittest2.TestCase):
     def test_dat_transform(self):
         # send in DataFrame of 10*x (defined above)
         x_trans = utils.dat_transform(10*x_dat, ['x_dat', 'f_dat'])
-        self.assertTrue(np.sum(x_trans[0]) == X_TRANS_SUM)
+        self.assertTrue(np.sum(x_trans[0]).round(15) == X_TRANS_SUM)
 
     def test_dat_un_transform(self):
         # send in sampled data set, which will just be random

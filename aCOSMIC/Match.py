@@ -1,22 +1,51 @@
-#! /usr/bin/env python
+ -*- coding: utf-8 -*-
+# Copyright (C) Scott Coughlin (2017)
+#
+# This file is part of aCOSMIC.
+#
+# aCOSMIC is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# aCOSMIC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
-# Code: Match.py
-# Version: 1
-# Version changes: PLOT HISTOGRAMS
-#
-# Input: list of data, # of runs
-# Output: list of data that adds cumulatively for each run
-#
-#
-# Edited on:  28 Oct 2015
+"""`Match`
+"""
 
 import numpy as np
 import astropy.stats as astroStats
 
-
+__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
+__credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
+__all__ = []
 
 def match(dataCm, nRuns):
+    """Performs the Match calculation in Eq. 1 of Breivik & Larson (2018)
 
+        Parameters
+        ----------
+            dataCm (list): 
+                List of cumulative data for a single paramter
+
+            nRuns (int):
+                Length of the list
+
+        Returns
+        -------
+            match (list):
+                List of matches for each cumulative data set
+    
+            binwidth (float):
+                Binwidth of histograms used for match computation
+ 
+   """
     # DEFINE A LIST TO HOLD THE BINNED DATA:   
     histo = [[] for i in range(nRuns)]
     histoBinEdges = [[] for i in range(int(nRuns))]
