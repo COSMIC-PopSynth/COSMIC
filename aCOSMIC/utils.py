@@ -16,16 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
-'''`utils`
-'''
+"""`utils`
+"""
 import scipy.integrate
 import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
 def mass_min_max_select(kstar_1, kstar_2):
-    '''
-    Select a minimum and maximum mass to filter out binaries in the initial
+    """Select a minimum and maximum mass to filter out binaries in the initial
     parameter sample to reduce the number of unneccessary binaries evolved
     in BSE
 
@@ -53,7 +52,7 @@ def mass_min_max_select(kstar_1, kstar_2):
         max_mass[1] (float):
             maximum secondary mass for initial sample
     
-    '''
+    """
 
     primary_max = 150.0
     secondary_max = 150.0
@@ -113,8 +112,7 @@ def mass_min_max_select(kstar_1, kstar_2):
 
 
 def idl_tabulate(x, f, p=5) :
-    '''
-    Function that replicates the IDL int_tabulated function
+    """Function that replicates the IDL int_tabulated function
     which performs a p-point integration on a tabulated set of data
 
     Paramters
@@ -132,7 +130,7 @@ def idl_tabulate(x, f, p=5) :
     -------
         ret (float):
             Integration result
-    '''
+    """
 
     def newton_cotes(x, f) :
         if x.shape[0] < 2 :
@@ -147,19 +145,48 @@ def idl_tabulate(x, f, p=5) :
 
 
 def rndm(a, b, g, size):
-    '''
-    Power-law gen for pdf(x)\propto x^{g-1} for a<=x<=b
-    '''
+    """Power-law generator for pdf(x)\propto x^{g-1} for a<=x<=b
+    
+    Paramters
+    ---------
+        a (float):
+            Minimum of range for power law
+    
+        b (float):
+            Maximum of range for power law
+
+        g (float):
+            Index for power law
+
+        size (int):
+            Number of data points to draw
+
+    Returns
+    -------
+        Array of data sampled from power law distribution with params
+        fixed by inputs
+
+    """
 
     r = np.random.random(size=size)
     ag, bg = a**g, b**g
     return (ag + (bg - ag)*r)**(1./g)
 
 def param_transform(dat):
-    '''
-    Transforms a data set to limits between zero and one
+    """Transforms a data set to limits between zero and one
     Leaves some wiggle room on the edges of the data set
-    '''
+    
+    Paramters
+    ---------
+        dat (array):
+            array of data to transform between 0 and 1
+
+    Returns
+    -------
+        dat_trans (array):
+            array of data with limits between 0 and 1
+
+    """
 
     datMin = min(dat)-0.000001
     datMax = max(dat)+0.000001
@@ -170,10 +197,23 @@ def param_transform(dat):
 
 
 def dat_transform(dat, dat_list):
-    '''
-    Transform a data set to have limits between zero and one using 
+    """Transform a data set to have limits between zero and one using 
     param_transform, then transform to logit space
-    '''
+    
+    Parameters
+    ----------
+        dat (DataFrame):
+            Data to transform to eventually perform KDE
+
+        dat_list (list):
+            List of DataFrame columns to include in transformation
+
+    Returns
+    -------
+        dat_trans (array):
+            Transformed data for columns in dat_list
+    """ 
+
 
     dat_trans = []
     for column in dat_list:
@@ -184,9 +224,26 @@ def dat_transform(dat, dat_list):
     return dat_trans
 
 def dat_un_transform(dat_sample, dat_set, dat_list):
-    '''
-    Un-transform data that was transformed in dat_transform
-    '''
+    """Un-transform data that was transformed in dat_transform
+    
+    Parameters
+    ----------
+        dat_sample (array):
+            Data sampled from kde generated with transformed data
+
+        dat_set (DataFrame):
+            Un-transformed data (same as dat in dat_transform)
+
+        dat_list (list):
+            List of DataFrame columns to include in transformation
+
+    Returns
+    -------
+        dat (array):
+            Array of data sampled from kde that is transformed back to 
+            bounds of the un-transformed data set the kde is generated from 
+
+    """
     dat = []
     
     dat_exp = ss.expit(dat_sample)
@@ -201,6 +258,19 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
     return dat
 
 def knuth_bw_selector(dat_list):
+    """Selects the kde bandwidth using Knuth's rule implemented in Astropy
+
+    Parameters
+    ----------
+        dat_list (list):
+            List of data arrays that will be used to generate a kde
+
+    Returns
+    -------
+        bw_min (float):
+            Minimum of bandwidths for all of the data arrays in dat_list
+    """
+
     bw_list = []
     for dat in dat_list:
         try:
