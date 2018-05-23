@@ -37,33 +37,33 @@ class TestSample(unittest2.TestCase):
     def test_sample_primary_kroupa93(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, model='kroupa93', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, SFH_model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_KROUPA93)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, model='kroupa93', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, SFH_model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_KROUPA93)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, model='kroupa93', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, SFH_model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_KROUPA93)
 
     def test_sample_primary_salpeter55(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, model='salpeter55', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, SFH_model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_SALPETER55)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, model='salpeter55', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, SFH_model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_SALPETER55)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, model='salpeter55', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, SFH_model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
 
     def test_sample_secondary(self):
@@ -87,23 +87,23 @@ class TestSample(unittest2.TestCase):
     def test_sample_ecc(self):
         np.random.seed(2)
         # Check that the sample_ecc function samples ecc properly
-        ecc = SAMPLECLASS.sample_ecc(model='thermal', size=10)
+        ecc = SAMPLECLASS.sample_ecc(ecc_model='thermal', size=10)
         self.assertEqual(ecc.sum(), THERMAL_ECC_SUM)
 
         np.random.seed(2)
         # Check that the sample_ecc function samples ecc properly
-        ecc = SAMPLECLASS.sample_ecc(model='uniform', size=10)
+        ecc = SAMPLECLASS.sample_ecc(ecc_model='uniform', size=10)
         self.assertEqual(ecc.sum(), UNIFORM_ECC_SUM)
 
     def test_sample_SFH(self):
         np.random.seed(2)
         # Check that the sample SFH function samples SFH correctly
-        times = SAMPLECLASS.sample_SFH(model='const', component_age=10000.0, size=100)
+        times = SAMPLECLASS.sample_SFH(SFH_model='const', component_age=10000.0, size=100)
         self.assertEqual(times.sum(), CONST_SFR_SUM)
 
         np.random.seed(2)
         # Check that the sample SFH function samples SFH correctly
-        times = SAMPLECLASS.sample_SFH(model='burst', component_age=10000.0, size=100)
+        times = SAMPLECLASS.sample_SFH(SFH_model='burst', component_age=10000.0, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
 
     def test_set_kstar(self):
@@ -119,12 +119,12 @@ class TestSample(unittest2.TestCase):
     def test_sample_SFH_MultiDim(self):
         np.random.seed(2)
         # Check that the sample SFH function samples SFH correctly
-        times = MULTIDIMSAMPLECLASS.sample_SFH(model='const', component_age=10000.0, size=100)
+        times = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='const', component_age=10000.0, size=100)
         self.assertEqual(times.sum(), CONST_SFR_SUM)
 
         np.random.seed(2)
         # Check that the sample SFH function samples SFH correctly
-        times = MULTIDIMSAMPLECLASS.sample_SFH(model='burst', component_age=10000.0, size=100)
+        times = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='burst', component_age=10000.0, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
 
     def test_set_kstar_MultiDim(self):
