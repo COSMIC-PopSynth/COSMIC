@@ -1,4 +1,4 @@
- -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (C) Scott Coughlin (2017)
 #
 # This file is part of aCOSMIC.
