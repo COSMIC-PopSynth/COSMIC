@@ -21,7 +21,7 @@ x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)])
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [11.0, 20.0, 34.0, 112.0, 330.0]
 MASS_SUM_MULTIPLE = 301.0
-X_TRANS_SUM = 5.0 
+X_TRANS_SUM = -2.82029688492e-09  
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method

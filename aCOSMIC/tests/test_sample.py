@@ -37,33 +37,33 @@ class TestSample(unittest2.TestCase):
     def test_sample_primary_kroupa93(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, SFH_model='kroupa93', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, primary_model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_KROUPA93)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, SFH_model='kroupa93', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, primary_model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_KROUPA93)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, SFH_model='kroupa93', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, primary_model='kroupa93', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_KROUPA93)
 
     def test_sample_primary_salpeter55(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, SFH_model='salpeter55', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, primary_model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_SALPETER55)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, SFH_model='salpeter55', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, primary_model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_SALPETER55)
 
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, SFH_model='salpeter55', size=100)
+        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, primary_model='salpeter55', size=100)
         self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
 
     def test_sample_secondary(self):
@@ -81,7 +81,7 @@ class TestSample(unittest2.TestCase):
     def test_sample_porb_han(self):
         np.random.seed(2)
         # Check that the sample_porb function samples porb properly
-        porb = SAMPLECLASS.sample_porb(1.0, 1.0, model='Han', size=1)
+        porb = SAMPLECLASS.sample_porb(1.0, 1.0, size=1)
         self.assertEqual(porb[0], HAN_PORB)
 
     def test_sample_ecc(self):
