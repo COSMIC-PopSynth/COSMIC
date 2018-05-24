@@ -1,8 +1,8 @@
 .. _examples:
 
-###################################################################
-COSMIC: Compact Object Synthesis and Monte-Carlo Investigation Code
-###################################################################
+########################################
+Using COSMIC to evolve binaries with BSE
+########################################
 
 
 ************
@@ -10,10 +10,14 @@ Introduction
 ************
 
 COSMIC can simulate binaries for several different use cases. Below 
-you'll find examples to run a single binary, a grid of binaries, and
+you'll find examples to run a single binary system, multiple binary
+systems or a grid of binaries. See below for the process to simulate
 a population of binaries consistent with a user-supplied star formation 
 history for a single compact object population (e.g. BH-BH) or a range
-of compact object populations (e.g. combinations of BH, NS, WD).
+of compact object populations (e.g. combinations of BH, NS, WD) as 
+described in Breivik & Larson (2018).
+
+
 
 *************************************
 Creating and evolving a single binary
@@ -94,14 +98,23 @@ periods
 Creating and evolving a sampled binary population
 *************************************************
 
-.. ipython::
+To generate a Milky Way like population, we need to generate an initial set of
+binaries that is representative of a population born in the Milky Way. This means
+we need to supply several arguments to our initial binary sampler. There are two 
+distinct ways to generate the initial population:
+1 - assume all binary paramters are independent of one another
+2 - try to account for paramter dependencies
 
-    In [1]: from aCOSMIC.sample.initialbinarytable import InitialBinaryTable
-
-    In [2]: sampled_binaries = InitialBinaryTable.sampler('independent')
-
-    In [3]: print(sampled_binaries)
+We consider both cases below. 
 
 **********************************
 Sampling Initial Binary Conditions
 **********************************
+
+.. ipython::
+
+    In [1]: from aCOSMIC.sample.initialbinarytable import InitialBinaryTable
+
+    In [2]: IBT, sampled_mass = InitialBinaryTable.sampler('independent', primary_min=0.08, primary_max=5.0, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, size=1000)
+
+    In [3]: print(IBT)
