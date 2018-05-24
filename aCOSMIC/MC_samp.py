@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
 
-'''MC_samp
+'''`MC_samp`
 '''
 
 import numpy as np
@@ -53,17 +53,30 @@ y_sun = 0.0
 z_sun = 25
 
 def mass_weighted_number(dat, total_sampled_mass, component_mass): 
-    '''
-    Compute the total number of systems in the synthetic catalog
+    """Compute the total number of systems in the synthetic catalog
     based on the total sampled mass of the simulated system and
     the total mass of a given galactic component
-    '''
-    print 'N binaries Fixed: ',len(dat.mass_1)
-    print 'Gx component mass: ',component_mass
-    print 'Total sampled mass: ',total_sampled_mass 
+
+    Parameters
+    ---------
+    dat (DataFrame):
+        DataFrame containing the fixed population created from runFixedPop
+
+    total_sampled_mass (float):
+        total amount of mass sampled to generate the fixed population 
+        including single stars
+
+    component_mass (float):
+        mass of the Galactic component we are simulating
+
+    Returns
+    -------
+    nSystems (int):
+        number of systems in a Milky Way population for the selected
+        Galactic population and fixed population
+    """
       
     nSystems = int(len(dat.mass_1)*component_mass/total_sampled_mass)
-    print 'N binaries in Gx: ',nSystems
     return nSystems
 
 def select_component_mass(gx_component):

@@ -13,6 +13,7 @@ import aCOSMIC.utils as utils
 
 f  = np.linspace(0,1,10)
 x = np.linspace(0,1,10)
+y = np.random.uniform(0.1,0.2,10)
 kstar_single = [[10], [11], [12], [13], [14]]
 kstar_double = [10, 14]
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
@@ -22,6 +23,7 @@ IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [11.0, 20.0, 34.0, 112.0, 330.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.820297e-09  
+BW_KNUTH = 0.333
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
@@ -64,4 +66,10 @@ class TestUtils(unittest2.TestCase):
         # 0 and 10
         x_un_trans = utils.dat_un_transform(x_sample, x_dat, ['x_dat', 'f_dat'])
         self.assertTrue(np.min(x_un_trans[0]) >= np.min(x_dat.x_dat))
-        self.assertTrue(np.max(x_un_trans[0]) <= np.max(x_dat.x_dat))        
+        self.assertTrue(np.max(x_un_trans[0]) <= np.max(x_dat.x_dat))
+
+    def test_binwidth_selector(self):
+        # Check that the Knuth's bw is selected properly
+        bw = utils.knuth_bw_selector(np.array([x]))
+        self.assertTrue(bw.round(3) == BW_KNUTH)
+

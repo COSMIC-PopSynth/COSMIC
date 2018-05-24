@@ -10,6 +10,7 @@ import pandas as pd
 from aCOSMIC.sample.sampler.independent import Sample
 from aCOSMIC.sample.sampler.multidim import MultiDim
 
+
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -28,6 +29,8 @@ CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
 KSTAR_SOLAR = 1.0
 MOE_TOTAL_MASS = 31.134712126322306 
+METALLICITY_1000 = 0.02
+METALLICITY_13000 = 0.02*0.15
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the aCOSMIC Sample class, which generates several 
@@ -111,6 +114,13 @@ class TestSample(unittest2.TestCase):
         kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
+    def set_metallicity_ind(self):
+        # Check that metallicity is properly selected
+        metallicity_1000 = SAMPLECLASS.set_metallicity(component_age=1000.0)
+        self.assertEqual(metallicity_1000 == METALLICITY_1000)
+
+        metallicity_13000 = SAMPLECLASS.set_metallicity(component_age=13000.0)
+        self.assertEqual(metallicity_13000 == METALLICITY_13000)
 
     def test_Moe_sample(self):
         m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
@@ -131,3 +141,11 @@ class TestSample(unittest2.TestCase):
         # Check that the kstar is selected properly
         kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
+
+    def set_metallicity_multi(self):
+        # Check that metallicity is properly selected
+        metallicity_1000 = MULTIDIMSAMPLECLASS.set_metallicity(component_age=1000.0)
+        self.assertEqual(metallicity_1000 == METALLICITY_1000)
+
+        metallicity_13000 = MULTIDIMSAMPLECLASS.set_metallicity(component_age=13000.0)
+        self.assertEqual(metallicity_13000 == METALLICITY_13000)
