@@ -86,48 +86,10 @@ if __name__ == '__main__':
         
         # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
         ###########################################################################
-        if n_systems > 1e5:
-            nLoop = int(n_systems/1.0e5)
-            for ii in range(nLoop):
-                nSample = int(n_systems/float(nLoop))
-                
-                # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
-                # BY GENERATING A KDE FIT
-                #####################################################################
-                binary_sample_dat_trans = dat_kernel.resample(nSample)
-                binary_sample_dat = utils.dat_un_transform(binary_sample_dat_trans, fixed_pop, dat_list)
-                ind_save, = np.where(binary_sample_dat[2,:] < 1e5/sec_in_year)
-                binary_sample_dat = binary_sample_dat[:,ind_save]
-                
-                # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
-                #####################################################################
-                binary_sample_positions = MC_sample.galactic_position_sample(gx_component, 
-                                                                             size = len(binary_sample_dat[0]),model='McMillan')
-                
-                full_sample = np.concatenate([binary_sample_dat,binary_sample_positions]).T
-                full_sample = pd.DataFrame(full_sample,\
-                                           columns = ['mass1', 'mass2', 'porb', 'ecc',
-                                                      'xGx', 'yGx', 'zGx', 'dist',
-                                                      'inc', 'OMEGA', 'omega'])
-                                                      
-                #if gx_save:
-                #    full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
-                #                       kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
-                
-                
-                # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
-                #####################################################################
-                if LISA_calc:
-                    SNR_dat, psd_dat = GW_calcs.LISA_calcs(full_sample.mass1*Msun, full_sample.mass2*Msun,
-                                                           full_sample.porb*sec_in_year,
-                                                           full_sample.ecc, full_sample.dist*1000*parsec,
-                                                           150)
-                    if SNR_dat.shape[0] > 1:
-                        SNR = SNR.append(SNR_dat)
-                    PSD = PSD.append(psd_dat)
-        else:
-            nSample = n_systems
-         
+        nLoop = int(n_systems/1.0e5)
+        for ii in range(nLoop):
+            nSample = int(n_systems/float(nLoop))
+            
             # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
             # BY GENERATING A KDE FIT
             #####################################################################
@@ -137,29 +99,37 @@ if __name__ == '__main__':
             binary_sample_dat = binary_sample_dat[:,ind_save]
             
             # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
-            #####################################################################            
+            #####################################################################
             binary_sample_positions = MC_sample.galactic_position_sample(gx_component, 
                                                                          size = len(binary_sample_dat[0]),model='McMillan')
+            
             full_sample = np.concatenate([binary_sample_dat,binary_sample_positions]).T
-            full_sample = pd.DataFrame(full_sample,
+            full_sample = pd.DataFrame(full_sample,\
                                        columns = ['mass1', 'mass2', 'porb', 'ecc',
                                                   'xGx', 'yGx', 'zGx', 'dist',
                                                   'inc', 'OMEGA', 'omega'])
-             
+                                                  
             #if gx_save:
             #    full_sample.to_hdf('gx_real_'+str(gx)+'_'+gx_component+'_'+
             #                       kstar1_range_string+'_'+kstar2_range_string+'.h5', key='gx', append='True')
-            # NOW WE CAN COMPUTE THE PSD OF THE POPULATION
+            
+            
+            # NOW WE CAN COMPUTE THE PSD AND SNRs OF THE POPULATION
             #####################################################################
             if LISA_calc:
-                SNR_dat, psd_dat = GW_calcs.LISA_calcs(full_sample.mass1*Msun, full_sample.mass2*Msun,
+                SNR_dat = GW_calcs.SNR_calcs(full_sample.mass1*Msun, full_sample.mass2*Msun,
                                                        full_sample.porb*sec_in_year,
                                                        full_sample.ecc, full_sample.dist*1000*parsec,
                                                        150)
-                
+
+                psd_dat = GW_calcs.PSD_calcs(full_sample.mass1*Msun, full_sample.mass2*Msun,
+                                                       full_sample.porb*sec_in_year,
+                                                       full_sample.ecc, full_sample.dist*1000*parsec,
+                                                       150)
                 if SNR_dat.shape[0] > 1:
                     SNR = SNR.append(SNR_dat)
-                PSD = PSD.append(psd_dat)  
+                PSD = PSD.append(psd_dat)
+        
         if len(PSD) > 1:           
             GW_foreground = GW_calcs.compute_foreground(PSD)
         else:
@@ -240,21 +210,32 @@ if __name__ == '__main__':
     else:
         dat_list = ['mass_1', 'mass_2', 'porb', 'ecc']
     
-    # Filter out long period binaries
-    ###########################################################################
-    #fixed_pop = fixed_pop.loc[fixed_pop.porb < 2e5/sec_in_year]
-    
-    # SAMPLE THE BINARY PARAMETERS AND GALACTIC POSITIONS
+    # Compute the mass weighted number of systems in a realistic Milky Way pop
     ###########################################################################
     component_mass = MC_sample.select_component_mass(args.galaxy_component)
     nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
     nSystems = int(nSystems)
+
+    # Filter out long period binaries if population is in excess of 1e6 sources
+    ###########################################################################
+    if nSystems > 1e6:
+        fixed_pop = fixed_pop.loc[fixed_pop.porb < 2e5/sec_in_year]
+        nSystems = MC_sample.mass_weighted_number(fixed_pop, total_sampled_mass, component_mass)
+        nSystems = int(nSystems)
+    else:
+        continue
+
+    # Sample the Milky Way realizations and perform observability calculations
+    ###########################################################################
     if args.nproc > 1:
         n_loops = args.N_realizations / args.nproc
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc + 0, nSystems, fixed_pop, dat_list, args.galaxy_component, args.LISA_calc, args.gx_save)) for x in range(args.nproc)]
+                                    args = (x + n*args.nproc + 0, nSystems, fixed_pop, 
+                                            dat_list, args.galaxy_component, 
+                                            args.LISA_calc, args.gx_save)) 
+                                    for x in range(args.nproc)]
             
             for p in processes:
                 p.daemon = True

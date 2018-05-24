@@ -95,34 +95,33 @@ class Sample(object):
 
         Parameters
         ----------
-            primary_min (float):
-                minimum initial primary mass
-            primary_max (float):
-                maximum initial primary mass
-            primary_model (str, optional):
-                model for mass distribution; choose from:
-                
-                kroupa93 follows Kroupa (1993), normalization comes from
-                `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-                valid for masses between 0.1 and 100 Msun
+        primary_min (float):
+            minimum initial primary mass
+        primary_max (float):
+            maximum initial primary mass
+        primary_model (str, optional):
+            model for mass distribution; choose from:
             
-                salpter55 follows
-                `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-                valid for masses between 0.1 and 100 Msun
-                
-                Default kroupa93
+            kroupa93 follows Kroupa (1993), normalization comes from
+            `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
+            valid for masses between 0.1 and 100 Msun
+        
+            salpter55 follows
+            `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+            valid for masses between 0.1 and 100 Msun
             
-            size (int, optional):
-                number of initial primary masses to sample
-                NOTE: this is set in runFixedPop call as Nstep
+            Default kroupa93
+        
+        size (int, optional):
+            number of initial primary masses to sample
+            NOTE: this is set in runFixedPop call as Nstep
 
         Returns
         -------
-            a_0 (array):
-                all sampled primary masses
-            total_sampled_mass:
-                the total amount of mass sampled
-            
+        a_0 (array):
+            all sampled primary masses
+        total_sampled_mass:
+            the total amount of mass sampled
         """
 
         if primary_model=='kroupa93':
@@ -179,14 +178,14 @@ class Sample(object):
         
         Parameters
         ----------
-            primary_mass (array):
-                sets the maximum secondary mass (for a maximum mass ratio of 1)
+        primary_mass (array):
+            sets the maximum secondary mass (for a maximum mass ratio of 1)
 
         Returns
         -------
-            secondary_mass (array):
-                sampled secondary masses with array size matching size of
-                primary_mass
+        secondary_mass (array):
+            sampled secondary masses with array size matching size of
+            primary_mass
         """
         
         a_0 = np.random.uniform(0.001, 1, primary_mass.size)
@@ -202,15 +201,15 @@ class Sample(object):
         
         Parameters
         ----------
-            primary_mass (array):
-                mass that determines the binary fraction
+        primary_mass (array):
+            mass that determines the binary fraction
 
         Returns
         -------
-            primary_mass[binaryIdx] (array):
-                primary masses that will have a binary companion
-            primary_mass[singleIdx] (array):
-                primary masses that will be single stars
+        primary_mass[binaryIdx] (array):
+            primary masses that will have a binary companion
+        primary_mass[singleIdx] (array):
+            primary masses that will be single stars
         """
 
         binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
@@ -229,16 +228,16 @@ class Sample(object):
 
         Parameters
         ----------
-            mass1 (array):
-                primary masses
-            mass2 (array):
-                secondary masses
+        mass1 (array):
+            primary masses
+        mass2 (array):
+            secondary masses
 
         Returns
         -------
-            porb_sec/sec_in_day (array):
-                orbital period with array size equalling array size 
-                of mass1 and mass2
+        porb_sec/sec_in_day (array):
+            orbital period with array size equalling array size 
+            of mass1 and mass2
         """
 
         a_0 = np.random.uniform(0, 1, size)
@@ -262,22 +261,22 @@ class Sample(object):
 
         Parameters
         ----------
-            ecc_model (string): 
-                'thermal' samples from a  thermal eccentricity distribution following 
-                `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
+        ecc_model (string): 
+            'thermal' samples from a  thermal eccentricity distribution following 
+            `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
 
-                'uniform' samples from a uniform eccentricity distribution
-            
-                DEFAULT = 'thermal'
-            
-            size (int, optional):
-                number of eccentricities to sample
-                NOTE: this is set in runFixedPop call as Nstep
+            'uniform' samples from a uniform eccentricity distribution
+        
+            DEFAULT = 'thermal'
+        
+        size (int, optional):
+            number of eccentricities to sample
+            NOTE: this is set in runFixedPop call as Nstep
 
         Returns
         -------
-            ecc (array):
-                array of sampled eccentricities with size=size
+        ecc (array):
+            array of sampled eccentricities with size=size
         """
 
         if ecc_model=='thermal':
@@ -299,28 +298,28 @@ class Sample(object):
 
         Parameters
         ----------
-            SFH_model (string):
-                'const' assigns an evolution time assuming a constant star
-                formation rate over the age of the MW disk: component_age [Myr]
-                
-                'burst' assigns an evolution time assuming a burst of constant
-                star formation for 1Gyr starting at component_age [Myr] in the past
-                
-                DEFAULT: 'const'
+        SFH_model (string):
+            'const' assigns an evolution time assuming a constant star
+            formation rate over the age of the MW disk: component_age [Myr]
+            
+            'burst' assigns an evolution time assuming a burst of constant
+            star formation for 1Gyr starting at component_age [Myr] in the past
+            
+            DEFAULT: 'const'
 
-            component_age (float):
-                age of the Galactic component [Myr]
-               
-                DEFAULT: 10000.0
+        component_age (float):
+            age of the Galactic component [Myr]
+           
+            DEFAULT: 10000.0
 
-            size (int, optional):
-                number of evolution times to sample
-                NOTE: this is set in runFixedPop call as Nstep
- 
+        size (int, optional):
+            number of evolution times to sample
+            NOTE: this is set in runFixedPop call as Nstep
+
         Returns
         -------
-            tphys (array):
-                array of evolution times of size=size
+        tphys (array):
+            array of evolution times of size=size
         """
 
         if SFH_model=='const':
@@ -339,13 +338,13 @@ class Sample(object):
         
         Parameters
         ----------
-            mass (array):
-                array of masses
+        mass (array):
+            array of masses
 
         Returns
         -------
-            kstar (array):
-                array of initial stellar types
+        kstar (array):
+            array of initial stellar types
         """
 
         kstar = np.zeros(mass.size)
@@ -365,17 +364,17 @@ class Sample(object):
         
         Parameters
         ----------
-            component_age (float):
-                age of the Galactic component [Myr]
+        component_age (float):
+            age of the Galactic component [Myr]
 
-            size (int, optional):
-                number of evolution times to sample
-                NOTE: this is set in runFixedPop call as Nstep
+        size (int, optional):
+            number of evolution times to sample
+            NOTE: this is set in runFixedPop call as Nstep
 
         Returns
         -------
-            metallicity (array):
-                array of metallicity values with size=size
+        metallicity (array):
+            array of metallicity values with size=size
         """
 
         if component_age > 10000:
