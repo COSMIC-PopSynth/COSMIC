@@ -26,6 +26,7 @@ Table of Contents
    :maxdepth: 4
 
    examples/index
+   runpop/index
 
 ******************
 How to run aCOSMIC
