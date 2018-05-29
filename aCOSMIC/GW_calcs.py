@@ -44,7 +44,6 @@ sec_in_day = 86400.0
 sec_in_hour = 3600.0
 hrs_in_day = 24.0
 sec_in_year = 3.15569e7
-Tobs = 4*sec_in_year
 geo_mass = G/c**2
 
 def m_chirp(m1, m2):
@@ -123,7 +122,7 @@ def peters_gfac(ecc, n_harmonic):
 
     return np.array(g_fac_squared)
  
-def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic):
+def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     """Computes the LISA signal-to-noise ratio with inputs in SI units
     with a LISA mission of 4 yr and 2.5 million km arms
     Note that this does not take into account the Galactic binary foreground
@@ -148,6 +147,9 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic):
 
     n_harmonic (int):
         number of frequency harmonics to include
+
+    Tobs (float):
+            LISA observation time in seconds
 
     Returns
     -------
@@ -194,9 +196,9 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic):
     return SNR_dat
 
 
-def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic):
+def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     """Computes the LISA power spectral density with inputs in SI units
-    with a LISA mission of 4 yr and 2.5 million km arms
+    with a LISA mission of Tobs [sec] and 2.5 million km arms
     Note that this does not take into account the Galactic binary foreground
     and assumes no orbital frequency evolution due to GW emission
 
@@ -219,6 +221,9 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic):
 
     n_harmonic (int):
         number of frequency harmonics to include
+
+    Tobs (float):
+            LISA observation time in seconds
 
     Returns
     -------
@@ -257,7 +262,7 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic):
     
     return PSD_dat 
 
-def compute_foreground(psd_dat):
+def compute_foreground(psd_dat, Tobs=4*sec_in_year):
     """Computes the gravitational-wave foreground by binning the PSDs 
     in psd_dat according to the LISA frequency resolution where 1
     frequency bin has a binwidth of 1/(Tobs [s])
@@ -269,6 +274,9 @@ def compute_foreground(psd_dat):
         freq = gravitational-wave frequency in Hz
         PSD = LISA power spectral density
 
+    Tobs (float):
+        LISA observation time in seconds; Default=4 yr
+
     Returns
     -------
     foreground_dat (DataFrame):
@@ -278,7 +286,7 @@ def compute_foreground(psd_dat):
     """
 
     binwidth = 1.0/Tobs
-    freqBinsLISA = np.arange(1e-5,1e-1,binwidth)
+    freqBinsLISA = np.arange(5e-4,1e-2,binwidth)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     psd_dat['digits'] = binIndices
     power_sum = psd_dat[['PSD', 'digits']].groupby('digits').sum()['PSD']

@@ -130,7 +130,7 @@ def sample_exponential_square(size, scale_height):
 
     return distributed_nums
 
-def galactic_position_sample(gx_component, size, model):
+def galactic_positions(gx_component, size, model):
     # SAMPLE FROM VERY SIMPLE DISTRIBUTION FUNCTIONS 
     ###########################################################################
     if gx_component == 'ThinDisk':
@@ -236,25 +236,3 @@ def galactic_position_sample(gx_component, size, model):
          
     return np.vstack([xGX, yGX, zGX, dist_kpc, inc, OMEGA, omega])
 
-
-def sample(dat, total_sampled_mass, gx_component, model='McMillan'):
-    '''
-    Monte-Carlo samples a galactic realization
-    '''
-    component_mass = select_component_mass(gx_component)
-    nSystems = mass_weighted_number(dat, total_sampled_mass, component_mass)
-    dat_trans = dat_transform(dat)
-    
-    # FIRST SAMPLE THE BINARY PARAMETERS FROM THE FIXED POPULATION
-    # BY GENERATING A KDE FIT
-    #####################################################################
-    dat_kernel = stats.gaussian_kde(dat_trans)
-    binary_sample_dat_trans = dat_kernel.resample(nSystems)
-    binary_sample_dat = dat_un_transform(binary_sample_dat_trans, dat)
-    
-    # NEXT SAMPLE THE BINARY POSITIONS AND ORIENTATIONS
-    #####################################################################
-    binary_sample_positions = galactic_position_sample(gx_component, size = nSystems, model=model) 
-
-    full_sample = np.concatenate([binary_sample_dat, binary_sample_positions])
-    return full_sample
