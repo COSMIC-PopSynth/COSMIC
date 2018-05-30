@@ -15,7 +15,7 @@
 from collections import OrderedDict
 import warnings
 import argparse
-import ConfigParser
+from configparser import ConfigParser
 
 import math
 import random
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     geo_mass = G/c**2
 
     # ---- Create configuration-file-parser object and read parameters file.
-    cp = ConfigParser.ConfigParser()
+    cp = ConfigParser()
     cp.optionxform = str
     cp.read(args.inifile)
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     try:
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
-        print 'There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved'
+        print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)

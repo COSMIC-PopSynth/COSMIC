@@ -68,9 +68,12 @@ install_requires = [
     'numpy',
     'scipy',
     'astropy',
+    'configparser',
     'matplotlib',
     'gwpy',
-    'pandas',
+    'pandas>=0.22;python_version>="3.5"',
+    'pandas<0.21;python_version=="3.4"',
+    'pandas>=0.22;python_version=="2.7"',
     'tables',
     'h5py',
 ]
@@ -82,7 +85,6 @@ if sys.version_info < (2, 7):
 extras_require = {
     'doc': [
         'sphinx',
-        'sphinx-fortran',
         'numpydoc',
         'sphinx_rtd_theme',
         'sphinxcontrib_programoutput',
