@@ -4,8 +4,8 @@
      \ tflagtmp,ifflagtmp,wdflagtmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,
-     \ bppout,bcmout,idumtmp)
+     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
+     \ bppout,bcmout)
       implicit none
       INCLUDE 'const_bse.h'
 ***
