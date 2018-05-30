@@ -84,6 +84,7 @@ if sys.version_info < (2, 7):
     tests_require.append('unittest2')
 extras_require = {
     'doc': [
+        'ipython',
         'sphinx',
         'numpydoc',
         'sphinx_rtd_theme',
