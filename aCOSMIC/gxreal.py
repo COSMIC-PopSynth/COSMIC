@@ -27,9 +27,9 @@ import aCOSMIC.MC_samp as MC_samp
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'GxReal'
+__all__ = ['GxReal']
 
-class GxReal():
+class GxReal(object):
     def __init__(self, fixed_pop, m_tot_samp, gx_model, gx_component, dat_list):
         '''
         Initialize GxReal
@@ -38,13 +38,12 @@ class GxReal():
         self.fixed_mass = m_tot_samp
         self.gx_model = gx_model
         self.gx_component = gx_component
-        self.n_samp = compute_n_sample(self.fixed_pop, self.fixed_mass, self.gx_component)
+        self.dat_list = dat_list 
 
-        self.realization = sample_population(dat_list)
         return
 
 
-    def compute_n_sample(self)
+    def compute_n_sample(self):
         """Use the fixed population and total mass sampled to generate the 
         fixed population to compute the number of systems in the Milky Way
         realization
@@ -77,8 +76,7 @@ class GxReal():
         return n_samp
 
 
-    @classmethod
-    def sample_population(cls, dat_list):
+    def sample_population(self):
         """Once the fixed population is evolved, we Monte-Carlo
         sample the binary parameters to generate a Milky Way realization.
 
@@ -109,6 +107,9 @@ class GxReal():
             Milky Way population realization of size n_samp
         """
 
+        if not hasattr(self, 'n_samp'):
+            self.n_samp = self.compute_n_sample()
+
         # Based on the user supplied filter flags, filter the
         # population to reduce the sample to only the relevant population
         #######################################################################
@@ -120,20 +121,20 @@ class GxReal():
         # then transform to logit space to maintain the population boundaries
         # and create a KDE using knuth's rule to select the bandwidth
         #######################################################################
-        dat_kde = utils.dat_transform(cls.fixed_pop, dat_list)
+        dat_kde = utils.dat_transform(self.fixed_pop, self.dat_list)
         bw = utils.knuth_bw_selector(dat_kde)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
     
         # Sample from the KDE
         #######################################################################
-        binary_dat_trans = dat_kernel.resample(cls.n_samp)
-        binary_dat = utils.dat_un_transform(binary_dat_trans, cls.fixed_pop, dat_list)
+        binary_dat_trans = dat_kernel.resample(self.n_samp)
+        binary_dat = utils.dat_un_transform(binary_dat_trans, self.fixed_pop, self.dat_list)
         
         # Sample positions and orientations for each sampled binary
         #######################################################################
-        binary_positions = MC_sample.galactic_positions(cls.gx_component,
+        binary_positions = MC_sample.galactic_positions(self.gx_component,
                                                         size = len(binary_dat[0]),
-                                                        model=cls.gx_model)
+                                                        model=self.gx_model)
          
         # Create a single DataFrame for the Galactic realization
         #######################################################################
@@ -172,7 +173,7 @@ class GxReal():
         """
 
         # Compute the SNR
-        ################# 
+        ####################################################################### 
         SNR_dat = GW_calcs.SNR_calcs(self.realization.mass1*Msun, 
                                      self.realization.mass2*Msun,
                                      self.realization.porb*sec_in_year,
@@ -181,7 +182,7 @@ class GxReal():
                                      150)
 
         # Compute the PSD
-        ################# 
+        #######################################################################
         PSD_dat = GW_calcs.PSD_calcs(self.realization.mass1*Msun, 
                                      self.realization.mass2*Msun,
                                      self.realization.porb*sec_in_year,
@@ -189,8 +190,8 @@ class GxReal():
                                      self.realization.dist*1000*parsec,
                                      150)
          # Compute the foreground from the PSD dataframe
-         ###############################################
-         foreground_dat = GW_calcs.compute_foreground(PSD_dat, Tobs)
+         #######################################################################
+         foreground_dat = GW_calcs.compute_foreground(PSD_dat, T_obs)
 
          return SNR_dat, foreground_dat
          
