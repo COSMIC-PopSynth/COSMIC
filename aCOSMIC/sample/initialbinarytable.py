@@ -169,19 +169,19 @@ class InitialBinaryTable(Table):
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):
-        """Fetch a table of events from a database
+        """Fetch a method to generate an initial binary sample
 
         Parameters
         ----------
-        format : `str`, `~sqlalchemy.engine.Engine`
-            the format of the remote data, see _Notes_ for a list of
-            registered formats, OR an SQL database `Engine` object
+        format (str):
+            the method name; should choose from 'independent' 
+            or 'multidim'    
 
         *args
-            all other positional arguments are specific to the
-            data format, see below for basic usage
-        Notes
-        -----"""
+            the arguments necessary for the registered sample 
+            method; see help(InitialBinaryTable.sampler('independent')
+            to see the arguments necessary for the independent sample
+        """
         # standard registered fetch
         from .sampler.sampler import get_sampler
         sampler = get_sampler(format_, cls)
