@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) Scott Coughlin (2017)
 #
-# This file is part of aCOSMIC.
+# This file is part of cosmic.
 #
-# aCOSMIC is free software: you can redistribute it and/or modify
+# cosmic is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# aCOSMIC is distributed in the hope that it will be useful,
+# cosmic is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
 
 """`evolve`
 """
 
 import numpy as np
 from gwpy.utils import mp as mp_utils
-from aCOSMIC import _evolvebin
+from cosmic import _evolvebin
 import pandas as pd
 from astropy.table import Table
 

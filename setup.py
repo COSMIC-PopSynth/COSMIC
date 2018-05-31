@@ -2,22 +2,22 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) Katie Breivik (2017)
 #
-# This file is part of the aCOSMIC python package.
+# This file is part of the cosmic python package.
 #
-# aCOSMIC is free software: you can redistribute it and/or modify
+# cosmic is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# aCOSMIC is distributed in the hope that it will be useful,
+# cosmic is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with aCOSMIC.  If not, see <http://www.gnu.org/licenses/>.
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Setup the aCOSMIC package
+"""Setup the cosmic package
 """
 
 from __future__ import print_function
@@ -34,8 +34,8 @@ from setuptools import find_packages
 from numpy.distutils.core import setup, Extension
 
 # set basic metadata
-PACKAGENAME = 'aCOSMIC'
-DISTNAME = 'aCOSMIC'
+PACKAGENAME = 'cosmic'
+DISTNAME = 'cosmic'
 AUTHOR = 'Katie Breivik'
 AUTHOR_EMAIL = 'katie.breivik@gmail.com'
 LICENSE = 'GPLv3'
@@ -93,7 +93,7 @@ extras_require = {
 }
 # fortran compile
 
-wrapper = Extension('aCOSMIC._evolvebin', sources=['aCOSMIC/src/comenv.f', 'aCOSMIC/src/corerd.f', 'aCOSMIC/src/deltat.f', 'aCOSMIC/src/dgcore.f', 'aCOSMIC/src/evolv2.f', 'aCOSMIC/src/gntage.f', 'aCOSMIC/src/hrdiag.f', 'aCOSMIC/src/instar.f', 'aCOSMIC/src/kick.f', 'aCOSMIC/src/mix.f', 'aCOSMIC/src/mlwind.f', 'aCOSMIC/src/mrenv.f', 'aCOSMIC/src/ran3.f', 'aCOSMIC/src/rl.f', 'aCOSMIC/src/star.f', 'aCOSMIC/src/zcnsts.f', 'aCOSMIC/src/zfuncs.f'], extra_compile_args = ["-O -g"])
+wrapper = Extension('cosmic._evolvebin', sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f'], extra_compile_args = ["-O -g"])
 
 
 # -- run setup ----------------------------------------------------------------
