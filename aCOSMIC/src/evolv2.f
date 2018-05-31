@@ -4,8 +4,8 @@
      \ tflagtmp,ifflagtmp,wdflagtmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,
-     \ bppout,bcmout,idumtmp)
+     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
+     \ bppout,bcmout)
       implicit none
       INCLUDE 'const_bse.h'
 ***
@@ -644,7 +644,7 @@ Cf2py intent(out) bppout,bcmout
 * For very close systems include angular momentum loss owing to 
 * gravitational radiation. 
 *
-         if(sep.le.1000.d0)then
+         if(sep.le.100000.d0)then
             djgr = 8.315d-10*mass(1)*mass(2)*(mass(1)+mass(2))/
      &             (sep*sep*sep*sep)
             f1 = (19.d0/6.d0) + (121.d0/96.d0)*ecc2
@@ -2465,7 +2465,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * For very close systems include angular momentum loss mechanisms.
 *
-         if(sep.le.1000.d0)then
+         if(sep.le.100000.d0)then
             djgr = 8.315d-10*mass(1)*mass(2)*(mass(1)+mass(2))/
      &             (sep*sep*sep*sep)
             f1 = (19.d0/6.d0) + (121.d0/96.d0)*ecc2
