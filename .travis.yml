@@ -19,7 +19,7 @@ install:
   - python -m pip install .
 
 before_script:
-  - python -m pip install coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2
+  - python -m pip install coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
 
 script:
   # run unit tests

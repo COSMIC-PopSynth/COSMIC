@@ -23,7 +23,7 @@ class TestMatch(unittest2.TestCase):
         # test the match by dividing the sample into to sub samples
         # one containing half of the set and one containing the full set
 
-        dataCm = [sample[:len(sample)/2], sample]
+        dataCm = [sample[:int(len(sample)/2)], sample]
         match, bin_width = Match.match(dataCm, 2)
         self.assertTrue(match[0] == MATCH_TEST)
 
