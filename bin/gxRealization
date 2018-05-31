@@ -31,10 +31,10 @@ import pandas as pd
 import multiprocessing as mp
 import matplotlib.pyplot as plt
 
-import aCOSMIC.gxreal as GxReal
-import aCOSMIC.MC_samp as MC_sample 
-import aCOSMIC.GW_calcs as GW_calcs
-import aCOSMIC.utils as utils
+import cosmic.gxreal as GxReal
+import cosmic.MC_samp as MC_sample 
+import cosmic.GW_calcs as GW_calcs
+import cosmic.utils as utils
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
 ##################################################################################

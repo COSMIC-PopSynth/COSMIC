@@ -1,4 +1,4 @@
-"""Unit test for aCOSMIC
+"""Unit test for cosmic
 """
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
@@ -9,7 +9,7 @@ import numpy as np
 import scipy.integrate
 import pandas as pd
 
-import aCOSMIC.utils as utils
+import cosmic.utils as utils
 
 f  = np.linspace(0,1,10)
 x = np.linspace(0,1,10)
