@@ -1,4 +1,4 @@
-"""Unit test for aCOSMIC
+"""Unit test for cosmic
 """
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
@@ -9,7 +9,7 @@ import numpy as np
 import scipy.integrate
 import pandas as pd
 
-import aCOSMIC.lisa_sensitivity as lisa_sens
+import cosmic.lisa_sensitivity as lisa_sens
 
 LISA_SENS_1mHz = 4.739480706393628e-19
 LISA_ROOT_PSD_1mHz = 1.807824352105568e-19

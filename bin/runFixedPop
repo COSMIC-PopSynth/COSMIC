@@ -29,11 +29,11 @@ import scipy.special as ss
 import pandas as pd
 
 
-from aCOSMIC.sample.initialbinarytable import InitialBinaryTable
-from aCOSMIC import Match
-from aCOSMIC.evolve import Evolve
-from aCOSMIC.utils import mass_min_max_select
-from aCOSMIC.utils import param_transform
+from cosmic.sample.initialbinarytable import InitialBinaryTable
+from cosmic import Match
+from cosmic.evolve import Evolve
+from cosmic.utils import mass_min_max_select
+from cosmic.utils import param_transform
 
 ##################################################################################
 # DEFINE COMMANDLINE ARGUMENTS
