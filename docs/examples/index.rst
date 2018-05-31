@@ -37,9 +37,9 @@ that initialize and evolve the binary.
 
 .. ipython::
 
-    In [1]: from aCOSMIC.sample.initialbinarytable import InitialBinaryTable
+    In [1]: from cosmic.sample.initialbinarytable import InitialBinaryTable
 
-    In [2]: from aCOSMIC.evolve import Evolve
+    In [2]: from cosmic.evolve import Evolve
 
 
 To initialize the a single binary, we populate the SingleBinary method in the
@@ -153,7 +153,7 @@ Sampling Initial Binary Conditions
 
 .. ipython::
 
-    In [1]: from aCOSMIC.sample.initialbinarytable import InitialBinaryTable
+    In [1]: from cosmic.sample.initialbinarytable import InitialBinaryTable
 
     In [2]: IBT, sampled_mass = InitialBinaryTable.sampler('independent', primary_min=0.08, primary_max=5.0, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, size=1000)
 

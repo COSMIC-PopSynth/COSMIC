@@ -4,7 +4,7 @@
 Running ``runFixedPop`` on the command line
 ###########################################
 
-As described on the home page, the main interface to the aCOSMIC algorithm is the command-line executable ``runFixedPop``.
+As described on the home page, the main interface to the cosmic algorithm is the command-line executable ``runFixedPop``.
 
 Basic instructions
 ==================
