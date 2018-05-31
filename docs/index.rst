@@ -1,21 +1,21 @@
-.. aCOSMIC documentation master file, created by
+.. cosmic documentation master file, created by
    sphinx-quickstart on Thu Apr 21 14:05:08 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-###################################
-Welcome to aCOSMIC's documentation!
-###################################
+##################################
+Welcome to cosmic's documentation!
+##################################
 
-******************
-Installing aCOSMIC
-******************
+*****************
+Installing cosmic
+*****************
 
-The easiest method to install aCOSMIC is using `pip <https://pip.pypa.io/en/stable/>`_ directly from the `GitHub repository <https://github.com/aCOSMIC/aCOSMIC.git>`_:
+The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stable/>`_ directly from the `GitHub repository <https://github.com/COSMIC-PopSynth/COSMIC.git>`_:
 
 .. code-block:: bash
 
-   $ pip install git+https://github.com/aCOSMIC/aCOSMIC.git
+   $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
 *****************
@@ -28,9 +28,9 @@ Table of Contents
    examples/index
    runpop/index
 
-******************
-How to run aCOSMIC
-******************
+*****************
+How to run cosmic
+*****************
 
 Here is an example commandline:
 
@@ -43,7 +43,7 @@ For more details see :ref:`command-line`.
 Package documentation
 *********************
 
-Please consult these pages for more details on using aCOSMIC:
+Please consult these pages for more details on using cosmic:
 
 .. toctree::
    :maxdepth: 1

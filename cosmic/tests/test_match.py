@@ -1,4 +1,4 @@
-"""Unit test for aCOSMIC
+"""Unit test for cosmic
 """
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
@@ -9,7 +9,7 @@ import numpy as np
 import scipy.integrate
 import pandas as pd
 
-import aCOSMIC.Match as Match
+import cosmic.Match as Match
 
 np.random.seed(2)
 sample = np.random.uniform(0,1,500)

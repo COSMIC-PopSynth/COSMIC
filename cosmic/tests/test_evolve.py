@@ -1,4 +1,4 @@
-"""Unit test for aCOSMIC
+"""Unit test for cosmic
 """
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
@@ -8,8 +8,8 @@ import unittest2
 import numpy as np
 import pandas as pd
 
-from aCOSMIC.evolve import Evolve
-from aCOSMIC.sample.initialbinarytable import InitialBinaryTable
+from cosmic.evolve import Evolve
+from cosmic.sample.initialbinarytable import InitialBinaryTable
 
 bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' , 'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type']
 
@@ -31,7 +31,7 @@ SINGLE_BINARY = InitialBinaryTable.SingleBinary(m1=INIT_CONDITIONS[2],
 BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'CK': -1000, 'bwind': 0.0, 'lambdaf': -1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 2, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0}
 
 class TestEvolve(unittest2.TestCase):
-    """`TestCase` for the aCOSMIC
+    """`TestCase` for the cosmic
     """
     def test_single_evolve(self):
         # Check that the sample_primary function samples mass correctly
