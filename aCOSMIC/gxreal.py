@@ -189,9 +189,9 @@ class GxReal(object):
                                      self.realization.ecc, 
                                      self.realization.dist*1000*parsec,
                                      150)
-         # Compute the foreground from the PSD dataframe
-         #######################################################################
-         foreground_dat = GW_calcs.compute_foreground(PSD_dat, T_obs)
+        # Compute the foreground from the PSD dataframe
+        #######################################################################
+        foreground_dat = GW_calcs.compute_foreground(PSD_dat, T_obs)
 
-         return SNR_dat, foreground_dat
+        return SNR_dat, foreground_dat
          
