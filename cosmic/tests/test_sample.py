@@ -1,4 +1,4 @@
-"""Unit test for aCOSMIC
+"""Unit test for cosmic
 """
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
@@ -7,8 +7,8 @@ import os
 import unittest2
 import numpy as np
 import pandas as pd
-from aCOSMIC.sample.sampler.independent import Sample
-from aCOSMIC.sample.sampler.multidim import MultiDim
+from cosmic.sample.sampler.independent import Sample
+from cosmic.sample.sampler.multidim import MultiDim
 
 
 SAMPLECLASS = Sample()
@@ -33,7 +33,7 @@ METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
 class TestSample(unittest2.TestCase):
-    """`TestCase` for the aCOSMIC Sample class, which generates several 
+    """`TestCase` for the cosmic Sample class, which generates several 
         independent initial parameters drawn from specified distributions
     """
 
