@@ -83,8 +83,7 @@ class Sample(object):
 
     # sample primary masses
     def sample_primary(self, primary_min, primary_max, primary_model='kroupa93', size=None):
-        """Sample the primary mass (always the most massive star) from 
-        a user-selected model
+        """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
@@ -93,35 +92,37 @@ class Sample(object):
         `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
         between 0.1 and 100 Msun
 
-        Parameters
-        ----------
-        primary_min (float):
-            minimum initial primary mass
-        primary_max (float):
-            maximum initial primary mass
-        primary_model (str, optional):
-            model for mass distribution; choose from:
+        Parameters:
             
-            kroupa93 follows Kroupa (1993), normalization comes from
-            `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-            valid for masses between 0.1 and 100 Msun
-        
-            salpter55 follows
-            `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-            valid for masses between 0.1 and 100 Msun
+            primary_min (float):
+                minimum initial primary mass
             
-            Default kroupa93
-        
-        size (int, optional):
-            number of initial primary masses to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            primary_max (float):
+                maximum initial primary mass
+            
+            primary_model (str, optional):
+                model for mass distribution; choose from:
+                
+                kroupa93 follows Kroupa (1993), normalization comes from
+                `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
+                valid for masses between 0.1 and 100 Msun
+            
+                salpter55 follows
+                `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+                valid for masses between 0.1 and 100 Msun
+                
+                Default kroupa93
+            
+            size (int, optional):
+                number of initial primary masses to sample
+                NOTE: this is set in runFixedPop call as Nstep
 
-        Returns
-        -------
-        a_0 (array):
-            all sampled primary masses
-        total_sampled_mass:
-            the total amount of mass sampled
+        Returns:
+            
+            a_0 (array):
+                all sampled primary masses
+            total_sampled_mass:
+                the total amount of mass sampled
         """
 
         if primary_model=='kroupa93':
