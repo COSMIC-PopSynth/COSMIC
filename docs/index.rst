@@ -6,6 +6,9 @@
 ##################################
 Welcome to cosmic's documentation!
 ##################################
+cosmic is a rapid binary population synthesis suite with a special purpose of generating realistic Milky Way compact binary populations. 
+
+cosmic currently implements binary evolutionary processes using BSE (`Hurley et al. (2002) <http://adsabs.harvard.edu/abs/2002MNRAS.329..897H>`_). Several modifications have been applied to BSE to account for recent updates to binary evolution especially important to compact binary formation (e.g. metallicity-dependent stellar winds or black hole natal kick strengths). For a detailed discussion of these modifications, see Breivik et al. (2018), `Rodriguez et al (2016) <http://adsabs.harvard.edu/abs/2016PhRvD..93h4029R>`_, and `Dominik et al (2013) <http://adsabs.harvard.edu/abs/2013ApJ...779...72D>`_.
 
 *****************
 Installing cosmic
@@ -18,6 +21,13 @@ The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stabl
    $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
+Here is an example commandline:
+
+.. code-block:: bash
+    runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 10000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11 --initial_samp "multidim"
+
+For more details see :ref:`command-line`.
+
 *****************
 Table of Contents
 *****************
@@ -27,17 +37,6 @@ Table of Contents
 
    examples/index
    runpop/index
-
-*****************
-How to run cosmic
-*****************
-
-Here is an example commandline:
-
-.. code-block:: bash
-    runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 100000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11
-
-For more details see :ref:`command-line`.
 
 *********************
 Package documentation
@@ -49,17 +48,6 @@ Please consult these pages for more details on using cosmic:
    :maxdepth: 1
 
    command-line/index
-
-*******
-Fortran
-*******
-
-evolv2
-======
-
-******************
-Indices and tables
-******************
 
 * :ref:`genindex`
 * :ref:`modindex`
