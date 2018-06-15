@@ -211,7 +211,7 @@ if __name__ == '__main__':
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
 
-    bcm_len_test = pd.DataFrame()
+    
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while Nstep < args.Niter and (len(bcm_len_test) < 500 or np.min(np.array(match_all)) < 0.9999):
+    while Nstep < args.Niter and (len(bcm_save) < 500 or np.min(np.array(match_all)) < 0.9999):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
@@ -236,11 +236,11 @@ if __name__ == '__main__':
  
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, args.Nstep)
 
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, seed_int, args.nproc, SFH_model, component_age, Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, seed_int, args.nproc, SFH_model, component_age, args.Nstep)
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
@@ -249,7 +249,7 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc)
+        bpp, bcm = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idxOld+1)
         # save the total_sampled_mass so far
         dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
@@ -257,12 +257,14 @@ if __name__ == '__main__':
         # any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e6/sec_in_year]
-        bcm_len_test = bcm_len_test.append(bcm_filtered.loc[bcm_filtered.porb < 1e2/sec_in_year])
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
         idx = bcm.index.max()
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
 
+
         if bcm_save_filtered.shape[0] > 0:
+            import pdb
+            pdb.set_trace()
             # Save the bcm dataframe
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
@@ -271,7 +273,9 @@ if __name__ == '__main__':
             else:
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
             idxSave = bcm_save.index
-            idxInitCond = idxSave[len(bcm_save)-len(bcm_save_filtered):]-idxOld
+            idxInitCond = idxSave[(len(bcm_save))-(len(bcm_save_filtered)):]-idxOld
+            # this creates a list of indices that are off by 1
+            #idxInitCond = idxInitCond-1
             bpp_save_array = bpp[bpp.index.isin(idxSave)]
             
             # Save the bpp dataframe
@@ -280,10 +284,14 @@ if __name__ == '__main__':
             
             IBT = IBT.to_pandas()
             initC = IBT.iloc[idxInitCond]
-
+            
+            #initC = IBT.iloc[idxSave]
             # Save the initial conditions of the bcm/bpp saved dataframes       
             dat_store.append('initCond', initC)
 
+            IBT = []
+            bcm = []
+            bpp = []
             # Check to see if the eccentricities are all circular for 
             # convergence (Match) calculations
             if bcm_save.ecc.sum() == 0.0:
@@ -305,9 +313,18 @@ if __name__ == '__main__':
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
                 match_save = pd.DataFrame(np.array(match_all).T, columns = conv_params)
                 dat_store.append('match', match_save)
+
+        else:
+            IBT = []
+
         Nstep += args.Nstep
         idxOld = idx
 
+    #IBT = IBT.to_pandas()
+    #initC = IBT.iloc[idxInitCond]
+    #initC = IBT.iloc[idxSave]
+    # Save the initial conditions of the bcm/bpp saved dataframes       
+    #dat_store.append('initCond', initC)
     # Close the data storage file 
     dat_store.close()
 
