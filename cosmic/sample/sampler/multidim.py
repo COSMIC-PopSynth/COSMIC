@@ -56,7 +56,7 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size, **kwargs):
+def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, size, **kwargs):    
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
     mass1_binary, mass2_binary, porb, ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
@@ -64,7 +64,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity = initconditions.set_metallicity(component_age, size = mass1_binary.size)
-
+    
     return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass) 
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
@@ -456,10 +456,10 @@ class MultiDim:
 
 
         def _sample_initial_pop(M1min, M2min, M1max, M2max, size, seed, output):
-            if seed > 0:
-                np.random.seed(seed)
-            else:
-                np.random.seed()
+            #if seed > 0:
+            #    np.random.seed(seed)
+            #else:
+            #    np.random.seed()
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
