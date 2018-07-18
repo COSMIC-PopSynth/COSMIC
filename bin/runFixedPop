@@ -283,7 +283,7 @@ if __name__ == '__main__':
             bpp_save = bpp_save.append(bpp_save_array)
             
             IBT = IBT.to_pandas()
-            initC = IBT.iloc[idxInitCond-1]
+            initC = IBT.iloc[idxInitCond]
             
             #initC = IBT.iloc[idxSave]
             # Save the initial conditions of the bcm/bpp saved dataframes       
