@@ -359,7 +359,6 @@ Cf2py intent(out) bppout,bcmout
       renv(2) = 0.0
       ospin(2) = 0.0
 
-      tphys = 0.0
 
 *
 * Set the seed for the random number generator. 
@@ -484,7 +483,7 @@ Cf2py intent(out) bppout,bcmout
 *
       if(output) write(*,*)'Init:',mass(1),mass(2),massc(1),massc(2),
      & rad(1),rad(2),kstar(1),kstar(2),sep,ospin(1),ospin(2),jspin(1),
-     & jspin(2),sigma,eddfac,z,id1_pass,id2_pass,tphysf,tphys,iter
+     & jspin(2),sigma,eddfac,z,id1_pass,id2_pass,tphysf,tphys,iter,tsave
 *
       if(mt2.lt.tiny)then
          sep = 0.d0
@@ -508,7 +507,7 @@ Cf2py intent(out) bppout,bcmout
       ip = 0
       jp = 0
 
-      tsave = tphys
+      tsave = tphysf
       isave = .true.
       iplot = .false.
       if(dtp.le.0.d0)then
@@ -1198,7 +1197,9 @@ Cf2py intent(out) bppout,bcmout
          dtm0 = dtm
       endif
       tphys = tphys + dtm
-      if(output) write(*,*)'time upd:',tphys,dtm,kstar(1),kstar(2),ecc
+    
+      if(output) write(*,*)'time upd:',tsave, tphys,dtm,
+     &                      kstar(1),kstar(2),ecc
 *
       do 6 , k = kmin,kmax
 *
@@ -3470,7 +3471,7 @@ Cf2py intent(out) bppout,bcmout
       if(iter.ge.loop)then
          WRITE(99,*)'ITER>=LOOP:',jp,tphys,tphysfhold,dtp,kstar,age,kst,
      & id1_pass,id2_pass,mass(1),mass(2),iter,loop
-         CALL exit(0)
+*         CALL exit(0)
          STOP
       endif
       bcm(ip+1,1) = -1.0

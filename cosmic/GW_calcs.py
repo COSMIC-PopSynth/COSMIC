@@ -130,19 +130,19 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
 
     Parameters
     ----------
-    m1 (float or array):
+    m1 (DataFrame):
         primary mass [kg]
   
-    m2 (float or array):    
+    m2 (DataFrame):    
         secondary mass [kg]
 
-    porb (float or array):
+    porb (DataFrame):
         orbital period [s]
 
-    ecc (float or array):
+    ecc (DataFrame):
         eccentricity
 
-    dist (float or array):
+    dist (DataFrame):
         Solar-centric distance [m]
 
     n_harmonic (int):
@@ -164,10 +164,15 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     
     mChirp = m_chirp(m1, m2)
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
-    h_0_squared = h_0**2
-  
-    SNR = np.zeros(len(mChirp))
-    gw_freq = np.zeros(len(mChirp))
+    h_0_squared = h_0**2 
+ 
+    try:
+        SNR = np.zeros(mChirp.size())
+        gw_freq = np.zeros(mChirp.size())
+    except:
+        SNR = np.zeros(1)
+        gw_freq = np.zeros(1)
+      
 
     ind_ecc, = np.where(ecc > 0.1)
     ind_circ, = np.where(ecc <= 0.1)
