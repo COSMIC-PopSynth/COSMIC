@@ -313,7 +313,7 @@ Cf2py intent(out) bppout,bcmout
 * Initialize the parameters.
 *
 
-      
+      tphys = 0.d0 
       bpp = 0.d0
       bcm = 0.d0
       bppout = 0.d0
@@ -3472,7 +3472,7 @@ Cf2py intent(out) bppout,bcmout
          WRITE(99,*)'ITER>=LOOP:',jp,tphys,tphysfhold,dtp,kstar,age,kst,
      & id1_pass,id2_pass,mass(1),mass(2),iter,loop
 *         CALL exit(0)
-         STOP
+*         STOP
       endif
       bcm(ip+1,1) = -1.0
       bpp(jp+1,1) = -1.0
