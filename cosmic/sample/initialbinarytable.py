@@ -94,7 +94,8 @@ class InitialBinaryTable():
                                           metallicity, tphysf]), 
                                columns = ['kstar_1', 'kstar_2', 
                                           'mass1_binary', 'mass2_binary', 
-                                          'porb', 'ecc', 'metallicity'                                                    'tphysf'])
+                                          'porb', 'ecc', 'metallicity',
+                                          'tphysf'])
 
         return bin_dat
 
