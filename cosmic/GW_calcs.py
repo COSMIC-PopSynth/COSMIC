@@ -131,10 +131,10 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     Parameters
     ----------
     m1 (DataFrame):
-        primary mass [kg]
+        primary mass [msun]
   
     m2 (DataFrame):    
-        secondary mass [kg]
+        secondary mass [msun]
 
     porb (DataFrame):
         orbital period [s]
@@ -161,42 +161,22 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
 
     # LISA mission: 2.5 million km arms
     LISA_psd = lisa_sensitivity.lisa_root_psd()
-    
-    mChirp = m_chirp(m1, m2)
+   
+    mChirp = m_chirp(m1, m2)*Msun
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2 
- 
-    try:
-        SNR = np.zeros(mChirp.size())
-        gw_freq = np.zeros(mChirp.size())
-    except:
-        SNR = np.zeros(1)
-        gw_freq = np.zeros(1)
-      
+    peters_g_factor = peters_gfac(ecc, n_harmonic)
+    GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
+    GW_freq_flat = GW_freq_array.flatten()
+    LISA_curve_eval_flat = LISA_psd(GW_freq_flat)**2
+    LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,ecc.shape[0]))
 
-    ind_ecc, = np.where(ecc > 0.1)
-    ind_circ, = np.where(ecc <= 0.1)
+    h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T
+    SNR_squared = h_0_squared_ecc * Tobs * peters_g_factor / LISA_curve_eval
 
-    SNR[ind_circ] = (h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs / LISA_psd(2 / porb.iloc[ind_circ])**2)
-    gw_freq[ind_circ] = 2 / (porb.iloc[ind_circ])
-
-    if len(ind_ecc) > 0:
-        peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
-        GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb.iloc[ind_ecc]]).T
-        GW_freq_flat = GW_freq_array.flatten()
-        LISA_curve_eval_flat = LISA_psd(GW_freq_flat)**2
-        LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,len(ind_ecc)))
-
-        h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared.iloc[ind_ecc]]).T
-        SNR_squared = h_0_squared_ecc * Tobs * peters_g_factor / LISA_curve_eval
-
-        SNR[ind_ecc] = (SNR_squared.sum(axis=0))**0.5
-        gw_freq[ind_ecc] = peak_gw_freq(m1.iloc[ind_ecc], m2.iloc[ind_ecc], ecc.iloc[ind_ecc], porb.iloc[ind_ecc])    
-    SNR_dat = pd.DataFrame(np.vstack([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
-    if len(SNR_dat.SNR > 1.0) > 1:
-        SNR_dat = SNR_dat.loc[SNR_dat.SNR > 1.0]
-    else:
-        SNR_dat = pd.DataFrame(columns=['gw_freq', 'SNR'])
+    SNR = (SNR_squared.sum(axis=0))**0.5
+    gw_freq = peak_gw_freq(m1, m2, ecc, porb)    
+    SNR_dat = pd.DataFrame(np.array([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
     
     return SNR_dat
 
@@ -210,10 +190,10 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     Parameters
     ----------
     m1 (float or array):
-        primary mass [kg]
+        primary mass [msun]
   
     m2 (float or array):    
-        secondary mass [kg]
+        secondary mass [msun]
 
     porb (float or array):
         orbital period [s]
@@ -241,28 +221,21 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     # LISA mission: 2.5 million km arms
     LISA_psd = lisa_sensitivity.lisa_root_psd()
     
-    mChirp = m_chirp(m1, m2)
+    mChirp = m_chirp(m1, m2)*Msun
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2
+    h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T
 
-    freq = []
-    psd = []
+    GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
+    GW_freq_flat = GW_freq_array.flatten()
+ 
+ 
+    peters_g_factor = peters_gfac(ecc, n_harmonic)
+    power = h_0_squared_ecc * Tobs * peters_g_factor
+    power_flat = power.flatten()
 
-    ind_ecc, = np.where(ecc > 0.1)
-    ind_circ, = np.where(ecc <= 0.1)
-
-    power = h_0_squared.iloc[ind_circ] * 1.0/4.0 * Tobs
-    
-    psd.extend(power)
-    freq.extend(2.0 / (porb.iloc[ind_circ]))
-
-    if len(ind_ecc) > 0:
-        peters_g_factor = peters_gfac(ecc.iloc[ind_ecc], n_harmonic)
-        power = h_0_squared_ecc * Tobs * peters_g_factor
-        power_flat = power.flatten()
-
-        psd.extend(power_flat)
-        freq.extend(GW_freq_flat)
+    psd = power_flat
+    freq = GW_freq_flat
     PSD_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'PSD'])
     
     return PSD_dat 
