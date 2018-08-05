@@ -91,7 +91,7 @@ class InitialBinaryTable():
         """
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2, 
                                           m1, m2, porb, ecc, 
-                                          metallicity, tphysf]), 
+                                          metallicity, tphysf]).T, 
                                columns = ['kstar_1', 'kstar_2', 
                                           'mass1_binary', 'mass2_binary', 
                                           'porb', 'ecc', 'metallicity',
