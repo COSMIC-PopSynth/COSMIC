@@ -34,6 +34,9 @@ F_PEAK_TEST = 0.028749555601321534
 G_FAC_TEST = 0.313913837667
 GW150914_SNR_TEST = 0.244493738333
 GW150914_F_PEAK_TEST = 0.0287495556013
+PSD_SUM_TEST = 1.2881240029e-40
+
+
 class TestGWcalcs(unittest2.TestCase):
     """`TestCase` for the GW calcs method
     """
@@ -55,7 +58,12 @@ class TestGWcalcs(unittest2.TestCase):
         self.assertAlmostEqual(g_factor_sum, G_FAC_TEST)
 
     def test_SNR(self):
-        # Test the SNR with 5 binaries
+        # Test the SNR with observed GWs with dummy orbital periods and eccs
         SNR_dat = GW_calcs.LISA_SNR(BCM_DAT.mass_1, BCM_DAT.mass_2, BCM_DAT.porb, BCM_DAT.ecc, BCM_DAT.dist*1000*parsec, 10, 4*sec_in_year) 
         self.assertAlmostEqual(SNR_dat.SNR.iloc[0], GW150914_SNR_TEST)
         self.assertAlmostEqual(SNR_dat.gw_freq.iloc[0], GW150914_F_PEAK_TEST)
+
+    def test_PSD(self):
+        # Test the PSDs with observed GWs with dummy orbital periods and eccs
+        PSD_dat = GW_calcs.LISA_PSD(BCM_DAT.mass_1, BCM_DAT.mass_2, BCM_DAT.porb, BCM_DAT.ecc, BCM_DAT.dist*1000*parsec, 10, 4*sec_in_year)
+        self.assertAlmostEqual(np.sum(PSD_dat.PSD), PSD_SUM_TEST)
