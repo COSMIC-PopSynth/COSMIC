@@ -219,10 +219,7 @@ if __name__ == '__main__':
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) & (bcm_len < 5000):
-        bcm = pd.DataFrame()
-        bpp = pd.DataFrame()
-        IBT = pd.DataFrame()
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) or (bcm_len < 5000):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
@@ -256,7 +253,7 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=0)
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=0)
 
         # Keep track of the index
         idx = bcm.index.max()
@@ -274,8 +271,6 @@ if __name__ == '__main__':
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
             bcm_len = bcm_save.shape[0]
-            print 'bcm_len'
-            print bcm_len
             if idx <= args.Nstep:
                 bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             else:
@@ -289,8 +284,7 @@ if __name__ == '__main__':
             bpp_save = bpp_save.append(bpp_save_filtered)
             
             # Now let's select out the initial binaries that produce our data
-            IBT = IBT.to_pandas()
-            initC = IBT.loc[IBT.index.isin(idxSave)]
+            initC = initCond.loc[initCond.indexes.isin(idxSave)]
 
             # Save the initial binaries 
             dat_store.append('initCond', initC)
