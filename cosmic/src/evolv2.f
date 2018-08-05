@@ -3464,7 +3464,7 @@ Cf2py intent(out) bppout,bcmout
       if(jp.ge.80)then
          WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
-         STOP
+*         STOP
       elseif(jp.ge.40)then
          WRITE(99,*)' EVOLV2 ARRAY WARNING ',mass1i,mass2i,tbi,ecci,jp
       endif

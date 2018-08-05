@@ -27,6 +27,7 @@ import scipy.integrate
 
 from astropy.table import Table, Column
 from astropy import units
+import pandas as pd
 
 from cosmic.utils import idl_tabulate, rndm
 
@@ -51,7 +52,7 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-class InitialBinaryTable(Table):
+class InitialBinaryTable():
     @classmethod
     def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
         """Create single binary
@@ -88,25 +89,14 @@ class InitialBinaryTable(Table):
             Returns:
                 `SingleBinary`
         """
-        tab = Table()
-        tab['kstar1'] = Column([kstar1], unit=None,
-                               description='Stellar type of larger object')
-        tab['kstar2'] = Column([kstar2], unit=None,
-                               description='Stelar type of smaller object')
-        tab['mass1_binary'] = Column([m1], unit=units.Msun,
-                               description='Mass of larger object')
-        tab['mass2_binary'] = Column([m2], unit=units.Msun,
-                               description='Mass of smaller object') 
-        tab['porb'] = Column([porb], unit=units.day,
-                               description='Orbital Period')
-        tab['ecc'] = Column([ecc], unit=None,
-                               description='Eccentricity')
-        tab['metallicity'] = Column([metallicity], unit=None,
-                               description='metallicity of the galaxy')
-        tab['tphysf'] = Column([tphysf], unit=units.year*1000000,
-                               description='Binary Evolution Time')
+        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2, 
+                                          m1, m2, porb, ecc, 
+                                          metallicity, tphysf]), 
+                               columns = ['kstar_1', 'kstar_2', 
+                                          'mass1_binary', 'mass2_binary', 
+                                          'porb', 'ecc', 'metallicity'                                                    'tphysf'])
 
-        return tab
+        return bin_dat
 
     @classmethod
     def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
@@ -145,27 +135,16 @@ class InitialBinaryTable(Table):
                 `BinaryGrid`
         """
         sampled_mass = kwargs.pop("sampled_mass", None)
-        tab = Table()
-        tab['kstar1'] = Column(kstar1, unit=None,
-                               description='Stellar type of larger object')
-        tab['kstar2'] = Column(kstar2, unit=None,
-                               description='Stelar type of smaller object')
-        tab['mass1_binary'] = Column(m1, unit=units.Msun,
-                               description='Mass of larger object')
-        tab['mass2_binary'] = Column(m2, unit=units.Msun,
-                               description='Mass of smaller object')
-        tab['porb'] = Column(porb, unit=units.day,
-                               description='Orbital Period')
-        tab['ecc'] = Column(ecc, unit=None,
-                               description='Eccentricity')
-        tab['metallicity'] = Column(metallicity, unit=None,
-                               description='metallicity of the galaxy')
-        tab['tphysf'] = Column(tphysf, unit=units.year*1000000,
-                               description='Binary Evolution Time')
+        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,       
+                                          m1, m2, porb, ecc,       
+                                          metallicity, tphysf]).T,       
+                               columns = ['kstar_1', 'kstar_2',    
+                                          'mass1_binary', 'mass2_binary',    
+                                          'porb', 'ecc', 'metallicity',                                                    'tphysf'])
         if sampled_mass:
-            return tab, sampled_mass
+            return bin_dat, sampled_mass
         else:
-            return tab
+            return bin_dat
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):
