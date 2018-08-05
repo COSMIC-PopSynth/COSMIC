@@ -25,6 +25,13 @@ hrs_in_day = 24.0
 sec_in_year = 3.15569e7
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
+BCM_DAT = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'dat_ThinDisk_11_11.h5'), key='bcm')
+SINGLE_BIN = BCM_DAT.iloc[0]
+N_HARMONIC = 10
+
+MCHIRP_TEST = 0.8595950466178689
+F_PEAK_TEST = 8.547625353123959e-10
+G_FAC_TEST = 0.30329959313
 
 class TestGWcalcs(unittest2.TestCase):
     """`TestCase` for the GW calcs method
@@ -32,18 +39,18 @@ class TestGWcalcs(unittest2.TestCase):
 
     def test_m_chirp(self):
         # Test the chirp mass calc with GW150914
-        m_chirp = GW_calcs.m_chirp(M1, M2)
+        m_chirp = GW_calcs.m_chirp(SINGLE_BIN.mass_1, SINGLE_BIN.mass_2)
         self.assertAlmostEqual(m_chirp, MCHIRP_TEST)
 
     def test_peak_gw_freq(self):
         # Test the peak gw freq with GW150914 
         # w/ ecc=0.5 at 1mHz GW freq
-        f_gw_peak = GW_calcs.peak_gw_freq(M1, M2, PORB, ECC)
+        f_gw_peak = GW_calcs.peak_gw_freq(SINGLE_BIN.mass_1, SINGLE_BIN.mass_2, SINGLE_BIN.porb, SINGLE_BIN.ecc)
         self.assertAlmostEqual(f_gw_peak, F_PEAK_TEST)
 
     def test_peters_gfac(self):
-        # Test the g factor with ecc=0.5 and 10 harmonics
-        g_factor = GW_calcs.peters_gfac(ECC, N_HARMONIC)
+        # Test the g factor with 10 harmonics
+        g_factor = GW_calcs.peters_gfac(SINGLE_BIN.ecc, N_HARMONIC)
         g_factor_sum = g_factor.sum()
         self.assertAlmostEqual(g_factor_sum, G_FAC_TEST)
 
