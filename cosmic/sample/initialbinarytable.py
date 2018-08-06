@@ -57,37 +57,31 @@ class InitialBinaryTable():
     def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
         """Create single binary
 
-            Parameters:
+        Parameters
+        ----------
+        m1 : float
+            Primary mass [Msun]
+        m2 : float
+            Secondary mass [Msun]
+        porb : float
+            Orbital period [days]
+        ecc : float
+            Eccentricity 
+        tphysf : float
+            Time to evolve the binary [Myr]
+        kstar1 : array
+            0-14 Initial stellar type of the larger object; 
+            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
+        kstar2 : array
+            0-14 Initial stellar type of the smaller object; 
+            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
+        metallicity:float
+            Metallicity of the binaries; Z_sun = 0.02
 
-                m1 (float) :
-                    This is the mass in solar masses of the larger object
-
-                m2 (float) :
-                    This is the mass in solar masses of the smaller object
-
-                porb (float) :
-                    This is the orbital period in days
-
-                ecc (float) :
-                    Eccentricity This value is between 0 and 1
-
-                tphysf (float) :
-                    How long to evolve the binary in millions of years
-
-                kstar1 (array) :
-                    0-14 Initial stellar type of the larger object; 
-                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-
-                kstar2 (array) :
-                    0-14 Initial stellar type of the smaller object; 
-                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-
-                metallicity (float):
-                    metallicity of the galaxy where the binary lives.
-
-
-            Returns:
-                `SingleBinary`
+        Returns
+        -------
+        SingleBinary : DataFrame
+            Single binary initial conditions
         """
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2, 
                                           m1, m2, porb, ecc, 
@@ -101,39 +95,34 @@ class InitialBinaryTable():
 
     @classmethod
     def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
-        """Create a grid of binaries
-
-            Parameters:
-
-                m1 (array) :
-                    This is the mass in solar masses of the larger object
-
-                m2 (array) :
-                    This is the mass in solar masses of the smaller object
-
-                porb (array) :
-                    This is the orbital period in days
-
-                ecc (array) :
-                    Eccentricity This value is between 0 and 1
-
-                tphysf (array) :
-                    How long to evolve the binary in millions of years
-
-                kstar1 (array) :
-                    0-14 Initial stellar type of the larger object; 
-                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-
-                kstar2 (array) :
-                    0-14 Initial stellar type of the smaller object; 
-                    main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-
-                metallicity (array):
-                    metallicity of the galaxy where the binary lives.
-
-
-            Returns:
-                `BinaryGrid`
+        """Create multiple binaries
+        Parameters
+        ----------
+        m1 : float
+            Primary mass [Msun]
+        m2 : float
+            Secondary mass [Msun]
+        porb : float
+            Orbital period [days]
+        ecc : float
+            Eccentricity 
+        tphysf : float
+            Time to evolve the binary [Myr]
+        kstar1 : array
+            0-14 Initial stellar type of the larger object; 
+            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
+        kstar2 : array
+            0-14 Initial stellar type of the smaller object; 
+            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
+        metallicity:float
+            Metallicity of the binaries; Z_sun = 0.02        
+            
+        Returns
+        -------
+        bin_dat : DataFrame
+            Contains initial conditions of multiple binaries
+        sampled_mass : int
+            Total mass of population conatining the initial binaries [Msun]
         """
         sampled_mass = kwargs.pop("sampled_mass", None)
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,       
@@ -153,9 +142,8 @@ class InitialBinaryTable():
 
         Parameters
         ----------
-        format (str):
-            the method name; should choose from 'independent' 
-            or 'multidim'    
+        format : str
+            the method name; Choose from 'independent' or 'multidim'    
 
         *args
             the arguments necessary for the registered sample 

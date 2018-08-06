@@ -51,15 +51,15 @@ def m_chirp(m1, m2):
    
     Parameters
     ----------
-    m1 (float or array):
+    m1 : float or array
         primary mass
   
-    m2 (float or array):    
+    m2 : float or array    
         secondary mass
 
     Returns
     -------
-    m_chirp (float or array):
+    m_chirp : float or array
         chirp mass in units of mass supplied
     """
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
@@ -68,23 +68,23 @@ def peak_gw_freq(m1, m2, ecc, porb):
     """Computes the peak gravitational-wave frequency for an
     eccentric binary system. Units are SI
 
-    Paramters
-    ---------
-    m1 (float or array):
+    Parameters
+    ----------
+    m1 : float or array
         primary mass [kg]
   
-    m2 (float or array):    
+    m2 : float or array    
         secondary mass [kg]
 
-    ecc (float or array):
+    ecc : float or array
         eccentricity
 
-    porb (float or array):
+    porb : float or array
         orbital period [s]
 
     Returns
     -------
-    f_gw_peak (floar or array):
+    f_gw_peak : float or array
         peak gravitational-wave frequency [Hz]
     """
 
@@ -99,15 +99,15 @@ def peters_gfac(ecc, n_harmonic):
 
     Parameters
     ----------
-    ecc (float or array):
+    ecc : float or array
         eccentricity
 
-    n_harmonic (int):
+    n_harmonic : int
         number of frequency harmonics to include
 
     Returns
     -------
-    g_fac_squared (array):
+    g_fac_squared : array
         array of g_n/n**2
     """
     g_fac_squared = []    
@@ -130,30 +130,30 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
 
     Parameters
     ----------
-    m1 (DataFrame):
+    m1 : Series
         primary mass [msun]
   
-    m2 (DataFrame):    
+    m2 : Series 
         secondary mass [msun]
 
-    porb (DataFrame):
+    porb : Series
         orbital period [s]
 
-    ecc (DataFrame):
+    ecc : Series
         eccentricity
 
-    dist (DataFrame):
+    dist : Series
         Solar-centric distance [m]
 
-    n_harmonic (int):
+    n_harmonic : int
         number of frequency harmonics to include
 
-    Tobs (float):
+    Tobs : float
             LISA observation time in seconds
 
     Returns
     -------
-    SNR_dat (DataFrame):
+    SNR_dat : DataFrame
         DataFrame with columns ['freq', 'SNR'] where
         freq = gravitational-wave frequency in Hz and 
         SNR = LISA signal-to-noise ratio 
@@ -189,33 +189,33 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
 
     Parameters
     ----------
-    m1 (float or array):
+    m1 : Series 
         primary mass [msun]
   
-    m2 (float or array):    
+    m2 : Series    
         secondary mass [msun]
 
-    porb (float or array):
+    porb : Series
         orbital period [s]
 
-    ecc (float or array):
+    ecc : Series
         eccentricity
 
-    dist (float or array):
+    dist : Series
         Solar-centric distance [m]
 
-    n_harmonic (int):
+    n_harmonic : int
         number of frequency harmonics to include
 
-    Tobs (float):
-            LISA observation time in seconds
+    Tobs : float
+            LISA observation time [s]
 
     Returns
     -------
-    PSD_dat (DataFrame):
+    PSD_dat : DataFrame
         DataFrame with columns ['freq', 'PSD'] where
-        freq = gravitational wave frequency in Hz
-        SNR = LISA signal-to-noise ratio 
+        freq = gravitational wave frequency [Hz]
+        PSD = LISA Power Spectral Density  
     """
 
     # LISA mission: 2.5 million km arms
@@ -247,20 +247,20 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
 
     Parameters
     ----------
-    psd_dat (DataFrame):
+    psd_dat : DataFrame
         DataFrame with columns ['freq', 'PSD'] where 
-        freq = gravitational-wave frequency in Hz
+        freq = gravitational-wave frequency [Hz]
         PSD = LISA power spectral density
 
     Tobs (float):
-        LISA observation time in seconds; Default=4 yr
+        LISA observation time [s]; Default=4 yr
 
     Returns
     -------
-    foreground_dat (DataFrame):
+    foreground_dat : DataFrame
         DataFrame with columns ['freq', 'PSD'] where 
-        freq = gravitational-wave frequency of LISA frequency bins in Hz
-        PSD = LISA power spectral density at each LISA frequency
+        freq = gravitational-wave frequency of LISA frequency bins [Hz]
+        PSD = LISA power spectral density of foreground
     """
 
     binwidth = 1.0/Tobs

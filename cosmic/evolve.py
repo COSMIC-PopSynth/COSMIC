@@ -56,7 +56,12 @@ class Evolve(Table):
 
         Returns
         -------
-        An evolved binary
+        output_bpp : DataFrame
+            Evolutionary history of each binary
+        output_bcm : DataFrame
+            Final state of each binary
+        initialbinarytable : DataFrame
+            Initial conditions for each binary
         """
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))

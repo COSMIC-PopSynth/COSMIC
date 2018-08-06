@@ -59,19 +59,19 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
 
     Parameters
     ---------
-    dat (DataFrame):
+    dat : DataFrame
         DataFrame containing the fixed population created from runFixedPop
 
-    total_sampled_mass (float):
+    total_sampled_mass : float
         total amount of mass sampled to generate the fixed population 
         including single stars
 
-    component_mass (float):
+    component_mass : float
         mass of the Galactic component we are simulating
 
     Returns
     -------
-    nSystems (int):
+    nSystems : int
         number of systems in a Milky Way population for the selected
         Galactic population and fixed population
     """
@@ -80,9 +80,20 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     return nSystems
 
 def select_component_mass(gx_component):
-    # SET GALACTIC COMPONENT MASS ACCORDING TO MCMILLAN 2011
-    # FOLLOWING BEST FIT
-    ###########################################################################
+    """Select the Galactic component mass according to 
+    McMillan (2011)
+
+    Parameters
+    ----------
+    gx_component : str
+        Choose from: 'ThinDisk', 'Bulge', 'ThickDisk'
+
+    Returns
+    -------
+    gx_component_mass : float
+        Galactic component mass [Msun]
+    """
+
     if gx_component == 'ThinDisk':
         gx_component_mass = 4.32e10
     elif gx_component == 'Bulge':
@@ -93,24 +104,66 @@ def select_component_mass(gx_component):
     return gx_component_mass
 
 def sample_sech_squared(size, scale_height=0.3):
-    # SAMPLE FROM SECH^2 DIST W/ PROVIDED SCALE HEIGHT FROM -INF to INF
-    ###########################################################################
+    """Sample a collection of numbers of size=size distributed according
+    to a sech sqaured function with a user specific scale height
+ 
+    Parameters
+    ----------
+    size : int
+        Size of the sample
+    scale_height : float
+        Scale height of the distribution; Default=0.3   
+
+    Returns
+    -------
+    distributed_nums : array
+        Array of sampled values
+    """
+    
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = np.arctanh( 2*rand_nums ) * scale_height
 
     return distributed_nums
 
 def sample_exponential_radial(size, scale_height):
-    # SAMPLE FROM EXP DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
-    ###########################################################################
+    """Sample a collection of numbers of size=size distributed according
+    to a radial exponential function with a user specific scale height
+ 
+    Parameters
+    ----------
+    size : int
+        Size of the sample
+    scale_height : float
+        Scale height of the distribution   
+
+    Returns
+    -------
+    distributed_nums : array
+        Array of sampled values
+    """
+
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * np.log(1.0 - rand_nums)
 
     return distributed_nums
 
 def sample_exponential_vertical(size, scale_height):
-    # SAMPLE FROM EXP DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
-    ###########################################################################
+    """Sample a collection of numbers of size=size distributed according
+    to a vertical exponential function with a user specific scale height
+ 
+    Parameters
+    ----------
+    size : int
+        Size of the sample
+    scale_height : float
+        Scale height of the distribution   
+
+    Returns
+    -------
+    distributed_nums : array
+        Array of sampled values
+    """    
+
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * np.log(1.0 - rand_nums)
 
@@ -123,14 +176,47 @@ def sample_exponential_vertical(size, scale_height):
     return distributed_nums
 
 def sample_exponential_square(size, scale_height):
-    # SAMPLE FROM EXP(-(X/A)^2) DIST W/ PROVIDED SCALE HEIGHT FROM 0 to INF
-    ###########################################################################
+    """Sample a collection of numbers of size=size distributed according
+    to an exponential squared function with a user specific scale height
+ 
+    Parameters
+    ----------
+    size : int
+        Size of the sample
+    scale_height : float
+        Scale height of the distribution   
+
+    Returns
+    -------
+    distributed_nums : array
+        Array of sampled values
+    """
+    
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * ss.erfinv(rand_nums)
 
     return distributed_nums
 
-def galactic_positions(gx_component, size, model):
+def galactic_positions(gx_component, size, model='McMillan'):
+    """Sample a set of Galactic positions of size=size distributed 
+    according to the user specified model. X,Y,Z positions in [pc];
+    Galactocentric distance in [kpc]
+
+    Parameters
+    ----------
+    gx_component : str
+        Choose from : 'ThinDisk', 'Bulge', 'ThickDisk'
+    size : int
+        Size of the sample
+    model : str
+        Current default model is 'McMillan'   
+
+    Returns
+    -------
+    position_dat : array
+        Array of sampled positions in Galactic cartesian coordinates
+        centered on the Galactic center and orientations in radians
+    """
     # SAMPLE FROM VERY SIMPLE DISTRIBUTION FUNCTIONS 
     ###########################################################################
     if gx_component == 'ThinDisk':
@@ -233,6 +319,7 @@ def galactic_positions(gx_component, size, model):
     OMEGA = np.random.uniform(0, 2*np.pi, size)
     omega = np.random.uniform(0, 2*np.pi, size)
 
+    position_dat = np.vstack([xGX, yGX, zGX, dist_kpc, inc, OMEGA, omega])
          
-    return np.vstack([xGX, yGX, zGX, dist_kpc, inc, OMEGA, omega])
+    return position_dat
 

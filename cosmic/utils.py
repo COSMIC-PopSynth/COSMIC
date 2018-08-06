@@ -28,30 +28,25 @@ def mass_min_max_select(kstar_1, kstar_2):
     parameter sample to reduce the number of unneccessary binaries evolved
     in BSE
 
-    Paramters
-    ---------
-    kstar_1 (int, list): 
+    Parameters
+    ----------
+    kstar_1 : int, list 
         BSE stellar type for the primary
         or minimum and maximum stellar types for the primary
-
-    kstar_2 (int, list):
+    kstar_2 : int, list
         BSE stellar type for the secondary 
         or minimum and maximum stellar types for the secondary
 
     Returns
     -------
-    min_mass[0] (float):
+    min_mass[0] : float
         minimum primary mass for initial sample
-        
-    max_mass[0] (float):
+    max_mass[0] : float
         maximum primary mass for initial sample
-
-    min_mass[1] (float):
+    min_mass[1] : float
         minimum secondary mass for initial sample
-    
-    max_mass[1] (float):
+    max_mass[1] : float
         maximum secondary mass for initial sample
-    
     """
 
     primary_max = 150.0
@@ -115,20 +110,18 @@ def idl_tabulate(x, f, p=5) :
     """Function that replicates the IDL int_tabulated function
     which performs a p-point integration on a tabulated set of data
 
-    Paramters
-    ---------
-    x (array):
+    Parameters
+    ----------
+    x : array
         tabulated x-value data
-
-    f (array):
+    f : array
         tabulated f-value data, same size as x
-        
-    p (int):
+    p : int
         number of chunks to divide tabulated data into
         Default: 5
     Returns
     -------
-    ret (float):
+    ret : float
         Integration result
     """
 
@@ -147,25 +140,21 @@ def idl_tabulate(x, f, p=5) :
 def rndm(a, b, g, size):
     """Power-law generator for pdf(x)\propto x^{g-1} for a<=x<=b
     
-    Paramters
-    ---------
-    a (float):
+    Parameters
+    ----------
+    a : float
         Minimum of range for power law
-
-    b (float):
+    b : float
         Maximum of range for power law
-
-    g (float):
+    g : float
         Index for power law
-
-    size (int):
+    size : int
         Number of data points to draw
 
     Returns
     -------
     Array of data sampled from power law distribution with params
     fixed by inputs
-
     """
 
     r = np.random.random(size=size)
@@ -176,16 +165,15 @@ def param_transform(dat):
     """Transforms a data set to limits between zero and one
     Leaves some wiggle room on the edges of the data set
     
-    Paramters
-    ---------
-    dat (array):
+    Parameters
+    ----------
+    dat : array
         array of data to transform between 0 and 1
 
     Returns
     -------
-    dat_trans (array):
+    dat_trans : array
         array of data with limits between 0 and 1
-
     """
 
     datMin = min(dat)-0.000001
@@ -202,18 +190,16 @@ def dat_transform(dat, dat_list):
     
     Parameters
     ----------
-    dat (DataFrame):
+    dat " DataFrame
         Data to transform to eventually perform KDE
-
-    dat_list (list):
+    dat_list : list
         List of DataFrame columns to include in transformation
 
     Returns
     -------
-    dat_trans (array):
+    dat_trans : array
         Transformed data for columns in dat_list
     """ 
-
 
     dat_trans = []
     for column in dat_list:
@@ -228,21 +214,18 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
     
     Parameters
     ----------
-    dat_sample (array):
+    dat_sample : array
         Data sampled from kde generated with transformed data
-
-    dat_set (DataFrame):
+    dat_set : DataFrame
         Un-transformed data (same as dat in dat_transform)
-
-    dat_list (list):
+    dat_list : list
         List of DataFrame columns to include in transformation
 
     Returns
     -------
-    dat (array):
+    dat : array
         Array of data sampled from kde that is transformed back to 
         bounds of the un-transformed data set the kde is generated from 
-
     """
     dat = []
     
@@ -263,12 +246,12 @@ def knuth_bw_selector(dat_list):
     
     Parameters
     ----------
-    dat_list (list):
+    dat_list : list
         List of data arrays that will be used to generate a kde
 
     Returns
     -------
-    bw_min (float):
+    bw_min : float
         Minimum of bandwidths for all of the data arrays in dat_list
     """
 
@@ -282,7 +265,4 @@ def knuth_bw_selector(dat_list):
         bw_list.append(bw)
         
     return np.min(bw_list)
-                      
         
-
-
