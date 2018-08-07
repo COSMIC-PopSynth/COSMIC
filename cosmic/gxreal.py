@@ -22,8 +22,9 @@
 import numpy as np
 from gwpy.utils import mp as mp_utils
 import pandas as pd
-import cosmic.MC_samp as MC_samp
-
+import cosmic.MC_samp as MC_sample
+import cosmic.utils as utils
+import scipy.stats as stats
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -132,14 +133,15 @@ class GxReal(object):
         
         # Sample positions and orientations for each sampled binary
         #######################################################################
-        binary_positions = MC_sample.galactic_positions(self.gx_component,
+        xGx, yGx, zGx, inc, OMEGA, omega = MC_sample.galactic_positions(self.gx_component,
                                                         size = len(binary_dat[0]),
                                                         model=self.gx_model)
-         
+        
+        binary_sample_positions = np.vstack([xGx, yGx, zGx, inc, OMEGA, omega]) 
         # Create a single DataFrame for the Galactic realization
         #######################################################################
-        realization = np.concatenate([binary_sample_dat,binary_sample_positions]).T
-        column_list = dat_list + ['xGx', 'yGx', 'zGx', 'dist', 'inc', 'OMEGA', 'omega']
+        full_sample = np.concatenate([binary_dat,binary_sample_positions]).T
+        column_list = self.dat_list + ['xGx', 'yGx', 'zGx', 'inc', 'OMEGA', 'omega']
         realization = pd.DataFrame(full_sample,\
                                    columns = column_list) 
 
