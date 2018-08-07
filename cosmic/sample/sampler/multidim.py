@@ -119,48 +119,38 @@ class MultiDim:
         
         Parameters
         ----------
-        M1min (float):
-            minimum primary mass to sample in Msun
+        M1min : float
+            minimum primary mass to sample [Msun]
             DEFAULT: 0.08
-
-        M2min (float):
-            minimum secondary mass to sample in Msun
+        M2min : float
+            minimum secondary mass to sample [Msun]
             DEFAULT: 0.08
-
-        M1max (float):
-            maximum primary mass to sample in Msun
+        M1max : float
+            maximum primary mass to sample [Msun]
             DEFAULT: 150.0
-
-        M2max (float):
-            maximum primary mass to sample in Msun
+        M2max : float
+            maximum primary mass to sample [Msun]
             DEFAULT: 150.0
-
-        rand_seed (int):
+        rand_seed : int
             random seed generator 
             DEFAULT: 0
-
-        size (int, optional):
+        size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
 
         Returns
         -------
-        primary_mass_list (array):
+        primary_mass_list : array
             array of primary masses with size=size
-
-        secondary_mass_list (array):
+        secondary_mass_list : array
             array of secondary masses with size=size
-        
-        porb_list (array):
+        porb_list : array
             array of orbital periods in days with size=size
-        
-        ecc_list (array):
+        ecc_list : array
             array of eccentricities with size=size
-        
-        total_mass (float):
+        total_mass : float
             total mass including single and binary stars 
             required to generate the initial population
-     
         """
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
@@ -593,30 +583,24 @@ class MultiDim:
 
         Parameters
         ----------
-        SFH_model (string):
+        SFH_model : string
             'const' assigns an evolution time assuming a constant star
             formation rate over the age of the MW disk: component_age [Myr]
-
             'burst' assigns an evolution time assuming a burst of constant
             star formation for 1Gyr starting at component_age [Myr] in the past
-
             Default: 'const'
-
-        component_age (float):
+        component_age : float
             age of the Galactic component [Myr]
-
             Default: 10000.0
-
-        size (int, optional):
+        size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
 
         Returns
         -------
-        tphys (array):
+        tphys : array
             array of evolution times of size=size
         """
-
 
         if SFH_model=='const':
 
@@ -633,12 +617,12 @@ class MultiDim:
                                 
         Parameters
         ----------
-        mass (array):
+        mass : array
             array of masses
 
         Returns
         -------
-        kstar (array):
+        kstar : array
             array of initial stellar types
         """
         
@@ -659,16 +643,15 @@ class MultiDim:
 
         Parameters
         ----------
-        component_age (float):
+        component_age : float
             age of the Galactic component [Myr]
-
-        size (int, optional):
+        size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
 
         Returns
         -------
-        metallicity (array):
+        metallicity : array
             array of metallicity values with size=size
         """
             
