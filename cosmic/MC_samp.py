@@ -48,9 +48,9 @@ geo_mass = G/c**2
 # solar coordinates in the galaxy: in parsecs from 
 # (Chaper 8 of Galactic Structure and stellar Pops book) Yoshii (2013)
 ############################################################################
-x_sun = 8000.0
+x_sun = 8.0
 y_sun = 0.0
-z_sun = 25
+z_sun = 25.0/1000.0
 
 def mass_weighted_number(dat, total_sampled_mass, component_mass): 
     """Compute the total number of systems in the synthetic catalog
@@ -58,7 +58,7 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     the total mass of a given galactic component
 
     Parameters
-    ---------
+    ----------
     dat : DataFrame
         DataFrame containing the fixed population created from runFixedPop
 
@@ -121,7 +121,7 @@ def sample_sech_squared(size, scale_height=0.3):
     """
     
     rand_nums = np.random.uniform(0, 1, size)
-    distributed_nums = np.arctanh( 2*rand_nums ) * scale_height
+    distributed_nums = np.arctanh( (2*rand_nums-1) ) * scale_height
 
     return distributed_nums
 
@@ -175,7 +175,7 @@ def sample_exponential_vertical(size, scale_height):
 
     return distributed_nums
 
-def sample_exponential_square(size, scale_height):
+def sample_exponential_square_radial(size, scale_height):
     """Sample a collection of numbers of size=size distributed according
     to an exponential squared function with a user specific scale height
  
@@ -238,28 +238,29 @@ def galactic_positions(gx_component, size, model='McMillan'):
         # Assign the azimuthal positions:
         phi = np.random.uniform(0, 2*np.pi, size)
         
-        # convert to cartesian and parsecs:
-        xGX = r * np.cos(phi) * 1000.0
-        yGX = r * np.sin(phi) * 1000.0
-        zGX = z * 1000.0
-    
+        # convert to cartesian:
+        xGX = r * np.cos(phi)
+        yGX = r * np.sin(phi)
+        zGX = z
+   
     elif gx_component == 'Bulge':
 
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
         #######################################################################
         # Assign the radial positions:
         if model == 'exp_squared':
-            r = sample_exponential_square(size, 0.5)
+            r = sample_exponential_square_radial(size, 0.5)
             # Assign the polar positions (uniform in cos(theta):
             theta = np.pi - np.arccos(np.random.uniform(-1, 1, size))
         
             # Assign the azimuthal positions:
             phi = np.random.uniform(0, 2*np.pi , size)
 
-            # convert to cartesian and parsecs:
-            xGX = r * np.cos(phi) * np.sin(theta) * 1000.0
-            yGX = r * np.sin(phi) * np.sin(theta) * 1000.0
-            zGX = r * np.cos(theta) * 1000.0
+            # convert to cartesian:
+            xGX = r * np.cos(phi) * np.sin(theta)
+            yGX = r * np.sin(phi) * np.sin(theta)
+            zGX = r * np.cos(theta)
+    
         elif model == 'McMillan':
             r_save = []
             z_save = []
@@ -280,14 +281,17 @@ def galactic_positions(gx_component, size, model='McMillan'):
                     z_save.append(z[ii])
             r = np.array(r_save[:size])
             z = np.array(z_save[:size])
+            ind_pos_neg = np.random.uniform(0,1,len(z))
+            ind_negative, = np.where(ind_pos_neg > 0.5)
+            z[ind_negative] = -z[ind_negative]
 
             # Assign the azimuthal positions:
             phi = np.random.uniform(0, 2*np.pi , size)
             
-            # convert to cartesian and parsecs:
-            xGX = r * np.cos(phi) * 1000.0
-            yGX = r * np.sin(phi) * 1000.0
-            zGX = z * 1000.0
+            # convert to cartesian:
+            xGX = r * np.cos(phi)
+            yGX = r * np.sin(phi)
+            zGX = z
 
     elif gx_component == 'ThickDisk':
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
@@ -304,22 +308,14 @@ def galactic_positions(gx_component, size, model='McMillan'):
         # Assign the azimuthal position of the star
         phi = np.random.uniform(0, 2*np.pi, size)
 
-        # convert to cartesian and parsecs
-        xGX = r*np.cos(phi)*1000.0
-        yGX = r*np.sin(phi)*1000.0
-        zGX = z*1000.0
-
-
-    # compute the distance to Earth/LISA/us in kiloparsecs
-    dist = ((xGX- x_sun)**2 + (yGX - y_sun)**2 + (zGX - z_sun)**2)**(1/2.0)
-    dist_kpc = dist/1000.0
+        # convert to cartesian:
+        xGX = r*np.cos(phi)
+        yGX = r*np.sin(phi)
+        zGX = z
 
     # assign an inclination, argument of periapsis, and longitude of ascending node
     inc = np.pi - np.arccos(np.random.uniform(-1, 0, size))
     OMEGA = np.random.uniform(0, 2*np.pi, size)
     omega = np.random.uniform(0, 2*np.pi, size)
 
-    position_dat = np.vstack([xGX, yGX, zGX, dist_kpc, inc, OMEGA, omega])
-         
-    return position_dat
-
+    return xGX, yGX, zGX, inc, OMEGA, omega
