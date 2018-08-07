@@ -176,11 +176,19 @@ def param_transform(dat):
         array of data with limits between 0 and 1
     """
 
-    datMin = min(dat)-0.000001
     datMax = max(dat)+0.000001
-    datZeroed = dat-datMin
-
+    if min(dat) > 1e-4:
+        datMin = min(dat)-0.000001
+        datZeroed = dat-datMin
+    else:
+        datMin = 1e-7 
+        datZeroed = dat-datMin
+        datZeroed[datZeroed < 0.0] = 1e-6
+         
+    
     datTransformed = datZeroed/((datMax-datMin))
+    if np.max(datTransformed) == 1.0:
+        datTransformed[datTransformed == 1.0] = 1-1e-6
     return datTransformed
 
 
