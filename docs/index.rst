@@ -21,12 +21,8 @@ The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stabl
    $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
-Here is an example commandline:
+For more details on how to use cosmic, see :ref:`examples` and :ref:`runpop`.
 
-.. code-block:: bash
-    runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 10000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11 --initial_samp "multidim"
-
-For more details see :ref:`command-line`.
 
 *****************
 Table of Contents
