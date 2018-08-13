@@ -22,7 +22,7 @@ x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)])
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [11.0, 20.0, 34.0, 112.0, 330.0]
 MASS_SUM_MULTIPLE = 301.0
-X_TRANS_SUM = -2.820297e-09  
+X_TRANS_SUM = -2.7199038e-07  
 BW_KNUTH = 0.333
 
 class TestUtils(unittest2.TestCase):

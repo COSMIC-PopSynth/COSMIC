@@ -1,14 +1,5 @@
 #! /usr/bin/env python
 
-# Code: runFixedPop.py
-# Version: 1
-# Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE;
-#                  COMPUTE RATES AND NUMBERS FOR EACH POPULATION ACCORDING
-#                  TO FLAGS SET BY USER
-#
-# Edited on:  8 SEP 2015
-
-
 ##############################################################################
 #  IMPORT ALL NECESSARY PYTHON PACKAGES
 ##############################################################################
@@ -141,11 +132,7 @@ if __name__ == '__main__':
     # ---- Read needed variables from [rand_seed] section.
     # -- rand_seed
     seed_int = cp.getint('rand_seed', 'seed')
-    if seed_int != 0:
-        np.random.seed(seed_int)
-    else:
-        np.random.seed()
-
+    np.random.seed(seed_int)
 
     # Make dictionary of all BSE parameters for readablility reasons
     BSEDict = {}
@@ -176,6 +163,12 @@ if __name__ == '__main__':
     BSEDict['merger'] = merger
     BSEDict['windflag'] = windflag
 
+    if seed_int != 0:
+        np.random.seed(seed_int)
+
+    idx = 0
+    idxOld = 0
+
     # Based on the final_kstar1 and final_kstar2, select primary and secondary
     # mass ranges to evolve    
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)   
@@ -197,29 +190,26 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
-        bcm_save = pd.read_hdf(dat_store, 'bcm')
-        print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
+        print('There are already: '+str(bpp_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
+        bcm_save = pd.read_hdf(dat_store, 'bcm')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
-        idxOld = pd.read_hdf(dat_store, 'idx')[0][0]
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
-        idxOld = 0
 
-    bcm_len = 0
-    match_all = np.zeros(len(args.convergence_params))
+    match_all = np.zeros(3)
     Nstep = args.Nstep
 
     match_list = []
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) or (bcm_len < 5000):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
@@ -236,75 +226,75 @@ if __name__ == '__main__':
  
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, args.Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, Nstep)
 
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, seed_int, args.nproc, SFH_model, component_age, args.Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, seed_int, args.nproc, SFH_model, component_age, Nstep)
 
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
         print("The total mass sampled so far is: {0}".format(total_sampled_mass))
-        
-        # save the total_sampled_mass so far
-        dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=0)
+        bpp, bcm = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc)
 
-        # Keep track of the index
-        idx = bcm.index.max()
-        dat_store.append('idx', pd.DataFrame([idx]))
+        # save the total_sampled_mass so far
+        dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
-        # Select the state of the binary today and filter out 
-        # any disrupted binaries
-        bcm_filtered = bcm.loc[bcm.tphys > 1.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
-        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
+        idx = bcm.index.max() 
 
-        if bcm_save_filtered.shape[0] > 0:
-            # Save the bcm dataframe
-            dat_store.append('bcm', bcm_save_filtered)
-            bcm_save = bcm_save.append(bcm_save_filtered)
-            bcm_len = bcm_save.shape[0]
-            if idx <= args.Nstep:
-                bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
-            else:
-                bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
-        
-            idxSave = bcm_save.index
-            bpp_save_filtered = bpp[bpp.index.isin(idxSave)]
-            
-            # Save the bpp dataframe
-            dat_store.append('bpp', bpp_save_filtered)
-            bpp_save = bpp_save.append(bpp_save_filtered)
-            
-            # Now let's select out the initial binaries that produce our data
-            initC = initCond.loc[initCond.indexes.isin(idxSave)]
+        # Select out all systems that start mass transfer with 
+        # proper kstars
+        # first select the systems with the proper kstar
+        bpp_filtered = bpp.loc[bpp.kstar_1.isin(kstar1_range) & bpp.kstar_2.isin(kstar2_range)]
+        # next select systems that are mass transferring
+        bpp_filtered = bpp_filtered.loc[bpp_filtered.evol_type == 3.0]
 
-            # Save the initial binaries 
+        if bpp_filtered.shape[0] > 0:
+ 
+            # Select the bcm systems that correspond to the 
+            # final state of the bpp_filtered systems
+            idxSave = bpp_filtered.index
+            bcm_save = bcm[bcm.index.isin(idxSave)]
+
+            # Select the initial conditions to save
+            IBT = IBT.to_pandas()
+            IBTidx = idxSave[len(bpp_save)-len(bpp_filtered):]-idxOld
+            initC = IBT.iloc[IBTidx]
+
+            # Save the initial conditions of the bcm/bpp saved dataframes       
             dat_store.append('initCond', initC)
 
+            # Save the bcm and bpp dataframes
+            dat_store.append('bcm', bcm_save)
+            dat_store.append('bpp', bpp_filtered)
+
+            bpp_save = bpp_save.append(bpp_filtered)
+            
+            if idx < args.Nstep:
+                bpp_save_test_conv1 = bpp_save.iloc[0:int(bpp_save.shape[0]/2.0)]
+            else:
+                bpp_save_test_conv1 = bpp_save.iloc[:bpp_save.shape[0]-bpp_filtered.shape[0]]
+
+            # The eccentricities are all zero so our convergence params are just m1, m2, tphys 
+            conv_params = ['tphys', 'mass_1', 'mass_2']
+            
             # Perform the Match calculations for all interested parameters
             # supplied by user in conv_params
-            if bcm_save_test_conv1.shape[0] > 3:
+            if bpp_save_test_conv1.shape[0] > 3:
                 match_all = []
-                for i_convergence_parameter in args.convergence_params:
-                    match, binwidth = Match.match([param_transform(bcm_save[i_convergence_parameter]).tolist(),\
-                                                   param_transform(bcm_save_test_conv1[i_convergence_parameter]).tolist()], 2)
+                for i_convergence_parameter in conv_params:
+                    match, binwidth = Match.match([param_transform(bpp_save[i_convergence_parameter]).tolist(),\
+                                                   param_transform(bpp_save_test_conv1[i_convergence_parameter]).tolist()], 2)
                     match_all.append(match)
-                match_all = np.array(match_all)
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
-                match_save = pd.DataFrame(np.array(match_all).T, columns = args.convergence_params)
+                match_save = pd.DataFrame(np.array(match_all).T, columns = conv_params)
                 dat_store.append('match', match_save)
-            # save the total_sampled_mass so far
-            dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
-
         Nstep += args.Nstep
         idxOld = idx
 
