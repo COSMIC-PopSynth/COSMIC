@@ -48,9 +48,9 @@ Now let's create our first initial binary sample:
 
 .. ipython::
 
-    In [5]: IBT, sampled_mass = InitialBinaryTable.sampler('independent', primary_min=0.08, primary_max=5.0, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, size=10)
+    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('independent', primary_min=0.08, primary_max=5.0, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, size=10)
 
-    In [6]: print(IBT)
+    In [6]: print(InitialBinaries)
 
 NOTE: the length of the initial binary data set, IBT, does not match 
 the size parameter provided to InitialBinaryTable.sampler. 
@@ -82,9 +82,9 @@ Now let's create a multidimensional initial binary sample:
 
 .. ipython::
 
-    In [5]: IBT, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=10)
+    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=10)
 
-    In [6]: print IBT
+    In [6]: print InitialBinaries
 
 NOTE that in the multidimensional case, the binary fraction is one of the dependent parameters. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
 
@@ -114,14 +114,14 @@ As in :ref:`examples`, now that we have an initial binary population, we can sim
 
 .. ipython::
 
-    In [1]: from cosmic.sample.initialbinarytable import InitialBinaryTable
+    In [2]: from cosmic.evolve import Evolve   
 
-    In [2]: from cosmic.evolve import Evolve
-
-    In [3]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=100)
+    In [3]: InitialBinaries_multidim, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=100)
     
     In [4]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'CK': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0}
 
-    In [5]: EvolvedBinariesBPP, EvolvedBinariesBCM, initialConditions  = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
+    In [5]: EvolvedBinariesBPP, EvolvedBinariesBCM, initialConditions  = Evolve.evolve(initialbinarytable=InitialBinaries_multidim, BSEDict=BSEDict)
 
- 
+    In [6]: print EvolvedBinariesBCM.iloc[:10]
+
+    In [7]: print EvolvedBinariesBPP

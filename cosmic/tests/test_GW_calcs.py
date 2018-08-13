@@ -59,11 +59,11 @@ class TestGWcalcs(unittest2.TestCase):
 
     def test_SNR(self):
         # Test the SNR with observed GWs with dummy orbital periods and eccs
-        SNR_dat = GW_calcs.LISA_SNR(BCM_DAT.mass_1, BCM_DAT.mass_2, BCM_DAT.porb, BCM_DAT.ecc, BCM_DAT.dist*1000*parsec, 10, 4*sec_in_year) 
+        SNR_dat = GW_calcs.LISA_SNR(BCM_DAT.mass_1, BCM_DAT.mass_2, BCM_DAT.porb, BCM_DAT.ecc, BCM_DAT.xGx, BCM_DAT.yGx, BCM_DAT.zGx, 10, 4*sec_in_year) 
         self.assertAlmostEqual(SNR_dat.SNR.iloc[0], GW150914_SNR_TEST)
         self.assertAlmostEqual(SNR_dat.gw_freq.iloc[0], GW150914_F_PEAK_TEST)
 
     def test_PSD(self):
         # Test the PSDs with observed GWs with dummy orbital periods and eccs
-        PSD_dat = GW_calcs.LISA_PSD(BCM_DAT.mass_1, BCM_DAT.mass_2, BCM_DAT.porb, BCM_DAT.ecc, BCM_DAT.dist*1000*parsec, 10, 4*sec_in_year)
+        PSD_dat = GW_calcs.LISA_PSD(BCM_DAT.mass_1, BCM_DAT.mass_2, BCM_DAT.porb, BCM_DAT.ecc, BCM_DAT.xGx, BCM_DAT.yGx, BCM_DAT.zGx, 10, 4*sec_in_year)
         self.assertAlmostEqual(np.sum(PSD_dat.PSD), PSD_SUM_TEST)
