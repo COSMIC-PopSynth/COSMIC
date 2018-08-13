@@ -56,7 +56,12 @@ class Evolve(Table):
 
         Returns
         -------
-        An evolved binary
+        output_bpp : DataFrame
+            Evolutionary history of each binary
+        output_bcm : DataFrame
+            Final state of each binary
+        initialbinarytable : DataFrame
+            Initial conditions for each binary
         """
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
@@ -88,10 +93,10 @@ class Evolve(Table):
         initialbinarytable['merger'] = BSEDict['merger']
         initialbinarytable['windflag'] = BSEDict['windflag']
         initialbinarytable['dtp'] = initialbinarytable['tphysf']
-        initialbinarytable['index'] = np.arange(idx, idx + len(initialbinarytable))
+        initialbinarytable['indexes'] = np.arange(idx, idx + len(initialbinarytable))
         initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
 
-        initial_conditions = initialbinarytable.as_array() 
+        initial_conditions = np.array(initialbinarytable) 
 
         # define multiprocessing method
         def _evolve_single_system(f):
@@ -128,4 +133,4 @@ class Evolve(Table):
         for f, x, y in output:
             output_bpp = output_bpp.append(x)
             output_bcm = output_bcm.append(y)
-        return output_bpp, output_bcm
+        return output_bpp, output_bcm, initialbinarytable 

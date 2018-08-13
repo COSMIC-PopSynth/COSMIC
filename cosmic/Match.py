@@ -31,21 +31,21 @@ def match(dataCm, nRuns):
 
         Parameters
         ----------
-            dataCm (list): 
-                List of cumulative data for a single paramter
+        dataCm : list 
+            List of cumulative data for a single paramter
 
-            nRuns (int):
-                Length of the list
+        nRuns : int
+            Length of the list
 
         Returns
         -------
-            match (list):
-                List of matches for each cumulative data set
+        match : list
+            List of matches for each cumulative data set
     
-            binwidth (float):
-                Binwidth of histograms used for match computation
- 
-   """
+        binwidth : float
+            Binwidth of histograms used for match computation
+    """
+
     # DEFINE A LIST TO HOLD THE BINNED DATA:   
     histo = [[] for i in range(nRuns)]
     histoBinEdges = [[] for i in range(int(nRuns))]
