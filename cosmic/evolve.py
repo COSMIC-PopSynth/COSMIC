@@ -93,7 +93,7 @@ class Evolve(Table):
         initialbinarytable['merger'] = BSEDict['merger']
         initialbinarytable['windflag'] = BSEDict['windflag']
         initialbinarytable['dtp'] = initialbinarytable['tphysf']
-        initialbinarytable['indexes'] = np.arange(idx, idx + len(initialbinarytable))
+        initialbinarytable['binary_number'] = np.arange(idx, idx + len(initialbinarytable))
         initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
 
         initial_conditions = np.array(initialbinarytable) 
@@ -109,7 +109,15 @@ class Evolve(Table):
 
                 bpp_tmp = tmp1[np.argwhere(tmp1[:,0]>0),:].squeeze(1)
                 bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>1),:].squeeze(1)
-                return f, pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[35])] * len(bpp_tmp)), pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[35])] * len(bcm_tmp))
+
+                bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[35])] * len(bpp_tmp))
+                bpp_tmp['binary_number'] = int(f[35])
+
+                bcm_tmp = pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[35])] * len(bcm_tmp))
+                bcm_tmp['binary_number'] = int(f[35])
+
+                return f, bpp_tmp, bcm_tmp
+
             except Exception as e:
                 if nproc == 1:
                     raise

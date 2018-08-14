@@ -83,6 +83,7 @@ if __name__ == '__main__':
     args = parse_commandline()
 
 
+
     # SET TIME TO TRACK COMPUTATION TIME
     ##############################################################################
     start_time = time.time()
@@ -256,7 +257,7 @@ if __name__ == '__main__':
         bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idxOld)
 
         # Keep track of the index
-        idx = bcm.index.max()
+        idx = bcm.binary_number.max()
         dat_store.append('idx', pd.DataFrame([idx]))
 
         # Select the state of the binary today and filter out 
@@ -276,15 +277,15 @@ if __name__ == '__main__':
             else:
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
         
-            idxSave = bcm_save.index
-            bpp_save_filtered = bpp[bpp.index.isin(idxSave)]
+            idxSave = bcm_save.binary_number
+            bpp_save_filtered = bpp[bpp.binary_number.isin(idxSave)]
             
             # Save the bpp dataframe
             dat_store.append('bpp', bpp_save_filtered)
             bpp_save = bpp_save.append(bpp_save_filtered)
             
             # Now let's select out the initial binaries that produce our data
-            initC = initCond.loc[initCond.indexes.isin(idxSave)]
+            initC = initCond.loc[initCond.binary_number.isin(idxSave)]
 
             # Save the initial binaries 
             dat_store.append('initCond', initC)
