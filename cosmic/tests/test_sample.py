@@ -114,14 +114,6 @@ class TestSample(unittest2.TestCase):
         kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
-    def set_metallicity_ind(self):
-        # Check that metallicity is properly selected
-        metallicity_1000 = SAMPLECLASS.set_metallicity(component_age=1000.0)
-        self.assertEqual(metallicity_1000 == METALLICITY_1000)
-
-        metallicity_13000 = SAMPLECLASS.set_metallicity(component_age=13000.0)
-        self.assertEqual(metallicity_13000 == METALLICITY_13000)
-
     def test_Moe_sample(self):
         m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(total_mass, MOE_TOTAL_MASS)
@@ -141,11 +133,3 @@ class TestSample(unittest2.TestCase):
         # Check that the kstar is selected properly
         kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
-
-    def set_metallicity_multi(self):
-        # Check that metallicity is properly selected
-        metallicity_1000 = MULTIDIMSAMPLECLASS.set_metallicity(component_age=1000.0)
-        self.assertEqual(metallicity_1000 == METALLICITY_1000)
-
-        metallicity_13000 = MULTIDIMSAMPLECLASS.set_metallicity(component_age=13000.0)
-        self.assertEqual(metallicity_13000 == METALLICITY_13000)
