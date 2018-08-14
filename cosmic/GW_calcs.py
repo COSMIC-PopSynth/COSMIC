@@ -30,7 +30,7 @@ from scipy.interpolate import interp1d
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'GW_calcs'
+__all__ = ['m_chirp', 'peak_gw_freq', 'peters_gfac', 'LISA_SNR', 'LISA_PSD', 'compute_foreground']
 
 G = 6.67384e-11
 c = 2.99792458e8
@@ -45,6 +45,9 @@ sec_in_hour = 3600.0
 hrs_in_day = 24.0
 sec_in_year = 3.15569e7
 geo_mass = G/c**2
+x_sun = 8.5
+y_sun = 0.0
+z_sun = 0.02
 
 def m_chirp(m1, m2):
     """Computes the chirp mass in the units of mass supplied
@@ -53,13 +56,12 @@ def m_chirp(m1, m2):
     ----------
     m1 : float or array
         primary mass
-  
     m2 : float or array    
         secondary mass
 
     Returns
     -------
-    m_chirp : float or array
+    mchirp : float or array
         chirp mass in units of mass supplied
     """
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
@@ -72,13 +74,10 @@ def peak_gw_freq(m1, m2, ecc, porb):
     ----------
     m1 : float or array
         primary mass [kg]
-  
     m2 : float or array    
         secondary mass [kg]
-
     ecc : float or array
         eccentricity
-
     porb : float or array
         orbital period [s]
 
@@ -101,7 +100,6 @@ def peters_gfac(ecc, n_harmonic):
     ----------
     ecc : float or array
         eccentricity
-
     n_harmonic : int
         number of frequency harmonics to include
 
@@ -122,7 +120,29 @@ def peters_gfac(ecc, n_harmonic):
 
     return np.array(g_fac_squared)
  
-def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
+def LISA_combo(foreground_dat):
+    """Computes the combination of the population foreground and LISA PSD
+    
+    Parameters
+    ----------
+    foreground_dat : DataFrame
+        gw_freq [Hz], PSD [Hz^-1]
+
+    Returns
+    -------
+    LISA_curve_combo : interpolation
+        gw_freq [Hz], PSD [Hz^-1]
+    """
+    # LISA mission: 2.5 million km arms
+    LISA_psd = lisa_sensitivity.lisa_root_psd()
+    LISA_curve = LISA_psd(np.array(foreground_dat.freq))**2
+    LISA_curve_foreground = LISA_curve + np.array(foreground_dat.PSD)
+    LISA_combo_interp = interp1d(np.array(foreground_dat.freq), LISA_curve_foreground)
+    
+    return LISA_combo_interp
+
+
+def LISA_SNR(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs, foreground_dat):
     """Computes the LISA signal-to-noise ratio with inputs in SI units
     with a LISA mission of 4 yr and 2.5 million km arms
     Note that this does not take into account the Galactic binary foreground
@@ -131,25 +151,21 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     Parameters
     ----------
     m1 : Series
-        primary mass [msun]
-  
+        primary mass [kg]
     m2 : Series 
-        secondary mass [msun]
-
+        secondary mass [kg]
     porb : Series
         orbital period [s]
-
     ecc : Series
         eccentricity
-
-    dist : Series
-        Solar-centric distance [m]
-
+    xGx, yGx, zGx : Series
+        Galactocentric distance [kpc]
     n_harmonic : int
         number of frequency harmonics to include
-
     Tobs : float
-            LISA observation time in seconds
+        LISA observation time in seconds
+    foreground_dat : DataFrame
+        gw_freq [Hz], PSD [Hz^-1]   
 
     Returns
     -------
@@ -159,29 +175,35 @@ def LISA_SNR(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
         SNR = LISA signal-to-noise ratio 
     """
 
-    # LISA mission: 2.5 million km arms
-    LISA_psd = lisa_sensitivity.lisa_root_psd()
-   
-    mChirp = m_chirp(m1, m2)*Msun
+    LISA_combo_interp = LISA_combo(foreground_dat) 
+    dist = ((xGx-x_sun)**2+(yGx-y_sun)**2+(zGx-z_sun)**2)**0.5*parsec*1000.0
+    mChirp = m_chirp(m1, m2)
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2 
-    peters_g_factor = peters_gfac(ecc, n_harmonic)
-    GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
-    GW_freq_flat = GW_freq_array.flatten()
-    LISA_curve_eval_flat = LISA_psd(GW_freq_flat)**2
-    LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,ecc.shape[0]))
+    if ecc.all() < 1e-4:
+        n_harmonic = 2
+        peters_g_factor = 0.5**2
+        GW_freq_array = 2/porb
+        LISA_curve_eval = LISA_combo_interp(GW_freq_array)
+        h_0_squared_dat = h_0_squared*peters_g_factor
+        SNR = (h_0_squared_dat * Tobs / LISA_curve_eval)
+    else:
+        peters_g_factor = peters_gfac(ecc, n_harmonic)
+        GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
+        GW_freq_flat = GW_freq_array.flatten()
+        LISA_curve_eval_flat = LISA_combo_interp(GW_freq_flat)
+        LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,ecc.shape[0]))
 
-    h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T
-    SNR_squared = h_0_squared_ecc * Tobs * peters_g_factor / LISA_curve_eval
-
-    SNR = (SNR_squared.sum(axis=0))**0.5
+        h_0_squared_dat = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T*peters_g_factor
+        SNR_squared = h_0_squared_dat * Tobs / LISA_curve_eval
+        SNR = (SNR_squared.sum(axis=0))**0.5
     gw_freq = peak_gw_freq(m1, m2, ecc, porb)    
     SNR_dat = pd.DataFrame(np.array([gw_freq, SNR]).T, columns=['gw_freq', 'SNR'])
     
     return SNR_dat
 
 
-def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
+def LISA_PSD(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs):
     """Computes the LISA power spectral density with inputs in SI units
     with a LISA mission of Tobs [sec] and 2.5 million km arms
     Note that this does not take into account the Galactic binary foreground
@@ -191,22 +213,16 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
     ----------
     m1 : Series 
         primary mass [msun]
-  
     m2 : Series    
         secondary mass [msun]
-
     porb : Series
         orbital period [s]
-
     ecc : Series
         eccentricity
-
-    dist : Series
-        Solar-centric distance [m]
-
+    xGx, yGx, zGx : Series
+        Galactocentric distance [kpc]
     n_harmonic : int
         number of frequency harmonics to include
-
     Tobs : float
             LISA observation time [s]
 
@@ -220,21 +236,30 @@ def LISA_PSD(m1, m2, porb, ecc, dist, n_harmonic, Tobs):
 
     # LISA mission: 2.5 million km arms
     LISA_psd = lisa_sensitivity.lisa_root_psd()
-    
+    dist = ((xGx-x_sun)**2+(yGx-y_sun)**2+(zGx-z_sun)**2)**0.5*parsec*1000.0
     mChirp = m_chirp(m1, m2)*Msun
+
+
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2
-    h_0_squared_ecc = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T
+    if ecc.all() < 1e-4:
+        n_harmonic = 2
+        peters_g_factor = 0.5**2
+        GW_freq_flat = 2/porb
+        LISA_curve_eval = LISA_psd(GW_freq_flat)**2
+        h_0_squared_dat = h_0_squared*peters_g_factor
+        psd = h_0_squared_dat * Tobs
+    else:
+        peters_g_factor = peters_gfac(ecc, n_harmonic)
+        GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
+        GW_freq_flat = GW_freq_array.flatten()
+        LISA_curve_eval_flat = LISA_psd(GW_freq_flat)**2
+        LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,ecc.shape[0]))
 
-    GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
-    GW_freq_flat = GW_freq_array.flatten()
- 
- 
-    peters_g_factor = peters_gfac(ecc, n_harmonic)
-    power = h_0_squared_ecc * Tobs * peters_g_factor
-    power_flat = power.flatten()
+        h_0_squared_dat = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T*peters_g_factor
+        PSD = h_0_squared_dat * Tobs 
+        psd = PSD.flatten()
 
-    psd = power_flat
     freq = GW_freq_flat
     PSD_dat = pd.DataFrame(np.vstack([freq, psd]).T, columns=['freq', 'PSD'])
     
@@ -251,7 +276,6 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
         DataFrame with columns ['freq', 'PSD'] where 
         freq = gravitational-wave frequency [Hz]
         PSD = LISA power spectral density
-
     Tobs (float):
         LISA observation time [s]; Default=4 yr
 
@@ -264,7 +288,7 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
     """
 
     binwidth = 1.0/Tobs
-    freqBinsLISA = np.arange(5e-4,1e-2,binwidth)
+    freqBinsLISA = np.arange(5e-6,1e-1,binwidth)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     psd_dat['digits'] = binIndices
     power_sum = psd_dat[['PSD', 'digits']].groupby('digits').sum()['PSD']

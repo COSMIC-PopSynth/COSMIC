@@ -1,8 +1,3 @@
-.. cosmic documentation master file, created by
-   sphinx-quickstart on Thu Apr 21 14:05:08 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ##################################
 Welcome to cosmic's documentation!
 ##################################
@@ -21,33 +16,25 @@ The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stabl
    $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
-Here is an example commandline:
+For more details on how to use cosmic, see :ref:`examples` and :ref:`runpop`.
 
-.. code-block:: bash
-    runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 10000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11 --initial_samp "multidim"
-
-For more details see :ref:`command-line`.
 
 *****************
 Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    examples/index
    runpop/index
+   fixedpop/index
 
 *********************
 Package documentation
 *********************
 
 Please consult these pages for more details on using cosmic:
-
-.. toctree::
-   :maxdepth: 1
-
-   command-line/index
 
 * :ref:`genindex`
 * :ref:`modindex`
