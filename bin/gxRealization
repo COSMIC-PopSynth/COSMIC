@@ -31,7 +31,7 @@ import pandas as pd
 import multiprocessing as mp
 import matplotlib.pyplot as plt
 
-import cosmic.gxreal as GxReal
+import cosmic.gxreal as gxreal
 import cosmic.MC_samp as MC_sample 
 import cosmic.GW_calcs as GW_calcs
 import cosmic.utils as utils
@@ -48,9 +48,9 @@ def parse_commandline():
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float, nargs='+')
     parser.add_argument("--N_realizations", help="Number of Galactic realziations to sample", type=int, default=100)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
-    parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", default=False)
-    parser.add_argument("--HG_save", help="Save systems which undergo common envelope w/ HG star secondary", default=False)
-    parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", default=True)
+    parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", type=bool, default=False)
+    parser.add_argument("--HG_save", help="Save systems which undergo common envelope w/ HG star secondary", type=bool, default=False)
+    parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", type=bool, default=True)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
@@ -76,33 +76,28 @@ if __name__ == '__main__':
 
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model='McMillan', LISA_calc, gx_save, Tobs):
+    def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model, LISA_calc, gx_save, Tobs, kstar1_string, kstar2_string):
         np.random.seed(gx)
+        gx_filename = 'gx_real_'+str(gx)+'_'+kstar1_string+'_'+kstar2_string+'.h5'
 
-        gx_real = GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
+        gx_real = gxreal.GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
         
         # compute the number of systems in the sample
         gx_real.n_samp = gx_real.compute_n_sample()
 
-        # CHUNK UP SAMPLE IF THERE ARE A LOT OF SYSTEMS IN THE POPULATION
-        ###########################################################################
-        nLoop = int(n_samp/1.0e5)
-        for ii in range(nLoop):
-            nSample = int(n_systems/float(nLoop))
-            
-            # Monte Carlo sample the population
-            gx_real.realization = gx_real.sample_population()
-            gx_real.realization.to_hdf('gx_real_'+str(gx)+'.h5', key='gx_dat')            
+        # Monte Carlo sample the population
+        gx_real.realization = gx_real.sample_population()
+        gx_real.realization.to_hdf(gx_filename, key='gx_dat')            
 
-            if LISA_calc:
-                SNRs, foreground = gx_real.LISA_obs(Tobs)
-                gx_real.SNRs = gx_real.SNRs.append(SNRs)
-                gx_real.foreground.PSD = gx_real.foreground.PSD + foreground.PSD 
-                gx_real.foreground.freq = foreground.freq               
+        print('Galaxy sampled')
 
         if LISA_calc:
-            gx_real.SNRs.to_hdf('gx_real_'+str(gx)+'.h5', key='SNR')   
-            gx_real.foreground.to_hdf('gx_real_'+str(gx)+'.h5', key='foreground')
+            gx_real.SNR, gx_real.PSD, gx_real.foreground = gx_real.LISA_obs(Tobs)
+            gx_real.SNR.to_hdf(gx_filename, key='SNR')   
+            gx_real.PSD.to_hdf(gx_filename, key='PSD') 
+            gx_real.foreground.to_hdf(gx_filename, key='foreground')
+            
+            print('LISA calcs finished')
         return
 
     # READ COMMANDLINE ARGUMENTS
@@ -145,17 +140,18 @@ if __name__ == '__main__':
 
     # READ IN DATA
     ###########################################################################
-    dat_path = '../COSMIC_paper_data/data/dat_'+args.galaxy_component+'_'+\
+    dat_path = 'dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 5]
+    if args.LISA_calc:
+        fixed_pop = fixed_pop.loc[fixed_pop.porb < 1e5/sec_in_year]
 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
     # Filter out systems which undergo Common Envelope w/ HG star secondary
     ###########################################################################
-    if args.HG_save != True:
+    if not args.HG_save:
         comenv_index, = np.where(bpp.evol_type==7.0)
         bpp_pre_ce = bpp.iloc[comenv_index-1]
         bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
@@ -177,8 +173,9 @@ if __name__ == '__main__':
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
                                     args = (x + n*args.nproc + 0, fixed_pop, 
-                                            dat_list, args.galaxy_component, 
-                                            args.LISA_calc, args.gx_save, Tobs)) 
+                                            dat_list, total_sampled_mass, args.galaxy_component, 
+                                            args.dist_model, args.LISA_calc, args.gx_save, Tobs,
+                                            kstar1_range_string, kstar2_range_string)) 
                                     for x in range(args.nproc)]
             
             for p in processes:
@@ -190,5 +187,5 @@ if __name__ == '__main__':
     else:
         n_loops = args.N_realizations
         for n in range(n_loops):
-            _gx_realization(n, fixed_pop, dat_list, args.galaxy_component, args.LISA_calc, args.gx_save, Tobs)
+            _gx_realization(n, fixed_pop, total_sampled_mass, dat_list, args.galaxy_component, args.dist_model, args.LISA_calc, args.gx_save, Tobs, kstar1_range_string, kstar2_range_string)
 

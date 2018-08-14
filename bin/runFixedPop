@@ -42,6 +42,7 @@ def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
     parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
@@ -51,7 +52,6 @@ def parse_commandline():
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
-    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
 
     args = parser.parse_args()
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     BSEDict['tflag'] = tflag
     BSEDict['ifflag'] = ifflag
     BSEDict['wdflag'] = wdflag
-    BSEDict['bhflag'] = bhflag
+    BSEDict['bhflag'] = bhflag        
     BSEDict['nsflag'] = nsflag
     BSEDict['mxns'] = mxns
     BSEDict['pts1'] = pts1
@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
         print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
         idxOld = 0
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) or (bcm_len < 5000):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) or (bcm_len < 1000):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
@@ -240,7 +240,7 @@ if __name__ == '__main__':
 
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, seed_int, args.nproc, SFH_model, component_age, args.Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.Nstep)
 
 
         # Log the total sampled mass from the initial binary sample
@@ -253,7 +253,7 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=0)
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idxOld)
 
         # Keep track of the index
         idx = bcm.index.max()
@@ -263,7 +263,7 @@ if __name__ == '__main__':
         # any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e5]
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e6/sec_in_year]
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
 
         if bcm_save_filtered.shape[0] > 0:
