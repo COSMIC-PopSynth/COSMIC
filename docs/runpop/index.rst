@@ -84,7 +84,7 @@ Now let's create a multidimensional initial binary sample:
 
     In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=10)
 
-    In [6]: print InitialBinaries
+    In [6]: print(InitialBinaries)
 
 NOTE that in the multidimensional case, the binary fraction is one of the dependent parameters. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
 
@@ -122,6 +122,6 @@ As in :ref:`examples`, now that we have an initial binary population, we can sim
 
     In [5]: EvolvedBinariesBPP, EvolvedBinariesBCM, initialConditions  = Evolve.evolve(initialbinarytable=InitialBinaries_multidim, BSEDict=BSEDict)
 
-    In [6]: print EvolvedBinariesBCM.iloc[:10]
+    In [6]: print(EvolvedBinariesBCM.iloc[:10])
 
-    In [7]: print EvolvedBinariesBPP
+    In [7]: print(EvolvedBinariesBPP)
