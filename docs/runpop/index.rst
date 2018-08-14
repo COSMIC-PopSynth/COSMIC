@@ -1,10 +1,10 @@
 .. _runpop:
 
-#####################################
-Evolve a Milky Way population by hand
-#####################################
+##################################
+Evolve a binary population by hand
+##################################
 
-To create a synthetic Milky Way population, we need to generate an initial set 
+To create a synthetic binary population, we need to generate an initial set 
 of binaries that is representative of a population born in the Milky Way. 
 This means we need to supply several arguments to our initial binary sampler. 
 There are two  ways to generate the initial population:
@@ -88,7 +88,7 @@ Now let's create a multidimensional initial binary sample:
 
 NOTE that in the multidimensional case, the binary fraction is one of the dependent parameters. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
 
-Also not that instead of supplying a minimum or maximum primary mass, we specified the final kstars. The final kstar is the final state of the binary system we are interested in and is based on the bse kstar naming conventions. The conventions are as follows:
+Also not that instead of supplying a minimum or maximum primary mass, we specified the final kstars. The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming conventions. The conventions are as follows:
 
 *   0 :        MS, < 0.7 Msun
 *   1 :        MS, > 0.7 Msun
@@ -116,12 +116,14 @@ As in :ref:`examples`, now that we have an initial binary population, we can sim
 
     In [2]: from cosmic.evolve import Evolve   
 
-    In [3]: InitialBinaries_multidim, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=100)
-    
     In [4]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'CK': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0}
 
-    In [5]: EvolvedBinariesBPP, EvolvedBinariesBCM, initialConditions  = Evolve.evolve(initialbinarytable=InitialBinaries_multidim, BSEDict=BSEDict)
+    In [5]: EvolvedBinariesBPP, EvolvedBinariesBCM, initialConditions  = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
 
     In [6]: print EvolvedBinariesBCM.iloc[:10]
 
     In [7]: print EvolvedBinariesBPP
+
+The BPP and the BCM arrays are named to follow the BSE convention. The EvolvedBinariesBPP DataFrame contains the evolutionary history of the binary and it's paramters. The EvolvedBinariesBCM DataFrame contains the current state of thebinaries at the present epoch.
+
+Note that this process doesn't try to choose the `right` number of binaries to evolve. If you are interested in generating a realistic synthetic Milky Way population, you should head over to :ref:`fixedpop`. For details on the process to generate synthetic Milky Way binary populations, see Breivik et al 2018 (in prep). 

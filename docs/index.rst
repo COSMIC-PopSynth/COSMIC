@@ -1,8 +1,3 @@
-.. cosmic documentation master file, created by
-   sphinx-quickstart on Thu Apr 21 14:05:08 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ##################################
 Welcome to cosmic's documentation!
 ##################################
@@ -29,21 +24,17 @@ Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    examples/index
    runpop/index
+   fixedpop/index
 
 *********************
 Package documentation
 *********************
 
 Please consult these pages for more details on using cosmic:
-
-.. toctree::
-   :maxdepth: 1
-
-   command-line/index
 
 * :ref:`genindex`
 * :ref:`modindex`

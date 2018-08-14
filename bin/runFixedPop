@@ -42,6 +42,7 @@ def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
     parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
     parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
@@ -51,7 +52,6 @@ def parse_commandline():
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
-    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
 
     args = parser.parse_args()
 
@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
         print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
         idxOld = 0
 
