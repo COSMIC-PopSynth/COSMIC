@@ -270,7 +270,7 @@ def knuth_bw_selector(dat_list):
         try:
             bw = astrostats.knuth_bin_width(dat)
         except:
-            print 'Using Scott Rule!!'
+            print('Using Scott Rule!!')
             bw = astrostats.scott_bin_width(dat)
         bw_list.append(bw)
     return np.min(bw_list)
