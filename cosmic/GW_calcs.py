@@ -56,13 +56,12 @@ def m_chirp(m1, m2):
     ----------
     m1 : float or array
         primary mass
-  
     m2 : float or array    
         secondary mass
 
     Returns
     -------
-    m_chirp : float or array
+    mchirp : float or array
         chirp mass in units of mass supplied
     """
     return (m1*m2)**(3./5.)/(m1+m2)**(1./5.)
@@ -75,13 +74,10 @@ def peak_gw_freq(m1, m2, ecc, porb):
     ----------
     m1 : float or array
         primary mass [kg]
-  
     m2 : float or array    
         secondary mass [kg]
-
     ecc : float or array
         eccentricity
-
     porb : float or array
         orbital period [s]
 
@@ -104,7 +100,6 @@ def peters_gfac(ecc, n_harmonic):
     ----------
     ecc : float or array
         eccentricity
-
     n_harmonic : int
         number of frequency harmonics to include
 
@@ -139,8 +134,6 @@ def LISA_combo(foreground_dat):
         gw_freq [Hz], PSD [Hz^-1]
     """
     # LISA mission: 2.5 million km arms
-    import pdb
-    pdb.set_trace()
     LISA_psd = lisa_sensitivity.lisa_root_psd()
     LISA_curve = LISA_psd(np.array(foreground_dat.freq))**2
     LISA_curve_foreground = LISA_curve + np.array(foreground_dat.PSD)
@@ -158,9 +151,9 @@ def LISA_SNR(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs, foreground_dat)
     Parameters
     ----------
     m1 : Series
-        primary mass [msun]
+        primary mass [kg]
     m2 : Series 
-        secondary mass [msun]
+        secondary mass [kg]
     porb : Series
         orbital period [s]
     ecc : Series
@@ -184,7 +177,7 @@ def LISA_SNR(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs, foreground_dat)
 
     LISA_combo_interp = LISA_combo(foreground_dat) 
     dist = ((xGx-x_sun)**2+(yGx-y_sun)**2+(zGx-z_sun)**2)**0.5*parsec*1000.0
-    mChirp = m_chirp(m1, m2)*Msun
+    mChirp = m_chirp(m1, m2)
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2 
     if ecc.all() < 1e-4:
@@ -220,22 +213,16 @@ def LISA_PSD(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs):
     ----------
     m1 : Series 
         primary mass [msun]
-  
     m2 : Series    
         secondary mass [msun]
-
     porb : Series
         orbital period [s]
-
     ecc : Series
         eccentricity
-
     xGx, yGx, zGx : Series
         Galactocentric distance [kpc]
-
     n_harmonic : int
         number of frequency harmonics to include
-
     Tobs : float
             LISA observation time [s]
 
@@ -289,7 +276,6 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
         DataFrame with columns ['freq', 'PSD'] where 
         freq = gravitational-wave frequency [Hz]
         PSD = LISA power spectral density
-
     Tobs (float):
         LISA observation time [s]; Default=4 yr
 
@@ -302,7 +288,7 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
     """
 
     binwidth = 1.0/Tobs
-    freqBinsLISA = np.arange(5e-5,1e-1,binwidth)
+    freqBinsLISA = np.arange(5e-6,1e-1,binwidth)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     psd_dat['digits'] = binIndices
     power_sum = psd_dat[['PSD', 'digits']].groupby('digits').sum()['PSD']

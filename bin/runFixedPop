@@ -42,16 +42,17 @@ def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
-    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
     parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float, nargs='+')
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float, nargs='+')
+    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
+    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
+    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--metallicity", help="Metallicity of the population; default: 0.02 (solar)", required=True, default=0.02, type=float)
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
-    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
 
     args = parser.parse_args()
 
@@ -198,7 +199,7 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
         print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
@@ -208,7 +209,7 @@ if __name__ == '__main__':
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_'+str(nsflag)+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
         idxOld = 0
 
@@ -223,25 +224,25 @@ if __name__ == '__main__':
     while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) or (bcm_len < 1000):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
-            metallicity = 0.02
             SFH_model='const'
             component_age=10000.0
         elif args.galaxy_component == 'Bulge':
-            metallicity = 0.02
             SFH_model='burst'
             component_age=10000.0
         elif args.galaxy_component == 'ThickDisk':
-            metallicity = 0.02*0.15
             SFH_model='burst'
             component_age=11000.0
- 
+        elif args.galaxy_component == 'DeltaBurst':
+            SFH_model='delta_burst'
+            component_age=13700.0
+        
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, args.Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
 
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
 
         # Log the total sampled mass from the initial binary sample
