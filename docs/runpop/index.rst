@@ -48,7 +48,7 @@ Now let's create our first initial binary sample:
 
 .. ipython::
 
-    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('independent', primary_min=0.08, primary_max=5.0, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, size=10)
+    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('independent', 0.08, 5.0, 'kroupa93', 'thermal', 'const', 10000.0, 0.02, 10)
 
     In [6]: print(InitialBinaries)
 
@@ -82,7 +82,7 @@ Now let's create a multidimensional initial binary sample:
 
 .. ipython::
 
-    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('multidim', final_kstar1 = ['11'], final_kstar2 = ['11'], rand_seed = 2, nproc = 1, SFH_model='const', component_age=10000.0, size=10)
+    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('multidim', ['11'], ['11'], 2, 1, 'const', 10000.0, 0.02, 10)
 
     In [6]: print(InitialBinaries)
 
