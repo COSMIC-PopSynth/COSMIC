@@ -27,3 +27,7 @@ __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>']
 
 del get_versions
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
