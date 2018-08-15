@@ -130,7 +130,7 @@ class GxReal(object):
         # then transform to logit space to maintain the population boundaries
         # and create a KDE using knuth's rule to select the bandwidth
         #######################################################################
-        dat_kde = utils.dat_transform(self.fixed_pop, self.dat_list)
+        dat_kde = utils.dat_transform(self.fixed_pop, self.dat_list)   
         bw = utils.knuth_bw_selector(dat_kde)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
     
@@ -203,6 +203,7 @@ class GxReal(object):
         # Smooth the foreground by doing a running average over 50 bins
         #######################################################################
         foreground_dat = foreground_dat.rolling(50).mean()
+        foreground_dat = foreground_dat.iloc[49:]
         
         # Compute the SNR
         ####################################################################### 

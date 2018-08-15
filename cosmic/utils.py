@@ -39,7 +39,7 @@ def mass_min_max_select(kstar_1, kstar_2):
 
     Returns
     -------
-    min_mass[0] : float
+    min_mass[0] : float 
         minimum primary mass for initial sample
     max_mass[0] : float
         maximum primary mass for initial sample
@@ -119,6 +119,7 @@ def idl_tabulate(x, f, p=5) :
     p : int
         number of chunks to divide tabulated data into
         Default: 5
+   
     Returns
     -------
     ret : float
@@ -153,8 +154,9 @@ def rndm(a, b, g, size):
 
     Returns
     -------
-    Array of data sampled from power law distribution with params
-    fixed by inputs
+    power : array
+        Array of data sampled from power law distribution with params
+        fixed by inputs
     """
 
     r = np.random.random(size=size)
@@ -172,7 +174,7 @@ def param_transform(dat):
 
     Returns
     -------
-    dat_trans : array
+    datTransformed : array
         array of data with limits between 0 and 1
     """
 
@@ -194,7 +196,7 @@ def param_transform(dat):
 
 def dat_transform(dat, dat_list):
     """Transform a data set to have limits between zero and one using 
-    param_transform, then transform to logit space
+    param_transform, then transform to log space
     
     Parameters
     ----------
@@ -213,8 +215,8 @@ def dat_transform(dat, dat_list):
     for column in dat_list:
         dat_trans.append(param_transform(dat[column]))
     
-    dat_trans = ss.logit(np.vstack([dat_trans]))
-
+    dat_trans = np.log10(np.vstack([dat_trans]))
+    
     return dat_trans
 
 def dat_un_transform(dat_sample, dat_set, dat_list):
@@ -237,7 +239,7 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
     """
     dat = []
     
-    dat_exp = ss.expit(dat_sample)
+    dat_exp = 10**(dat_sample)
     for ii,column in zip(range(len(dat_list)),dat_list):
         dat_untrans = dat_exp[ii, :]*\
                    (max(dat_set[column]) - min(dat_set[column])) +\
@@ -271,6 +273,5 @@ def knuth_bw_selector(dat_list):
             print 'Using Scott Rule!!'
             bw = astrostats.scott_bin_width(dat)
         bw_list.append(bw)
-        
     return np.min(bw_list)
         

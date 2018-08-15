@@ -76,8 +76,9 @@ if __name__ == '__main__':
 
     # LOOP OVER GALAXIES IN SAMPLE
     ###########################################################################
-    def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model, LISA_calc, gx_save, Tobs):
+    def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model, LISA_calc, gx_save, Tobs, kstar1_string, kstar2_string):
         np.random.seed(gx)
+        gx_filename = 'gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.h5'
 
         gx_real = gxreal.GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
         
@@ -86,15 +87,15 @@ if __name__ == '__main__':
 
         # Monte Carlo sample the population
         gx_real.realization = gx_real.sample_population()
-        gx_real.realization.to_hdf('gx_real_'+str(gx)+'.h5', key='gx_dat')            
+        gx_real.realization.to_hdf(gx_filename, key='gx_dat')            
 
         print('Galaxy sampled')
 
         if LISA_calc:
             gx_real.SNR, gx_real.PSD, gx_real.foreground = gx_real.LISA_obs(Tobs)
-            gx_real.SNR.to_hdf('gx_real_'+str(gx)+'.h5', key='SNR')   
-            gx_real.PSD.to_hdf('gx_real_'+str(gx)+'.h5', key='PSD') 
-            gx_real.foreground.to_hdf('gx_real_'+str(gx)+'.h5', key='foreground')
+            gx_real.SNR.to_hdf(gx_filename, key='SNR')   
+            gx_real.PSD.to_hdf(gx_filename, key='PSD') 
+            gx_real.foreground.to_hdf(gx_filename, key='foreground')
             
             print('LISA calcs finished')
         return
@@ -140,10 +141,11 @@ if __name__ == '__main__':
     # READ IN DATA
     ###########################################################################
     dat_path = 'dat_'+args.galaxy_component+'_'+\
-                kstar1_range_string+'_'+kstar2_range_string+'_3.h5'
+                kstar1_range_string+'_'+kstar2_range_string+'.h5'
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
-    fixed_pop = fixed_pop.loc[fixed_pop.porb < 5]
+    if args.LISA_calc:
+        fixed_pop = fixed_pop.loc[fixed_pop.porb < 1e5/sec_in_year]
 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
@@ -172,7 +174,8 @@ if __name__ == '__main__':
             processes = [mp.Process(target = _gx_realization,\
                                     args = (x + n*args.nproc + 0, fixed_pop, 
                                             dat_list, total_sampled_mass, args.galaxy_component, 
-                                            args.dist_model, args.LISA_calc, args.gx_save, Tobs)) 
+                                            args.dist_model, args.LISA_calc, args.gx_save, Tobs,
+                                            kstar1_range_string, kstar2_range_string)) 
                                     for x in range(args.nproc)]
             
             for p in processes:
@@ -184,5 +187,5 @@ if __name__ == '__main__':
     else:
         n_loops = args.N_realizations
         for n in range(n_loops):
-            _gx_realization(n, fixed_pop, total_sampled_mass, dat_list, args.galaxy_component, args.dist_model, args.LISA_calc, args.gx_save, Tobs)
+            _gx_realization(n, fixed_pop, total_sampled_mass, dat_list, args.galaxy_component, args.dist_model, args.LISA_calc, args.gx_save, Tobs, kstar1_range_string, kstar2_range_string)
 
