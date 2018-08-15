@@ -78,7 +78,7 @@ if __name__ == '__main__':
     ###########################################################################
     def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model, LISA_calc, gx_save, Tobs, kstar1_string, kstar2_string):
         np.random.seed(gx)
-        gx_filename = 'gx_real_'+str(gx)+'_'+kstar1_string+'_'+kstar2_string+'.h5'
+        gx_filename = 'gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.h5'
 
         gx_real = gxreal.GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
         

@@ -16,7 +16,7 @@ The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stabl
    $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
-For more details on how to use cosmic, see :ref:`examples` and :ref:`runpop`.
+For more details on how to use cosmic, see :ref:`examples`, :ref:`runpop`, and :ref:`fixedpop`.
 
 
 *****************
