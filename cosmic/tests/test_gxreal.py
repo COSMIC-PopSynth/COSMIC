@@ -46,7 +46,7 @@ class TestGxreal(unittest2.TestCase):
         self.assertTrue(np.min(gx_real.gxrealization.porb) >= 0.0) 
         self.assertTrue(np.min(gx_real.gxrealization.ecc) >= 0.0)
         
-        self.assertTrue(np.max(gx_real.gxrealization.mass_1) <= np.max(FIXED_POP.mass_1))
-        self.assertTrue(np.max(gx_real.gxrealization.mass_2) <= np.max(FIXED_POP.mass_2))
-        self.assertTrue(np.max(gx_real.gxrealization.porb) <= np.max(FIXED_POP.porb))
-        self.assertTrue(np.max(gx_real.gxrealization.ecc) <= np.max(FIXED_POP.ecc))
+        self.assertTrue(np.max(gx_real.gxrealization.mass_1) <= np.max(FIXED_POP.mass_1) + np.max(FIXED_POP.mass_1)/20.0)
+        self.assertTrue(np.max(gx_real.gxrealization.mass_2) <= np.max(FIXED_POP.mass_2) + np.max(FIXED_POP.mass_2)/20.0)
+        self.assertTrue(np.max(gx_real.gxrealization.porb) <= np.max(FIXED_POP.porb) + np.max(FIXED_POP.porb)/50.0)
+        self.assertTrue(np.max(gx_real.gxrealization.ecc) <= np.max(FIXED_POP.ecc) + np.max(FIXED_POP.ecc)/10.0) 
