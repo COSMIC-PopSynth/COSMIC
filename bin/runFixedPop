@@ -201,17 +201,19 @@ if __name__ == '__main__':
     try:
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
+        bcm_save_match = bcm_save.loc[bcm_save.porb < np.log10(5e3)]
         print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
-        idxOld = pd.read_hdf(dat_store, 'idx')[0][0]
+        idx = pd.read_hdf(dat_store, 'idx')[0][0]
     except:
         bcm_save = pd.DataFrame()
+        bcm_save_match = pd.DataFrame()
         bpp_save = pd.DataFrame()
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
-        idxOld = 0
+        idx = pd.Series([0])
 
     bcm_len = 0
     match_all = np.zeros(len(args.convergence_params))
@@ -221,7 +223,7 @@ if __name__ == '__main__':
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999) or (bcm_len < 1000):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.99999) or (bcm_len < 10000):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             SFH_model='const'
@@ -255,28 +257,42 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idxOld)
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx)
+
+        # Convert the orbital period from years to seconds
+        bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
 
         # Keep track of the index
         idx = bcm.binary_number.max()
         dat_store.append('idx', pd.DataFrame([idx]))
 
+        # Filter out any binaries that have has mass transfer from a WD onto a compact object
+        idx_MT = bpp.loc[(bpp.kstar_1.isin([10,11,12])) &(bpp.kstar_2.isin([10,11,12])) &
+                         (bpp.evol_type == 3.0)].binary_number
+        bcm = bcm.loc[~bcm.binary_number.isin(idx_MT)]
+        
         # Select the state of the binary today and filter out 
         # any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 1e6/sec_in_year]
+        
+        # Filter out long period binaries and systems that don't match final kstars supplied
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < np.log10(1e5)]
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
-
-        if bcm_save_filtered.shape[0] > 0:
+        
+        # Run the match on short period binaries, such that we get a better sampling
+        # for the highest signal systems
+        bcm_save_filtered_match = bcm_save_filtered.loc[bcm_save_filtered.porb < np.log10(5e3)]
+        if bcm_save_filtered_match.shape[0] > 0:
             # Save the bcm dataframe
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
+            bcm_save_match = bcm_save_match.append(bcm_save_filtered_match)
             bcm_len = bcm_save.shape[0]
             if idx <= args.Nstep:
-                bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
+                bcm_save_test_conv1 = bcm_save_match.iloc[0:int(bcm_save_match.shape[0]/2.0)]
             else:
-                bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
+                bcm_save_test_conv1 = bcm_save_match.iloc[:bcm_save_match.shape[0]-bcm_save_filtered_match.shape[0]]
         
             idxSave = bcm_save.binary_number
             bpp_save_filtered = bpp[bpp.binary_number.isin(idxSave)]
@@ -296,9 +312,12 @@ if __name__ == '__main__':
             if bcm_save_test_conv1.shape[0] > 3:
                 match_all = []
                 for i_convergence_parameter in args.convergence_params:
-                    match, binwidth = Match.match([param_transform(bcm_save[i_convergence_parameter]).tolist(),\
-                                                   param_transform(bcm_save_test_conv1[i_convergence_parameter]).tolist()], 2)
-                    match_all.append(match)
+                    if bcm_save_match[i_convergence_parameter].all() == 0.0:
+                        match_all.append(np.array([1.0]))
+                    else:
+                        match, binwidth = Match.match([param_transform(bcm_save_match[i_convergence_parameter]).tolist(),\
+                                                      param_transform(bcm_save_test_conv1[i_convergence_parameter]).tolist()], 2)
+                        match_all.append(match)
                 match_all = np.array(match_all)
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
@@ -308,7 +327,6 @@ if __name__ == '__main__':
             dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
         Nstep += args.Nstep
-        idxOld = idx
 
     # Close the data storage file 
     dat_store.close()

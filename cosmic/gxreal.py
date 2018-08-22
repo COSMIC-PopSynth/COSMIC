@@ -190,7 +190,7 @@ class GxReal(object):
         #######################################################################
         PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1*Msun, 
                                      self.realization.mass_2*Msun,
-                                     self.realization.porb*sec_in_year,
+                                     self.realization.porb*sec_in_hr,
                                      self.realization.ecc, 
                                      self.realization.xGx,
                                      self.realization.yGx,     
@@ -209,7 +209,7 @@ class GxReal(object):
         ####################################################################### 
         SNR_dat = GW_calcs.LISA_SNR(self.realization.mass_1,
                                      self.realization.mass_2,
-                                     self.realization.porb*sec_in_year,
+                                     self.realization.porb*sec_in_hr,
                                      self.realization.ecc,
                                      self.realization.xGx,
                                      self.realization.yGx,

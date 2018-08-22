@@ -93,7 +93,7 @@ class Evolve(Table):
         initialbinarytable['merger'] = BSEDict['merger']
         initialbinarytable['windflag'] = BSEDict['windflag']
         initialbinarytable['dtp'] = initialbinarytable['tphysf']
-        initialbinarytable['binary_number'] = np.arange(idx, idx + len(initialbinarytable))
+        initialbinarytable['binary_number'] = np.arange(idx.max(), idx.max() + len(initialbinarytable))
         initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
 
         initial_conditions = np.array(initialbinarytable) 

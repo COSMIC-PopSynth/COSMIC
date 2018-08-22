@@ -154,8 +154,6 @@ if __name__ == '__main__':
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
     fixed_pop = pd.read_hdf(dat_path, key='bcm') 
-    if args.LISA_calc > 0:
-        fixed_pop = fixed_pop.loc[fixed_pop.porb < 1e5/sec_in_year]
 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
@@ -166,9 +164,16 @@ if __name__ == '__main__':
         bpp_pre_ce = bpp.iloc[comenv_index-1]
         bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
         bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
-        index_save = bpp_ce_save.index
+        index_save = bpp_ce_save.binary_number
 
-        fixed_pop = fixed_pop.loc[fixed_pop.index.isin(index_save)]
+        fixed_pop = fixed_pop.loc[fixed_pop.binary_number.isin(index_save)]
+
+    # Filter out systems which undergo mass transfer as compact objects
+    ###################################################################
+    index_MT = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
+               (bpp.kstar_2.isin([10,11,12])) &
+               (bpp.evol_type == 3.0)].binary_number
+    fixed_pop = fixed_pop.loc[~fixed_pop.binary_number.isin(index_MT)]
 
     if fixed_pop.ecc.all() <= 1e-3:
         dat_list = ['mass_1', 'mass_2', 'porb']
