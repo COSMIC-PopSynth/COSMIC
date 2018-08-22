@@ -179,11 +179,11 @@ def param_transform(dat):
     """
 
     datMax = max(dat)+0.000001
-    if min(dat) > 1e-4:
+    if min(dat) > 1e-6:
         datMin = min(dat)-0.000001
         datZeroed = dat-datMin
     else:
-        datMin = 1e-7 
+        datMin = 1e-6
         datZeroed = dat-datMin
         datZeroed[datZeroed < 0.0] = 1e-6
          
@@ -213,9 +213,8 @@ def dat_transform(dat, dat_list):
 
     dat_trans = []
     for column in dat_list:
-        dat_trans.append(param_transform(dat[column]))
-    
-    dat_trans = np.log10(np.vstack([dat_trans]))
+        dat_trans.append(np.log10(param_transform(dat[column])))
+    dat_trans = np.vstack([dat_trans])
     
     return dat_trans
 
@@ -246,8 +245,6 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
                     min(dat_set[column])
         dat.append(dat_untrans)
     dat = np.vstack(dat)
-    if not np.any(['ecc' in x for x in dat_list]):
-        dat = np.vstack([dat, np.zeros(len(dat[0]))])
     return dat
 
 def knuth_bw_selector(dat_list):
@@ -273,5 +270,5 @@ def knuth_bw_selector(dat_list):
             print('Using Scott Rule!!')
             bw = astrostats.scott_bin_width(dat)
         bw_list.append(bw)
-    return np.min(bw_list)
+    return np.mean(bw_list)
         
