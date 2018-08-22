@@ -122,10 +122,9 @@ class GxReal(object):
         # Based on the user supplied filter flags, filter the
         # population to reduce the sample to only the relevant population
         #######################################################################
-        #
-        # Fill this in; holding place for now
-        # 
-        
+        if self.fixed_pop.ecc.all() == 0.0:
+            self.dat_list.remove('ecc')
+ 
         # Transform the fixed population to have limits between 0 and 1
         # then transform to logit space to maintain the population boundaries
         # and create a KDE using knuth's rule to select the bandwidth
@@ -133,7 +132,7 @@ class GxReal(object):
         dat_kde = utils.dat_transform(self.fixed_pop, self.dat_list)   
         bw = utils.knuth_bw_selector(dat_kde)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
-    
+   
         # Sample from the KDE
         #######################################################################
         binary_dat_trans = dat_kernel.resample(self.n_samp)
@@ -149,10 +148,11 @@ class GxReal(object):
         binary_sample_positions = np.vstack([xGx, yGx, zGx, inc, OMEGA, omega]) 
         # Create a single DataFrame for the Galactic realization
         #######################################################################
-        full_sample = np.concatenate([binary_dat,binary_sample_positions]).T
         if len(self.dat_list) < 4:
+            full_sample = np.vstack([binary_dat,np.zeros(self.n_samp),binary_sample_positions]).T
             column_list = self.dat_list + ['ecc', 'xGx', 'yGx', 'zGx', 'inc', 'OMEGA', 'omega']
         else:
+            full_sample = np.concatenate([binary_dat,binary_sample_positions]).T
             column_list = self.dat_list + ['xGx', 'yGx', 'zGx', 'inc', 'OMEGA', 'omega']
         realization = pd.DataFrame(full_sample,\
                                    columns = column_list) 

@@ -178,19 +178,19 @@ def param_transform(dat):
         array of data with limits between 0 and 1
     """
 
-    datMax = max(dat)+0.000000001
-    if min(dat) > 1e-9:
-        datMin = min(dat)-0.000000001
+    datMax = max(dat)+0.000001
+    if min(dat) > 1e-6:
+        datMin = min(dat)-0.000001
         datZeroed = dat-datMin
     else:
-        datMin = 1e-9
+        datMin = 1e-6
         datZeroed = dat-datMin
-        datZeroed[datZeroed < 0.0] = 1e-9
+        datZeroed[datZeroed < 0.0] = 1e-6
          
     
     datTransformed = datZeroed/((datMax-datMin))
     if np.max(datTransformed) == 1.0:
-        datTransformed[datTransformed == 1.0] = 1-1e-9
+        datTransformed[datTransformed == 1.0] = 1-1e-6
     return datTransformed
 
 
@@ -245,9 +245,6 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
                     min(dat_set[column])
         dat.append(dat_untrans)
     dat = np.vstack(dat)
-    if not np.any(['ecc' in x for x in dat_list]):
-        dat = np.vstack([dat, np.zeros(len(dat[0]))])
-    print dat[:1000,:]
     return dat
 
 def knuth_bw_selector(dat_list):
