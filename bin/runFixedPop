@@ -273,7 +273,7 @@ if __name__ == '__main__':
         # any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 5]
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 10]
         # Filter out long period binaries and systems that don't match final kstars supplied
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
         
