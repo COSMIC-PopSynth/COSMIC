@@ -84,7 +84,8 @@ if __name__ == '__main__':
         
         # compute the number of systems in the sample
         gx_real.n_samp = gx_real.compute_n_sample()
-
+        print('The number of systems in a Galactic realization are {0}'.format(gx_real.n_samp))
+ 
         if gx_real.n_samp >= 1e6:
             n_loop = 50
             gx_real.n_samp = int(gx_real.n_samp/n_loop)
@@ -161,12 +162,13 @@ if __name__ == '__main__':
     ###########################################################################
     if args.HG_save == 0:
         comenv_index, = np.where(bpp.evol_type==7.0)
-        bpp_pre_ce = bpp.iloc[comenv_index-1]
-        bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
-        bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
-        index_save = bpp_ce_save.binary_number
-
-        fixed_pop = fixed_pop.loc[fixed_pop.binary_number.isin(index_save)]
+        if len(comenv_index) > 0:
+            bpp_pre_ce = bpp.iloc[comenv_index-1]
+            bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
+            bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
+            index_save = bpp_ce_save.binary_number
+            
+            fixed_pop = fixed_pop.loc[fixed_pop.binary_number.isin(index_save)]
 
     # Filter out systems which undergo mass transfer as compact objects
     ###################################################################
@@ -175,7 +177,7 @@ if __name__ == '__main__':
                (bpp.evol_type == 3.0)].binary_number
     fixed_pop = fixed_pop.loc[~fixed_pop.binary_number.isin(index_MT)]
 
-    if fixed_pop.ecc.all() <= 1e-3:
+    if fixed_pop.ecc.all() <= 1e-6:
         dat_list = ['mass_1', 'mass_2', 'porb']
     else:
         dat_list = ['mass_1', 'mass_2', 'porb', 'ecc']
