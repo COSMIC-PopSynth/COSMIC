@@ -152,9 +152,9 @@ def LISA_SNR(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs, foreground_dat,
     Parameters
     ----------
     m1 : Series
-        primary mass [kg]
+        primary mass [Msun]
     m2 : Series 
-        secondary mass [kg]
+        secondary mass [Msun]
     porb : Series
         orbital period [s]
     ecc : Series
@@ -178,7 +178,7 @@ def LISA_SNR(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs, foreground_dat,
 
     #LISA_combo_interp = LISA_combo(foreground_dat.freq) 
     dist = ((xGx-x_sun)**2+(yGx-y_sun)**2+(zGx-z_sun)**2)**0.5*parsec*1000.0
-    mChirp = m_chirp(m1, m2)
+    mChirp = m_chirp(m1, m2)*Msun
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2 
     if ecc.all() < 1e-4:
@@ -235,11 +235,8 @@ def LISA_PSD(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs):
         PSD = LISA Power Spectral Density  
     """
 
-    # LISA mission: 2.5 million km arms
-    LISA_psd = lisa_sensitivity.lisa_root_psd()
     dist = ((xGx-x_sun)**2+(yGx-y_sun)**2+(zGx-z_sun)**2)**0.5*parsec*1000.0
     mChirp = m_chirp(m1, m2)*Msun
-
 
     h_0 = 8*G/c**2*(mChirp)/(dist)*(G/c**3*2*np.pi*(1/(porb))*mChirp)**(2./3.)
     h_0_squared = h_0**2
@@ -247,15 +244,12 @@ def LISA_PSD(m1, m2, porb, ecc, xGx, yGx, zGx, n_harmonic, Tobs):
         n_harmonic = 2
         peters_g_factor = 0.5**2
         GW_freq_flat = 2/porb
-        LISA_curve_eval = LISA_psd(GW_freq_flat)**2
         h_0_squared_dat = h_0_squared*peters_g_factor
         psd = h_0_squared_dat * Tobs
     else:
         peters_g_factor = peters_gfac(ecc, n_harmonic)
         GW_freq_array = np.array([np.arange(1,n_harmonic)/p for p in porb]).T
         GW_freq_flat = GW_freq_array.flatten()
-        LISA_curve_eval_flat = LISA_psd(GW_freq_flat)**2
-        LISA_curve_eval = LISA_curve_eval_flat.reshape((n_harmonic-1,ecc.shape[0]))
 
         h_0_squared_dat = np.array([h*np.ones(n_harmonic-1) for h in h_0_squared]).T*peters_g_factor
         PSD = h_0_squared_dat * Tobs 
@@ -289,7 +283,7 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
     """
 
     binwidth = 1.0/Tobs
-    freqBinsLISA = np.arange(5e-6,1e-2,binwidth)
+    freqBinsLISA = np.arange(1e-6,1e-2,binwidth)
     binIndices = np.digitize(psd_dat.freq, freqBinsLISA)
     psd_dat['digits'] = binIndices
     power_sum = psd_dat[['PSD', 'digits']].groupby('digits').sum()['PSD']
@@ -297,6 +291,6 @@ def compute_foreground(psd_dat, Tobs=4*sec_in_year):
     power_tot[power_sum.index[:len(freqBinsLISA)-1]] = power_sum
     foreground_dat = pd.DataFrame(np.vstack([freqBinsLISA, power_tot[1:]]).T,\
                                   columns=['freq', 'PSD'])
-    foreground_dat = foreground_dat.rolling(50).mean()
-    foreground_dat = foreground_dat.iloc[49:]
+    foreground_dat = foreground_dat.rolling(10).median()
+    foreground_dat = foreground_dat.iloc[10:]
     return foreground_dat
