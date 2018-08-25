@@ -213,7 +213,7 @@ def dat_transform(dat, dat_list):
 
     dat_trans = []
     for column in dat_list:
-        dat_trans.append(np.log10(param_transform(dat[column])))
+        dat_trans.append(ss.logit(param_transform(dat[column])))
     dat_trans = np.vstack([dat_trans])
     
     return dat_trans
@@ -238,7 +238,7 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
     """
     dat = []
     
-    dat_exp = 10**(dat_sample)
+    dat_exp = ss.expit(dat_sample)
     for ii,column in zip(range(len(dat_list)),dat_list):
         dat_untrans = dat_exp[ii, :]*\
                    (max(dat_set[column]) - min(dat_set[column])) +\

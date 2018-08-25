@@ -122,9 +122,6 @@ class GxReal(object):
         # Based on the user supplied filter flags, filter the
         # population to reduce the sample to only the relevant population
         #######################################################################
-        if self.fixed_pop.ecc.all() == 0.0:
-            self.dat_list.remove('ecc')
- 
         # Transform the fixed population to have limits between 0 and 1
         # then transform to logit space to maintain the population boundaries
         # and create a KDE using knuth's rule to select the bandwidth
@@ -188,9 +185,9 @@ class GxReal(object):
 
         # Compute the PSD
         #######################################################################
-        PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1*Msun, 
-                                     self.realization.mass_2*Msun,
-                                     self.realization.porb*sec_in_hr,
+        PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1, 
+                                     self.realization.mass_2,
+                                     10**self.realization.porb,
                                      self.realization.ecc, 
                                      self.realization.xGx,
                                      self.realization.yGx,     
@@ -200,22 +197,20 @@ class GxReal(object):
         #######################################################################
         foreground_dat = GW_calcs.compute_foreground(PSD_dat, T_obs)
         
-        # Smooth the foreground by doing a running average over 50 bins
-        #######################################################################
-        foreground_dat = foreground_dat.rolling(50).mean()
-        foreground_dat = foreground_dat.iloc[49:]
-        
+        LISA_plus_foreground = GW_calcs.LISA_combo(foreground_dat) 
+         
         # Compute the SNR
         ####################################################################### 
         SNR_dat = GW_calcs.LISA_SNR(self.realization.mass_1,
                                      self.realization.mass_2,
-                                     self.realization.porb*sec_in_hr,
+                                     10**self.realization.porb,
                                      self.realization.ecc,
                                      self.realization.xGx,
                                      self.realization.yGx,
                                      self.realization.zGx,
                                      150, T_obs, 
-                                     foreground_dat) 
+                                     foreground_dat,
+                                     LISA_plus_foreground) 
 
         return SNR_dat, PSD_dat, foreground_dat
          
