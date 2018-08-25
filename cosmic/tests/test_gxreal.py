@@ -20,10 +20,10 @@ GX_COMPONENT_BULGE = 'Bulge'
 GX_COMPONENT_MASS_THIN = 4.32e10
 GX_COMPONENT_MASS_THICK = 1.44e10
 GX_COMPONENT_MASS_BULGE = 8.9e9
-N_GX = 15846996
+N_GX = 139752476
 GX_MODEL_MCMILLAN = 'McMillan'
 DAT_LIST = ['mass_1', 'mass_2', 'porb', 'ecc']
-N_SAMP = 10
+N_SAMP = 1000
 
 class TestGxreal(unittest2.TestCase):
     """`TestCase` for the gxreal method
