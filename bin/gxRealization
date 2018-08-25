@@ -103,10 +103,8 @@ if __name__ == '__main__':
         print('Galaxy sampled')
 
         if LISA_calc > 0:
-            gx_real.SNR, gx_real.PSD, gx_real.foreground = gx_real.LISA_obs(Tobs)
-            gx_real.SNR.to_hdf(gx_filename, key='SNR')   
+            gx_real.PSD = gx_real.LISA_PSD(Tobs)
             gx_real.PSD.to_hdf(gx_filename, key='PSD') 
-            gx_real.foreground.to_hdf(gx_filename, key='foreground')
             
             print('LISA calcs finished')
         return

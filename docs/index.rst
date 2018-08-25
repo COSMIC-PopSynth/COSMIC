@@ -11,10 +11,33 @@ Installing cosmic
 
 The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stable/>`_ directly from the `GitHub repository <https://github.com/COSMIC-PopSynth/COSMIC.git>`_:
 
+-----
+MacOS
+-----
+
 .. code-block:: bash
 
-   $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
+    conda create --name cosmic python=3.6
+    source activate cosmic
+    conda install gcc numpy
+    conda install -c uvcdat gfortran
+    pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
+----
+Unix
+----
+
+.. code-block:: bash
+
+    conda create --name cosmic python=3.6
+    source activate cosmic
+    conda install numpy
+    pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
+
+
+*******************************
+Using cosmic to evolve binaries
+*******************************
 
 For more details on how to use cosmic, see :ref:`examples`, :ref:`runpop`, and :ref:`fixedpop`.
 
