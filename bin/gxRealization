@@ -50,7 +50,7 @@ def parse_commandline():
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--gx_save", help="Save the galaxy realizations; MAY GENERATE LARGE DATA SETS", type=int, default=0)
     parser.add_argument("--HG_save", help="Save systems which undergo common envelope w/ HG star secondary", type=int, default=0)
-    parser.add_argument("--LISA_calc", help="Save the SNR and PSD of the population in the LISA band", type=int, default=0)
+    parser.add_argument("--LISA_calc", help="Save the PSD of the population in the LISA band", type=int, default=0)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
     args = parser.parse_args()
 
@@ -103,10 +103,8 @@ if __name__ == '__main__':
         print('Galaxy sampled')
 
         if LISA_calc > 0:
-            gx_real.SNR, gx_real.PSD, gx_real.foreground = gx_real.LISA_obs(Tobs)
-            gx_real.SNR.to_hdf(gx_filename, key='SNR')   
+            gx_real.PSD = gx_real.LISA_PSD(Tobs)
             gx_real.PSD.to_hdf(gx_filename, key='PSD') 
-            gx_real.foreground.to_hdf(gx_filename, key='foreground')
             
             print('LISA calcs finished')
         return

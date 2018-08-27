@@ -33,16 +33,17 @@ def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
     parser.add_argument("--inifile", help="Name of ini file of params", required=True)
-    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
     parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=float, nargs='+')
     parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=float, nargs='+')
+    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
+    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
+    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--metallicity", help="Metallicity of the population; default: 0.02 (solar)", required=True, default=0.02, type=float)
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
-    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
 
     args = parser.parse_args()
 
@@ -190,26 +191,28 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_acc.h5')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         print('There are already: '+str(bpp_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
+        idx = np.max(pd.read_hdf(dat_store, 'idx'))
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'_acc.h5')
         total_sampled_mass = 0.0
+        idx = pd.Series([0])
 
     match_all = np.zeros(3)
-    Nstep = args.Nstep
+    Nstep = 0
 
     match_list = []
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.9999):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.999999):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             metallicity = 0.02
@@ -226,12 +229,10 @@ if __name__ == '__main__':
  
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, Nstep)
-
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, seed_int, args.nproc, SFH_model, component_age, Nstep)
-
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
@@ -240,12 +241,17 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc)
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx)
+
+        # Convert the orbital period from years to seconds
+        bcm['porb'] = np.log10(bcm['porb']*sec_in_year)        
 
         # save the total_sampled_mass so far
         dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
-        idx = bcm.index.max() 
+        # Kepp track of the index
+        idx = bcm.binary_number.max() 
+        dat_store.append('idx', pd.DataFrame([idx]))
 
         # Select out all systems that start mass transfer with 
         # proper kstars
@@ -258,45 +264,42 @@ if __name__ == '__main__':
  
             # Select the bcm systems that correspond to the 
             # final state of the bpp_filtered systems
-            idxSave = bpp_filtered.index
-            bcm_save = bcm[bcm.index.isin(idxSave)]
+            idxSave = bpp_filtered.binary_number
+            bpp_save = bpp[bpp.binary_number.isin(idxSave)]
 
             # Select the initial conditions to save
-            IBT = IBT.to_pandas()
-            IBTidx = idxSave[len(bpp_save)-len(bpp_filtered):]-idxOld
-            initC = IBT.iloc[IBTidx]
+            initC = initCond.loc[initCond.binary_number.isin(idxSave)]
 
             # Save the initial conditions of the bcm/bpp saved dataframes       
             dat_store.append('initCond', initC)
 
             # Save the bcm and bpp dataframes
-            dat_store.append('bcm', bcm_save)
-            dat_store.append('bpp', bpp_filtered)
+            dat_store.append('bcm', bpp_filtered)
+            dat_store.append('bpp', bpp_save)
 
-            bpp_save = bpp_save.append(bpp_filtered)
+            bcm_save = bcm_save.append(bpp_filtered)
             
             if idx < args.Nstep:
-                bpp_save_test_conv1 = bpp_save.iloc[0:int(bpp_save.shape[0]/2.0)]
+                bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             else:
-                bpp_save_test_conv1 = bpp_save.iloc[:bpp_save.shape[0]-bpp_filtered.shape[0]]
+                bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bpp_filtered.shape[0]]
 
             # The eccentricities are all zero so our convergence params are just m1, m2, tphys 
             conv_params = ['tphys', 'mass_1', 'mass_2']
             
             # Perform the Match calculations for all interested parameters
             # supplied by user in conv_params
-            if bpp_save_test_conv1.shape[0] > 3:
+            if bcm_save_test_conv1.shape[0] > 3:
                 match_all = []
                 for i_convergence_parameter in conv_params:
-                    match, binwidth = Match.match([param_transform(bpp_save[i_convergence_parameter]).tolist(),\
-                                                   param_transform(bpp_save_test_conv1[i_convergence_parameter]).tolist()], 2)
+                    match, binwidth = Match.match([param_transform(bcm_save[i_convergence_parameter]).tolist(),\
+                                                   param_transform(bcm_save_test_conv1[i_convergence_parameter]).tolist()], 2)
                     match_all.append(match)
                 print('matches: {0}'.format(np.array(match_all)))
                 print('Length of bcm array: {0}'.format(len(bcm_save)))
                 match_save = pd.DataFrame(np.array(match_all).T, columns = conv_params)
                 dat_store.append('match', match_save)
         Nstep += args.Nstep
-        idxOld = idx
 
     # Close the data storage file 
     dat_store.close()
