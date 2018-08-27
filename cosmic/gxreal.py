@@ -156,6 +156,35 @@ class GxReal(object):
 
         return realization
 
+    def LISA_obs(self, T_obs):
+        """Computes the gravitational wave signal from the population
+        that will be observable by LISA, including SNR and PSD according
+        to the user input
+
+        Parameters
+        ----------
+        realization : DataFrame
+            Milky Way population realization of size n_samp
+        T_obs : float
+            LISA observation time in seconds
+
+        Returns
+        -------
+        PSD_dat : DataFrame
+            DataFrame containing the power spectral density for all systems
+            in realization 
+        """
+        # Compute the PSD
+        #######################################################################
+        PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1,
+                                     self.realization.mass_2,
+                                     10**self.realization.porb,
+                                     self.realization.ecc,
+                                     self.realization.xGx,
+                                     self.realization.yGx,
+                                     self.realization.zGx,
+                                     150, T_obs)
+        return PSD_dat
 
     def LISA_obs(self, T_obs):
         """Computes the gravitational wave signal from the population
