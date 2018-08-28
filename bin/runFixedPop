@@ -49,6 +49,7 @@ def parse_commandline():
     parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
     parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
     parser.add_argument("--metallicity", help="Metallicity of the population; default: 0.02 (solar)", required=True, default=0.02, type=float)
+    parser.add_argument("--porb_cut", help="Specify an orbital period cut in log10(sec); default: 12", required=True, type=float, default=12.0)
     parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
     parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
@@ -221,7 +222,7 @@ if __name__ == '__main__':
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.99999) or (bcm_len < 10000):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.999999) or (bcm_len < 10000):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             SFH_model='const'
@@ -261,19 +262,19 @@ if __name__ == '__main__':
         bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
         
         # Keep track of the index
-        idx = bcm.binary_number.max()
+        idx = bcm.bin_num.max()
         dat_store.append('idx', pd.DataFrame([idx]))
 
         # Filter out any binaries that have has mass transfer from a WD onto a compact object
         idx_MT = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &(bpp.kstar_2.isin([10,11,12])) &
-                         (bpp.evol_type == 3.0)].binary_number
-        bcm = bcm.loc[~bcm.binary_number.isin(idx_MT)]
+                         (bpp.evol_type == 3.0)].bin_num
+        bcm = bcm.loc[~bcm.bin_num.isin(idx_MT)]
         
         # Select the state of the binary today and filter out 
         # any disrupted binaries
         bcm_filtered = bcm.loc[bcm.tphys > 1.0]
         bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < 10]
+        bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < args.porb_cut]
         # Filter out long period binaries and systems that don't match final kstars supplied
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
         
@@ -289,15 +290,15 @@ if __name__ == '__main__':
             else:
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
         
-            idxSave = bcm_save.binary_number
-            bpp_save_filtered = bpp[bpp.binary_number.isin(idxSave)]
+            idxSave = bcm_save.bin_num
+            bpp_save_filtered = bpp[bpp.bin_num.isin(idxSave)]
             
             # Save the bpp dataframe
             dat_store.append('bpp', bpp_save_filtered)
             bpp_save = bpp_save.append(bpp_save_filtered)
             
             # Now let's select out the initial binaries that produce our data
-            initC = initCond.loc[initCond.binary_number.isin(idxSave)]
+            initC = initCond.loc[initCond.bin_num.isin(idxSave)]
 
             # Save the initial binaries 
             dat_store.append('initCond', initC)
