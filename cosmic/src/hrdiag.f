@@ -33,7 +33,8 @@
       parameter(mlp=12.d0,tiny=1.0d-14)
       real*8 mass0,mt0,mtc
       REAL*8 neta,bwind,hewind,mxns
-      COMMON /VALUE1/ neta,bwind,hewind,mxns
+      integer ppsn
+      COMMON /VALUE1/ neta,bwind,hewind,mxns,ppsn
       common /fall/fallback
       REAL*8 fallback
 * 
@@ -45,6 +46,7 @@
       real*8 rx,ry,delr,rzams,rtms,gamma,rmin,taumin,rg
       parameter(taumin=5.0d-08)
       real*8 mcmax,mcx,mcy,mcbagb,lambda
+      real*8 frac,kappa,sappa,alphap
       real*8 am,xx,fac,rdgen,mew,lum0,kap,zeta,ahe,aco
       parameter(lum0=7.0d+04,kap=-0.5d0,ahe=4.d0,aco=16.d0)
 *
@@ -629,6 +631,60 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age Black hole
 *
                      kw = 14
+
+* CLR - (Pulsational) Pair-Instability Supernova
+
+* Belczynski+2016 prescription: just shrink any BH with a He core mass
+* between 45 and 65 solar masses, and blow up anything between 65 and
+* 135 solar masses.  Cheap, but effective
+                     if(ppsn.eq.1)then
+                        if(mcbagb.ge.45.d0.and.mcbagb.lt.65.d0)then
+                           mt = 45.d0
+                           mc = 45.d0
+                        elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
+                           mt = 0.d0
+                           mc = 0.d0
+                           kw = 15
+                        endif
+* The Spera+Mapelli2017 prescription is a tad more sophisticated:
+* complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
+* were done using the ZAMS mass/core mass/remnant mass relationships for
+* SEVN, not BSE.  In other words, I woud be careful using this (and in
+* practice, it doesn't vary that much from Belczynski's prescription,
+* since the He core masses are the same in both)
+                     elseif(ppsn.eq.2)then
+                        frac = mcbagb/mt
+                        kappa = 0.67d0*frac + 0.1d0
+                        sappa = 0.5228d0*frac - 0.52974
+                        if(mcbagb.le.32.d0)then
+                           alphap = 1.0d0
+                        elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
+                           alphap = 0.2d0*(kappa-1.d0)*mcbagb +
+     &                             0.2d0*(37.d0 - 32.d0*kappa)
+                        elseif(mcbagb.le.60d0.and.frac.lt.0.9d0)then
+                           alphap = kappa
+                        elseif(frac.ge.0.9.and.mcbagb.le.37d0)then
+                           alphap = sappa*(mcbagb - 32.d0) + 1.d0
+                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
+     &                         sappa.lt.0.82916)then
+                           alphap = 5.d0*sappa + 1.d0
+                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
+     &                         sappa.ge.0.82916)then
+                           alphap = (-0.1381*frac + 0.1309)*
+     &                              (mcbagb - 56.d0) + 0.82916
+                        elseif(frac.ge.0.9.and.mcbagb.gt.56.and.
+     &                         mcbagb.lt.64)then
+                           alphap = -0.103645*mcbagb + 6.63328
+                        elseif(mcbagb.ge.64.and.mcbagb.lt.135)then
+                           alphap = 0.d0
+                           kw = 15
+                        elseif(mcbagb.ge.135)then
+                           alphap = 1.0d0
+                        endif
+
+                     mt = alphap*mt
+                     endif
+
 * Convert baryonic mass to gravitational mass (approx for BHs) 
                      if(nsflag.ge.2) mt = 0.9d0*mt 
                   endif  
@@ -839,6 +895,64 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age Black hole
 *
                      kw = 14
+
+* CLR - (Pulsational) Pair-Instability Supernova
+
+* Belczynski+2016 prescription: just shrink any BH with a He core mass
+* between 45 and 65 solar masses, and blow up anything between 65 and
+* 135 solar masses.  Cheap, but effective
+                     if(ppsn.eq.1)then
+                        if(mcbagb.ge.45.d0.and.mcbagb.lt.65.d0)then
+                           mt = 45.d0
+                           mc = 45.d0
+                        elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
+                           mt = 0.d0
+                           mc = 0.d0
+                           kw = 15
+                        endif
+* The Spera+Mapelli2017 prescription is a tad more sophisticated:
+* complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
+* were done using the ZAMS mass/core mass/remnant mass relationships for
+* SEVN, not BSE.  In other words, I woud be careful using this (and in
+* practice, it doesn't vary that much from Belczynski's prescription,
+* since the He core masses are the same in both)
+
+                     elseif(ppsn.eq.2)then
+                        frac = mcbagb/mt
+                        kappa = 0.67d0*frac + 0.1d0
+                        sappa = 0.5228d0*frac - 0.52974
+                        if(mcbagb.le.32.d0)then
+                           alphap = 1.0d0
+                        elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
+                           alphap = 0.2d0*(kappa-1.d0)*mcbagb +
+     &                              0.2d0*(37.d0 - 32.d0*kappa)
+                        elseif(mcbagb.le.60d0.and.frac.lt.0.9d0)then
+                           alphap = kappa
+                        elseif(frac.ge.0.9.and.mcbagb.le.37d0)then
+                           alphap = sappa*(mcbagb - 32.d0) + 1.d0
+                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
+     &                        sappa.lt.0.82916)then
+                           alphap = 5.d0*sappa + 1.d0
+                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
+     &                        sappa.ge.0.82916)then
+                           alphap = (-0.1381*frac + 0.1309)*
+     &                              (mcbagb - 56.d0) + 0.82916
+                        elseif(frac.ge.0.9.and.mcbagb.gt.56.and.
+     &                        mcbagb.lt.64)then
+                           alphap = -0.103645*mcbagb + 6.63328
+                        elseif(mcbagb.ge.64.and.mcbagb.lt.135)then
+                           alphap = 0.d0
+                           kw = 15
+                        elseif(mcbagb.ge.135)then
+                           alphap = 1.0d0
+                        endif
+ 
+                        mt = alphap*mt
+                     endif
+
+
+
+
 * Convert baryonic mass to gravitational mass (approx for BHs) 
                      if(nsflag.ge.2) mt = 0.9d0*mt 
                      endif
