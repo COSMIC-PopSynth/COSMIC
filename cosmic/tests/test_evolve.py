@@ -18,7 +18,7 @@ BPP_ARRAY = np.load(os.path.join(TEST_DATA_DIR, 'bpp_array_ind_sampling.npy'))
 INIT_CONDITIONS = np.load(os.path.join(TEST_DATA_DIR, 'init_conditions_ind_sampling.npy'))
 
 bppDF = pd.DataFrame(BPP_ARRAY, columns=bpp_columns, index=[int(INIT_CONDITIONS[35])] * len(BPP_ARRAY))
-bppDF['binary_number'] = int(INIT_CONDITIONS[35])
+bppDF['bin_num'] = int(INIT_CONDITIONS[35])
 
 SINGLE_BINARY = InitialBinaryTable.SingleBinary(m1=INIT_CONDITIONS[2],
                                                 m2=INIT_CONDITIONS[3],
