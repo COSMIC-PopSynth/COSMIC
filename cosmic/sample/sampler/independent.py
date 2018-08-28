@@ -54,9 +54,9 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-def get_independent_sampler(primary_min, primary_max, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
     sampled_mass = 0.0
-
+    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = Sample()    
     mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
     # add in the total sampled primary mass
@@ -76,7 +76,7 @@ def get_independent_sampler(primary_min, primary_max, primary_model, ecc_model, 
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="primary_min, primary_max, ecc_model, SFH_model, component_age, size")
+                 usage="final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
 
 class Sample(object):
