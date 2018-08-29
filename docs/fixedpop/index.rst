@@ -1,0 +1,167 @@
+.. _fixedpop:
+
+##############################################
+Evolve a Milky Way population the `cosmic` way
+##############################################
+There are two executables that are installed when you pip install cosmic:
+
+* runFixedPop
+
+* gxRealization
+
+These two executables generate the two components of a cosmic Milky Way population. 
+
+***********
+runFixedPop
+***********
+The `fixed population` is generated first and is designed to fully describe the population of binaries that results from a user specified star formation history (SFH) and binary evolution model. The arguments necessary to run the runFixedPop executable can be found using the help command:
+
+.. code-block:: bash
+
+   $ runFixedPop -h 
+
+.. program-output:: runFixedPop -h 
+
+======
+Inputs
+======
+
+There are currently three SFHs implemented in cosmic, one each for the Milky Way thin disk, thick disk and bulge. Their assumptions are as follows:
+
+* ThinDisk : constant star formation over 10 Gyr; the metallicity for the thin disk is traditionally set to solar
+
+* ThickDisk : a 1 Gyr burst of constant star formation 11 Gyr in the past; the metallicity for the thick disk is traditionally set to be subsolar, we reccommend 15% solar
+
+* Bulge : a 1 Gyr burst of constant 10 Gyr in the past; the metallicity for the bulge is traditionally set to solar 
+
+New implementations of SFHs will be added to the sample_SFH modules in the independent and multidim samplers.  
+
+-------------------
+Sample command line
+------------------- 
+
+Below is an example command line call for runFixedPop:
+
+.. code-block:: bash
+   
+   $ runFixedPop --final_kstar1 11 --final_kstar2 10 11 --inifile examples/Params.ini --galaxy_component ThinDisk --metallicity 0.02 --convergence-params mass_1 mass_2 porb ecc --initial_samp multidim --Nstep 5000 --Niter 10000000 -n 1
+
+Let's break down each argument:
+
+* --final_ktar1 11 --final_kstar2 10 11 : this tells cosmic that we want to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD. 
+
+* --inifile examples/Params.ini : this tells cosmic where to look for the BSE flags that set the binary evolution model
+
+* --galaxy_component ThinDisk : this tells cosmic that we want to run a Milky Way thin disk, which will implement constant star formation history over 10 Gyr
+
+* --metallicity 0.02 : this tells cosmic to use solar metallicity for every binary we evolve 
+
+* --convergence-params mass_1 mass_2 porb ecc : this tells cosmic to watch how the distributions of the masses, orbital period, and eccentricity of the binaries change with each iterated population
+
+* --initial_samp multidim : this tells cosmic to initialize the binaries with multidimensional parameter distributions according to Moe & Di Stefano 2017
+
+* --Nstep 5000 --Niter 10000000 -n 1 : this tells cosmic to use 1 processor to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
+
+The stop conditions for runFixedPop are that the shape of the parameter distributions of interest converge, quantified by the match criteria of Breivik & Larson 2018 or the number of binaries evolved exceeds Niter. 
+
+=====================
+Output of runFixedPop
+=====================
+The output of runFixed pop is the `fixed population`, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the runFixedPop call above is: dat_ThinDisk_11_10_11.h5. 
+
+The fixed population contains three pandas DataFrames accessed by the following keys:
+
+* bcm : The final state of the converged population at the present epoch
+
+* bpp : The evolutionary history of the systems in the bcm data set
+
+* initCond : The initial conditions for each binary in the bcm data set
+
+Each of these DataFrames shares a common 'binary_number' column which can be used to index the population.
+
+
+*************
+gxRealization
+*************
+The gxRealization exectuable uses the fixed population and a model for the spatial distribution of systems in a given Galactic component to Monte Carlo sample synthetic Milky Way population realizations. The necessary arguments for the gxRealization executable can be accessed using the help:
+
+.. code-block:: bash
+
+   $ gxRealization -h 
+.. program-output:: gxRealization -h 
+
+======
+Inputs
+======
+cosmic has several different models to spatially distribute binary sources in the Galaxy, depending on the --galaxy_component selection. These choices are detailed below, however, in `all cases` the orbital inclination, longitude of the ascending node, and the argument of periapse are randomized.
+
+--------
+ThinDisk
+--------
+There are three models to choose from with a ThinDisk population, where the differences between each model lie in the distbrituion of binaries above and below the disk and the scaling factor of each distribution. The radial distribution of binaries is always an exponential decay, though the scaling can vary from model to model. The azimuthal distribution is always uniform. 
+
+* 'sech_squared' : Radial exponential decay distribution with scale factor of 2.5 kpc and sech_squared distribution with scale factor of 0.3 kpc; consistent with Nelemans et al. 2001
+
+* 'double_exp' : Radial and vertical exponential decay distributions, with a scale factor of 2.5 kpc radially and 0.3 kpc vertically
+
+* 'McMillan' : Radial and vertical exponential decay distributions, with a scale factor of 2.9 kpc radially and 0.3 kpc vertically; cosisten with McMillan 2011
+
+-----
+Bulge
+-----
+There are two models to choose from with a Bulge population.
+
+* 'exp_squared' : Radial exponential squared decay distribution with a scale factor of 0.5 kpc, uniform azimuthal distribution and uniform in cos polar distribution; conisisten with Nelemans et al. 2001
+
+* 'McMillan' : Three dimensional distribution consistent with McMillan 2011
+
+---------
+ThickDisk
+---------
+There are two models to choose from with a ThickDisk population. Both use exponentional decay distributions for the radial and vertical directions and uniform azimuthal distribution, but differ in the choice of scale factor.
+
+* 'double_exp' : Radial and vertical exponential decay distributions with radial scale factor of 2.5 kpc and vertical scale factor of 1 kpc
+
+* 'McMillan' : Radial and vertical exponential decay distributions with radial scale factor of 3.1 kpc and vertical scale factor of 0.9 kpc
+
+===================
+Sample command line
+===================
+Below is a sample command line input to run 100 Galactic realizations for a thin disk population of white dwarf binaries with a CO WD primary and CO or He WD secondary.
+
+.. code-block:: bash
+   
+   $  --final_kstar1 11 --final_kstar2 10 11 --galaxy_component ThinDisk --dist_model McMillan --N_realizations 100 --gx_save True --HG_save False --LISA_calc True -n 1
+
+Let's break down each argument:
+
+* --final_ktar1 11 --final_kstar2 10 11 : this tells cosmic that we want to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD.
+
+* --galaxy_component ThinDisk --dist_model McMillan : this tells cosmic to distribute the thin disk sources according to McMillan 2011
+
+* --N_realizations 100 : this tells cosmic to generate 100 thin disk realizations
+
+* --gx_save True : this tells cosmic to save the galactic realizations - NOTE: this can generate large amounts of data (~3.5G per realization) for large populations (e.g. white dwarf binaries) and large numbers of galactic realizations
+
+* --HG_save False : this tells cosmic to ignore any systems that undergo a common envelope while the secondary is on the Hertzsprung Gap; these systems are expected to merge - see Belczynski et al. 2008 for more details
+
+* --LISA_calc True : this tells cosmic to compute the LISA power spectral density and signal to noise ratio - WARNING: this is still under construction
+
+* -n : this tells cosmic to use 1 processor - NOTE: multiprocessing is available!
+
+=======================
+Output of gxRealization
+=======================
+The output of gxRealization is file for every Galactic realization created where each realization file is an hdf5 file with a naming scheme that tells you the Galctic realization number, the Galactic component, and final kstars of the population; the 0th realization data file created by the gxRealization call above is: gxReal_0_ThinDisk_11_10_11.h5.
+
+Each realization contains up to four pandas DataFrames accessed by the following keys:
+
+* gx_dat : The full realization, including binary parameters, spatial distribution, and binary orientation
+
+* SNR : The LISA signal to noise ratio data including the gravitational wave frequency and SNR
+
+* PSD : The LISA signal to power spectral density data including the gravitational wave frequency and PSD
+
+* foreground : The LISA foreground from the Galactic realization
+
+The SNR, PSD, and foreground data sets are only available if the LISA_calc flag is set to True. WARNING - if you set gx_save to False and LISA_calc to False you will get no output!

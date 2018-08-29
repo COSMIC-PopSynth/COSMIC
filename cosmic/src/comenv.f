@@ -42,8 +42,8 @@
       PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0) 
       COMMON /VALUE2/ ALPHA1,LAMBDA
       LOGICAL COEL,output
-      REAL*8 CELAMF,RL,RZAMSF
-      EXTERNAL CELAMF,RL,RZAMSF
+      REAL*8 CELAMF,CELAMF_XU_LI,RL,RZAMSF
+      EXTERNAL CELAMF,CELAMF_XU_LI,RL,RZAMSF
 *
 * Common envelope evolution - entered only when KW1 = 2, 3, 4, 5, 6, 8 or 9.
 *
@@ -66,7 +66,14 @@
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
       RZAMS = RZAMSF(M01)
-      LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDA)
+*
+* Decide which CE prescription to use based on LAMBDA flag
+*
+      IF(LAMBDA.EQ.1.0)THEN
+         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDA)
+      ELSE
+         LAMB1 = CELAMF_XU_LI(KW,M01,M1,MC1,R1,LAMBDA)
+      ENDIF
       KW = KW2
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
@@ -85,7 +92,11 @@
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
          RZAMS = RZAMSF(M02)
-         LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDA)
+         IF(LAMBDA.EQ.1.0)THEN
+            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDA)
+         ELSE
+            LAMB2 = CELAMF_XU_LI(KW,M02,M2,MC2,R2,LAMBDA)
+         ENDIF
          EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
 * Calculate the initial orbital energy

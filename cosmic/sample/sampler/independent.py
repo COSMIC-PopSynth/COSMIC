@@ -54,9 +54,9 @@ Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
 
-def get_independent_sampler(primary_min, primary_max, primary_model, ecc_model, SFH_model, component_age, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
     sampled_mass = 0.0
-
+    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = Sample()    
     mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
     # add in the total sampled primary mass
@@ -70,13 +70,13 @@ def get_independent_sampler(primary_min, primary_max, primary_model, ecc_model, 
     tphysf = initconditions.sample_SFH(SFH_model, component_age=component_age, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
-    metallicity = initconditions.set_metallicity(component_age, size = mass1_binary.size)    
+    metallicity = met * np.ones(mass1_binary.size)
     
     return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass)
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="primary_min, primary_max, ecc_model, SFH_model, component_age, size")
+                 usage="final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
 
 class Sample(object):
@@ -301,6 +301,7 @@ class Sample(object):
             formation rate over the age of the MW disk: component_age [Myr]  
             'burst' assigns an evolution time assuming a burst of constant
             star formation for 1Gyr starting at component_age [Myr] in the past
+            'delta_burst' assignes a t=0 evolution time until component age
             DEFAULT: 'const'
 
         component_age: float
@@ -322,6 +323,10 @@ class Sample(object):
 
         if SFH_model=='burst':
             tphys = component_age - np.random.uniform(0, 1000, size)
+            return tphys
+
+        if SFH_model=='delta_burst':
+            tphys = component_age*np.ones(size)
             return tphys
 
 
@@ -350,29 +355,3 @@ class Sample(object):
 
         return kstar
 
-    def set_metallicity(self, component_age, size):
-        """Set metallicity for all systems with component age less 
-        than 10 Gyr to solar metallicity and systems with 
-        component age greater than 10 Gyr to 0.15 solar metallicity
-        
-        Parameters
-        ----------
-        component_age : float
-            age of the Galactic component [Myr]
-
-        size : int, optional
-            number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
-
-        Returns
-        -------
-        metallicity : array
-            array of metallicity values with size=size
-        """
-
-        if component_age > 10000:
-            metallicity = 0.02*0.15*np.ones(size)
-        else:
-            metallicity = 0.02*np.ones(size)
-        
-        return metallicity

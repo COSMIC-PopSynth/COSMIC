@@ -44,7 +44,7 @@ SECHSQUARE_THINDISK_MEAN_TEST_Z = 0.0
 DOUBLEEXP_THINDISK_MEAN_TEST_XY = 2.5
 DOUBLEEXP_THINDISK_MEAN_TEST_Z = 0.0
 DOUBLEEXP_BULGE_MEAN_TEST_XYZ  = 0.5/np.sqrt(np.pi)
-MCMILLAN_BULGE_MEAN_TEST_XY = 0.301369819502
+MCMILLAN_BULGE_MEAN_TEST_XY = 0.5
 MCMILLAN_THICKDISK_MEAN_TEST_XY = 3.31
 MCMILLAN_THICKDISK_MEAN_TEST_Z = 0.0
 DOUBLEEXP_THICKDISK_MEAN_TEST_XY = 2.5
@@ -135,8 +135,8 @@ class TestMC_samp(unittest2.TestCase):
         self.assertTrue(np.abs(np.mean(OMEGA) - np.pi) < 1e-2)
         self.assertTrue(np.abs(np.mean(omega) - np.pi) < 1e-2)
 
-        xGX, yGX, zGX, inc, OMEGA, omega = MC_samp.galactic_positions('Bulge', 1000000, model='McMillan')
-        self.assertTrue(np.abs(np.mean((xGX**2+yGX**2)**0.5) - MCMILLAN_BULGE_MEAN_TEST_XY) < 1e-2)
+        xGX, yGX, zGX, inc, OMEGA, omega = MC_samp.galactic_positions('Bulge', 50000, model='McMillan')
+        self.assertTrue(np.abs(np.mean((xGX**2+yGX**2)**0.5) - MCMILLAN_BULGE_MEAN_TEST_XY) < 1e-1)
         self.assertTrue(np.abs(np.mean(zGX) - 0.0 < 1e-2))
         self.assertTrue(np.abs(np.mean(inc) - 1.0) < 1e-2)
         self.assertTrue(np.abs(np.mean(OMEGA) - np.pi) < 1e-2)
