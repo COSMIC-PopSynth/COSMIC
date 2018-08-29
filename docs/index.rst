@@ -23,14 +23,38 @@ The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stabl
 
 For more details on how to use cosmic, see :ref:`examples` and :ref:`runpop`.
 
+How to run a fixed population
+-----------------------------
+
+One of the main product of this package is the command-line executable `runFixedPop`,
+which takes an excess noise time makes an omega scan of the event and classifies the image.
+
+To run an analysis:
+
+.. code-block:: bash
+
+   $ runFixedPop --final_kstar1 11 --final_kstar2 11 --galaxy_component ThinDisk --initial_samp multidim --Nstep 500 --Niter 10000 -n 1 --inifile my-config-file.ini
+
+where ``./my-config-file.ini`` is the path of your BSE configuration file.
+In the `examples` folder is an example of an ini file.
+
+For a full list of command-line argument and options, run
+
+.. code-block:: bash
+
+   $ runFixedPop --help
+
+For more details see :ref:`runFixedPop`.
+
 
 *****************
 Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
+   install/index
    examples/index
    runpop/index
 
@@ -42,8 +66,6 @@ Please consult these pages for more details on using cosmic:
 
 .. toctree::
    :maxdepth: 1
-
-   command-line/index
 
 * :ref:`genindex`
 * :ref:`modindex`
