@@ -1,8 +1,3 @@
-.. cosmic documentation master file, created by
-   sphinx-quickstart on Thu Apr 21 14:05:08 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ##################################
 Welcome to cosmic's documentation!
 ##################################
@@ -16,12 +11,35 @@ Installing cosmic
 
 The easiest method to install cosmic is using `pip <https://pip.pypa.io/en/stable/>`_ directly from the `GitHub repository <https://github.com/COSMIC-PopSynth/COSMIC.git>`_:
 
+-----
+MacOS
+-----
+
 .. code-block:: bash
 
-   $ pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
+    conda create --name cosmic python=3.6
+    source activate cosmic
+    conda install gcc numpy
+    conda install -c uvcdat gfortran
+    pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
+
+----
+Unix
+----
+
+.. code-block:: bash
+
+    conda create --name cosmic python=3.6
+    source activate cosmic
+    conda install numpy
+    pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
-For more details on how to use cosmic, see :ref:`examples` and :ref:`runpop`.
+*******************************
+Using cosmic to evolve binaries
+*******************************
+
+For more details on how to use cosmic, see :ref:`examples`, :ref:`runpop`, and :ref:`fixedpop`.
 
 How to run a fixed population
 -----------------------------
@@ -52,20 +70,18 @@ Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    install/index
    examples/index
    runpop/index
+   fixedpop/index
 
 *********************
 Package documentation
 *********************
 
 Please consult these pages for more details on using cosmic:
-
-.. toctree::
-   :maxdepth: 1
 
 * :ref:`genindex`
 * :ref:`modindex`

@@ -122,18 +122,14 @@ class GxReal(object):
         # Based on the user supplied filter flags, filter the
         # population to reduce the sample to only the relevant population
         #######################################################################
-        #
-        # Fill this in; holding place for now
-        # 
-        
         # Transform the fixed population to have limits between 0 and 1
         # then transform to logit space to maintain the population boundaries
         # and create a KDE using knuth's rule to select the bandwidth
         #######################################################################
-        dat_kde = utils.dat_transform(self.fixed_pop, self.dat_list)
+        dat_kde = utils.dat_transform(self.fixed_pop, self.dat_list)   
         bw = utils.knuth_bw_selector(dat_kde)
         dat_kernel = stats.gaussian_kde(dat_kde, bw_method=bw)
-    
+   
         # Sample from the KDE
         #######################################################################
         binary_dat_trans = dat_kernel.resample(self.n_samp)
@@ -149,16 +145,46 @@ class GxReal(object):
         binary_sample_positions = np.vstack([xGx, yGx, zGx, inc, OMEGA, omega]) 
         # Create a single DataFrame for the Galactic realization
         #######################################################################
-        full_sample = np.concatenate([binary_dat,binary_sample_positions]).T
         if len(self.dat_list) < 4:
+            full_sample = np.vstack([binary_dat,np.zeros(self.n_samp),binary_sample_positions]).T
             column_list = self.dat_list + ['ecc', 'xGx', 'yGx', 'zGx', 'inc', 'OMEGA', 'omega']
         else:
+            full_sample = np.concatenate([binary_dat,binary_sample_positions]).T
             column_list = self.dat_list + ['xGx', 'yGx', 'zGx', 'inc', 'OMEGA', 'omega']
         realization = pd.DataFrame(full_sample,\
                                    columns = column_list) 
 
         return realization
 
+    def LISA_obs(self, T_obs):
+        """Computes the gravitational wave signal from the population
+        that will be observable by LISA, including SNR and PSD according
+        to the user input
+
+        Parameters
+        ----------
+        realization : DataFrame
+            Milky Way population realization of size n_samp
+        T_obs : float
+            LISA observation time in seconds
+
+        Returns
+        -------
+        PSD_dat : DataFrame
+            DataFrame containing the power spectral density for all systems
+            in realization 
+        """
+        # Compute the PSD
+        #######################################################################
+        PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1,
+                                     self.realization.mass_2,
+                                     10**self.realization.porb,
+                                     self.realization.ecc,
+                                     self.realization.xGx,
+                                     self.realization.yGx,
+                                     self.realization.zGx,
+                                     150, T_obs)
+        return PSD_dat
 
     def LISA_obs(self, T_obs):
         """Computes the gravitational wave signal from the population
@@ -188,9 +214,9 @@ class GxReal(object):
 
         # Compute the PSD
         #######################################################################
-        PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1*Msun, 
-                                     self.realization.mass_2*Msun,
-                                     self.realization.porb*sec_in_year,
+        PSD_dat = GW_calcs.LISA_PSD(self.realization.mass_1, 
+                                     self.realization.mass_2,
+                                     10**self.realization.porb,
                                      self.realization.ecc, 
                                      self.realization.xGx,
                                      self.realization.yGx,     
@@ -200,21 +226,20 @@ class GxReal(object):
         #######################################################################
         foreground_dat = GW_calcs.compute_foreground(PSD_dat, T_obs)
         
-        # Smooth the foreground by doing a running average over 50 bins
-        #######################################################################
-        foreground_dat = foreground_dat.rolling(50).mean()
-        
+        LISA_plus_foreground = GW_calcs.LISA_combo(foreground_dat) 
+         
         # Compute the SNR
         ####################################################################### 
         SNR_dat = GW_calcs.LISA_SNR(self.realization.mass_1,
                                      self.realization.mass_2,
-                                     self.realization.porb*sec_in_year,
+                                     10**self.realization.porb,
                                      self.realization.ecc,
                                      self.realization.xGx,
                                      self.realization.yGx,
                                      self.realization.zGx,
                                      150, T_obs, 
-                                     foreground_dat) 
+                                     foreground_dat,
+                                     LISA_plus_foreground) 
 
         return SNR_dat, PSD_dat, foreground_dat
          

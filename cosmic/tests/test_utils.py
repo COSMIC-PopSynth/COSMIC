@@ -8,6 +8,7 @@ import unittest2
 import numpy as np
 import scipy.integrate
 import pandas as pd
+import scipy.special as special
 
 import cosmic.utils as utils
 
@@ -58,13 +59,14 @@ class TestUtils(unittest2.TestCase):
     def test_dat_transform(self):
         # send in DataFrame of 10*x (defined above)
         x_trans = utils.dat_transform(10*x_dat, ['x_dat', 'f_dat'])
-        self.assertTrue(np.sum(x_trans[0]).round(15) == X_TRANS_SUM)
+        self.assertTrue(np.max(special.expit(x_trans[0])) < 1)
+        self.assertTrue(np.min(special.expit(x_trans[0])) > 0)
 
     def test_dat_un_transform(self):
         # send in sampled data set, which will just be random
         # between -inf to +inf and should be transformed to be between
         # 0 and 10
-        x_un_trans = utils.dat_un_transform(x_sample, x_dat, ['x_dat', 'f_dat'])
+        x_un_trans = utils.dat_un_transform(special.logit(x_sample), x_dat, ['x_dat', 'f_dat'])
         self.assertTrue(np.min(x_un_trans[0]) >= np.min(x_dat.x_dat))
         self.assertTrue(np.max(x_un_trans[0]) <= np.max(x_dat.x_dat))
 

@@ -39,7 +39,7 @@ def mass_min_max_select(kstar_1, kstar_2):
 
     Returns
     -------
-    min_mass[0] : float
+    min_mass[0] : float 
         minimum primary mass for initial sample
     max_mass[0] : float
         maximum primary mass for initial sample
@@ -119,6 +119,7 @@ def idl_tabulate(x, f, p=5) :
     p : int
         number of chunks to divide tabulated data into
         Default: 5
+   
     Returns
     -------
     ret : float
@@ -153,8 +154,9 @@ def rndm(a, b, g, size):
 
     Returns
     -------
-    Array of data sampled from power law distribution with params
-    fixed by inputs
+    power : array
+        Array of data sampled from power law distribution with params
+        fixed by inputs
     """
 
     r = np.random.random(size=size)
@@ -172,16 +174,16 @@ def param_transform(dat):
 
     Returns
     -------
-    dat_trans : array
+    datTransformed : array
         array of data with limits between 0 and 1
     """
 
     datMax = max(dat)+0.000001
-    if min(dat) > 1e-4:
+    if min(dat) > 1e-6:
         datMin = min(dat)-0.000001
         datZeroed = dat-datMin
     else:
-        datMin = 1e-7 
+        datMin = 1e-6
         datZeroed = dat-datMin
         datZeroed[datZeroed < 0.0] = 1e-6
          
@@ -194,7 +196,7 @@ def param_transform(dat):
 
 def dat_transform(dat, dat_list):
     """Transform a data set to have limits between zero and one using 
-    param_transform, then transform to logit space
+    param_transform, then transform to log space
     
     Parameters
     ----------
@@ -211,10 +213,9 @@ def dat_transform(dat, dat_list):
 
     dat_trans = []
     for column in dat_list:
-        dat_trans.append(param_transform(dat[column]))
+        dat_trans.append(ss.logit(param_transform(dat[column])))
+    dat_trans = np.vstack([dat_trans])
     
-    dat_trans = ss.logit(np.vstack([dat_trans]))
-
     return dat_trans
 
 def dat_un_transform(dat_sample, dat_set, dat_list):
@@ -244,8 +245,6 @@ def dat_un_transform(dat_sample, dat_set, dat_list):
                     min(dat_set[column])
         dat.append(dat_untrans)
     dat = np.vstack(dat)
-    if not np.any(['ecc' in x for x in dat_list]):
-        dat = np.vstack([dat, np.zeros(len(dat[0]))])
     return dat
 
 def knuth_bw_selector(dat_list):
@@ -268,9 +267,8 @@ def knuth_bw_selector(dat_list):
         try:
             bw = astrostats.knuth_bin_width(dat)
         except:
-            print 'Using Scott Rule!!'
+            print('Using Scott Rule!!')
             bw = astrostats.scott_bin_width(dat)
         bw_list.append(bw)
-        
-    return np.min(bw_list)
+    return np.mean(bw_list)
         

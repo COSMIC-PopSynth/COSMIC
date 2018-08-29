@@ -27,7 +27,10 @@ import scipy.stats as stats
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = 'MC_samp'
+__all__ = ['mass_weighted_number', 'select_component_mass', 
+           'sample_sech_squared', 'sample_exponential_radial',
+           'sample_exponential_vertical', 'sample_exponential_square_radial',
+           'galactic_positions'] 
 
 
 G = 6.67384*math.pow(10, -11.0)
@@ -61,11 +64,9 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     ----------
     dat : DataFrame
         DataFrame containing the fixed population created from runFixedPop
-
     total_sampled_mass : float
         total amount of mass sampled to generate the fixed population 
         including single stars
-
     component_mass : float
         mass of the Galactic component we are simulating
 
@@ -213,7 +214,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
 
     Returns
     -------
-    position_dat : array
+    xGx, yGx, zGx, inc, OMEGA, omega : array
         Array of sampled positions in Galactic cartesian coordinates
         centered on the Galactic center and orientations in radians
     """
@@ -270,8 +271,8 @@ def galactic_positions(gx_component, size, model='McMillan'):
                 q = 0.5
                 r0 = 0.075
                 alpha = -1.8
-                r = np.random.uniform(0,1,size*10)
-                z = np.random.uniform(0,1,size*10)
+                r = np.random.uniform(0,5,size*10)
+                z = np.random.uniform(0,3,size*10)
                 prob = np.random.uniform(0,1,size*10)
                 sample_func = np.exp(-(r**2 + (z/q)**2)/rcut**2)
                 actual_func = (1+np.sqrt((r**2 + (z/q)**2))/r0)**(alpha)*sample_func

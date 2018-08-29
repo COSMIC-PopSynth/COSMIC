@@ -1,11 +1,11 @@
 .. _examples:
 
 ########################################
-Using COSMIC to evolve binaries with BSE
+Using cosmic to evolve binaries with BSE
 ########################################
 
 
-COSMIC can simulate binaries for several different use cases. Below 
+cosmic can simulate binaries for several different use cases. Below 
 you'll find examples to run a single binary system, multiple binary
 systems or a grid of binaries.
 

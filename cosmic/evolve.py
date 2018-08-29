@@ -33,8 +33,8 @@ __all__ = ['Evolve']
 bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' , 'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type']
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1', 'teff_1', 'massc_1',
 'radc_1', 'menv_1', 'renv_1', 'epoch_1', 'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
-'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2', 'renv_2', 'epoch_2', 'ospin_2', 'deltam_1', 'RROL_2',
-'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation2']
+'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2', 'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
+'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation_2']
 
 class Evolve(Table):
     def __init__():
@@ -93,7 +93,7 @@ class Evolve(Table):
         initialbinarytable['merger'] = BSEDict['merger']
         initialbinarytable['windflag'] = BSEDict['windflag']
         initialbinarytable['dtp'] = initialbinarytable['tphysf']
-        initialbinarytable['binary_number'] = np.arange(idx, idx + len(initialbinarytable))
+        initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
         initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
 
         initial_conditions = np.array(initialbinarytable) 
@@ -111,10 +111,12 @@ class Evolve(Table):
                 bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>1),:].squeeze(1)
 
                 bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[35])] * len(bpp_tmp))
-                bpp_tmp['binary_number'] = int(f[35])
+                bpp_tmp['bin_num'] = int(f[35])
+                bpp_tmp.set_index('bin_num')
 
                 bcm_tmp = pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[35])] * len(bcm_tmp))
-                bcm_tmp['binary_number'] = int(f[35])
+                bcm_tmp['bin_num'] = int(f[35])
+                bcm_tmp.set_index('bin_num')
 
                 return f, bpp_tmp, bcm_tmp
 
@@ -140,5 +142,7 @@ class Evolve(Table):
         output_bcm = pd.DataFrame()
         for f, x, y in output:
             output_bpp = output_bpp.append(x)
-            output_bcm = output_bcm.append(y)
+            output_bcm = output_bcm.append(y)        
+
+        initialbinarytable.set_index('bin_num')
         return output_bpp, output_bcm, initialbinarytable 
