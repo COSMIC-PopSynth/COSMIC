@@ -68,11 +68,12 @@ setup_requires = [
     'pytest-runner',
 ]
 install_requires = [
-    'numpy',
-    'scipy',
-    'astropy',
+    'numpy >= 1.7.1',
+    'scipy >= 0.12.1',
+    'matplotlib >= 1.2.0, != 2.1.0, != 2.1.1',
+    'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
+    'astropy >= 1.1.1 ; python_version >= \'3\'',
     'configparser',
-    'matplotlib',
     'gwpy',
     'pandas>=0.22;python_version>="3.5"',
     'pandas<0.21;python_version=="3.4"',
