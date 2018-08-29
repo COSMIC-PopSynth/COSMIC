@@ -25,8 +25,7 @@ import math
 import random
 import scipy.integrate
 
-from astropy.table import Table, Column
-from astropy import units
+from cosmic.utils import mass_min_max_select
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
