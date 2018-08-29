@@ -1,8 +1,8 @@
 .. _fixedpop:
 
-##############################################
-Evolve a Milky Way population the `cosmic` way
-##############################################
+######################################
+Generate a population the `cosmic` way
+######################################
 There are two executables that are installed when you pip install cosmic:
 
 * runFixedPop
@@ -14,7 +14,7 @@ These two executables generate the two components of a cosmic Milky Way populati
 ***********
 runFixedPop
 ***********
-The `fixed population` is generated first and is designed to fully describe the population of binaries that results from a user specified star formation history (SFH) and binary evolution model. The arguments necessary to run the runFixedPop executable can be found using the help command:
+The `fixed population` is generated first and is designed to fully describe the population of binaries that results from a user specified star formation history (SFH) and binary evolution model (BSEDict, specified in an inifile). The arguments necessary to run the runFixedPop executable can be found using the help command:
 
 .. code-block:: bash
 
@@ -46,15 +46,15 @@ Below is an example command line call for runFixedPop:
    
    $ runFixedPop --final_kstar1 11 --final_kstar2 10 11 --inifile examples/Params.ini --galaxy_component ThinDisk --metallicity 0.02 --convergence-params mass_1 mass_2 porb ecc --initial_samp multidim --Nstep 5000 --Niter 10000000 -n 1
 
-Let's break down each argument:
+A breakdown of each argument follos:
 
-* --final_ktar1 11 --final_kstar2 10 11 : this tells cosmic that we want to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD. 
+* --final_ktar1 11 --final_kstar2 10 11 : this tells cosmic to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD. 
 
 * --inifile examples/Params.ini : this tells cosmic where to look for the BSE flags that set the binary evolution model
 
-* --galaxy_component ThinDisk : this tells cosmic that we want to run a Milky Way thin disk, which will implement constant star formation history over 10 Gyr
+* --galaxy_component ThinDisk : this tells cosmic to run a Milky Way thin disk, which will implement constant star formation history over 10 Gyr
 
-* --metallicity 0.02 : this tells cosmic to use solar metallicity for every binary we evolve 
+* --metallicity 0.02 : this tells cosmic to use solar metallicity for every binary evolved 
 
 * --convergence-params mass_1 mass_2 porb ecc : this tells cosmic to watch how the distributions of the masses, orbital period, and eccentricity of the binaries change with each iterated population
 
@@ -62,7 +62,11 @@ Let's break down each argument:
 
 * --Nstep 5000 --Niter 10000000 -n 1 : this tells cosmic to use 1 processor to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
 
-The stop conditions for runFixedPop are that the shape of the parameter distributions of interest converge, quantified by the match criteria of Breivik & Larson 2018 or the number of binaries evolved exceeds Niter. 
+There are two stop conditions for runFixedPop:
+
+1. the shape of the parameter distributions for the parameters specified in --convergence-params converge to a shape, regardelss of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2018 in prep
+
+2. the number of binaries evolved exceeds Niter. 
 
 =====================
 Output of runFixedPop
@@ -77,7 +81,7 @@ The fixed population contains three pandas DataFrames accessed by the following 
 
 * initCond : The initial conditions for each binary in the bcm data set
 
-Each of these DataFrames shares a common 'binary_number' column which can be used to index the population.
+Each of these DataFrames shares a common 'binary_number' column which is used to index the population.
 
 
 *************
@@ -145,7 +149,7 @@ Let's break down each argument:
 
 * --HG_save False : this tells cosmic to ignore any systems that undergo a common envelope while the secondary is on the Hertzsprung Gap; these systems are expected to merge - see Belczynski et al. 2008 for more details
 
-* --LISA_calc True : this tells cosmic to compute the LISA power spectral density and signal to noise ratio - WARNING: this is still under construction
+* --LISA_calc True : this tells cosmic to compute the gravitational wave power which can be used to generate the population's power spectral density observable by LISA
 
 * -n : this tells cosmic to use 1 processor - NOTE: multiprocessing is available!
 
@@ -158,10 +162,6 @@ Each realization contains up to four pandas DataFrames accessed by the following
 
 * gx_dat : The full realization, including binary parameters, spatial distribution, and binary orientation
 
-* SNR : The LISA signal to noise ratio data including the gravitational wave frequency and SNR
-
 * PSD : The LISA signal to power spectral density data including the gravitational wave frequency and PSD
 
-* foreground : The LISA foreground from the Galactic realization
-
-The SNR, PSD, and foreground data sets are only available if the LISA_calc flag is set to True. WARNING - if you set gx_save to False and LISA_calc to False you will get no output!
+WARNING - if you set gx_save to False and LISA_calc to False you will get no output!

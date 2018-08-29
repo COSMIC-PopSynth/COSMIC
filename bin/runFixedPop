@@ -48,11 +48,11 @@ def parse_commandline():
     parser.add_argument("--final_kstar1",
                         help="Specify the final condition of kstar1 "
                         ", you want systems to end at for your samples",
-                        required=True, type=float, nargs='+')
+                        required=True, type=int, nargs='+')
     parser.add_argument("--final_kstar2",
                         help="Specify the final condition of kstar2, you want "
                         "systems to end at for your samples",
-                        required=True, type=float, nargs='+')
+                        required=True, type=int, nargs='+')
     parser.add_argument("--convergence-params",
                         help="A space separated list of parameters you would "
                         "like to varify you have simulated enough binaries for"
