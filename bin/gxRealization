@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 # Code: gxRealization
 # Version: 1
@@ -15,7 +15,6 @@
 from collections import OrderedDict
 import warnings
 import argparse
-import ConfigParser
 
 import math
 import random
