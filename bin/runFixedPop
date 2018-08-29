@@ -239,7 +239,7 @@ if __name__ == '__main__':
         
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
-            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, primary_min, primary_max, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
+            IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
 
 
         if args.initial_samp == 'multidim':
