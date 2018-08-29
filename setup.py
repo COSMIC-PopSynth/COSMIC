@@ -31,7 +31,10 @@ import os.path
 
 from setuptools import find_packages
 
-from numpy.distutils.core import setup, Extension
+try:
+    from numpy.distutils.core import setup, Extension
+except ImportError:
+    raise ImportError("Building fortran extensions requires numpy.")
 
 # set basic metadata
 PACKAGENAME = 'cosmic'
