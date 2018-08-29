@@ -74,11 +74,11 @@ install_requires = [
     'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
     'astropy >= 1.1.1 ; python_version >= \'3\'',
     'configparser',
-    'gwpy>=0.12',
-    'pandas>=0.22;python_version>="3.5"',
-    'pandas<0.21;python_version=="3.4"',
-    'pandas>=0.22;python_version=="2.7"',
-    'tables',
+    'gwpy >= 0.12',
+    'pandas >= 0.22 ; python_version >= \'3.5\'',
+    'pandas < 0.21 ; python_version == \'3.4\'',
+    'pandas >= 0.22 ; python_version == \'2.7\'',
+    'tables > 3.0.0',
     'h5py >= 1.3',
 ]
 tests_require = [
