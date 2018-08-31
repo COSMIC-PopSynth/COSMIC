@@ -106,6 +106,7 @@ if __name__ == '__main__':
             gx_file.append('PSD', gx_real.PSD)
             
             print('LISA calcs finished')
+        gx_file.close()
         return
 
     # READ COMMANDLINE ARGUMENTS
