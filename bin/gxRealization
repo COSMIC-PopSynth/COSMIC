@@ -78,7 +78,7 @@ if __name__ == '__main__':
     ###########################################################################
     def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model, LISA_calc, gx_save, Tobs, kstar1_string, kstar2_string):
         np.random.seed(gx)
-        gx_filename = 'gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.h5'
+        gx_file = pd.HDFStore('gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.h5', format='table')
 
         gx_real = gxreal.GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
         
@@ -93,20 +93,20 @@ if __name__ == '__main__':
             for ii in range(n_loop):
                 # Monte Carlo sample the population
                 gx_real.realization = gx_real.sample_population()
-                gx_real.realization.to_hdf(gx_filename, key='gx_dat')
+                gx_file.append('gx_dat', gx_real.realization)
                 print('Chunk {0} complete'.format(ii))          
         else:
             # Monte Carlo sample the population
             gx_real.realization = gx_real.sample_population()
-            gx_real.realization.to_hdf(gx_filename, key='gx_dat')  
-        
+            gx_file.append('gx_dat', gx_real.realization) 
         print('Galaxy sampled')
 
         if LISA_calc > 0:
             gx_real.PSD = gx_real.LISA_PSD(Tobs)
-            gx_real.PSD.to_hdf(gx_filename, key='PSD') 
+            gx_file.append('PSD', gx_real.PSD)
             
             print('LISA calcs finished')
+        gx_file.close()
         return
 
     # READ COMMANDLINE ARGUMENTS
