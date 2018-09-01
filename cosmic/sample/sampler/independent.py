@@ -221,8 +221,10 @@ class Sample(object):
 
 
     def sample_porb(self, mass1, mass2, size=None):
-        """Sample the semi-major axis according to 
-        `Han (1998) <http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        """Sample the semi-major axis flat in log space from RROL < 0.5 up 
+        to 1e5 Rsun according to 
+        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+        and consistent with Dominik+2012,2013
         and then converted to orbital period in days using Kepler III
 
         Parameters
@@ -238,15 +240,14 @@ class Sample(object):
             orbital period with array size equalling array size 
             of mass1 and mass2
         """
+        q = mass2/mass1
+        RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))       
+        
+        a_min = 0.5/RL_fac
+        a_0 = np.random.uniform(np.log(a_min), 5, size)
 
-        a_0 = np.random.uniform(0, 1, size)
-        low_cutoff = 0.0583333
-        lowIdx, = np.where(a_0 <= low_cutoff)
-        hiIdx, = np.where(a_0 > low_cutoff)
-
-        a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
-        a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
-
+        # convert out of log space
+        a_0 = np.exp(a_0)
         # convert to meters
         a_0 = a_0*Rsun
 
