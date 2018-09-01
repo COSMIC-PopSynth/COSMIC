@@ -185,14 +185,14 @@ if __name__ == '__main__':
 
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2: 
-        kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1])
+        kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1]+1)
         kstar1_range_string = str(int(args.final_kstar1[0]))+'_'+str(int(args.final_kstar1[1]))
     else:
         kstar1_range = args.final_kstar1
         kstar1_range_string = str(int(args.final_kstar1[0]))
 
     if len(args.final_kstar2) == 2:
-        kstar2_range = np.arange(args.final_kstar2[0], args.final_kstar2[1])
+        kstar2_range = np.arange(args.final_kstar2[0], args.final_kstar2[1]+1)
         kstar2_range_string = str(int(args.final_kstar2[0]))+'_'+str(int(args.final_kstar2[1]))
     else:
         kstar2_range = args.final_kstar2
@@ -240,7 +240,6 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
             IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
-
 
         if args.initial_samp == 'multidim':
             IBT, sampled_mass = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
