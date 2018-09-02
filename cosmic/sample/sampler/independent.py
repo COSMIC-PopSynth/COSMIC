@@ -242,9 +242,21 @@ class Sample(object):
         """
         q = mass2/mass1
         RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))       
-        
-        a_min = 0.5/RL_fac
-        a_0 = np.random.uniform(np.log(a_min), 5, size)
+        try:
+            ind_lo, = np.where(mass1 < 1.66)
+            ind_hi, = np.where(mass1 >= 1.66)
+
+            rad1 = np.zeros(len(mass1))
+            rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
+            rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
+        except:
+            if mass1 < 1.66:
+                rad1 = 1.06*mass1**0.945
+            else:
+                rad1 = 1.33*mass1**0.555
+
+        a_min = rad1/(0.5*RL_fac)
+        a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
         # convert out of log space
         a_0 = np.exp(a_0)
