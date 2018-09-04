@@ -261,7 +261,7 @@ if __name__ == '__main__':
         bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
         
         # Keep track of the index
-        idx = bcm.bin_num.max()
+        idx = bcm.bin_num.max()+1
         dat_store.append('idx', pd.DataFrame([idx]))
 
         # Filter out any binaries that have has mass transfer from a WD onto a compact object
