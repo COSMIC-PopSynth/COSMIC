@@ -99,7 +99,7 @@ def mass_min_max_select(kstar_1, kstar_2):
             max_mass[ii] = 12.0
         elif k== 11.0:
             max_mass[ii] = 8.0
-        elif k == 10.0:
+        elif k <= 10.0:
             max_mass[ii] = 5.0
         ii += 1
 
