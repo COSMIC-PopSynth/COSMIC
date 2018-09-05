@@ -15,7 +15,6 @@
 from collections import OrderedDict
 import warnings
 import argparse
-import ConfigParser
 
 import math
 import random
@@ -29,7 +28,6 @@ import scipy.special as ss
 import scipy.stats as stats
 import pandas as pd
 import multiprocessing as mp
-import matplotlib.pyplot as plt
 
 import cosmic.gxreal as gxreal
 import cosmic.MC_samp as MC_sample 

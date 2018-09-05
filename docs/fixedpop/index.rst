@@ -18,7 +18,7 @@ The `fixed population` is generated first and is designed to fully describe the 
 
 .. code-block:: bash
 
-   $ runFixedPop -h 
+   runFixedPop -h 
 
 .. program-output:: runFixedPop -h 
 
@@ -44,11 +44,11 @@ Below is an example command line call for runFixedPop:
 
 .. code-block:: bash
    
-   $ runFixedPop --final_kstar1 11 --final_kstar2 10 11 --inifile examples/Params.ini --galaxy_component ThinDisk --metallicity 0.02 --convergence-params mass_1 mass_2 porb ecc --initial_samp multidim --Nstep 5000 --Niter 10000000 -n 1
+   runFixedPop --final_kstar1 11 --final_kstar2 10 11 --inifile examples/Params.ini --galaxy_component ThinDisk --metallicity 0.02 --convergence-params mass_1 mass_2 porb ecc --initial_samp multidim --porb_cut 5 --Nstep 5000 --Niter 10000000 -n 1
 
-A breakdown of each argument follos:
+A breakdown of each argument follows:
 
-* --final_ktar1 11 --final_kstar2 10 11 : this tells cosmic to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD. 
+* ---final_ktar1 11 ---final_kstar2 10 11 : this tells cosmic to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD. 
 
 * --inifile examples/Params.ini : this tells cosmic where to look for the BSE flags that set the binary evolution model
 
@@ -58,7 +58,9 @@ A breakdown of each argument follos:
 
 * --convergence-params mass_1 mass_2 porb ecc : this tells cosmic to watch how the distributions of the masses, orbital period, and eccentricity of the binaries change with each iterated population
 
-* --initial_samp multidim : this tells cosmic to initialize the binaries with multidimensional parameter distributions according to Moe & Di Stefano 2017
+* --initial_samp multidim : this tells cosmic to initialize the binaries with multidimensional parameter distributions according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
+
+* ---porb_cut: this tells cosmit to only retain systems with an orbital period less than 1e5 seconds
 
 * --Nstep 5000 --Niter 10000000 -n 1 : this tells cosmic to use 1 processor to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
 
@@ -91,7 +93,7 @@ The gxRealization exectuable uses the fixed population and a model for the spati
 
 .. code-block:: bash
 
-   $ gxRealization -h 
+   gxRealization -h 
 .. program-output:: gxRealization -h 
 
 ======
@@ -104,20 +106,21 @@ ThinDisk
 --------
 There are three models to choose from with a ThinDisk population, where the differences between each model lie in the distbrituion of binaries above and below the disk and the scaling factor of each distribution. The radial distribution of binaries is always an exponential decay, though the scaling can vary from model to model. The azimuthal distribution is always uniform. 
 
-* 'sech_squared' : Radial exponential decay distribution with scale factor of 2.5 kpc and sech_squared distribution with scale factor of 0.3 kpc; consistent with Nelemans et al. 2001
+* 'sech_squared' : Radial exponential decay distribution with scale factor of 2.5 kpc and sech_squared distribution with scale factor of 0.3 kpc; consistent with `Nelemans+2001 <http://adsabs.harvard.edu/abs/2001A%26A...375..890N>`_
 
 * 'double_exp' : Radial and vertical exponential decay distributions, with a scale factor of 2.5 kpc radially and 0.3 kpc vertically
 
-* 'McMillan' : Radial and vertical exponential decay distributions, with a scale factor of 2.9 kpc radially and 0.3 kpc vertically; cosisten with McMillan 2011
+* 'McMillan' : Radial and vertical exponential decay distributions, with a scale factor of 2.9 kpc radially and 0.3 kpc vertically; consistent with `McMillan 2011 <http://adsabs.harvard.edu/abs/2011MNRAS.414.2446M>`_
 
 -----
 Bulge
 -----
 There are two models to choose from with a Bulge population.
 
-* 'exp_squared' : Radial exponential squared decay distribution with a scale factor of 0.5 kpc, uniform azimuthal distribution and uniform in cos polar distribution; conisisten with Nelemans et al. 2001
+* 'exp_squared' : Radial exponential squared decay distribution with a scale factor of 0.5 kpc, uniform azimuthal distribution and uniform in cos polar distribution; consistent with `Nelemans+2001 <http://adsabs.harvard.edu/abs/2001A%26A...375..890N>`_
 
-* 'McMillan' : Three dimensional distribution consistent with McMillan 2011
+* 'McMillan' : Three dimensional distribution consistent with `McMillan 2011 <http://adsabs.harvard.edu/abs/2011MNRAS.414.2446M>`_
+
 
 ---------
 ThickDisk
@@ -126,7 +129,8 @@ There are two models to choose from with a ThickDisk population. Both use expone
 
 * 'double_exp' : Radial and vertical exponential decay distributions with radial scale factor of 2.5 kpc and vertical scale factor of 1 kpc
 
-* 'McMillan' : Radial and vertical exponential decay distributions with radial scale factor of 3.1 kpc and vertical scale factor of 0.9 kpc
+* 'McMillan' : Radial and vertical exponential decay distributions with radial scale factor of 3.1 kpc and vertical scale factor of 0.9 kpc, consistent with `McMillan 2011 <http://adsabs.harvard.edu/abs/2011MNRAS.414.2446M>`_
+
 
 ===================
 Sample command line
@@ -135,7 +139,7 @@ Below is a sample command line input to run 100 Galactic realizations for a thin
 
 .. code-block:: bash
    
-   $  --final_kstar1 11 --final_kstar2 10 11 --galaxy_component ThinDisk --dist_model McMillan --N_realizations 100 --gx_save True --HG_save False --LISA_calc True -n 1
+   gxRealization --final_kstar1 11 --final_kstar2 10 11 --galaxy_component ThinDisk --dist_model McMillan --N_realizations 100 --gx_save True --HG_save False --LISA_calc True -n 1
 
 Let's break down each argument:
 
