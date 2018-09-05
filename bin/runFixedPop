@@ -212,7 +212,7 @@ if __name__ == '__main__':
         bpp_save = pd.DataFrame()
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
-        idx = pd.Series([0])
+        idx = 0
 
     bcm_len = 0
     match_all = np.zeros(len(args.convergence_params))
