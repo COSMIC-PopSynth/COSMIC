@@ -186,7 +186,7 @@ class GxReal(object):
                                      150, T_obs)
         return PSD_dat
 
-    def LISA_obs(self, T_obs):
+    def LISA_full_obs(self, T_obs):
         """Computes the gravitational wave signal from the population
         that will be observable by LISA, including SNR and PSD according
         to the user input

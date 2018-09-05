@@ -102,7 +102,7 @@ if __name__ == '__main__':
         print('Galaxy sampled')
 
         if LISA_calc > 0:
-            gx_real.PSD = gx_real.LISA_PSD(Tobs)
+            gx_real.PSD = gx_real.LISA_obs(Tobs)
             gx_file.append('PSD', gx_real.PSD)
             
             print('LISA calcs finished')
@@ -164,16 +164,16 @@ if __name__ == '__main__':
             bpp_pre_ce = bpp.iloc[comenv_index-1]
             bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
             bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
-            index_save = bpp_ce_save.binary_number
+            index_save = bpp_ce_save.bin_num
             
-            fixed_pop = fixed_pop.loc[fixed_pop.binary_number.isin(index_save)]
+            fixed_pop = fixed_pop.loc[fixed_pop.bin_num.isin(index_save)]
 
     # Filter out systems which undergo mass transfer as compact objects
     ###################################################################
     index_MT = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
                (bpp.kstar_2.isin([10,11,12])) &
-               (bpp.evol_type == 3.0)].binary_number
-    fixed_pop = fixed_pop.loc[~fixed_pop.binary_number.isin(index_MT)]
+               (bpp.evol_type == 3.0)].bin_num
+    fixed_pop = fixed_pop.loc[~fixed_pop.bin_num.isin(index_MT)]
 
     if fixed_pop.ecc.all() <= 1e-6:
         dat_list = ['mass_1', 'mass_2', 'porb']
