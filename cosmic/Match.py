@@ -55,7 +55,7 @@ def match(dataCm, nRuns):
     
     # BIN THE DATA:
     for i in range(nRuns):
-        histo[i], histoBinEdges[i] = astroStats.histogram(dataCm[i], bins = binEdges, normed = True)
+        histo[i], histoBinEdges[i] = astroStats.histogram(dataCm[i], bins = binEdges, density = True)
     # COMPUTE THE MATCH:
     nominator = []
     denominator1 = []
