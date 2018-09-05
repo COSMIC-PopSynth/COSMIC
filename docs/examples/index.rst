@@ -33,7 +33,8 @@ that initialize and evolve the binary.
 
 
 To initialize the a single binary, populate the SingleBinary method in the
-InitialBinaryTable class. Each initialized binary requires several parameters:
+InitialBinaryTable class. Each initialized binary requires the following parameters:
+
 
 * m1 : ZAMS mass of the primary star in :math:`M_{\odot}`
 
@@ -64,7 +65,7 @@ if you need to change the binary evolution prescriptions.
 
 If you are unfamiliar with these prescriptions, it is highly 
 advised to either run the defaults from the cosmic install (which are consistent
-with `Rodriguez+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120o1101R>`_ and `Kremer+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120s1103K>`) or refer to `Hurley+2002 <http://adsabs.harvard.edu/abs/2002MNRAS.329..897H>`_.
+with `Rodriguez+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120o1101R>`_ and `Kremer+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120s1103K>`_) or refer to `Hurley+2002 <http://adsabs.harvard.edu/abs/2002MNRAS.329..897H>`_.
 
 .. ipython::
 
@@ -96,9 +97,9 @@ The units are broadly consistent with BSE; masses, radii are in Solar units, tem
 
 The evol_type column in bpp indicates the evolutionary change that occured for each line. The meaning of each number is below:
 
-=========   =======================
+=========   =====================
 evol_type   evolutionary change   
-=========   =======================
+=========   =====================
 1           initial state         
 2           kstar change          
 3           begin RL overflow     
@@ -113,7 +114,7 @@ evol_type   evolutionary change
 12          begin symbiotic phase 
 13          end symbiotic phase   
 14          blue straggler        
-=========   =======================
+=========   =====================
 
 
 Each of the parameters in bpp or bcm can be accessed in the usual way for DataFrames.

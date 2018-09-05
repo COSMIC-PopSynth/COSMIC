@@ -17,7 +17,7 @@ In cosmic, the initial sample is done through an initial binary sampler which wo
 with the InitialBinaryTable class. There are two samplers available: 
 
 1. `independent` : initial binary parameters are distributed independently
-2. `multidim` : accounts for parameter dependencies following `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`
+2. `multidim` : accounts for parameter dependencies following `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
 We consider both cases below. 
 
@@ -92,14 +92,14 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
 NOTE: the length of the initial binary data set, InitialBinaries, does not match 
 the size parameter provided to InitialBinaryTable.sampler. 
-This is becuase the sampler begins by sampling a set of stellar masses of size=size, then assigns each of the stellar masses to be either single or in a binary system following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`. 
+This is becuase the sampler begins by sampling a set of stellar masses of size=size, then assigns each of the stellar masses to be either single or in a binary system following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
 Since we are interested in binaries, we only retain the binary systems. However, we also keep track of the total mass sampled so that we can scale our results to a full Milky Way population.
 
 ********
 multidim
 ********
 
-cosmic implements multidimensionally distributed initial binaries according to Moe Di Stefano 2017. The python code used in cosmic to create this sample was written by Mads Sorenson, and is based on the IDL codes written to accompany Moe & Di Stefano 2017. 
+cosmic implements multidimensionally distributed initial binaries according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_. The python code used in cosmic to create this sample was written by Mads Sorenson, and is based on the IDL codes written to accompany `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_. 
 
 The multidimensional initial binary data is sampled in cosmic as follows:
 
