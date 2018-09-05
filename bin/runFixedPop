@@ -202,17 +202,19 @@ if __name__ == '__main__':
     try:
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
-        print('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved')
+        log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
+        log_file.write('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
-        idx = np.max(pd.read_hdf(dat_store, 'idx'))
+        idx = np.max(pd.read_hdf(dat_store, 'idx'))[0]
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_sampled_mass = 0.0
-        idx = pd.Series([0])
+        idx = 0
+        log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
     bcm_len = 0
     match_all = np.zeros(len(args.convergence_params))
@@ -248,7 +250,7 @@ if __name__ == '__main__':
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
-        print("The total mass sampled so far is: {0}".format(total_sampled_mass))
+        log_file.write("The total mass sampled so far is: {0}\n".format(total_sampled_mass))
         
         # save the total_sampled_mass so far
         dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
@@ -314,17 +316,19 @@ if __name__ == '__main__':
                                                       param_transform(bcm_save_test_conv1[i_convergence_parameter]).tolist()], 2)
                         match_all.append(match)
                 match_all = np.array(match_all)
-                print('matches: {0}'.format(np.array(match_all)))
-                print('Length of bcm array: {0}'.format(len(bcm_save)))
+                log_file.write('matches: {0}\n'.format(np.array(match_all)))
+                log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
                 match_save = pd.DataFrame(np.array(match_all).T, columns = args.convergence_params)
                 dat_store.append('match', match_save)
             # save the total_sampled_mass so far
             dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 
         Nstep += args.Nstep
+        log_file.flush()
 
     # Close the data storage file 
     dat_store.close()
 
-    print('All done friend!')
+    log_file.write('All done friend!')
+    log_file.close()
 

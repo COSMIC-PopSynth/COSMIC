@@ -25,6 +25,6 @@ class TestMatch(unittest2.TestCase):
 
         dataCm = [sample[:int(len(sample)/2)], sample]
         match, bin_width = Match.match(dataCm, 2)
-        self.assertTrue(match[0] == MATCH_TEST)
+        self.assertAlmostEqual(match[0],MATCH_TEST)
 
         
