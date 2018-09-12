@@ -39,7 +39,7 @@ except ImportError:
 
 # set basic metadata
 PACKAGENAME = 'cosmic'
-DISTNAME = 'cosmic'
+DISTNAME = 'cosmic-popsynth'
 AUTHOR = 'Katie Breivik'
 AUTHOR_EMAIL = 'katie.breivik@gmail.com'
 LICENSE = 'GPLv3'
@@ -63,6 +63,10 @@ else:
     cmdclass['build_sphinx'] = BuildDoc
 
 cmdclass["sdist"] = sdist
+
+# read description
+with open('README.md', 'rb') as f:
+    longdesc = f.read().decode().strip()
 
 # -- dependencies -------------------------------------------------------------
 
@@ -112,7 +116,8 @@ setup(name=DISTNAME,
       provides=[PACKAGENAME],
       version=__version__,
       description="Compact Object Synthesis and Monte Carlo Investigation Code",
-      long_description=None,
+      long_description=longdesc,
+      long_description_content_type='text/markdown',
       ext_modules = [wrapper],
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
