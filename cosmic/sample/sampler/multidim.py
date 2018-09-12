@@ -56,13 +56,13 @@ geo_mass = G/c**2
 def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, met, size, **kwargs):
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, sampled_mass = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
-    tphysf = initconditions.sample_SFH(SFH_model, component_age, size = size)
+    mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    tphysf = initconditions.sample_SFH(SFH_model, component_age, met, size = size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
-    metallicity = met * np.ones(mass1_binary.size)
+    metallicity = np.ones(mass1_binary.size)*met
 
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass) 
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=n_sampled) 
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
                  usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size")
@@ -469,7 +469,7 @@ class MultiDim:
             #; Value of primary mass CDF where M1 = M1min
             #; Minimum primary mass to generate (must be >0.080 Msun)
             cumf_M1min = np.interp(0.08, M1, cumfM1)
-
+            n_sampled = 0
             while len(primary_mass_list) < size:
 
                 #; Select primary M1 > M1min from primary mass function
@@ -535,9 +535,11 @@ class MultiDim:
                         ecc_list.append(mye)
                     total_mass += myM1
                     total_mass += myq * myM1
+                    n_sampled += 1
                 else:
                     total_mass += myM1
-            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass])
+                    n_sampled += 1
+            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass, n_sampled])
             return
 
         output = mp.Queue()
@@ -556,7 +558,8 @@ class MultiDim:
         porb_list = []
         ecc_list = []
         total_mass = []
-        dat_lists = [[],[],[],[],[]]
+        n_sampled = []
+        dat_lists = [[],[],[],[],[],[]]
 
         for output_list in results:
             ii = 0
@@ -569,11 +572,11 @@ class MultiDim:
         porb_list = np.hstack(dat_lists[2])
         ecc_list = np.hstack(dat_lists[3])
         total_mass = np.sum(dat_lists[4])
+        n_sampled = np.sum(dat_lists[5])
 
+        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass, n_sampled
 
-        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass
-
-    def sample_SFH(self, SFH_model='const', component_age=10000.0, size=None):
+    def sample_SFH(self, SFH_model='const', component_age=10000.0, met = 0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
         star formation history (SFH) and Galactic component age. 
         The default is a MW thin disk constant evolution over 10000 Myr
@@ -590,6 +593,9 @@ class MultiDim:
         component_age : float
             age of the Galactic component [Myr]
             Default: 10000.0
+        met : float
+            metallicity of the population [Z_sun = 0.02]
+            Default: 0.02
         size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
@@ -603,15 +609,19 @@ class MultiDim:
         if SFH_model=='const':
 
             tphys = np.random.uniform(0, component_age, size)
+            metallicity = np.ones(size)*met
             return tphys
 
-        if SFH_model=='burst':
+        elif SFH_model=='burst':
             tphys = component_age - np.random.uniform(0, 1000, size)
+            metallicity = np.ones(size)*met
             return tphys
  
-        if SFH_model=='delta_burst':
+        elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
+            metallicity = np.ones(size)*met
             return tphys
+        
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
