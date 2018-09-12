@@ -30,6 +30,7 @@ import glob
 import os.path
 
 from setuptools import find_packages
+from distutils.command.sdist import sdist
 
 try:
     from numpy.distutils.core import setup, Extension
@@ -60,6 +61,8 @@ except ImportError:
     pass
 else:
     cmdclass['build_sphinx'] = BuildDoc
+
+cmdclass["sdist"] = sdist
 
 # -- dependencies -------------------------------------------------------------
 
@@ -95,8 +98,8 @@ extras_require = {
         'sphinxcontrib_programoutput',
     ],
 }
-# fortran compile
 
+# fortran compile
 wrapper = Extension('cosmic._evolvebin', sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f'], extra_compile_args = ["-O -g"])
 
 
