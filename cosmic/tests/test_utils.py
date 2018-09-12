@@ -21,7 +21,7 @@ x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 
 IDL_TABULATE_ANSWER = 0.5
-MASS_SUM_SINGLE = [11.0, 20.0, 34.0, 112.0, 330.0]
+MASS_SUM_SINGLE = [41.0, 44.0, 50.0, 132.0, 320.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07  
 BW_KNUTH = 0.333
