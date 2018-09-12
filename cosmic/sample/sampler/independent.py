@@ -71,7 +71,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity = met * np.ones(mass1_binary.size)
     
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass)
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=size)
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
@@ -221,8 +221,10 @@ class Sample(object):
 
 
     def sample_porb(self, mass1, mass2, size=None):
-        """Sample the semi-major axis according to 
-        `Han (1998) <http://adsabs.harvard.edu/abs/1998MNRAS.296.1019H>`_
+        """Sample the semi-major axis flat in log space from RROL < 0.5 up 
+        to 1e5 Rsun according to 
+        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+        and consistent with Dominik+2012,2013
         and then converted to orbital period in days using Kepler III
 
         Parameters
@@ -238,15 +240,26 @@ class Sample(object):
             orbital period with array size equalling array size 
             of mass1 and mass2
         """
+        q = mass2/mass1
+        RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))       
+        try:
+            ind_lo, = np.where(mass1 < 1.66)
+            ind_hi, = np.where(mass1 >= 1.66)
 
-        a_0 = np.random.uniform(0, 1, size)
-        low_cutoff = 0.0583333
-        lowIdx, = np.where(a_0 <= low_cutoff)
-        hiIdx, = np.where(a_0 > low_cutoff)
+            rad1 = np.zeros(len(mass1))
+            rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
+            rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
+        except:
+            if mass1 < 1.66:
+                rad1 = 1.06*mass1**0.945
+            else:
+                rad1 = 1.33*mass1**0.555
 
-        a_0[lowIdx] = (a_0[lowIdx]/0.00368058)**(5/6.0)
-        a_0[hiIdx] = np.exp(a_0[hiIdx]/0.07+math.log(10.0))
+        a_min = rad1/(0.5*RL_fac)
+        a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
+        # convert out of log space
+        a_0 = np.exp(a_0)
         # convert to meters
         a_0 = a_0*Rsun
 
