@@ -86,7 +86,7 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
 .. ipython::
 
-    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, met=0.02, size=10000)
+    In [5]: InitialBinaries, sampled_mass, n_sampled = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, met=0.02, size=10000)
 
     In [6]: print(InitialBinaries)
 
@@ -122,7 +122,7 @@ The multidimensional sample is generated as follows:
 
 .. ipython::
 
-    In [5]: InitialBinaries, sampled_mass = InitialBinaryTable.sampler('multidim', [11], [11], 2, 1, 'const', 10000.0, 0.02, 10)
+    In [5]: InitialBinaries, sampled_mass, n_sampled = InitialBinaryTable.sampler('multidim', [11], [11], 2, 1, 'const', 10000.0, 0.02, 10)
 
     In [6]: print(InitialBinaries)
 
