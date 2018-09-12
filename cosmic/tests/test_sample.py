@@ -115,7 +115,7 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
     def test_Moe_sample(self):
-        m1, m2, porb, ecc, total_mass = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
+        m1, m2, porb, ecc, total_mass, n_samp = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(total_mass, MOE_TOTAL_MASS)
 
     def test_sample_SFH_MultiDim(self):
