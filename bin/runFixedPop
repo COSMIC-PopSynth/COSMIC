@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 # Code: runFixedPop.py
 # Version: 1
@@ -35,25 +35,55 @@ from cosmic.evolve import Evolve
 from cosmic.utils import mass_min_max_select
 from cosmic.utils import param_transform
 
-##################################################################################
+###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
-##################################################################################
+###############################################################################
 def parse_commandline():
     """Parse the arguments given on the command-line.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--inifile", help="Name of ini file of params", required=True)
-    parser.add_argument("--final_kstar1", help="Specify the final condition of kstar1, you want systems to end at for your samples", required=True, type=int, nargs='+')
-    parser.add_argument("--final_kstar2", help="Specify the final condition of kstar2, you want systems to end at for your samples", required=True, type=int, nargs='+')
-    parser.add_argument("--convergence-params", help="A space separated list of parameters you would like to varify you have simulated enough binaries for", nargs='+', default=['mass_1', 'mass_2', 'porb', 'ecc'])
-    parser.add_argument("--initial_samp", help="Specify if independent binary initial conditions: independent, or following Moe & Di Stefano (2017): multidim", default="multidim")
-    parser.add_argument("--galaxy_component", help="Galaxy Components. Options include Bulge ThinDisk and ThickDisk", required=True)
-    parser.add_argument("--metallicity", help="Metallicity of the population; default: 0.02 (solar)", required=True, default=0.02, type=float)
-    parser.add_argument("--porb_cut", help="Specify an orbital period cut in log10(sec); default: 12", required=True, type=float, default=12.0)
-    parser.add_argument("--Niter", help="Number of iterations of binaries to try, will check ever Nstep for convergence", type=int, default=10000000)
-    parser.add_argument("--Nstep", help="Number of binaries to try before checking for convergence, it will check ever Nstep binaries until it reach Niter binaries", type=int, default=10000)
-    parser.add_argument("-n", "--nproc", help="number of processors", type=int, default=1)
-    parser.add_argument("--verbose", action="store_true", default=False, help="Run in Verbose Mode")
+    parser.add_argument("--inifile",
+                        help="Name of ini file of params",
+                        required=True)
+    parser.add_argument("--final_kstar1",
+                        help="Specify the final condition of kstar1 "
+                        ", you want systems to end at for your samples",
+                        required=True, type=int, nargs='+')
+    parser.add_argument("--final_kstar2",
+                        help="Specify the final condition of kstar2, you want "
+                        "systems to end at for your samples",
+                        required=True, type=int, nargs='+')
+    parser.add_argument("--convergence-params",
+                        help="A space separated list of parameters you would "
+                        "like to varify you have simulated enough binaries for"
+                        , nargs='+',
+                        default=['mass_1', 'mass_2', 'porb', 'ecc'])
+    parser.add_argument("--initial_samp",
+                        help="Specify if independent binary initial "
+                        "conditions: independent, or following "
+                        "Moe & Di Stefano (2017): multidim",
+                        default="multidim")
+    parser.add_argument("--galaxy_component",
+                        help="Galaxy Components. Options include "
+                        "Bulge ThinDisk and ThickDisk", required=True)
+    parser.add_argument("--metallicity", help="Metallicity of the population; "
+                        "default: 0.02 (solar)", default=0.02, type=float)
+    parser.add_argument("--porb_cut",
+                        help="Specify an orbital period cut "
+                        "in log10(sec); default: 12",
+                        type=float, default=12.0)
+    parser.add_argument("--Niter",
+                        help="Number of iterations of binaries "
+                        "to try, will check ever Nstep for convergence",
+                        type=int, default=10000000)
+    parser.add_argument("--Nstep",
+                        help="Number of binaries to try before checking for "
+                        "convergence, it will check ever Nstep binaries until "
+                        "it reach Niter binaries", type=int, default=10000)
+    parser.add_argument("-n", "--nproc",
+                        help="number of processors", type=int, default=1)
+    parser.add_argument("--verbose", action="store_true", default=False,
+                        help="Run in Verbose Mode")
 
     args = parser.parse_args()
 
@@ -71,27 +101,28 @@ def parse_commandline():
             raise parser.error('Range provided for kstar2 invalid')
 
     if args.initial_samp not in ['independent', 'multidim']:
-        raise parser.error('Initial sample must either be independent or multidim')
+        raise parser.error('Initial sample must either be '
+                           'independent or multidim')
 
     return args
 
-##################################################################################
+###############################################################################
 # BEGIN MAIN FUNCTION
-##################################################################################
+###############################################################################
 if __name__ == '__main__':
 
     # READ COMMANDLINE ARGUMENTS
-    ##############################################################################
+    ###########################################################################
     args = parse_commandline()
 
 
 
     # SET TIME TO TRACK COMPUTATION TIME
-    ##############################################################################
+    ###########################################################################
     start_time = time.time()
 
     # CONSTANTS
-    ##############################################################################
+    ###########################################################################
     G = 6.67384*math.pow(10, -11.0)
     c = 2.99792458*math.pow(10, 8.0)
     parsec = 3.08567758*math.pow(10, 16)
