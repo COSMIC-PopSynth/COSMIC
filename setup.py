@@ -31,7 +31,10 @@ import os.path
 
 from setuptools import find_packages
 
-from numpy.distutils.core import setup, Extension
+try:
+    from numpy.distutils.core import setup, Extension
+except ImportError:
+    raise ImportError("Building fortran extensions requires numpy.")
 
 # set basic metadata
 PACKAGENAME = 'cosmic'
@@ -65,17 +68,18 @@ setup_requires = [
     'pytest-runner',
 ]
 install_requires = [
-    'numpy',
-    'scipy',
-    'astropy',
+    'numpy >= 1.7.1',
+    'scipy >= 0.12.1',
+    'matplotlib >= 1.2.0, != 2.1.0, != 2.1.1',
+    'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
+    'astropy >= 1.1.1 ; python_version >= \'3\'',
     'configparser',
-    'matplotlib',
-    'gwpy',
-    'pandas>=0.22;python_version>="3.5"',
-    'pandas<0.21;python_version=="3.4"',
-    'pandas>=0.22;python_version=="2.7"',
-    'tables',
-    'h5py',
+    'gwpy >= 0.12',
+    'pandas >= 0.22 ; python_version >= \'3.5\'',
+    'pandas < 0.21 ; python_version == \'3.4\'',
+    'pandas >= 0.22 ; python_version == \'2.7\'',
+    'tables > 3.0.0',
+    'h5py >= 1.3',
 ]
 tests_require = [
     'pytest'
