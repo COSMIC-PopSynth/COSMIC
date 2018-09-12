@@ -30,6 +30,7 @@ import glob
 import os.path
 
 from setuptools import find_packages
+from distutils.command.sdist import sdist
 
 try:
     from numpy.distutils.core import setup, Extension
@@ -38,7 +39,7 @@ except ImportError:
 
 # set basic metadata
 PACKAGENAME = 'cosmic'
-DISTNAME = 'cosmic'
+DISTNAME = 'cosmic-popsynth'
 AUTHOR = 'Katie Breivik'
 AUTHOR_EMAIL = 'katie.breivik@gmail.com'
 LICENSE = 'GPLv3'
@@ -60,6 +61,12 @@ except ImportError:
     pass
 else:
     cmdclass['build_sphinx'] = BuildDoc
+
+cmdclass["sdist"] = sdist
+
+# read description
+with open('README.md', 'rb') as f:
+    longdesc = f.read().decode().strip()
 
 # -- dependencies -------------------------------------------------------------
 
@@ -95,8 +102,8 @@ extras_require = {
         'sphinxcontrib_programoutput',
     ],
 }
-# fortran compile
 
+# fortran compile
 wrapper = Extension('cosmic._evolvebin', sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f'], extra_compile_args = ["-O -g"])
 
 
@@ -108,8 +115,9 @@ scripts = glob.glob(os.path.join('bin', '*')) + glob.glob('data/*')
 setup(name=DISTNAME,
       provides=[PACKAGENAME],
       version=__version__,
-      description=None,
-      long_description=None,
+      description="Compact Object Synthesis and Monte Carlo Investigation Code",
+      long_description=longdesc,
+      long_description_content_type='text/markdown',
       ext_modules = [wrapper],
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
@@ -117,15 +125,21 @@ setup(name=DISTNAME,
       packages=packagenames,
       include_package_data=True,
       cmdclass=cmdclass,
+      url='https://github.com/COSMIC-PopSynth/COSMIC',
       scripts=scripts,
       setup_requires=setup_requires,
       install_requires=install_requires,
       tests_require=tests_require,
       extras_require=extras_require,
+      python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
       use_2to3=True,
       classifiers=[
+          'Development Status :: 4 - Beta',
           'Programming Language :: Python',
-          'Development Status :: 3 - Alpha',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
           'Intended Audience :: Science/Research',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Science/Research',
