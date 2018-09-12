@@ -28,7 +28,6 @@ import scipy.special as ss
 import scipy.stats as stats
 import pandas as pd
 import multiprocessing as mp
-import matplotlib.pyplot as plt
 
 import cosmic.gxreal as gxreal
 import cosmic.MC_samp as MC_sample 
@@ -77,35 +76,38 @@ if __name__ == '__main__':
     ###########################################################################
     def _gx_realization(gx, fixed_pop, fixed_mass, dat_list, gx_component, gx_model, LISA_calc, gx_save, Tobs, kstar1_string, kstar2_string):
         np.random.seed(gx)
-        gx_filename = 'gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.h5'
+        gx_file = pd.HDFStore('gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.h5', format='table')
 
+        gx_log_file = open('log_gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.txt', 'w')
         gx_real = gxreal.GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
         
         # compute the number of systems in the sample
         gx_real.n_samp = gx_real.compute_n_sample()
-        print('The number of systems in a Galactic realization are {0}'.format(gx_real.n_samp))
+        gx_log_file.write('The number of systems in a Galactic realization are {0}\n'.format(gx_real.n_samp))
  
         if gx_real.n_samp >= 1e6:
             n_loop = 50
             gx_real.n_samp = int(gx_real.n_samp/n_loop)
-            print('Sampling full population in {0} chunks'.format(n_loop))           
+            gx_log_file.write('Sampling full population in {0} chunks\n'.format(n_loop))           
             for ii in range(n_loop):
                 # Monte Carlo sample the population
                 gx_real.realization = gx_real.sample_population()
-                gx_real.realization.to_hdf(gx_filename, key='gx_dat')
-                print('Chunk {0} complete'.format(ii))          
+                gx_file.append('gx_dat', gx_real.realization)
+                gx_log_file.write('Chunk {0} complete\n'.format(ii))          
+                gx_log_file.flush()
         else:
             # Monte Carlo sample the population
             gx_real.realization = gx_real.sample_population()
-            gx_real.realization.to_hdf(gx_filename, key='gx_dat')  
-        
-        print('Galaxy sampled')
+            gx_file.append('gx_dat', gx_real.realization) 
+        gx_log_file.write('Galaxy sampled\n')
 
         if LISA_calc > 0:
-            gx_real.PSD = gx_real.LISA_PSD(Tobs)
-            gx_real.PSD.to_hdf(gx_filename, key='PSD') 
+            gx_real.PSD = gx_real.LISA_obs(Tobs)
+            gx_file.append('PSD', gx_real.PSD)
             
-            print('LISA calcs finished')
+            gx_log_file.write('LISA calcs finished\n')
+        gx_file.close()
+        gx_log_file.close()
         return
 
     # READ COMMANDLINE ARGUMENTS
@@ -163,16 +165,16 @@ if __name__ == '__main__':
             bpp_pre_ce = bpp.iloc[comenv_index-1]
             bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
             bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
-            index_save = bpp_ce_save.binary_number
+            index_save = bpp_ce_save.bin_num
             
-            fixed_pop = fixed_pop.loc[fixed_pop.binary_number.isin(index_save)]
+            fixed_pop = fixed_pop.loc[fixed_pop.bin_num.isin(index_save)]
 
     # Filter out systems which undergo mass transfer as compact objects
     ###################################################################
     index_MT = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
                (bpp.kstar_2.isin([10,11,12])) &
-               (bpp.evol_type == 3.0)].binary_number
-    fixed_pop = fixed_pop.loc[~fixed_pop.binary_number.isin(index_MT)]
+               (bpp.evol_type == 3.0)].bin_num
+    fixed_pop = fixed_pop.loc[~fixed_pop.bin_num.isin(index_MT)]
 
     if fixed_pop.ecc.all() <= 1e-6:
         dat_list = ['mass_1', 'mass_2', 'porb']

@@ -35,11 +35,18 @@ Unix
     pip install git+https://github.com/COSMIC-PopSynth/COSMIC.git
 
 
-*******************************
-Using cosmic to evolve binaries
-*******************************
+************
+Using cosmic
+************
+cosmic's primary purpose is to generate synthetic Milky Way populations. 
+This is done through two executables that are installed when cosmic is installed:
 
-For more details on how to use cosmic, see :ref:`examples`, :ref:`runpop`, and :ref:`fixedpop`.
+* runFixedPop
+* gxRealization
+
+For more information on how to use these executables in the command line, see ref:`fixedpop`. 
+
+For more details on how to use cosmic to run BSE in python, see :ref:`examples` and :ref:`runpop`.
 
 How to run a fixed population
 -----------------------------
