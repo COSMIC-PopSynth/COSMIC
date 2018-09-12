@@ -1,65 +1,40 @@
-.. aCOSMIC documentation master file, created by
-   sphinx-quickstart on Thu Apr 21 14:05:08 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+##################################
+Welcome to cosmic's documentation!
+##################################
+cosmic is a rapid binary population synthesis suite with a special purpose of generating realistic Milky Way compact binary populations. 
 
-###################################
-Welcome to aCOSMIC's documentation!
-###################################
+cosmic currently implements binary evolutionary processes using BSE (`Hurley+2002 <http://adsabs.harvard.edu/abs/2002MNRAS.329..897H>`_). Several modifications have been applied to BSE to account for recent updates to binary evolution especially important to compact binary formation (e.g. metallicity-dependent stellar winds or black hole natal kick strengths). For a detailed discussion of these modifications, see Breivik+2018 in prep.
 
-******************
-Installing aCOSMIC
-******************
+************
+Using cosmic
+************
+cosmic's primary purpose is to generate synthetic Milky Way populations. 
+This is done through two executables that are installed when cosmic is installed:
 
-The easiest method to install aCOSMIC is using `pip <https://pip.pypa.io/en/stable/>`_ directly from the `GitHub repository <https://github.com/aCOSMIC/aCOSMIC.git>`_:
+* runFixedPop
+* gxRealization
 
-.. code-block:: bash
+For more information on how to use these executables in the command line, see :ref:`fixedpop`. 
 
-   $ pip install git+https://github.com/aCOSMIC/aCOSMIC.git
-
+For more details on how to use cosmic to run BSE in python, see :ref:`examples` and :ref:`runpop`.
 
 *****************
 Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
+   install/index
    examples/index
    runpop/index
-
-******************
-How to run aCOSMIC
-******************
-
-Here is an example commandline:
-
-.. code-block:: bash
-    runFixedPop --inifile Params.ini --Niter 1000000 --Nstep 100000 --galaxy-component ThinDisk --nproc=2 --final-kstar1=11 --final-kstar2=11
-
-For more details see :ref:`command-line`.
+   fixedpop/index
 
 *********************
 Package documentation
 *********************
 
-Please consult these pages for more details on using aCOSMIC:
-
-.. toctree::
-   :maxdepth: 1
-
-   command-line/index
-
-*******
-Fortran
-*******
-
-evolv2
-======
-
-******************
-Indices and tables
-******************
+Please consult these pages for more details on using cosmic:
 
 * :ref:`genindex`
 * :ref:`modindex`
