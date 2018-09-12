@@ -71,7 +71,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity = met * np.ones(mass1_binary.size)
     
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass)
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=size)
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,

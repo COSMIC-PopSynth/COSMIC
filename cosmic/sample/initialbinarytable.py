@@ -125,6 +125,7 @@ class InitialBinaryTable():
             Total mass of population conatining the initial binaries [Msun]
         """
         sampled_mass = kwargs.pop("sampled_mass", None)
+        n_sampled = kwargs.pop("n_sampled", None)
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,       
                                           m1, m2, porb, ecc,       
                                           metallicity, tphysf]).T,       
@@ -132,7 +133,10 @@ class InitialBinaryTable():
                                           'mass1_binary', 'mass2_binary',    
                                           'porb', 'ecc', 'metallicity',                                                    'tphysf'])
         if sampled_mass:
-            return bin_dat, sampled_mass
+            if n_sampled:
+                return bin_dat, sampled_mass, n_sampled
+            else:
+                return bin_dat, sampled_mass
         else:
             return bin_dat
 
