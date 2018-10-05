@@ -247,7 +247,13 @@ if __name__ == '__main__':
         idx = 0
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
+    # BRUTE FORCE REQUIRE LOTS OF SHORT PERIOD BINARIES
+    ####################################################
     bcm_len = 0
+    porb_short = np.log10(1000.0)
+    bcm_short_length_required = 1000
+    ####################################################
+
     match_all = np.zeros(len(args.convergence_params))
     Nstep = args.Nstep
 
@@ -255,7 +261,7 @@ if __name__ == '__main__':
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.999999) or (bcm_len < 10000):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.999999) or (bcm_len < bcm_short_length_required):
         # Select the Galactic component from user input
         if args.galaxy_component == 'ThinDisk':
             SFH_model='const'
@@ -269,6 +275,9 @@ if __name__ == '__main__':
         elif args.galaxy_component == 'DeltaBurst':
             SFH_model='delta_burst'
             component_age=13700.0
+        elif args.galaxy_component == 'FIRE':
+            SFH_model='FIRE'
+            component_age=13900.0
         
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
@@ -316,7 +325,8 @@ if __name__ == '__main__':
             # Save the bcm dataframe
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
-            bcm_len = bcm_save.shape[0]
+            bcm_short = bcm_save.loc[bcm_save.porb < porb_short]
+            bcm_len = bcm_short.shape[0]
             if idx <= args.Nstep:
                 bcm_save_test_conv1 = bcm_save.iloc[0:int(bcm_save.shape[0]/2.0)]
             else:
