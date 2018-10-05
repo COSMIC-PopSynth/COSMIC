@@ -75,6 +75,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=size)
 
 
+
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
                  usage="final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
@@ -316,9 +317,11 @@ class Sample(object):
             star formation for 1Gyr starting at component_age [Myr] in the past
             'delta_burst' assignes a t=0 evolution time until component age
             DEFAULT: 'const'
-
         component_age: float
             age of the Galactic component [Myr]; DEFAULT: 10000.0
+        met : float
+            metallicity of the population [Z_sun = 0.02]
+            Default: 0.02
         size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
@@ -327,6 +330,8 @@ class Sample(object):
         -------
         tphys : array
             array of evolution times of size=size
+        metallicity : array
+            array of metallicities
         """
 
         if SFH_model=='const':
@@ -349,7 +354,8 @@ class Sample(object):
             import cosmic.FIRE as FIRE
             tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
-
+          
+    
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
         kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
