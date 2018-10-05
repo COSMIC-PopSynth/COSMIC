@@ -82,6 +82,7 @@ class InitialBinaryTable():
         -------
         SingleBinary : DataFrame
             Single binary initial conditions
+
         """
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2, 
                                           m1, m2, porb, ecc, 
@@ -131,7 +132,8 @@ class InitialBinaryTable():
                                           metallicity, tphysf]).T,       
                                columns = ['kstar_1', 'kstar_2',    
                                           'mass1_binary', 'mass2_binary',    
-                                          'porb', 'ecc', 'metallicity',                                                    'tphysf'])
+                                          'porb', 'ecc', 'metallicity', 
+                                          'tphysf'])
         if sampled_mass:
             if n_sampled:
                 return bin_dat, sampled_mass, n_sampled
