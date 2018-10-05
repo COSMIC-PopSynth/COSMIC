@@ -154,6 +154,7 @@ if __name__ == '__main__':
     tflag = cp.getint('bse', 'tflag')
     ifflag = cp.getint('bse', 'ifflag')
     wdflag = cp.getint('bse', 'wdflag')
+    ppsn = cp.getint('bse', 'ppsn')
     bhflag = cp.getint('bse', 'bhflag')
     nsflag = cp.getint('bse', 'nsflag')
     mxns = cp.getfloat('bse', 'mxns')
@@ -192,6 +193,7 @@ if __name__ == '__main__':
     BSEDict['tflag'] = tflag
     BSEDict['ifflag'] = ifflag
     BSEDict['wdflag'] = wdflag
+    BSEDict['ppsn'] = ppsn
     BSEDict['bhflag'] = bhflag        
     BSEDict['nsflag'] = nsflag
     BSEDict['mxns'] = mxns
