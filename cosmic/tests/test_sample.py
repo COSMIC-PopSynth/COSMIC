@@ -31,6 +31,11 @@ KSTAR_SOLAR = 1.0
 MOE_TOTAL_MASS = 31.134712126322306 
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
+FIRE_MAX_TIME = 13900.0
+FIRE_MIN_TIME = 0.0
+FIRE_MAX_MET = 0.2
+FIRE_MIN_MET = 0.0001
+
 
 class TestSample(unittest2.TestCase):
     """`TestCase` for the cosmic Sample class, which generates several 
@@ -100,14 +105,32 @@ class TestSample(unittest2.TestCase):
 
     def test_sample_SFH(self):
         np.random.seed(2)
-        # Check that the sample SFH function samples SFH correctly
-        times = SAMPLECLASS.sample_SFH(SFH_model='const', component_age=10000.0, size=100)
+        # Check that the sample SFH function samples SFH='const' correctly
+        times, met = SAMPLECLASS.sample_SFH(SFH_model='const', component_age=10000.0,\
+                                            met = 0.02, size=100)
         self.assertEqual(times.sum(), CONST_SFR_SUM)
+        self.assertAlmostEqual(np.mean(met), 0.02)
 
         np.random.seed(2)
-        # Check that the sample SFH function samples SFH correctly
-        times = SAMPLECLASS.sample_SFH(SFH_model='burst', component_age=10000.0, size=100)
+        # Check that the sample SFH function samples SFH='burst' correctly
+        times, met = SAMPLECLASS.sample_SFH(SFH_model='burst', component_age=10000.0,\
+                                            met = 0.02, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
+        self.assertAlmostEqual(np.mean(met), 0.02)
+ 
+        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        times, met = SAMPLECLASS.sample_SFH(SFH_model='delta_burst',\
+                                            component_age=10000.0,\
+                                            met = 0.02, size=100)
+        self.assertEqual(times.sum(), 100*10000.0)
+        self.assertAlmostEqual(np.mean(met), 0.02)
+
+        # Check that the sample SFH function samples SFH='FIRE' correctly
+        times, met = SAMPLECLASS.sample_SFH(SFH_model='FIRE', size=100)
+        self.assertTrue(np.max(times) < FIRE_MAX_TIME)
+        self.assertTrue(np.min(times) > FIRE_MIN_TIME)
+        self.assertTrue(np.max(met) < FIRE_MAX_MET)
+        self.assertTrue(np.min(met) > FIRE_MIN_MET)
 
     def test_set_kstar(self):
         # Check that the kstar is selected properly
@@ -118,18 +141,40 @@ class TestSample(unittest2.TestCase):
         m1, m2, porb, ecc, total_mass, n_samp = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(total_mass, MOE_TOTAL_MASS)
 
-    def test_sample_SFH_MultiDim(self):
+    def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
-        # Check that the sample SFH function samples SFH correctly
-        times = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='const', component_age=10000.0, size=100)
+        # Check that the sample SFH function samples SFH='const' correctly
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='const',\
+                                                    component_age=10000.0,\
+                                                    met = 0.02, size=100)
         self.assertEqual(times.sum(), CONST_SFR_SUM)
+        self.assertAlmostEqual(np.mean(met), 0.02)
 
         np.random.seed(2)
-        # Check that the sample SFH function samples SFH correctly
-        times = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='burst', component_age=10000.0, size=100)
+        # Check that the sample SFH function samples SFH='burst' correctly
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='burst',\
+                                                    component_age=10000.0,\
+                                                    met = 0.02, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
+        self.assertAlmostEqual(np.mean(met), 0.02)
+ 
+        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='delta_burst',\
+                                                    component_age=10000.0,\
+                                                    met = 0.02, size=100)
+        self.assertEqual(times.sum(), 100*10000.0)
+        self.assertAlmostEqual(np.mean(met), 0.02)
+
+        # Check that the sample SFH function samples SFH='FIRE' correctly
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='FIRE', size=100)
+        self.assertTrue(np.max(times) < FIRE_MAX_TIME)
+        self.assertTrue(np.min(times) > FIRE_MIN_TIME)
+        self.assertTrue(np.max(met) < FIRE_MAX_MET)
+        self.assertTrue(np.min(met) > FIRE_MIN_MET)
 
     def test_set_kstar_MultiDim(self):
         # Check that the kstar is selected properly
         kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
+
+
