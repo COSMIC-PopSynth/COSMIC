@@ -1,7 +1,7 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
-     \ tflagtmp,ifflagtmp,wdflagtmp,
+     \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
@@ -210,7 +210,7 @@
       REAL bcmout(50000,36)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
-      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,dtptmp,idumtmp
+      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
       REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
@@ -223,6 +223,7 @@ Cf2py intent(out) bppout,bcmout
       ifflag = ifflagtmp
       nsflag = nsflagtmp
       wdflag = wdflagtmp
+      ppsn = ppsntmp
       bhflag = bhflagtmp
       nsflag = nsflagtmp
       mxns = mxnstmp
