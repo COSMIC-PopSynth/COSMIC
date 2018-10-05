@@ -610,17 +610,22 @@ class MultiDim:
 
             tphys = np.random.uniform(0, component_age, size)
             metallicity = np.ones(size)*met
-            return tphys
+            return tphys, metallicity
 
         elif SFH_model=='burst':
             tphys = component_age - np.random.uniform(0, 1000, size)
             metallicity = np.ones(size)*met
-            return tphys
+            return tphys, metallicity
  
         elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
-            return tphys
+            return tphys, metallicity
+     
+        elif SFH_model=='FIRE':
+            import cosmic.FIRE as FIRE
+            tphys, metallicity = FIRE.SFH(size)
+            return tphys, metallicity
         
 
     def set_kstar(self, mass):
