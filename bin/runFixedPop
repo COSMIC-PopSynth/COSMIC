@@ -359,6 +359,7 @@ if __name__ == '__main__':
                 match_all = np.array(match_all)
                 log_file.write('matches: {0}\n'.format(np.array(match_all)))
                 log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
+                log_file.write('Number of binaries with orbital period shorter than {0} seconds: {1}\n'.format(10**porb_short, bcm_len))
                 match_save = pd.DataFrame(np.array(match_all).T, columns = args.convergence_params)
                 dat_store.append('match', match_save)
             # save the total_sampled_mass so far
