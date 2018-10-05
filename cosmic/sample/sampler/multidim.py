@@ -57,11 +57,11 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
     mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
-    tphysf = initconditions.sample_SFH(SFH_model, component_age, met, size = size)
+    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
-    metallicity = np.ones(mass1_binary.size)*met
-
+    metallicity[metallicity < 1e-4] = 1e-4
+    metallicity[metallicity > 0.03] = 0.03
     return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=n_sampled) 
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
@@ -616,17 +616,14 @@ class MultiDim:
             tphys = component_age - np.random.uniform(0, 1000, size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
- 
         elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
-     
         elif SFH_model=='FIRE':
             import cosmic.FIRE as FIRE
             tphys, metallicity = FIRE.SFH(size)
-            return tphys, metallicity
-        
+            return tphys, metallicity 
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
