@@ -66,10 +66,11 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     sampled_mass += np.sum(mass2_binary)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, size=mass1_binary.size)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
-    tphysf = initconditions.sample_SFH(SFH_model, component_age=component_age, size = mass1_binary.size)
+    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
+    metallicity[metallicity < 1e-4] = 1e-4
+    metallicity[metallicity > 0.03] = 0.03
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
-    metallicity = met * np.ones(mass1_binary.size)
     
     return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=size)
 
@@ -301,7 +302,7 @@ class Sample(object):
             return ecc
 
 
-    def sample_SFH(self, SFH_model='const', component_age=10000.0, size=None):
+    def sample_SFH(self, SFH_model='const', component_age=10000.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
         star formation history (SFH) and Galactic component age. 
         The default is a MW thin disk constant evolution over 10000 Myr
@@ -331,16 +332,23 @@ class Sample(object):
         if SFH_model=='const':
 
             tphys = np.random.uniform(0, component_age, size)
-            return tphys
+            metallicity = np.ones(size)*met
+            return tphys, metallicity
 
-        if SFH_model=='burst':
+        elif SFH_model=='burst':
             tphys = component_age - np.random.uniform(0, 1000, size)
-            return tphys
+            metallicity = np.ones(size)*met
+            return tphys, metallicity
 
-        if SFH_model=='delta_burst':
+        elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
-            return tphys
+            metallicity = np.ones(size)*met
+            return tphys, metallicity
 
+        elif SFH_model=='FIRE':
+            import cosmic.FIRE as FIRE
+            tphys, metallicity = FIRE.SFH(size)
+            return tphys, metallicity
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
