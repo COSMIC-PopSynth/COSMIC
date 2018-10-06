@@ -252,7 +252,7 @@ if __name__ == '__main__':
     # BRUTE FORCE REQUIRE LOTS OF SHORT PERIOD BINARIES
     ####################################################
     bcm_len = 0
-    porb_short = np.log10(1000.0)
+    porb_short = np.log10(100000.0)
     bcm_short_length_required = 1000
     ####################################################
 
@@ -288,7 +288,6 @@ if __name__ == '__main__':
         if args.initial_samp == 'multidim':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
-
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
@@ -320,7 +319,6 @@ if __name__ == '__main__':
         bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < args.porb_cut]
         # Filter out long period binaries and systems that don't match final kstars supplied
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
-        
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
         if bcm_save_filtered.shape[0] > 0:
@@ -334,7 +332,7 @@ if __name__ == '__main__':
             else:
                 bcm_save_test_conv1 = bcm_save.iloc[:bcm_save.shape[0]-bcm_save_filtered.shape[0]]
         
-            idxSave = bcm_save.bin_num
+            idxSave = bcm_save_filtered.bin_num
             bpp_save_filtered = bpp[bpp.bin_num.isin(idxSave)]
             
             # Save the bpp dataframe
