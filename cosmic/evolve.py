@@ -94,8 +94,8 @@ class Evolve(Table):
         initialbinarytable['merger'] = BSEDict['merger']
         initialbinarytable['windflag'] = BSEDict['windflag']
         initialbinarytable['dtp'] = initialbinarytable['tphysf']
-        initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
         initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
+        initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
 
         initial_conditions = np.array(initialbinarytable) 
 
@@ -106,18 +106,16 @@ class Evolve(Table):
                 [tmp1, tmp2] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
                                         f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                         f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
-                                        f[30], f[31], f[32], f[33], f[34], f[36], f[37])
+                                        f[30], f[31], f[32], f[33], f[34], f[35], f[36])
 
                 bpp_tmp = tmp1[np.argwhere(tmp1[:,0]>0),:].squeeze(1)
                 bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>1),:].squeeze(1)
 
-                bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[36])] * len(bpp_tmp))
-                bpp_tmp['bin_num'] = int(f[36])
-                bpp_tmp.set_index('bin_num')
+                bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[37])] * len(bpp_tmp))
+                bpp_tmp['bin_num'] = int(f[37])
 
-                bcm_tmp = pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[36])] * len(bcm_tmp))
-                bcm_tmp['bin_num'] = int(f[36])
-                bcm_tmp.set_index('bin_num')
+                bcm_tmp = pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[37])] * len(bcm_tmp))
+                bcm_tmp['bin_num'] = int(f[37])
 
                 return f, bpp_tmp, bcm_tmp
 
@@ -145,5 +143,4 @@ class Evolve(Table):
             output_bpp = output_bpp.append(x)
             output_bcm = output_bcm.append(y)        
 
-        initialbinarytable.set_index('bin_num')
-        return output_bpp, output_bcm, initialbinarytable 
+        return output_bpp, output_bcm, initial_conditions 
