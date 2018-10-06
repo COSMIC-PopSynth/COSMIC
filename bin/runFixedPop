@@ -287,7 +287,6 @@ if __name__ == '__main__':
 
         if args.initial_samp == 'multidim':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
-            print(len(IBT))
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
@@ -320,16 +319,12 @@ if __name__ == '__main__':
         bcm_filtered = bcm_filtered.loc[bcm_filtered.porb < args.porb_cut]
         # Filter out long period binaries and systems that don't match final kstars supplied
         bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
-        print('length of bcm_save_filtered: {}\n'.format(len(bcm_save_filtered)))
-        
-        
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
         if bcm_save_filtered.shape[0] > 0:
             # Save the bcm dataframe
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
-            print('length of bcm_save: {}\n'.format(len(bcm_save)))
             bcm_short = bcm_save.loc[bcm_save.porb < porb_short]
             bcm_len = bcm_short.shape[0]
             if idx <= args.Nstep:
