@@ -143,4 +143,4 @@ class Evolve(Table):
             output_bpp = output_bpp.append(x)
             output_bcm = output_bcm.append(y)        
 
-        return output_bpp, output_bcm, initial_conditions 
+        return output_bpp, output_bcm, initialbinarytable 
