@@ -184,7 +184,7 @@ if __name__ == '__main__':
     # Sample the Milky Way realizations and perform observability calculations
     ###########################################################################
     if args.nproc > 1:
-        n_loops = args.N_realizations / args.nproc
+        n_loops = (args.N_realizations / args.nproc)
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
