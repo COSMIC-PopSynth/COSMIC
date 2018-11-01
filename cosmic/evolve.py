@@ -51,8 +51,12 @@ class Evolve(Table):
         ----------
         nproc : `int`, optional, default: 1
             number of CPUs to use for parallel file reading
-
-        kwargs: 
+        idx : `int`, optional, default: 0
+            initial index of the bcm/bpp arrays
+        dtp : `float`, optional: default: tphysf
+            timestep size in Myr for bcm output where tphysf
+            is total evolution time in Myr
+       
 
         Returns
         -------
@@ -93,7 +97,7 @@ class Evolve(Table):
         initialbinarytable['CK'] = BSEDict['CK']
         initialbinarytable['merger'] = BSEDict['merger']
         initialbinarytable['windflag'] = BSEDict['windflag']
-        initialbinarytable['dtp'] = initialbinarytable['tphysf']
+        initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
         initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
         initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
 

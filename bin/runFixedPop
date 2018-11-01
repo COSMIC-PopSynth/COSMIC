@@ -212,10 +212,6 @@ if __name__ == '__main__':
     BSEDict['merger'] = merger
     BSEDict['windflag'] = windflag
 
-    # Based on the final_kstar1 and final_kstar2, select primary and secondary
-    # mass ranges to evolve    
-    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(args.final_kstar1, args.final_kstar2)   
-
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2: 
         kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1]+1)
