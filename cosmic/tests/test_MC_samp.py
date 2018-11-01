@@ -84,7 +84,7 @@ class TestMC_samp(unittest2.TestCase):
         # the analytical mean & variance of the radial exponential distribution 
         exp_radial_sample = MC_samp.sample_exponential_radial(N_SAMP, EXP_RADIAL_SCALE_HEIGHT)
         dist_mean = np.mean(exp_radial_sample)
-        self.assertTrue(np.abs(dist_mean - (-EXP_RADIAL_MEAN_TEST)) < 1e-3)
+        self.assertTrue(np.abs(dist_mean - (EXP_RADIAL_MEAN_TEST)) < 1e-3)
         dist_var = np.var(exp_radial_sample)
         self.assertTrue(np.abs(dist_var - EXP_RADIAL_VAR_TEST) < 1e-3)
 
@@ -108,6 +108,7 @@ class TestMC_samp(unittest2.TestCase):
 
     def test_galactic_positions(self):
         # Check that the galactic positions are sampled properly
+        np.random.seed(2)
         xGX, yGX, zGX, inc, OMEGA, omega = MC_samp.galactic_positions('ThinDisk', N_SAMP, model='McMillan')
         self.assertTrue(np.abs(np.mean((xGX**2+yGX**2)**0.5) - MCMILLAN_THINDISK_MEAN_TEST_XY) < 1e-2)
         self.assertTrue(np.abs(np.mean(zGX) - MCMILLAN_THINDISK_MEAN_TEST_Z) < 1e-2) 
