@@ -144,7 +144,7 @@ def sample_exponential_radial(size, scale_height):
     """
 
     rand_nums = np.random.uniform(0, 1, size)
-    distributed_nums = scale_height * np.log(1.0 - rand_nums)
+    distributed_nums = -scale_height * np.log(1.0 - rand_nums)
 
     return distributed_nums
 
@@ -166,7 +166,7 @@ def sample_exponential_vertical(size, scale_height):
     """    
 
     rand_nums = np.random.uniform(0, 1, size)
-    distributed_nums = scale_height * np.log(1.0 - rand_nums)
+    distributed_nums = -scale_height * np.log(1.0 - rand_nums)
 
     # CHOOSE A POSITION ABOVE AND BELOW THE DISK 
     ###########################################################################
