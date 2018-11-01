@@ -508,7 +508,7 @@ Cf2py intent(out) bppout,bcmout
       ip = 0
       jp = 0
 
-      tsave = tphysf
+      tsave = tphys
       isave = .true.
       iplot = .false.
       if(dtp.le.0.d0)then
