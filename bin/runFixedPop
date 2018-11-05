@@ -145,33 +145,11 @@ if __name__ == '__main__':
 
     # ---- Read needed variables from [bse] section.
     # -- bse
-    neta = cp.getfloat('bse', 'neta')
-    bwind = cp.getfloat('bse', 'bwind')
-    hewind = cp.getfloat('bse', 'hewind')
-    alpha1 = cp.getfloat('bse', 'alpha1')
-    lambdaf = cp.getfloat('bse', 'lambdaf')
-    ceflag = cp.getint('bse', 'ceflag')
-    tflag = cp.getint('bse', 'tflag')
-    ifflag = cp.getint('bse', 'ifflag')
-    wdflag = cp.getint('bse', 'wdflag')
-    ppsn = cp.getint('bse', 'ppsn')
-    bhflag = cp.getint('bse', 'bhflag')
-    nsflag = cp.getint('bse', 'nsflag')
-    mxns = cp.getfloat('bse', 'mxns')
-    pts1 = cp.getfloat('bse', 'pts1')
-    pts2 = cp.getfloat('bse', 'pts2')
-    pts3 = cp.getfloat('bse', 'pts3')
-    sigma = cp.getfloat('bse', 'sigma')
-    beta = cp.getfloat('bse', 'beta')
-    xi = cp.getfloat('bse', 'xi')
-    acc2 = cp.getfloat('bse', 'acc2')
-    epsnov = cp.getfloat('bse', 'epsnov')
-    eddfac = cp.getfloat('bse', 'eddfac')
-    gamma = cp.getfloat('bse', 'gamma')
-    bconst = cp.getint('bse', 'bconst')
-    CK = cp.getint('bse', 'CK')
-    merger = cp.getint('bse', 'merger')
-    windflag = cp.getint('bse', 'windflag')
+    BSEDict = {}
+    for section in cp.sections():
+        BSEDict[section] = {}
+        for option in cp.options(section):
+            BSEDict[section][option] = cp.get(section, option)
 
     # ---- Read needed variables from [rand_seed] section.
     # -- rand_seed
@@ -180,37 +158,6 @@ if __name__ == '__main__':
         np.random.seed(seed_int)
     else:
         np.random.seed()
-
-
-    # Make dictionary of all BSE parameters for readablility reasons
-    BSEDict = {}
-    BSEDict['neta'] = neta
-    BSEDict['bwind'] = bwind
-    BSEDict['hewind'] = hewind
-    BSEDict['alpha1'] = alpha1
-    BSEDict['lambdaf'] = lambdaf
-    BSEDict['ceflag'] = ceflag
-    BSEDict['tflag'] = tflag
-    BSEDict['ifflag'] = ifflag
-    BSEDict['wdflag'] = wdflag
-    BSEDict['ppsn'] = ppsn
-    BSEDict['bhflag'] = bhflag        
-    BSEDict['nsflag'] = nsflag
-    BSEDict['mxns'] = mxns
-    BSEDict['pts1'] = pts1
-    BSEDict['pts2'] = pts2
-    BSEDict['pts3'] = pts3
-    BSEDict['sigma'] = sigma
-    BSEDict['beta'] = beta
-    BSEDict['xi'] = xi
-    BSEDict['acc2'] = acc2
-    BSEDict['epsnov'] = epsnov
-    BSEDict['eddfac'] = eddfac
-    BSEDict['gamma'] = gamma
-    BSEDict['bconst'] = bconst
-    BSEDict['CK'] = CK
-    BSEDict['merger'] = merger
-    BSEDict['windflag'] = windflag
 
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2: 
