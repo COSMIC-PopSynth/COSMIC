@@ -14,7 +14,7 @@ import cosmic.Match as Match
 np.random.seed(2)
 sample = np.random.uniform(0,1,500)
 
-MATCH_TEST = 0.9893134305198774
+MATCH_TEST = 0.99636185870762237007
 
 class TestMatch(unittest2.TestCase):
     """`TestCase` for the match method
@@ -24,7 +24,7 @@ class TestMatch(unittest2.TestCase):
         # one containing half of the set and one containing the full set
 
         dataCm = [sample[:int(len(sample)/2)], sample]
-        match, bin_width = Match.match(dataCm, 2)
+        match, bin_width = Match.match(dataCm)
         self.assertAlmostEqual(match[0],MATCH_TEST)
 
         
