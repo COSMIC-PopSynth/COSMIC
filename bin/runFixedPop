@@ -145,11 +145,13 @@ if __name__ == '__main__':
 
     # ---- Read needed variables from [bse] section.
     # -- bse
-    BSEDict = {}
+    dictionary = {}
     for section in cp.sections():
-        BSEDict[section] = {}
+        dictionary[section] = {}
         for option in cp.options(section):
-            BSEDict[section][option] = cp.get(section, option)
+            dictionary[section][option] = cp.get(section, option)
+
+    BSEDict = dictionary['bse']
 
     # ---- Read needed variables from [rand_seed] section.
     # -- rand_seed
