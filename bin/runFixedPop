@@ -145,21 +145,20 @@ if __name__ == '__main__':
     cp.optionxform = str
     cp.read(args.inifile)
 
-    # ---- Read needed variables from [bse] section.
-    # -- bse
-    BSEDict = {}
+    # ---- Read needed variables from the inifile
+    dictionary = {}
     for section in cp.sections():
-        BSEDict[section] = {}
+        dictionary[section] = {}
         for option in cp.options(section):
-            BSEDict[section][option] = cp.get(section, option)
+            dictionary[section][option] = cp.get(section, option)
 
-    # ---- Read needed variables from [rand_seed] section.
-    # -- rand_seed
-    seed_int = cp.getint('rand_seed', 'seed')
+    BSEDict = dictionary['bse']
+    seed_int = dictionary['rand_seed']['seed']
+    
     if seed_int != 0:
         np.random.seed(seed_int)
     else:
-        np.random.seed()
+        np.random.seed(0)
 
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2: 
