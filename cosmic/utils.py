@@ -23,6 +23,58 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
+def filter_bpp_bcm(bcm, bpp, method):
+    """Filter the output of bpp and bcm
+
+    Parameters
+    ----------
+        bcm : `pandas.DataFrame`
+            bcm dataframe
+
+        bpp : `pandas.DataFrame`
+            bpp dataframe
+
+        method : `dict`,
+            one or more methods by which to filter the
+            bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
+            This means you do *not* want disrupted_binaries in your table
+
+    Returns
+    -------
+        bcm : `pandas.DataFrame`
+            filtered bcm dataframe
+
+        bpp : `pandas.DataFrame`
+            filtered bpp dataframe
+    """
+    _known_methods = ['mass_transfer_white_dwarf_to_co',
+                      'select_final_state',
+                      'disrupted_binaries',
+                      'porb_above_1e4']
+
+    if not set(method.keys()).issubset(set(_known_methods)):
+        raise ValueError("You have supplied an "
+                         "unknown method to filter out "
+                         "the bp or bcm array. Known methods are "
+                         "{0}".format(_known_methods))
+
+    for meth, use in method.items():
+        if meth == 'mass_transfer_white_dwarf_to_co' and not use:
+            idx_mass_transfer_white_dwarf_to_co = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                                          (bpp.kstar_2.isin([10,11,12])) &
+                                                          (bpp.evol_type == 3.0)].bin_num
+            bcm = bcm.loc[~bcm.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
+            bpp = bpp.loc[~bpp.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
+        elif (meth == 'select_final_state') and use:
+            bcm = bcm.loc[bcm.tphys > 1.0]
+        elif (meth == 'disrupted_binaries') and not use:
+            bcm = bcm.loc[bcm.sep > 0.0]
+            bpp = bpp.loc[bpp.bin_num.isin(bcm.bin_num)]
+        elif (meth == 'porb_above_1e4') and not use:
+            print('not implemented')
+
+    return bcm, bpp
+
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial
     parameter sample to reduce the number of unneccessary binaries evolved
