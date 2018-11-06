@@ -153,8 +153,8 @@ if __name__ == '__main__':
             dictionary[section][option] = cp.get(section, option)
 
     BSEDict = dictionary['bse']
-    seed_int = dictionary['rand_seed']['seed']
-    
+    seed_int = int(dictionary['rand_seed']['seed'])
+
     if seed_int != 0:
         np.random.seed(seed_int)
     else:
