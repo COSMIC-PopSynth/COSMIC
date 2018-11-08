@@ -50,12 +50,12 @@ def filter_bpp_bcm(bcm, bpp, method):
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
                       'disrupted_binaries',
-                      'porb_above_1e4']
+                      'LISA_sources']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
                          "unknown method to filter out "
-                         "the bp or bcm array. Known methods are "
+                         "the bpp or bcm array. Known methods are "
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
@@ -64,16 +64,67 @@ def filter_bpp_bcm(bcm, bpp, method):
                                                           (bpp.kstar_2.isin([10,11,12])) &
                                                           (bpp.evol_type == 3.0)].bin_num
             bcm = bcm.loc[~bcm.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
-            bpp = bpp.loc[~bpp.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
         elif (meth == 'select_final_state') and use:
             bcm = bcm.loc[bcm.tphys > 1.0]
         elif (meth == 'disrupted_binaries') and not use:
             bcm = bcm.loc[bcm.sep > 0.0]
-            bpp = bpp.loc[bpp.bin_num.isin(bcm.bin_num)]
-        elif (meth == 'porb_above_1e4') and not use:
-            print('not implemented')
+        elif (meth == 'LISA_sources') and use:
+            bcm = bcm.loc[bcm.porb < 4]
 
-    return bcm, bpp
+    return bcm
+
+def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
+    """Select bcm data for special convergence cases
+
+    Parameters
+    ----------
+        bcm_save_tot : `pandas.DataFrame`
+            bcm dataframe containing all saved bcm data
+
+        bcm_save_last : `pandas.DataFrame`
+            bcm dataframe containing bcm data from last
+            iteration 
+
+        method : `dict`,
+            one or more methods by which to filter the
+            bcm table, e.g. ``{'LISA_convergence' : True}``;
+            This means you want to only compute the convergence
+            over the region specified for the LISA_convergence
+            method below
+    Returns
+    -------
+        bcm_conv_tot : `pandas.DataFrame`
+            filtered bcm dataframe containing all saved bcm
+            data
+        
+        bcm_conv_last : `pandas.DataFrame`
+            filtered bcm dataframe containing saved bcm
+            data from last iteration
+
+    """
+    _known_methods = ['LISA_convergence']
+
+    if not set(method.keys()).issubset(set(_known_methods)):
+        raise ValueError("You have supplied an "
+                         "unknown method to filter the "
+                         "bcm array for convergence. Known methods are "
+                         "{0}".format(_known_methods))
+
+    for meth, use in method.items():
+        if meth == 'LISA_convergence' and use:
+            bcm_conv_tot = bcm_save_tot.loc[bcm_save_tot.porb < 3]
+            bcm_conv_last = bcm_save_last.loc[bcm_save_last.porb < 3]
+            
+        else:
+            bcm_conv_tot = bcm_save_tot
+            bcm_conv_last = bcm_save_last
+
+        # If it is the first iteration, divide the bcm array in two
+        # for convergence computation
+        if bcm_conv_tot.size == bcm_conv_last.size:
+            bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
+    
+    return bcm_conv_tot, bcm_conv_last
 
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial

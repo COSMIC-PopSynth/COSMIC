@@ -32,7 +32,7 @@ import pandas as pd
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match
 from cosmic.evolve import Evolve
-from cosmic.utils import param_transform, filter_bpp_bcm
+from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
 
 ###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -98,11 +98,6 @@ def parse_commandline():
     if args.initial_samp not in ['independent', 'multidim']:
         raise parser.error('Initial sample must either be '
                            'independent or multidim')
-
-    if args.LISA_convergence == 'True':
-        args.LISA_convergence = True
-    else:
-        args.LISA_convergence = False
 
     return args
 
@@ -224,9 +219,6 @@ if __name__ == '__main__':
         if args.initial_samp == 'multidim':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
-        if args.LISA_convergence:
-            IBT = IBT.loc[np.log10(IBT.porb*86400) < 10.5]
-
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
@@ -246,15 +238,15 @@ if __name__ == '__main__':
         idx = bcm.bin_num.max()+1
         dat_store.append('idx', pd.DataFrame([idx]))
 
-        bcm, bpp = filter_bpp_bcm(bcm, bpp, filters)
+        # Filter the bcm and bpp arrays according to user specified filters
+        bcm = filter_bpp_bcm(bcm, bpp, filters)
         
-        # Filter out long period binaries and systems that don't match final kstars supplied
+        # Filter out systems that don't match final kstars supplied
         bcm_save_filtered = bcm.loc[(bcm.kstar_1.isin(kstar1_range)) & (bcm.kstar_2.isin(kstar2_range))]
-        if args.LISA_convergence:
-            bcm_save_filtered = bcm_save_filtered.loc[bcm_save_filtered.porb < 4]
+        
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
-        if bcm_save_filtered.shape[0] > 0:
+        if (len(bcm_save_filtered) > 0):
             # Save the bcm dataframe
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
@@ -272,36 +264,24 @@ if __name__ == '__main__':
             # Save the initial binaries 
             dat_store.append('initCond', initC)
 
-            if args.LISA_convergence:
-                bcm_match = bcm_save.loc[bcm_save.porb < 3.5]
-                bcm_match_filtered = bcm_save_filtered.loc[bcm_save_filtered.porb < 3.5]
-            else:
-                bcm_match = bcm_save
-                bcm_match_filtered = bcm_save_filtered
-            bcm_len = bcm_match.shape[0]
-  
-            if steps <= 1:
-                bcm_conv1 = bcm_match.iloc[0:int(bcm_match.shape[0]/2.0)]
-            else:
-                bcm_conv1 = bcm_match.iloc[:bcm_match.shape[0]-bcm_match_filtered.shape[0]]
+            bcm_conv_1, bcm_conv_2 = bcm_conv_select(bcm_save, bcm_save_filtered, convergence) 
 
             # Perform the Match calculations for all interested parameters
             # supplied by user in conv_params
-            if bcm_conv1.shape[0] > 3:
-                steps += 1
+            if len(bcm_conv_2) > 3:
                 match_all = []
                 for conv_param in args.convergence_params:
-                    if bcm_match[conv_param].all() == 0.0:
+                    if bcm_conv_1[conv_param].all() == 0.0:
                         match_all.append(np.array([1.0]))
                     else:
-                        match, bw = Match.match([param_transform(bcm_match[conv_param]).tolist(),\
-                                                 param_transform(bcm_conv1[conv_param]).tolist()])
+                        match, bw = Match.match([param_transform(bcm_conv_1[conv_param]).tolist(),\
+                                                 param_transform(bcm_conv_2[conv_param]).tolist()])
                         match_all.append(match)
-                match_all = np.array(match_all)
-                log_file.write('matches: {0}\n'.format(np.array(match_all)))
-                log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
-                match_save = pd.DataFrame(np.array(match_all).T, columns = args.convergence_params)
-                dat_store.append('match', match_save)
+            match_all = np.array(match_all)
+            log_file.write('matches: {0}\n'.format(np.array(match_all)))
+            log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
+            match_save = pd.DataFrame(match_all)
+            dat_store.append('match', match_save)
             # save the total_sampled_mass so far
             dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 

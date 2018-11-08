@@ -113,7 +113,7 @@ class Evolve(Table):
                                         f[30], f[31], f[32], f[33], f[34], f[35], f[36])
 
                 bpp_tmp = tmp1[np.argwhere(tmp1[:,0]>0),:].squeeze(1)
-                bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>1),:].squeeze(1)
+                bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>0),:].squeeze(1)
 
                 bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[37])] * len(bpp_tmp))
                 bpp_tmp['bin_num'] = int(f[37])
