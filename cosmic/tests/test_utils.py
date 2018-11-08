@@ -19,16 +19,70 @@ kstar_single = [[10], [11], [12], [13], [14]]
 kstar_double = [10, 14]
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
+wrong_dict = {'test_wrong_dict' : False}
+true_dict = {'mass_transfer_white_dwarf_to_co' : True, 
+             'select_final_state' : True,
+             'disrupted_binaries' : True,
+             'LISA_sources' : True}
+false_dict = {'mass_transfer_white_dwarf_to_co' : False,
+             'select_final_state' : False,
+             'disrupted_binaries' : False,
+             'LISA_sources' : False}
+conv_dict_true = {'LISA_convergence' : True}
+conv_dict_false = {'LISA_convergence' : False}
+
+
+TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
+BPP_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bpp')
+BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
+
 
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [41.0, 44.0, 50.0, 132.0, 320.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07  
 BW_KNUTH = 0.333
+_KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
+                      'select_final_state',
+                      'disrupted_binaries',
+                      'LISA_sources']
+
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
     """
+    def test_filter_bpp_bcm(self):
+        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict)
+
+        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, true_dict)
+        
+        self.assertTrue(bcm_true.tphys.all() >= 1.0)
+        self.assertTrue(len(bcm_true.loc[bcm_true.sep == 0.0]) >= 1)
+        self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
+        self.assertTrue(bcm_true.porb.all() < 4.0)
+
+        bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict)
+        
+        self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
+        self.assertTrue(bcm_false.sep.all() > 0.0)
+        self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
+        self.assertTrue(len(bcm_false.loc[bcm_false.porb > 4.0]) > 1)
+
+    def test_bcm_conv_select(self):
+        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict)
+
+        bcm_1, bcm_2 = utils.bcm_conv_select(BCM_TEST, BCM_TEST, conv_dict_true)
+        self.assertEqual(len(bcm_2), int(len(bcm_1)/2))
+        self.assertTrue(bcm_1.porb.all() < 3.0)
+        self.assertTrue(bcm_2.porb.all() < 3.0)
+
+        bcm_1_F, bcm_2_F = utils.bcm_conv_select(BCM_TEST[:len(BCM_TEST)-10],\
+                                                 BCM_TEST[len(BCM_TEST)-10:],\
+                                                 conv_dict_false)
+        self.assertEqual(len(BCM_TEST[len(BCM_TEST)-10:]), len(bcm_2_F))
+        self.assertTrue(len(bcm_1_F.porb.loc[bcm_1_F.porb > 3.0]) > 1)
+        self.assertTrue(len(bcm_2_F.porb.loc[bcm_2_F.porb > 3.0]) > 1)
+
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
         # of a line from x = 0 to 1 and y= 0 to 1
