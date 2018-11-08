@@ -13,7 +13,7 @@ from cosmic.sample.sampler.multidim import MultiDim
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
-#TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
+TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
 TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
 TOTAL_SAMPLED_MASS_KROUPA93 = 41.585324999945854 
