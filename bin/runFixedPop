@@ -229,7 +229,14 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx)
+        # see if users specified a smaple rate for the bcm array if not set it
+        # tphysf
+        try:
+            dtp = dictionary['bse']['dtp']
+        except:
+            dtp = IBT['tphysf'].values
+
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
 
         # Convert the orbital period from years to log seconds
         bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
