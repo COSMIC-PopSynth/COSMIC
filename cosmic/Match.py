@@ -83,4 +83,4 @@ def match(dataCm):
     else:
         match = (nominatorSum/np.sqrt(denominator1Sum*denominator2Sum))
         
-    return match, binwidth;
+    return match[0], binwidth;
