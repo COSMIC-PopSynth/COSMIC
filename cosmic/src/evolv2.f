@@ -182,7 +182,7 @@
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
-      INTEGER mergemsp,merge_mem,notamerger
+      INTEGER mergemsp,merge_mem,notamerger,binstate
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
@@ -207,7 +207,7 @@
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
       REAL bppout(80,10)
-      REAL bcmout(50000,36)
+      REAL bcmout(50000,37)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
@@ -272,6 +272,9 @@ Cf2py intent(out) bppout,bcmout
       ngtv = -1.d0
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
+
+* value for bcm[ii,37] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
+      binstate = 0
 * PDK
       pulsar = 1
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
@@ -1344,6 +1347,7 @@ Cf2py intent(out) bppout,bcmout
                   kstar(3-k) = 15
                   mass(3-k) = 0.d0
                   coel = .true.
+                  binstate = 1
                   goto 135 
                endif
                if(ecc.gt.1.d0)then
@@ -1589,6 +1593,7 @@ Cf2py intent(out) bppout,bcmout
             endif
             bcm(ip,35) = float(formation(1))
             bcm(ip,36) = float(formation(2))
+            bcm(ip,37) = binstate
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1833,6 +1838,7 @@ Cf2py intent(out) bppout,bcmout
          endif
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
+         bcm(ip,37) = binstate
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
@@ -1961,6 +1967,7 @@ Cf2py intent(out) bppout,bcmout
             mass(j2) = mass(j2) + dm2
          endif
          coel = .true.
+         binstate = 1
          if(mass(j2).gt.0.d0)then
             mass(j1) = 0.d0
             kstar(j1) = 15
@@ -2015,6 +2022,7 @@ Cf2py intent(out) bppout,bcmout
          epoch(j1) = tphys - aj(j1)
          if(coel)then
             com = .true.
+            binstate = 1
             goto 135
          endif
          epoch(j2) = tphys - aj(j2)
@@ -2102,6 +2110,7 @@ Cf2py intent(out) bppout,bcmout
             mass(j2) = 0.d0
          endif
          coel = .true.
+         binstate = 1
          goto 135
       elseif(kstar(j1).eq.13)then
 *
@@ -2114,6 +2123,7 @@ Cf2py intent(out) bppout,bcmout
          mass(j2) = mass(j2) + dm2
          kstar(j2) = 14
          coel = .true.
+         binstate = 1
          goto 135
       elseif(kstar(j1).eq.14)then
 *
@@ -2125,6 +2135,7 @@ Cf2py intent(out) bppout,bcmout
          dm2 = dm1
          mass(j2) = mass(j2) + dm2
          coel = .true.
+         binstate = 1
          goto 135
       else
 *
@@ -2181,6 +2192,7 @@ Cf2py intent(out) bppout,bcmout
             dtm = 0.d0
             epoch(1) = tphys - aj(1)
             coel = .true.
+            binstate = 1
             goto 135
          else
             dm1 = MIN(dm1,mass(j1)*tb/tdyn)
@@ -2958,6 +2970,7 @@ Cf2py intent(out) bppout,bcmout
                kstar(3-k) = 15
                mass(3-k) = 0.d0
                coel = .true.
+               binstate = 1
             endif
             if(ecc.gt.1.d0)then
                kstar(k) = kw
@@ -3101,6 +3114,7 @@ Cf2py intent(out) bppout,bcmout
          endif
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
+         bcm(ip,37) = binstate
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3154,6 +3168,7 @@ Cf2py intent(out) bppout,bcmout
 * Contact system.
 *
       coel = .true.
+      binstate = 1
 *
 * If *1 or *2 is giant-like this will be common-envelope evolution.
 *
@@ -3303,6 +3318,7 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,9) = ngtv
             if(coel)then
                bpp(jp,10) = 6.0
+               binstate = 1
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -3311,8 +3327,10 @@ Cf2py intent(out) bppout,bcmout
                bpp(jp,7) = ecc
                bpp(jp,9) = ngtv2
                bpp(jp,10) = 11.0
+               binstate = 2
             else
                bpp(jp,10) = 9.0
+               binstate = 2
             endif
          endif
          if(kstar(2).eq.15)then
@@ -3365,6 +3383,7 @@ Cf2py intent(out) bppout,bcmout
          if(coel)then
             bpp(jp,9) = ngtv
             bpp(jp,10) = 6.0
+            binstate = 1
          elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -3372,6 +3391,7 @@ Cf2py intent(out) bppout,bcmout
 *
             bpp(jp,9) = ngtv2
             bpp(jp,10) = 9.0
+            binstate = 2
          else
             bpp(jp,6) = sep
             bpp(jp,7) = ecc
@@ -3441,6 +3461,7 @@ Cf2py intent(out) bppout,bcmout
          endif
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
+         bcm(ip,37) = binstate
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
@@ -3448,7 +3469,7 @@ Cf2py intent(out) bppout,bcmout
          if(isave) tsave = tsave + dtp
          if(tphysf.le.0.d0)then
             ip = ip + 1
-            do 145 , k = 1,36
+            do 145 , k = 1,37
                bcm(ip,k) = bcm(ip-1,k)
  145        continue
          endif
