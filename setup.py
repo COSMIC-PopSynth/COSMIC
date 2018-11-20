@@ -104,7 +104,7 @@ extras_require = {
 }
 
 # fortran compile
-wrapper = Extension('cosmic._evolvebin', sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f'], extra_compile_args = ["-O -g"])
+wrapper = Extension('cosmic._evolvebin', sources=['cosmic/bse/src/comenv.f', 'cosmic/bse/src/corerd.f', 'cosmic/bse/src/deltat.f', 'cosmic/bse/src/dgcore.f', 'cosmic/bse/src/evolv2.f', 'cosmic/bse/src/gntage.f', 'cosmic/bse/src/hrdiag.f', 'cosmic/bse/src/instar.f', 'cosmic/bse/src/kick.f', 'cosmic/bse/src/mix.f', 'cosmic/bse/src/mlwind.f', 'cosmic/bse/src/mrenv.f', 'cosmic/bse/src/ran3.f', 'cosmic/bse/src/rl.f', 'cosmic/bse/src/star.f', 'cosmic/bse/src/zcnsts.f', 'cosmic/bse/src/zfuncs.f'], extra_compile_args = ["-O -g"])
 
 
 # -- run setup ----------------------------------------------------------------
