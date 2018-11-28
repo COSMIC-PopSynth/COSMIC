@@ -3216,6 +3216,7 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
+         binstate = 0
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
@@ -3237,6 +3238,7 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
+         binstate = 0
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
       endif
@@ -3330,7 +3332,7 @@ Cf2py intent(out) bppout,bcmout
                binstate = 2
             else
                bpp(jp,10) = 9.0
-               binstate = 2
+               binstate = 3
             endif
          endif
          if(kstar(2).eq.15)then
@@ -3391,7 +3393,7 @@ Cf2py intent(out) bppout,bcmout
 *
             bpp(jp,9) = ngtv2
             bpp(jp,10) = 9.0
-            binstate = 2
+            binstate = 3
          else
             bpp(jp,6) = sep
             bpp(jp,7) = ecc
