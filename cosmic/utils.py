@@ -49,7 +49,7 @@ def filter_bpp_bcm(bcm, bpp, method):
     """
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
-                      'disrupted_binaries',
+                      'binary_state',
                       'LISA_sources']
 
     if not set(method.keys()).issubset(set(_known_methods)):
@@ -65,9 +65,9 @@ def filter_bpp_bcm(bcm, bpp, method):
                                                           (bpp.evol_type == 3.0)].bin_num
             bcm = bcm.loc[~bcm.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
         elif (meth == 'select_final_state') and use:
-            bcm = bcm.loc[bcm.tphys > 1.0]
-        elif (meth == 'disrupted_binaries') and not use:
-            bcm = bcm.loc[bcm.sep > 0.0]
+            bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
+        elif (meth == 'binary_state'):
+            bcm = bcm.loc[bcm.bin_state.isin(use)]
         elif (meth == 'LISA_sources') and use:
             bcm = bcm.loc[bcm.porb < 4]
 
