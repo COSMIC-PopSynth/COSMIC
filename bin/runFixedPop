@@ -142,10 +142,15 @@ if __name__ == '__main__':
     for section in cp.sections():
         dictionary[section] = {}
         for option in cp.options(section):
+            opt = cp.get(section, option)
+            if opt == 'False':
+                opt = False
+            elif opt == 'True':
+                opt = True
             try:
-                dictionary[section][option] = json.loads(cp.get(section, option))
+                dictionary[section][option] = json.loads(opt)
             except:
-                dictionary[section][option] = cp.get(section, option)
+                dictionary[section][option] = opt
 
     BSEDict = dictionary['bse']
     seed_int = int(dictionary['rand_seed']['seed'])

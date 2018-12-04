@@ -110,19 +110,17 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
                          "bcm array for convergence. Known methods are "
                          "{0}".format(_known_methods))
 
+    bcm_conv_tot = bcm_save_tot
+    bcm_conv_last = bcm_save_last
     for meth, use in method.items():
         if meth == 'LISA_convergence' and use:
-            bcm_conv_tot = bcm_save_tot.loc[bcm_save_tot.porb < 3]
-            bcm_conv_last = bcm_save_last.loc[bcm_save_last.porb < 3]
-            
-        else:
-            bcm_conv_tot = bcm_save_tot
-            bcm_conv_last = bcm_save_last
+            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < 3]
+            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < 3]
 
-        # If it is the first iteration, divide the bcm array in two
-        # for convergence computation
-        if bcm_conv_tot.size == bcm_conv_last.size:
-            bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
+    # If it is the first iteration, divide the bcm array in two
+    # for convergence computation
+    if len(bcm_conv_tot) == len(bcm_conv_last):
+        bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
     
     return bcm_conv_tot, bcm_conv_last
 
