@@ -228,6 +228,9 @@ if __name__ == '__main__':
 
         if args.LISA_convergence:
             IBT = IBT.loc[np.log10(IBT.porb*86400) < 10.5]
+        
+        # Force all birth times to be capped with minimum times of 1 Myr
+        IBT.loc[IBT.tphysf < 1.0] = 1.0
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
