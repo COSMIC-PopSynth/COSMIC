@@ -3478,77 +3478,8 @@ Cf2py intent(out) bppout,bcmout
 *
       
       elseif((kstar(1).eq.15.and.kstar(2).eq.15))then
-         ip = ip + 1
-         bcm(ip,1) = tphysf
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
-         teff1 = 1000.d0*((1130.d0*lumin(1)/
-     &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/
-     &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
-         dt = MAX(dtm,1.0d-12)*1.0d+06
-         if(j1.eq.1)then
-            bcm(ip,14) = (-1.0*dm1 - dms(1))/dt
-            bcm(ip,28) = (dm2 - dms(2))/dt
-         else
-            bcm(ip,14) = (dm2 - dms(1))/dt
-            bcm(ip,28) = (-1.0*dm1 - dms(2))/dt
-         endif
-         if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
-         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
-         else
-            bcm(ip,33) = B(1)
-         endif
-         if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
-         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
-         else
-            bcm(ip,34) = B(2)
-         endif
-         bcm(ip,35) = float(formation(1))
-         bcm(ip,36) = float(formation(2))
-         bcm(ip,37) = binstate
-         if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
-     & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
-     & tphys,tphysf
-*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1),
-         if(isave) tsave = tsave + dtp
-         if(tphysf.le.0.d0)then
-            ip = ip + 1
-            do 146 , k = 1,37
-               bcm(ip,k) = bcm(ip-1,k)
- 146        continue
-         endif
+         tphys = tphysf
+         goto 135
       endif
       tphysfhold = tphysf
       tphysf = tphys
