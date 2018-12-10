@@ -95,7 +95,7 @@ class InitialBinaryTable():
         return bin_dat
 
     @classmethod
-    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
+    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
         """Create multiple binaries
         Parameters
         ----------
@@ -125,8 +125,6 @@ class InitialBinaryTable():
         sampled_mass : int
             Total mass of population conatining the initial binaries [Msun]
         """
-        sampled_mass = kwargs.pop("sampled_mass", None)
-        n_sampled = kwargs.pop("n_sampled", None)
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,       
                                           m1, m2, porb, ecc,       
                                           metallicity, tphysf]).T,       
@@ -134,13 +132,7 @@ class InitialBinaryTable():
                                           'mass1_binary', 'mass2_binary',    
                                           'porb', 'ecc', 'metallicity', 
                                           'tphysf'])
-        if sampled_mass:
-            if n_sampled:
-                return bin_dat, sampled_mass, n_sampled
-            else:
-                return bin_dat, sampled_mass
-        else:
-            return bin_dat
+        return bin_dat
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):
