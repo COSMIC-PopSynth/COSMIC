@@ -3475,8 +3475,12 @@ Cf2py intent(out) bppout,bcmout
                bcm(ip,k) = bcm(ip-1,k)
  145        continue
          endif
-      endif
 *
+      
+      elseif((kstar(1).eq.15.and.kstar(2).eq.15))then
+         tphys = tphysf
+         goto 135
+      endif
       tphysfhold = tphysf
       tphysf = tphys
       if(sgl)then
