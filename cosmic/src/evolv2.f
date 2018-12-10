@@ -1991,7 +1991,7 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide)
+     &               formation(j1),formation(j2),ST_tide,binstate)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK. 
 * In CE the NS got switched around. Do same to formation.
@@ -2022,7 +2022,6 @@ Cf2py intent(out) bppout,bcmout
          epoch(j1) = tphys - aj(j1)
          if(coel)then
             com = .true.
-            binstate = 1
             goto 135
          endif
          epoch(j2) = tphys - aj(j2)
@@ -2116,6 +2115,13 @@ Cf2py intent(out) bppout,bcmout
 *
 * Gamma ray burster?
 *
+         if(kstar(j2).eq.13)then
+*           NSNS
+            binstate = 13
+         elseif(kstar(j2).eq.14)then
+*           BHNS
+            binstate = 12
+         endif
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
@@ -2123,7 +2129,6 @@ Cf2py intent(out) bppout,bcmout
          mass(j2) = mass(j2) + dm2
          kstar(j2) = 14
          coel = .true.
-         binstate = 1
          goto 135
       elseif(kstar(j1).eq.14)then
 *
@@ -2135,7 +2140,8 @@ Cf2py intent(out) bppout,bcmout
          dm2 = dm1
          mass(j2) = mass(j2) + dm2
          coel = .true.
-         binstate = 1
+*        BHBH
+         binstate = 14
          goto 135
       else
 *
@@ -3200,7 +3206,7 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide)
+     &               formation(j1),formation(j2),ST_tide,binstate)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3216,13 +3222,15 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         binstate = 0
+         if(com.and..not.coel)then
+            binstate = 0
+         endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide)
+     &               formation(j1),formation(j2),ST_tide,binstate)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3238,7 +3246,9 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         binstate = 0
+         if(com.and..not.coel)then
+            binstate = 0
+         endif
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
       endif
@@ -3320,7 +3330,6 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,9) = ngtv
             if(coel)then
                bpp(jp,10) = 6.0
-               binstate = 1
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -3332,7 +3341,6 @@ Cf2py intent(out) bppout,bcmout
                binstate = 2
             else
                bpp(jp,10) = 9.0
-               binstate = 3
             endif
          endif
          if(kstar(2).eq.15)then
@@ -3393,7 +3401,6 @@ Cf2py intent(out) bppout,bcmout
 *
             bpp(jp,9) = ngtv2
             bpp(jp,10) = 9.0
-            binstate = 3
          else
             bpp(jp,6) = sep
             bpp(jp,7) = ecc
