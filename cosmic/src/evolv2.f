@@ -1998,7 +1998,8 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,binstate)
+     &               formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK. 
 * In CE the NS got switched around. Do same to formation.
@@ -3212,7 +3213,8 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,binstate)
+     &               formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3237,7 +3239,8 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,binstate)
+     &               formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3347,6 +3350,7 @@ Cf2py intent(out) bppout,bcmout
                bpp(jp,9) = ngtv2
                bpp(jp,10) = 11.0
                binstate = 2
+               mergertype = -1
             else
                bpp(jp,10) = 9.0
             endif
@@ -3401,7 +3405,6 @@ Cf2py intent(out) bppout,bcmout
          if(coel)then
             bpp(jp,9) = ngtv
             bpp(jp,10) = 6.0
-            binstate = 1
          elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
