@@ -54,6 +54,10 @@ geo_mass = G/c**2
 
 
 def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, met, size, **kwargs):
+    if type(final_kstar1) in [int, float]:
+        final_kstar1 = [final_kstar1]
+    if type(final_kstar2) in [int, float]:
+        final_kstar2 = [final_kstar2]
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
     mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
@@ -62,7 +66,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, sampled_mass=sampled_mass, n_sampled=n_sampled) 
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), sampled_mass, n_sampled
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
                  usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size")
@@ -113,7 +117,7 @@ class MultiDim:
     def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-        
+
         Parameters
         ----------
         M1min : float
@@ -129,7 +133,7 @@ class MultiDim:
             maximum primary mass to sample [Msun]
             DEFAULT: 150.0
         rand_seed : int
-            random seed generator 
+            random seed generator
             DEFAULT: 0
         size : int, optional
             number of evolution times to sample
@@ -146,7 +150,7 @@ class MultiDim:
         ecc_list : array
             array of eccentricities with size=size
         total_mass : float
-            total mass including single and binary stars 
+            total mass including single and binary stars
             required to generate the initial population
         """
         #Tabulate probably density functions of periods,
@@ -578,7 +582,7 @@ class MultiDim:
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, met = 0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
-        star formation history (SFH) and Galactic component age. 
+        star formation history (SFH) and Galactic component age.
         The default is a MW thin disk constant evolution over 10000 Myr
 
         Parameters
@@ -623,12 +627,12 @@ class MultiDim:
         elif SFH_model=='FIRE':
             import cosmic.FIRE as FIRE
             tphys, metallicity = FIRE.SFH(size)
-            return tphys, metallicity 
+            return tphys, metallicity
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
         kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
-                                
+
         Parameters
         ----------
         mass : array
@@ -639,7 +643,7 @@ class MultiDim:
         kstar : array
             array of initial stellar types
         """
-        
+
         kstar = np.zeros(mass.size)
         low_cutoff = 0.7
         lowIdx = np.where(mass < low_cutoff)[0]
