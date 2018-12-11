@@ -1344,6 +1344,7 @@ Cf2py intent(out) bppout,bcmout
                if(mass(3-k).lt.0.d0)then
                   if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k) !ignore TZ object
                   if(kw.eq.13.and.mt.gt.mxns) kw = 14
+                  CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
                   kstar(k) = kw
                   mass(k) = mt
                   epoch(k) = tphys - age
@@ -1902,6 +1903,7 @@ Cf2py intent(out) bppout,bcmout
 * common-envelope evolution.  The result is always a single
 * star placed in *2.
 *
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          taum = SQRT(tkh(j1)*tdyn)
          dm1 = mass(j1)
          if(kstar(j2).le.1)then
@@ -2058,6 +2060,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Dynamic transfer from a white dwarf.  Secondary will have KW > 9.
 *
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          taum = SQRT(tkh(j1)*tdyn)
          dm1 = mass(j1)
          if(eddfac.lt.10.d0)then
@@ -2120,13 +2123,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Gamma ray burster?
 *
-         if(kstar(j2).eq.13)then
-*           NSNS
-            mergertype = 1313
-         elseif(kstar(j2).eq.14)then
-*           BHNS
-            mergertype = 1314
-         endif
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype) 
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
@@ -2140,7 +2137,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Both stars are black holes.  Let them merge quietly.
 *
-         mergertype = 1414
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
@@ -2188,6 +2185,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Allow the stars to merge with the product in *1.
 *
+            CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
             m1ce = mass(j1)
             m2ce = mass(j2)
             if((kstar(1).ge.10.and.kstar(1).le.12).and.
@@ -2976,6 +2974,7 @@ Cf2py intent(out) bppout,bcmout
             if(mass(3-k).lt.0.d0)then
                if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k)
                if(kw.eq.13.and.mt.gt.mxns) kw = 14
+               CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
                kstar(k) = kw
                mass(k) = mt
                epoch(k) = tphys - age
@@ -3181,6 +3180,7 @@ Cf2py intent(out) bppout,bcmout
 *
       coel = .true.
       binstate = 1
+      CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
 *
 * If *1 or *2 is giant-like this will be common-envelope evolution.
 *
@@ -3230,6 +3230,7 @@ Cf2py intent(out) bppout,bcmout
          com = .true.
          if(com.and..not.coel)then
             binstate = 0
+            mergertype = -1
          endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
@@ -3254,6 +3255,7 @@ Cf2py intent(out) bppout,bcmout
          com = .true.
          if(com.and..not.coel)then
             binstate = 0
+            mergertype = -1
          endif
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
