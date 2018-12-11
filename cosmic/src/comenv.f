@@ -297,7 +297,7 @@
                      MC2 = 0.D0
                      M2 = 0.D0
                      KW2 = 15
-                     binstate = 4
+                     binstate = 2
                      GOTO 30
                   ENDIF
                ENDIF
