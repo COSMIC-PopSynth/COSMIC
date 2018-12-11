@@ -182,7 +182,7 @@
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
-      INTEGER mergemsp,merge_mem,notamerger,binstate
+      INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
@@ -207,7 +207,7 @@
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
       REAL bppout(80,10)
-      REAL bcmout(50000,37)
+      REAL bcmout(50000,38)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
@@ -275,6 +275,9 @@ Cf2py intent(out) bppout,bcmout
 
 * value for bcm[ii,37] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
       binstate = 0
+* value for bcm[ii,38] which tracks merger types; only set when binstate is 1
+* the logic is to combine kstar values of merged objects. so 1313 or 0809.
+      mergertype = -1
 * PDK
       pulsar = 1
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
@@ -1594,6 +1597,7 @@ Cf2py intent(out) bppout,bcmout
             bcm(ip,35) = float(formation(1))
             bcm(ip,36) = float(formation(2))
             bcm(ip,37) = binstate
+            bcm(ip,38) = mergertype
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1839,6 +1843,7 @@ Cf2py intent(out) bppout,bcmout
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
          bcm(ip,37) = binstate
+         bcm(ip,38) = mergertype
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
@@ -2117,10 +2122,10 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kstar(j2).eq.13)then
 *           NSNS
-            binstate = 13
+            mergertype = 1313
          elseif(kstar(j2).eq.14)then
 *           BHNS
-            binstate = 12
+            mergertype = 1314
          endif
          dm1 = mass(j1)
          mass(j1) = 0.d0
@@ -2129,19 +2134,20 @@ Cf2py intent(out) bppout,bcmout
          mass(j2) = mass(j2) + dm2
          kstar(j2) = 14
          coel = .true.
+         binstate = 1
          goto 135
       elseif(kstar(j1).eq.14)then
 *
 * Both stars are black holes.  Let them merge quietly.
 *
+         mergertype = 1414
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
          dm2 = dm1
          mass(j2) = mass(j2) + dm2
          coel = .true.
-*        BHBH
-         binstate = 14
+         binstate = 1
          goto 135
       else
 *
@@ -3471,6 +3477,7 @@ Cf2py intent(out) bppout,bcmout
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
          bcm(ip,37) = binstate
+         bcm(ip,38) = mergertype
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
