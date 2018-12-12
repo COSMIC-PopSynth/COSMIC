@@ -3127,6 +3127,7 @@ Cf2py intent(out) bppout,bcmout
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
          bcm(ip,37) = binstate
+         bcm(ip,38) = mergertype
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
