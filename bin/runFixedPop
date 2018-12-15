@@ -297,7 +297,7 @@ if __name__ == '__main__':
                 match_all = np.array(match_all)
                 log_file.write('matches: {0}\n'.format(np.array(match_all)))
                 log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
-                match_save = pd.DataFrame(np.atleast_2d(match_all), columns = args.convergence_params)
+                match_save = pd.DataFrame(np.atleast_2d(match_all).T, columns = args.convergence_params)
                 dat_store.append('match', match_save)
 
             # save the total_sampled_mass so far
