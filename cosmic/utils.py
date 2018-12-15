@@ -70,7 +70,7 @@ def filter_bpp_bcm(bcm, bpp, method):
         elif (meth == 'binary_state'):
             bcm = bcm.loc[bcm.bin_state.isin(use)]
         elif (meth == 'merger_type'):
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
+            bcm = bcm.loc[bcm.merger_type.isin(use)]
         elif (meth == 'LISA_sources') and use:
             bcm = bcm.loc[bcm.porb < 4]
 
