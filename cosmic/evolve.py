@@ -34,7 +34,7 @@ bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' , 'sep', 'ecc',
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1', 'teff_1', 'massc_1',
 'radc_1', 'menv_1', 'renv_1', 'epoch_1', 'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
 'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2', 'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
-'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation_2', 'bin_state']
+'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation_2', 'bin_state', 'merger_type']
 
 class Evolve(Table):
     def __init__():
@@ -112,8 +112,8 @@ class Evolve(Table):
                                         f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
                                         f[30], f[31], f[32], f[33], f[34], f[35], f[36])
 
-                bpp_tmp = tmp1[np.argwhere(tmp1[:,0]>0),:].squeeze(1)
-                bcm_tmp = tmp2[np.argwhere(tmp2[:,0]>0),:].squeeze(1)
+                bpp_tmp = tmp1[:np.argwhere(tmp1[:,0] == -1)[0][0]]
+                bcm_tmp = tmp2[:np.argwhere(tmp2[:,0] == -1)[0][0]]
 
                 bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[37])] * len(bpp_tmp))
                 bpp_tmp['bin_num'] = int(f[37])

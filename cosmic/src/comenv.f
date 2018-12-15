@@ -3,7 +3,7 @@
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  fb,bkick,ecsnp,ecsn_mlow,formation1,formation2,
-     &                  ST_tide,binstate)
+     &                  ST_tide,binstate,mergertype)
 *
 * Common Envelope Evolution.
 *
@@ -21,7 +21,7 @@
       INTEGER KW1,KW2,KW,fb,KW1i,KW2i,snp
       INTEGER star1,star2
       INTEGER KTYPE(0:14,0:14)
-      INTEGER binstate
+      INTEGER binstate,mergertype
       COMMON /TYPES/ KTYPE
       INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
       COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
@@ -132,12 +132,14 @@
                COEL = .TRUE.
                SEPL = RC1/RL1
                binstate = 1
+               CALL CONCATKSTARS(KW1, KW2, mergertype)
             ENDIF
          ELSE
             IF(R2.GT.RL2*SEPF)THEN
                COEL = .TRUE.
                SEPL = R2/RL2
                binstate = 1
+               CALL CONCATKSTARS(KW1, KW2, mergertype)
             ENDIF
          ENDIF
          IF(COEL)THEN
@@ -236,12 +238,14 @@
                COEL = .TRUE.
                SEPL = RC1/RL1
                binstate = 1
+               CALL CONCATKSTARS(KW1, KW2, mergertype)
             ENDIF
          ELSE
             IF(RC2.GT.RL2*SEPF)THEN
                COEL = .TRUE.
                SEPL = RC2/RL2
                binstate = 1
+               CALL CONCATKSTARS(KW1, KW2, mergertype)
             ENDIF
          ENDIF
 *
@@ -297,7 +301,8 @@
                      MC2 = 0.D0
                      M2 = 0.D0
                      KW2 = 15
-                     binstate = 4
+                     binstate = 2
+                     mergertype = -1
                      GOTO 30
                   ENDIF
                ENDIF
