@@ -30,11 +30,16 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['Evolve']
 
 
-bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' , 'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type']
-bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1', 'teff_1', 'massc_1',
-'radc_1', 'menv_1', 'renv_1', 'epoch_1', 'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
-'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2', 'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
-'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1', 'formation_2', 'bin_state', 'merger_type']
+bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
+               'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 'bin_num']
+
+bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
+               'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
+               'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
+               'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
+               'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
+               'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1',
+               'formation_2', 'bin_state', 'merger_type', 'bin_num']
 
 class Evolve(Table):
     def __init__():
@@ -107,44 +112,39 @@ class Evolve(Table):
         def _evolve_single_system(f):
             try:
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                [tmp1, tmp2] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
-                                        f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
-                                        f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
-                                        f[30], f[31], f[32], f[33], f[34], f[35], f[36])
+                [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
+                                               f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
+                                               f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
+                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36])
 
-                bpp_tmp = tmp1[:np.argwhere(tmp1[:,0] == -1)[0][0]]
-                bcm_tmp = tmp2[:np.argwhere(tmp2[:,0] == -1)[0][0]]
+                bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
+                bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
 
-                bpp_tmp = pd.DataFrame(bpp_tmp, columns=bpp_columns, index=[int(f[37])] * len(bpp_tmp))
-                bpp_tmp['bin_num'] = int(f[37])
+                bpp = np.hstack((bpp, np.array([[f[37]]] * len(bpp))))
+                bcm = np.hstack((bcm, np.array([[f[37]]] * len(bcm))))
 
-                bcm_tmp = pd.DataFrame(bcm_tmp, columns=bcm_columns, index=[int(f[37])] * len(bcm_tmp))
-                bcm_tmp['bin_num'] = int(f[37])
-
-                return f, bpp_tmp, bcm_tmp
+                return f, bpp, bcm
 
             except Exception as e:
                 if nproc == 1:
                     raise
                 else:
                     return f, e
+
         # evolve sysyems
         output = mp_utils.multiprocess_with_queues(
             nproc, _evolve_single_system, initial_conditions, raise_exceptions=False)
 
-        # raise exceptions (from multiprocessing, single process raises inline)
-        for f, x, y in output:
-            if isinstance(x, Exception):
-                x.args = ('Failed to evolve %s: %s' % (f, str(x)),)
-                raise x
-            if isinstance(y, Exception):
-                y.args = ('Failed to evolve %s: %s' % (f, str(y)),)
-                raise y
+        output = np.array(output)
+        bpp_arrays = np.vstack(output[:, 1])
+        bcm_arrays = np.vstack(output[:, 2])
 
-        output_bpp = pd.DataFrame()
-        output_bcm = pd.DataFrame()
-        for f, x, y in output:
-            output_bpp = output_bpp.append(x)
-            output_bcm = output_bcm.append(y)        
+        bpp = pd.DataFrame(bpp_arrays,
+                           columns=bpp_columns,
+                           index=bpp_arrays[:, -1].astype(int))
 
-        return output_bpp, output_bcm, initialbinarytable 
+        bcm = pd.DataFrame(bcm_arrays,
+                           columns=bcm_columns,
+                           index=bcm_arrays[:, -1].astype(int))
+
+        return bpp, bcm, initialbinarytable 
