@@ -120,8 +120,11 @@ class Evolve(Table):
                 bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
                 bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
 
-                bpp = np.hstack((bpp, np.array([[f[37]]] * len(bpp))))
-                bcm = np.hstack((bcm, np.array([[f[37]]] * len(bcm))))
+                bpp_bin_numbers = np.atleast_2d(np.array([f[37]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[37]] * len(bcm))).T
+
+                bpp = np.hstack((bpp, bpp_bin_numbers))
+                bcm = np.hstack((bcm, bcm_bin_numbers))
 
                 return f, bpp, bcm
 
