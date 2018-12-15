@@ -50,6 +50,7 @@ def filter_bpp_bcm(bcm, bpp, method):
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
                       'binary_state',
+                      'merger_type',
                       'LISA_sources']
 
     if not set(method.keys()).issubset(set(_known_methods)):
@@ -67,6 +68,8 @@ def filter_bpp_bcm(bcm, bpp, method):
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
+            bcm = bcm.loc[bcm.bin_state.isin(use)]
+        elif (meth == 'merger_type'):
             bcm = bcm.loc[bcm.bin_state.isin(use)]
         elif (meth == 'LISA_sources') and use:
             bcm = bcm.loc[bcm.porb < 4]
