@@ -186,7 +186,7 @@ if __name__ == '__main__':
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
-        idx = np.max(pd.read_hdf(dat_store, 'idx'))[0]
+        idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
@@ -251,7 +251,7 @@ if __name__ == '__main__':
         bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
         
         # Keep track of the index
-        idx = bcm.bin_num.max()+1
+        idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
 
         # Filter the bcm and bpp arrays according to user specified filters
