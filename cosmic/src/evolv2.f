@@ -182,7 +182,7 @@
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
-      INTEGER mergemsp,merge_mem,notamerger,binstate
+      INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
@@ -207,7 +207,7 @@
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
       REAL bppout(80,10)
-      REAL bcmout(50000,37)
+      REAL bcmout(50000,38)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
@@ -275,6 +275,9 @@ Cf2py intent(out) bppout,bcmout
 
 * value for bcm[ii,37] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
       binstate = 0
+* value for bcm[ii,38] which tracks merger types; only set when binstate is 1
+* the logic is to combine kstar values of merged objects. so 1313 or 0809.
+      mergertype = -1
 * PDK
       pulsar = 1
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
@@ -1341,6 +1344,7 @@ Cf2py intent(out) bppout,bcmout
                if(mass(3-k).lt.0.d0)then
                   if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k) !ignore TZ object
                   if(kw.eq.13.and.mt.gt.mxns) kw = 14
+                  CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
                   kstar(k) = kw
                   mass(k) = mt
                   epoch(k) = tphys - age
@@ -1594,6 +1598,7 @@ Cf2py intent(out) bppout,bcmout
             bcm(ip,35) = float(formation(1))
             bcm(ip,36) = float(formation(2))
             bcm(ip,37) = binstate
+            bcm(ip,38) = mergertype
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1839,6 +1844,7 @@ Cf2py intent(out) bppout,bcmout
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
          bcm(ip,37) = binstate
+         bcm(ip,38) = mergertype
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
@@ -1897,6 +1903,7 @@ Cf2py intent(out) bppout,bcmout
 * common-envelope evolution.  The result is always a single
 * star placed in *2.
 *
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          taum = SQRT(tkh(j1)*tdyn)
          dm1 = mass(j1)
          if(kstar(j2).le.1)then
@@ -1991,7 +1998,8 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide)
+     &               formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK. 
 * In CE the NS got switched around. Do same to formation.
@@ -2022,7 +2030,6 @@ Cf2py intent(out) bppout,bcmout
          epoch(j1) = tphys - aj(j1)
          if(coel)then
             com = .true.
-            binstate = 1
             goto 135
          endif
          epoch(j2) = tphys - aj(j2)
@@ -2054,6 +2061,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Dynamic transfer from a white dwarf.  Secondary will have KW > 9.
 *
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          taum = SQRT(tkh(j1)*tdyn)
          dm1 = mass(j1)
          if(eddfac.lt.10.d0)then
@@ -2116,6 +2124,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Gamma ray burster?
 *
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype) 
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
@@ -2129,6 +2138,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Both stars are black holes.  Let them merge quietly.
 *
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
@@ -2176,6 +2186,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Allow the stars to merge with the product in *1.
 *
+            CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
             m1ce = mass(j1)
             m2ce = mass(j2)
             if((kstar(1).ge.10.and.kstar(1).le.12).and.
@@ -2964,6 +2975,7 @@ Cf2py intent(out) bppout,bcmout
             if(mass(3-k).lt.0.d0)then
                if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k)
                if(kw.eq.13.and.mt.gt.mxns) kw = 14
+               CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
                kstar(k) = kw
                mass(k) = mt
                epoch(k) = tphys - age
@@ -3115,6 +3127,7 @@ Cf2py intent(out) bppout,bcmout
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
          bcm(ip,37) = binstate
+         bcm(ip,38) = mergertype
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3169,6 +3182,7 @@ Cf2py intent(out) bppout,bcmout
 *
       coel = .true.
       binstate = 1
+      CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
 *
 * If *1 or *2 is giant-like this will be common-envelope evolution.
 *
@@ -3200,7 +3214,8 @@ Cf2py intent(out) bppout,bcmout
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide)
+     &               formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3216,13 +3231,17 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         binstate = 0
+         if(com.and..not.coel)then
+            binstate = 0
+            mergertype = -1
+         endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide)
+     &               formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3238,7 +3257,10 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         binstate = 0
+         if(com.and..not.coel)then
+            binstate = 0
+            mergertype = -1
+         endif
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
       endif
@@ -3320,7 +3342,6 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,9) = ngtv
             if(coel)then
                bpp(jp,10) = 6.0
-               binstate = 1
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -3330,9 +3351,9 @@ Cf2py intent(out) bppout,bcmout
                bpp(jp,9) = ngtv2
                bpp(jp,10) = 11.0
                binstate = 2
+               mergertype = -1
             else
                bpp(jp,10) = 9.0
-               binstate = 3
             endif
          endif
          if(kstar(2).eq.15)then
@@ -3385,7 +3406,6 @@ Cf2py intent(out) bppout,bcmout
          if(coel)then
             bpp(jp,9) = ngtv
             bpp(jp,10) = 6.0
-            binstate = 1
          elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -3393,7 +3413,6 @@ Cf2py intent(out) bppout,bcmout
 *
             bpp(jp,9) = ngtv2
             bpp(jp,10) = 9.0
-            binstate = 3
          else
             bpp(jp,6) = sep
             bpp(jp,7) = ecc
@@ -3464,6 +3483,7 @@ Cf2py intent(out) bppout,bcmout
          bcm(ip,35) = float(formation(1))
          bcm(ip,36) = float(formation(2))
          bcm(ip,37) = binstate
+         bcm(ip,38) = mergertype
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
