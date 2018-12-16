@@ -23,6 +23,7 @@ import time
 from time import sleep
 import string
 import os.path
+import json
 
 import numpy as np
 import scipy.special as ss
@@ -32,7 +33,7 @@ import pandas as pd
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match
 from cosmic.evolve import Evolve
-from cosmic.utils import param_transform
+from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
 
 ###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -57,10 +58,6 @@ def parse_commandline():
                         "like to verify have converged to a single distribution shape"
                         , nargs='+',
                         default=['mass_1', 'mass_2', 'porb', 'ecc'])
-    parser.add_argument("--LISA_convergence",
-                        help="Specify whether or not you want to compute "
-                        "convergence for a LISA population which requries  "
-                        "short period systems", default='False')
     parser.add_argument("--initial_samp",
                         help="Specify if independent binary initial "
                         "conditions: independent, or following "
@@ -102,11 +99,6 @@ def parse_commandline():
     if args.initial_samp not in ['independent', 'multidim']:
         raise parser.error('Initial sample must either be '
                            'independent or multidim')
-
-    if args.LISA_convergence == 'True':
-        args.LISA_convergence = True
-    else:
-        args.LISA_convergence = False
 
     return args
 
@@ -150,10 +142,20 @@ if __name__ == '__main__':
     for section in cp.sections():
         dictionary[section] = {}
         for option in cp.options(section):
-            dictionary[section][option] = cp.get(section, option)
+            opt = cp.get(section, option)
+            if opt == 'False':
+                opt = False
+            elif opt == 'True':
+                opt = True
+            try:
+                dictionary[section][option] = json.loads(opt)
+            except:
+                dictionary[section][option] = opt
 
     BSEDict = dictionary['bse']
     seed_int = int(dictionary['rand_seed']['seed'])
+    filters = dictionary['filters']
+    convergence = dictionary['convergence']
 
     if seed_int != 0:
         np.random.seed(seed_int)
@@ -184,7 +186,7 @@ if __name__ == '__main__':
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
-        idx = np.max(pd.read_hdf(dat_store, 'idx'))[0]
+        idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
@@ -198,39 +200,33 @@ if __name__ == '__main__':
 
     match_list = []
 
+    # Select the Galactic component from user input
+    if args.galaxy_component == 'ThinDisk':
+        SFH_model='const'
+        component_age=10000.0
+    elif args.galaxy_component == 'Bulge':
+        SFH_model='burst'
+        component_age=10000.0
+    elif args.galaxy_component == 'ThickDisk':
+        SFH_model='burst'
+        component_age=11000.0
+    elif args.galaxy_component == 'DeltaBurst':
+        SFH_model='delta_burst'
+        component_age=13700.0
+    elif args.galaxy_component == 'FIRE':
+        SFH_model='FIRE'
+        component_age=13900.0
+
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
     while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.99999):
-        # Select the Galactic component from user input
-        if args.galaxy_component == 'ThinDisk':
-            SFH_model='const'
-            component_age=10000.0
-        elif args.galaxy_component == 'Bulge':
-            SFH_model='burst'
-            component_age=10000.0
-        elif args.galaxy_component == 'ThickDisk':
-            SFH_model='burst'
-            component_age=11000.0
-        elif args.galaxy_component == 'DeltaBurst':
-            SFH_model='delta_burst'
-            component_age=13700.0
-        elif args.galaxy_component == 'FIRE':
-            SFH_model='FIRE'
-            component_age=13900.0
-        
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
 
         if args.initial_samp == 'multidim':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
-
-        if args.LISA_convergence:
-            IBT = IBT.loc[np.log10(IBT.porb*86400) < 10.5]
-        
-        # Force all birth times to be capped with minimum times of 1 Myr
-        IBT.loc[IBT.tphysf < 1.0] = 1.0
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
@@ -242,31 +238,31 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions 
         # let's create an Evolve class and evolve these systems
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx)
+        # see if users specified a smaple rate for the bcm array if not set it
+        # tphysf
+        try:
+            dtp = dictionary['bse']['dtp']
+        except:
+            dtp = IBT['tphysf'].values
+
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
 
         # Convert the orbital period from years to log seconds
         bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
         
         # Keep track of the index
-        idx = bcm.bin_num.max()+1
+        idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
 
-        # Filter out any binaries that have has mass transfer from a WD onto a compact object
-        idx_MT = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &(bpp.kstar_2.isin([10,11,12])) &
-                         (bpp.evol_type == 3.0)].bin_num
-        bcm = bcm.loc[~bcm.bin_num.isin(idx_MT)]
+        # Filter the bcm and bpp arrays according to user specified filters
+        bcm = filter_bpp_bcm(bcm, bpp, filters)
         
-        # Select the state of the binary today and filter out 
-        # any disrupted binaries
-        bcm_filtered = bcm.loc[bcm.tphys > 1.0]
-        bcm_filtered = bcm_filtered.loc[bcm_filtered.sep > 0.0]
-        # Filter out long period binaries and systems that don't match final kstars supplied
-        bcm_save_filtered = bcm_filtered.loc[(bcm_filtered.kstar_1.isin(kstar1_range)) & (bcm_filtered.kstar_2.isin(kstar2_range))]
-        if args.LISA_convergence:
-            bcm_save_filtered = bcm_save_filtered.loc[bcm_save_filtered.porb < 4]
+        # Filter out systems that don't match final kstars supplied
+        bcm_save_filtered = bcm.loc[(bcm.kstar_1.isin(kstar1_range)) & (bcm.kstar_2.isin(kstar2_range))]
+        
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
-        if bcm_save_filtered.shape[0] > 0:
+        if (len(bcm_save_filtered) > 0):
             # Save the bcm dataframe
             dat_store.append('bcm', bcm_save_filtered)
             bcm_save = bcm_save.append(bcm_save_filtered)
@@ -284,36 +280,26 @@ if __name__ == '__main__':
             # Save the initial binaries 
             dat_store.append('initCond', initC)
 
-            if args.LISA_convergence:
-                bcm_match = bcm_save.loc[bcm_save.porb < 3.5]
-                bcm_match_filtered = bcm_save_filtered.loc[bcm_save_filtered.porb < 3.5]
-            else:
-                bcm_match = bcm_save
-                bcm_match_filtered = bcm_save_filtered
-            bcm_len = bcm_match.shape[0]
-  
-            if steps <= 1:
-                bcm_conv1 = bcm_match.iloc[0:int(bcm_match.shape[0]/2.0)]
-            else:
-                bcm_conv1 = bcm_match.iloc[:bcm_match.shape[0]-bcm_match_filtered.shape[0]]
+            bcm_conv_1, bcm_conv_2 = bcm_conv_select(bcm_save, bcm_save_filtered, convergence) 
 
             # Perform the Match calculations for all interested parameters
             # supplied by user in conv_params
-            if bcm_conv1.shape[0] > 3:
-                steps += 1
+            if len(bcm_conv_2) > 3:
                 match_all = []
                 for conv_param in args.convergence_params:
-                    if bcm_match[conv_param].all() == 0.0:
+                    if bcm_conv_1[conv_param].all() == 0.0:
                         match_all.append(np.array([1.0]))
                     else:
-                        match, bw = Match.match([param_transform(bcm_match[conv_param]).tolist(),\
-                                                 param_transform(bcm_conv1[conv_param]).tolist()])
+                        match, bw = Match.match([param_transform(bcm_conv_1[conv_param]).tolist(),\
+                                                 param_transform(bcm_conv_2[conv_param]).tolist()])
                         match_all.append(match)
+
                 match_all = np.array(match_all)
                 log_file.write('matches: {0}\n'.format(np.array(match_all)))
                 log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
-                match_save = pd.DataFrame(np.atleast_2d(match_all), columns = args.convergence_params)
+                match_save = pd.DataFrame(np.atleast_2d(match_all).T, columns = args.convergence_params)
                 dat_store.append('match', match_save)
+
             # save the total_sampled_mass so far
             dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
 

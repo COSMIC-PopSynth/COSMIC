@@ -23,6 +23,110 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
+def filter_bpp_bcm(bcm, bpp, method):
+    """Filter the output of bpp and bcm
+
+    Parameters
+    ----------
+        bcm : `pandas.DataFrame`
+            bcm dataframe
+
+        bpp : `pandas.DataFrame`
+            bpp dataframe
+
+        method : `dict`,
+            one or more methods by which to filter the
+            bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
+            This means you do *not* want disrupted_binaries in your table
+
+    Returns
+    -------
+        bcm : `pandas.DataFrame`
+            filtered bcm dataframe
+
+        bpp : `pandas.DataFrame`
+            filtered bpp dataframe
+    """
+    _known_methods = ['mass_transfer_white_dwarf_to_co',
+                      'select_final_state',
+                      'binary_state',
+                      'merger_type',
+                      'LISA_sources']
+
+    if not set(method.keys()).issubset(set(_known_methods)):
+        raise ValueError("You have supplied an "
+                         "unknown method to filter out "
+                         "the bpp or bcm array. Known methods are "
+                         "{0}".format(_known_methods))
+
+    for meth, use in method.items():
+        if meth == 'mass_transfer_white_dwarf_to_co' and not use:
+            idx_mass_transfer_white_dwarf_to_co = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                                          (bpp.kstar_2.isin([10,11,12])) &
+                                                          (bpp.evol_type == 3.0)].bin_num
+            bcm = bcm.loc[~bcm.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
+        elif (meth == 'select_final_state') and use:
+            bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
+        elif (meth == 'binary_state'):
+            bcm = bcm.loc[bcm.bin_state.isin(use)]
+        elif (meth == 'merger_type'):
+            bcm = bcm.loc[bcm.merger_type.isin(use)]
+        elif (meth == 'LISA_sources') and use:
+            bcm = bcm.loc[bcm.porb < 4]
+
+    return bcm
+
+def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
+    """Select bcm data for special convergence cases
+
+    Parameters
+    ----------
+        bcm_save_tot : `pandas.DataFrame`
+            bcm dataframe containing all saved bcm data
+
+        bcm_save_last : `pandas.DataFrame`
+            bcm dataframe containing bcm data from last
+            iteration 
+
+        method : `dict`,
+            one or more methods by which to filter the
+            bcm table, e.g. ``{'LISA_convergence' : True}``;
+            This means you want to only compute the convergence
+            over the region specified for the LISA_convergence
+            method below
+    Returns
+    -------
+        bcm_conv_tot : `pandas.DataFrame`
+            filtered bcm dataframe containing all saved bcm
+            data
+        
+        bcm_conv_last : `pandas.DataFrame`
+            filtered bcm dataframe containing saved bcm
+            data from last iteration
+
+    """
+    _known_methods = ['LISA_convergence']
+
+    if not set(method.keys()).issubset(set(_known_methods)):
+        raise ValueError("You have supplied an "
+                         "unknown method to filter the "
+                         "bcm array for convergence. Known methods are "
+                         "{0}".format(_known_methods))
+
+    bcm_conv_tot = bcm_save_tot
+    bcm_conv_last = bcm_save_last
+    for meth, use in method.items():
+        if meth == 'LISA_convergence' and use:
+            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < 3]
+            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < 3]
+
+    # If it is the first iteration, divide the bcm array in two
+    # for convergence computation
+    if len(bcm_conv_tot) == len(bcm_conv_last):
+        bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
+    
+    return bcm_conv_tot, bcm_conv_last
+
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial
     parameter sample to reduce the number of unneccessary binaries evolved
