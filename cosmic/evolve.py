@@ -38,8 +38,8 @@ bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
                'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
                'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
-               'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'formation_1',
-               'formation_2', 'bin_state', 'merger_type', 'bin_num']
+               'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'SN_1',
+               'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
 class Evolve(Table):
     def __init__():
