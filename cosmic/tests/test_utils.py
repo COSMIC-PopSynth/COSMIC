@@ -20,13 +20,20 @@ kstar_double = [10, 14]
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 wrong_dict = {'test_wrong_dict' : False}
-true_dict = {'mass_transfer_white_dwarf_to_co' : True, 
+alive_dict = {'mass_transfer_white_dwarf_to_co' : True, 
              'select_final_state' : True,
-             'disrupted_binaries' : True,
+             'binary_state' : [0],
+             'merger_type' : [-1],
              'LISA_sources' : True}
+noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
+               'select_final_state' : True,
+               'binary_state' : [0],
+               'merger_type' : [-1],
+               'LISA_sources' : False}
 false_dict = {'mass_transfer_white_dwarf_to_co' : False,
              'select_final_state' : False,
-             'disrupted_binaries' : False,
+             'binary_state' : [0, 1, 2, 3],
+             'merger_type' : [100],
              'LISA_sources' : False}
 conv_dict_true = {'LISA_convergence' : True}
 conv_dict_false = {'LISA_convergence' : False}
@@ -43,9 +50,10 @@ MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07  
 BW_KNUTH = 0.333
 _KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
-                      'select_final_state',
-                      'disrupted_binaries',
-                      'LISA_sources']
+                  'select_final_state',
+                  'binary_state',
+                  'merger_type',
+                  'LISA_sources']
 
 
 class TestUtils(unittest2.TestCase):
@@ -54,20 +62,22 @@ class TestUtils(unittest2.TestCase):
     def test_filter_bpp_bcm(self):
         self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict)
 
-        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, true_dict)
+        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict)
         
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
-        self.assertTrue(len(bcm_true.loc[bcm_true.sep == 0.0]) >= 1)
+        self.assertTrue(len(bcm_true.loc[bcm_true.sep > 0.0]) >= 1)
         self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
         self.assertTrue(bcm_true.porb.all() < 4.0)
 
         bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict)
         
         self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
-        self.assertTrue(bcm_false.sep.all() > 0.0)
+        self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0] > 1))
         self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
-        self.assertTrue(len(bcm_false.loc[bcm_false.porb > 4.0]) > 1)
 
+        bcm_no_LISA = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict)
+        self.assertTrue(len(bcm_no_LISA.loc[bcm_no_LISA.porb < 4.0]) > 1)
+ 
     def test_bcm_conv_select(self):
         self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict)
 
