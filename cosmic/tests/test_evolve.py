@@ -40,4 +40,4 @@ class TestEvolve(unittest2.TestCase):
             initialbinarytable=SINGLE_BINARY, BSEDict=BSEDict,
             idx=1)
 
-        pd.testing.assert_frame_equal(EvolvedBinaryBPP, bppDF)
+        pd.testing.assert_frame_equal(EvolvedBinaryBPP, bppDF, check_dtype=False)
