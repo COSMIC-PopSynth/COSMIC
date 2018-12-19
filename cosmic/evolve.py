@@ -190,5 +190,7 @@ class Evolve(Table):
 
         bcm.merger_type = bcm.merger_type.astype(int).astype(str).apply(lambda x: x.zfill(4))
         bcm.bin_state = bcm.bin_state.astype(int)
+        bpp.bin_num = bpp.bin_num.astype(int)
+        bcm.bin_num = bcm.bin_num.astype(int)
 
         return bpp, bcm, initialbinarytable 
