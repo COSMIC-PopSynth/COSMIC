@@ -75,36 +75,74 @@ class Evolve(Table):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
 
-        initialbinarytable['neta'] = BSEDict['neta']
-        initialbinarytable['bwind'] = BSEDict['bwind']
-        initialbinarytable['hewind'] = BSEDict['hewind']
-        initialbinarytable['alpha1'] = BSEDict['alpha1']
-        initialbinarytable['lambdaf'] = BSEDict['lambdaf']
-        initialbinarytable['ceflag'] = BSEDict['ceflag']
-        initialbinarytable['tflag'] = BSEDict['tflag']
-        initialbinarytable['ifflag'] = BSEDict['ifflag']
-        initialbinarytable['wdflag'] = BSEDict['wdflag']
-        initialbinarytable['ppsn'] = BSEDict['ppsn']
-        initialbinarytable['bhflag'] = BSEDict['bhflag']
-        initialbinarytable['nsflag'] = BSEDict['nsflag']
-        initialbinarytable['mxns'] = BSEDict['mxns']
-        initialbinarytable['pts1'] = BSEDict['pts1']
-        initialbinarytable['pts2'] = BSEDict['pts2']
-        initialbinarytable['pts3'] = BSEDict['pts3']
-        initialbinarytable['sigma'] = BSEDict['sigma']
-        initialbinarytable['beta'] = BSEDict['beta']
-        initialbinarytable['xi'] = BSEDict['xi']
-        initialbinarytable['acc2'] = BSEDict['acc2']
-        initialbinarytable['epsnov'] = BSEDict['epsnov']
-        initialbinarytable['eddfac'] = BSEDict['eddfac']
-        initialbinarytable['gamma'] = BSEDict['gamma']
-        initialbinarytable['bconst'] = BSEDict['bconst']
-        initialbinarytable['CK'] = BSEDict['CK']
-        initialbinarytable['merger'] = BSEDict['merger']
-        initialbinarytable['windflag'] = BSEDict['windflag']
-        initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
-        initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
-        initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
+        if 'neta' not in initialbinarytable.keys():
+            initialbinarytable['neta'] = BSEDict['neta']
+        if 'bwind' not in initialbinarytable.keys():
+            initialbinarytable['bwind'] = BSEDict['bwind']
+        if 'hewind' not in initialbinarytable.keys():
+            initialbinarytable['hewind'] = BSEDict['hewind']
+        if 'alpha1' not in initialbinarytable.keys():
+            initialbinarytable['alpha1'] = BSEDict['alpha1']
+        if 'lambdaf' not in initialbinarytable.keys():
+            initialbinarytable['lambdaf'] = BSEDict['lambdaf']
+        if 'ceflag' not in initialbinarytable.keys():
+            initialbinarytable['ceflag'] = BSEDict['ceflag']
+        if 'tflag' not in initialbinarytable.keys():
+            initialbinarytable['tflag'] = BSEDict['tflag']
+        if 'ifflag' not in initialbinarytable.keys():
+            initialbinarytable['ifflag'] = BSEDict['ifflag']
+        if 'wdflag' not in initialbinarytable.keys():
+            initialbinarytable['wdflag'] = BSEDict['wdflag']
+        if 'ppsn' not in initialbinarytable.keys():
+            initialbinarytable['ppsn'] = BSEDict['ppsn']
+        if 'bhflag' not in initialbinarytable.keys():
+            initialbinarytable['bhflag'] = BSEDict['bhflag']
+        if 'nsflag' not in initialbinarytable.keys():
+            initialbinarytable['nsflag'] = BSEDict['nsflag']
+        if 'mxns' not in initialbinarytable.keys():
+            initialbinarytable['mxns'] = BSEDict['mxns']
+        if 'pts1' not in initialbinarytable.keys():
+            initialbinarytable['pts1'] = BSEDict['pts1']
+        if 'pts2' not in initialbinarytable.keys():
+            initialbinarytable['pts2'] = BSEDict['pts2']
+        if 'pts3' not in initialbinarytable.keys():
+            initialbinarytable['pts3'] = BSEDict['pts3']
+        if 'sigma' not in initialbinarytable.keys():
+            initialbinarytable['sigma'] = BSEDict['sigma']
+        if 'beta' not in initialbinarytable.keys():
+            initialbinarytable['beta'] = BSEDict['beta']
+        if 'xi' not in initialbinarytable.keys():
+            initialbinarytable['xi'] = BSEDict['xi']
+        if 'acc2' not in initialbinarytable.keys():
+            initialbinarytable['acc2'] = BSEDict['acc2']
+        if 'epsnov' not in initialbinarytable.keys():
+            initialbinarytable['epsnov'] = BSEDict['epsnov']
+        if 'eddfac' not in initialbinarytable.keys():
+            initialbinarytable['eddfac'] = BSEDict['eddfac']
+        if 'gamma' not in initialbinarytable.keys():
+            initialbinarytable['gamma'] = BSEDict['gamma']
+        if 'bconst' not in initialbinarytable.keys():
+            initialbinarytable['bconst'] = BSEDict['bconst']
+        if 'CK' not in initialbinarytable.keys():
+            initialbinarytable['CK'] = BSEDict['CK']
+        if 'merger' not in initialbinarytable.keys():
+            initialbinarytable['merger'] = BSEDict['merger']
+        if 'windflag' not in initialbinarytable.keys():
+            initialbinarytable['windflag'] = BSEDict['windflag']
+        if 'dtp' not in initialbinarytable.keys():
+            initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
+        if 'randomseed' not in initialbinarytable.keys():
+            initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
+        if 'bin_num' not in initialbinarytable.keys():
+            initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
+
+        # need to ensure that the order of variables is correct
+        initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'beta', 'xi', 'acc2', 'epsnov',
+                                                'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
+                                                'randomseed', 'bin_num']]
 
         initial_conditions = np.array(initialbinarytable) 
 
