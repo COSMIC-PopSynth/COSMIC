@@ -220,7 +220,7 @@ if __name__ == '__main__':
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
-    while (Nstep < args.Niter) & (np.min(np.array(match_all)) < 0.99999):
+    while (Nstep < args.Niter) & (np.min(np.array(match_all)) > -6):
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
@@ -297,7 +297,7 @@ if __name__ == '__main__':
                 match_all = np.array(match_all)
                 log_file.write('matches: {0}\n'.format(np.array(match_all)))
                 log_file.write('Length of bcm array: {0}\n'.format(len(bcm_save)))
-                match_save = pd.DataFrame(np.atleast_2d(match_all).T, columns = args.convergence_params)
+                match_save = pd.DataFrame(np.atleast_2d(match_all), columns = args.convergence_params)
                 dat_store.append('match', match_save)
 
             # save the total_sampled_mass so far
