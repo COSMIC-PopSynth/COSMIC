@@ -14,7 +14,7 @@ import cosmic.Match as Match
 np.random.seed(2)
 sample = np.random.uniform(0,1,500)
 
-MATCH_TEST = 0.99636185870762237007
+MATCH_TEST = np.log10(1-0.99636185870762237007)
 
 class TestMatch(unittest2.TestCase):
     """`TestCase` for the match method
