@@ -81,6 +81,7 @@ def match(dataCm):
     if binwidth < 1e-7:
         match = 1.0
     else:
-        match = (nominatorSum/np.sqrt(denominator1Sum*denominator2Sum))
+        match = np.log10(1-(nominatorSum/np.sqrt(denominator1Sum*denominator2Sum)))
+
         
     return match[0], binwidth;
