@@ -20,7 +20,10 @@
 """
 
 import numpy as np
+import pandas as pd
 import astropy.stats as astroStats
+from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
+
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -76,12 +79,89 @@ def match(dataCm):
     nominatorSum = np.array(nominatorSum, dtype=np.float128)
     denominator1Sum = np.array(denominator1Sum, dtype=np.float128)
     denominator2Sum = np.array(denominator2Sum, dtype=np.float128)
-
+    
     binwidth = binEdges[1]-binEdges[0]
     if binwidth < 1e-7:
-        match = 1.0
+        match = 1e-9
     else:
         match = np.log10(1-(nominatorSum/np.sqrt(denominator1Sum*denominator2Sum)))
 
         
     return match[0], binwidth;
+
+def perform_convergence(conv_params, bin_states, conv_filter,\
+                        bcm_save, bcm_save_filtered,\
+                        bpp_save, final_kstar_1, final_kstar_2, log_file):
+    """Performs the convergence calculations for each convergence parameter 
+       and binary state
+       Parameters
+       ----------
+       conv_params : dict 
+           List of user supplied convergence parameters
+       bin_states : dict
+           List of user supplied binary states
+       conv_filter : dict
+           List of user supplied convergence filters
+       bcm_save : DataFrame
+           Cumulative data set of bcm arrays
+       bcm_save_filtered : DataFrame
+           Most recent data set of bcm array from most recent BSE run
+       bpp_save : DataFrame
+           Cumulative data set of bpp arrays
+       log_file : file write
+           File to log matches or if the convergence params are not appropriate
+           e.g. eccentricity for a disrupted system
+
+       Returns
+       -------
+       match : array
+           Matches for each cumulative data set
+    """
+
+    match_lists = []
+    for bin_state in bin_states:
+        bcm_save_conv = bcm_save.loc[bcm_save.bin_state==bin_state]
+        bcm_save_filtered_conv = bcm_save_filtered.loc[bcm_save_filtered.bin_state==bin_state]
+        bcm_conv_1, bcm_conv_2 = bcm_conv_select(bcm_save_conv, bcm_save_filtered_conv, conv_filter)
+        if (bin_state == 1) or (bin_state == 2):
+           # select the formation parameters of the mergers and disruptions
+
+           # select out the bpp arrays of interest
+           bpp_conv_1 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_1.bin_num)]
+           bpp_conv_2 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_2.bin_num)]
+           # filter to the kstars of interest
+           bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1))&(bpp_conv_1.kstar_2.isin(final_kstar_2))]
+           # select the formation parameters
+           bcm_conv_1 = bcm_conv_1.groupby('bin_num').first()
+           bcm_conv_2 = bcm_conv_2.groupby('bin_num').first()
+
+        # Perform the Match calculations for all interested parameters
+        # supplied by user in conv_params
+        if len(bcm_conv_1) > 3:
+            match_all = []
+            for conv_param in conv_params:
+                close_test = np.isclose(bcm_conv_1[conv_param],  bcm_conv_1[conv_param].mean())
+                if close_test.all():
+                    log_file.write('convergence param: {0} for all bcm is {1}\n'.format(conv_param,\
+                                    np.mean(bcm_conv_1[conv_param])))
+                    match_all.append(-9)
+                else:
+                    match_compute, bw = match([param_transform(bcm_conv_1[conv_param]).tolist(),\
+                                               param_transform(bcm_conv_2[conv_param]).tolist()])
+                    match_all.append(match_compute)
+
+            log_file.write('matches for bin state {0} are: {1}\n'.format(bin_state, match_all))
+            log_file.write('Number of binaries is: {0}\n'.format(len(bcm_save_conv)))
+
+        else:
+            log_file.write('Bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
+            log_file.write('Consider larger Nstep sizes')
+            match_all = [0]*len(conv_params)
+        match_lists.append(match_all)
+
+    if len(match_lists) > 1:
+        match_save = np.array(match_lists)
+    else:
+        match_save = []
+
+    return match_save
