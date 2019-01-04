@@ -117,14 +117,14 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
     bcm_conv_last = bcm_save_last
     for meth, use in method.items():
         if meth == 'LISA_convergence' and use:
-            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < 3]
-            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < 3]
+            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(6000)]
+            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(6000)]
 
     # If it is the first iteration, divide the bcm array in two
     # for convergence computation
     if len(bcm_conv_tot) == len(bcm_conv_last):
         bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
-    
+   
     return bcm_conv_tot, bcm_conv_last
 
 def mass_min_max_select(kstar_1, kstar_2):
@@ -282,19 +282,15 @@ def param_transform(dat):
         array of data with limits between 0 and 1
     """
 
-    datMax = max(dat)+0.000001
-    if min(dat) > 1e-6:
-        datMin = min(dat)-0.000001
-        datZeroed = dat-datMin
-    else:
-        datMin = 1e-6
-        datZeroed = dat-datMin
-        datZeroed[datZeroed < 0.0] = 1e-6
-         
+    datMax = max(dat)
+    datMin = min(dat)    
+    datZeroed = dat-datMin
     
     datTransformed = datZeroed/((datMax-datMin))
     if np.max(datTransformed) == 1.0:
         datTransformed[datTransformed == 1.0] = 1-1e-6
+    if np.min(datTransformed) == 0.0:
+        datTransformed[datTransformed == 0.0] = 1e-6
     return datTransformed
 
 
