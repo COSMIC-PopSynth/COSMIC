@@ -84,7 +84,7 @@ def match(dataCm):
     if binwidth < 1e-7:
         match = 1e-9
     else:
-        match = np.log10(1-(nominatorSum/np.sqrt(denominator1Sum*denominator2Sum)))
+        match = np.log10(1-nominatorSum/np.sqrt(denominator1Sum*denominator2Sum))
 
         
     return match[0], binwidth;
@@ -129,8 +129,26 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
            # select out the bpp arrays of interest
            bpp_conv_1 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_1.bin_num)]
            bpp_conv_2 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_2.bin_num)]
+
+           if bin_state == 1:
+               bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
+                                           (bpp_conv_1.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_conv_1.evol_type == 3)]
+               bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
+                                           (bpp_conv_2.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_conv_2.evol_type == 3)]
+           if bin_state == 2:
+               bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
+                                           (bpp_conv_1.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_conv_1.evol_type == 11)]
+               bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
+                                           (bpp_conv_2.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_conv_2.evol_type == 11)]
+            
            # filter to the kstars of interest
-           bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1))&(bpp_conv_1.kstar_2.isin(final_kstar_2))]
+           #bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1))&(bpp_conv_1.kstar_2.isin(final_kstar_2))]
+           # KB: I think this will be defunct
+
            # select the formation parameters
            bcm_conv_1 = bcm_conv_1.groupby('bin_num').first()
            bcm_conv_2 = bcm_conv_2.groupby('bin_num').first()
@@ -152,12 +170,13 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
 
             log_file.write('matches for bin state {0} are: {1}\n'.format(bin_state, match_all))
             log_file.write('Number of binaries is: {0}\n'.format(len(bcm_save_conv)))
+            log_file.write('Binwidth is: {0}\n'.format(bw))
 
         else:
             log_file.write('Bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
             log_file.write('Consider larger Nstep sizes')
             match_all = [0]*len(conv_params)
-        match_lists.append(match_all)
+        match_lists.extend(match_all)
 
     if len(match_lists) > 1:
         match_save = np.array(match_lists)

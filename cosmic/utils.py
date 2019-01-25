@@ -23,7 +23,7 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
-def filter_bpp_bcm(bcm, bpp, method):
+def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
 
     Parameters
@@ -38,14 +38,15 @@ def filter_bpp_bcm(bcm, bpp, method):
             one or more methods by which to filter the
             bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
             This means you do *not* want disrupted_binaries in your table
+        kstar1_range : `list`
+            list containing all kstar1 values to retain
+        kstar2_range : `list`
+            list containing all kstar2 values to retain
 
     Returns
     -------
         bcm : `pandas.DataFrame`
             filtered bcm dataframe
-
-        bpp : `pandas.DataFrame`
-            filtered bpp dataframe
     """
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
@@ -58,6 +59,9 @@ def filter_bpp_bcm(bcm, bpp, method):
                          "unknown method to filter out "
                          "the bpp or bcm array. Known methods are "
                          "{0}".format(_known_methods))
+
+    bcm = bcm.loc[(bcm.kstar_1.isin(kstar1_range)) & (bcm.kstar_2.isin(kstar2_range))]
+    bpp = bpp.loc[bpp.bin_num.isin(bcm.bin_num)]
 
     for meth, use in method.items():
         if meth == 'mass_transfer_white_dwarf_to_co' and not use:
@@ -72,7 +76,7 @@ def filter_bpp_bcm(bcm, bpp, method):
         elif (meth == 'merger_type'):
             bcm = bcm.loc[bcm.merger_type.isin(use)]
         elif (meth == 'LISA_sources') and use:
-            bcm = bcm.loc[bcm.porb < 4]
+            bcm = bcm.loc[bcm.porb < 5]
 
     return bcm
 
@@ -114,7 +118,10 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
                          "{0}".format(_known_methods))
 
     bcm_conv_tot = bcm_save_tot
-    bcm_conv_last = bcm_save_last
+    if len(bcm_save_tot) == len(bcm_save_last):
+        bcm_conv_last = bcm_save_last
+    else:
+        bcm_conv_last = bcm_save_tot.iloc[:len(bcm_save_tot)-len(bcm_save_last)]
     for meth, use in method.items():
         if meth == 'LISA_convergence' and use:
             bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(6000)]
@@ -313,6 +320,7 @@ def dat_transform(dat, dat_list):
 
     dat_trans = []
     for column in dat_list:
+        print(dat, column)
         dat_trans.append(ss.logit(param_transform(dat[column])))
     dat_trans = np.vstack([dat_trans])
     
