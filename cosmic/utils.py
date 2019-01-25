@@ -124,8 +124,8 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
         bcm_conv_last = bcm_save_tot.iloc[:len(bcm_save_tot)-len(bcm_save_last)]
     for meth, use in method.items():
         if meth == 'LISA_convergence' and use:
-            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(6000)]
-            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(6000)]
+            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(5000)]
+            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(5000)]
 
     # If it is the first iteration, divide the bcm array in two
     # for convergence computation
