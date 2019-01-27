@@ -60,24 +60,32 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "the bpp or bcm array. Known methods are "
                          "{0}".format(_known_methods))
 
-    bcm = bcm.loc[(bcm.kstar_1.isin(kstar1_range)) & (bcm.kstar_2.isin(kstar2_range))]
-    bpp = bpp.loc[bpp.bin_num.isin(bcm.bin_num)]
-
     for meth, use in method.items():
         if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_mass_transfer_white_dwarf_to_co = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                                          (bpp.kstar_2.isin([10,11,12])) &
-                                                          (bpp.evol_type == 3.0)].bin_num
-            bcm = bcm.loc[~bcm.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
+            idx_save = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                (bpp.kstar_2.isin([10,11,12])) &
+                                (bpp.evol_type == 3.0)].bin_num.tolist()
+            bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
             bcm = bcm.loc[bcm.bin_state.isin(use)]
+            if 0 in use:
+                bcm_0 = bcm.loc[(bcm.bin_state == 0)]
+                bcm_0_binflag = bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)==False)].bin_num
+                bcm_0_binflag = bcm_0_binflag.append(bcm_0.loc[(bcm_0.kstar_2.isin(kstar2_range)==False)].bin_num)
+                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_binflag)]
+                
         elif (meth == 'merger_type'):
             bcm = bcm.loc[bcm.merger_type.isin(use)]
         elif (meth == 'LISA_sources') and use:
-            bcm = bcm.loc[bcm.porb < 5]
-
+            if 0 in method['binary_state']:
+                bcm_0 = bcm.loc[bcm.bin_state==0]
+                bcm_0_LISAflag = bcm_0.loc[bcm_0.porb > 5].bin_num
+                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_LISAflag)]
+            else:
+                raise ValueError("You must have bin state = 0 for LISA" 
+                                 "sources filter")
     return bcm
 
 def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
