@@ -53,7 +53,8 @@
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,kickscale,bound,phi_old
 * Output
-      real*8 v1out,v2out,v3out,vkout
+      real*8 v1xout,v1yout,v1zout,vkout1,vkout2
+      real*8 v2xout,v2yout,v2zout
       logical output
 *
       real*8 bconst,CK,opening_angle
@@ -71,10 +72,15 @@
       output = .false. !useful for debugging...
 *       write(91,49)kw,m1,m1n,m2,ecc,sep,snstar,fallback,
 *    &               bhflag,sigma,mxns,id1_pass,id2_pass
-      v1out = 0.d0
-      v2out = 0.d0
-      v3out = 0.d0
-      vkout = 0.d0
+      v1xout = 0.d0
+      v1yout = 0.d0
+      v1zout = 0.d0
+      v2xout = 0.d0
+      v2yout = 0.d0
+      v2zout = 0.d0
+      vkout1 = 0.d0
+      vkout2 = 0.d0
+
 * Scaling owing to ECSN.
       kickscale = 0.d0
 *
@@ -346,9 +352,14 @@
                   m2 = -1.d0*m2
                endif
             endif
-            v1out = bkick(2)
-            v2out = bkick(3)
-            v3out = bkick(4)
+            v1xout = bkick(2)
+            v1yout = bkick(3)
+            v1zout = bkick(4)
+            v2xout = bkick(6)
+            v2yout = bkick(7)
+            v2zout = bkick(8)
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
+            vkout2 = sqrt(v2xout*v2xout+v2yout*v2yout+v2zout*v2zout)
          elseif(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
             bkick(5) = float(snstar)
 *     
@@ -385,9 +396,14 @@
                   m2 = -1.d0*m2
                endif
             endif
-            v1out = bkick(6)
-            v2out = bkick(7)
-            v3out = bkick(8)
+            v1xout = bkick(10)
+            v1yout = bkick(11)
+            v1zout = bkick(12)
+            v2xout = bkick(6)
+            v2yout = bkick(7)
+            v2zout = bkick(8)
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
+            vkout2 = sqrt(v2xout*v2xout+v2yout*v2yout+v2zout*v2zout)
 *     
          endif
          ecc = MIN(ecc,99.99d0)
@@ -403,27 +419,30 @@
             bkick(2) = vs(1)
             bkick(3) = vs(2)
             bkick(4) = vs(3)
-            v1out = bkick(2)
-            v2out = bkick(3)
-            v3out = bkick(4)
+            v1xout = bkick(2)
+            v1yout = bkick(3)
+            v1zout = bkick(4)
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
 * 2nd time with kick.
          elseif(bkick(5).le.0.d0)then
             bkick(5) = float(snstar)
             bkick(6) = vs(1)
             bkick(7) = vs(2)
             bkick(8) = vs(3)
-            v1out = bkick(6)
-            v2out = bkick(7)
-            v3out = bkick(8)
+            v2xout = bkick(6)
+            v2yout = bkick(7)
+            v2zout = bkick(8)
+            vkout2 = sqrt(v2xout*v2xout+v2yout*v2yout+v2zout*v2zout)
 * 2nd time with kick if already disrupted.
          elseif(bkick(5).gt.0.d0)then
             bkick(9) = float(snstar)
             bkick(10) = vs(1)
             bkick(11) = vs(2)
             bkick(12) = vs(3)
-            v1out = bkick(10)
-            v2out = bkick(11)
-            v3out = bkick(12)
+            v2xout = bkick(10)
+            v2yout = bkick(11)
+            v2zout = bkick(12)
+            vkout2 = sqrt(v2xout*v2xout+v2yout*v2yout+v2zout*v2zout)
          endif
       endif
 *
@@ -438,9 +457,14 @@
             bkick(6) = -vs(1)
             bkick(7) = -vs(2)
             bkick(8) = -vs(3)
-            v1out = bkick(2)
-            v2out = bkick(3)
-            v3out = bkick(4)
+            v1xout = bkick(2)
+            v1yout = bkick(3)
+            v1zout = bkick(4)
+            v2xout = bkick(6)
+            v2yout = bkick(7)
+            v2zout = bkick(8)
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
+            vkout2 = sqrt(v2xout*v2xout+v2yout*v2yout+v2zout*v2zout)
 * 2nd time with kick.
          elseif(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
             bkick(5) = float(snstar)
@@ -451,9 +475,14 @@
             bkick(10) = -vs(1)
             bkick(11) = -vs(2)
             bkick(12) = -vs(3)
-            v1out = bkick(6)
-            v2out = bkick(7)
-            v3out = bkick(8)
+            v1xout = bkick(10)
+            v1yout = bkick(11)
+            v1zout = bkick(12)
+            v2xout = bkick(6)
+            v2yout = bkick(7)
+            v2zout = bkick(8)
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
+            vkout2 = sqrt(v2xout*v2xout+v2yout*v2yout+v2zout*v2zout)
          endif
       endif
 * Randomly rotate system
@@ -462,15 +491,17 @@
      &            bkick(8),bkick(10),bkick(11),bkick(12))
 *
       if(ecc.gt.99.9d0) ecc = 99.9d0
+      bkick(15) = vkout1
+      bkick(16) = vkout2
       if(output)then
          if(sep.le.0.d0.or.ecc.ge.1.d0)then
-            vkout = sqrt(v1out*v1out+v2out*v2out+v3out*v3out)
-            write(44,43)kw,m1,m1n,sigma,vk,v1out,v2out,v3out,vkout,
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
+            write(44,43)kw,m1,m1n,sigma,vk,v1xout,v1yout,v1zout,vkout1,
      &                  (bkick(l),l=1,12),id1_pass,id2_pass
          else
-            vkout = sqrt(v1out*v1out+v2out*v2out+v3out*v3out)
-            write(45,47)kw,m1,m1n,sigma,vk,v1out,v2out,v3out,
-     &                  vkout,id1_pass,id2_pass
+            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
+            write(45,47)kw,m1,m1n,sigma,vk,v1xout,v1yout,v1zout,
+     &                  vkout1,id1_pass,id2_pass
          endif
       endif
  43   FORMAT(i3,1p,8e12.4,1x,12e12.4,1x,i10,i10)
