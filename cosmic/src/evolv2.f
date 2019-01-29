@@ -206,7 +206,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL bppout(80,10)
+      REAL bppout(80,12)
       REAL bcmout(50000,38)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
@@ -632,6 +632,11 @@ Cf2py intent(out) bppout,bcmout
                   bpp(jp,10) = 12.0
                   bsymb = .true.
                endif
+               bpp(jp,11) = bkick(15)
+               bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+               bkick(15) = 0.d0
+               bkick(16) = 0.d0
             endif
          endif
 *
@@ -1493,6 +1498,11 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,8) = rad(1)/rol(1)
             bpp(jp,9) = rad(2)/rol(2)
             bpp(jp,10) = 14.0
+            bpp(jp,11) = bkick(15)
+            bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+            bkick(15) = 0.d0
+            bkick(16) = 0.d0
          endif
 *
  6    continue
@@ -1534,6 +1544,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 1.0
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
          if(snova)then
             bpp(jp,10) = 2.0
             dtm = 0.d0
@@ -1723,6 +1738,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 2.0
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
       endif
 *
       iter = iter + 1
@@ -1788,6 +1808,11 @@ Cf2py intent(out) bppout,bcmout
       bpp(jp,8) = rad(1)/rol(1)
       bpp(jp,9) = rad(2)/rol(2)
       bpp(jp,10) = 3.0
+      bpp(jp,11) = bkick(15)
+      bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+      bkick(15) = 0.d0
+      bkick(16) = 0.d0
 *
       if(iplot.and.tphys.gt.tiny)then
          ip = ip + 1
@@ -2026,6 +2051,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 7.0
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
 *
          epoch(j1) = tphys - aj(j1)
          if(coel)then
@@ -2317,6 +2347,11 @@ Cf2py intent(out) bppout,bcmout
                   bpp(jp,8) = rad(1)/rol(1)
                   bpp(jp,9) = rad(2)/rol(2)
                   bpp(jp,10) = 8.0
+                  bpp(jp,11) = bkick(15)
+                  bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+                  bkick(15) = 0.d0
+                  bkick(16) = 0.d0
                   if(j1.eq.2)then
                      bpp(jp,2) = mt2
                      bpp(jp,3) = mass(j1)
@@ -2373,6 +2408,11 @@ Cf2py intent(out) bppout,bcmout
                   bpp(jp,8) = rad(1)/rol(1)
                   bpp(jp,9) = rad(2)/rol(2)
                   bpp(jp,10) = 8.0
+                  bpp(jp,11) = bkick(15)
+                  bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+                  bkick(15) = 0.d0
+                  bkick(16) = 0.d0
                   if(j1.eq.2)then
                      bpp(jp,2) = mt2
                      bpp(jp,3) = mass(j1)
@@ -3051,6 +3091,11 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,8) = rad(1)/rol(1)
             bpp(jp,9) = rad(2)/rol(2)
             bpp(jp,10) = 14.0
+            bpp(jp,11) = bkick(15)
+            bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+            bkick(15) = 0.d0
+            bkick(16) = 0.d0
          endif
 *
  90   continue
@@ -3149,6 +3194,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 2.0
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
       endif
 *
 * Test whether the primary still fills its Roche lobe.
@@ -3172,6 +3222,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rad(1)/rol(1)
          bpp(jp,9) = rad(2)/rol(2)
          bpp(jp,10) = 4.0
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
          dtm = 0.d0
          goto 4
       endif
@@ -3202,6 +3257,11 @@ Cf2py intent(out) bppout,bcmout
       bpp(jp,8) = rrl1
       bpp(jp,9) = rrl2
       bpp(jp,10) = 5.0
+      bpp(jp,11) = bkick(15)
+      bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+      bkick(15) = 0.d0
+      bkick(16) = 0.d0
 *
       kcomp1 = kstar(j1)
       kcomp2 = kstar(j2)
@@ -3280,6 +3340,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,8) = rrl1
          bpp(jp,9) = rrl2
          bpp(jp,10) = 7.0
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
       endif
       epoch(1) = tphys - aj(1)
       epoch(2) = tphys - aj(2)
@@ -3340,6 +3405,11 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,7) = zero
             bpp(jp,8) = zero
             bpp(jp,9) = ngtv
+            bpp(jp,11) = bkick(15)
+            bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+            bkick(15) = 0.d0
+            bkick(16) = 0.d0
             if(coel)then
                bpp(jp,10) = 6.0
             elseif(ecc.gt.1.d0)then
@@ -3403,6 +3473,11 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,6) = zero
          bpp(jp,7) = zero
          bpp(jp,8) = zero
+         bpp(jp,11) = bkick(15)
+         bpp(jp,12) = bkick(16)
+* Aftering saving to bpp reset kick magnitudes to 0
+         bkick(15) = 0.d0
+         bkick(16) = 0.d0
          if(coel)then
             bpp(jp,9) = ngtv
             bpp(jp,10) = 6.0
