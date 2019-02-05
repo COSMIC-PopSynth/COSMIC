@@ -129,7 +129,8 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
            # select out the bpp arrays of interest
            bpp_conv_1 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_1.bin_num)]
            bpp_conv_2 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_2.bin_num)]
-
+           
+           # note that we compute the match for values other than the bcm array
            if bin_state == 1:
                bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
                                            (bpp_conv_1.kstar_2.isin(final_kstar_2)) &\
@@ -137,13 +138,6 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
                                            (bpp_conv_2.kstar_2.isin(final_kstar_2)) &\
                                            (bpp_conv_2.evol_type == 3)]
-           if bin_state == 2:
-               bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
-                                           (bpp_conv_1.kstar_2.isin(final_kstar_2)) &\
-                                           (bpp_conv_1.evol_type == 11)]
-               bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
-                                           (bpp_conv_2.kstar_2.isin(final_kstar_2)) &\
-                                           (bpp_conv_2.evol_type == 11)]
             
            # filter to the kstars of interest
            #bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1))&(bpp_conv_1.kstar_2.isin(final_kstar_2))]
@@ -155,7 +149,7 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
 
         # Perform the Match calculations for all interested parameters
         # supplied by user in conv_params
-        if len(bcm_conv_1) > 3:
+        if len(bcm_conv_2) > 3:
             match_all = []
             for conv_param in conv_params:
                 close_test = np.isclose(bcm_conv_1[conv_param],  bcm_conv_1[conv_param].mean())
@@ -171,11 +165,13 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
             log_file.write('matches for bin state {0} are: {1}\n'.format(bin_state, match_all))
             log_file.write('Number of binaries is: {0}\n'.format(len(bcm_save_conv)))
             log_file.write('Binwidth is: {0}\n'.format(bw))
+            log_file.write('\n')
 
         else:
             log_file.write('Bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
-            log_file.write('Consider larger Nstep sizes')
+            log_file.write('Consider larger Nstep sizes\n')
             match_all = [0]*len(conv_params)
+            log_file.write('\n')
         match_lists.extend(match_all)
 
     if len(match_lists) > 1:
