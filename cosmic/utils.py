@@ -70,12 +70,27 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
             bcm = bcm.loc[bcm.bin_state.isin(use)]
+            
+            # CREATE A LIST OF BIN_NUM INDICES TO APPEND TO
+            bin_num_save = []
             if 0 in use:
                 bcm_0 = bcm.loc[(bcm.bin_state == 0)]
-                bcm_0_binflag = bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)==False)].bin_num
-                bcm_0_binflag = bcm_0_binflag.append(bcm_0.loc[(bcm_0.kstar_2.isin(kstar2_range)==False)].bin_num)
-                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_binflag)]
-                
+                bin_num_save.extend(bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)) &
+                                              (bcm_0.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            if 1 in use:
+                bcm_1 = bcm.loc[bcm.bin_state == 1]
+                bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
+                bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
+                                              (bpp_1.kstar_2.isin(kstar2_range)) &
+                                              (bpp_1.evol_type == 3)].bin_num.tolist())
+
+            if 2 in use:
+                # SHOULD BE DISRUPTED AND kstar_1.isin(kstar1_range) and kstar_2.isin(kstar2_range)
+                bcm_2 = bcm.loc[bcm.bin_state == 2]
+                bin_num_save.extend(bcm_2.loc[(bcm_2.kstar_1.isin(kstar1_range)) &
+                                              (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())              
+            bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]  
+              
         elif (meth == 'merger_type'):
             bcm = bcm.loc[bcm.merger_type.isin(use)]
         elif (meth == 'LISA_sources') and use:
@@ -124,7 +139,6 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
                          "unknown method to filter the "
                          "bcm array for convergence. Known methods are "
                          "{0}".format(_known_methods))
-
     bcm_conv_tot = bcm_save_tot
     if len(bcm_save_tot) == len(bcm_save_last):
         bcm_conv_last = bcm_save_last
@@ -328,7 +342,6 @@ def dat_transform(dat, dat_list):
 
     dat_trans = []
     for column in dat_list:
-        print(dat, column)
         dat_trans.append(ss.logit(param_transform(dat[column])))
     dat_trans = np.vstack([dat_trans])
     
