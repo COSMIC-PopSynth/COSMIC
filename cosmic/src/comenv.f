@@ -35,7 +35,7 @@
       REAL*8 ECC,SEP,JORB,TB,OORB,OSPIN1,OSPIN2,TWOPI
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
-      REAL*8 bkick(14),fallback,ecsnp,ecsn_mlow,M1i,M2i,commonEnv
+      REAL*8 bkick(20),fallback,ecsnp,ecsn_mlow,M1i,M2i,commonEnv
       INTEGER formation1,formation2
       REAL*8 sigma,bhsigmafrac,sigmahold,sigmadiv
       COMMON /VALUE4/ sigma,bhsigmafrac
