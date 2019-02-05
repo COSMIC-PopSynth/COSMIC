@@ -110,6 +110,12 @@ class Evolve(Table):
             initialbinarytable['pts3'] = BSEDict['pts3']
         if 'sigma' not in initialbinarytable.keys():
             initialbinarytable['sigma'] = BSEDict['sigma']
+        if 'bhsigmafrac' not in initialbinarytable.keys():
+            initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
+        if 'opening_angle' not in initialbinarytable.keys():
+            initialbinarytable['opening_angle'] = BSEDict['opening_angle']
+        if 'bkick' not in initialbinarytable.keys():
+            initialbinarytable['bkick'] = [BSEDict['bkick']]
         if 'beta' not in initialbinarytable.keys():
             initialbinarytable['beta'] = BSEDict['beta']
         if 'xi' not in initialbinarytable.keys():
@@ -141,7 +147,8 @@ class Evolve(Table):
         initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                                 'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
-                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'beta', 'xi', 'acc2', 'epsnov',
+                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac', 'opening_angle', 'bkick',
+                                                'beta', 'xi', 'acc2', 'epsnov',
                                                 'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
                                                 'randomseed', 'bin_num']]
 
@@ -154,13 +161,13 @@ class Evolve(Table):
                 [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
                                                f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                                f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
-                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36])
+                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39])
 
                 bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
                 bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[37]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[37]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[40]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[40]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))

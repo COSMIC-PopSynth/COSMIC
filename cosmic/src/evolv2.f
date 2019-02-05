@@ -3,7 +3,8 @@
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
      \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
-     \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
+     \ sigmatmp,bhsigmafractmp,opening_angletmp,bkicktmp,betatmp,xitmp,
+     \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
       implicit none
@@ -212,11 +213,12 @@
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
-      REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
+      REAL*8 sigmatmp,bhsigmafractmp,opening_angletmp,betatmp,xitmp
+      REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp,bkicktmp(16)
       REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
 
 
-Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
+Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
       ceflag = ceflagtmp
       tflag = tflagtmp
@@ -232,6 +234,8 @@ Cf2py intent(out) bppout,bcmout
       pts2 = pts2tmp
       pts3 = pts3tmp
       sigma = sigmatmp
+      bhsigmafrac = bhsigmafractmp
+      opening_angle = opening_angle
       beta = betatmp
       neta = netatmp
       lambda = lambdatmp
