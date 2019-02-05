@@ -1356,10 +1356,37 @@ Cf2py intent(out) bppout,bcmout
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
+* set kick values for the bcm array
+               if(bkick(13).gt.0.d0)then
+                  vk1_bcm=bkick(13)
+               endif
+               if(bkick(14).gt.0.d0)then
+                  vk2_bcm=bkick(14)
+               endif
+               if(bkick(17).gt.0.d0)then
+                  vsys_bcm=bkick(17)
+               endif
+               if(bkick(20).gt.0.d0)then
+                  theta_bcm=bkick(20)
+               endif
+
             else
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                   rad(k-3),fallback,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
+* set kick values for the bcm array
+               if(bkick(13).gt.0.d0)then
+                  vk1_bcm=bkick(13)
+               endif
+               if(bkick(14).gt.0.d0)then
+                  vk2_bcm=bkick(14)
+               endif
+               if(bkick(17).gt.0.d0)then
+                  vsys_bcm=bkick(17)
+               endif
+               if(bkick(20).gt.0.d0)then
+                  theta_bcm=bkick(20)
+               endif
                if(mass(3-k).lt.0.d0)then
                   if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k) !ignore TZ object
                   if(kw.eq.13.and.mt.gt.mxns) kw = 14
@@ -1381,20 +1408,6 @@ Cf2py intent(out) bppout,bcmout
                endif
                tb = (sep/aursun)*SQRT(sep/(aursun*(mt+mass(3-k))))
                oorb = twopi/tb
-            endif
-
-* set kick values for the bcm array
-            if(bkick(13).gt.0.d0)then
-               vk1_bcm=bkick(13)
-            endif
-            if(bkick(14).gt.0.d0)then
-               vk2_bcm=bkick(14)
-            endif
-            if(bkick(17).gt.0.d0)then
-               vsys_bcm=bkick(17)
-            endif
-            if(bkick(20).gt.0.d0)then
-               theta_bcm=bkick(20)
             endif
 
             merger = -1.d0
@@ -2101,6 +2114,20 @@ Cf2py intent(out) bppout,bcmout
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
             bkick(1) = 3-bkick(1)
+         endif
+
+* set kick values for the bcm array
+         if(bkick(13).gt.0.d0)then
+            vk1_bcm=bkick(13)
+         endif
+         if(bkick(14).gt.0.d0)then
+            vk2_bcm=bkick(14)
+         endif
+         if(bkick(17).gt.0.d0)then
+            vsys_bcm=bkick(17)
+         endif
+         if(bkick(20).gt.0.d0)then
+            theta_bcm=bkick(20)
          endif
 *
          jp = MIN(80,jp + 1)
@@ -3457,6 +3484,21 @@ Cf2py intent(out) bppout,bcmout
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
       endif
+
+* set kick values for the bcm array
+      if(bkick(13).gt.0.d0)then
+         vk1_bcm=bkick(13)
+      endif
+      if(bkick(14).gt.0.d0)then
+         vk2_bcm=bkick(14)
+      endif
+      if(bkick(17).gt.0.d0)then
+         vsys_bcm=bkick(17)
+      endif
+      if(bkick(20).gt.0.d0)then
+         theta_bcm=bkick(20)
+      endif
+
       if(com)then
          jp = MIN(80,jp + 1)
          bpp(jp,1) = tphys
