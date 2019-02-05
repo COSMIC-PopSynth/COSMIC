@@ -223,9 +223,16 @@
       sigma = sigmah
 * CLR - Allow for a restricted opening angle for SN kicks
 *       Only relevant for binaries, obviously
+*       Default value for opening_angle = 90.0
       bound = SIN((90.d0 - opening_angle)*pi/180.d0)
       sphi = (1.d0-bound)*ran3(idum) + bound
       phi = ASIN(sphi)
+* MJZ - The constrained kick will hit at either the north
+*       or south pole
+      if(RAN3(idum).ge.0.5)then
+        phi = pi-phi
+        sphi = SIN(phi)
+      endif
       cphi = COS(phi)
 * CLR - if the orbit has already been kicked, then any polar kick
 *       needs to be tilted as well (since L_hat and S_hat are no longer
