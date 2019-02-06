@@ -964,8 +964,6 @@
 *
  90      continue
 *
-      else
-         celamf = -1.d0*fac
       endif
 *
       return
@@ -1254,8 +1252,6 @@
 *
       if(abs(celamf_xu_li) .lt. 0.001d0) celamf_xu_li = 0.001d0
 90       continue
-      else
-         celamf_xu_li = -1.0*fac
       endif
       return
       END
