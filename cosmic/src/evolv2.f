@@ -3,7 +3,8 @@
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
      \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
-     \ sigmatmp,bhsigmafractmp,opening_angletmp,bkicktmp,betatmp,xitmp,
+     \ sigmatmp,bhsigmafractmp,opening_angletmp,natal_kick,
+     \ betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
@@ -207,16 +208,16 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL bppout(80,14)
-      REAL bcmout(50000,42)
+      REAL*8 bppout(80,14)
+      REAL*8 bcmout(50000,42)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
       REAL*8 sigmatmp,bhsigmafractmp,opening_angletmp,betatmp,xitmp
-      REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp,bkicktmp(16)
+      REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
-      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
+      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick(6)
 
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
@@ -236,7 +237,7 @@ Cf2py intent(out) bppout,bcmout
       pts3 = pts3tmp
       sigma = sigmatmp
       bhsigmafrac = bhsigmafractmp
-      opening_angle = opening_angle
+      opening_angle = opening_angletmp
       beta = betatmp
       neta = netatmp
       lambda = lambdatmp
@@ -1358,7 +1359,7 @@ Cf2py intent(out) bppout,bcmout
             endif
             if(sgl)then
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick)
+     &                   0.d0,fallback,bkick,natal_kick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1376,7 +1377,7 @@ Cf2py intent(out) bppout,bcmout
 
             else
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(k-3),fallback,bkick)
+     &                   rad(k-3),fallback,bkick,natal_kick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -2106,7 +2107,7 @@ Cf2py intent(out) bppout,bcmout
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype)
+     &               binstate,mergertype,natal_kick)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK. 
 * In CE the NS got switched around. Do same to formation.
@@ -3127,7 +3128,7 @@ Cf2py intent(out) bppout,bcmout
                endif
             endif
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick)
+     &                rad(3-k),fallback,bkick,natal_kick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
 * set kick values for the bcm array
@@ -3439,7 +3440,7 @@ Cf2py intent(out) bppout,bcmout
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype)
+     &               binstate,mergertype,natal_kick)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3465,7 +3466,7 @@ Cf2py intent(out) bppout,bcmout
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,fb,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype)
+     &               binstate,mergertype,natal_kick)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.

@@ -27,8 +27,8 @@
       COMMON /POINTS/ pts1,pts2,pts3
       REAL*8 dmmax,drmax
       COMMON /TSTEPC/ dmmax,drmax
-      REAL scm(50000,14),spp(20,3)
+      REAL*8 scm(50000,14),spp(20,3)
       COMMON /SINGLE/ scm,spp
-      REAL bcm(50000,42),bpp(80,14)
+      REAL*8 bcm(50000,42),bpp(80,14)
       COMMON /BINARY/ bcm,bpp
 *
