@@ -67,9 +67,9 @@
       real*8 v2xout,v2yout,v2zout
       logical output
 *
-      real*8 bconst,CK,opening_angle
+      real*8 bconst,CK,polar_kick_angle
       COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK,bhflag
-      COMMON /VALUE4/ opening_angle,cmu_SN1
+      COMMON /VALUE4/ polar_kick_angle,cmu_SN1
       real*8 mxns,neta,bwind,hewind
       COMMON /VALUE1/ neta,bwind,hewind,mxns
       real*8 bkick(20)
@@ -254,10 +254,11 @@
       else
 * CLR - Allow for a restricted opening angle for SN kicks
 *       Only relevant for binaries, obviously
-*       Default value for opening_angle = 90.0
-          bound = SIN((90.d0 - opening_angle)*pi/180.d0)
+*       Default value for polar_kick_angle = 90.0
+          bound = SIN((90.d0 - polar_kick_angle)*pi/180.d0)
           sphi = (1.d0-bound)*ran3(idum) + bound
           phi = ASIN(sphi)
+          phi = pi/2.d0 - ASIN(sphi)
 * MJZ - The constrained kick will hit at either the north
 *       or south pole
           if(RAN3(idum).ge.0.5)then
@@ -563,7 +564,7 @@
       bkick(15) = vkout1
       bkick(16) = vkout2
 * Set the total final systemic velocities in the bkick array
-      if(ecc.lt.1.d0.and.bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
+      if(ecc.lt.1.d0.and.bkick(1).eq.1.d0.and.bkick(5).eq.2.d0)then
          bkick(17) = SQRT((bkick(2)+bkick(6))*(bkick(2)+bkick(6))+
      &            (bkick(3)+bkick(7))*(bkick(3)+bkick(7))+
      &            (bkick(4)+bkick(8))*(bkick(4)+bkick(8)))
