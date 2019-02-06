@@ -3,7 +3,7 @@
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
      \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
-     \ sigmatmp,bhsigmafractmp,opening_angletmp,natal_kick,
+     \ sigmatmp,bhsigmafractmp,polar_kick_angletmp,natal_kick,
      \ betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
@@ -214,7 +214,7 @@
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
       REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
       REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
-      REAL*8 sigmatmp,bhsigmafractmp,opening_angletmp,betatmp,xitmp
+      REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick(6)
@@ -237,7 +237,7 @@ Cf2py intent(out) bppout,bcmout
       pts3 = pts3tmp
       sigma = sigmatmp
       bhsigmafrac = bhsigmafractmp
-      opening_angle = opening_angletmp
+      polar_kick_angle = polar_kick_angletmp
       beta = betatmp
       neta = netatmp
       lambda = lambdatmp
