@@ -116,7 +116,7 @@ class Evolve(Table):
         if 'polar_kick_angle' not in initialbinarytable.keys():
             initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
         if 'natal_kick' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick'] = [BSEDict['natal_kick']]
+            initialbinarytable['natal_kick'] = [BSEDict['natal_kick']] * len(initialbinarytable)
         if 'beta' not in initialbinarytable.keys():
             initialbinarytable['beta'] = BSEDict['beta']
         if 'xi' not in initialbinarytable.keys():
