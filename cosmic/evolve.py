@@ -113,8 +113,8 @@ class Evolve(Table):
             initialbinarytable['sigma'] = BSEDict['sigma']
         if 'bhsigmafrac' not in initialbinarytable.keys():
             initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
-        if 'opening_angle' not in initialbinarytable.keys():
-            initialbinarytable['opening_angle'] = BSEDict['opening_angle']
+        if 'polar_kick_angle' not in initialbinarytable.keys():
+            initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
         if 'natal_kick' not in initialbinarytable.keys():
             initialbinarytable['natal_kick'] = [BSEDict['natal_kick']]
         if 'beta' not in initialbinarytable.keys():
@@ -149,7 +149,7 @@ class Evolve(Table):
                                                 'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
-                                                'opening_angle', 'natal_kick',
+                                                'polar_kick_angle', 'natal_kick',
                                                 'beta', 'xi', 'acc2', 'epsnov',
                                                 'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
                                                 'randomseed', 'bin_num']]
@@ -201,5 +201,6 @@ class Evolve(Table):
         bcm.merger_type = bcm.merger_type.astype(int).astype(str).apply(lambda x: x.zfill(4))
         bcm.bin_state = bcm.bin_state.astype(int)
         bpp.bin_num = bpp.bin_num.astype(int)
+        bcm.bin_num = bcm.bin_num.astype(int)
 
         return bpp, bcm, initialbinarytable 
