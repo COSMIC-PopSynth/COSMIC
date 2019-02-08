@@ -27,7 +27,7 @@ from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = []
+__all__ = ['match', 'perform_convergence']
 
 
 def match(dataCm):
