@@ -123,6 +123,7 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
         This means you want to only compute the convergence
         over the region specified for the LISA_convergence
         method below
+
     Returns
     -------
     bcm_conv_tot : `pandas.DataFrame`
