@@ -94,6 +94,7 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                         bpp_save, final_kstar_1, final_kstar_2, log_file):
     """Performs the convergence calculations for each convergence parameter 
        and binary state
+
        Parameters
        ----------
        conv_params : dict 
