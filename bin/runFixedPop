@@ -198,7 +198,7 @@ if __name__ == '__main__':
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
     match_all = np.zeros(len(args.convergence_params))
-    Nstep = args.Nstep
+    Nstep = 0
 
     match_list = []
 
