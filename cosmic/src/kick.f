@@ -258,11 +258,10 @@
           bound = SIN((90.d0 - polar_kick_angle)*pi/180.d0)
           sphi = (1.d0-bound)*ran3(idum) + bound
           phi = ASIN(sphi)
-          phi = pi/2.d0 - ASIN(sphi)
 * MJZ - The constrained kick will hit at either the north
 *       or south pole
           if(RAN3(idum).ge.0.5)then
-            phi = pi-phi
+            phi = -phi
             sphi = SIN(phi)
           endif
           cphi = COS(phi)
