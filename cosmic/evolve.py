@@ -115,8 +115,16 @@ class Evolve(Table):
             initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
         if 'polar_kick_angle' not in initialbinarytable.keys():
             initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
+        if pd.Series(['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']).isin(initialbinarytable.keys()).all() and 'natal_kick' not in initialbinarytable.keys():
+            initialbinarytable['natal_kick'] = initialbinarytable[['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']].values.tolist()
         if 'natal_kick' not in initialbinarytable.keys():
             initialbinarytable['natal_kick'] = [BSEDict['natal_kick']] * len(initialbinarytable)
+            initialbinarytable.loc[:,'SNkick_1'] = pd.Series([BSEDict['natal_kick'][0]] * len(initialbinarytable), index=initialbinarytable.index, name='SNkick_1')
+            initialbinarytable.loc[:,'SNkick_2'] = pd.Series([BSEDict['natal_kick'][1]] * len(initialbinarytable), index=initialbinarytable.index, name='SNkick_2')
+            initialbinarytable.loc[:,'phi_1'] = pd.Series([BSEDict['natal_kick'][2]] * len(initialbinarytable), index=initialbinarytable.index, name='phi_1')
+            initialbinarytable.loc[:,'phi_2'] = pd.Series([BSEDict['natal_kick'][3]] * len(initialbinarytable), index=initialbinarytable.index, name='phi_2')
+            initialbinarytable.loc[:,'theta_1'] = pd.Series([BSEDict['natal_kick'][4]] * len(initialbinarytable), index=initialbinarytable.index, name='theta_1')
+            initialbinarytable.loc[:,'theta_2'] = pd.Series([BSEDict['natal_kick'][5]] * len(initialbinarytable), index=initialbinarytable.index, name='theta_2')
         if 'beta' not in initialbinarytable.keys():
             initialbinarytable['beta'] = BSEDict['beta']
         if 'xi' not in initialbinarytable.keys():
@@ -145,16 +153,23 @@ class Evolve(Table):
             initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
 
         # need to ensure that the order of variables is correct
-        initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+        initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                                 'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'natal_kick',
                                                 'beta', 'xi', 'acc2', 'epsnov',
                                                 'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
-                                                'randomseed', 'bin_num']]
+                                                'randomseed', 'bin_num']].values
 
-        initial_conditions = np.array(initialbinarytable) 
+        initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
+                                                'polar_kick_angle', 'SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2',
+                                                'beta', 'xi', 'acc2', 'epsnov',
+                                                'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
+                                                'randomseed', 'bin_num']]
 
         # define multiprocessing method
         def _evolve_single_system(f):
