@@ -106,8 +106,7 @@
       sigmah = sigma
 *Test: Checking if we can make customized sigma for blackholes only
       if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
-           sigma = sigmah
-*          sigma = sigmah*bhsigmafrac
+           sigma = sigmah*bhsigmafrac
       endif
       if(output)then
 
