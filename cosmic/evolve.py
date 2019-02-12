@@ -139,8 +139,8 @@ class Evolve(Table):
             initialbinarytable['gamma'] = BSEDict['gamma']
         if 'bconst' not in initialbinarytable.keys():
             initialbinarytable['bconst'] = BSEDict['bconst']
-        if 'CK' not in initialbinarytable.keys():
-            initialbinarytable['CK'] = BSEDict['CK']
+        if 'ck' not in initialbinarytable.keys():
+            initialbinarytable['ck'] = BSEDict['ck']
         if 'merger' not in initialbinarytable.keys():
             initialbinarytable['merger'] = BSEDict['merger']
         if 'windflag' not in initialbinarytable.keys():
@@ -159,7 +159,7 @@ class Evolve(Table):
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'natal_kick',
                                                 'beta', 'xi', 'acc2', 'epsnov',
-                                                'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
+                                                'eddfac', 'gamma', 'bconst', 'ck', 'merger', 'windflag', 'dtp',
                                                 'randomseed', 'bin_num']].values
 
         initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
@@ -168,7 +168,7 @@ class Evolve(Table):
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2',
                                                 'beta', 'xi', 'acc2', 'epsnov',
-                                                'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
+                                                'eddfac', 'gamma', 'bconst', 'ck', 'merger', 'windflag', 'dtp',
                                                 'randomseed', 'bin_num']]
 
         # define multiprocessing method
