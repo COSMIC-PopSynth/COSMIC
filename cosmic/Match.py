@@ -27,7 +27,7 @@ from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = []
+__all__ = ['match', 'perform_convergence']
 
 
 def match(dataCm):
@@ -94,6 +94,7 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                         bpp_save, final_kstar_1, final_kstar_2, log_file):
     """Performs the convergence calculations for each convergence parameter 
        and binary state
+
        Parameters
        ----------
        conv_params : dict 
