@@ -145,7 +145,7 @@ class GxReal(object):
         binary_sample_positions = np.vstack([xGx, yGx, zGx, inc, OMEGA, omega]) 
         # Create a single DataFrame for the Galactic realization
         #######################################################################
-        if len(self.dat_list) < 4:
+        if 'ecc' not in self.dat_list:
             full_sample = np.vstack([binary_dat,np.zeros(self.n_samp),binary_sample_positions]).T
             column_list = self.dat_list + ['ecc', 'xGx', 'yGx', 'zGx', 'inc', 'OMEGA', 'omega']
         else:
