@@ -28,25 +28,27 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     Parameters
     ----------
-        bcm : `pandas.DataFrame`
-            bcm dataframe
+    bcm : `pandas.DataFrame`
+        bcm dataframe
 
-        bpp : `pandas.DataFrame`
-            bpp dataframe
+    bpp : `pandas.DataFrame`
+        bpp dataframe
 
-        method : `dict`,
-            one or more methods by which to filter the
-            bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
-            This means you do *not* want disrupted_binaries in your table
-        kstar1_range : `list`
-            list containing all kstar1 values to retain
-        kstar2_range : `list`
-            list containing all kstar2 values to retain
+    method : `dict`,
+        one or more methods by which to filter the
+        bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
+        This means you do *not* want disrupted_binaries in your table
+    
+    kstar1_range : `list`
+        list containing all kstar1 values to retain
+    
+    kstar2_range : `list`
+        list containing all kstar2 values to retain
 
     Returns
     -------
-        bcm : `pandas.DataFrame`
-            filtered bcm dataframe
+    bcm : `pandas.DataFrame`
+        filtered bcm dataframe
     """
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
@@ -108,28 +110,29 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
 
     Parameters
     ----------
-        bcm_save_tot : `pandas.DataFrame`
-            bcm dataframe containing all saved bcm data
+    bcm_save_tot : `pandas.DataFrame`
+        bcm dataframe containing all saved bcm data
 
-        bcm_save_last : `pandas.DataFrame`
-            bcm dataframe containing bcm data from last
-            iteration 
+    bcm_save_last : `pandas.DataFrame`
+        bcm dataframe containing bcm data from last
+        iteration 
 
-        method : `dict`,
-            one or more methods by which to filter the
-            bcm table, e.g. ``{'LISA_convergence' : True}``;
-            This means you want to only compute the convergence
-            over the region specified for the LISA_convergence
-            method below
+    method : `dict`,
+        one or more methods by which to filter the
+        bcm table, e.g. ``{'LISA_convergence' : True}``;
+        This means you want to only compute the convergence
+        over the region specified for the LISA_convergence
+        method below
+
     Returns
     -------
-        bcm_conv_tot : `pandas.DataFrame`
-            filtered bcm dataframe containing all saved bcm
-            data
+    bcm_conv_tot : `pandas.DataFrame`
+        filtered bcm dataframe containing all saved bcm
+        data
         
-        bcm_conv_last : `pandas.DataFrame`
-            filtered bcm dataframe containing saved bcm
-            data from last iteration
+    bcm_conv_last : `pandas.DataFrame`
+        filtered bcm dataframe containing saved bcm
+        data from last iteration
 
     """
     _known_methods = ['LISA_convergence']

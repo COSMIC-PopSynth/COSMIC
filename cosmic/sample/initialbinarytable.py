@@ -97,6 +97,7 @@ class InitialBinaryTable():
     @classmethod
     def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
         """Create multiple binaries
+        
         Parameters
         ----------
         m1 : float
