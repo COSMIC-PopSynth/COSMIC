@@ -3,7 +3,7 @@
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  fb,bkick,ecsnp,ecsn_mlow,formation1,formation2,
-     &                  ST_tide,binstate,mergertype)
+     &                  ST_tide,binstate,mergertype,natal_kick)
 *
 * Common Envelope Evolution.
 *
@@ -35,7 +35,8 @@
       REAL*8 ECC,SEP,JORB,TB,OORB,OSPIN1,OSPIN2,TWOPI
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
-      REAL*8 bkick(14),fallback,ecsnp,ecsn_mlow,M1i,M2i,commonEnv
+      REAL*8 natal_kick(6)
+      REAL*8 bkick(20),fallback,ecsnp,ecsn_mlow,M1i,M2i
       INTEGER formation1,formation2
       REAL*8 sigma,bhsigmafrac,sigmahold,sigmadiv
       COMMON /VALUE4/ sigma,bhsigmafrac
@@ -208,7 +209,7 @@
                   endif
                endif
                CALL kick(KW1,MF,M1,M2,ECC,SEPF,JORB,vk,star1,
-     &                   R2,fallback,bkick)
+     &                   R2,fallback,bkick,natal_kick)
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -364,7 +365,7 @@
                   endif
                endif
                CALL kick(KW1,MF,M1,M2,ECC,SEPF,JORB,vk,star1,
-     &                   R2,fallback,bkick)
+     &                   R2,fallback,bkick,natal_kick)
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -431,7 +432,7 @@
                   endif
                endif
                CALL kick(KW2,MF,M2,M1,ECC,SEPF,JORB,vk,star2,
-     &                   R1,fallback,bkick)
+     &                   R1,fallback,bkick,natal_kick)
                snp = 1
                if(M1.lt.0.d0)then
                   if(KW2.ge.10) M2 = M2-M1
@@ -593,7 +594,7 @@
                endif
             endif
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,bkick)
+     &                0.d0,fallback,bkick,natal_kick)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
