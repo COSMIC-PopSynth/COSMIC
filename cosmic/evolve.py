@@ -31,7 +31,7 @@ __all__ = ['Evolve']
 
 
 bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
-               'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 
+               'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta', 'bin_num']
 
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
