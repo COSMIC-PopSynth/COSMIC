@@ -255,6 +255,7 @@ if __name__ == '__main__':
 
         # Convert the orbital period from years to log seconds
         bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
+        bpp['porb'] = np.log10(bpp['porb']*sec_in_year)
         
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
