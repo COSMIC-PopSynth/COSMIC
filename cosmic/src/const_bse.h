@@ -29,6 +29,6 @@
       COMMON /TSTEPC/ dmmax,drmax
       REAL*8 scm(50000,14),spp(20,3)
       COMMON /SINGLE/ scm,spp
-      REAL*8 bcm(50000,42),bpp(80,14)
+      REAL*8 bcm(50000,42),bpp(80,15)
       COMMON /BINARY/ bcm,bpp
 *
