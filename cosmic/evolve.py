@@ -31,15 +31,17 @@ __all__ = ['Evolve']
 
 
 bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
-               'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 'bin_num']
+               'sep', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 
+               'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta', 'bin_num']
 
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
                'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
                'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
-               'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2', 'SN_1',
-               'SN_2', 'bin_state', 'merger_type', 'bin_num']
+               'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2',
+               'SNkick_1', 'SNkick_2', 'Vsys_final', 'SNtheta_final',
+               'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
 class Evolve(Table):
     def __init__():
@@ -75,38 +77,99 @@ class Evolve(Table):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
 
-        initialbinarytable['neta'] = BSEDict['neta']
-        initialbinarytable['bwind'] = BSEDict['bwind']
-        initialbinarytable['hewind'] = BSEDict['hewind']
-        initialbinarytable['alpha1'] = BSEDict['alpha1']
-        initialbinarytable['lambdaf'] = BSEDict['lambdaf']
-        initialbinarytable['ceflag'] = BSEDict['ceflag']
-        initialbinarytable['tflag'] = BSEDict['tflag']
-        initialbinarytable['ifflag'] = BSEDict['ifflag']
-        initialbinarytable['wdflag'] = BSEDict['wdflag']
-        initialbinarytable['ppsn'] = BSEDict['ppsn']
-        initialbinarytable['bhflag'] = BSEDict['bhflag']
-        initialbinarytable['nsflag'] = BSEDict['nsflag']
-        initialbinarytable['mxns'] = BSEDict['mxns']
-        initialbinarytable['pts1'] = BSEDict['pts1']
-        initialbinarytable['pts2'] = BSEDict['pts2']
-        initialbinarytable['pts3'] = BSEDict['pts3']
-        initialbinarytable['sigma'] = BSEDict['sigma']
-        initialbinarytable['beta'] = BSEDict['beta']
-        initialbinarytable['xi'] = BSEDict['xi']
-        initialbinarytable['acc2'] = BSEDict['acc2']
-        initialbinarytable['epsnov'] = BSEDict['epsnov']
-        initialbinarytable['eddfac'] = BSEDict['eddfac']
-        initialbinarytable['gamma'] = BSEDict['gamma']
-        initialbinarytable['bconst'] = BSEDict['bconst']
-        initialbinarytable['CK'] = BSEDict['CK']
-        initialbinarytable['merger'] = BSEDict['merger']
-        initialbinarytable['windflag'] = BSEDict['windflag']
-        initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
-        initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
-        initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
+        if 'neta' not in initialbinarytable.keys():
+            initialbinarytable['neta'] = BSEDict['neta']
+        if 'bwind' not in initialbinarytable.keys():
+            initialbinarytable['bwind'] = BSEDict['bwind']
+        if 'hewind' not in initialbinarytable.keys():
+            initialbinarytable['hewind'] = BSEDict['hewind']
+        if 'alpha1' not in initialbinarytable.keys():
+            initialbinarytable['alpha1'] = BSEDict['alpha1']
+        if 'lambdaf' not in initialbinarytable.keys():
+            initialbinarytable['lambdaf'] = BSEDict['lambdaf']
+        if 'ceflag' not in initialbinarytable.keys():
+            initialbinarytable['ceflag'] = BSEDict['ceflag']
+        if 'tflag' not in initialbinarytable.keys():
+            initialbinarytable['tflag'] = BSEDict['tflag']
+        if 'ifflag' not in initialbinarytable.keys():
+            initialbinarytable['ifflag'] = BSEDict['ifflag']
+        if 'wdflag' not in initialbinarytable.keys():
+            initialbinarytable['wdflag'] = BSEDict['wdflag']
+        if 'ppsn' not in initialbinarytable.keys():
+            initialbinarytable['ppsn'] = BSEDict['ppsn']
+        if 'bhflag' not in initialbinarytable.keys():
+            initialbinarytable['bhflag'] = BSEDict['bhflag']
+        if 'nsflag' not in initialbinarytable.keys():
+            initialbinarytable['nsflag'] = BSEDict['nsflag']
+        if 'mxns' not in initialbinarytable.keys():
+            initialbinarytable['mxns'] = BSEDict['mxns']
+        if 'pts1' not in initialbinarytable.keys():
+            initialbinarytable['pts1'] = BSEDict['pts1']
+        if 'pts2' not in initialbinarytable.keys():
+            initialbinarytable['pts2'] = BSEDict['pts2']
+        if 'pts3' not in initialbinarytable.keys():
+            initialbinarytable['pts3'] = BSEDict['pts3']
+        if 'sigma' not in initialbinarytable.keys():
+            initialbinarytable['sigma'] = BSEDict['sigma']
+        if 'bhsigmafrac' not in initialbinarytable.keys():
+            initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
+        if 'polar_kick_angle' not in initialbinarytable.keys():
+            initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
+        if pd.Series(['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']).isin(initialbinarytable.keys()).all() and 'natal_kick' not in initialbinarytable.keys():
+            initialbinarytable['natal_kick'] = initialbinarytable[['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']].values.tolist()
+        if 'natal_kick' not in initialbinarytable.keys():
+            initialbinarytable['natal_kick'] = [BSEDict['natal_kick']] * len(initialbinarytable)
+            initialbinarytable.loc[:,'SNkick_1'] = pd.Series([BSEDict['natal_kick'][0]] * len(initialbinarytable), index=initialbinarytable.index, name='SNkick_1')
+            initialbinarytable.loc[:,'SNkick_2'] = pd.Series([BSEDict['natal_kick'][1]] * len(initialbinarytable), index=initialbinarytable.index, name='SNkick_2')
+            initialbinarytable.loc[:,'phi_1'] = pd.Series([BSEDict['natal_kick'][2]] * len(initialbinarytable), index=initialbinarytable.index, name='phi_1')
+            initialbinarytable.loc[:,'phi_2'] = pd.Series([BSEDict['natal_kick'][3]] * len(initialbinarytable), index=initialbinarytable.index, name='phi_2')
+            initialbinarytable.loc[:,'theta_1'] = pd.Series([BSEDict['natal_kick'][4]] * len(initialbinarytable), index=initialbinarytable.index, name='theta_1')
+            initialbinarytable.loc[:,'theta_2'] = pd.Series([BSEDict['natal_kick'][5]] * len(initialbinarytable), index=initialbinarytable.index, name='theta_2')
+        if 'beta' not in initialbinarytable.keys():
+            initialbinarytable['beta'] = BSEDict['beta']
+        if 'xi' not in initialbinarytable.keys():
+            initialbinarytable['xi'] = BSEDict['xi']
+        if 'acc2' not in initialbinarytable.keys():
+            initialbinarytable['acc2'] = BSEDict['acc2']
+        if 'epsnov' not in initialbinarytable.keys():
+            initialbinarytable['epsnov'] = BSEDict['epsnov']
+        if 'eddfac' not in initialbinarytable.keys():
+            initialbinarytable['eddfac'] = BSEDict['eddfac']
+        if 'gamma' not in initialbinarytable.keys():
+            initialbinarytable['gamma'] = BSEDict['gamma']
+        if 'bconst' not in initialbinarytable.keys():
+            initialbinarytable['bconst'] = BSEDict['bconst']
+        if 'CK' not in initialbinarytable.keys():
+            initialbinarytable['CK'] = BSEDict['CK']
+        if 'merger' not in initialbinarytable.keys():
+            initialbinarytable['merger'] = BSEDict['merger']
+        if 'windflag' not in initialbinarytable.keys():
+            initialbinarytable['windflag'] = BSEDict['windflag']
+        if 'dtp' not in initialbinarytable.keys():
+            initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
+        if 'randomseed' not in initialbinarytable.keys():
+            initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
+        if 'bin_num' not in initialbinarytable.keys():
+            initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
 
-        initial_conditions = np.array(initialbinarytable) 
+        # need to ensure that the order of variables is correct
+        initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
+                                                'polar_kick_angle', 'natal_kick',
+                                                'beta', 'xi', 'acc2', 'epsnov',
+                                                'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
+                                                'randomseed', 'bin_num']].values
+
+        initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
+                                                'polar_kick_angle', 'SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2',
+                                                'beta', 'xi', 'acc2', 'epsnov',
+                                                'eddfac', 'gamma', 'bconst', 'CK', 'merger', 'windflag', 'dtp',
+                                                'randomseed', 'bin_num']]
 
         # define multiprocessing method
         def _evolve_single_system(f):
@@ -115,13 +178,13 @@ class Evolve(Table):
                 [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
                                                f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                                f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
-                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36])
+                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39])
 
                 bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
                 bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[37]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[37]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[40]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[40]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
@@ -152,5 +215,7 @@ class Evolve(Table):
 
         bcm.merger_type = bcm.merger_type.astype(int).astype(str).apply(lambda x: x.zfill(4))
         bcm.bin_state = bcm.bin_state.astype(int)
+        bpp.bin_num = bpp.bin_num.astype(int)
+        bcm.bin_num = bcm.bin_num.astype(int)
 
         return bpp, bcm, initialbinarytable 
