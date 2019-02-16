@@ -28,19 +28,19 @@ alive_dict = {'mass_transfer_white_dwarf_to_co' : True,
              'select_final_state' : True,
              'binary_state' : [0],
              'merger_type' : [-1],
-             'LISA_sources' : True}
+             'lisa_sources' : True}
 noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
                'select_final_state' : True,
                'binary_state' : [0],
                'merger_type' : [-1],
-               'LISA_sources' : False}
+               'lisa_sources' : False}
 false_dict = {'mass_transfer_white_dwarf_to_co' : False,
              'select_final_state' : False,
              'binary_state' : [0,1,2],
              'merger_type' : [-1,100],
-             'LISA_sources' : False}
-conv_dict_true = {'LISA_convergence' : True}
-conv_dict_false = {'LISA_convergence' : False}
+             'lisa_sources' : False}
+conv_dict_true = {'lisa_convergence' : True}
+conv_dict_false = {'lisa_convergence' : False}
 
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -57,7 +57,7 @@ _KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
                   'select_final_state',
                   'binary_state',
                   'merger_type',
-                  'LISA_sources']
+                  'lisa_sources']
 
 
 class TestUtils(unittest2.TestCase):
