@@ -32,7 +32,7 @@ that initialize and evolve the binary.
     In [2]: from cosmic.evolve import Evolve
 
 
-To initialize the a single binary, populate the SingleBinary method in the
+To initialize a single binary, populate the SingleBinary method in the
 InitialBinaryTable class. Each initialized binary requires the following parameters:
 
 
