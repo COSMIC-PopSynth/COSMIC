@@ -23,29 +23,32 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
-def filter_bpp_bcm(bcm, bpp, method):
+def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
 
     Parameters
     ----------
-        bcm : `pandas.DataFrame`
-            bcm dataframe
+    bcm : `pandas.DataFrame`
+        bcm dataframe
 
-        bpp : `pandas.DataFrame`
-            bpp dataframe
+    bpp : `pandas.DataFrame`
+        bpp dataframe
 
-        method : `dict`,
-            one or more methods by which to filter the
-            bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
-            This means you do *not* want disrupted_binaries in your table
+    method : `dict`,
+        one or more methods by which to filter the
+        bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
+        This means you do *not* want disrupted_binaries in your table
+    
+    kstar1_range : `list`
+        list containing all kstar1 values to retain
+    
+    kstar2_range : `list`
+        list containing all kstar2 values to retain
 
     Returns
     -------
-        bcm : `pandas.DataFrame`
-            filtered bcm dataframe
-
-        bpp : `pandas.DataFrame`
-            filtered bpp dataframe
+    bcm : `pandas.DataFrame`
+        filtered bcm dataframe
     """
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
@@ -61,19 +64,45 @@ def filter_bpp_bcm(bcm, bpp, method):
 
     for meth, use in method.items():
         if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_mass_transfer_white_dwarf_to_co = bpp.loc[(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                                          (bpp.kstar_2.isin([10,11,12])) &
-                                                          (bpp.evol_type == 3.0)].bin_num
-            bcm = bcm.loc[~bcm.bin_num.isin(idx_mass_transfer_white_dwarf_to_co)]
+            idx_save = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                (bpp.kstar_2.isin([10,11,12])) &
+                                (bpp.evol_type == 3.0)].bin_num.tolist()
+            bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
             bcm = bcm.loc[bcm.bin_state.isin(use)]
+            
+            # CREATE A LIST OF BIN_NUM INDICES TO APPEND TO
+            bin_num_save = []
+            if 0 in use:
+                bcm_0 = bcm.loc[(bcm.bin_state == 0)]
+                bin_num_save.extend(bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)) &
+                                              (bcm_0.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            if 1 in use:
+                bcm_1 = bcm.loc[bcm.bin_state == 1]
+                bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
+                bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
+                                              (bpp_1.kstar_2.isin(kstar2_range)) &
+                                              (bpp_1.evol_type == 3)].bin_num.tolist())
+
+            if 2 in use:
+                # SHOULD BE DISRUPTED AND kstar_1.isin(kstar1_range) and kstar_2.isin(kstar2_range)
+                bcm_2 = bcm.loc[bcm.bin_state == 2]
+                bin_num_save.extend(bcm_2.loc[(bcm_2.kstar_1.isin(kstar1_range)) &
+                                              (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())              
+            bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]  
+              
         elif (meth == 'merger_type'):
             bcm = bcm.loc[bcm.merger_type.isin(use)]
         elif (meth == 'LISA_sources') and use:
-            bcm = bcm.loc[bcm.porb < 4]
-
+            if 0 in method['binary_state']:
+                bcm_0 = bcm.loc[bcm.bin_state==0]
+                bcm_0_LISAflag = bcm_0.loc[bcm_0.porb > 5].bin_num
+                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_LISAflag)]
+            else:
+                raise ValueError("You must have bin state = 0 for LISA" 
+                                 "sources filter")
     return bcm
 
 def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
@@ -81,28 +110,29 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
 
     Parameters
     ----------
-        bcm_save_tot : `pandas.DataFrame`
-            bcm dataframe containing all saved bcm data
+    bcm_save_tot : `pandas.DataFrame`
+        bcm dataframe containing all saved bcm data
 
-        bcm_save_last : `pandas.DataFrame`
-            bcm dataframe containing bcm data from last
-            iteration 
+    bcm_save_last : `pandas.DataFrame`
+        bcm dataframe containing bcm data from last
+        iteration 
 
-        method : `dict`,
-            one or more methods by which to filter the
-            bcm table, e.g. ``{'LISA_convergence' : True}``;
-            This means you want to only compute the convergence
-            over the region specified for the LISA_convergence
-            method below
+    method : `dict`,
+        one or more methods by which to filter the
+        bcm table, e.g. ``{'LISA_convergence' : True}``;
+        This means you want to only compute the convergence
+        over the region specified for the LISA_convergence
+        method below
+
     Returns
     -------
-        bcm_conv_tot : `pandas.DataFrame`
-            filtered bcm dataframe containing all saved bcm
-            data
+    bcm_conv_tot : `pandas.DataFrame`
+        filtered bcm dataframe containing all saved bcm
+        data
         
-        bcm_conv_last : `pandas.DataFrame`
-            filtered bcm dataframe containing saved bcm
-            data from last iteration
+    bcm_conv_last : `pandas.DataFrame`
+        filtered bcm dataframe containing saved bcm
+        data from last iteration
 
     """
     _known_methods = ['LISA_convergence']
@@ -112,13 +142,15 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
                          "unknown method to filter the "
                          "bcm array for convergence. Known methods are "
                          "{0}".format(_known_methods))
-
     bcm_conv_tot = bcm_save_tot
-    bcm_conv_last = bcm_save_last
+    if len(bcm_save_tot) == len(bcm_save_last):
+        bcm_conv_last = bcm_save_last
+    else:
+        bcm_conv_last = bcm_save_tot.iloc[:len(bcm_save_tot)-len(bcm_save_last)]
     for meth, use in method.items():
         if meth == 'LISA_convergence' and use:
-            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(6000)]
-            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(6000)]
+            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(5000)]
+            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(5000)]
 
     # If it is the first iteration, divide the bcm array in two
     # for convergence computation

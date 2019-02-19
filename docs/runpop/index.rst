@@ -45,23 +45,27 @@ that you would like the final population to contain.
 
 The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming conventions. The conventions are as follows:
 
-*   0 :        MS, < 0.7 Msun
-*   1 :        MS, > 0.7 Msun
-*   2 :        Hertzsprung Gap
-*   3 :        First Giant Branch
-*   4 :        Core Helium Burning
-*   5 :        Early Asymptotic Giant Branch
-*   6 :        Thermally Pulsing AGB
-*   7 :        Naked Helium Star MS
-*   8 :        Naked Helium Star Hertzsprung Gap
-*   9 :        Naked Helium Star Giant Branch
-*  10 :        Helium White Dwarf
-*  11 :        Carbon/Oxygen White Dwarf
-*  12 :        Oxygen/Neon White Dwarf
-*  13 :        Neutron Star
-*  14 :        Black Hole
-*  15 :        Massless Remnant
 
+=====     ==================================
+kstar     evolutionary stage
+=====     ==================================
+0         MS, < 0.7 Msun
+1         MS, > 0.7 Msun
+2         Hertzsprung Gap
+3         First Giant Branch
+4         Core Helium Burning
+5         Early Asymptotic Giant Branch
+6         Thermally Pulsing AGB
+7         Naked Helium Star MS
+8         Naked Helium Star Hertzsprung Gap
+9         Naked Helium Star Giant Branch
+10        Helium White Dwarf
+11        Carbon/Oxygen White Dwarf
+12        Oxygen/Neon White Dwarf
+13        Neutron Star
+14        Black Hole
+15        Massless Remnant
+=====     ==================================
 
 Thus, if you want to generate a 
 population containing double white dwarfs with CO and ONe WD primaries and He-WD secondaries, 
