@@ -22,6 +22,7 @@
 import numpy as np
 import pandas as pd
 import astropy.stats as astroStats
+import warnings
 from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
 
 
@@ -52,8 +53,13 @@ def match(dataCm):
     histoBinEdges = [[], []]
     # COMPUTE THE BINWIDTH FOR THE MOST COMPLETE DATA SET:
     # NOTE: THIS WILL BE THE BINWIDTH FOR ALL THE HISTOGRAMS IN THE HISTO LIST
-    mainHisto, binEdges = astroStats.histogram(np.array(dataCm[0]), bins='knuth')
-    
+    with warnings.catch_warnings():
+        #warnings.filterwarnings("ignore", message="divide by zero encountered in divide")
+        warnings.filterwarnings("ignore", message="divide by zero encountered in double_scalars")
+        try:
+            mainHisto, binEdges = astroStats.histogram(np.array(dataCm[0]), bins='knuth')
+        except:
+            mainHisto, binEdges = astroStats.histogram(np.array(dataCm[0]), bins='scott')
     # BIN THE DATA:
     for i in range(2):
         histo[i], histoBinEdges[i] = astroStats.histogram(dataCm[i], bins = binEdges, density = True)
