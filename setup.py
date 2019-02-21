@@ -75,7 +75,7 @@ setup_requires = [
     'pytest-runner',
 ]
 install_requires = [
-    'numpy >= 1.7.1',
+    'numpy >= 1.7.1, < 1.16',
     'scipy >= 0.12.1',
     'matplotlib >= 1.2.0, != 2.1.0, != 2.1.1',
     'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
