@@ -93,8 +93,6 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                                               (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())              
             bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]  
               
-        elif (meth == 'merger_type'):
-            bcm = bcm.loc[bcm.merger_type.isin(use)]
         elif (meth == 'LISA_sources') and use:
             if 0 in method['binary_state']:
                 bcm_0 = bcm.loc[bcm.bin_state==0]
