@@ -44,32 +44,31 @@
       COMMON /VALUE3/ idum
       INTEGER idum2,iy,ir(32)
       COMMON /RAND3/ idum2,iy,ir
-      integer bhflag,wdaflag
-      real*8 tphys,m1,m2,m1n,mbi,mbf,mtilda,mdif
-      real*8 ecc,sep,sepn,jorb,ecc2,bb,angle
+      integer bhflag
+      real*8 m1,m2,m1n,mbi,mbf,mdif
+      real*8 ecc,sep,sepn,jorb,ecc2
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
-      real*8 omega,sino,coso,cosmu,sinmu,x_tilt,y_tilt,z_tilt
+      real*8 cosmu,sinmu,z_tilt
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mm,em,dif,der,del,r
-      real*8 u1,u2,vk,v(4),s,theta,phi,alpha,beta,gamma
-      real*8 sphi,cphi,stheta,ctheta,salpha,calpha,csig,ssig
-      real*8 sthetatest,cthetatest,ct,st,cp,sp,sphitest,cphitest
+      real*8 u1,u2,vk,v(4),s,theta,phi
+      real*8 sphi,cphi,stheta,ctheta,salpha,calpha
       real*8 vr,vr2,vk2,vn2,hn2
-      real*8 mu,cmu,cmu_SN1,vs(3),v1,v2,v1a,v1b
-      real*8 Ptt,Qtt,Rtt,Stt,mx1,mx2,r2,qdist
-      real*8 sigma,sigmah,bhsigmafrac,RotInvX,RotInvZ
+      real*8 mu,cmu,vs(3),v1,v2
+      real*8 mx1,mx2,r2
+      real*8 sigma,sigmah,bhsigmafrac,RotInvX
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
-      real*8 csigns,ssigns,csigc,ssigc
+      real*8 csigns
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
-      real*8 fallback,kickscale,bound,phi_old
+      real*8 fallback,kickscale,bound
 * Output
       real*8 v1xout,v1yout,v1zout,vkout1,vkout2
       real*8 v2xout,v2yout,v2zout
       logical output
 *
-      real*8 bconst,CK,polar_kick_angle
-      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK,bhflag
-      COMMON /VALUE4/ polar_kick_angle,cmu_SN1
+      real*8 bconst,CK,polar_kick_angle,cmu_SN1
+      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
+      COMMON /VALUE4/ polar_kick_angle,cmu_SN1,bhflag
       real*8 mxns,neta,bwind,hewind
       COMMON /VALUE1/ neta,bwind,hewind,mxns
       real*8 bkick(20)
