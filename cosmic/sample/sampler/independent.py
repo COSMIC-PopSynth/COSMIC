@@ -370,12 +370,6 @@ class Sample(object):
             metallicity = np.ones(size)*met
             return tphys, metallicity
 
-        elif SFH_model=='FIRE':
-            import cosmic.FIRE as FIRE
-            tphys, metallicity = FIRE.SFH(size)
-            return tphys, metallicity
-
-
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
         kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
