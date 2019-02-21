@@ -32,6 +32,7 @@
 *        For kw=1 or 2 this is radius at BGB, and for kw=4 either GB or 
 *        AGB radius at present luminosity.
 *
+      tebgb = 0.d0
       logm = log10(mass)
       A = MIN(0.81d0,MAX(0.68d0,0.68d0+0.4d0*logm))
       C = MAX(-2.5d0,MIN(-1.5d0,-2.5d0+5.d0*logm))
