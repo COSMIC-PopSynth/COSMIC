@@ -54,12 +54,15 @@ def match(dataCm):
     # COMPUTE THE BINWIDTH FOR THE MOST COMPLETE DATA SET:
     # NOTE: THIS WILL BE THE BINWIDTH FOR ALL THE HISTOGRAMS IN THE HISTO LIST
     with warnings.catch_warnings():
-        #warnings.filterwarnings("ignore", message="divide by zero encountered in divide")
         warnings.filterwarnings("ignore", message="divide by zero encountered in double_scalars")
         try:
-            mainHisto, binEdges = astroStats.histogram(np.array(dataCm[0]), bins='knuth')
+            bw, binEdges = astroStats.knuth_bin_width(np.array(dataCm[0]), return_bins=True)
         except:
-            mainHisto, binEdges = astroStats.histogram(np.array(dataCm[0]), bins='scott')
+            bw, binEdges = astroStats.scott_bin_width(np.array(dataCm[0]), return_bins=True)
+    if bw < 1e-4:
+        bw = 1e-4
+        binEdges = np.arange(binEdges[0], binEdges[-1], bw)
+
     # BIN THE DATA:
     for i in range(2):
         histo[i], histoBinEdges[i] = astroStats.histogram(dataCm[i], bins = binEdges, density = True)
