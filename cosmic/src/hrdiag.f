@@ -38,7 +38,7 @@
       common /fall/fallback
       REAL*8 fallback
 * 
-      real*8 mt_max,ecsnp,ecsn_mlow,mchold
+      real*8 ecsnp,ecsn_mlow,mchold
 * 
       real*8 avar,bvar
       real*8 thook,thg,tbagb,tau,tloop,taul,tauh,tau1,tau2,dtau,texp

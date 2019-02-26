@@ -973,7 +973,7 @@
       real*8 FUNCTION celamf_xu_li(kw,m0,m,mc,R,fac)
       implicit none
       integer kw,GBt,nRGBbc,ig,ii
-      real*8 m0,m,mc,lum,R,rzams,menv,fac
+      real*8 m0,m,mc,R,fac
       real*8 logM,logR,LMHMbs,calc_logBE,lamda
       real*8 logBE0,Mzams,logRbd,dlogBE
       integer ndat(6),ms(325),rs(325)
@@ -1251,8 +1251,8 @@
       celamf_xu_li = 3.794d41*m*(m-mc)/R/10**(calc_logBE-7.0d0)
 *
       if(abs(celamf_xu_li) .lt. 0.001d0) celamf_xu_li = 0.001d0
-90       continue
       endif
+90    continue
       return
       END
 

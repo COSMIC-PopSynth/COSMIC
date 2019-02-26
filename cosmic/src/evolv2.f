@@ -3,7 +3,9 @@
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
      \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
-     \ sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp,
+     \ sigmatmp,bhsigmafractmp,polar_kick_angletmp,natal_kick,
+     \ betatmp,xitmp,
+     \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
       implicit none
@@ -154,8 +156,8 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
-      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj,j
-      INTEGER fb,kcomp1,kcomp2,formation(2) !PDK
+      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
+      INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
 *
@@ -185,7 +187,7 @@
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
-      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
+      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim
       COMMON /fall/fallback
       REAL ran3
@@ -206,18 +208,19 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL bppout(80,14)
-      REAL bcmout(50000,42)
+      REAL*8 bppout(80,15)
+      REAL*8 bcmout(50000,42)
 
-      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
-      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
-      REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
-      REAL*8 sigmatmp,betatmp,xitmp,acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
-      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
+      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
+      REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
+      REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
+      REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
+      REAL*8 bconsttmp,CKtmp,mergertmp
+      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick(6)
+      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp
+      INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
-
-Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf
+Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
       ceflag = ceflagtmp
       tflag = tflagtmp
@@ -233,6 +236,8 @@ Cf2py intent(out) bppout,bcmout
       pts2 = pts2tmp
       pts3 = pts3tmp
       sigma = sigmatmp
+      bhsigmafrac = bhsigmafractmp
+      polar_kick_angle = polar_kick_angletmp
       beta = betatmp
       neta = netatmp
       lambda = lambdatmp
@@ -282,7 +287,6 @@ Cf2py intent(out) bppout,bcmout
 * PDK
       pulsar = 1
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
-      fb = 1
       wdwdedd = 0 !Have not introduced yet but will. if set to 1 forces WD dynamical MT to be limited by eddington rate.
       eddlim = 1 !Have not introduced yet but will.if = 0 then BSE version, only H limit, else StarTrack version.
       ecsnp = 2.5d0 !>0 turns on ECSN and also sets maximum ECSN kick mass range (mass at SN, bse=st=2.25, pod=2.5)
@@ -629,24 +633,25 @@ Cf2py intent(out) bppout,bcmout
                bpp(jp,4) = float(kstar(1))
                bpp(jp,5) = float(kstar(2))
                bpp(jp,6) = sep
-               bpp(jp,7) = ecc
-               bpp(jp,8) = rad(1)/rol(1)
-               bpp(jp,9) = rad(2)/rol(2)
+               bpp(jp,7) = tb
+               bpp(jp,8) = ecc
+               bpp(jp,9) = rad(1)/rol(1)
+               bpp(jp,10) = rad(2)/rol(2)
                if(bsymb)then
-                  bpp(jp,10) = 13.0
+                  bpp(jp,11) = 13.0
                   esymb = .true.
                else
-                  bpp(jp,10) = 12.0
+                  bpp(jp,11) = 12.0
                   bsymb = .true.
                endif
-               bpp(jp,11) = bkick(15)
-               bpp(jp,12) = bkick(16)
+               bpp(jp,12) = bkick(15)
+               bpp(jp,13) = bkick(16)
                if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-                  bpp(jp,13) = bkick(13)
-                  bpp(jp,14) = bkick(18)
+                  bpp(jp,14) = bkick(13)
+                  bpp(jp,15) = bkick(18)
                elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-                  bpp(jp,13) = bkick(14)
-                  bpp(jp,14) = bkick(19)
+                  bpp(jp,14) = bkick(14)
+                  bpp(jp,15) = bkick(19)
                endif
                DO jj = 13,20
                   bkick(jj) = 0.0
@@ -1354,7 +1359,7 @@ Cf2py intent(out) bppout,bcmout
             endif
             if(sgl)then
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick)
+     &                   0.d0,fallback,bkick,natal_kick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1363,16 +1368,16 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0)then
+               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0)then
+               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
                   theta_bcm=bkick(20)
                endif
 
             else
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(k-3),fallback,bkick)
+     &                   rad(k-3),fallback,bkick,natal_kick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1381,10 +1386,10 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0)then
+               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0)then
+               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
                   theta_bcm=bkick(20)
                endif
                if(mass(3-k).lt.0.d0)then
@@ -1536,18 +1541,19 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,4) = float(kstar(1))
             bpp(jp,5) = float(kstar(2))
             bpp(jp,6) = sep
-            bpp(jp,7) = ecc
-            bpp(jp,8) = rad(1)/rol(1)
-            bpp(jp,9) = rad(2)/rol(2)
-            bpp(jp,10) = 14.0
-            bpp(jp,11) = bkick(15)
-            bpp(jp,12) = bkick(16)
+            bpp(jp,7) = tb
+            bpp(jp,8) = ecc
+            bpp(jp,9) = rad(1)/rol(1)
+            bpp(jp,10) = rad(2)/rol(2)
+            bpp(jp,11) = 14.0
+            bpp(jp,12) = bkick(15)
+            bpp(jp,13) = bkick(16)
             if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-               bpp(jp,13) = bkick(13)
-               bpp(jp,14) = bkick(18)
+               bpp(jp,14) = bkick(13)
+               bpp(jp,15) = bkick(18)
             elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-               bpp(jp,13) = bkick(14)
-               bpp(jp,14) = bkick(19)
+               bpp(jp,14) = bkick(14)
+               bpp(jp,15) = bkick(19)
             endif
             DO jj = 13,20
                bkick(jj) = 0.0
@@ -1589,24 +1595,25 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,4) = float(kstar(1))
          bpp(jp,5) = float(kstar(2))
          bpp(jp,6) = sep
-         bpp(jp,7) = ecc
-         bpp(jp,8) = rad(1)/rol(1)
-         bpp(jp,9) = rad(2)/rol(2)
-         bpp(jp,10) = 1.0
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,7) = tb 
+         bpp(jp,8) = ecc
+         bpp(jp,9) = rad(1)/rol(1)
+         bpp(jp,10) = rad(2)/rol(2)
+         bpp(jp,11) = 1.0
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
          if(snova)then
-            bpp(jp,10) = 2.0
+            bpp(jp,11) = 2.0
             dtm = 0.d0
             goto 4
          endif
@@ -1794,18 +1801,19 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,4) = float(kstar(1))
          bpp(jp,5) = float(kstar(2))
          bpp(jp,6) = sep
-         bpp(jp,7) = ecc
-         bpp(jp,8) = rad(1)/rol(1)
-         bpp(jp,9) = rad(2)/rol(2)
-         bpp(jp,10) = 2.0
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,7) = tb
+         bpp(jp,8) = ecc
+         bpp(jp,9) = rad(1)/rol(1)
+         bpp(jp,10) = rad(2)/rol(2)
+         bpp(jp,11) = 2.0
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
@@ -1871,18 +1879,19 @@ Cf2py intent(out) bppout,bcmout
       bpp(jp,4) = float(kstar(1))
       bpp(jp,5) = float(kstar(2))
       bpp(jp,6) = sep
-      bpp(jp,7) = ecc
-      bpp(jp,8) = rad(1)/rol(1)
-      bpp(jp,9) = rad(2)/rol(2)
-      bpp(jp,10) = 3.0
-      bpp(jp,11) = bkick(15)
-      bpp(jp,12) = bkick(16)
+      bpp(jp,7) = tb
+      bpp(jp,8) = ecc
+      bpp(jp,9) = rad(1)/rol(1)
+      bpp(jp,10) = rad(2)/rol(2)
+      bpp(jp,11) = 3.0
+      bpp(jp,12) = bkick(15)
+      bpp(jp,13) = bkick(16)
       if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-         bpp(jp,13) = bkick(13)
-         bpp(jp,14) = bkick(18)
+         bpp(jp,14) = bkick(13)
+         bpp(jp,15) = bkick(18)
       elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-         bpp(jp,13) = bkick(14)
-         bpp(jp,14) = bkick(19)
+         bpp(jp,14) = bkick(14)
+         bpp(jp,15) = bkick(19)
       endif
       DO jj = 13,20
          bkick(jj) = 0.0
@@ -2100,9 +2109,9 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,fb,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype)
+     &               binstate,mergertype,natal_kick)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK. 
 * In CE the NS got switched around. Do same to formation.
@@ -2123,10 +2132,10 @@ Cf2py intent(out) bppout,bcmout
          if(bkick(14).gt.0.d0)then
             vk2_bcm=bkick(14)
          endif
-         if(bkick(17).gt.0.d0)then
+         if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
             vsys_bcm=bkick(17)
          endif
-         if(bkick(20).gt.0.d0)then
+         if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
             theta_bcm=bkick(20)
          endif
 *
@@ -2139,18 +2148,19 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,4) = float(kstar(1))
          bpp(jp,5) = float(kstar(2))
          bpp(jp,6) = sep
-         bpp(jp,7) = ecc
-         bpp(jp,8) = rad(1)/rol(1)
-         bpp(jp,9) = rad(2)/rol(2)
-         bpp(jp,10) = 7.0
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,7) = tb
+         bpp(jp,8) = ecc
+         bpp(jp,9) = rad(1)/rol(1)
+         bpp(jp,10) = rad(2)/rol(2)
+         bpp(jp,11) = 7.0
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
@@ -2442,18 +2452,19 @@ Cf2py intent(out) bppout,bcmout
                   bpp(jp,4) = float(kstar(j1))
                   bpp(jp,5) = float(kst)
                   bpp(jp,6) = sep
-                  bpp(jp,7) = ecc
-                  bpp(jp,8) = rad(1)/rol(1)
-                  bpp(jp,9) = rad(2)/rol(2)
-                  bpp(jp,10) = 8.0
-                  bpp(jp,11) = bkick(15)
-                  bpp(jp,12) = bkick(16)
+                  bpp(jp,7) = tb
+                  bpp(jp,8) = ecc
+                  bpp(jp,9) = rad(1)/rol(1)
+                  bpp(jp,10) = rad(2)/rol(2)
+                  bpp(jp,11) = 8.0
+                  bpp(jp,12) = bkick(15)
+                  bpp(jp,13) = bkick(16)
                   if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-                     bpp(jp,13) = bkick(13)
-                     bpp(jp,14) = bkick(18)
+                     bpp(jp,14) = bkick(13)
+                     bpp(jp,15) = bkick(18)
                   elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-                     bpp(jp,13) = bkick(14)
-                     bpp(jp,14) = bkick(19)
+                     bpp(jp,14) = bkick(14)
+                     bpp(jp,15) = bkick(19)
                   endif
                   DO jj = 13,20
                      bkick(jj) = 0.0
@@ -2510,18 +2521,19 @@ Cf2py intent(out) bppout,bcmout
                   bpp(jp,4) = float(kstar(j1))
                   bpp(jp,5) = float(kst)
                   bpp(jp,6) = sep
-                  bpp(jp,7) = ecc
-                  bpp(jp,8) = rad(1)/rol(1)
-                  bpp(jp,9) = rad(2)/rol(2)
-                  bpp(jp,10) = 8.0
-                  bpp(jp,11) = bkick(15)
-                  bpp(jp,12) = bkick(16)
+                  bpp(jp,7) = tb
+                  bpp(jp,8) = ecc
+                  bpp(jp,9) = rad(1)/rol(1)
+                  bpp(jp,10) = rad(2)/rol(2)
+                  bpp(jp,11) = 8.0
+                  bpp(jp,12) = bkick(15)
+                  bpp(jp,13) = bkick(16)
                   if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-                     bpp(jp,13) = bkick(13)
-                     bpp(jp,14) = bkick(18)
+                     bpp(jp,14) = bkick(13)
+                     bpp(jp,15) = bkick(18)
                   elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-                     bpp(jp,13) = bkick(14)
-                     bpp(jp,14) = bkick(19)
+                     bpp(jp,14) = bkick(14)
+                     bpp(jp,15) = bkick(19)
                   endif
                   DO jj = 13,20
                      bkick(jj) = 0.0
@@ -3123,7 +3135,7 @@ Cf2py intent(out) bppout,bcmout
                endif
             endif
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick)
+     &                rad(3-k),fallback,bkick,natal_kick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
 * set kick values for the bcm array
@@ -3133,10 +3145,10 @@ Cf2py intent(out) bppout,bcmout
             if(bkick(14).gt.0.d0)then
                vk2_bcm=bkick(14)
             endif
-            if(bkick(17).gt.0.d0)then
+            if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
                vsys_bcm=bkick(17)
             endif
-            if(bkick(20).gt.0.d0)then
+            if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
                theta_bcm=bkick(20)
             endif
 
@@ -3215,18 +3227,19 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,4) = float(kstar(1))
             bpp(jp,5) = float(kstar(2))
             bpp(jp,6) = sep
-            bpp(jp,7) = ecc
-            bpp(jp,8) = rad(1)/rol(1)
-            bpp(jp,9) = rad(2)/rol(2)
-            bpp(jp,10) = 14.0
-            bpp(jp,11) = bkick(15)
-            bpp(jp,12) = bkick(16)
+            bpp(jp,7) = tb
+            bpp(jp,8) = ecc
+            bpp(jp,9) = rad(1)/rol(1)
+            bpp(jp,10) = rad(2)/rol(2)
+            bpp(jp,11) = 14.0
+            bpp(jp,12) = bkick(15)
+            bpp(jp,13) = bkick(16)
             if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-               bpp(jp,13) = bkick(13)
-               bpp(jp,14) = bkick(18)
+               bpp(jp,14) = bkick(13)
+               bpp(jp,15) = bkick(18)
             elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-               bpp(jp,13) = bkick(14)
-               bpp(jp,14) = bkick(19)
+               bpp(jp,14) = bkick(14)
+               bpp(jp,15) = bkick(19)
             endif
             DO jj = 13,20
                bkick(jj) = 0.0
@@ -3329,18 +3342,19 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,4) = float(kstar(1))
          bpp(jp,5) = float(kstar(2))
          bpp(jp,6) = sep
-         bpp(jp,7) = ecc
-         bpp(jp,8) = rad(1)/rol(1)
-         bpp(jp,9) = rad(2)/rol(2)
-         bpp(jp,10) = 2.0
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,7) = tb
+         bpp(jp,8) = ecc
+         bpp(jp,9) = rad(1)/rol(1)
+         bpp(jp,10) = rad(2)/rol(2)
+         bpp(jp,11) = 2.0
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
@@ -3364,18 +3378,19 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,4) = float(kstar(1))
          bpp(jp,5) = float(kstar(2))
          bpp(jp,6) = sep
-         bpp(jp,7) = ecc
-         bpp(jp,8) = rad(1)/rol(1)
-         bpp(jp,9) = rad(2)/rol(2)
-         bpp(jp,10) = 4.0
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,7) = tb
+         bpp(jp,8) = ecc
+         bpp(jp,9) = rad(1)/rol(1)
+         bpp(jp,10) = rad(2)/rol(2)
+         bpp(jp,11) = 4.0
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
@@ -3406,18 +3421,19 @@ Cf2py intent(out) bppout,bcmout
       bpp(jp,4) = float(kstar(1))
       bpp(jp,5) = float(kstar(2))
       bpp(jp,6) = sep
-      bpp(jp,7) = ecc
-      bpp(jp,8) = rrl1
-      bpp(jp,9) = rrl2
-      bpp(jp,10) = 5.0
-      bpp(jp,11) = bkick(15)
-      bpp(jp,12) = bkick(16)
+      bpp(jp,7) = tb
+      bpp(jp,8) = ecc
+      bpp(jp,9) = rrl1
+      bpp(jp,10) = rrl2
+      bpp(jp,11) = 5.0
+      bpp(jp,12) = bkick(15)
+      bpp(jp,13) = bkick(16)
       if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-         bpp(jp,13) = bkick(13)
-         bpp(jp,14) = bkick(18)
+         bpp(jp,14) = bkick(13)
+         bpp(jp,15) = bkick(18)
       elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-         bpp(jp,13) = bkick(14)
-         bpp(jp,14) = bkick(19)
+         bpp(jp,14) = bkick(14)
+         bpp(jp,15) = bkick(19)
       endif
       DO jj = 13,20
          bkick(jj) = 0.0
@@ -3433,9 +3449,9 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,fb,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype)
+     &               binstate,mergertype,natal_kick)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3459,9 +3475,9 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,fb,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype)
+     &               binstate,mergertype,natal_kick)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3492,10 +3508,10 @@ Cf2py intent(out) bppout,bcmout
       if(bkick(14).gt.0.d0)then
          vk2_bcm=bkick(14)
       endif
-      if(bkick(17).gt.0.d0)then
+      if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
          vsys_bcm=bkick(17)
       endif
-      if(bkick(20).gt.0.d0)then
+      if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
          theta_bcm=bkick(20)
       endif
 
@@ -3509,20 +3525,21 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,4) = float(kstar(1))
          bpp(jp,5) = float(kstar(2))
          bpp(jp,6) = sep
-         bpp(jp,7) = ecc
+         bpp(jp,7) = tb
+         bpp(jp,8) = ecc
          rrl1 = MIN(rrl1,0.99d0)
          rrl2 = MIN(rrl2,0.99d0)
-         bpp(jp,8) = rrl1
-         bpp(jp,9) = rrl2
-         bpp(jp,10) = 7.0
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,9) = rrl1
+         bpp(jp,10) = rrl2
+         bpp(jp,11) = 7.0
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
@@ -3586,33 +3603,36 @@ Cf2py intent(out) bppout,bcmout
             bpp(jp,6) = zero
             bpp(jp,7) = zero
             bpp(jp,8) = zero
-            bpp(jp,9) = ngtv
-            bpp(jp,11) = bkick(15)
-            bpp(jp,12) = bkick(16)
+            bpp(jp,9) = zero
+            bpp(jp,10) = ngtv
+            bpp(jp,11) = zero
+            bpp(jp,12) = bkick(15)
+            bpp(jp,13) = bkick(16)
             if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-               bpp(jp,13) = bkick(13)
-               bpp(jp,14) = bkick(18)
+               bpp(jp,14) = bkick(13)
+               bpp(jp,15) = bkick(18)
             elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-               bpp(jp,13) = bkick(14)
-               bpp(jp,14) = bkick(19)
+               bpp(jp,14) = bkick(14)
+               bpp(jp,15) = bkick(19)
             endif
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
             if(coel)then
-               bpp(jp,10) = 6.0
+               bpp(jp,11) = 6.0
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
 *
                bpp(jp,6) = sep
-               bpp(jp,7) = ecc
-               bpp(jp,9) = ngtv2
-               bpp(jp,10) = 11.0
+               bpp(jp,7) = tb
+               bpp(jp,8) = ecc
+               bpp(jp,10) = ngtv2
+               bpp(jp,11) = 11.0
                binstate = 2
                mergertype = -1
             else
-               bpp(jp,10) = 9.0
+               bpp(jp,11) = 9.0
             endif
          endif
          if(kstar(2).eq.15)then
@@ -3662,34 +3682,36 @@ Cf2py intent(out) bppout,bcmout
          bpp(jp,6) = zero
          bpp(jp,7) = zero
          bpp(jp,8) = zero
-         bpp(jp,11) = bkick(15)
-         bpp(jp,12) = bkick(16)
+         bpp(jp,9) = zero
+         bpp(jp,12) = bkick(15)
+         bpp(jp,13) = bkick(16)
          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,13) = bkick(13)
-            bpp(jp,14) = bkick(18)
+            bpp(jp,14) = bkick(13)
+            bpp(jp,15) = bkick(18)
          elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,13) = bkick(14)
-            bpp(jp,14) = bkick(19)
+            bpp(jp,14) = bkick(14)
+            bpp(jp,15) = bkick(19)
          endif
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
          if(coel)then
-            bpp(jp,9) = ngtv
-            bpp(jp,10) = 6.0
+            bpp(jp,10) = ngtv
+            bpp(jp,11) = 6.0
          elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
 * No remnant is left in either case.
 *
-            bpp(jp,9) = ngtv2
-            bpp(jp,10) = 9.0
+            bpp(jp,10) = ngtv2
+            bpp(jp,11) = 9.0
          else
             bpp(jp,6) = sep
-            bpp(jp,7) = ecc
-            bpp(jp,8) = rad(1)/rol(1)
-            bpp(jp,9) = rad(2)/rol(2)
-            bpp(jp,10) = 10.0
+            bpp(jp,7) = tb
+            bpp(jp,8) = ecc
+            bpp(jp,9) = rad(1)/rol(1)
+            bpp(jp,10) = rad(2)/rol(2)
+            bpp(jp,11) = 10.0
          endif
       endif
 *

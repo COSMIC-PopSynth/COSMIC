@@ -2,7 +2,7 @@
       real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
       implicit none
       integer kw,windflag,testflag
-      real*8 lum,r,mt,mc,rl,z,teff,tphys
+      real*8 lum,r,mt,mc,rl,z,teff
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
       real*8 neta,bwind,hewind,mxns
       parameter(lum0=7.0d+04,kap=-0.5d0)
