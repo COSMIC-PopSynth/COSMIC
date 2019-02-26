@@ -2,7 +2,7 @@
       SUBROUTINE COMENV(M01,M1,MC1,AJ1,JSPIN1,KW1,
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
-     &                  fb,bkick,ecsnp,ecsn_mlow,formation1,formation2,
+     &                  bkick,ecsnp,ecsn_mlow,formation1,formation2,
      &                  ST_tide,binstate,mergertype,natal_kick)
 *
 * Common Envelope Evolution.
@@ -18,7 +18,7 @@
 *
       IMPLICIT NONE
 *
-      INTEGER KW1,KW2,KW,fb,KW1i,KW2i,snp
+      INTEGER KW1,KW2,KW,KW1i,KW2i,snp
       INTEGER star1,star2
       INTEGER KTYPE(0:14,0:14)
       INTEGER binstate,mergertype
@@ -74,8 +74,8 @@
 *
       IF(LAMBDA.EQ.1.0)THEN
          LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDA)
-      ELSEIF(LAMBDA.LT.0.0)THEN
-         LAMB1 = -LAMBDA
+      ELSEIF(LAMBDA.LT.0.d0)THEN
+         LAMB1 = -1.0*LAMBDA
       ELSE
          LAMB1 = CELAMF_XU_LI(KW,M01,M1,MC1,R1,LAMBDA)
       ENDIF
@@ -99,8 +99,8 @@
          RZAMS = RZAMSF(M02)
          IF(LAMBDA.EQ.1.0)THEN
             LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDA)
-         ELSEIF(LAMBDA.LT.0.0)THEN
-            LAMB2 = -LAMBDA
+         ELSEIF(LAMBDA.LT.0.d0)THEN
+            LAMB2 = -1.0*LAMBDA
          ELSE
             LAMB2 = CELAMF_XU_LI(KW,M02,M2,MC2,R2,LAMBDA)
          ENDIF

@@ -17,8 +17,8 @@
       INTEGER windflag, ppsn
       COMMON /VALUE1/ neta,bwind,hewind,mxns,windflag,ppsn
       COMMON /VALUE2/ alpha1,lambda
-      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK,bhflag
-      COMMON /VALUE4/ polar_kick_angle,cmu_SN1
+      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
+      COMMON /VALUE4/ polar_kick_angle,cmu_SN1,bhflag
       COMMON /VALUE5/ beta,xi,acc2,epsnov,eddfac,gamma
       INTEGER*8 id1_pass,id2_pass
       REAL*8 merger
