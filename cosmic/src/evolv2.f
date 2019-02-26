@@ -156,8 +156,8 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
-      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj,j
-      INTEGER fb,kcomp1,kcomp2,formation(2) !PDK
+      INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
+      INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
 *
@@ -187,7 +187,7 @@
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
-      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxi,diskxip
+      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim
       COMMON /fall/fallback
       REAL ran3
@@ -211,14 +211,14 @@
       REAL*8 bppout(80,15)
       REAL*8 bcmout(50000,42)
 
-      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp
-      REAL*8 tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,dtptmp,idumtmp
-      REAL*8 bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp
+      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
+      REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,mergertmp,windflagtmp
+      REAL*8 bconsttmp,CKtmp,mergertmp
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick(6)
-
+      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp
+      INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
@@ -287,7 +287,6 @@ Cf2py intent(out) bppout,bcmout
 * PDK
       pulsar = 1
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
-      fb = 1
       wdwdedd = 0 !Have not introduced yet but will. if set to 1 forces WD dynamical MT to be limited by eddington rate.
       eddlim = 1 !Have not introduced yet but will.if = 0 then BSE version, only H limit, else StarTrack version.
       ecsnp = 2.5d0 !>0 turns on ECSN and also sets maximum ECSN kick mass range (mass at SN, bse=st=2.25, pod=2.5)
@@ -2110,7 +2109,7 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,fb,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3450,7 +3449,7 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,fb,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
@@ -3476,7 +3475,7 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,fb,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,

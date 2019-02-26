@@ -54,7 +54,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                       'select_final_state',
                       'binary_state',
                       'merger_type',
-                      'LISA_sources']
+                      'lisa_sources']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -117,9 +117,9 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
 
     method : `dict`,
         one or more methods by which to filter the
-        bcm table, e.g. ``{'LISA_convergence' : True}``;
+        bcm table, e.g. ``{'lisa_convergence' : True}``;
         This means you want to only compute the convergence
-        over the region specified for the LISA_convergence
+        over the region specified for the lisa_convergence
         method below
 
     Returns
@@ -133,7 +133,7 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
         data from last iteration
 
     """
-    _known_methods = ['LISA_convergence']
+    _known_methods = ['lisa_convergence']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -146,7 +146,7 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
     else:
         bcm_conv_last = bcm_save_tot.iloc[:len(bcm_save_tot)-len(bcm_save_last)]
     for meth, use in method.items():
-        if meth == 'LISA_convergence' and use:
+        if meth == 'lisa_convergence' and use:
             bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(5000)]
             bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(5000)]
 
