@@ -22,7 +22,7 @@ TOTAL_SAMPLED_MASS_50_SALPETER55 = 1615.8593881185334
 TOTAL_SAMPLED_MASS_SALPETER55 = 28.182278678238717 
 TOTAL_SECONDARY_MASS = 16.15470927770034
 N_BINARY_SELECT = 92
-PORB = 475.82462814
+PORB = 855.304181220944
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
@@ -31,10 +31,6 @@ KSTAR_SOLAR = 1.0
 MOE_TOTAL_MASS = 31.134712126322306 
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
-FIRE_MAX_TIME = 13900.0
-FIRE_MIN_TIME = 0.0
-FIRE_MAX_MET = 0.2
-FIRE_MIN_MET = 0.0001
 
 
 class TestSample(unittest2.TestCase):
@@ -125,13 +121,6 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
-        # Check that the sample SFH function samples SFH='FIRE' correctly
-        times, met = SAMPLECLASS.sample_SFH(SFH_model='FIRE', size=100)
-        self.assertTrue(np.max(times) < FIRE_MAX_TIME)
-        self.assertTrue(np.min(times) > FIRE_MIN_TIME)
-        self.assertTrue(np.max(met) < FIRE_MAX_MET)
-        self.assertTrue(np.min(met) > FIRE_MIN_MET)
-
     def test_set_kstar(self):
         # Check that the kstar is selected properly
         kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
@@ -164,13 +153,6 @@ class TestSample(unittest2.TestCase):
                                                     met = 0.02, size=100)
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)
-
-        # Check that the sample SFH function samples SFH='FIRE' correctly
-        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='FIRE', size=100)
-        self.assertTrue(np.max(times) < FIRE_MAX_TIME)
-        self.assertTrue(np.min(times) > FIRE_MIN_TIME)
-        self.assertTrue(np.max(met) < FIRE_MAX_MET)
-        self.assertTrue(np.min(met) > FIRE_MIN_MET)
 
     def test_set_kstar_MultiDim(self):
         # Check that the kstar is selected properly

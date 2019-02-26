@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick)
+     &                r2,fallback,bkick,natal_kick)
       implicit none
 *
 * Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
@@ -44,35 +44,35 @@
       COMMON /VALUE3/ idum
       INTEGER idum2,iy,ir(32)
       COMMON /RAND3/ idum2,iy,ir
-      integer bhflag,wdaflag
-      real*8 tphys,m1,m2,m1n,mbi,mbf,mtilda,mdif
-      real*8 ecc,sep,sepn,jorb,ecc2,bb,angle
+      integer bhflag
+      real*8 m1,m2,m1n,mbi,mbf,mdif
+      real*8 ecc,sep,sepn,jorb,ecc2
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
-      real*8 omega,sino,coso,cosmu,sinmu,x_tilt,y_tilt,z_tilt
+      real*8 cosmu,sinmu,z_tilt
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mm,em,dif,der,del,r
-      real*8 u1,u2,vk,v(4),s,theta,phi,alpha,beta,gamma
-      real*8 sphi,cphi,stheta,ctheta,salpha,calpha,csig,ssig
-      real*8 sthetatest,cthetatest,ct,st,cp,sp,sphitest,cphitest
+      real*8 u1,u2,vk,v(4),s,theta,phi
+      real*8 sphi,cphi,stheta,ctheta,salpha,calpha
       real*8 vr,vr2,vk2,vn2,hn2
-      real*8 mu,cmu,cmu_SN1,vs(3),v1,v2,v1a,v1b
-      real*8 Ptt,Qtt,Rtt,Stt,mx1,mx2,r2,qdist
-      real*8 sigma,sigmah,bhsigmafrac,RotInvX,RotInvZ
+      real*8 mu,cmu,vs(3),v1,v2
+      real*8 mx1,mx2,r2
+      real*8 sigma,sigmah,bhsigmafrac,RotInvX
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
-      real*8 csigns,ssigns,csigc,ssigc
+      real*8 csigns
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
-      real*8 fallback,kickscale,bound,phi_old
+      real*8 fallback,kickscale,bound
 * Output
       real*8 v1xout,v1yout,v1zout,vkout1,vkout2
       real*8 v2xout,v2yout,v2zout
       logical output
 *
-      real*8 bconst,CK,opening_angle
-      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK,bhflag
-      COMMON /VALUE4/ opening_angle,cmu_SN1
+      real*8 bconst,CK,polar_kick_angle,cmu_SN1
+      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
+      COMMON /VALUE4/ polar_kick_angle,cmu_SN1,bhflag
       real*8 mxns,neta,bwind,hewind
       COMMON /VALUE1/ neta,bwind,hewind,mxns
       real*8 bkick(20)
+      real*8 natal_kick(6)
 *      COMMON /VKICK/ bkick
       real ran3,xx
       external ran3
@@ -105,8 +105,7 @@
       sigmah = sigma
 *Test: Checking if we can make customized sigma for blackholes only
       if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
-           sigma = sigmah
-*          sigma = sigmah*bhsigmafrac
+           sigma = sigmah*bhsigmafrac
       endif
       if(output)then
 
@@ -173,45 +172,53 @@
          salpha = 0.d0
          calpha = 0.d0
       endif
+* Before we draw the kick from the maxwellian and then scale it
+* if desired, let us see if a pre-supplied set of natal kicks
+* and phi theta values associated with the kicks was passed.
+      if(natal_kick(snstar).gt.0.d0)then
+          vk = natal_kick(snstar)
+          vk2 = vk*vk
+      else
 *
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
 * Use Henon's method for pairwise components (Douglas Heggie 22/5/97).
-      do 20 k = 1,2
-         u1 = RAN3(idum)
-*         write(15,*)'kick 2:',u1,idum
-         u2 = RAN3(idum)
-         if(u1.gt.0.9999d0) u1 = 0.9999d0
-         if(u2.gt.1.d0) u2 = 1.d0
-*         write(15,*)'kick 3:',u2,idum
+          do 20 k = 1,2
+             u1 = RAN3(idum)
+*             write(15,*)'kick 2:',u1,idum
+             u2 = RAN3(idum)
+             if(u1.gt.0.9999d0) u1 = 0.9999d0
+             if(u2.gt.1.d0) u2 = 1.d0
+*             write(15,*)'kick 3:',u2,idum
 * Generate two velocities from polar coordinates S & THETA.
-         s = -2.d0*LOG(1.d0 - u1)
-         s = sigma*SQRT(s)
-         theta = twopi*u2
-         v(2*k-1) = s*COS(theta)
-         v(2*k) = s*SIN(theta)
- 20   continue
-      vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
-      vk = SQRT(vk2)
+             s = -2.d0*LOG(1.d0 - u1)
+             s = sigma*SQRT(s)
+             theta = twopi*u2
+             v(2*k-1) = s*COS(theta)
+             v(2*k) = s*SIN(theta)
+ 20          continue
+          vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
+          vk = SQRT(vk2)
 
 * Limit BH kick with fallback mass fraction.
-*      if(kw.eq.14)then
-*Limit BH kick with fallback only if wanted
-*      write(20,*)'BH FORM', m1,vk,fallback,kw
-      if(kickscale.gt.0.d0)then
-         vk = vk/kickscale
-         vk2 = vk2/kickscale/kickscale
+*          if(kw.eq.14)then
+* Limit BH kick with fallback only if wanted
+*          write(20,*)'BH FORM', m1,vk,fallback,kw
+          if(kickscale.gt.0.d0)then
+             vk = vk/kickscale
+             vk2 = vk2/kickscale/kickscale
+          endif
+          if(kw.eq.14.and.bhflag.eq.0)then
+             vk2 = 0.d0
+             vk = 0.d0
+          elseif(kw.eq.14.and.bhflag.eq.1)then
+              fallback = MIN(fallback,1.d0)
+              vk = MAX((1.d0-fallback)*vk,0.d0)
+              vk2 = vk*vk
+          elseif(kw.eq.14.and.bhflag.eq.2)then
+             vk = vk * mxns / m1n
+             vk2 = vk*vk
+          endif 
       endif
-      if(kw.eq.14.and.bhflag.eq.0)then
-         vk2 = 0.d0
-         vk = 0.d0
-      elseif(kw.eq.14.and.bhflag.eq.1)then
-          fallback = MIN(fallback,1.d0)
-          vk = MAX((1.d0-fallback)*vk,0.d0)
-          vk2 = vk*vk
-      elseif(kw.eq.14.and.bhflag.eq.2)then
-         vk = vk * mxns / m1n
-         vk2 = vk*vk
-      endif 
 
 * Set natal kick magnitude in the bkick array
       if(bkick(1).le.0.d0)then
@@ -221,35 +228,60 @@
       endif
 
       sigma = sigmah
+* Before we randomly drawa phi and theta,
+* let us see if a pre-supplied set of natal kicks
+* and phi theta values associated with the kicks was passed.
+      if(natal_kick(snstar).gt.0.d0)then
+          phi = natal_kick(snstar+2)
+          sphi = SIN(phi)
+          cphi = COS(phi)
+          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
+            cosmu = cmu_SN1
+            sinmu = sqrt(1 - cmu_SN1*cmu_SN1)
+*           this stheta should probably be from first kick
+            z_tilt=cosmu*sphi + cphi*sinmu*stheta
+            phi = ASIN(z_tilt)
+            sphi = z_tilt
+            cphi = COS(phi)
+*           write(15,*) vk,theta,phi,cmu_SN1
+          endif
+          theta = natal_kick(snstar+4)
+          stheta = SIN(theta)
+          ctheta = COS(theta)
+       
+      else
 * CLR - Allow for a restricted opening angle for SN kicks
 *       Only relevant for binaries, obviously
-*       Default value for opening_angle = 90.0
-      bound = SIN((90.d0 - opening_angle)*pi/180.d0)
-      sphi = (1.d0-bound)*ran3(idum) + bound
-      phi = ASIN(sphi)
+*       Default value for polar_kick_angle = 90.0
+          bound = SIN((90.d0 - polar_kick_angle)*pi/180.d0)
+          sphi = (1.d0-bound)*ran3(idum) + bound
+          phi = ASIN(sphi)
 * MJZ - The constrained kick will hit at either the north
 *       or south pole
-      if(RAN3(idum).ge.0.5)then
-        phi = pi-phi
-        sphi = SIN(phi)
-      endif
-      cphi = COS(phi)
+          if(RAN3(idum).ge.0.5)then
+            phi = -phi
+            sphi = SIN(phi)
+          endif
+          cphi = COS(phi)
+
 * CLR - if the orbit has already been kicked, then any polar kick
 *       needs to be tilted as well (since L_hat and S_hat are no longer
 *       aligned).  Here we take the random kick from above and rotate it
 *       about the X axis by the angle mu from the last SN kick
-      if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-        cosmu = cmu_SN1
-        sinmu = sqrt(1 - cmu_SN1*cmu_SN1)
-        z_tilt=cosmu*sphi + cphi*sinmu*stheta
-        phi = ASIN(z_tilt)
-        sphi = z_tilt
-        cphi = COS(phi)
-*       write(15,*) vk,theta,phi,cmu_SN1
+          if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
+            cosmu = cmu_SN1
+            sinmu = sqrt(1 - cmu_SN1*cmu_SN1)
+*           this stheta should probably be from first kick
+            z_tilt=cosmu*sphi + cphi*sinmu*stheta
+            phi = ASIN(z_tilt)
+            sphi = z_tilt
+            cphi = COS(phi)
+*           write(15,*) vk,theta,phi,cmu_SN1
+          endif
+          theta = twopi*ran3(idum)
+          stheta = SIN(theta)
+          ctheta = COS(theta)
       endif
-      theta = twopi*ran3(idum)
-      stheta = SIN(theta)
-      ctheta = COS(theta)
 
       if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
 *
@@ -529,7 +561,7 @@
       bkick(15) = vkout1
       bkick(16) = vkout2
 * Set the total final systemic velocities in the bkick array
-      if(ecc.lt.1.d0.and.bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
+      if(ecc.lt.1.d0.and.bkick(1).eq.1.d0.and.bkick(5).eq.2.d0)then
          bkick(17) = SQRT((bkick(2)+bkick(6))*(bkick(2)+bkick(6))+
      &            (bkick(3)+bkick(7))*(bkick(3)+bkick(7))+
      &            (bkick(4)+bkick(8))*(bkick(4)+bkick(8)))

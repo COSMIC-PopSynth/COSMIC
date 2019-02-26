@@ -248,6 +248,9 @@ class Sample(object):
         """
         q = mass2/mass1
         RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
+        
+        q2 = mass1/mass2
+        RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
         try:
             ind_lo, = np.where(mass1 < 1.66)
             ind_hi, = np.where(mass1 >= 1.66)
@@ -261,7 +264,20 @@ class Sample(object):
             else:
                 rad1 = 1.33*mass1**0.555
 
-        a_min = rad1/(0.5*RL_fac)
+        try:
+            ind_lo, = np.where(mass2 < 1.66)
+            ind_hi, = np.where(mass2 >= 1.66)
+
+            rad2 = np.zeros(len(mass2))
+            rad2[ind_lo] = 1.06*mass2[ind_lo]**0.945
+            rad2[ind_hi] = 1.33*mass2[ind_hi]**0.555
+        except:
+            if mass2 < 1.66:
+                rad2 = 1.06*mass1**0.945
+            else:
+                rad2 = 1.33*mass1**0.555
+
+        a_min = 2*rad1/RL_fac + 2*rad2/RL_fac2
         a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
         # convert out of log space
@@ -353,12 +369,6 @@ class Sample(object):
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
-
-        elif SFH_model=='FIRE':
-            import cosmic.FIRE as FIRE
-            tphys, metallicity = FIRE.SFH(size)
-            return tphys, metallicity
-
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

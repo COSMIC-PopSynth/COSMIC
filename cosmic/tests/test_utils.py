@@ -17,6 +17,10 @@ x = np.linspace(0,1,10)
 y = np.random.uniform(0.1,0.2,10)
 kstar_single = [[10], [11], [12], [13], [14]]
 kstar_double = [10, 14]
+k1_range = [10, 11, 12]
+k2_range = [10, 11, 12]
+k1_range_false = np.arange(0,12)
+k2_range_false = np.arange(0,12)
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 wrong_dict = {'test_wrong_dict' : False}
@@ -24,19 +28,19 @@ alive_dict = {'mass_transfer_white_dwarf_to_co' : True,
              'select_final_state' : True,
              'binary_state' : [0],
              'merger_type' : [-1],
-             'LISA_sources' : True}
+             'lisa_sources' : True}
 noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
                'select_final_state' : True,
                'binary_state' : [0],
                'merger_type' : [-1],
-               'LISA_sources' : False}
+               'lisa_sources' : False}
 false_dict = {'mass_transfer_white_dwarf_to_co' : False,
              'select_final_state' : False,
-             'binary_state' : [0, 1, 2, 3],
-             'merger_type' : [100],
-             'LISA_sources' : False}
-conv_dict_true = {'LISA_convergence' : True}
-conv_dict_false = {'LISA_convergence' : False}
+             'binary_state' : [0,1,2],
+             'merger_type' : [-1,100],
+             'lisa_sources' : False}
+conv_dict_true = {'lisa_convergence' : True}
+conv_dict_false = {'lisa_convergence' : False}
 
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -53,44 +57,44 @@ _KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
                   'select_final_state',
                   'binary_state',
                   'merger_type',
-                  'LISA_sources']
+                  'lisa_sources']
 
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
     """
     def test_filter_bpp_bcm(self):
-        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict)
+        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
 
-        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict)
+        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
         
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
         self.assertTrue(len(bcm_true.loc[bcm_true.sep > 0.0]) >= 1)
         self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
-        self.assertTrue(bcm_true.porb.all() < 4.0)
+        self.assertTrue(bcm_true.porb.all() < 5.0)
 
-        bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict)
+        bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
         
         self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
-        self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0] > 1))
+        self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0]) > 1)
         self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
 
-        bcm_no_LISA = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict)
+        bcm_no_LISA = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
         self.assertTrue(len(bcm_no_LISA.loc[bcm_no_LISA.porb < 4.0]) > 1)
  
     def test_bcm_conv_select(self):
-        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict)
+        self.assertRaises(ValueError, utils.bcm_conv_select, BCM_TEST, BPP_TEST, wrong_dict)
 
         bcm_1, bcm_2 = utils.bcm_conv_select(BCM_TEST, BCM_TEST, conv_dict_true)
         self.assertEqual(len(bcm_2), int(len(bcm_1)/2))
-        self.assertTrue(bcm_1.porb.all() < 3.0)
-        self.assertTrue(bcm_2.porb.all() < 3.0)
+        self.assertTrue(bcm_1.porb.all() < np.log10(5000))
+        self.assertTrue(bcm_2.porb.all() < np.log10(5000))
 
         bcm_1_F, bcm_2_F = utils.bcm_conv_select(BCM_TEST[:len(BCM_TEST)-10],\
-                                                 BCM_TEST[len(BCM_TEST)-10:],\
+                                                 BCM_TEST,\
                                                  conv_dict_false)
-        self.assertEqual(len(BCM_TEST[len(BCM_TEST)-10:]), len(bcm_2_F))
-        self.assertTrue(len(bcm_1_F.porb.loc[bcm_1_F.porb > 3.0]) > 1)
+        self.assertEqual(len(BCM_TEST[len(BCM_TEST)-10:]), len(bcm_1_F)-len(bcm_2_F))
+        self.assertTrue(len(bcm_1_F.porb.loc[bcm_1_F.porb > np.log10(5000)]) > 1)
         self.assertTrue(len(bcm_2_F.porb.loc[bcm_2_F.porb > 3.0]) > 1)
 
     def test_idl_tabulate(self):
