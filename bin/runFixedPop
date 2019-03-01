@@ -155,7 +155,6 @@ if __name__ == '__main__':
     BSEDict = dictionary['bse']
     seed_int = int(dictionary['rand_seed']['seed'])
     filters = dictionary['filters']
-    filters['merger_type'] = [str(i).zfill(4) for i in filters['merger_type']]
     convergence = dictionary['convergence']
 
     if seed_int != 0:
