@@ -163,6 +163,10 @@ if __name__ == '__main__':
     else:
         np.random.seed(0)
 
+    # ---- Check that values in the BSEDict are viable
+    if BSEDict['polar_kick_angle']<0 or BSEDict['polar_kick_angle']>90:
+        raise ValueError("{0:0.1f} is outside the allowed range of [0,90] for specifying polar kicks".format(BSEDict['polar_kick_angle']))
+
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2: 
         kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1]+1)
