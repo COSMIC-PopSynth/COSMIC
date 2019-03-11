@@ -964,8 +964,6 @@
 *
  90      continue
 *
-      else
-         celamf = -1.d0*fac
       endif
 *
       return
