@@ -27,10 +27,10 @@ import scipy.stats as stats
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = ['mass_weighted_number', 'select_component_mass', 
+__all__ = ['mass_weighted_number', 'select_component_mass',
            'sample_sech_squared', 'sample_exponential_radial',
            'sample_exponential_vertical', 'sample_exponential_square_radial',
-           'galactic_positions'] 
+           'galactic_positions']
 
 
 G = 6.67384*math.pow(10, -11.0)
@@ -48,14 +48,14 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
-# solar coordinates in the galaxy: in parsecs from 
+# solar coordinates in the galaxy: in parsecs from
 # (Chaper 8 of Galactic Structure and stellar Pops book) Yoshii (2013)
 ############################################################################
 x_sun = 8.0
 y_sun = 0.0
 z_sun = 25.0/1000.0
 
-def mass_weighted_number(dat, total_sampled_mass, component_mass): 
+def mass_weighted_number(dat, total_sampled_mass, component_mass):
     """Compute the total number of systems in the synthetic catalog
     based on the total sampled mass of the simulated system and
     the total mass of a given galactic component
@@ -65,7 +65,7 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     dat : DataFrame
         DataFrame containing the fixed population created from runFixedPop
     total_sampled_mass : float
-        total amount of mass sampled to generate the fixed population 
+        total amount of mass sampled to generate the fixed population
         including single stars
     component_mass : float
         mass of the Galactic component we are simulating
@@ -76,12 +76,12 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
         number of systems in a Milky Way population for the selected
         Galactic population and fixed population
     """
-      
+
     nSystems = int(len(dat.mass_1)*component_mass/total_sampled_mass)
     return nSystems
 
 def select_component_mass(gx_component):
-    """Select the Galactic component mass according to 
+    """Select the Galactic component mass according to
     McMillan (2011)
 
     Parameters
@@ -101,26 +101,26 @@ def select_component_mass(gx_component):
         gx_component_mass = 8.9e9
     elif gx_component == 'ThickDisk':
         gx_component_mass = 1.44e10
- 
+
     return gx_component_mass
 
 def sample_sech_squared(size, scale_height=0.3):
     """Sample a collection of numbers of size=size distributed according
     to a sech sqaured function with a user specific scale height
- 
+
     Parameters
     ----------
     size : int
         Size of the sample
     scale_height : float
-        Scale height of the distribution; Default=0.3   
+        Scale height of the distribution; Default=0.3
 
     Returns
     -------
     distributed_nums : array
         Array of sampled values
     """
-    
+
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = np.arctanh( (2*rand_nums-1) ) * scale_height
 
@@ -129,13 +129,13 @@ def sample_sech_squared(size, scale_height=0.3):
 def sample_exponential_radial(size, scale_height):
     """Sample a collection of numbers of size=size distributed according
     to a radial exponential function with a user specific scale height
- 
+
     Parameters
     ----------
     size : int
         Size of the sample
     scale_height : float
-        Scale height of the distribution   
+        Scale height of the distribution
 
     Returns
     -------
@@ -151,24 +151,24 @@ def sample_exponential_radial(size, scale_height):
 def sample_exponential_vertical(size, scale_height):
     """Sample a collection of numbers of size=size distributed according
     to a vertical exponential function with a user specific scale height
- 
+
     Parameters
     ----------
     size : int
         Size of the sample
     scale_height : float
-        Scale height of the distribution   
+        Scale height of the distribution
 
     Returns
     -------
     distributed_nums : array
         Array of sampled values
-    """    
+    """
 
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = -scale_height * np.log(1.0 - rand_nums)
 
-    # CHOOSE A POSITION ABOVE AND BELOW THE DISK 
+    # CHOOSE A POSITION ABOVE AND BELOW THE DISK
     ###########################################################################
     pos_neg_choose = np.random.uniform(0, 1, size)
     negInd, = np.where(pos_neg_choose < 0.5)
@@ -179,27 +179,27 @@ def sample_exponential_vertical(size, scale_height):
 def sample_exponential_square_radial(size, scale_height):
     """Sample a collection of numbers of size=size distributed according
     to an exponential squared function with a user specific scale height
- 
+
     Parameters
     ----------
     size : int
         Size of the sample
     scale_height : float
-        Scale height of the distribution   
+        Scale height of the distribution
 
     Returns
     -------
     distributed_nums : array
         Array of sampled values
     """
-    
+
     rand_nums = np.random.uniform(0, 1, size)
     distributed_nums = scale_height * ss.erfinv(rand_nums)
 
     return distributed_nums
 
 def galactic_positions(gx_component, size, model='McMillan'):
-    """Sample a set of Galactic positions of size=size distributed 
+    """Sample a set of Galactic positions of size=size distributed
     according to the user specified model. X,Y,Z positions in [pc];
     Galactocentric distance in [kpc]
 
@@ -210,7 +210,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
     size : int
         Size of the sample
     model : str
-        Current default model is 'McMillan'   
+        Current default model is 'McMillan'
 
     Returns
     -------
@@ -218,7 +218,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
         Array of sampled positions in Galactic cartesian coordinates
         centered on the Galactic center and orientations in radians
     """
-    # SAMPLE FROM VERY SIMPLE DISTRIBUTION FUNCTIONS 
+    # SAMPLE FROM VERY SIMPLE DISTRIBUTION FUNCTIONS
     ###########################################################################
     if gx_component == 'ThinDisk':
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
@@ -238,12 +238,12 @@ def galactic_positions(gx_component, size, model='McMillan'):
 
         # Assign the azimuthal positions:
         phi = np.random.uniform(0, 2*np.pi, size)
-        
+
         # convert to cartesian:
         xGX = r * np.cos(phi)
         yGX = r * np.sin(phi)
         zGX = z
-   
+
     elif gx_component == 'Bulge':
 
         # COMPUTE THE POSITION AND ORIENTATION OF EACH BINARY
@@ -253,7 +253,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
             r = sample_exponential_square_radial(size, 0.5)
             # Assign the polar positions (uniform in cos(theta):
             theta = np.pi - np.arccos(np.random.uniform(-1, 1, size))
-        
+
             # Assign the azimuthal positions:
             phi = np.random.uniform(0, 2*np.pi , size)
 
@@ -261,7 +261,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
             xGX = r * np.cos(phi) * np.sin(theta)
             yGX = r * np.sin(phi) * np.sin(theta)
             zGX = r * np.cos(theta)
-    
+
         elif model == 'McMillan':
             r_save = []
             z_save = []
@@ -288,7 +288,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
 
             # Assign the azimuthal positions:
             phi = np.random.uniform(0, 2*np.pi , size)
-            
+
             # convert to cartesian:
             xGX = r * np.cos(phi)
             yGX = r * np.sin(phi)
@@ -301,7 +301,7 @@ def galactic_positions(gx_component, size, model='McMillan'):
         if model == 'double_exp':
             r = sample_exponential_radial(size, 2.5)
             z = sample_exponential_vertical(size, 1.0)
-        
+
         if model == 'McMillan':
             r = sample_exponential_radial(size, 3.31)
             z = sample_exponential_vertical(size, 0.9)
