@@ -1,5 +1,11 @@
 language: python
 
+dist: xenial
+
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     packages:
