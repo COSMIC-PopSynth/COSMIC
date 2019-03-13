@@ -5,6 +5,7 @@ addons:
     packages:
     - gfortran
     - swig
+    - libhdf5-serial-dev
 
 python:
   - '2.7'
