@@ -188,7 +188,7 @@
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
-      REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim
+      REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
       REAL ran3
       EXTERNAL ran3
@@ -626,35 +626,18 @@ Cf2py intent(out) bppout,bcmout
             lacc = lacc/lumin(j1)
             if((lacc.gt.0.01d0.and..not.bsymb).or.
      &         (lacc.lt.0.01d0.and.bsymb))then
-               jp = MIN(80,jp + 1)
-               bpp(jp,1) = tphys
-               bpp(jp,2) = mass(1)
-               bpp(jp,3) = mass(2)
-               bpp(jp,4) = float(kstar(1))
-               bpp(jp,5) = float(kstar(2))
-               bpp(jp,6) = sep
-               bpp(jp,7) = tb
-               bpp(jp,8) = ecc
-               bpp(jp,9) = rad(1)/rol(1)
-               bpp(jp,10) = rad(2)/rol(2)
                if(bsymb)then
-                  bpp(jp,11) = 13.0
+                  evolve_type = 13.0
                   esymb = .true.
                else
-                  bpp(jp,11) = 12.0
+                  evolve_type = 12.0
                   bsymb = .true.
                endif
-               bpp(jp,12) = bkick(15)
-               bpp(jp,13) = bkick(16)
-               if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-                  bpp(jp,14) = bkick(13)
-                  bpp(jp,15) = bkick(18)
-               elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-                  bpp(jp,14) = bkick(14)
-                  bpp(jp,15) = bkick(19)
-               endif
+               CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,mass0,kstar,sep,
+     &                      tb,ecc,rad,rol,bkick)
                DO jj = 13,20
-                  bkick(jj) = 0.0
+                   bkick(jj) = 0.0
                ENDDO
             endif
          endif
@@ -2127,16 +2110,16 @@ Cf2py intent(out) bppout,bcmout
 
 * set kick values for the bcm array
          if(bkick(13).gt.0.d0)then
-            vk1_bcm=bkick(13)
+             vk1_bcm=bkick(13)
          endif
          if(bkick(14).gt.0.d0)then
-            vk2_bcm=bkick(14)
+             vk2_bcm=bkick(14)
          endif
          if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
-            vsys_bcm=bkick(17)
+             vsys_bcm=bkick(17)
          endif
          if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
-            theta_bcm=bkick(20)
+             theta_bcm=bkick(20)
          endif
 *
          jp = MIN(80,jp + 1)
