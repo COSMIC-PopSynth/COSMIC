@@ -31,7 +31,7 @@ __all__ = ['Evolve']
 
 
 bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
-               'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 
+               'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta', 'bin_num']
 
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
@@ -57,13 +57,13 @@ class Evolve(Table):
         Parameters
         ----------
         nproc : `int`, optional, default: 1
-            number of CPUs to use for parallel file reading
+            number of CPUs to use to evolve systems
+            in parallel
         idx : `int`, optional, default: 0
             initial index of the bcm/bpp arrays
         dtp : `float`, optional: default: tphysf
             timestep size in Myr for bcm output where tphysf
             is total evolution time in Myr
-       
 
         Returns
         -------
@@ -218,4 +218,4 @@ class Evolve(Table):
         bpp.bin_num = bpp.bin_num.astype(int)
         bcm.bin_num = bcm.bin_num.astype(int)
 
-        return bpp, bcm, initialbinarytable 
+        return bpp, bcm, initialbinarytable

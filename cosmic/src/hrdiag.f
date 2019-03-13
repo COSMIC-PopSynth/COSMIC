@@ -37,9 +37,9 @@
       COMMON /VALUE1/ neta,bwind,hewind,mxns,windflag,ppsn
       common /fall/fallback
       REAL*8 fallback
-* 
+*
       real*8 ecsnp,ecsn_mlow,mchold
-* 
+*
       real*8 avar,bvar
       real*8 thook,thg,tbagb,tau,tloop,taul,tauh,tau1,tau2,dtau,texp
       real*8 lx,ly,dell,alpha,beta,eta
@@ -146,8 +146,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
             if(mass.lt.(zpars(1)-0.3d0))then
                kw = 0
-* This following is given by Chris for low mass MS stars which will be 
-* substantially degenerate. We need the Hydrogen abundance, X, which we 
+* This following is given by Chris for low mass MS stars which will be
+* substantially degenerate. We need the Hydrogen abundance, X, which we
 * calculate from Z assuming that the helium abundance, Y, is calculated
 * according to Y = 0.24 + 2*Z
                rdgen = 0.0258d0*((1.d0+zpars(11))**(5.d0/3.d0))*
@@ -161,7 +161,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                r = 0.16d0
             endif
 *
-         else 
+         else
 *
 *           Star is on the HG
 *
@@ -368,7 +368,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                lum = lx*(ly/lx)**(tau**texp)
             endif
          endif
-* 
+*
 * Test whether core mass exceeds total mass.
 *
          if(mc.ge.mt)then
@@ -435,7 +435,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcy = mc
             mc = mc - lambda*(mcy-mcx)
             mcx = mc
-            mcmax = MIN(mt,mcmax)   
+            mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))
          rg = r
@@ -449,7 +449,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             if(mc.lt.mch)then
                if(ifflag.ge.1)then
 *
-* Invoke WD IFMR from HPE, 1995, MNRAS, 272, 800. 
+* Invoke WD IFMR from HPE, 1995, MNRAS, 272, 800.
 *
                   if(zpars(14).ge.1.0d-08)then
                      mc = MIN(0.36d0+0.104d0*mass,0.58d0+0.061d0*mass)
@@ -466,7 +466,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                if(ecsnp.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
                   kw = 11
                elseif(ecsnp.eq.0.d0.and.mcbagb.lt.1.6d0)then !double check what this should be. should be ecsn_mlow. Remember need to add option if ecsnp = 0 (i.e. no ECSN!!!)
-*     
+*
 * Zero-age Carbon/Oxygen White Dwarf
 *
                   kw = 11
@@ -478,7 +478,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *                  kw = 11
 
                else
-*     
+*
 * Zero-age Oxygen/Neon White Dwarf
 *
                   kw = 12
@@ -511,7 +511,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mt = 1.17d0 + 0.09d0*mc
                   elseif(nsflag.eq.1)then
 *
-* Use NS/BH mass given by Belczynski et al. 2002, ApJ, 572, 407. 
+* Use NS/BH mass given by Belczynski et al. 2002, ApJ, 572, 407.
 *
                      if(mc.lt.2.5d0)then
                         mcx = 0.161767d0*mc + 1.067055d0
@@ -614,10 +614,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.ge.11.d0)then
                         fallback = 1.d0
-                     endif 
+                     endif
                      mc = mt
                   endif
-                  
+
                   if(mt.le.mxns)then
 *
 * Zero-age Neutron star
@@ -685,9 +685,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mt = alphap*mt
                      endif
 
-* Convert baryonic mass to gravitational mass (approx for BHs) 
-                     if(nsflag.ge.2) mt = 0.9d0*mt 
-                  endif  
+* Convert baryonic mass to gravitational mass (approx for BHs)
+                     if(nsflag.ge.2) mt = 0.9d0*mt
+                  endif
                endif
             endif
          endif
@@ -741,7 +741,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mt = MAX(mc,(mc+0.31d0)/1.45d0)
                      kw = 11
                   elseif(ecsnp.eq.0.d0.and.mass.lt.1.6d0)then
-*     
+*
 * Zero-age Carbon/Oxygen White Dwarf
 *
                      mt = MAX(mc,(mc+0.31d0)/1.45d0)
@@ -751,7 +751,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mt = MAX(mc,(mc+0.31d0)/1.45d0)
                      kw = 11
                   else
-*     
+*
 * Zero-age Oxygen/Neon White Dwarf
 *
                      mt = mc
@@ -878,10 +878,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.ge.11.d0)then
                         fallback = 1.d0
-                     endif 
+                     endif
                      mc = mt
                   endif
-                  
+
                   if(mt.le.mxns)then
 *
 * Zero-age Neutron star
@@ -946,17 +946,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         elseif(mcbagb.ge.135)then
                            alphap = 1.0d0
                         endif
- 
+
                         mt = alphap*mt
                      endif
 
 
 
 
-* Convert baryonic mass to gravitational mass (approx for BHs) 
-                     if(nsflag.ge.2) mt = 0.9d0*mt 
+* Convert baryonic mass to gravitational mass (approx for BHs)
+                     if(nsflag.ge.2) mt = 0.9d0*mt
                      endif
-                  endif  
+                  endif
                endif
             endif
          endif
@@ -972,8 +972,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mc.ge.mch)then
 *
 * Accretion induced supernova with no remnant
-* unless WD is ONe in which case we assume a NS 
-* of minimum mass is the remnant. 
+* unless WD is ONe in which case we assume a NS
+* of minimum mass is the remnant.
 *
             if(kw.eq.12)then
                kw = 13
