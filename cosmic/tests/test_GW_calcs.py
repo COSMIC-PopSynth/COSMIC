@@ -72,7 +72,7 @@ class TestGWcalcs(unittest2.TestCase):
         # Test the luminosity distance calculator
         d_lum = GW_calcs.luminosity_distance(Z)
         self.assertAlmostEqual(np.round(d_lum, 1), D_LUM_TEST)
-  
+
     def test_z_from_lum_distance(self):
         # Test the calculator to get z from d_lum
         z = GW_calcs.z_from_lum_distance(D_LUM)
