@@ -127,7 +127,7 @@ def luminosity_distance(z):
     ----------
     z : float
         redshift
-    
+
     Returns
     -------
     D_lum : float
@@ -273,22 +273,22 @@ def n_max(ecc):
     """
 
     n_max = 2*np.ones(len(ecc))
-        
+
     ind_05, = np.where((ecc > 0.001) & (ecc <=0.5))
     n_max[ind_05] = 20
-    
+
     ind_07, = np.where((ecc > 0.5) & (ecc <=0.7))
     n_max[ind_07] = 50
-    
+
     ind_08, = np.where((ecc > 0.7) & (ecc <=0.8))
     n_max[ind_08] = 150
-    
+
     ind_085, = np.where((ecc > 0.8) & (ecc <= 0.85))
     n_max[ind_085] = 300
-    
+
     ind_085_great, = np.where(ecc > 0.85)
     n_max[ind_085_great] = 500
-        
+
     return n_max
 
 def hc2_circ(m1, m2, f_orb, D):
@@ -296,7 +296,7 @@ def hc2_circ(m1, m2, f_orb, D):
     characterstic strain) for a population of binaries 
     in the Galaxy. This assumes the binaries are
     circular and redshift can be passed.
-    
+
     Parameters
     ----------
     m1 : array/float
@@ -330,7 +330,7 @@ def hc2(m1, m2, f_orb, D, e, n):
     """ Computes the characterstic power (square of the
     characterstic strain) for a population of binaries 
     in the Galaxy. Redshift can be passed as a kwarg.
-    
+
     Parameters
     ----------
     m1 : float
@@ -353,7 +353,7 @@ def hc2(m1, m2, f_orb, D, e, n):
 
     # Set the redshift based on the luminosity distance
     z = z_from_lum_distance(D)
-    
+
     # assumes SI units!
     f_n = n*f_orb
     f_n_z = f_n/(1+z)
@@ -484,7 +484,7 @@ def peters_evolution(a_0,e_0,m1,m2,t_evol,nstep):
 
 def snr_calc(f_vals, hc_n_vals, noise_vals, averaging_factor=4./5.):
     """Computes the SNR sum over the characteristic strain evolution
-    
+
     Parameters
     ----------
     f_vals : array
@@ -511,7 +511,7 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
     """Computes the LISA SNR for a chirping, eccentric binary
     using the Robson, Cornish, and Liu 2018 characteristic
     strain sensivity curve
- 
+
     Parameters
     ----------
     m1 : float
@@ -562,7 +562,7 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
 def LISA_foreground_combo(foreground_freq, foreground_hc2):
     """Computes the combination of the population foreground and LISA 
     sensitivity in characteristic strain
-    
+
     Parameters
     ----------
     foreground_freq : array
@@ -577,25 +577,25 @@ def LISA_foreground_combo(foreground_freq, foreground_hc2):
         foreground and LISA sensitivity combined
     """
     LISA_interp = LISA_hc()  
-  
+
     LISA_at_foreground = LISA_interp(foreground_freq)**2
     power_combo = foreground_hc2 + LISA_at_foreground   
 
     above_foreground_freq = np.logspace(np.log10(max(foreground_freq)+1e-4, 1e-1, 100))
     LISA_above_foreground = LISA_interp(above_foreground_freq)**2
-   
+
     freqs_total = np.hstack([foreground_freq, above_foreground_freq])
     hc2_total = np.hstact([power_combo, LISA_above_foreground])
 
     LISA_combo_interp = interp1d(freqs_total, hc_total)
-    
+
     return LISA_combo_interp
 
 def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
     """Computes the gravitational-wave foreground in characteristic
     power according to the LISA frequency resolution where 1
     frequency bin has a binwidth of 1/(Tobs [s])
-    
+
     Parameters
     ----------
     m1 : array
@@ -630,7 +630,7 @@ def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
     bin_indices = np.digitize(freq_array, freq_bins_LISA)
     psd_dat = pd.DataFrame(np.vstack([freq_array, hc_array, bin_indices]),\
                            columns=['f_gw', 'hc2', 'bin_digits'])
-    
+
     power_sum = psd_dat[['hc2', 'bin_digits']].groupby('bin_digits').sum()['hc2']
     power_tot = np.zeros(len(freq_bins_LISA)+1)
     power_tot[power_sum.index[:len(freq_bins_LISA)-1]] = power_sum
