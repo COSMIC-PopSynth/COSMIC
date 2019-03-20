@@ -209,7 +209,7 @@
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
       REAL*8 bppout(80,15)
-      REAL*8 bcmout(50000,42)
+      REAL*8 bcmout(50000,43)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
       REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
@@ -279,9 +279,9 @@ Cf2py intent(out) bppout,bcmout
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
 
-* value for bcm[ii,37] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
+* value for bcm[ii,38] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
       binstate = 0
-* value for bcm[ii,38] which tracks merger types; only set when binstate is 1
+* value for bcm[ii,39] which tracks merger types; only set when binstate is 1
 * the logic is to combine kstar values of merged objects. so 1313 or 0809.
       mergertype = -1
 * PDK
@@ -1624,63 +1624,64 @@ Cf2py intent(out) bppout,bcmout
      &      or.tphys.lt.tiny)then
             ip = ip + 1
             bcm(ip,1) = tphys
-            bcm(ip,2) = float(kstar(1))
-            bcm(ip,3) = mass0(1)
-            bcm(ip,4) = mass(1)
-            bcm(ip,5) = log10(lumin(1))
-            bcm(ip,6) = log10(rad(1))
+            bcm(ip,2) = z
+            bcm(ip,3) = float(kstar(1))
+            bcm(ip,4) = mass0(1)
+            bcm(ip,5) = mass(1)
+            bcm(ip,6) = log10(lumin(1))
+            bcm(ip,7) = log10(rad(1))
             teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-            bcm(ip,7) = log10(teff1)
-            bcm(ip,8) = massc(1)
-            bcm(ip,9) = radc(1)
-            bcm(ip,10) = menv(1)
-            bcm(ip,11) = renv(1)
-            bcm(ip,12) = epoch(1)
-            bcm(ip,13) = ospin(1)
-            bcm(ip,14) = dmt(1) - dmr(1)
-            bcm(ip,15) = rad(1)/rol(1)
-            bcm(ip,16) = float(kstar(2))
-            bcm(ip,17) = mass0(2)
-            bcm(ip,18) = mass(2)
-            bcm(ip,19) = log10(lumin(2))
-            bcm(ip,20) = log10(rad(2))
+            bcm(ip,8) = log10(teff1)
+            bcm(ip,9) = massc(1)
+            bcm(ip,10) = radc(1)
+            bcm(ip,11) = menv(1)
+            bcm(ip,12) = renv(1)
+            bcm(ip,13) = epoch(1)
+            bcm(ip,14) = ospin(1)
+            bcm(ip,15) = dmt(1) - dmr(1)
+            bcm(ip,16) = rad(1)/rol(1)
+            bcm(ip,17) = float(kstar(2))
+            bcm(ip,18) = mass0(2)
+            bcm(ip,19) = mass(2)
+            bcm(ip,20) = log10(lumin(2))
+            bcm(ip,21) = log10(rad(2))
             teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
-            bcm(ip,21) = log10(teff2)
-            bcm(ip,22) = massc(2)
-            bcm(ip,23) = radc(2)
-            bcm(ip,24) = menv(2)
-            bcm(ip,25) = renv(2)
-            bcm(ip,26) = epoch(2)
-            bcm(ip,27) = ospin(2)
-            bcm(ip,28) = dmt(2) - dmr(2)
-            bcm(ip,29) = rad(2)/rol(2)
-            bcm(ip,30) = tb
-            bcm(ip,31) = sep
-            bcm(ip,32) = ecc
+            bcm(ip,22) = log10(teff2)
+            bcm(ip,23) = massc(2)
+            bcm(ip,24) = radc(2)
+            bcm(ip,25) = menv(2)
+            bcm(ip,26) = renv(2)
+            bcm(ip,27) = epoch(2)
+            bcm(ip,28) = ospin(2)
+            bcm(ip,29) = dmt(2) - dmr(2)
+            bcm(ip,30) = rad(2)/rol(2)
+            bcm(ip,31) = tb
+            bcm(ip,32) = sep
+            bcm(ip,33) = ecc
             if(B_0(1).eq.0.d0)then !PK.
-               bcm(ip,33) = 0.d0
+               bcm(ip,34) = 0.d0
             elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-               bcm(ip,33) = B_0(1)
+               bcm(ip,34) = B_0(1)
             else
-               bcm(ip,33) = B(1)
+               bcm(ip,34) = B(1)
             endif
             if(B_0(2).eq.0.d0)then
-               bcm(ip,34) = 0.d0
+               bcm(ip,35) = 0.d0
             elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-               bcm(ip,34) = B_0(2)
+               bcm(ip,35) = B_0(2)
             else
-               bcm(ip,34) = B(2)
+               bcm(ip,35) = B(2)
             endif
-            bcm(ip,35) = vk1_bcm
-            bcm(ip,36) = vk2_bcm
-            bcm(ip,37) = vsys_bcm
-            bcm(ip,38) = theta_bcm
-            bcm(ip,39) = float(formation(1))
-            bcm(ip,40) = float(formation(2))
-            bcm(ip,41) = binstate
-            bcm(ip,42) = mergertype
+            bcm(ip,36) = vk1_bcm
+            bcm(ip,37) = vk2_bcm
+            bcm(ip,38) = vsys_bcm
+            bcm(ip,39) = theta_bcm
+            bcm(ip,40) = float(formation(1))
+            bcm(ip,41) = float(formation(2))
+            bcm(ip,42) = binstate
+            bcm(ip,43) = mergertype
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1900,63 +1901,64 @@ Cf2py intent(out) bppout,bcmout
       if(iplot.and.tphys.gt.tiny)then
          ip = ip + 1
          bcm(ip,1) = tphys
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
+         bcm(ip,2) = z
+         bcm(ip,3) = float(kstar(1))
+         bcm(ip,4) = mass0(1)
+         bcm(ip,5) = mass(1)
+         bcm(ip,6) = log10(lumin(1))
+         bcm(ip,7) = log10(rad(1))
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,14) = 0.0
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
+         bcm(ip,8) = log10(teff1)
+         bcm(ip,9) = massc(1)
+         bcm(ip,10) = radc(1)
+         bcm(ip,11) = menv(1)
+         bcm(ip,12) = renv(1)
+         bcm(ip,13) = epoch(1)
+         bcm(ip,14) = ospin(1)
+         bcm(ip,15) = 0.0
+         bcm(ip,16) = rad(1)/rol(1)
+         bcm(ip,17) = float(kstar(2))
+         bcm(ip,18) = mass0(2)
+         bcm(ip,19) = mass(2)
+         bcm(ip,20) = log10(lumin(2))
+         bcm(ip,21) = log10(rad(2))
          teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,28) = 0.0
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
+         bcm(ip,22) = log10(teff2)
+         bcm(ip,23) = massc(2)
+         bcm(ip,24) = radc(2)
+         bcm(ip,25) = menv(2)
+         bcm(ip,26) = renv(2)
+         bcm(ip,27) = epoch(2)
+         bcm(ip,28) = ospin(2)
+         bcm(ip,29) = 0.0
+         bcm(ip,30) = rad(2)/rol(2)
+         bcm(ip,31) = tb
+         bcm(ip,32) = sep
+         bcm(ip,33) = ecc
          if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
+            bcm(ip,34) = 0.d0
          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
+            bcm(ip,34) = B_0(1)
          else
-            bcm(ip,33) = B(1)
+            bcm(ip,34) = B(1)
          endif
          if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
+            bcm(ip,35) = 0.d0
          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
+            bcm(ip,35) = B_0(2)
          else
-            bcm(ip,34) = B(2)
+            bcm(ip,35) = B(2)
          endif
-         bcm(ip,35) = vk1_bcm
-         bcm(ip,36) = vk2_bcm
-         bcm(ip,37) = vsys_bcm
-         bcm(ip,38) = theta_bcm
-         bcm(ip,39) = float(formation(1))
-         bcm(ip,40) = float(formation(2))
-         bcm(ip,41) = binstate
-         bcm(ip,42) = mergertype
+         bcm(ip,36) = vk1_bcm
+         bcm(ip,37) = vk2_bcm
+         bcm(ip,38) = vsys_bcm
+         bcm(ip,39) = theta_bcm
+         bcm(ip,40) = float(formation(1))
+         bcm(ip,41) = float(formation(2))
+         bcm(ip,42) = binstate
+         bcm(ip,43) = mergertype
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
@@ -3262,69 +3264,70 @@ Cf2py intent(out) bppout,bcmout
       if((isave.and.tphys.ge.tsave).or.iplot)then
          ip = ip + 1
          bcm(ip,1) = tphys
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
+         bcm(ip,2) = z
+         bcm(ip,3) = float(kstar(1))
+         bcm(ip,4) = mass0(1)
+         bcm(ip,5) = mass(1)
+         bcm(ip,6) = log10(lumin(1))
+         bcm(ip,7) = log10(rad(1))
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
+         bcm(ip,8) = log10(teff1)
+         bcm(ip,9) = massc(1)
+         bcm(ip,10) = radc(1)
+         bcm(ip,11) = menv(1)
+         bcm(ip,12) = renv(1)
+         bcm(ip,13) = epoch(1)
+         bcm(ip,14) = ospin(1)
+         bcm(ip,16) = rad(1)/rol(1)
+         bcm(ip,17) = float(kstar(2))
+         bcm(ip,18) = mass0(2)
+         bcm(ip,19) = mass(2)
+         bcm(ip,20) = log10(lumin(2))
+         bcm(ip,21) = log10(rad(2))
          teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
+         bcm(ip,22) = log10(teff2)
+         bcm(ip,23) = massc(2)
+         bcm(ip,24) = radc(2)
+         bcm(ip,25) = menv(2)
+         bcm(ip,26) = renv(2)
+         bcm(ip,27) = epoch(2)
+         bcm(ip,28) = ospin(2)
+         bcm(ip,30) = rad(2)/rol(2)
+         bcm(ip,31) = tb
+         bcm(ip,32) = sep
+         bcm(ip,33) = ecc
          dt = MAX(dtm,1.0d-12)*1.0d+06
          if(j1.eq.1)then
-            bcm(ip,14) = (-1.0*dm1 - dms(1))/dt
-            bcm(ip,28) = (dm2 - dms(2))/dt
+            bcm(ip,15) = (-1.0*dm1 - dms(1))/dt
+            bcm(ip,29) = (dm2 - dms(2))/dt
          else
-            bcm(ip,14) = (dm2 - dms(1))/dt
-            bcm(ip,28) = (-1.0*dm1 - dms(2))/dt
+            bcm(ip,15) = (dm2 - dms(1))/dt
+            bcm(ip,29) = (-1.0*dm1 - dms(2))/dt
          endif
          if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
+            bcm(ip,34) = 0.d0
          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
+            bcm(ip,34) = B_0(1)
          else
-            bcm(ip,33) = B(1)
+            bcm(ip,34) = B(1)
          endif
          if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
+            bcm(ip,35) = 0.d0
          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
+            bcm(ip,35) = B_0(2)
          else
-            bcm(ip,34) = B(2)
+            bcm(ip,35) = B(2)
          endif
-         bcm(ip,35) = vk1_bcm
-         bcm(ip,36) = vk2_bcm
-         bcm(ip,37) = vsys_bcm
-         bcm(ip,38) = theta_bcm
-         bcm(ip,39) = float(formation(1))
-         bcm(ip,40) = float(formation(2))
-         bcm(ip,41) = binstate
-         bcm(ip,42) = mergertype
+         bcm(ip,36) = vk1_bcm
+         bcm(ip,37) = vk2_bcm
+         bcm(ip,38) = vsys_bcm
+         bcm(ip,39) = theta_bcm
+         bcm(ip,40) = float(formation(1))
+         bcm(ip,41) = float(formation(2))
+         bcm(ip,42) = binstate
+         bcm(ip,43) = mergertype
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3718,69 +3721,70 @@ Cf2py intent(out) bppout,bcmout
       if((isave.and.tphys.ge.tsave).or.iplot)then
          ip = ip + 1
          bcm(ip,1) = tphys
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
+         bcm(ip,2) = z
+         bcm(ip,3) = float(kstar(1))
+         bcm(ip,4) = mass0(1)
+         bcm(ip,5) = mass(1)
+         bcm(ip,6) = log10(lumin(1))
+         bcm(ip,7) = log10(rad(1))
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
+         bcm(ip,8) = log10(teff1)
+         bcm(ip,9) = massc(1)
+         bcm(ip,10) = radc(1)
+         bcm(ip,11) = menv(1)
+         bcm(ip,12) = renv(1)
+         bcm(ip,13) = epoch(1)
+         bcm(ip,14) = ospin(1)
+         bcm(ip,16) = rad(1)/rol(1)
+         bcm(ip,17) = float(kstar(2))
+         bcm(ip,18) = mass0(2)
+         bcm(ip,19) = mass(2)
+         bcm(ip,20) = log10(lumin(2))
+         bcm(ip,21) = log10(rad(2))
          teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
+         bcm(ip,22) = log10(teff2)
+         bcm(ip,23) = massc(2)
+         bcm(ip,24) = radc(2)
+         bcm(ip,25) = menv(2)
+         bcm(ip,26) = renv(2)
+         bcm(ip,27) = epoch(2)
+         bcm(ip,28) = ospin(2)
+         bcm(ip,30) = rad(2)/rol(2)
+         bcm(ip,31) = tb
+         bcm(ip,32) = sep
+         bcm(ip,33) = ecc
          dt = MAX(dtm,1.0d-12)*1.0d+06
          if(j1.eq.1)then
-            bcm(ip,14) = (-1.0*dm1 - dms(1))/dt
-            bcm(ip,28) = (dm2 - dms(2))/dt
+            bcm(ip,15) = (-1.0*dm1 - dms(1))/dt
+            bcm(ip,29) = (dm2 - dms(2))/dt
          else
-            bcm(ip,14) = (dm2 - dms(1))/dt
-            bcm(ip,28) = (-1.0*dm1 - dms(2))/dt
+            bcm(ip,15) = (dm2 - dms(1))/dt
+            bcm(ip,29) = (-1.0*dm1 - dms(2))/dt
          endif
          if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
+            bcm(ip,34) = 0.d0
          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
+            bcm(ip,34) = B_0(1)
          else
-            bcm(ip,33) = B(1)
+            bcm(ip,34) = B(1)
          endif
          if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
+            bcm(ip,35) = 0.d0
          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
+            bcm(ip,35) = B_0(2)
          else
-            bcm(ip,34) = B(2)
+            bcm(ip,35) = B(2)
          endif
-         bcm(ip,35) = vk1_bcm
-         bcm(ip,36) = vk2_bcm
-         bcm(ip,37) = vsys_bcm
-         bcm(ip,38) = theta_bcm
-         bcm(ip,39) = float(formation(1))
-         bcm(ip,40) = float(formation(2))
-         bcm(ip,41) = binstate
-         bcm(ip,42) = mergertype
+         bcm(ip,36) = vk1_bcm
+         bcm(ip,37) = vk2_bcm
+         bcm(ip,38) = vsys_bcm
+         bcm(ip,39) = theta_bcm
+         bcm(ip,40) = float(formation(1))
+         bcm(ip,41) = float(formation(2))
+         bcm(ip,42) = binstate
+         bcm(ip,43) = mergertype
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
@@ -3788,7 +3792,7 @@ Cf2py intent(out) bppout,bcmout
          if(isave) tsave = tsave + dtp
          if(tphysf.le.0.d0)then
             ip = ip + 1
-            do 145 , k = 1,42
+            do 145 , k = 1,43
                bcm(ip,k) = bcm(ip-1,k)
  145        continue
          endif

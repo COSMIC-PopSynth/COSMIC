@@ -34,9 +34,10 @@ bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
                'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta', 'bin_num']
 
-bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
-               'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
-               'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
+bcm_columns = ['tphys', 'met', 'kstar_1', 'mass0_1', 'mass_1', 
+               'lumin_1', 'rad_1', 'teff_1', 'massc_1', 'radc_1', 
+               'menv_1', 'renv_1', 'epoch_1', 'ospin_1', 'deltam_1', 
+               'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
                'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
                'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2',
@@ -154,7 +155,7 @@ class Evolve(Table):
 
         # need to ensure that the order of variables is correct
         initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'met', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'natal_kick',
@@ -163,7 +164,7 @@ class Evolve(Table):
                                                 'randomseed', 'bin_num']].values
 
         initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'met', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2',
