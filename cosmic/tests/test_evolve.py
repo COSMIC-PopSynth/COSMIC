@@ -25,5 +25,5 @@ class TestEvolve(unittest2.TestCase):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond = Evolve.evolve(
             initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict)
 
-        pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False, check_less_precise=True)
-        pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False, check_less_precise=True)
+        pd.testing.assert_frame_equal(EvolvedBinaryBPP.round(4), BPP_DF.round(4), check_dtype=False, check_exact=False, check_less_precise=True)
+        pd.testing.assert_frame_equal(EvolvedBinaryBCM.round(4), BCM_DF.round(4), check_dtype=False, check_exact=False, check_less_precise=True)
