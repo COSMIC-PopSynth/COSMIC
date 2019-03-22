@@ -1,7 +1,7 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,ceflagtmp,
-     \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
+     \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,cekickflagtmp,
+     \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,
      \ sigmatmp,bhsigmafractmp,polar_kick_angletmp,natal_kick_array,
      \ qcrit_array,betatmp,xitmp,
@@ -212,7 +212,7 @@
       REAL*8 bcmout(50000,42)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
-      REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
+      REAL*8 cekickflagtmp,mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,qc_fixed,qcrit_array(16)
@@ -241,6 +241,7 @@ Cf2py intent(out) bppout,bcmout
       beta = betatmp
       neta = netatmp
       lambda = lambdatmp
+      cekickflag = cekickflagtmp
       hewind = hewindtmp
       bwind = bwindtmp
       xi = xitmp 
