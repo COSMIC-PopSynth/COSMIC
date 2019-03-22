@@ -38,6 +38,8 @@ There are currently three SFHs implemented in cosmic, one each for the Milky Way
 
 * Bulge : a 1 Gyr burst of constant 10 Gyr in the past; the metallicity for the bulge is traditionally set to solar 
 
+* DeltaBurst : a single burst of star formation 13.7 Gyr in the past; the user should specify a metallicity of their choice
+
 New implementations of SFHs will be added to the sample_SFH modules in the independent and multidim samplers.  
 
 ----------

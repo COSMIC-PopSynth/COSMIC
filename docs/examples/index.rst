@@ -54,7 +54,7 @@ InitialBinaryTable class. Each initialized binary requires the following paramet
  
 .. ipython::
 
-    In [3]: single_binary = InitialBinaryTable.SingleBinary(m1=100.0, m2=85.0, porb=10000.0, ecc=0.65, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.005)
+    In [3]: single_binary = InitialBinaryTable.SingleBinary(m1=100.0, m2=85.0, porb=10000.0, ecc=0.65, tphysf=13700.0, kstar1=1, kstar2=1, met=0.005)
 
     In [4]: print(single_binary)
 
@@ -69,7 +69,7 @@ with `Rodriguez+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120o1101R>`_ and `
 
 .. ipython::
 
-    In [5]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'CK': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'ppsn': 1}
+    In [5]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'CK': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'ppsn': 1, 'bhsigmafrac': 1.0, 'polar_kick_angle': 90, 'natal_kick': [0.0,0.0,0.0,0.0,0.0,0.0]}
 
 Once the binary is initialized and the BSE model is set, the system is evolved with the 
 the Evolve class, which calls the evolv2.f subroutine in the BSE source code. 
@@ -135,7 +135,7 @@ that could form GW150914 and GW170817 - like binaries.
 
 .. ipython::
 
-    In [11]: binary_set = InitialBinaryTable.MultipleBinary(m1=[100.0, 11.8], m2=[85.0, 11.1], porb=[10000.0,2211.0], ecc=[0.65,0.55], tphysf=[13700.0,13700.0], kstar1=[1,1], kstar2=[1,1], metallicity=[0.005,0.02])
+    In [11]: binary_set = InitialBinaryTable.MultipleBinary(m1=[100.0, 11.8], m2=[85.0, 11.1], porb=[10000.0,2211.0], ecc=[0.65,0.55], tphysf=[13700.0,13700.0], kstar1=[1,1], kstar2=[1,1], met=[0.005,0.02])
 
     In [12]: print(binary_set)
 
@@ -169,7 +169,7 @@ periods spaced evenly in log space.
 
     In [16]: n_grid = 10 
 
-    In [17]: binary_grid = InitialBinaryTable.MultipleBinary(m1=np.ones(n_grid)*100.0, m2=np.ones(n_grid)*85.0, porb=np.logspace(3,5,n_grid), ecc=np.ones(n_grid)*0.65, tphysf=np.ones(n_grid)*13700.0, kstar1=np.ones(n_grid), kstar2=np.ones(n_grid), metallicity=np.ones(n_grid)*0.005)
+    In [17]: binary_grid = InitialBinaryTable.MultipleBinary(m1=np.ones(n_grid)*100.0, m2=np.ones(n_grid)*85.0, porb=np.logspace(3,5,n_grid), ecc=np.ones(n_grid)*0.65, tphysf=np.ones(n_grid)*13700.0, kstar1=np.ones(n_grid), kstar2=np.ones(n_grid), met=np.ones(n_grid)*0.005)
 
     In [18]: print(binary_grid)
 
