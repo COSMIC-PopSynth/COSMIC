@@ -23,8 +23,10 @@
       INTEGER KTYPE(0:14,0:14)
       INTEGER binstate,mergertype
       COMMON /TYPES/ KTYPE
-      INTEGER ceflag,cekickflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,cekickflag,tflag,ifflag,nsflag,wdflag
+      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
+      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER cekickflag,cemergeflag,cehestarflag
+      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
       common /fall/fallback
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
@@ -130,11 +132,25 @@
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
-         IF(RC1/RL1.GE.R2/RL2)THEN
+*
+* If cemergeflag is set, cause kstars without clear core-envelope
+* structure to merge automatically if they enter a CE
+*
+         IF(cemergeflag.eq.1)THEN
+            if(KW1.eq.0.or.KW1.eq.1.or.KW1.eq.2.or.KW1.eq.7.or.
+     &         KW1.eq.8.or.KW1.eq.10.or.KW1.eq.11.or.KW1.eq.12)then
+                  write(*,*)'cemergeflag',cemergeflag,KW1,KW2
+                  COEL = .TRUE.
+                  SEPL = RC1/RL1
+                  binstate = 1
+                  CALL CONCATKSTARS(KW1, KW2, mergertype)
+            endif
+         ENDIF
 *
 * The helium core of a very massive star of type 4 may actually fill
 * its Roche lobe in a wider orbit with a very low-mass secondary.
 *
+         IF(RC1/RL1.GE.R2/RL2)THEN
             IF(RC1.GT.RL1*SEPF)THEN
                COEL = .TRUE.
                SEPL = RC1/RL1
@@ -254,6 +270,20 @@
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
+*
+* If cemergeflag is set, cause kstars without clear core-envelope
+* structure to merge automatically if they enter a CE
+*
+         IF(cemergeflag.eq.1)THEN
+            if(KW1.eq.0.or.KW1.eq.1.or.KW1.eq.2.or.KW1.eq.7.or.
+     &         KW1.eq.8.or.KW1.eq.10.or.KW1.eq.11.or.KW1.eq.12)then
+                  write(*,*)'cemergeflag',cemergeflag,KW1,KW2
+                  COEL = .TRUE.
+                  SEPL = RC1/RL1
+                  binstate = 1
+                  CALL CONCATKSTARS(KW1, KW2, mergertype)
+            endif
+         ENDIF
          IF(RC1/RL1.GE.RC2/RL2)THEN
             IF(RC1.GT.RL1*SEPF)THEN
                COEL = .TRUE.
