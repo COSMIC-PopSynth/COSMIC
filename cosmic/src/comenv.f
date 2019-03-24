@@ -23,14 +23,15 @@
       INTEGER KTYPE(0:14,0:14)
       INTEGER binstate,mergertype
       COMMON /TYPES/ KTYPE
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER ceflag,cekickflag,tflag,ifflag,nsflag,wdflag,ST_tide
+      COMMON /FLAGS/ ceflag,cekickflag,tflag,ifflag,nsflag,wdflag
       common /fall/fallback
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
       REAL*8 M02,M2,MC2,AJ2,JSPIN2,R2,L2,K22,MC22
       REAL*8 TSCLS1(20),TSCLS2(20),LUMS(10),GB(10),TM1,TM2,TN,ZPARS(20)
       REAL*8 EBINDI,EBINDF,EORBI,EORBF,ECIRC,SEPF,SEPL,MF,XX
+      REAL*8 SEP_postCE, M_postCE
       REAL*8 CONST,DELY,DERI,DELMF,MC3,FAGE1,FAGE2
       REAL*8 ECC,SEP,JORB,TB,OORB,OSPIN1,OSPIN2,TWOPI
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
@@ -166,6 +167,20 @@
             M1 = MC1
             KW1i = KW1
             M1i = M1
+*
+* Choose which masses and separations to use in SN based on cekickflag
+*
+            IF(cekickflag.eq.0)then
+               SEP_postCE=SEPF
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.1)then
+               SEP_postCE=SEP
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.2)then
+               SEP_postCE=SEPF
+               M_postCE=MC1
+            ENDIF
+
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
@@ -213,8 +228,8 @@
                      formation1 = 6
                   endif
                endif
-               CALL kick(KW1,MF,M1,M2,ECC,SEPF,JORB,vk,star1,
-     &                   R2,fallback,bkick,natal_kick)
+               CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
+     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -322,6 +337,20 @@
             M1 = MC1
             KW1i = KW1
             M1i = M1
+*
+* Choose which masses and separations to use in SN based on cekickflag
+*
+            IF(cekickflag.eq.0)then
+               SEP_postCE=SEPF
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.1)then
+               SEP_postCE=SEP
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.2)then
+               SEP_postCE=SEPF
+               M_postCE=MC1
+            ENDIF
+
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
@@ -369,8 +398,8 @@
                      formation1 = 6
                   endif
                endif
-               CALL kick(KW1,MF,M1,M2,ECC,SEPF,JORB,vk,star1,
-     &                   R2,fallback,bkick,natal_kick)
+               CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
+     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -389,6 +418,20 @@
             M2 = MC2
             KW2i = KW2
             M2i = M2
+*
+* Choose which masses and separations to use in SN based on cekickflag
+*
+            IF(cekickflag.eq.0)then
+               SEP_postCE=SEPF
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.1)then
+               SEP_postCE=SEP
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.2)then
+               SEP_postCE=SEPF
+               M_postCE=MC2
+            ENDIF
+
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
@@ -436,8 +479,8 @@
                      formation2 = 6
                   endif
                endif
-               CALL kick(KW2,MF,M2,M1,ECC,SEPF,JORB,vk,star2,
-     &                   R1,fallback,bkick,natal_kick)
+               CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
+     &                   JORB,vk,star2,R1,fallback,bkick,natal_kick)
                snp = 1
                if(M1.lt.0.d0)then
                   if(KW2.ge.10) M2 = M2-M1
