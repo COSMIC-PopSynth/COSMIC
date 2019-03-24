@@ -154,7 +154,7 @@ class Evolve(Table):
 
         # need to ensure that the order of variables is correct
         initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                                'met', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'natal_kick',
@@ -163,7 +163,7 @@ class Evolve(Table):
                                                 'randomseed', 'bin_num']].values
 
         initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                                'met', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
                                                 'polar_kick_angle', 'SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2',
