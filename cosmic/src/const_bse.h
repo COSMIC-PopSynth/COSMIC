@@ -7,8 +7,10 @@
       COMMON /RAND3/ idum2,iy,ir
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
-      INTEGER ceflag,cekickflag,tflag,ifflag,nsflag,wdflag
-      COMMON /FLAGS/ ceflag,cekickflag,tflag,ifflag,nsflag,wdflag
+      INTEGER ceflag,tflag,ifflag,nsflag,wdflag
+      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER cekickflag,cemergeflag,cehestarflag
+      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
 *
       INTEGER bhflag
       REAL*8 neta,bwind,hewind,mxns,alpha1,lambda
