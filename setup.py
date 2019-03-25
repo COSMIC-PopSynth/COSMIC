@@ -85,7 +85,7 @@ install_requires = [
     'pandas >= 0.22 ; python_version >= \'3.5\'',
     'pandas < 0.21 ; python_version == \'3.4\'',
     'pandas >= 0.22 ; python_version == \'2.7\'',
-    'tables > 3.0.0',
+    'tables > 3.0.0, <3.5.0',
     'h5py >= 1.3',
 ]
 tests_require = [
