@@ -9,6 +9,8 @@
       COMMON /TYPES/ ktype
       INTEGER ceflag,tflag,ifflag,nsflag,wdflag
       COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER cekickflag,cemergeflag,cehestarflag
+      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
 *
       INTEGER bhflag
       REAL*8 neta,bwind,hewind,mxns,alpha1,lambda
