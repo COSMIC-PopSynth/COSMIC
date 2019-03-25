@@ -38,6 +38,7 @@
       REAL*8 ECC,SEP,JORB,TB,OORB,OSPIN1,OSPIN2,TWOPI
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
+      REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 natal_kick(6)
       REAL*8 bkick(20),fallback,ecsnp,ecsn_mlow,M1i,M2i
       INTEGER formation1,formation2
@@ -139,7 +140,6 @@
          IF(cemergeflag.eq.1)THEN
             if(KW1.eq.0.or.KW1.eq.1.or.KW1.eq.2.or.KW1.eq.7.or.
      &         KW1.eq.8.or.KW1.eq.10.or.KW1.eq.11.or.KW1.eq.12)then
-                  write(*,*)'cemergeflag',cemergeflag,KW1,KW2
                   COEL = .TRUE.
                   SEPL = RC1/RL1
                   binstate = 1
@@ -277,7 +277,6 @@
          IF(cemergeflag.eq.1)THEN
             if(KW1.eq.0.or.KW1.eq.1.or.KW1.eq.2.or.KW1.eq.7.or.
      &         KW1.eq.8.or.KW1.eq.10.or.KW1.eq.11.or.KW1.eq.12)then
-                  write(*,*)'cemergeflag',cemergeflag,KW1,KW2
                   COEL = .TRUE.
                   SEPL = RC1/RL1
                   binstate = 1
@@ -379,6 +378,41 @@
             ELSEIF(cekickflag.eq.2)then
                SEP_postCE=SEPF
                M_postCE=MC1
+            ENDIF
+*
+* If cehestarflag is specified, determine the post-CE separation and/or
+* mass for He-star/compact object system according to Tauris+2015
+*
+            IF(KW1.ge.7.and.KW1.le.9.and.KW2.ge.13)THEN
+                if(cehestarflag.ne.0)then
+* calculate G in Rsun/Msun/days, and initial Porb in days
+                    G = 2957.45d+0
+                    Porbi = (TWOPI/(G*(MF+M2))**(1d0/2d0)) *
+     &                  SEP**(3d0/2d0)
+                    Mcf = (1d0/(400d0*Porbi)+0.49d0)*MF -
+     &                  ((0.016d0/Porbi) - 0.106d0)
+                    if(Porbi.le.2d0)then
+                        Menvf = 0.18d0*Porbi**(0.45d0) *
+     &                      (LOG(Mcf**4d0) - 1.05d0)
+                    else
+                        Menvf = Mcf*(LOG(Porbi**(-0.2d0))+1) +
+     &                      LOG(Porbi**(0.5d0))-1.5d0
+                    endif
+                    qi = MF/M2
+* if cehestarflag is 1, use BSE's calculation of post-CE core mass
+                    if(cehestarflag.eq.1)then
+                        M_postCE = MC1
+                        qf = MC1/M2
+* elseif cehestarflag is 2, use Tauris fitting formula for post-CE mass
+                    elseif(cehestarflag.eq.2)then
+                        M_postCE = (Mcf+Menvf)
+                        qf = (Mcf+Menvf)/M2
+                    endif
+                    Porbf = (((qi+1)/(qf+1))**(2d0) * (qi/qf)**(3d0) *
+     &                      EXP(3d0*(qf-qi))) * Porbi
+                    SEP_postCE = (G*(M_postCE+M2) / (TWOPI**(2d0)) *
+     &                      Porbf**(2d0))**(1d0/3d0)
+                endif
             ENDIF
 
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
