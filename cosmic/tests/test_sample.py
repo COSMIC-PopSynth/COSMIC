@@ -16,10 +16,10 @@ MULTIDIMSAMPLECLASS = MultiDim()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
 TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
-TOTAL_SAMPLED_MASS_KROUPA93 = 41.585324999945854 
+TOTAL_SAMPLED_MASS_KROUPA93 = 41.585324999945854
 TOTAL_SAMPLED_MASS_150_SALPETER55 = 17593.2866338113
 TOTAL_SAMPLED_MASS_50_SALPETER55 = 1615.8593881185334
-TOTAL_SAMPLED_MASS_SALPETER55 = 28.182278678238717 
+TOTAL_SAMPLED_MASS_SALPETER55 = 28.182278678238717
 TOTAL_SECONDARY_MASS = 16.15470927770034
 N_BINARY_SELECT = 92
 PORB = 855.304181220944
@@ -28,13 +28,13 @@ UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
 KSTAR_SOLAR = 1.0
-MOE_TOTAL_MASS = 31.134712126322306 
+MOE_TOTAL_MASS = 31.134712126322306
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
 
 class TestSample(unittest2.TestCase):
-    """`TestCase` for the cosmic Sample class, which generates several 
+    """`TestCase` for the cosmic Sample class, which generates several
         independent initial parameters drawn from specified distributions
     """
 
@@ -81,7 +81,7 @@ class TestSample(unittest2.TestCase):
         # Check that the binary select function chooses binarity properly
         m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100))
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
- 
+
     def test_sample_porb_abt(self):
         np.random.seed(2)
         # Check that the sample_porb function samples porb properly
@@ -113,7 +113,7 @@ class TestSample(unittest2.TestCase):
                                             met = 0.02, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
         self.assertAlmostEqual(np.mean(met), 0.02)
- 
+
         # Check that the sample SFH function samples SFH='delta_burst' correctly
         times, met = SAMPLECLASS.sample_SFH(SFH_model='delta_burst',\
                                             component_age=10000.0,\
@@ -146,7 +146,7 @@ class TestSample(unittest2.TestCase):
                                                     met = 0.02, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
         self.assertAlmostEqual(np.mean(met), 0.02)
- 
+
         # Check that the sample SFH function samples SFH='delta_burst' correctly
         times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='delta_burst',\
                                                     component_age=10000.0,\
