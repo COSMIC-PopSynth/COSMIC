@@ -261,7 +261,14 @@ if __name__ == '__main__':
             warnings.filterwarnings("ignore", message="divide by zero encountered in log10")
             bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
             bpp['porb'] = np.log10(bpp['porb']*sec_in_year)
-        
+
+        met = []
+        for num in bcm.bin_num.unique():
+            n_met = len(bcm.loc[bcm.bin_num==num])
+            met_val = np.array(initCond.loc[initCond.bin_num==num].metallicity)[0]
+            met.extend(np.ones(n_met)*met_val)
+        bcm['metallicity'] = met
+ 
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
