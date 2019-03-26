@@ -246,6 +246,9 @@
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+* Returning variable state to original naming convention
+               MF = M_postCE
+               SEPF = SEP_postCE
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -464,6 +467,9 @@
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+* Returning variable state to original naming convention
+               MF = M_postCE
+               SEPF = SEP_postCE
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -545,6 +551,9 @@
                endif
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,bkick,natal_kick)
+* Returning variable state to original naming convention
+               MF = M_postCE
+               SEPF = SEP_postCE
                snp = 1
                if(M1.lt.0.d0)then
                   if(KW2.ge.10) M2 = M2-M1

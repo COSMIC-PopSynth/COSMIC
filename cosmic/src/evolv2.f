@@ -215,11 +215,11 @@
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
       REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
-      REAL*8 cekickflagtmp,cemergeflagtmp,cehestarflagtmp
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
+      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp
       INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
