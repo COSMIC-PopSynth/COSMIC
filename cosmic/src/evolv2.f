@@ -4,9 +4,9 @@
      \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,
      \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
-     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,
-     \ sigmatmp,bhsigmafractmp,polar_kick_angletmp,natal_kick_array,
-     \ qcrit_array,betatmp,xitmp,
+     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsnptmp,ecsn_mlowtmp,aictmp,
+     \ sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
+     \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
@@ -216,11 +216,12 @@
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
       REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
+      REAL*8 ecsnptmp,ecsn_mlowtmp,sigmadivtmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
-      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp
+      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
@@ -238,7 +239,11 @@ Cf2py intent(out) bppout,bcmout
       pts1 = pts1tmp
       pts2 = pts2tmp
       pts3 = pts3tmp
+      ecsnp = ecsnptmp
+      ecsn_mlow = ecsn_mlowtmp
+      aic = aictmp
       sigma = sigmatmp
+      sigmadiv = sigmadivtmp
       bhsigmafrac = bhsigmafractmp
       polar_kick_angle = polar_kick_angletmp
       beta = betatmp
@@ -295,11 +300,7 @@ Cf2py intent(out) bppout,bcmout
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
       wdwdedd = 0 !Have not introduced yet but will. if set to 1 forces WD dynamical MT to be limited by eddington rate.
       eddlim = 1 !Have not introduced yet but will.if = 0 then BSE version, only H limit, else StarTrack version.
-      ecsnp = 2.5d0 !>0 turns on ECSN and also sets maximum ECSN kick mass range (mass at SN, bse=st=2.25, pod=2.5)
-      ecsn_mlow = 1.6d0 ! low end of ECSN mass range, BSE=1.6, Pod=1.4, StarTrack=1.85.
       sigmahold = sigma !Captures original sigma so after ECSN we can reset it.
-      sigmadiv = -20.d0! negative sets ECSN sigma, positive devides into old sigma.
-      aic = 1 !set to 1 for inclusion of AIC low kicks (even if ecsnp = 0)
       betahold = beta !memory for wind mass loss factor.
       htpmb = 1 !zero = htpmb, 1 = Ivanova & Taam 2002 method which kicks in later than the standard
       ST_cr = 1 !sets which convective/radiative boundary to use, 0=old, 1=startrack.
