@@ -208,7 +208,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(80,15)
+      REAL*8 bppout(1000,15)
       REAL*8 bcmout(50000,42)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
@@ -626,7 +626,7 @@ Cf2py intent(out) bppout,bcmout
             lacc = lacc/lumin(j1)
             if((lacc.gt.0.01d0.and..not.bsymb).or.
      &         (lacc.lt.0.01d0.and.bsymb))then
-               jp = MIN(80,jp + 1)
+               jp = MIN(1000,jp + 1)
                bpp(jp,1) = tphys
                bpp(jp,2) = mass(1)
                bpp(jp,3) = mass(2)
@@ -1534,7 +1534,7 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
-            jp = MIN(80,jp + 1)
+            jp = MIN(1000,jp + 1)
             bpp(jp,1) = tphys
             bpp(jp,2) = mass(1)
             bpp(jp,3) = mass(2)
@@ -1588,7 +1588,7 @@ Cf2py intent(out) bppout,bcmout
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -1794,7 +1794,7 @@ Cf2py intent(out) bppout,bcmout
       if(tphys.ge.tphysf.and.intpol.eq.0) goto 140
       if(change)then
          change = .false.
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -1872,7 +1872,7 @@ Cf2py intent(out) bppout,bcmout
       radx(j1) = MAX(radc(j1),rol(j1))
       radx(j2) = rad(j2)
 *
-      jp = MIN(80,jp + 1)
+      jp = MIN(1000,jp + 1)
       bpp(jp,1) = tphys
       bpp(jp,2) = mass(1)
       bpp(jp,3) = mass(2)
@@ -2139,7 +2139,7 @@ Cf2py intent(out) bppout,bcmout
             theta_bcm=bkick(20)
          endif
 *
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
@@ -2445,7 +2445,7 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  jp = MIN(80,jp + 1)
+                  jp = MIN(1000,jp + 1)
                   bpp(jp,1) = tphys
                   bpp(jp,2) = mass(j1)
                   bpp(jp,3) = mt2
@@ -2514,7 +2514,7 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  jp = MIN(80,jp + 1)
+                  jp = MIN(1000,jp + 1)
                   bpp(jp,1) = tphys
                   bpp(jp,2) = mass(j1)
                   bpp(jp,3) = mt2
@@ -3220,7 +3220,7 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
-            jp = MIN(80,jp + 1)
+            jp = MIN(1000,jp + 1)
             bpp(jp,1) = tphys
             bpp(jp,2) = mass(1)
             bpp(jp,3) = mass(2)
@@ -3335,7 +3335,7 @@ Cf2py intent(out) bppout,bcmout
 *
       if(change)then
          change = .false.
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -3371,7 +3371,7 @@ Cf2py intent(out) bppout,bcmout
          iter = iter + 1
          goto 8
       else
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -3414,7 +3414,7 @@ Cf2py intent(out) bppout,bcmout
       rrl1 = MIN(999.999d0,rad(1)/rol(1))
       rrl2 = MIN(999.999d0,rad(2)/rol(2))
 *
-      jp = MIN(80,jp + 1)
+      jp = MIN(1000,jp + 1)
       bpp(jp,1) = tphys
       bpp(jp,2) = mass(1)
       bpp(jp,3) = mass(2)
@@ -3516,7 +3516,7 @@ Cf2py intent(out) bppout,bcmout
       endif
 
       if(com)then
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
@@ -3592,7 +3592,7 @@ Cf2py intent(out) bppout,bcmout
          if(com)then
             com = .false.
          else
-            jp = MIN(80,jp + 1)
+            jp = MIN(1000,jp + 1)
             bpp(jp,1) = tphys
             bpp(jp,2) = mass(1)
             if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
@@ -3667,7 +3667,7 @@ Cf2py intent(out) bppout,bcmout
       if(com)then
          com = .false.
       else
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          if(kstar(1).eq.15.and.bpp(jp-1,4).lt.15.0)then
@@ -3806,7 +3806,7 @@ Cf2py intent(out) bppout,bcmout
       endif
       tb = tb*yeardy
 
-      if(jp.ge.80)then
+      if(jp.ge.1000)then
          WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
 *         STOP
