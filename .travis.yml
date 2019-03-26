@@ -2,11 +2,8 @@ language: python
 
 dist: xenial
 
-osx_image: xcode8.3
-
 os:
   - linux
-  - osx
 
 addons:
   apt:
