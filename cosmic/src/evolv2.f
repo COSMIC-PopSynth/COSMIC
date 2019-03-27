@@ -2095,7 +2095,7 @@ Cf2py intent(out) bppout,bcmout
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
-     &                 mass,kstar,sep,
+     &                 mass_pass,kstar,sep,
      &                 tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
@@ -2395,7 +2395,7 @@ Cf2py intent(out) bppout,bcmout
                   rrl1 = rad(1)/rol(1)
                   rrl2 = rad(2)/rol(2)
                   CALL writebpp(jp,tphys,evolve_type,
-     &                          mass,kstar,sep,
+     &                          mass_pass,kstar,sep,
      &                          tb,ecc,rrl1,rrl2,bkick)
                endif
             endif            
@@ -2451,7 +2451,7 @@ Cf2py intent(out) bppout,bcmout
                   rrl1 = rad(1)/rol(1)
                   rrl2 = rad(2)/rol(2)
                   CALL writebpp(jp,tphys,evolve_type,
-     &                          mass,kstar,sep,
+     &                          mass_pass,kstar,sep,
      &                          tb,ecc,rrl1,rrl2,bkick)
                   DO jj = 13,20
                      bkick(jj) = 0.0
@@ -3374,7 +3374,7 @@ Cf2py intent(out) bppout,bcmout
           rrl1 = MIN(rrl1,0.99d0)
           rrl2 = MIN(rrl2,0.99d0)
           CALL writebpp(jp,tphys,evolve_type,
-     &                      mass,kstar,sep,
+     &                      mass_pass,kstar,sep,
      &                      tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
