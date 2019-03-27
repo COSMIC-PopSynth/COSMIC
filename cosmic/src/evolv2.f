@@ -2395,7 +2395,7 @@ Cf2py intent(out) bppout,bcmout
                   rrl1 = rad(1)/rol(1)
                   rrl2 = rad(2)/rol(2)
                   CALL writebpp(jp,tphys,evolve_type,
-     &                          mass_pass,kstar,sep,
+     &                          mass_pass,kstar_pass,sep,
      &                          tb,ecc,rrl1,rrl2,bkick)
                endif
             endif            
@@ -2451,7 +2451,7 @@ Cf2py intent(out) bppout,bcmout
                   rrl1 = rad(1)/rol(1)
                   rrl2 = rad(2)/rol(2)
                   CALL writebpp(jp,tphys,evolve_type,
-     &                          mass_pass,kstar,sep,
+     &                          mass_pass,kstar_pass,sep,
      &                          tb,ecc,rrl1,rrl2,bkick)
                   DO jj = 13,20
                      bkick(jj) = 0.0
