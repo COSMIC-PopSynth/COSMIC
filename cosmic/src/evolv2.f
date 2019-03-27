@@ -162,11 +162,13 @@
       INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
+      INTEGER kstar_pass(2)
 *
       REAL*8 km,km0,tphys,tphys0,dtm0,tphys00,tphysfhold
       REAL*8 tphysf,dtp,tsave,mass1,mass2
       REAL*8 aj(2),aj0(2),epoch(2),tms(2),tbgb(2),tkh(2),dtmi(2)
       REAL*8 mass0(2),mass(2),massc(2),menv(2),mass00(2),mcxx(2)
+      REAL*8 mass_pass(2)
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
       REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,bkick(20)
@@ -278,7 +280,12 @@ Cf2py intent(out) bppout,bcmout
 
       kstar(1) = kstar1
       kstar(2) = kstar2
-      
+
+      kstar_pass(1) = 0
+      kstar_pass(2) = 0
+
+      mass_pass(1) = 0.d0
+      mass_pass(2) = 0.d0
 
       mass1i = mass(1)
       mass2i = mass(2)
@@ -634,15 +641,17 @@ Cf2py intent(out) bppout,bcmout
             if((lacc.gt.0.01d0.and..not.bsymb).or.
      &         (lacc.lt.0.01d0.and.bsymb))then
                if(bsymb)then
-                  evolve_type = 13.0
+                  evolve_type = 13.d0
                   esymb = .true.
                else
-                  evolve_type = 12.0
+                  evolve_type = 12.d0
                   bsymb = .true.
                endif
+               rrl1 = rad(1)/rol(1)
+               rrl2 = rad(2)/rol(2)
                CALL writebpp(jp,tphys,evolve_type,
-     &                      mass,mass0,kstar,sep,
-     &                      tb,ecc,rad,rol,bkick)
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
                DO jj = 13,20
                    bkick(jj) = 0.0
                ENDDO
@@ -1524,27 +1533,12 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
-            jp = MIN(80,jp + 1)
-            bpp(jp,1) = tphys
-            bpp(jp,2) = mass(1)
-            bpp(jp,3) = mass(2)
-            bpp(jp,4) = float(kstar(1))
-            bpp(jp,5) = float(kstar(2))
-            bpp(jp,6) = sep
-            bpp(jp,7) = tb
-            bpp(jp,8) = ecc
-            bpp(jp,9) = rad(1)/rol(1)
-            bpp(jp,10) = rad(2)/rol(2)
-            bpp(jp,11) = 14.0
-            bpp(jp,12) = bkick(15)
-            bpp(jp,13) = bkick(16)
-            if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-               bpp(jp,14) = bkick(13)
-               bpp(jp,15) = bkick(18)
-            elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-               bpp(jp,14) = bkick(14)
-               bpp(jp,15) = bkick(19)
-            endif
+            evolve_type = 14.d0
+            rrl1 = rad(1)/rol(1)
+            rrl2 = rad(2)/rol(2)
+            CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
@@ -1578,27 +1572,12 @@ Cf2py intent(out) bppout,bcmout
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         bpp(jp,3) = mass(2)
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = sep
-         bpp(jp,7) = tb 
-         bpp(jp,8) = ecc
-         bpp(jp,9) = rad(1)/rol(1)
-         bpp(jp,10) = rad(2)/rol(2)
-         bpp(jp,11) = 1.0
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
+          evolve_type = 1.d0
+          rrl1 = rad(1)/rol(1)
+          rrl2 = rad(2)/rol(2)
+          CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1784,27 +1763,12 @@ Cf2py intent(out) bppout,bcmout
       if(tphys.ge.tphysf.and.intpol.eq.0) goto 140
       if(change)then
          change = .false.
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         bpp(jp,3) = mass(2)
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = sep
-         bpp(jp,7) = tb
-         bpp(jp,8) = ecc
-         bpp(jp,9) = rad(1)/rol(1)
-         bpp(jp,10) = rad(2)/rol(2)
-         bpp(jp,11) = 2.0
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
+         evolve_type = 2.d0
+         rrl1 = rad(1)/rol(1)
+         rrl2 = rad(2)/rol(2)
+         CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1862,27 +1826,12 @@ Cf2py intent(out) bppout,bcmout
       radx(j1) = MAX(radc(j1),rol(j1))
       radx(j2) = rad(j2)
 *
-      jp = MIN(80,jp + 1)
-      bpp(jp,1) = tphys
-      bpp(jp,2) = mass(1)
-      bpp(jp,3) = mass(2)
-      bpp(jp,4) = float(kstar(1))
-      bpp(jp,5) = float(kstar(2))
-      bpp(jp,6) = sep
-      bpp(jp,7) = tb
-      bpp(jp,8) = ecc
-      bpp(jp,9) = rad(1)/rol(1)
-      bpp(jp,10) = rad(2)/rol(2)
-      bpp(jp,11) = 3.0
-      bpp(jp,12) = bkick(15)
-      bpp(jp,13) = bkick(16)
-      if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-         bpp(jp,14) = bkick(13)
-         bpp(jp,15) = bkick(18)
-      elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-         bpp(jp,14) = bkick(14)
-         bpp(jp,15) = bkick(19)
-      endif
+      evolve_type = 3.0
+      rrl1 = rad(1)/rol(1)
+      rrl2 = rad(2)/rol(2)
+      CALL writebpp(jp,tphys,evolve_type,
+     &              mass,kstar,sep,
+     &              tb,ecc,rrl1,rrl2,bkick)
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -2138,29 +2087,16 @@ Cf2py intent(out) bppout,bcmout
              theta_bcm=bkick(20)
          endif
 *
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
-         bpp(jp,3) = mass(2)
-         if(kstar(2).eq.15) bpp(jp,3) = mass0(2)
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = sep
-         bpp(jp,7) = tb
-         bpp(jp,8) = ecc
-         bpp(jp,9) = rad(1)/rol(1)
-         bpp(jp,10) = rad(2)/rol(2)
-         bpp(jp,11) = 7.0
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
+         evolve_type = 7.0
+         mass_pass(1) = mass(1)
+         mass_pass(2) = mass(2)
+         if(kstar(1).eq.15) mass_pass(1) = mass0(1)
+         if(kstar(2).eq.15) mass_pass(2) = mass0(2)
+         rrl1 = rad(1)/rol(1)
+         rrl2 = rad(2)/rol(2)
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass,kstar,sep,
+     &                 tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -2444,36 +2380,23 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  jp = MIN(80,jp + 1)
-                  bpp(jp,1) = tphys
-                  bpp(jp,2) = mass(j1)
-                  bpp(jp,3) = mt2
-                  bpp(jp,4) = float(kstar(j1))
-                  bpp(jp,5) = float(kst)
-                  bpp(jp,6) = sep
-                  bpp(jp,7) = tb
-                  bpp(jp,8) = ecc
-                  bpp(jp,9) = rad(1)/rol(1)
-                  bpp(jp,10) = rad(2)/rol(2)
-                  bpp(jp,11) = 8.0
-                  bpp(jp,12) = bkick(15)
-                  bpp(jp,13) = bkick(16)
-                  if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-                     bpp(jp,14) = bkick(13)
-                     bpp(jp,15) = bkick(18)
-                  elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-                     bpp(jp,14) = bkick(14)
-                     bpp(jp,15) = bkick(19)
-                  endif
-                  DO jj = 13,20
-                     bkick(jj) = 0.0
-                  ENDDO
+                  evolve_type = 8.0
                   if(j1.eq.2)then
-                     bpp(jp,2) = mt2
-                     bpp(jp,3) = mass(j1)
-                     bpp(jp,4) = float(kst)
-                     bpp(jp,5) = float(kstar(j1))
+                      kstar_pass(1) = kst
+                      kstar_pass(2) = kstar(j1)
+                      mass_pass(1) = mt2
+                      mass_pass(2) = mass(j1)
+                  else
+                      kstar_pass(1) = kstar(j1)
+                      kstar_pass(2) = kst
+                      mass_pass(1) = mass(j1)
+                      mass_pass(2) = mt2
                   endif
+                  rrl1 = rad(1)/rol(1)
+                  rrl2 = rad(2)/rol(2)
+                  CALL writebpp(jp,tphys,evolve_type,
+     &                          mass,kstar,sep,
+     &                          tb,ecc,rrl1,rrl2,bkick)
                endif
             endif            
          elseif(kstar(j1).le.6.and. 
@@ -2513,36 +2436,26 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  jp = MIN(80,jp + 1)
-                  bpp(jp,1) = tphys
-                  bpp(jp,2) = mass(j1)
-                  bpp(jp,3) = mt2
-                  bpp(jp,4) = float(kstar(j1))
-                  bpp(jp,5) = float(kst)
-                  bpp(jp,6) = sep
-                  bpp(jp,7) = tb
-                  bpp(jp,8) = ecc
-                  bpp(jp,9) = rad(1)/rol(1)
-                  bpp(jp,10) = rad(2)/rol(2)
-                  bpp(jp,11) = 8.0
-                  bpp(jp,12) = bkick(15)
-                  bpp(jp,13) = bkick(16)
-                  if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-                     bpp(jp,14) = bkick(13)
-                     bpp(jp,15) = bkick(18)
-                  elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-                     bpp(jp,14) = bkick(14)
-                     bpp(jp,15) = bkick(19)
+                  evolve_type = 8.0
+                  if(j1.eq.2)then
+                      kstar_pass(1) = kst
+                      kstar_pass(2) = kstar(j1)
+                      mass_pass(1) = mt2
+                      mass_pass(2) = mass(j1)
+                  else
+                      kstar_pass(1) = kstar(j1)
+                      kstar_pass(2) = kst
+                      mass_pass(1) = mass(j1)
+                      mass_pass(2) = mt2
                   endif
+                  rrl1 = rad(1)/rol(1)
+                  rrl2 = rad(2)/rol(2)
+                  CALL writebpp(jp,tphys,evolve_type,
+     &                          mass,kstar,sep,
+     &                          tb,ecc,rrl1,rrl2,bkick)
                   DO jj = 13,20
                      bkick(jj) = 0.0
                   ENDDO
-                  if(j1.eq.2)then
-                     bpp(jp,2) = mt2
-                     bpp(jp,3) = mass(j1)
-                     bpp(jp,4) = float(kst)
-                     bpp(jp,5) = float(kstar(j1))
-                  endif
                endif
 *
             endif
@@ -3219,27 +3132,12 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
-            jp = MIN(80,jp + 1)
-            bpp(jp,1) = tphys
-            bpp(jp,2) = mass(1)
-            bpp(jp,3) = mass(2)
-            bpp(jp,4) = float(kstar(1))
-            bpp(jp,5) = float(kstar(2))
-            bpp(jp,6) = sep
-            bpp(jp,7) = tb
-            bpp(jp,8) = ecc
-            bpp(jp,9) = rad(1)/rol(1)
-            bpp(jp,10) = rad(2)/rol(2)
-            bpp(jp,11) = 14.0
-            bpp(jp,12) = bkick(15)
-            bpp(jp,13) = bkick(16)
-            if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-               bpp(jp,14) = bkick(13)
-               bpp(jp,15) = bkick(18)
-            elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-               bpp(jp,14) = bkick(14)
-               bpp(jp,15) = bkick(19)
-            endif
+            evolve_type = 14.0
+            rrl1 = rad(1)/rol(1)
+            rrl2 = rad(2)/rol(2)
+            CALL writebpp(jp,tphys,evolve_type,
+     &                    mass,kstar,sep,
+     &                    tb,ecc,rrl1,rrl2,bkick)
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
@@ -3334,27 +3232,12 @@ Cf2py intent(out) bppout,bcmout
 *
       if(change)then
          change = .false.
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         bpp(jp,3) = mass(2)
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = sep
-         bpp(jp,7) = tb
-         bpp(jp,8) = ecc
-         bpp(jp,9) = rad(1)/rol(1)
-         bpp(jp,10) = rad(2)/rol(2)
-         bpp(jp,11) = 2.0
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
+         evolve_type = 2.0
+         rrl1 = rad(1)/rol(1)
+         rrl2 = rad(2)/rol(2)
+         CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3370,27 +3253,12 @@ Cf2py intent(out) bppout,bcmout
          iter = iter + 1
          goto 8
       else
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         bpp(jp,3) = mass(2)
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = sep
-         bpp(jp,7) = tb
-         bpp(jp,8) = ecc
-         bpp(jp,9) = rad(1)/rol(1)
-         bpp(jp,10) = rad(2)/rol(2)
-         bpp(jp,11) = 4.0
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
+         evolve_type = 4.0
+         rrl1 = rad(1)/rol(1)
+         rrl2 = rad(2)/rol(2)
+         CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3413,27 +3281,10 @@ Cf2py intent(out) bppout,bcmout
       rrl1 = MIN(999.999d0,rad(1)/rol(1))
       rrl2 = MIN(999.999d0,rad(2)/rol(2))
 *
-      jp = MIN(80,jp + 1)
-      bpp(jp,1) = tphys
-      bpp(jp,2) = mass(1)
-      bpp(jp,3) = mass(2)
-      bpp(jp,4) = float(kstar(1))
-      bpp(jp,5) = float(kstar(2))
-      bpp(jp,6) = sep
-      bpp(jp,7) = tb
-      bpp(jp,8) = ecc
-      bpp(jp,9) = rrl1
-      bpp(jp,10) = rrl2
-      bpp(jp,11) = 5.0
-      bpp(jp,12) = bkick(15)
-      bpp(jp,13) = bkick(16)
-      if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-         bpp(jp,14) = bkick(13)
-         bpp(jp,15) = bkick(18)
-      elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-         bpp(jp,14) = bkick(14)
-         bpp(jp,15) = bkick(19)
-      endif
+      evolve_type = 5.0
+      CALL writebpp(jp,tphys,evolve_type,
+     &              mass,kstar,sep,
+     &              tb,ecc,rrl1,rrl2,bkick)
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -3515,31 +3366,16 @@ Cf2py intent(out) bppout,bcmout
       endif
 
       if(com)then
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
-         bpp(jp,3) = mass(2)
-         if(kstar(2).eq.15) bpp(jp,3) = mass0(2)
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = sep
-         bpp(jp,7) = tb
-         bpp(jp,8) = ecc
-         rrl1 = MIN(rrl1,0.99d0)
-         rrl2 = MIN(rrl2,0.99d0)
-         bpp(jp,9) = rrl1
-         bpp(jp,10) = rrl2
-         bpp(jp,11) = 7.0
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
+          evolve_type = 7.0
+          mass_pass(1) = mass(1)
+          mass_pass(2) = mass(2)
+          if(kstar(1).eq.15) mass_pass(1) = mass0(1)
+          if(kstar(2).eq.15) mass_pass(2) = mass0(2)
+          rrl1 = MIN(rrl1,0.99d0)
+          rrl2 = MIN(rrl2,0.99d0)
+          CALL writebpp(jp,tphys,evolve_type,
+     &                      mass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3591,48 +3427,34 @@ Cf2py intent(out) bppout,bcmout
          if(com)then
             com = .false.
          else
-            jp = MIN(80,jp + 1)
-            bpp(jp,1) = tphys
-            bpp(jp,2) = mass(1)
-            if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
-            bpp(jp,3) = mass(2)
-            if(kstar(2).eq.15) bpp(jp,3) = mass0(2)
-            bpp(jp,4) = float(kstar(1))
-            bpp(jp,5) = float(kstar(2))
-            bpp(jp,6) = zero
-            bpp(jp,7) = zero
-            bpp(jp,8) = zero
-            bpp(jp,9) = zero
-            bpp(jp,10) = ngtv
-            bpp(jp,11) = zero
-            bpp(jp,12) = bkick(15)
-            bpp(jp,13) = bkick(16)
-            if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-               bpp(jp,14) = bkick(13)
-               bpp(jp,15) = bkick(18)
-            elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-               bpp(jp,14) = bkick(14)
-               bpp(jp,15) = bkick(19)
-            endif
-            DO jj = 13,20
-               bkick(jj) = 0.0
-            ENDDO
+            mass_pass(1) = mass(1)
+            mass_pass(2) = mass(2)
+            if(kstar(1).eq.15) mass_pass(1) = mass0(1)
+            if(kstar(2).eq.15) mass_pass(2) = mass0(2)
             if(coel)then
-               bpp(jp,11) = 6.0
+                evolve_type = 6.0
+                CALL writebpp(jp,tphys,evolve_type,
+     &                      mass_pass,kstar,0.d0,
+     &                      0.d0,0.d0,0.d0,ngtv,bkick)
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
 *
-               bpp(jp,6) = sep
-               bpp(jp,7) = tb
-               bpp(jp,8) = ecc
-               bpp(jp,10) = ngtv2
-               bpp(jp,11) = 11.0
-               binstate = 2
-               mergertype = -1
+                evolve_type = 11.0
+                binstate = 2
+                mergertype = -1
+                CALL writebpp(jp,tphys,evolve_type,
+     &                      mass_pass,kstar,sep,
+     &                      tb,ecc,0.d0,ngtv2,bkick)
             else
-               bpp(jp,11) = 9.0
+                evolve_type = 9.0
+                CALL writebpp(jp,tphys,evolve_type,
+     &                      mass_pass,kstar,0.d0,
+     &                      0.d0,0.d0,0.d0,ngtv,bkick)
             endif
+            DO jj = 13,20
+               bkick(jj) = 0.0
+            ENDDO
          endif
          if(kstar(2).eq.15)then
             kmax = 1
@@ -3666,52 +3488,42 @@ Cf2py intent(out) bppout,bcmout
       if(com)then
          com = .false.
       else
-         jp = MIN(80,jp + 1)
-         bpp(jp,1) = tphys
-         bpp(jp,2) = mass(1)
-         if(kstar(1).eq.15.and.bpp(jp-1,4).lt.15.0)then
-            bpp(jp,2) = mass0(1)
-         endif
-         bpp(jp,3) = mass(2)
-         if(kstar(2).eq.15.and.bpp(jp-1,5).lt.15.0)then
-            bpp(jp,3) = mass0(2)
-         endif
-         bpp(jp,4) = float(kstar(1))
-         bpp(jp,5) = float(kstar(2))
-         bpp(jp,6) = zero
-         bpp(jp,7) = zero
-         bpp(jp,8) = zero
-         bpp(jp,9) = zero
-         bpp(jp,12) = bkick(15)
-         bpp(jp,13) = bkick(16)
-         if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
-            bpp(jp,14) = bkick(13)
-            bpp(jp,15) = bkick(18)
-         elseif(bkick(1).gt.0.d0.and.bkick(5).gt.0.d0)then
-            bpp(jp,14) = bkick(14)
-            bpp(jp,15) = bkick(19)
-         endif
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
-         if(coel)then
-            bpp(jp,10) = ngtv
-            bpp(jp,11) = 6.0
-         elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
+          mass_pass(1) = mass(1)
+          mass_pass(2) = mass(2)
+
+          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
+              mass_pass(1) = mass0(1)
+          endif
+
+          if(kstar(2).eq.15.and.bpp(jp,5).lt.15.0)then
+              mass_pass(2) = mass0(2)
+          endif
+
+          if(coel)then
+              evolve_type = 6.0
+              CALL writebpp(jp,tphys,evolve_type,
+     &                      mass_pass,kstar,0.d0,
+     &                      0.d0,0.d0,0.d0,ngtv,bkick)
+          elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
 * No remnant is left in either case.
 *
-            bpp(jp,10) = ngtv2
-            bpp(jp,11) = 9.0
-         else
-            bpp(jp,6) = sep
-            bpp(jp,7) = tb
-            bpp(jp,8) = ecc
-            bpp(jp,9) = rad(1)/rol(1)
-            bpp(jp,10) = rad(2)/rol(2)
-            bpp(jp,11) = 10.0
-         endif
+              evolve_type = 9.0
+              CALL writebpp(jp,tphys,evolve_type,
+     &                      mass_pass,kstar,0.d0,
+     &                      0.d0,0.d0,0.d0,ngtv2,bkick)
+          else
+              evolve_type = 10.0
+              rrl1 = rad(1)/rol(1)
+              rrl2 = rad(2)/rol(2)
+              CALL writebpp(jp,tphys,evolve_type,
+     &                      mass_pass,kstar,sep,
+     &                      tb,ecc,rrl1,rrl2,bkick)
+          endif
+          DO jj = 13,20
+              bkick(jj) = 0.0
+          ENDDO
       endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then

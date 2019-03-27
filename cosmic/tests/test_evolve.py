@@ -25,8 +25,5 @@ class TestEvolve(unittest2.TestCase):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond = Evolve.evolve(
             initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict)
 
-        import pdb
-        pdb.set_trace()
-
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False, check_less_precise=True)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False, check_less_precise=True)
