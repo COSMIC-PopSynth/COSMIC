@@ -18,38 +18,10 @@
 
 """`utils`
 """
-
-__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
-__credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = ['epanechnikov', 'filter_bpp_bcm', 'bcm_conv_select',
-           'mass_min_max_select', 'idl_tabulate', 'rndm',
-           'param_transform', 'dat_transform', 'dat_un_transform'
-           'knuth_bw_selector']
-
-
 import scipy.integrate
 import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
-
-def epanechnikov(kern_len, pos):
-    kernel = np.array(kern_len)
-    samp = []
-    ind_toss = np.arange(0,len(kernel),1)
-    n_samp = len(kernel)
-    while len(ind_toss) > 0:
-        a_samp = np.random.uniform(-1,1,len(kernel))
-        a_samp = np.array(kernel)*a_samp
-        a_eval = 3/(4*kernel[ind_toss])*(1-(a_samp[ind_toss])**2/kernel[ind_toss]**2)
-        a_test = np.random.uniform(0,1,len(ind_toss))
-        a_test = a_test*(3/(4*kernel[ind_toss]))
-        ind_keep, = np.where(a_eval/a_test <= 1)
-        if len(ind_keep >0):
-            samp.extend(a_samp[ind_keep])
-        
-        ind_toss, = np.where(a_eval/a_test > 1)
-    return np.array(samp + pos)
-
 
 def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
