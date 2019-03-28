@@ -592,17 +592,14 @@ class MultiDim:
             formation rate over the age of the MW disk: component_age [Myr]
             'burst' assigns an evolution time assuming a burst of constant
             star formation for 1Gyr starting at component_age [Myr] in the past
-            'delta_burst' assigns a t=0 evolution time until component age
-            'FIRE' assigns evolution time and metallicity according to m12i 
+            'delta_burst' assignes a t=0 evolution time until component age
             Default: 'const'
         component_age : float
             age of the Galactic component [Myr]
             Default: 10000.0
-            Deprecated if SFH_model='FIRE'
         met : float
             metallicity of the population [Z_sun = 0.02]
             Default: 0.02
-            Deprecated if SFH_model='FIRE'
         size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
@@ -626,10 +623,6 @@ class MultiDim:
         elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
-            return tphys, metallicity
-        elif SFH_model=='FIRE':
-            import cosmic.FIRE as FIRE
-            tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
 
     def set_kstar(self, mass):
