@@ -76,6 +76,9 @@ def parse_commandline():
                         help="Number of binaries to try before checking for "
                         "convergence, it will check ever Nstep binaries until "
                         "it reach Niter binaries", type=int, default=10000)
+    parser.add_argument("--match", 
+                        help="Match value for convergence tests", 
+                        type=float, default=-5.0)
     parser.add_argument("-n", "--nproc",
                         help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False,
@@ -229,7 +232,7 @@ if __name__ == '__main__':
     initC_filter = pd.DataFrame()
     bpp_filter = pd.DataFrame()
 
-    while (Nstep < args.Niter) & (np.max(np.array(match_all)) > -6):
+    while (Nstep < args.Niter) & (np.max(np.array(match_all)) > args.match):
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
@@ -301,12 +304,12 @@ if __name__ == '__main__':
             dat_store.append('initCond', initC_filter)
 
             # perform the convergence
-            match_all = Match.perform_convergence(args.convergence_params, filters['binary_state'],\
+            match = Match.perform_convergence(args.convergence_params, filters['binary_state'],\
                                                   convergence, bcm_save, bcm_filter, bpp_save,\
                                                   kstar1_range, kstar2_range, log_file)
  
-            if len(match_all) > 1:
-                match_all = np.reshape(match_all, (-1,len(args.convergence_params)))
+            if (len(match) > 1):
+                match_all = np.reshape(match, (-1,len(args.convergence_params)))
                 match_save = pd.DataFrame(np.atleast_2d(match_all), columns = args.convergence_params)
                 dat_store.append('match', match_save)
       
