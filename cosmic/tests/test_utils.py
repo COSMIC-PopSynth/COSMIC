@@ -27,17 +27,14 @@ wrong_dict = {'test_wrong_dict' : False}
 alive_dict = {'mass_transfer_white_dwarf_to_co' : True, 
              'select_final_state' : True,
              'binary_state' : [0],
-             'merger_type' : [-1],
              'lisa_sources' : True}
 noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
                'select_final_state' : True,
                'binary_state' : [0],
-               'merger_type' : [-1],
                'lisa_sources' : False}
 false_dict = {'mass_transfer_white_dwarf_to_co' : False,
              'select_final_state' : False,
              'binary_state' : [0,1,2],
-             'merger_type' : [-1,100],
              'lisa_sources' : False}
 conv_dict_true = {'lisa_convergence' : True}
 conv_dict_false = {'lisa_convergence' : False}
@@ -56,7 +53,6 @@ BW_KNUTH = 0.333
 _KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
                   'select_final_state',
                   'binary_state',
-                  'merger_type',
                   'lisa_sources']
 
 
