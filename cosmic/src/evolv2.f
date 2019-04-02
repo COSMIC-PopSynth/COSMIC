@@ -4,9 +4,9 @@
      \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,
      \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
-     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,
-     \ sigmatmp,bhsigmafractmp,polar_kick_angletmp,natal_kick_array,
-     \ qcrit_array,betatmp,xitmp,
+     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsnptmp,ecsn_mlowtmp,aictmp,
+     \ sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
+     \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
@@ -210,17 +210,18 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(80,15)
+      REAL*8 bppout(1000,15)
       REAL*8 bcmout(50000,42)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
       REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
+      REAL*8 ecsnptmp,ecsn_mlowtmp,sigmadivtmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,mergertmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
-      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp
+      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
@@ -238,7 +239,11 @@ Cf2py intent(out) bppout,bcmout
       pts1 = pts1tmp
       pts2 = pts2tmp
       pts3 = pts3tmp
+      ecsnp = ecsnptmp
+      ecsn_mlow = ecsn_mlowtmp
+      aic = aictmp
       sigma = sigmatmp
+      sigmadiv = sigmadivtmp
       bhsigmafrac = bhsigmafractmp
       polar_kick_angle = polar_kick_angletmp
       beta = betatmp
@@ -295,11 +300,7 @@ Cf2py intent(out) bppout,bcmout
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
       wdwdedd = 0 !Have not introduced yet but will. if set to 1 forces WD dynamical MT to be limited by eddington rate.
       eddlim = 1 !Have not introduced yet but will.if = 0 then BSE version, only H limit, else StarTrack version.
-      ecsnp = 2.5d0 !>0 turns on ECSN and also sets maximum ECSN kick mass range (mass at SN, bse=st=2.25, pod=2.5)
-      ecsn_mlow = 1.6d0 ! low end of ECSN mass range, BSE=1.6, Pod=1.4, StarTrack=1.85.
       sigmahold = sigma !Captures original sigma so after ECSN we can reset it.
-      sigmadiv = -20.d0! negative sets ECSN sigma, positive devides into old sigma.
-      aic = 1 !set to 1 for inclusion of AIC low kicks (even if ecsnp = 0)
       betahold = beta !memory for wind mass loss factor.
       htpmb = 1 !zero = htpmb, 1 = Ivanova & Taam 2002 method which kicks in later than the standard
       ST_cr = 1 !sets which convective/radiative boundary to use, 0=old, 1=startrack.
@@ -632,7 +633,7 @@ Cf2py intent(out) bppout,bcmout
             lacc = lacc/lumin(j1)
             if((lacc.gt.0.01d0.and..not.bsymb).or.
      &         (lacc.lt.0.01d0.and.bsymb))then
-               jp = MIN(80,jp + 1)
+               jp = MIN(1000,jp + 1)
                bpp(jp,1) = tphys
                bpp(jp,2) = mass(1)
                bpp(jp,3) = mass(2)
@@ -1540,7 +1541,7 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
-            jp = MIN(80,jp + 1)
+            jp = MIN(1000,jp + 1)
             bpp(jp,1) = tphys
             bpp(jp,2) = mass(1)
             bpp(jp,3) = mass(2)
@@ -1594,7 +1595,7 @@ Cf2py intent(out) bppout,bcmout
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -1800,7 +1801,7 @@ Cf2py intent(out) bppout,bcmout
       if(tphys.ge.tphysf.and.intpol.eq.0) goto 140
       if(change)then
          change = .false.
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -1878,7 +1879,7 @@ Cf2py intent(out) bppout,bcmout
       radx(j1) = MAX(radc(j1),rol(j1))
       radx(j2) = rad(j2)
 *
-      jp = MIN(80,jp + 1)
+      jp = MIN(1000,jp + 1)
       bpp(jp,1) = tphys
       bpp(jp,2) = mass(1)
       bpp(jp,3) = mass(2)
@@ -2154,7 +2155,7 @@ Cf2py intent(out) bppout,bcmout
             theta_bcm=bkick(20)
          endif
 *
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
@@ -2460,7 +2461,7 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  jp = MIN(80,jp + 1)
+                  jp = MIN(1000,jp + 1)
                   bpp(jp,1) = tphys
                   bpp(jp,2) = mass(j1)
                   bpp(jp,3) = mt2
@@ -2529,7 +2530,7 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  jp = MIN(80,jp + 1)
+                  jp = MIN(1000,jp + 1)
                   bpp(jp,1) = tphys
                   bpp(jp,2) = mass(j1)
                   bpp(jp,3) = mt2
@@ -3235,7 +3236,7 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
-            jp = MIN(80,jp + 1)
+            jp = MIN(1000,jp + 1)
             bpp(jp,1) = tphys
             bpp(jp,2) = mass(1)
             bpp(jp,3) = mass(2)
@@ -3350,7 +3351,7 @@ Cf2py intent(out) bppout,bcmout
 *
       if(change)then
          change = .false.
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -3386,7 +3387,7 @@ Cf2py intent(out) bppout,bcmout
          iter = iter + 1
          goto 8
       else
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          bpp(jp,3) = mass(2)
@@ -3429,7 +3430,7 @@ Cf2py intent(out) bppout,bcmout
       rrl1 = MIN(999.999d0,rad(1)/rol(1))
       rrl2 = MIN(999.999d0,rad(2)/rol(2))
 *
-      jp = MIN(80,jp + 1)
+      jp = MIN(1000,jp + 1)
       bpp(jp,1) = tphys
       bpp(jp,2) = mass(1)
       bpp(jp,3) = mass(2)
@@ -3531,7 +3532,7 @@ Cf2py intent(out) bppout,bcmout
       endif
 
       if(com)then
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
@@ -3607,7 +3608,7 @@ Cf2py intent(out) bppout,bcmout
          if(com)then
             com = .false.
          else
-            jp = MIN(80,jp + 1)
+            jp = MIN(1000,jp + 1)
             bpp(jp,1) = tphys
             bpp(jp,2) = mass(1)
             if(kstar(1).eq.15) bpp(jp,2) = mass0(1)
@@ -3682,7 +3683,7 @@ Cf2py intent(out) bppout,bcmout
       if(com)then
          com = .false.
       else
-         jp = MIN(80,jp + 1)
+         jp = MIN(1000,jp + 1)
          bpp(jp,1) = tphys
          bpp(jp,2) = mass(1)
          if(kstar(1).eq.15.and.bpp(jp-1,4).lt.15.0)then
@@ -3821,7 +3822,7 @@ Cf2py intent(out) bppout,bcmout
       endif
       tb = tb*yeardy
 
-      if(jp.ge.80)then
+      if(jp.ge.1000)then
          WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
 *         STOP
