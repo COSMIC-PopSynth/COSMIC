@@ -1,6 +1,6 @@
 ***
       SUBROUTINE zcnsts(z,zpars)
-* 
+*
       implicit none
       integer kw
 *
@@ -23,7 +23,7 @@
 *
 *      zpars:  1; M below which hook doesn't appear on MS, Mhook.
 *              2; M above which He ignition occurs non-degenerately, Mhef.
-*              3; M above which He ignition occurs on the HG, Mfgb. 
+*              3; M above which He ignition occurs on the HG, Mfgb.
 *              4; M below which C/O ignition doesn't occur, Mup.
 *              5; M above which C ignites in the centre, Mec.
 *              6; value of log D for M<= zpars(3)
@@ -71,7 +71,7 @@
       msp(14) = xz(62)+lzs*(xz(63)+lzs*(xz(64)+lzs*(xz(65)+lzs*xz(66))))
       msp(15) = xz(67)+lzs*(xz(68)+lzs*(xz(69)+lzs*(xz(70)+lzs*xz(71))))
       msp(16) = xz(72)+lzs*(xz(73)+lzs*(xz(74)+lzs*(xz(75)+lzs*xz(76))))
-* Tbgb 
+* Tbgb
       msp(17) = xt(1)+lzs*(xt(2)+lzs*(xt(3)+lzs*xt(4)))
       msp(18) = xt(5)+lzs*(xt(6)+lzs*(xt(7)+lzs*xt(8)))
       msp(19) = xt(9)+lzs*(xt(10)+lzs*(xt(11)+lzs*xt(12)))
@@ -88,7 +88,7 @@
       msp(24) = xt(23)+lzs*(xt(24)+lzs*(xt(25)+lzs*xt(26)))
       msp(25) = xt(27)+lzs*(xt(28)+lzs*(xt(29)+lzs*xt(30)))
       msp(26) = xt(31)
-* Ltms 
+* Ltms
       msp(27) = xl(1)+lzs*(xl(2)+lzs*(xl(3)+lzs*(xl(4)+lzs*xl(5))))
       msp(28) = xl(6)+lzs*(xl(7)+lzs*(xl(8)+lzs*(xl(9)+lzs*xl(10))))
       msp(29) = xl(11)+lzs*(xl(12)+lzs*(xl(13)+lzs*xl(14)))
@@ -204,7 +204,7 @@
       else
          msp(97) = 20.d0
       endif
-* Lbgb 
+* Lbgb
       gbp(1) = xg(1)+lzs*(xg(2)+lzs*(xg(3)+lzs*xg(4)))
       gbp(2) = xg(5)+lzs*(xg(6)+lzs*(xg(7)+lzs*xg(8)))
       gbp(3) = xg(9)+lzs*(xg(10)+lzs*(xg(11)+lzs*xg(12)))
@@ -374,7 +374,7 @@
 * set constant for low-mass CHeB stars
       zpars(13) = rminf(zpars(2))/
      &            rgbf(zpars(2),lzahbf(zpars(2),zpars(9),zpars(2)))
-* 
+*
       zpars(14) = z**0.4d0
 *
       return

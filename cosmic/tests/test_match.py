@@ -27,4 +27,4 @@ class TestMatch(unittest2.TestCase):
         match, bin_width = Match.match(dataCm)
         self.assertAlmostEqual(match,MATCH_TEST)
 
-        
+

@@ -31,7 +31,7 @@
 * incorporate corrections.
 * Fully revised on 1st April 1998 to include new stellar evolution formulae
 * and associated binary evolution changes.
-* Fully revised on 4th July 1998 to include eccentricity, tidal 
+* Fully revised on 4th July 1998 to include eccentricity, tidal
 * circularization, wind accretion, velocity kicks for supernovae and all
 * associated orbital momentum changes.
 *
@@ -39,79 +39,79 @@
 *
 * See Tout et al., 1997, MNRAS, 291, 732 for a description of many of the
 * processes in this code as well as the relevant references mentioned
-* within the code. 
+* within the code.
 *
-* Reference for the stellar evolution formulae is Hurley, Pols & Tout, 
-* 2000, MNRAS, 315, 543 (SSE paper).  
-* Reference for the binary evolution algorithm is Hurley, Tout & Pols, 
-* 2002, MNRAS, 329, 897 (BSE paper). 
+* Reference for the stellar evolution formulae is Hurley, Pols & Tout,
+* 2000, MNRAS, 315, 543 (SSE paper).
+* Reference for the binary evolution algorithm is Hurley, Tout & Pols,
+* 2002, MNRAS, 329, 897 (BSE paper).
 *
 ***
 *
 * March 2001 *
-* Changes since version 3, i.e. since production of Paper3:  
+* Changes since version 3, i.e. since production of Paper3:
 *
-* 1) The Eddington limit flag (on/off) has been replaced by an 
-*    Eddington limit multiplicative factor (eddfac). So if you 
-*    want to neglect the Eddington limit you would set eddfac 
-*    to a large value. 
+* 1) The Eddington limit flag (on/off) has been replaced by an
+*    Eddington limit multiplicative factor (eddfac). So if you
+*    want to neglect the Eddington limit you would set eddfac
+*    to a large value.
 *
-* 2) To determine whether material transferred during RLOF forms 
-*    an accretion disk around the secondary or hits the secondary 
-*    in a direct stream we calculate a minimum radial distance, rmin, 
-*    of the mass stream from the secondary. This is taken from eq.(1) 
-*    of Ulrich & Burger (1976, ApJ, 206, 509) which they fitted to 
+* 2) To determine whether material transferred during RLOF forms
+*    an accretion disk around the secondary or hits the secondary
+*    in a direct stream we calculate a minimum radial distance, rmin,
+*    of the mass stream from the secondary. This is taken from eq.(1)
+*    of Ulrich & Burger (1976, ApJ, 206, 509) which they fitted to
 *    the calculations of Lubow & Shu (1974, ApJ, 198, 383).
-*    If rmin is less than the radius of the secondary then an 
-*    accretion disk is not formed. 
-*    Note that the formula for rmin given by Ulrich & Burger is valid 
-*    for all q whereas that given by Nelemans et al. (2001, A&A, 
-*    submitted) in their eq.(6) is only valid for q < 1 where 
-*    they define q = Mdonor/Maccretor, i.e. DD systems. 
+*    If rmin is less than the radius of the secondary then an
+*    accretion disk is not formed.
+*    Note that the formula for rmin given by Ulrich & Burger is valid
+*    for all q whereas that given by Nelemans et al. (2001, A&A,
+*    submitted) in their eq.(6) is only valid for q < 1 where
+*    they define q = Mdonor/Maccretor, i.e. DD systems.
 *
-* 3) The changes to orbital and spin angular momentum owing to 
-*    RLOF mass transfer have been improved, and an new input option 
-*    now exists. 
-*    When mass is lost from the system during RLOF there are now 
-*    three choices as to how the orbital angular momentum is 
-*    affected: a) the lost material carries with it a fraction 
-*    gamma of the orbital angular momentum, i.e. 
-*    dJorb = gamma*dm*a^2*omega_orb; b) the material carries with it 
+* 3) The changes to orbital and spin angular momentum owing to
+*    RLOF mass transfer have been improved, and an new input option
+*    now exists.
+*    When mass is lost from the system during RLOF there are now
+*    three choices as to how the orbital angular momentum is
+*    affected: a) the lost material carries with it a fraction
+*    gamma of the orbital angular momentum, i.e.
+*    dJorb = gamma*dm*a^2*omega_orb; b) the material carries with it
 *    the specific angular momentum of the primary, i.e.
-*    dJorb = dm*a_1^2*omega_orb; or c) assume the material is lost 
+*    dJorb = dm*a_1^2*omega_orb; or c) assume the material is lost
 *    from the system as if a wind from the secondary, i.e.
-*    dJorb = dm*a_2^2*omega_orb. 
-*    The parameter gamma is an input option. 
-*    Choice c) is used if the mass transfer is super-Eddington 
-*    or the system is experiencing novae eruptions. 
-*    In all other cases choice a) is used if gamma > 0.0, b) if 
-*    gamma = -1.0 and c) is used if gamma = -2.0. 
-*    The primary spin angular momentum is reduced by an amount 
-*    dm1*r_1^2*omega_1 when an amount of mass dm1 is transferred 
-*    from the primary. 
-*    If the secondary accretes through a disk then its spin 
-*    angular momentum is altered by assuming that the material 
-*    falls onto the star from the inner edge of a Keplerian 
-*    disk and that the system is in a steady state, i.e. 
-*    an amount dm2*SQRT(G*m_2*r_2). 
-*    If there is no accretion disk then we calculate the angular 
-*    momentum of the transferred material by using the radius at 
-*    at which the disk would have formed (rdisk = 1.7*rmin, see 
-*    Ulrich & Burger 1976) if allowed, i.e. the angular momentum 
-*    of the inner Lagrangian point, and add this directly to 
-*    the secondary, i.e. an amount dm2*SQRT(G*m_2*rdisk). 
-*    Total angular momentum is conserved in this model. 
+*    dJorb = dm*a_2^2*omega_orb.
+*    The parameter gamma is an input option.
+*    Choice c) is used if the mass transfer is super-Eddington
+*    or the system is experiencing novae eruptions.
+*    In all other cases choice a) is used if gamma > 0.0, b) if
+*    gamma = -1.0 and c) is used if gamma = -2.0.
+*    The primary spin angular momentum is reduced by an amount
+*    dm1*r_1^2*omega_1 when an amount of mass dm1 is transferred
+*    from the primary.
+*    If the secondary accretes through a disk then its spin
+*    angular momentum is altered by assuming that the material
+*    falls onto the star from the inner edge of a Keplerian
+*    disk and that the system is in a steady state, i.e.
+*    an amount dm2*SQRT(G*m_2*r_2).
+*    If there is no accretion disk then we calculate the angular
+*    momentum of the transferred material by using the radius at
+*    at which the disk would have formed (rdisk = 1.7*rmin, see
+*    Ulrich & Burger 1976) if allowed, i.e. the angular momentum
+*    of the inner Lagrangian point, and add this directly to
+*    the secondary, i.e. an amount dm2*SQRT(G*m_2*rdisk).
+*    Total angular momentum is conserved in this model.
 *
-* 4) Now using q_crit = 3.0 for MS-MS Roche systems (previously we 
-*    had nothing). This corresponds roughly to R proportional to M^5 
-*    which should be true for the majority of the MS (varies from 
-*    (M^17 -> M^2). If q > q_crit then contact occurs. 
-*    For CHeB primaries we also take q_crit = 3.0 and allow 
-*    common-envelope to occur if this is exceeded. 
+* 4) Now using q_crit = 3.0 for MS-MS Roche systems (previously we
+*    had nothing). This corresponds roughly to R proportional to M^5
+*    which should be true for the majority of the MS (varies from
+*    (M^17 -> M^2). If q > q_crit then contact occurs.
+*    For CHeB primaries we also take q_crit = 3.0 and allow
+*    common-envelope to occur if this is exceeded.
 *
-* 5) The value of lambda used in calculations of the envelope binding 
-*    energy for giants in common-envelope is now variable (see function 
-*    in zfuncs). The lambda function has been fitted by Onno to detailed 
+* 5) The value of lambda used in calculations of the envelope binding
+*    energy for giants in common-envelope is now variable (see function
+*    in zfuncs). The lambda function has been fitted by Onno to detailed
 *    models ... he will write about this soon!
 *
 * 6) Note that eq.42 in the paper is missing a SQRT around the
@@ -120,36 +120,36 @@
 *    It is ok in the code.
 *
 * March 2003 *
-* New input options added:  
+* New input options added:
 *
-*    ifflag - for the mass of a WD you can choose to use the mass that 
+*    ifflag - for the mass of a WD you can choose to use the mass that
 *             results from the evolution algorithm (basically a competition
-*             between core-mass growth and envelope mass-loss) or use the IFMR 
+*             between core-mass growth and envelope mass-loss) or use the IFMR
 *             proposed by Han, Podsiadlowski & Eggleton, 1995, MNRAS, 272, 800
-*             [>0 activates HPE IFMR]. 
+*             [>0 activates HPE IFMR].
 *
-*    wdflag - for the cooling of WDs you can choose to use either the standard 
-*             Mestel cooling law (see SSE paper) or a modified-Mestel law that 
-*             is better matched to detailed models (provided by Brad Hansen 
-*             ... see Hurley & Shara, 2003, ApJ, May 20, in press) 
-*             [>0 activates modified-Mestel]. 
+*    wdflag - for the cooling of WDs you can choose to use either the standard
+*             Mestel cooling law (see SSE paper) or a modified-Mestel law that
+*             is better matched to detailed models (provided by Brad Hansen
+*             ... see Hurley & Shara, 2003, ApJ, May 20, in press)
+*             [>0 activates modified-Mestel].
 *
-*    bhflag - choose whether or not black holes should get velocity kicks 
-*             at formation 
-*             [0= no kick; >0 kick]. 
+*    bhflag - choose whether or not black holes should get velocity kicks
+*             at formation
+*             [0= no kick; >0 kick].
 *
-*    nsflag - for the mass of neutron stars and black holes you can use either 
-*             the SSE prescription or the prescription presented by 
-*             Belczynski et al. 2002, ApJ, 572, 407 who found that SSE was 
-*             underestimating the masses of these stars. In either case you also 
-*             need to set the maximum NS mass (mxns) for the prescription  
+*    nsflag - for the mass of neutron stars and black holes you can use either
+*             the SSE prescription or the prescription presented by
+*             Belczynski et al. 2002, ApJ, 572, 407 who found that SSE was
+*             underestimating the masses of these stars. In either case you also
+*             need to set the maximum NS mass (mxns) for the prescription
 *             [0= SSE, mxns=1.8; >0 Belczynski, mxns=3.0].
 *
 * Sept 2004 *
 * Input options added/changed:
 *
-*    ceflag - set to 3 this uses de Kool (or Podsiadlowski) CE prescription, 
-*             other options, such as Yungelson, could be added as well. 
+*    ceflag - set to 3 this uses de Kool (or Podsiadlowski) CE prescription,
+*             other options, such as Yungelson, could be added as well.
 *
 *    hewind - factor to control the amount of He star mass-loss, i.e.
 *             1.0e-13*hewind*L^(2/3) gives He star mass-loss.
@@ -274,7 +274,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Save the initial state.
 *
-     
+
 *      CE2flag = 0
       mass(1) = mass1
       mass(2) = mass2
@@ -318,7 +318,7 @@ Cf2py intent(out) bppout,bcmout
 * at periastron, and circularisation and synchronisation at start of MT).
       Kconst = 2.5d-52
       Bbot = 5e+7 !100.d0 or ~d+07.
-      b_mdot_lim = -1.0e-11 !limiting accretion induced field decay with mdot as a proxy for 
+      b_mdot_lim = -1.0e-11 !limiting accretion induced field decay with mdot as a proxy for
 *                           accretion temperature and number of impurities.
       xihold = xi
       xip = 1 !1 is on, 0 is off; for modified NS wind ang. mom. accretion.
@@ -329,7 +329,7 @@ Cf2py intent(out) bppout,bcmout
       mergemsp = 1 !if set to 1 any NS that merges with another star where the NS is an MSP stays an MSP...
       merge_mem = 0
       output = .false.  ! .true. turns on, .false. turns off.
-*                       WARNING: can fill up the output file very quickly. 
+*                       WARNING: can fill up the output file very quickly.
 *                       With N=2e6 .stdout was 3.2 GB in 6 mins. If needed you can
 *                       be more selective with outputting, but must add this yourself!
 *      if(id1_pass.eq.1)then!.and.tphysf.gt.17.50d0.and.
@@ -340,7 +340,7 @@ Cf2py intent(out) bppout,bcmout
 * Initialize the parameters.
 *
 
-      tphys = 0.d0 
+      tphys = 0.d0
       bpp = 0.d0
       bcm = 0.d0
       bppout = 0.d0
@@ -354,7 +354,7 @@ Cf2py intent(out) bppout,bcmout
 
       tacc(1) = 0.d0
       tacc(2) = 0.d0
-  
+
       tms(1) = 0.0
       tms(2) = 0.0
 
@@ -373,7 +373,7 @@ Cf2py intent(out) bppout,bcmout
       menv(1) = 0.0
       renv(1) = 0.0
       ospin(1) = 0.0
-  
+
       mass0(2) = mass(2)
       massc(2) = 0.0
       ospin(2) = 0.0
@@ -394,7 +394,7 @@ Cf2py intent(out) bppout,bcmout
 
 
 *
-* Set the seed for the random number generator. 
+* Set the seed for the random number generator.
 *
 *      idum = INT(sep*100)
       if(idum.gt.0) idum = -idum
@@ -665,14 +665,14 @@ Cf2py intent(out) bppout,bcmout
          omecc2 = 1.d0 - ecc2
          sqome2 = SQRT(omecc2)
 *
-         djorb = ((dmr(1)+q(1)*dmt(1))*mass(2)*mass(2) + 
+         djorb = ((dmr(1)+q(1)*dmt(1))*mass(2)*mass(2) +
      &            (dmr(2)+q(2)*dmt(2))*mass(1)*mass(1))*
      &           sep*sep*sqome2*oorb/(mass(1)+mass(2))**2
          delet = ecc*(dmt(1)*(0.5d0/mass(1) + 1.d0/(mass(1)+mass(2))) +
      &                dmt(2)*(0.5d0/mass(2) + 1.d0/(mass(1)+mass(2))))
 *
-* For very close systems include angular momentum loss owing to 
-* gravitational radiation. 
+* For very close systems include angular momentum loss owing to
+* gravitational radiation.
 *
          if(sep.le.100000.d0)then
             djgr = 8.315d-10*mass(1)*mass(2)*(mass(1)+mass(2))/
@@ -714,7 +714,7 @@ Cf2py intent(out) bppout,bcmout
 *                 H-rich HG and CHeB temperature limit
                   convradcomp(k) = 10.d0**3.73d0
                elseif(kstar(k).le.6)then
-*                 No limit or all other giant stars 
+*                 No limit or all other giant stars
 *                 (compare this large value to mass).
                   convradcomp(k) = 99999999.d0
                elseif(kstar(k).eq.9)then
@@ -733,7 +733,7 @@ Cf2py intent(out) bppout,bcmout
                if(xip.eq.1)then
 * Modify spin angular momentum accretion according to Ruffert (1999)
 * or magnetic field strength limit tested (but by no means established - in fact it
-* is likely to change, especially when propeller and ablation are implemented) 
+* is likely to change, especially when propeller and ablation are implemented)
 * in Kiel et al. (2008).
                   if(B(k).gt.0.d0)then
                      xi = MIN(1.d0,(0.01d0*(2.0d+11/B(k)))+0.01d0)
@@ -756,9 +756,9 @@ Cf2py intent(out) bppout,bcmout
      &                       (dmr(k)*rad(k)*rad(k)*ospin(k)) - djtx(k)
             endif
 *
-* Include magnetic braking for stars that have appreciable convective 
-* envelopes. This includes MS stars with M < 1.25, HG stars near the GB 
-* and giants. MB is not allowed for fully convective MS stars. 
+* Include magnetic braking for stars that have appreciable convective
+* envelopes. This includes MS stars with M < 1.25, HG stars near the GB
+* and giants. MB is not allowed for fully convective MS stars.
 *
 *            if(mass(k).gt.0.35d0.and.kstar(k).lt.10)then
 *               djmb = 5.83d-16*menv(k)*(rad(k)*ospin(k))**3/mass(k)
@@ -766,9 +766,9 @@ Cf2py intent(out) bppout,bcmout
 *
 *            if(mass(k).gt.0.35d0.and.kstar(k).lt.10.and.
 *     &              menv(k).gt.0.0d0)then
-*              if (ospin(k) .le. wx) djmb = kw3 * rad(k)**4.0d0 * 
+*              if (ospin(k) .le. wx) djmb = kw3 * rad(k)**4.0d0 *
 *     &              (ospin(k)/wsun)**3.0d0
-*              if (ospin(k) .gt. wx) djmb = kw3 * rad(k)**4.0d0 * 
+*              if (ospin(k) .gt. wx) djmb = kw3 * rad(k)**4.0d0 *
 *     &             (ospin(k)/wsun)**1.3d0 * (wx/wsun)**1.7d0
 *              djspint(k) = djspint(k) + djmb
             djmb = 0.d0
@@ -803,10 +803,10 @@ Cf2py intent(out) bppout,bcmout
                   djspint(k) = djspint(k) + djmb
                endif
             endif
-* Limit to a 3% angular momentum change for the star owing to MB. 
-* This is found to work best with the maximum iteration of 20000, 
-* i.e. does not create an excessive number of iterations, while not 
-* affecting the evolution outcome when compared with a 2% restriction.  
+* Limit to a 3% angular momentum change for the star owing to MB.
+* This is found to work best with the maximum iteration of 20000,
+* i.e. does not create an excessive number of iterations, while not
+* affecting the evolution outcome when compared with a 2% restriction.
 *
             if(djmb.gt.tiny)then
                dtj = 0.03d0*jspin(k)/ABS(djmb)
@@ -930,12 +930,12 @@ Cf2py intent(out) bppout,bcmout
      &                     (f2*oorb - sqome3*f5*ospin(k))
                if(output) write(*,*)'502 3:',k,dspint(k),tcqr
 *
-* Calculate the equilibrium spin at which no angular momentum 
+* Calculate the equilibrium spin at which no angular momentum
 * can be transferred.
 *
                eqspin = oorb*f2/(sqome3*f5)
 *
-* Calculate angular momentum change for the star owing to tides. 
+* Calculate angular momentum change for the star owing to tides.
 *
                djt = (k2str(k)*(mass(k)-massc(k))*rad(k)*rad(k) +
      &                k3*massc(k)*radc(k)*radc(k))*dspint(k)
@@ -947,7 +947,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Limit to 2% orbital angular momentum change.
 *
-         djtt = djtt + djorb 
+         djtt = djtt + djorb
          if(ABS(djtt).gt.tiny)then
             dtj = 0.02d0*jorb/ABS(djtt)
             dt = MIN(dt,dtj)
@@ -995,7 +995,7 @@ Cf2py intent(out) bppout,bcmout
 *                 H-rich HG and CHeB temperature limit
                   convradcomp(k) = 10.d0**3.73d0
                elseif(kstar(k).le.6)then
-*                 No limit or all other giant stars 
+*                 No limit or all other giant stars
 *                 (compare this large value to mass).
                   convradcomp(k) = 99999999.d0
                elseif(kstar(k).eq.9)then
@@ -1008,9 +1008,9 @@ Cf2py intent(out) bppout,bcmout
 *               djspint(k) = djspint(k) + djmb
 *             if(mass(k).gt.0.35d0.and.kstar(k).lt.10.and.
 *     &              menv(k).gt.0.0d0)then
-*                if (ospin(k) .le. wx) djmb = kw3 * rad(k)**4.0d0 * 
+*                if (ospin(k) .le. wx) djmb = kw3 * rad(k)**4.0d0 *
 *     &              (ospin(k)/wsun)**3.0d0
-*                if (ospin(k) .gt. wx) djmb = kw3 * rad(k)**4.0d0 * 
+*                if (ospin(k) .gt. wx) djmb = kw3 * rad(k)**4.0d0 *
 *     &             (ospin(k)/wsun)**1.3d0 * (wx/wsun)**1.7d0
 *                djspint(k) = djspint(k) + djmb
 *
@@ -1123,8 +1123,8 @@ Cf2py intent(out) bppout,bcmout
 *
  504  continue
 *
-* Update mass and intrinsic spin (checking that the star is not spun 
-* past the equilibrium) and reset epoch for a MS (and possibly a HG) star. 
+* Update mass and intrinsic spin (checking that the star is not spun
+* past the equilibrium) and reset epoch for a MS (and possibly a HG) star.
 *
       do 505 , k = kmin,kmax
 *
@@ -1190,7 +1190,7 @@ Cf2py intent(out) bppout,bcmout
             endif
 * Update NS magnetic field owing to accretion, as a function of mass accreted. PK.
             if(kstar(k).eq.13.and.pulsar.eq.1)then
-               if(dms(k).lt.0.d0)then !negative dms is mass gained. 
+               if(dms(k).lt.0.d0)then !negative dms is mass gained.
 * When propeller ev. include .not.prop here...
                   b_mdot = dms(k)/dt
                   if(b_mdot_lim.gt.0.d0.and.b_mdot.gt.b_mdot_lim)then
@@ -1228,7 +1228,7 @@ Cf2py intent(out) bppout,bcmout
          dtm0 = dtm
       endif
       tphys = tphys + dtm
-    
+
       if(output) write(*,*)'time upd:',tsave, tphys,dtm,
      &                      kstar(1),kstar(2),ecc
 *
@@ -1321,7 +1321,7 @@ Cf2py intent(out) bppout,bcmout
                   sigma = ABS(merger)
                   fallback = 0.d0
                   if(merger.ge.200.d0)then!estimate CC SN
-*Sourav:Possible bug in the line above. merger should really be sigms!!              
+*Sourav:Possible bug in the line above. merger should really be sigms!!
 *                  if(sigma.ge.200.d0)then!estimate CC SN
                      formation(k) = 4
                   else
@@ -1403,7 +1403,7 @@ Cf2py intent(out) bppout,bcmout
                   mass(3-k) = 0.d0
                   coel = .true.
                   binstate = 1
-                  goto 135 
+                  goto 135
                endif
                if(ecc.gt.1.d0)then
                   kstar(k) = kw
@@ -1530,7 +1530,7 @@ Cf2py intent(out) bppout,bcmout
          tms(k) = tm
          tbgb(k) = tscls(1)
 *
-* Check for blue straggler formation. 
+* Check for blue straggler formation.
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
@@ -1668,7 +1668,7 @@ Cf2py intent(out) bppout,bcmout
             if(inttry) goto 7
             if(intpol.ge.100)then
                WRITE(99,*)' INTPOL EXCEEDED ',mass1i,mass2i,tbi,ecci
-               goto 140 
+               goto 140
             endif
             dr = rad(j1) - 1.001d0*rol(j1)
             if(ABS(rdot(j1)).lt.tiny.or.prec)then
@@ -1713,7 +1713,7 @@ Cf2py intent(out) bppout,bcmout
             if((tphys+dtm).ge.tphys00)then
 *
 * If this occurs then most likely the star is a high mass type 4
-* where the radius can change very sharply or possibly there is a 
+* where the radius can change very sharply or possibly there is a
 * discontinuity in the radius as a function of time and HRDIAG
 * needs to be checked!
 *
@@ -1853,10 +1853,10 @@ Cf2py intent(out) bppout,bcmout
       novae = .false.
       disk = .false.
 *
-* Determine whether the transferred material forms an accretion 
-* disk around the secondary or hits the secondary in a direct 
-* stream, by using eq.(1) of Ulrich & Burger (1976, ApJ, 206, 509) 
-* fitted to the calculations of Lubow & Shu (1974, ApJ, 198, 383). 
+* Determine whether the transferred material forms an accretion
+* disk around the secondary or hits the secondary in a direct
+* stream, by using eq.(1) of Ulrich & Burger (1976, ApJ, 206, 509)
+* fitted to the calculations of Lubow & Shu (1974, ApJ, 198, 383).
 *
 *     if(kstar(j2).ge.10) disk = .true.
       rmin = 0.0425d0*sep*(q(j2)*(1.d0+q(j2)))**(1.d0/4.d0)
@@ -1884,9 +1884,9 @@ Cf2py intent(out) bppout,bcmout
          qc = 4.d0
       elseif(kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6)then
 *        qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
-* Alternatively use condition of Hjellming & Webbink, 1987, ApJ, 318, 794. 
+* Alternatively use condition of Hjellming & Webbink, 1987, ApJ, 318, 794.
          qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
-* Or allow all cases to avoid common-envelope.  
+* Or allow all cases to avoid common-envelope.
 *        qc = 100.d0
       elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
          qc = 0.784d0
@@ -1975,7 +1975,7 @@ Cf2py intent(out) bppout,bcmout
 * The neutron star or black hole simply accretes at the Eddington rate.
 *
             dm2 = MIN(dme*taum/tb,dm1)
-            if(dm2.lt.dm1) supedd = .true. 
+            if(dm2.lt.dm1) supedd = .true.
             mass(j2) = mass(j2) + dm2
          endif
          coel = .true.
@@ -2006,13 +2006,13 @@ Cf2py intent(out) bppout,bcmout
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
-     &      kstar(j1).eq.13)then !PK. 
+     &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
             bkick(1) = 3-bkick(1)
          endif
          if(j1.eq.1.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
-     &      kstar(j1).eq.13)then !PK. 
+     &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
             bkick(1) = 3-bkick(1)
@@ -2086,7 +2086,7 @@ Cf2py intent(out) bppout,bcmout
          dm1 = mass(j1)
          if(eddfac.lt.10.d0)then
             dm2 = MIN(dme*taum/tb,dm1)
-            if(dm2.lt.dm1) supedd = .true. 
+            if(dm2.lt.dm1) supedd = .true.
          else
             dm2 = dm1
          endif
@@ -2094,16 +2094,16 @@ Cf2py intent(out) bppout,bcmout
 *
          if(kstar(j1).eq.10.and.kstar(j2).eq.10)then
 *
-* Assume the energy released by ignition of the triple-alpha reaction 
-* is enough to destroy the star. 
+* Assume the energy released by ignition of the triple-alpha reaction
+* is enough to destroy the star.
 *
             kstar(j2) = 15
             mass(j2) = 0.d0
          elseif(kstar(j1).eq.10.or.kstar(j2).eq.10)then
 *
-* Should be helium overflowing onto a CO or ONe core in which case the 
-* helium swells up to form a giant envelope so a HeGB star is formed. 
-* Allowance for the rare case of CO or ONe flowing onto He is made. 
+* Should be helium overflowing onto a CO or ONe core in which case the
+* helium swells up to form a giant envelope so a HeGB star is formed.
+* Allowance for the rare case of CO or ONe flowing onto He is made.
 *
             kst = 9
             if(kstar(j2).eq.10) massc(j2) = dm2
@@ -2114,15 +2114,15 @@ Cf2py intent(out) bppout,bcmout
             mass0(j2) = mass(j2)
             if(kstar(j1).eq.12.and.kstar(j2).eq.11)then
 *
-* Mixture of ONe and CO will result in an ONe product. 
+* Mixture of ONe and CO will result in an ONe product.
 *
                kstar(j2) = 12
             endif
             if(kstar(j1).eq.11.and.kstar(j2).eq.11)then !PK.
 *
 * Following Startrack of merger of two CO will result in an ONe or NS product
-* (depending upon mass, if kstar = 12 and mass > Mecsn then hrdiag will update 
-* accordingly). 
+* (depending upon mass, if kstar = 12 and mass > Mecsn then hrdiag will update
+* accordingly).
 *
                kstar(j2) = 12
             endif
@@ -2144,7 +2144,7 @@ Cf2py intent(out) bppout,bcmout
 *
 * Gamma ray burster?
 *
-         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype) 
+         CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          dm1 = mass(j1)
          mass(j1) = 0.d0
          kstar(j1) = 15
@@ -2182,8 +2182,8 @@ Cf2py intent(out) bppout,bcmout
          endif
          kst = kstar(j2)
 *
-* Possibly mass transfer needs to be reduced if primary is rotating 
-* faster than the orbit (not currently implemented). 
+* Possibly mass transfer needs to be reduced if primary is rotating
+* faster than the orbit (not currently implemented).
 *
 *        spnfac = MIN(3.d0,MAX(ospin(j1)/oorb,1.d0))
 *        dm1 = dm1/spnfac**2
@@ -2288,10 +2288,10 @@ Cf2py intent(out) bppout,bcmout
          dt = km*tb
          dtm = dt/1.0d+06
 *
-* Take the stellar evolution timestep into account but don't let it 
-* be overly restrictive for long lived phases. 
+* Take the stellar evolution timestep into account but don't let it
+* be overly restrictive for long lived phases.
 *
-         if(iter.le.1000) dtm = MIN(dtm,dtmi(1),dtmi(2)) 
+         if(iter.le.1000) dtm = MIN(dtm,dtmi(1),dtmi(2))
          dtm = MIN(dtm,tsave-tphys)
          dt = dtm*1.0d+06
          km = dt/tb
@@ -2299,7 +2299,7 @@ Cf2py intent(out) bppout,bcmout
 * Decide between accreted mass by secondary and/or system mass loss.
 *
          taum = mass(j2)/dm1*tb
-         if(kstar(j2).le.2.or.kstar(j2).eq.4)then 
+         if(kstar(j2).le.2.or.kstar(j2).eq.4)then
 *
 * Limit according to the thermal timescale of the secondary.
 *
@@ -2345,8 +2345,8 @@ Cf2py intent(out) bppout,bcmout
      &                          kstar1_bpp,kstar2_bpp,sep,
      &                          tb,ecc,rrl1,rrl2,bkick)
                endif
-            endif            
-         elseif(kstar(j1).le.6.and. 
+            endif
+         elseif(kstar(j1).le.6.and.
      &           (kstar(j2).ge.10.and.kstar(j2).le.12))then
 *
 * White dwarf secondary.
@@ -2356,9 +2356,9 @@ Cf2py intent(out) bppout,bcmout
 *
 * Accrete until a nova explosion blows away most of the accreted material.
 *
-                  novae = .true. 
+                  novae = .true.
                   dm2 = MIN(dm1,dme)
-                  if(dm2.lt.dm1) supedd = .true. 
+                  if(dm2.lt.dm1) supedd = .true.
                   dm22 = epsnov*dm2
                else
 *
@@ -2412,8 +2412,8 @@ Cf2py intent(out) bppout,bcmout
 * Impose the Eddington limit.
 *
             dm2 = MIN(dm1,dme)
-            if(dm2.lt.dm1) supedd = .true. 
-* Can add pulsar propeller evolution here if need be. PK. 
+            if(dm2.lt.dm1) supedd = .true.
+* Can add pulsar propeller evolution here if need be. PK.
 *
 *
          else
@@ -2437,13 +2437,13 @@ Cf2py intent(out) bppout,bcmout
                goto 135
             elseif(kstar(j1).le.10.and.kst.ge.11)then
 *
-* CO and ONeWDs accrete helium-rich material until the accumulated 
-* material exceeds a mass of 0.15 when it ignites. For a COWD with 
-* mass less than 0.95 the system will be destroyed as an ELD in a 
-* possible Type 1a SN. COWDs with mass greater than 0.95 and ONeWDs 
-* will survive with all the material converted to ONe (JH 30/09/99). 
+* CO and ONeWDs accrete helium-rich material until the accumulated
+* material exceeds a mass of 0.15 when it ignites. For a COWD with
+* mass less than 0.95 the system will be destroyed as an ELD in a
+* possible Type 1a SN. COWDs with mass greater than 0.95 and ONeWDs
+* will survive with all the material converted to ONe (JH 30/09/99).
 *
-** Now changed to an ELD for all COWDs when 0.15 accreted (JH 11/01/00).  
+** Now changed to an ELD for all COWDs when 0.15 accreted (JH 11/01/00).
 *
                if((mt2-mass0(j2)).ge.0.15d0)then
                   if(kst.eq.11)then
@@ -2488,13 +2488,13 @@ Cf2py intent(out) bppout,bcmout
      &           (mass(1)+mass(2))**2
          djorb = djorb*dt
 *
-* For super-Eddington mass transfer rates, for gamma = -2.0, 
-* and for novae systems, assume that material is lost from  
-* the system as if a wind from the secondary. 
-* If gamma = -1.0 then assume the lost material carries with it 
-* the specific angular momentum of the primary and for all 
-* gamma > 0.0 assume that it takes away a fraction gamma of 
-* the orbital angular momentum. 
+* For super-Eddington mass transfer rates, for gamma = -2.0,
+* and for novae systems, assume that material is lost from
+* the system as if a wind from the secondary.
+* If gamma = -1.0 then assume the lost material carries with it
+* the specific angular momentum of the primary and for all
+* gamma > 0.0 assume that it takes away a fraction gamma of
+* the orbital angular momentum.
 *
          if(supedd.or.novae.or.gamma.lt.-1.5d0)then
             djorb = djorb + (dm1 - dm22)*mass(j1)*mass(j1)/
@@ -2575,7 +2575,7 @@ Cf2py intent(out) bppout,bcmout
 *                 H-rich HG and CHeB temperature limit
                   convradcomp(k) = 10.d0**3.73d0
                elseif(kstar(k).le.6)then
-*                 No limit or all other giant stars 
+*                 No limit or all other giant stars
 *                 (compare this large value to mass).
                   convradcomp(k) = 9999999999.d0
                elseif(kstar(k).eq.9)then
@@ -2589,11 +2589,11 @@ Cf2py intent(out) bppout,bcmout
 *               djspint(k) = djspint(k) + djmb*dt
 *            if(mass(k).gt.0.35d0.and.kstar(k).lt.10.and.
 *     &              menv(k).gt.0.0d0)then
-*                if (ospin(k) .le. wx) djmb = kw3 * rad(k)**4.0d0 * 
+*                if (ospin(k) .le. wx) djmb = kw3 * rad(k)**4.0d0 *
 *     &              (ospin(k)/wsun)**3.0d0
-*                if (ospin(k) .gt. wx) djmb = kw3 * rad(k)**4.0d0 * 
+*                if (ospin(k) .gt. wx) djmb = kw3 * rad(k)**4.0d0 *
 *     &             (ospin(k)/wsun)**1.3d0 * (wx/wsun)**1.7d0
-*                djspint(k) = djspint(k) + djmb               
+*                djspint(k) = djspint(k) + djmb
 *            endif
 * MB
             djmb = 0.d0
@@ -2660,8 +2660,8 @@ Cf2py intent(out) bppout,bcmout
 *
  602     continue
 *
-* Adjust the spin angular momentum of each star owing to mass transfer 
-* and conserve total angular momentum. 
+* Adjust the spin angular momentum of each star owing to mass transfer
+* and conserve total angular momentum.
 *
          djt = dm1*radx(j1)*radx(j1)*ospin(j1)
          djspint(j1) = djspint(j1) + djt
@@ -2672,30 +2672,30 @@ Cf2py intent(out) bppout,bcmout
 * falls onto the star from the inner edge of a Keplerian accretion
 * disk and that the system is in a steady state.
 *
-            djt = dm2*twopi*aursun*SQRT(aursun*mass(j2)*radx(j2)) 
-            djspint(j2) = djspint(j2) - djt 
+            djt = dm2*twopi*aursun*SQRT(aursun*mass(j2)*radx(j2))
+            djspint(j2) = djspint(j2) - djt
             djorb = djorb + djt
 *
          else
 *
-* No accretion disk. 
-* Calculate the angular momentum of the transferred material by 
-* using the radius of the disk (see Ulrich & Burger) that would 
-* have formed if allowed. 
+* No accretion disk.
+* Calculate the angular momentum of the transferred material by
+* using the radius of the disk (see Ulrich & Burger) that would
+* have formed if allowed.
 *
             rdisk = 1.7d0*rmin
-            djt = dm2*twopi*aursun*SQRT(aursun*mass(j2)*rdisk) 
+            djt = dm2*twopi*aursun*SQRT(aursun*mass(j2)*rdisk)
             djspint(j2) = djspint(j2) - djt
             djorb = djorb + djt
 *
          endif
          djtx(2) = djt
 *
-* Adjust the secondary spin if a nova eruption has occurred. 
+* Adjust the secondary spin if a nova eruption has occurred.
 *
          if(novae)then
-            djt = (dm2 - dm22)*radx(j2)*radx(j2)*ospin(j2) 
-            djspint(j2) = djspint(j2) + djt 
+            djt = (dm2 - dm22)*radx(j2)*radx(j2)*ospin(j2)
+            djspint(j2) = djspint(j2) + djt
             djtx(2) = djtx(2) - djt
          endif
 *
@@ -2730,7 +2730,7 @@ Cf2py intent(out) bppout,bcmout
 *                 H-rich HG and CHeB temperature limit
                   convradcomp(k) = 10.d0**3.73d0
                elseif(kstar(k).le.6)then
-*                 No limit or all other giant stars 
+*                 No limit or all other giant stars
 *                 (compare this large value to mass).
                   convradcomp(k) = 99999999.d0
                elseif(kstar(k).eq.9)then
@@ -2856,7 +2856,7 @@ Cf2py intent(out) bppout,bcmout
             endif
          endif
 *
-* For a HG star check if the initial mass can be reduced. 
+* For a HG star check if the initial mass can be reduced.
 *
          if(kstar(j1).eq.2.and.mass0(j1).le.zpars(3))then
             m0 = mass0(j1)
@@ -2883,8 +2883,8 @@ Cf2py intent(out) bppout,bcmout
 *
          if(ecc.ge.1.d0) goto 135
 *
-* Ensure that Jorb does not become negative which could happen if the 
-* primary overfills its Roche lobe initially. In this case we simply 
+* Ensure that Jorb does not become negative which could happen if the
+* primary overfills its Roche lobe initially. In this case we simply
 * allow contact to occur.
 *
          jorb = MAX(1.d0,jorb - djorb)
@@ -3076,7 +3076,7 @@ Cf2py intent(out) bppout,bcmout
          tms(k) = tm
          tbgb(k) = tscls(1)
 *
-* Check for blue straggler formation. 
+* Check for blue straggler formation.
 *
          if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
             bss = .true.
@@ -3225,13 +3225,13 @@ Cf2py intent(out) bppout,bcmout
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
-     &      kstar(j1).eq.13)then !PK. 
+     &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
             bkick(1) = 3-bkick(1)
          endif
          if(j1.eq.1.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
-     &      kstar(j1).eq.13)then !PK. 
+     &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
             bkick(1) = 3-bkick(1)
@@ -3251,13 +3251,13 @@ Cf2py intent(out) bppout,bcmout
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
-     &      kstar(j2).eq.13)then !PK. 
+     &      kstar(j2).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j2) = formation(j1)
             bkick(1) = 3-bkick(1)
          endif
          if(j2.eq.1.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
-     &      kstar(j2).eq.13)then !PK. 
+     &      kstar(j2).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j2) = formation(j1)
             bkick(1) = 3-bkick(1)
@@ -3503,7 +3503,7 @@ Cf2py intent(out) bppout,bcmout
  145        continue
          endif
 *
-      
+
       elseif((kstar(1).eq.15.and.kstar(2).eq.15))then
          tphys = tphysf
          goto 135
@@ -3535,5 +3535,5 @@ Cf2py intent(out) bppout,bcmout
       bcmout = bcm
 *
 
-      END SUBROUTINE evolv2 
+      END SUBROUTINE evolv2
 ***

@@ -26,7 +26,7 @@
       mx = SQRT(m)
       rzamsf = ((a(8)*m**2 + a(9)*m**6)*mx + a(10)*m**11 +
      &          (a(11) + a(12)*mx)*m**19)/
-     &         (a(13) + a(14)*m**2 + 
+     &         (a(13) + a(14)*m**2 +
      &          (a(15)*m**8 + m**18 + a(16)*m**19)*mx)
 *
       return
@@ -91,7 +91,7 @@
       common /MSCFF/ a
 *
 * A function to evaluate the lifetime to the end of the MS
-* hook ( for those models that have one ) as a fraction of 
+* hook ( for those models that have one ) as a fraction of
 * the lifetime to the BGB
 * Note that this function is only valid for M > Mhook.
 * (JH 24/11/97)
@@ -112,7 +112,7 @@
 *
       ltmsf = (a(27)*m**3 + a(28)*m**4 + a(29)*m**(a(32)+1.8d0))/
      &        (a(30) + a(31)*m**5 + m**a(32))
-* 
+*
       return
       end
 ***
@@ -214,7 +214,7 @@
 *
 * A function to evaluate the radius at the end of the MS
 * Note that a safety check is added to ensure Rtms > Rzams
-* when extrapolating the function to low masses. 
+* when extrapolating the function to low masses.
 * (JH 24/11/97)
 *
       m2 = a(62) + 0.1d0
@@ -227,7 +227,7 @@
       else
          rtmsf = a(63) + ((a(64) - a(63))/0.1d0)*(m - a(62))
       endif
-* 
+*
       return
       end
 ***
@@ -343,14 +343,14 @@
       real*8 m,a(200)
       common /GBCFF/ a
 *
-* A function to evaluate the luminosity at the end of the 
+* A function to evaluate the luminosity at the end of the
 * FGB ( for those models that have one )
 * Note that this function is only valid for LM & IM stars
 * (JH 24/11/97)
 *
       lbgbf = (a(1)*m**a(5) + a(2)*m**a(8))/
      &        (a(3) + a(4)*m**a(7) + m**a(6))
-* 
+*
       return
       end
 ***
@@ -369,7 +369,7 @@
       dg = a(7)*a(4)*m**(a(7)-1.d0) + a(6)*m**(a(6)-1.d0)
 *
       lbgbdf = (df*g - f*dg)/(g*g)
-* 
+*
       return
       end
 ***
@@ -416,7 +416,7 @@
 * (JH 24/11/97)
 *
       a1 = MIN(a(20)/m**a(21),a(22)/m**a(23))
-      rgbdf = a1*(a(18)*lum**(a(18)-1.d0) + 
+      rgbdf = a1*(a(18)*lum**(a(18)-1.d0) +
      &            a(17)*a(19)*lum**(a(19)-1.d0))
 *
       return
@@ -477,7 +477,7 @@
          a1 = a(31) + 5.d0*(a(32)-a(31))*(m-m1)
       endif
 *
-      ragbdf = a1*(a(18)*lum**(a(18)-1.d0) + 
+      ragbdf = a1*(a(18)*lum**(a(18)-1.d0) +
      &             a(17)*a4*lum**(a4-1.d0))
 *
       return
@@ -487,8 +487,8 @@
       implicit none
       real*8 m,m525
 *
-* A function to evaluate core mass at the end of the MS as a 
-* fraction of the BGB value, i.e. this must be multiplied by 
+* A function to evaluate core mass at the end of the MS as a
+* fraction of the BGB value, i.e. this must be multiplied by
 * the BGB value (see below) to give the actual core mass (JH 5/9/99)
 *
       m525 = m**(21.d0/4.d0)
@@ -804,8 +804,8 @@
       implicit none
       real*8 m,lum,rx,lx,cm
 *
-* A function to evaluate Helium star radius on the Hertzsprung gap 
-* from its mass and luminosity. 
+* A function to evaluate Helium star radius on the Hertzsprung gap
+* from its mass and luminosity.
 *
       cm = 2.0d-03*m**(5.d0/2.d0)/(2.d0 + m**5)
       rhehgf = rx*(lum/lx)**0.2d0 + 0.02d0*(EXP(cm*lum) - EXP(cm*lx))
@@ -817,7 +817,7 @@
       implicit none
       real*8 lum
 *
-* A function to evaluate Helium star radius on the giant branch. 
+* A function to evaluate Helium star radius on the giant branch.
 *
       rhegbf = 0.08d0*lum**(3.d0/4.d0)
 *

@@ -66,7 +66,7 @@
         REAL*8 radc_2,menv_2,renv_2,epoch_2,ospin_2,deltam_2
         REAL*8 RROL_2,porb,sep,ecc,B_0_1,B_0_2
         REAL*8 SNkick_1,SNkick_2,Vsys_final,SNtheta_final
-        INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type 
+        INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
 
         ip = ip + 1

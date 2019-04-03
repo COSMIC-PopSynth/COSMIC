@@ -54,6 +54,16 @@ geo_mass = G/c**2
 
 
 def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
+    """Something
+
+    Parameters
+    ----------
+    final_kstar1 : `int`
+        name of the format to be registered
+
+    final_kstar2 : `int`
+        the class that the sampler returns
+    """
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
@@ -248,7 +258,7 @@ class Sample(object):
         """
         q = mass2/mass1
         RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
-        
+
         q2 = mass1/mass2
         RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
         try:
