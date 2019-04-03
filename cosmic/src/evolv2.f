@@ -213,7 +213,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(80,15)
+      REAL*8 bppout(1000,15)
       REAL*8 bcmout(50000,42)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
@@ -3516,7 +3516,7 @@ Cf2py intent(out) bppout,bcmout
       endif
       tb = tb*yeardy
 
-      if(jp.ge.80)then
+      if(jp.ge.1000)then
          WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
 *         STOP

@@ -53,7 +53,6 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
                       'binary_state',
-                      'merger_type',
                       'lisa_sources']
 
     if not set(method.keys()).issubset(set(_known_methods)):
@@ -93,7 +92,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                                               (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())              
             bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]  
               
-        elif (meth == 'LISA_sources') and use:
+        elif (meth == 'lisa_sources') and use:
             if 0 in method['binary_state']:
                 bcm_0 = bcm.loc[bcm.bin_state==0]
                 bcm_0_LISAflag = bcm_0.loc[bcm_0.porb > 5].bin_num

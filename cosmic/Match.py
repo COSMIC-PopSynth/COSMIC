@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 import astropy.stats as astroStats
 import warnings
-from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
+from cosmic.utils import dat_transform, filter_bpp_bcm, bcm_conv_select
 
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
@@ -149,10 +149,6 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                                            (bpp_conv_2.kstar_2.isin(final_kstar_2)) &\
                                            (bpp_conv_2.evol_type == 3)]
             
-           # filter to the kstars of interest
-           #bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1))&(bpp_conv_1.kstar_2.isin(final_kstar_2))]
-           # KB: I think this will be defunct
-
            # select the formation parameters
            bcm_conv_1 = bcm_conv_1.groupby('bin_num').first()
            bcm_conv_2 = bcm_conv_2.groupby('bin_num').first()
@@ -168,21 +164,20 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                                     np.mean(bcm_conv_1[conv_param])))
                     match_all.append(-9)
                 else:
-                    match_compute, bw = match([param_transform(bcm_conv_1[conv_param]).tolist(),\
-                                               param_transform(bcm_conv_2[conv_param]).tolist()])
+                    match_compute, bw = match([dat_transform(bcm_conv_1, [conv_param])[0].tolist(),\
+                                               dat_transform(bcm_conv_2, [conv_param])[0].tolist()])
                     match_all.append(match_compute)
 
             log_file.write('matches for bin state {0} are: {1}\n'.format(bin_state, match_all))
             log_file.write('Number of binaries is: {0}\n'.format(len(bcm_save_conv)))
             log_file.write('Binwidth is: {0}\n'.format(bw))
             log_file.write('\n')
+            match_lists.extend(match_all)
 
         else:
-            log_file.write('Bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
+            log_file.write('The filtered bcm array for bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
             log_file.write('Consider larger Nstep sizes\n')
-            match_all = [0]*len(conv_params)
             log_file.write('\n')
-        match_lists.extend(match_all)
 
     if len(match_lists) > 1:
         match_save = np.array(match_lists)
