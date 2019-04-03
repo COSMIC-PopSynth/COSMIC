@@ -1,6 +1,6 @@
 ***
         SUBROUTINE WRITEBPP(jp,tphys,evolve_type,
-     &                      mass,kstar,sep,
+     &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,bkick)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
@@ -10,17 +10,17 @@
 *     Author : Scott Coughlin
 *     Date :   12th March 2019
 *
-        REAL*8 bkick(20),mass(2)
+        REAL*8 bkick(20),mass1,mass2
         REAL*8 evolve_type,sep,tb,ecc,tphys,rrl1,rrl2
         INTEGER jp,jj
-        INTEGER kstar(2)
+        INTEGER kstar1,kstar2
 
         jp = MIN(80,jp + 1)
         bpp(jp,1) = tphys
-        bpp(jp,2) = mass(1)
-        bpp(jp,3) = mass(2)
-        bpp(jp,4) = float(kstar(1))
-        bpp(jp,5) = float(kstar(2))
+        bpp(jp,2) = mass1
+        bpp(jp,3) = mass2
+        bpp(jp,4) = float(kstar1)
+        bpp(jp,5) = float(kstar2)
         bpp(jp,6) = sep
         bpp(jp,7) = tb
         bpp(jp,8) = ecc
