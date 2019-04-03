@@ -211,8 +211,14 @@ class Evolve(Table):
                                                f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39],
                                                f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47])
 
-                bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
-                bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
+                try:
+                    bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
+                    bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
+                except IndexError:
+                    bpp = bpp[:np.argwhere(bpp[:,0] > 0)[0][0]]
+                    bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
+                    raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
+                                   .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
                 bpp_bin_numbers = np.atleast_2d(np.array([f[48]] * len(bpp))).T
                 bcm_bin_numbers = np.atleast_2d(np.array([f[48]] * len(bcm))).T
@@ -223,10 +229,7 @@ class Evolve(Table):
                 return f, bpp, bcm
 
             except Exception as e:
-                if nproc == 1:
-                    raise
-                else:
-                    return f, e
+                raise
 
         # evolve sysyems
         output = mp_utils.multiprocess_with_queues(
@@ -249,4 +252,4 @@ class Evolve(Table):
         bpp.bin_num = bpp.bin_num.astype(int)
         bcm.bin_num = bcm.bin_num.astype(int)
 
-        return bpp, bcm, initialbinarytable 
+        return bpp, bcm, initialbinarytable
