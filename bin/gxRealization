@@ -2,8 +2,8 @@
 
 # Code: gxRealization
 # Version: 1
-# Version changes: GENERATE KDE FROM FIXED POPULATION TO MONTE CARLO 
-#                  A GALACTIC REALIZATION OF THE POPULATION ACCORDING 
+# Version changes: GENERATE KDE FROM FIXED POPULATION TO MONTE CARLO
+#                  A GALACTIC REALIZATION OF THE POPULATION ACCORDING
 #                  TO FLAGS SET BY USER
 #
 # Edited on:  13 FEB 2018
@@ -30,7 +30,7 @@ import pandas as pd
 import multiprocessing as mp
 
 import cosmic.gxreal as gxreal
-import cosmic.MC_samp as MC_sample 
+import cosmic.MC_samp as MC_sample
 import cosmic.GW_calcs as GW_calcs
 import cosmic.utils as utils
 ##################################################################################
@@ -80,31 +80,31 @@ if __name__ == '__main__':
 
         gx_log_file = open('log_gx_real_'+str(gx)+'_'+str(gx_component)+'_'+kstar1_string+'_'+kstar2_string+'.txt', 'w')
         gx_real = gxreal.GxReal(fixed_pop, fixed_mass, gx_model, gx_component, dat_list)
-        
+
         # compute the number of systems in the sample
         gx_real.n_samp = gx_real.compute_n_sample()
         gx_log_file.write('The number of systems in a Galactic realization are {0}\n'.format(gx_real.n_samp))
- 
+
         if gx_real.n_samp >= 1e6:
             n_loop = 50
             gx_real.n_samp = int(gx_real.n_samp/n_loop)
-            gx_log_file.write('Sampling full population in {0} chunks\n'.format(n_loop))           
+            gx_log_file.write('Sampling full population in {0} chunks\n'.format(n_loop))
             for ii in range(n_loop):
                 # Monte Carlo sample the population
                 gx_real.realization = gx_real.sample_population()
                 gx_file.append('gx_dat', gx_real.realization)
-                gx_log_file.write('Chunk {0} complete\n'.format(ii))          
+                gx_log_file.write('Chunk {0} complete\n'.format(ii))
                 gx_log_file.flush()
         else:
             # Monte Carlo sample the population
             gx_real.realization = gx_real.sample_population()
-            gx_file.append('gx_dat', gx_real.realization) 
+            gx_file.append('gx_dat', gx_real.realization)
         gx_log_file.write('Galaxy sampled\n')
 
         if LISA_calc > 0:
             gx_real.PSD = gx_real.LISA_obs(Tobs)
             gx_file.append('PSD', gx_real.PSD)
-            
+
             gx_log_file.write('LISA calcs finished\n')
         gx_file.close()
         gx_log_file.close()
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     else:
         kstar1_range = args.final_kstar1
         kstar1_range_string = str(int(args.final_kstar1[0]))
-    
+
     if len(args.final_kstar2) == 2:
         kstar2_range = np.arange(args.final_kstar2[0], args.final_kstar2[1])
         kstar2_range_string = str(int(args.final_kstar2[0]))+'_'+str(int(args.final_kstar2[1]))
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     dat_path = 'dat_'+args.galaxy_component+'_'+\
                 kstar1_range_string+'_'+kstar2_range_string+'.h5'
     total_sampled_mass = np.max(pd.read_hdf(dat_path, key='totalMass'))
-    fixed_pop = pd.read_hdf(dat_path, key='bcm') 
+    fixed_pop = pd.read_hdf(dat_path, key='bcm')
 
     bpp = pd.read_hdf(dat_path, key='bpp')
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
             bpp_ce_save = bpp_pre_ce.loc[bpp_pre_ce.kstar_2 != 2.0]
             bpp_ce_save = bpp_ce_save.loc[bpp_ce_save.kstar_2 != 8.0]
             index_save = bpp_ce_save.bin_num
-            
+
             fixed_pop = fixed_pop.loc[fixed_pop.bin_num.isin(index_save)]
 
     # Filter out systems which undergo mass transfer as compact objects
@@ -188,16 +188,16 @@ if __name__ == '__main__':
         for n in range(n_loops):
             output = mp.Queue()
             processes = [mp.Process(target = _gx_realization,\
-                                    args = (x + n*args.nproc + 0, fixed_pop, 
-                                            dat_list, total_sampled_mass, args.galaxy_component, 
+                                    args = (x + n*args.nproc + 0, fixed_pop,
+                                            dat_list, total_sampled_mass, args.galaxy_component,
                                             args.dist_model, args.LISA_calc, args.gx_save, Tobs,
-                                            kstar1_range_string, kstar2_range_string)) 
+                                            kstar1_range_string, kstar2_range_string))
                                     for x in range(args.nproc)]
-            
+
             for p in processes:
                 p.daemon = True
                 p.start()
-            
+
             for p in processes:
                 p.join()
     else:
