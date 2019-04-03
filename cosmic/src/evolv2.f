@@ -192,6 +192,7 @@
       REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
+      REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
       REAL ran3
@@ -1591,65 +1592,37 @@ Cf2py intent(out) bppout,bcmout
       if((isave.and.tphys.ge.tsave).or.iplot)then
          if(sgl.or.(rad(1).lt.rol(1).and.rad(2).lt.rol(2)).
      &      or.tphys.lt.tiny)then
-            ip = ip + 1
-            bcm(ip,1) = tphys
-            bcm(ip,2) = float(kstar(1))
-            bcm(ip,3) = mass0(1)
-            bcm(ip,4) = mass(1)
-            bcm(ip,5) = log10(lumin(1))
-            bcm(ip,6) = log10(rad(1))
-            teff1 = 1000.d0*((1130.d0*lumin(1)/
-     &                       (rad(1)**2.d0))**(1.d0/4.d0))
-            bcm(ip,7) = log10(teff1)
-            bcm(ip,8) = massc(1)
-            bcm(ip,9) = radc(1)
-            bcm(ip,10) = menv(1)
-            bcm(ip,11) = renv(1)
-            bcm(ip,12) = epoch(1)
-            bcm(ip,13) = ospin(1)
-            bcm(ip,14) = dmt(1) - dmr(1)
-            bcm(ip,15) = rad(1)/rol(1)
-            bcm(ip,16) = float(kstar(2))
-            bcm(ip,17) = mass0(2)
-            bcm(ip,18) = mass(2)
-            bcm(ip,19) = log10(lumin(2))
-            bcm(ip,20) = log10(rad(2))
-            teff2 = 1000.d0*((1130.d0*lumin(2)/
-     &                       (rad(2)**2.d0))**(1.d0/4.d0))
-            bcm(ip,21) = log10(teff2)
-            bcm(ip,22) = massc(2)
-            bcm(ip,23) = radc(2)
-            bcm(ip,24) = menv(2)
-            bcm(ip,25) = renv(2)
-            bcm(ip,26) = epoch(2)
-            bcm(ip,27) = ospin(2)
-            bcm(ip,28) = dmt(2) - dmr(2)
-            bcm(ip,29) = rad(2)/rol(2)
-            bcm(ip,30) = tb
-            bcm(ip,31) = sep
-            bcm(ip,32) = ecc
             if(B_0(1).eq.0.d0)then !PK.
-               bcm(ip,33) = 0.d0
+               b01_bcm = 0.d0
             elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-               bcm(ip,33) = B_0(1)
+               b01_bcm = B_0(1)
             else
-               bcm(ip,33) = B(1)
+               b01_bcm = B(1)
             endif
             if(B_0(2).eq.0.d0)then
-               bcm(ip,34) = 0.d0
+               b02_bcm = 0.d0
             elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-               bcm(ip,34) = B_0(2)
+               b02_bcm = B_0(2)
             else
-               bcm(ip,34) = B(2)
+               b02_bcm = B(2)
             endif
-            bcm(ip,35) = vk1_bcm
-            bcm(ip,36) = vk2_bcm
-            bcm(ip,37) = vsys_bcm
-            bcm(ip,38) = theta_bcm
-            bcm(ip,39) = float(formation(1))
-            bcm(ip,40) = float(formation(2))
-            bcm(ip,41) = binstate
-            bcm(ip,42) = mergertype
+            teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+            teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+            rrl1 = rad(1)/rol(1)
+            rrl2 = rad(2)/rol(2)
+            deltam1_bcm = dmt(1) - dmr(1)
+            deltam2_bcm = dmt(2) - dmr(2)
+            CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
+     &                    lumin(1),rad(1),teff1,massc(1),
+     &                    radc(1),menv(1),renv(1),epoch(1),
+     &                    ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
+     &                    mass(2),lumin(2),rad(2),teff2,massc(2),
+     &                    radc(2),menv(2),renv(2),epoch(2),ospin(2),
+     &                    deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
+     &                    vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,
+     &                    formation(1),formation(2),binstate,mergertype)
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1837,65 +1810,37 @@ Cf2py intent(out) bppout,bcmout
       ENDDO
 *
       if(iplot.and.tphys.gt.tiny)then
-         ip = ip + 1
-         bcm(ip,1) = tphys
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
-         teff1 = 1000.d0*((1130.d0*lumin(1)/
-     &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,14) = 0.0
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/
-     &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,28) = 0.0
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
-         if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
-         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
-         else
-            bcm(ip,33) = B(1)
-         endif
-         if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
-         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
-         else
-            bcm(ip,34) = B(2)
-         endif
-         bcm(ip,35) = vk1_bcm
-         bcm(ip,36) = vk2_bcm
-         bcm(ip,37) = vsys_bcm
-         bcm(ip,38) = theta_bcm
-         bcm(ip,39) = float(formation(1))
-         bcm(ip,40) = float(formation(2))
-         bcm(ip,41) = binstate
-         bcm(ip,42) = mergertype
+          if(B_0(1).eq.0.d0)then !PK.
+              b01_bcm = 0.d0
+          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+              b01_bcm = B_0(1)
+          else
+              b01_bcm = B(1)
+          endif
+          if(B_0(2).eq.0.d0)then
+              b02_bcm = 0.d0
+          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+              b02_bcm = B_0(2)
+          else
+              b02_bcm = B(2)
+          endif
+          teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+          teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+          rrl1 = rad(1)/rol(1)
+          rrl2 = rad(2)/rol(2)
+          deltam1_bcm = 0.0
+          deltam2_bcm = 0.0
+          CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
+     &                  lumin(1),rad(1),teff1,massc(1),
+     &                  radc(1),menv(1),renv(1),epoch(1),
+     &                  ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
+     &                  mass(2),lumin(2),rad(2),teff2,massc(2),
+     &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
+     &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
+     &                  vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,
+     &                  formation(1),formation(2),binstate,mergertype)
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
@@ -3160,71 +3105,43 @@ Cf2py intent(out) bppout,bcmout
  110  continue
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
-         ip = ip + 1
-         bcm(ip,1) = tphys
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
-         teff1 = 1000.d0*((1130.d0*lumin(1)/
-     &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/
-     &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
-         dt = MAX(dtm,1.0d-12)*1.0d+06
-         if(j1.eq.1)then
-            bcm(ip,14) = (-1.0*dm1 - dms(1))/dt
-            bcm(ip,28) = (dm2 - dms(2))/dt
-         else
-            bcm(ip,14) = (dm2 - dms(1))/dt
-            bcm(ip,28) = (-1.0*dm1 - dms(2))/dt
-         endif
-         if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
-         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
-         else
-            bcm(ip,33) = B(1)
-         endif
-         if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
-         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
-         else
-            bcm(ip,34) = B(2)
-         endif
-         bcm(ip,35) = vk1_bcm
-         bcm(ip,36) = vk2_bcm
-         bcm(ip,37) = vsys_bcm
-         bcm(ip,38) = theta_bcm
-         bcm(ip,39) = float(formation(1))
-         bcm(ip,40) = float(formation(2))
-         bcm(ip,41) = binstate
-         bcm(ip,42) = mergertype
+          if(B_0(1).eq.0.d0)then !PK.
+              b01_bcm = 0.d0
+          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+              b01_bcm = B_0(1)
+          else
+              b01_bcm = B(1)
+          endif
+          if(B_0(2).eq.0.d0)then
+              b02_bcm = 0.d0
+          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+              b02_bcm = B_0(2)
+          else
+              b02_bcm = B(2)
+          endif
+          teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+          teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+          rrl1 = rad(1)/rol(1)
+          rrl2 = rad(2)/rol(2)
+          dt = MAX(dtm,1.0d-12)*1.0d+06
+          if(j1.eq.1)then
+              deltam1_bcm = (-1.0*dm1 - dms(1))/dt
+              deltam2_bcm = (dm2 - dms(2))/dt
+          else
+              deltam1_bcm = (dm2 - dms(1))/dt
+              deltam2_bcm = (-1.0*dm1 - dms(2))/dt
+          endif
+          CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
+     &                  lumin(1),rad(1),teff1,massc(1),
+     &                  radc(1),menv(1),renv(1),epoch(1),
+     &                  ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
+     &                  mass(2),lumin(2),rad(2),teff2,massc(2),
+     &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
+     &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
+     &                  vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,
+     &                  formation(1),formation(2),binstate,mergertype)
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3537,71 +3454,43 @@ Cf2py intent(out) bppout,bcmout
       endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
-         ip = ip + 1
-         bcm(ip,1) = tphys
-         bcm(ip,2) = float(kstar(1))
-         bcm(ip,3) = mass0(1)
-         bcm(ip,4) = mass(1)
-         bcm(ip,5) = log10(lumin(1))
-         bcm(ip,6) = log10(rad(1))
-         teff1 = 1000.d0*((1130.d0*lumin(1)/
-     &                    (rad(1)**2.d0))**(1.d0/4.d0))
-         bcm(ip,7) = log10(teff1)
-         bcm(ip,8) = massc(1)
-         bcm(ip,9) = radc(1)
-         bcm(ip,10) = menv(1)
-         bcm(ip,11) = renv(1)
-         bcm(ip,12) = epoch(1)
-         bcm(ip,13) = ospin(1)
-         bcm(ip,15) = rad(1)/rol(1)
-         bcm(ip,16) = float(kstar(2))
-         bcm(ip,17) = mass0(2)
-         bcm(ip,18) = mass(2)
-         bcm(ip,19) = log10(lumin(2))
-         bcm(ip,20) = log10(rad(2))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/
-     &                    (rad(2)**2.d0))**(1.d0/4.d0))
-         bcm(ip,21) = log10(teff2)
-         bcm(ip,22) = massc(2)
-         bcm(ip,23) = radc(2)
-         bcm(ip,24) = menv(2)
-         bcm(ip,25) = renv(2)
-         bcm(ip,26) = epoch(2)
-         bcm(ip,27) = ospin(2)
-         bcm(ip,29) = rad(2)/rol(2)
-         bcm(ip,30) = tb
-         bcm(ip,31) = sep
-         bcm(ip,32) = ecc
-         dt = MAX(dtm,1.0d-12)*1.0d+06
-         if(j1.eq.1)then
-            bcm(ip,14) = (-1.0*dm1 - dms(1))/dt
-            bcm(ip,28) = (dm2 - dms(2))/dt
-         else
-            bcm(ip,14) = (dm2 - dms(1))/dt
-            bcm(ip,28) = (-1.0*dm1 - dms(2))/dt
-         endif
-         if(B_0(1).eq.0.d0)then !PK.
-            bcm(ip,33) = 0.d0
-         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
-            bcm(ip,33) = B_0(1)
-         else
-            bcm(ip,33) = B(1)
-         endif
-         if(B_0(2).eq.0.d0)then
-            bcm(ip,34) = 0.d0
-         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
-            bcm(ip,34) = B_0(2)
-         else
-            bcm(ip,34) = B(2)
-         endif
-         bcm(ip,35) = vk1_bcm
-         bcm(ip,36) = vk2_bcm
-         bcm(ip,37) = vsys_bcm
-         bcm(ip,38) = theta_bcm
-         bcm(ip,39) = float(formation(1))
-         bcm(ip,40) = float(formation(2))
-         bcm(ip,41) = binstate
-         bcm(ip,42) = mergertype
+          if(B_0(1).eq.0.d0)then !PK.
+              b01_bcm = 0.d0
+          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+              b01_bcm = B_0(1)
+          else
+              b01_bcm = B(1)
+          endif
+          if(B_0(2).eq.0.d0)then
+              b02_bcm = 0.d0
+          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+              b02_bcm = B_0(2)
+          else
+              b02_bcm = B(2)
+          endif
+          teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+          teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+          rrl1 = rad(1)/rol(1)
+          rrl2 = rad(2)/rol(2)
+          dt = MAX(dtm,1.0d-12)*1.0d+06
+          if(j1.eq.1)then
+              deltam1_bcm = (-1.0*dm1 - dms(1))/dt
+              deltam2_bcm = (dm2 - dms(2))/dt
+          else
+              deltam1_bcm = (dm2 - dms(1))/dt
+              deltam2_bcm = (-1.0*dm1 - dms(2))/dt
+          endif
+          CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
+     &                  lumin(1),rad(1),teff1,massc(1),
+     &                  radc(1),menv(1),renv(1),epoch(1),
+     &                  ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
+     &                  mass(2),lumin(2),rad(2),teff2,massc(2),
+     &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
+     &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
+     &                  vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,
+     &                  formation(1),formation(2),binstate,mergertype)
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
