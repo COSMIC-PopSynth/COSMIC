@@ -53,7 +53,6 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     _known_methods = ['mass_transfer_white_dwarf_to_co',
                       'select_final_state',
                       'binary_state',
-                      'merger_type',
                       'lisa_sources']
 
     if not set(method.keys()).issubset(set(_known_methods)):

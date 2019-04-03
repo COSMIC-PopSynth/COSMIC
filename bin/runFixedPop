@@ -221,9 +221,6 @@ if __name__ == '__main__':
     elif args.galaxy_component == 'DeltaBurst':
         SFH_model='delta_burst'
         component_age=13700.0
-    elif args.galaxy_component == 'FIRE':
-        SFH_model='FIRE'
-        component_age=13900.0
 
     # Simulate the fixed population 
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
