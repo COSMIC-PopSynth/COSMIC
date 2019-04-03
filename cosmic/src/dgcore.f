@@ -38,7 +38,7 @@
 * of energy liberated by the coalescence.
       ebinde = MAX(0.d0,ebinde - deleb)
       if(kw1.gt.3) goto 90
-* Distribute the mass into core mass groups where mhe represents Helium 
+* Distribute the mass into core mass groups where mhe represents Helium
 * core mass, mc represents Carbon core mass and mne represents a Neon
 * core mass or any mass that is all converted Carbon.
       mhe = 0.d0
@@ -62,15 +62,15 @@
       temp = (deleb/(cvhe*mhe+cvc*mc+cvne*mne))*gmr
 *
 * To decide if He is converted to C we use:
-*    3He4 -> C12 , T > 10^8 K , 7.274 Mev released, 
+*    3He4 -> C12 , T > 10^8 K , 7.274 Mev released,
 * to decide if C is converted further we use:
 *    2C12 -> Ne20 + alpha , T > 10^9 K , 4.616 Mev released.
 * and to decide if O is converted further we use:
 *    2O16 -> P31 + p , T > 10^9 K , 7.677 Mev released.
-* To obtain the heat capacity of an O/Ne WD and to gain an idea of the 
+* To obtain the heat capacity of an O/Ne WD and to gain an idea of the
 * energy released from the further processing of an O/Ne WD we use:
 *    2Ne20 + gamma -> O16 + Mg24 +gamma , T > 10^9 K , 4.583 Mev released.
-* For a CO core the composition is assumed to be 20% C, 80% O and for 
+* For a CO core the composition is assumed to be 20% C, 80% O and for
 * an ONe core 80% O, 20% Ne.
 *
 * Decide if conversion of elements can take place.
@@ -90,12 +90,12 @@
 * (core + envelope) and the nuclear energy. The new star will be
 * destroyed in a SN if dE < 0.
       de = (ebindf + ebinde) - enuc
-* If the star survives and an envelope is present then reduce the 
+* If the star survives and an envelope is present then reduce the
 * envelope binding energy by the amount of liberated nuclear energy.
 * The envelope will not survive if its binding energy is reduced to <= 0.
       if(de.ge.0.d0) ebinde = MAX(0.d0,ebinde - enuc)
 * Now determine the final evolution state of the merged core.
-      if(de.lt.0.d0) kw3 = 15 
+      if(de.lt.0.d0) kw3 = 15
       if(kw3.eq.3)then
          if(x.gt.0.5d0)then
             kw3 = 6

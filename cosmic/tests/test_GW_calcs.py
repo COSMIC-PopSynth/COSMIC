@@ -154,4 +154,4 @@ class TestGWcalcs(unittest2.TestCase):
     def test_snr_chirping(self):
         snr = GW_calcs.snr_chirping(GW150914.mass_1, GW150914.mass_2, GW_calcs.sep_from_p(GW150914.porb/sec_in_year, GW150914.mass_1, GW150914.mass_2), GW150914.ecc, GW150914.dist/1000, 5)
         self.assertAlmostEqual(snr, SNR_TEST)
-         
+

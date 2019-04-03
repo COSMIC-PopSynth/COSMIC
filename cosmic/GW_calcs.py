@@ -28,11 +28,15 @@ import scipy.integrate as integrate
 from scipy.optimize import brentq
 from lisa_sensitivity import lisa_characteristic_noise as LISA_hc
 import pandas as pd
-from scipy.interpolate import interp1d 
+from scipy.interpolate import interp1d
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = ['m_chirp', 'peak_gw_freq', 'peters_gfac', 'LISA_SNR', 'LISA_PSD', 'compute_foreground']
+__all__ = ['sep_from_p', 'p_from_a', 'comoving_distance', 'luminosity_distance',
+           'z_from_lum_distance', 'm_chirp', 'peak_gw_freq', 'peters_g', 'F_e',
+           'n_max', 'hc2_circ', 'hc2', 'da_dt', 'de_dt', 'peters_evolution',
+           'snr_calc', 'snr_chirping', 'LISA_foreground_combo', 'LISA_foreground']
+
 
 G = 6.67384e-11
 c = 2.99792458e8
@@ -78,7 +82,7 @@ def p_from_a(sep,m1,m2):
 
     Parameters
     ----------
-    sep : float/array 
+    sep : float/array
         separation [au]
     m1 : float/array
         primary mass [msun]
@@ -103,7 +107,7 @@ def comoving_distance(z):
     ----------
     z : float
         redshift
-    
+
     Returns
     -------
     D_co : float
@@ -157,12 +161,12 @@ def z_from_lum_distance(d):
 
 def m_chirp(m1, m2, **kwargs):
     """Computes the chirp mass in the units of mass supplied
-   
+
     Parameters
     ----------
     m1 : float or array
         primary mass
-    m2 : float or array    
+    m2 : float or array
         secondary mass
     z : float or array
         redshift
@@ -188,7 +192,7 @@ def peak_gw_freq(m1, m2, ecc, porb):
     ----------
     m1 : float or array
         primary mass [kg]
-    m2 : float or array    
+    m2 : float or array
         secondary mass [kg]
     ecc : float or array
         eccentricity
@@ -198,12 +202,12 @@ def peak_gw_freq(m1, m2, ecc, porb):
     Returns
     -------
     f_gw_peak : float or array
-        peak gravitational-wave frequency [Hz] 
+        peak gravitational-wave frequency [Hz]
     """
 
     # convert the orbital period into a separation using Kepler III
     sep_m = (G/(4*np.pi**2)*porb**2*(m1+m2))**(1./3.)
-    
+
     f_gw_peak = ((G*(m1+m2))**0.5/np.pi) * (1+ecc)**1.1954/(sep_m*(1-ecc)**2)**1.5
     return f_gw_peak
 
@@ -251,13 +255,13 @@ def F_e(e):
 
     nominator = 1 + 73./24.*e**2 + 37./96.*e**4
     denominator = (1 - e**2)**(7./2.)
-    F_e = nominator/denominator    
+    F_e = nominator/denominator
 
     return F_e
 
 def n_max(ecc):
     """ Computes the maximum number of harmonics
-    needed to compute SNRs given an array of 
+    needed to compute SNRs given an array of
     eccentricities.
 
     Parameters
@@ -267,8 +271,8 @@ def n_max(ecc):
 
     Returns
     -------
-    n_max : array 
-        Maximum number of harmonics to use when 
+    n_max : array
+        Maximum number of harmonics to use when
         computing eccentric LISA SNR
     """
 
@@ -293,7 +297,7 @@ def n_max(ecc):
 
 def hc2_circ(m1, m2, f_orb, D):
     """ Computes the characterstic power (square of the
-    characterstic strain) for a population of binaries 
+    characterstic strain) for a population of binaries
     in the Galaxy. This assumes the binaries are
     circular and redshift can be passed.
 
@@ -328,7 +332,7 @@ def hc2_circ(m1, m2, f_orb, D):
 
 def hc2(m1, m2, f_orb, D, e, n):
     """ Computes the characterstic power (square of the
-    characterstic strain) for a population of binaries 
+    characterstic strain) for a population of binaries
     in the Galaxy. Redshift can be passed as a kwarg.
 
     Parameters
@@ -369,8 +373,8 @@ def da_dt(m1, m2, a, e):
     """Computes da/dt from Peters and Matthews 1963;
     assumes all units are SI
 
-    Params
-    ------
+    Parameters
+    ----------
     m1 : float
         primary mass [kg]
     m2 : float
@@ -397,8 +401,8 @@ def de_dt(m1, m2, a, e):
     """Computes de/dt from Peters and Matthews 1963;
     assumes all units are SI
 
-    Params
-    ------
+    Parameters
+    ----------
     m1 : float
         primary mass [kg]
     m2 : float
@@ -427,7 +431,7 @@ def peters_evolution(a_0,e_0,m1,m2,t_evol,nstep):
     """
     Computes the evolution of a binary with spacing according
     to the amount of time specified. Calculation is in SI;
-    Returns values in units specified. 
+    Returns values in units specified.
 
     Parameters
     ----------
@@ -448,7 +452,7 @@ def peters_evolution(a_0,e_0,m1,m2,t_evol,nstep):
     -------
     a_array : array
         evolution of semimajor axis [au]
-    e_array : array 
+    e_array : array
         evolution of eccentricity
     t_array : array
         evolution of time [yr]
@@ -477,7 +481,7 @@ def peters_evolution(a_0,e_0,m1,m2,t_evol,nstep):
             e = e_0
         else:
             break
-            
+
         a_0 = a
         e_0 = e
     return np.array(a_array), np.array(e_array), np.array(t_array)
@@ -541,10 +545,10 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
     f_orb_evol = 1/(p_from_a(a_evol, m1, m2) * sec_in_year)
     t_evol_log = np.logspace(-6, np.log10(t_obs), 5000)
     forb_evol_log = np.interp(t_evol_log,
-                              xp = t_evol * sec_in_year, 
+                              xp = t_evol * sec_in_year,
                               fp = f_orb_evol)
     e_evol_log = np.interp(t_evol_log,
-                           xp = t_evol * sec_in_year, 
+                           xp = t_evol * sec_in_year,
                            fp = e_evol)
     n_harm = int(n_max(np.array([e]))[0])
     h_c_squared = []
@@ -560,7 +564,7 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
     return snr
 
 def LISA_foreground_combo(foreground_freq, foreground_hc2):
-    """Computes the combination of the population foreground and LISA 
+    """Computes the combination of the population foreground and LISA
     sensitivity in characteristic strain
 
     Parameters
@@ -573,13 +577,13 @@ def LISA_foreground_combo(foreground_freq, foreground_hc2):
     Returns
     -------
     LISA_curve_combo : interpolation
-        interpolation of characteristic power for the Galactic 
+        interpolation of characteristic power for the Galactic
         foreground and LISA sensitivity combined
     """
-    LISA_interp = LISA_hc()  
+    LISA_interp = LISA_hc()
 
     LISA_at_foreground = LISA_interp(foreground_freq)**2
-    power_combo = foreground_hc2 + LISA_at_foreground   
+    power_combo = foreground_hc2 + LISA_at_foreground
 
     above_foreground_freq = np.logspace(np.log10(max(foreground_freq)+1e-4, 1e-1, 100))
     LISA_above_foreground = LISA_interp(above_foreground_freq)**2
@@ -626,7 +630,7 @@ def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
     freq_bins_LISA = np.arange(1e-8,5e-3,binwidth)
     z_redshift = zAtLuminosityDistance(d_lum)
     hc2_array = hc2_circ(m1, m2, f_orb, d_lum, z=z_redshift)
-    freq_array = 2*f_orb    
+    freq_array = 2*f_orb
     bin_indices = np.digitize(freq_array, freq_bins_LISA)
     psd_dat = pd.DataFrame(np.vstack([freq_array, hc_array, bin_indices]),\
                            columns=['f_gw', 'hc2', 'bin_digits'])

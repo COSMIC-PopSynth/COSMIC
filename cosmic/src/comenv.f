@@ -45,7 +45,7 @@
       REAL*8 sigma,bhsigmafrac,sigmahold,sigmadiv
       COMMON /VALUE4/ sigma,bhsigmafrac
       REAL*8 AURSUN,K3,ALPHA1,LAMBDA
-      PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0) 
+      PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0)
       COMMON /VALUE2/ ALPHA1,LAMBDA
       LOGICAL COEL,output
       REAL*8 CELAMF,RL,RZAMSF
@@ -569,7 +569,7 @@
       IF(COEL)THEN
          MC22 = MC2
          IF(KW.EQ.4.OR.KW.EQ.7)THEN
-* If making a helium burning star calculate the fractional age 
+* If making a helium burning star calculate the fractional age
 * depending on the amount of helium that has burnt.
             IF(KW1.LE.3)THEN
                FAGE1 = 0.D0
@@ -597,7 +597,7 @@
 *
       IF(COEL)THEN
 *
-* Calculate the orbital spin just before coalescence. 
+* Calculate the orbital spin just before coalescence.
 *
          TB = (SEPL/AURSUN)*SQRT(SEPL/(AURSUN*(MC1+MC2)))
          OORB = TWOPI/TB
@@ -720,9 +720,9 @@
          if(output) write(*,*)'coel 2 7:',KW1,M1,M01,R1,MENV,RENV
       ELSE
 *
-* Check if any eccentricity remains in the orbit by first using 
-* energy to circularise the orbit before removing angular momentum. 
-* (note this should not be done in case of CE SN ... fixed PDK).  
+* Check if any eccentricity remains in the orbit by first using
+* energy to circularise the orbit before removing angular momentum.
+* (note this should not be done in case of CE SN ... fixed PDK).
 *
          IF(snp.EQ.0)THEN
             IF(EORBF.LT.ECIRC)THEN
@@ -732,7 +732,7 @@
             ENDIF
          ENDIF
 *
-* Set both cores in co-rotation with the orbit on exit of CE, 
+* Set both cores in co-rotation with the orbit on exit of CE,
 *
          TB = (SEPF/AURSUN)*SQRT(SEPF/(AURSUN*(M1+M2)))
          OORB = TWOPI/TB

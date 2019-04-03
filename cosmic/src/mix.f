@@ -72,7 +72,7 @@
       KW = ICASE
       AGE3 = 0.d0
 *
-*       Restrict merged stars to masses less than 100 Msun. 
+*       Restrict merged stars to masses less than 100 Msun.
 C      IF(M3.GE.100.D0)THEN
 C         M3 = 99.D0
 C         M03 = MIN(M03,M3)
@@ -105,8 +105,8 @@ C      ENDIF
             KW = 15
          ENDIF
       ELSEIF(ICASE.EQ.13.OR.ICASE.EQ.14)THEN
-*       Set unstable Thorne-Zytkow object with fast mass loss of envelope 
-*       unless the less evolved star is a WD, NS or BH. 
+*       Set unstable Thorne-Zytkow object with fast mass loss of envelope
+*       unless the less evolved star is a WD, NS or BH.
          IF(K2.LT.10)THEN
             M03 = M1
             M3 = M1
