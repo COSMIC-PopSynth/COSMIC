@@ -101,8 +101,8 @@ class Evolve(Table):
             initialbinarytable['ifflag'] = BSEDict['ifflag']
         if 'wdflag' not in initialbinarytable.keys():
             initialbinarytable['wdflag'] = BSEDict['wdflag']
-        if 'ppsn' not in initialbinarytable.keys():
-            initialbinarytable['ppsn'] = BSEDict['ppsn']
+        if 'pisn' not in initialbinarytable.keys():
+            initialbinarytable['pisn'] = BSEDict['pisn']
         if 'bhflag' not in initialbinarytable.keys():
             initialbinarytable['bhflag'] = BSEDict['bhflag']
         if 'nsflag' not in initialbinarytable.keys():
@@ -115,8 +115,8 @@ class Evolve(Table):
             initialbinarytable['pts2'] = BSEDict['pts2']
         if 'pts3' not in initialbinarytable.keys():
             initialbinarytable['pts3'] = BSEDict['pts3']
-        if 'ecsnp' not in initialbinarytable.keys():
-            initialbinarytable['ecsnp'] = BSEDict['ecsnp']
+        if 'ecsn' not in initialbinarytable.keys():
+            initialbinarytable['ecsn'] = BSEDict['ecsn']
         if 'ecsn_mlow' not in initialbinarytable.keys():
             initialbinarytable['ecsn_mlow'] = BSEDict['ecsn_mlow']
         if 'aic' not in initialbinarytable.keys():
@@ -177,10 +177,10 @@ class Evolve(Table):
         # need to ensure that the order of variables is correct
         initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                                 'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
                                                 'cekickflag', 'cemergeflag', 'cehestarflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3',
-                                                'ecsnp', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                                                'ecsn', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                                                 'natal_kick_array', 'qcrit_array',
                                                 'beta', 'xi', 'acc2', 'epsnov',
                                                 'eddfac', 'gamma', 'bconst', 'ck', 'merger', 'windflag', 'dtp',
@@ -188,10 +188,10 @@ class Evolve(Table):
 
         initial_binary_table_column_names = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                              'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
                                              'cekickflag', 'cemergeflag', 'cehestarflag',
                                              'mxns', 'pts1', 'pts2', 'pts3',
-                                             'ecsnp', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                                             'ecsn', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                                              'beta', 'xi', 'acc2', 'epsnov',
                                              'eddfac', 'gamma', 'bconst', 'ck', 'merger', 'windflag', 'dtp',
                                              'randomseed', 'bin_num']

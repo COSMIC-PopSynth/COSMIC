@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,ecsnp)
+      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,ecsn)
 *
 *     Author : J. R. Hurley
 *     Date :   7th July 1998
@@ -15,7 +15,7 @@
       REAL*8 M0(2),M(2),AJ(2),ZPARS(20)
       REAL*8 TSCLS(20),LUMS(10),GB(10),TMS1,TMS2,TMS3,TN
       REAL*8 M01,M02,M03,M1,M2,M3,AGE1,AGE2,AGE3,MC3,MCH
-      REAL*8 ecsnp
+      REAL*8 ecsn
       PARAMETER(MCH=1.44D0)
       REAL*8 NETA,BWIND,HEWIND,MXNS
       COMMON /VALUE1/ NETA,BWIND,HEWIND,MXNS
@@ -98,7 +98,7 @@ C      ENDIF
       ELSEIF(ICASE.LE.12)THEN
 *       Ensure that a new WD has the initial mass set correctly.
          M03 = M3
-         IF(ecsnp.gt.0.d0.and.ICASE.EQ.11.AND.M3.GE.1.38d0)then
+         IF(ecsn.gt.0.d0.and.ICASE.EQ.11.AND.M3.GE.1.38d0)then
             KW = 12 !will let hrdiag update accordingly...
          ELSEIF(ICASE.LT.12.AND.M3.GE.MCH)THEN
             M3 = 0.D0
