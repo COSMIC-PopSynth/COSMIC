@@ -32,9 +32,9 @@
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
       parameter(mlp=12.d0,tiny=1.0d-14)
       real*8 mass0,mt0,mtc
-      REAL*8 neta,bwind,hewind,mxns
-      integer pisn,windflag
-      COMMON /VALUE1/ neta,bwind,hewind,mxns,windflag,pisn
+      REAL*8 neta,bwind,hewind,mxns,pisn
+      integer windflag
+      COMMON /VALUE1/ neta,bwind,hewind,mxns,pisn,windflag
       common /fall/fallback
       REAL*8 fallback
 *

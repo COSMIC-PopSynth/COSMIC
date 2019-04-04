@@ -17,7 +17,7 @@
       REAL*8 sigma,bhsigmafrac,pisn,beta,xi,acc2,epsnov,eddfac,gamma
       REAL*8 bconst,CK,polar_kick_angle,cmu_SN1
       INTEGER windflag
-      COMMON /VALUE1/ neta,bwind,hewind,mxns,windflag,pisn
+      COMMON /VALUE1/ neta,bwind,hewind,mxns,pisn,windflag
       COMMON /VALUE2/ alpha1,lambda
       COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
       COMMON /VALUE4/ polar_kick_angle,cmu_SN1,bhflag
