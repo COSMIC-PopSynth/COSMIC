@@ -318,7 +318,14 @@ def hc2_circ(m1, m2, f_orb, D):
         characteristic power
     """
     # Set the redshift based on the luminosity distance
-    z = z_from_lum_distance(D)
+    # For systems inside the Milky Way, assume z=0
+    if max(D) >= 1:
+        z = []
+        for d in D:
+            z.append(z_from_lum_distance(D))
+        z = np.array(z)
+    else:
+        z = np.zeros(len(D))
 
     # assumes SI units!
     f_n = 2*f_orb
@@ -356,7 +363,14 @@ def hc2(m1, m2, f_orb, D, e, n):
     """
 
     # Set the redshift based on the luminosity distance
-    z = z_from_lum_distance(D)
+    # For systems inside the Milky Way, assume z=0
+    if max(D) >= 1:
+        z = []
+        for d in D:
+            z.append(z_from_lum_distance(D))
+        z = np.array(z)
+    else:
+        z = np.zeros(len(D))
 
     # assumes SI units!
     f_n = n*f_orb
@@ -537,7 +551,14 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
         LISA snr
     """
     LISA_interp = LISA_hc()
-    z = z_from_lum_distance(d_lum)
+    # Set the redshift based on the luminosity distance
+    # For systems inside the Milky Way, assume z=0
+    if max(d_lum) >= 1:
+        z = []
+        for d in d_lum:
+            z.append(z_from_lum_distance(d))
+    else:
+        z = np.zeros(len(d_lum))
     t_obs = t_obs * sec_in_year
     a_evol, e_evol, t_evol = peters_evolution(a,e,m1,m2,t_obs,1e3)
     porb = p_from_a(a, m1, m2) * sec_in_year
@@ -610,8 +631,6 @@ def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
         orbital frequency [Hz]
     d_lum : array
         Distance [Mpc]
-    z : array
-        redshift, Tobs=4):
     t_obs : float
         LISA observation time [yr]; Default=4 yr
     rolling_window : int
@@ -628,8 +647,7 @@ def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
 
     binwidth = 1.0/t_obs
     freq_bins_LISA = np.arange(1e-8,5e-3,binwidth)
-    z_redshift = zAtLuminosityDistance(d_lum)
-    hc2_array = hc2_circ(m1, m2, f_orb, d_lum, z=z_redshift)
+    hc2_array = hc2_circ(m1, m2, f_orb, d_lum)
     freq_array = 2*f_orb
     bin_indices = np.digitize(freq_array, freq_bins_LISA)
     psd_dat = pd.DataFrame(np.vstack([freq_array, hc_array, bin_indices]),\
