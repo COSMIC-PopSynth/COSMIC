@@ -54,6 +54,41 @@ geo_mass = G/c**2
 
 
 def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, met, size, **kwargs):
+    """adapted version of Maxwell Moe's IDL code that generates a population of single and binary stars
+
+    Below is the adapted version of Maxwell Moe's IDL code
+    that generates a population of single and binary stars
+    based on the paper Mind your P's and Q's
+    By Maxwell Moe and Rosanne Di Stefano
+
+    The python code has been adopted by Mads Sørensen
+
+    Version history:
+    V. 0.1; 2017/02/03
+    By Mads Sørensen
+    - This is a pure adaption from IDL to Python.
+    - The function idl_tabulate is similar to
+    the IDL function int_tabulated except, this function seems to be slightly
+    more exact in its solution.
+    Therefore, relative to the IDL code, there are small numerical differences.
+
+    Comments below beginning with ; is the original nodes by Maxwell Moe.
+    Please read these careful for understanding the script.
+    ; NOTE - This version produces only the statistical distributions of
+    ;        single stars, binaries, and inner binaries in hierarchical triples.
+    ;        Outer tertiaries in hierarchical triples are NOT generated.
+    ;        Moreover, given a set of companions, all with period P to
+    ;        primary mass M1, this version currently uses an approximation to
+    ;        determine the fraction of those companions that are inner binaries
+    ;        vs. outer triples. Nevertheless, this approximation reproduces
+    ;        the overall multiplicity statistics.
+    ; Step 1 - Tabulate probably density functions of periods,
+    ;          mass ratios, and eccentricities based on
+    ;          analytic fits to corrected binary star populations.
+    ; Step 2 - Implement Monte Carlo method to generate stellar
+    ;          population from those density functions.
+    """
+
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
@@ -623,10 +658,6 @@ class MultiDim:
         elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
-            return tphys, metallicity
-        elif SFH_model=='FIRE':
-            import cosmic.FIRE as FIRE
-            tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
 
     def set_kstar(self, mass):

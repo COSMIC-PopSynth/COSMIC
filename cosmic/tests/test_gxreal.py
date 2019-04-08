@@ -43,7 +43,7 @@ class TestGxreal(unittest2.TestCase):
 
         self.assertTrue(np.min(gx_real.gxrealization.mass_1) >= 0.0)
         self.assertTrue(np.min(gx_real.gxrealization.mass_2) >= 0.0)
-        self.assertTrue(np.min(gx_real.gxrealization.porb) >= 0.0) 
+        self.assertTrue(np.min(gx_real.gxrealization.porb) >= 0.0)
         self.assertTrue(np.min(gx_real.gxrealization.ecc) >= 0.0)
         self.assertTrue(np.max(gx_real.gxrealization.ecc) <= 1.0)
- 
+

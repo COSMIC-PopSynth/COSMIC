@@ -12,10 +12,8 @@ MacOS
 -----
 .. code-block:: bash
 
-   conda create --name cosmic python=3.6
+   conda create -n cosmic gcc numpy h5py python=3.7
    source activate cosmic
-   conda install gcc numpy
-   conda install -c uvcdat gfortran
    pip install cosmic-popsynth
 
 Unix

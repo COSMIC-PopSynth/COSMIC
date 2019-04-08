@@ -28,10 +28,11 @@
 *   lhei = luminosity at He ignition, lums(4)
 *   rzams = radius at ZAMS
 *   rtms = radius at TMS
-*   rg = giant branch or Hayashi track radius, approporaite for the type. 
-*        For kw=1 or 2 this is radius at BGB, and for kw=4 either GB or 
+*   rg = giant branch or Hayashi track radius, approporaite for the type.
+*        For kw=1 or 2 this is radius at BGB, and for kw=4 either GB or
 *        AGB radius at present luminosity.
 *
+      tebgb = 0.d0
       logm = log10(mass)
       A = MIN(0.81d0,MAX(0.68d0,0.68d0+0.4d0*logm))
       C = MAX(-2.5d0,MIN(-1.5d0,-2.5d0+5.d0*logm))
@@ -51,7 +52,7 @@
 * Formula is fairly accurate for both FGB and AGB stars if M <= 10, and
 * gives reasonable values for higher masses. Mass dependence is on actual
 * rather than ZA mass, expected to work for mass-losing stars (but not
-* tested!). The slightly complex appearance is to insure continuity at 
+* tested!). The slightly complex appearance is to insure continuity at
 * the BGB, which depends on the ZA mass.
 *
          logmt = log10(mt)
@@ -92,17 +93,17 @@
 * Stars not on the Hayashi track: MS and HG stars, non-giant CHeB stars,
 * HeMS and HeHG stars, as well as giants with very small envelope mass.
 *
-         
+
          if(kw.le.6)then
 *
 * Envelope k^2 fitted for MS and HG stars.
 * Again, pretty accurate for M <= 10 but less so for larger masses.
-* [Note that this represents the whole star on the MS, so there is a 
-* discontinuity in stellar k^2 between MS and HG - okay for stars with a 
+* [Note that this represents the whole star on the MS, so there is a
+* discontinuity in stellar k^2 between MS and HG - okay for stars with a
 * MS hook but low-mass stars should preferably be continous...]
 *
-* For other types of star not on the Hayashi track we use the same fit as 
-* for HG stars, this is not very accurate but has the correct qualitative 
+* For other types of star not on the Hayashi track we use the same fit as
+* for HG stars, this is not very accurate but has the correct qualitative
 * behaviour. For CheB stars this is an overestimate because they appear
 * to have a more centrally concentrated envelope than HG stars.
 *
