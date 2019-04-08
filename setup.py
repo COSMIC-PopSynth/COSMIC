@@ -75,17 +75,15 @@ setup_requires = [
     'pytest-runner',
 ]
 install_requires = [
-    'numpy >= 1.7.1',
+    'numpy >= 1.16',
     'scipy >= 0.12.1',
     'matplotlib >= 1.2.0, != 2.1.0, != 2.1.1',
     'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
     'astropy >= 1.1.1 ; python_version >= \'3\'',
     'configparser',
-    'gwpy >= 0.12',
-    'pandas >= 0.22 ; python_version >= \'3.5\'',
-    'pandas < 0.21 ; python_version == \'3.4\'',
-    'pandas >= 0.22 ; python_version == \'2.7\'',
-    'tables > 3.0.0',
+    'gwpy >= 0.14',
+    'pandas >= 0.24',
+    'tables > 3.5.0',
     'h5py >= 1.3',
 ]
 tests_require = [
@@ -104,8 +102,7 @@ extras_require = {
 }
 
 # fortran compile
-wrapper = Extension('cosmic._evolvebin', sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f', 'cosmic/src/concatkstars.f'], extra_compile_args = ["-O -g"])
-
+wrapper = Extension('cosmic._evolvebin', sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f', 'cosmic/src/concatkstars.f', 'cosmic/src/bpp_array.f'], extra_compile_args = ["-g"], )#extra_f77_compile_args=["-O0"], extra_f90_compile_args=["-O0"])
 
 # -- run setup ----------------------------------------------------------------
 
@@ -131,15 +128,15 @@ setup(name=DISTNAME,
       install_requires=install_requires,
       tests_require=tests_require,
       extras_require=extras_require,
-      python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
+      python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
       use_2to3=True,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.7',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Intended Audience :: Science/Research',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Science/Research',

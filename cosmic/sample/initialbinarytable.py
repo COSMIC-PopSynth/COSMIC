@@ -66,14 +66,14 @@ class InitialBinaryTable():
         porb : float
             Orbital period [days]
         ecc : float
-            Eccentricity 
+            Eccentricity
         tphysf : float
             Time to evolve the binary [Myr]
         kstar1 : array
-            0-14 Initial stellar type of the larger object; 
+            0-14 Initial stellar type of the larger object;
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
         kstar2 : array
-            0-14 Initial stellar type of the smaller object; 
+            0-14 Initial stellar type of the smaller object;
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
         metallicity:float
             Metallicity of the binaries; Z_sun = 0.02
@@ -84,11 +84,11 @@ class InitialBinaryTable():
             Single binary initial conditions
 
         """
-        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2, 
-                                          m1, m2, porb, ecc, 
-                                          metallicity, tphysf]).T, 
-                               columns = ['kstar_1', 'kstar_2', 
-                                          'mass1_binary', 'mass2_binary', 
+        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
+                                          m1, m2, porb, ecc,
+                                          metallicity, tphysf]).T,
+                               columns = ['kstar_1', 'kstar_2',
+                                          'mass1_binary', 'mass2_binary',
                                           'porb', 'ecc', 'metallicity',
                                           'tphysf'])
 
@@ -97,6 +97,7 @@ class InitialBinaryTable():
     @classmethod
     def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
         """Create multiple binaries
+
         Parameters
         ----------
         m1 : float
@@ -106,18 +107,18 @@ class InitialBinaryTable():
         porb : float
             Orbital period [days]
         ecc : float
-            Eccentricity 
+            Eccentricity
         tphysf : float
             Time to evolve the binary [Myr]
         kstar1 : array
-            0-14 Initial stellar type of the larger object; 
+            0-14 Initial stellar type of the larger object;
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
         kstar2 : array
-            0-14 Initial stellar type of the smaller object; 
+            0-14 Initial stellar type of the smaller object;
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
         metallicity:float
-            Metallicity of the binaries; Z_sun = 0.02        
-            
+            Metallicity of the binaries; Z_sun = 0.02
+
         Returns
         -------
         bin_dat : DataFrame
@@ -125,12 +126,12 @@ class InitialBinaryTable():
         sampled_mass : int
             Total mass of population conatining the initial binaries [Msun]
         """
-        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,       
-                                          m1, m2, porb, ecc,       
-                                          metallicity, tphysf]).T,       
-                               columns = ['kstar_1', 'kstar_2',    
-                                          'mass1_binary', 'mass2_binary',    
-                                          'porb', 'ecc', 'metallicity', 
+        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
+                                          m1, m2, porb, ecc,
+                                          metallicity, tphysf]).T,
+                               columns = ['kstar_1', 'kstar_2',
+                                          'mass1_binary', 'mass2_binary',
+                                          'porb', 'ecc', 'metallicity',
                                           'tphysf'])
         return bin_dat
 
@@ -141,10 +142,10 @@ class InitialBinaryTable():
         Parameters
         ----------
         format : str
-            the method name; Choose from 'independent' or 'multidim'    
+            the method name; Choose from 'independent' or 'multidim'
 
         *args
-            the arguments necessary for the registered sample 
+            the arguments necessary for the registered sample
             method; see help(InitialBinaryTable.sampler('independent')
             to see the arguments necessary for the independent sample
         """

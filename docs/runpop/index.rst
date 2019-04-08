@@ -45,23 +45,27 @@ that you would like the final population to contain.
 
 The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming conventions. The conventions are as follows:
 
-*   0 :        MS, < 0.7 Msun
-*   1 :        MS, > 0.7 Msun
-*   2 :        Hertzsprung Gap
-*   3 :        First Giant Branch
-*   4 :        Core Helium Burning
-*   5 :        Early Asymptotic Giant Branch
-*   6 :        Thermally Pulsing AGB
-*   7 :        Naked Helium Star MS
-*   8 :        Naked Helium Star Hertzsprung Gap
-*   9 :        Naked Helium Star Giant Branch
-*  10 :        Helium White Dwarf
-*  11 :        Carbon/Oxygen White Dwarf
-*  12 :        Oxygen/Neon White Dwarf
-*  13 :        Neutron Star
-*  14 :        Black Hole
-*  15 :        Massless Remnant
 
+=====     ==================================
+kstar     evolutionary stage
+=====     ==================================
+0         MS, < 0.7 Msun
+1         MS, > 0.7 Msun
+2         Hertzsprung Gap
+3         First Giant Branch
+4         Core Helium Burning
+5         Early Asymptotic Giant Branch
+6         Thermally Pulsing AGB
+7         Naked Helium Star MS
+8         Naked Helium Star Hertzsprung Gap
+9         Naked Helium Star Giant Branch
+10        Helium White Dwarf
+11        Carbon/Oxygen White Dwarf
+12        Oxygen/Neon White Dwarf
+13        Neutron Star
+14        Black Hole
+15        Massless Remnant
+=====     ==================================
 
 Thus, if you want to generate a 
 population containing double white dwarfs with CO and ONe WD primaries and He-WD secondaries, 
@@ -139,7 +143,7 @@ The syntax for the Evolve class is as follows:
 
     In [2]: from cosmic.evolve import Evolve   
 
-    In [4]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'CK': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'ppsn': 1}
+    In [4]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'merger': 0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'ppsn': 1, 'natal_kick_array' :[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 0, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsnp' : 2.5, 'ecsn_mlow' : 1.6, 'aic' : 1, 'sigmadiv' :-20.0}
 
     In [5]: bpp, bcm, initC  = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
 

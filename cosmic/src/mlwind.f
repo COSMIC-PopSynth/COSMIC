@@ -2,7 +2,7 @@
       real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
       implicit none
       integer kw,windflag,testflag
-      real*8 lum,r,mt,mc,rl,z,teff,tphys
+      real*8 lum,r,mt,mc,rl,z,teff
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
       real*8 neta,bwind,hewind,mxns
       parameter(lum0=7.0d+04,kap=-0.5d0)
@@ -20,7 +20,7 @@
      &            ' Massless Supernova '/
 *
 *      windflag = 0 !BSE=0, startrack08=1, vink=2, vink+LBV for all
-*      stars=3. 
+*      stars=3.
 * Must be one of these values or mlwind will cause problem with code,
 * i.e. mlwind not set (see last line of main if statement...).
       if(windflag.eq.0)then
@@ -39,9 +39,9 @@
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
             dml = neta*4.0d-13*r*lum/mt
-            if(rl.gt.0.d0) dml = 
+            if(rl.gt.0.d0) dml =
      &         dml*(1.d0 + bwind*(MIN(0.5d0,(r/rl)))**6)
-* Apply mass loss of Vassiliadis & Wood, ApJ, 1993, 413, 641, 
+* Apply mass loss of Vassiliadis & Wood, ApJ, 1993, 413, 641,
 * for high pulsation periods on AGB.
             if(kw.eq.5.or.kw.eq.6)then
                p0 = -2.07d0 - 0.9d0*log10(mt) + 1.94d0*log10(r)
@@ -97,9 +97,9 @@
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
             dml = neta*4.0d-13*r*lum/mt
-            if(rl.gt.0.d0) dml = 
+            if(rl.gt.0.d0) dml =
      &         dml*(1.d0 + bwind*(MIN(0.5d0,(r/rl)))**6)
-* Apply mass loss of Vassiliadis & Wood, ApJ, 1993, 413, 641, 
+* Apply mass loss of Vassiliadis & Wood, ApJ, 1993, 413, 641,
 * for high pulsation periods on AGB.
             if(kw.eq.5.or.kw.eq.6)then
                p0 = -2.07d0 - 0.9d0*log10(mt) + 1.94d0*log10(r)
@@ -131,12 +131,12 @@
 *
          mlwind = dms
       elseif(windflag.ge.2)then
-* Vink winds etc according to as implemented following 
+* Vink winds etc according to as implemented following
 * Belczynski, Bulik, Fryer, Ruiter, Valsecchi, Vink & Hurley 2010.
 *
 * Firstly implement BSE 'old' winds that cover all other stars not
 * accounted for by Vink winds (see Belczynski+09). Then implement
-* Vink et al. winds. 
+* Vink et al. winds.
 *
 * Calculate stellar wind mass loss.
 *
@@ -154,9 +154,9 @@
          if(kw.ge.2.and.kw.le.6)then
 * 'Reimers' mass loss
             dml = neta*4.0d-13*r*lum/mt
-            if(rl.gt.0.d0) dml = 
+            if(rl.gt.0.d0) dml =
      &         dml*(1.d0 + bwind*(MIN(0.5d0,(r/rl)))**6)
-* Apply mass loss of Vassiliadis & Wood, ApJ, 1993, 413, 641, 
+* Apply mass loss of Vassiliadis & Wood, ApJ, 1993, 413, 641,
 * for high pulsation periods on AGB.
             if(kw.eq.5.or.kw.eq.6)then
                p0 = -2.07d0 - 0.9d0*log10(mt) + 1.94d0*log10(r)
@@ -172,13 +172,13 @@
 * Apply Vink, de Koter & lamers (2001) OB star winds.
 * First check if hot massive H-rich O/B star in appropriate temperature ranges.
          if(teff.ge.12500.and.teff.le.25000)then
-            dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) - 
+            dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
      &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
      &            0.85d0*LOG10(z/0.02d0) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
             testflag = 2
          elseif(teff.gt.25000.and.teff.le.50000)then
-            dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) - 
+            dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
      &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
      &            0.85d0*LOG10(z/0.02d0) +0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
@@ -196,7 +196,7 @@
                testflag = 3
             endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
-* If naked helium use Hamann & Koesterke (1998) reduced WR winds with 
+* If naked helium use Hamann & Koesterke (1998) reduced WR winds with
 * Vink & de Koter (2005) metallicity dependence.
             dms = 1.0d-13*(lum**1.5d0)*((z/0.02d0)**0.86d0)
             testflag = 4
@@ -214,7 +214,7 @@
 *         write(*,*) 'LBV Winds, ', label(kw),tphys,mt,mc,r,teff,dms
 *         elseif(mt.gt.50.and.testflag.eq.4) then
 *         write(*,*) 'WR Winds, ', label(kw),tphys,mt,mc,r,teff,dms
-*         endif 
+*         endif
 
       return
       end

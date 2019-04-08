@@ -28,7 +28,7 @@ import json
 import numpy as np
 import scipy.special as ss
 import pandas as pd
-
+import warnings
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match
@@ -76,6 +76,9 @@ def parse_commandline():
                         help="Number of binaries to try before checking for "
                         "convergence, it will check ever Nstep binaries until "
                         "it reach Niter binaries", type=int, default=10000)
+    parser.add_argument("--match",
+                        help="Match value for convergence tests",
+                        type=float, default=-5.0)
     parser.add_argument("-n", "--nproc",
                         help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False,
@@ -155,7 +158,6 @@ if __name__ == '__main__':
     BSEDict = dictionary['bse']
     seed_int = int(dictionary['rand_seed']['seed'])
     filters = dictionary['filters']
-    filters['merger_type'] = [str(i).zfill(4) for i in filters['merger_type']]
     convergence = dictionary['convergence']
 
     if seed_int != 0:
@@ -163,8 +165,12 @@ if __name__ == '__main__':
     else:
         np.random.seed(0)
 
+    # ---- Check that values in the BSEDict are viable
+    if BSEDict['polar_kick_angle']<0 or BSEDict['polar_kick_angle']>90:
+        raise ValueError("{0:0.1f} is outside the allowed range of [0,90] for specifying polar kicks".format(BSEDict['polar_kick_angle']))
+
     # Set up final_kstar1 and final_kstar2 strings for saved data files
-    if len(args.final_kstar1) == 2: 
+    if len(args.final_kstar1) == 2:
         kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1]+1)
         kstar1_range_string = str(int(args.final_kstar1[0]))+'_'+str(int(args.final_kstar1[1]))
     else:
@@ -184,6 +190,7 @@ if __name__ == '__main__':
         bcm_save = pd.read_hdf(dat_store, 'bcm')
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
         log_file.write('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
+        log_file.write('\n')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
         total_sampled_mass = np.max(total_mass)
@@ -196,8 +203,8 @@ if __name__ == '__main__':
         idx = 0
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
-    match_save = np.zeros(len(args.convergence_params))
-    Nstep = args.Nstep
+    match_all = np.zeros(len(args.convergence_params))
+    Nstep = 0
 
     match_list = []
 
@@ -214,14 +221,15 @@ if __name__ == '__main__':
     elif args.galaxy_component == 'DeltaBurst':
         SFH_model='delta_burst'
         component_age=13700.0
-    elif args.galaxy_component == 'FIRE':
-        SFH_model='FIRE'
-        component_age=13900.0
 
-    # Simulate the fixed population 
+    # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
-    while (Nstep < args.Niter) & (np.max(np.array(match_save)) > -6):
+    bcm_filter = pd.DataFrame()
+    initC_filter = pd.DataFrame()
+    bpp_filter = pd.DataFrame()
+
+    while (Nstep < args.Niter) & (np.max(np.array(match_all)) > args.match):
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
@@ -232,12 +240,12 @@ if __name__ == '__main__':
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
-        log_file.write("The total mass sampled so far is: {0}\n".format(total_sampled_mass))
-        
+
         # save the total_sampled_mass so far
         dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+        log_file.write("The total mass sampled so far is: {0}\n".format(total_sampled_mass))
 
-        # Now that we have all these initial conditions 
+        # Now that we have all these initial conditions
         # let's create an Evolve class and evolve these systems
         # see if users specified a smaple rate for the bcm array if not set it
         # tphysf
@@ -249,51 +257,66 @@ if __name__ == '__main__':
         bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
 
         # Convert the orbital period from years to log seconds
-        bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
-        
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message="divide by zero encountered in log10")
+            bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
+            bpp['porb'] = np.log10(bpp['porb']*sec_in_year)
+
+        met = []
+        for num in bcm.bin_num.unique():
+            n_met = len(bcm.loc[bcm.bin_num==num])
+            met_val = np.array(initCond.loc[initCond.bin_num==num].metallicity)[0]
+            met.extend(np.ones(n_met)*met_val)
+        bcm['metallicity'] = met
+
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
 
         # Filter the bcm and bpp arrays according to user specified filters
-        bcm = filter_bpp_bcm(bcm, bpp, filters)
-        
-        # Filter out systems that don't match final kstars supplied
-        bcm_save_filtered = bcm.loc[(bcm.kstar_1.isin(kstar1_range)) & (bcm.kstar_2.isin(kstar2_range))]
-        
+        if len(bcm_filter) > 1:
+            bcm_filter = bcm_filter.append(filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range))
+            initC_filter = initC_filter.append(initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)])
+            bpp_filter = bpp_filter.append(bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)])
+        else:
+            bcm_filter = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+            initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
+            bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
+
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
-        if (len(bcm_save_filtered) > 0):
+        n_bin_state = []
+        for bin_state in filters['binary_state']:
+            n_bin_state.append(len(bcm_filter.loc[bcm_filter.bin_state == bin_state]))
+        if all(i >= 50 for i in n_bin_state):
             # Save the bcm dataframe
-            dat_store.append('bcm', bcm_save_filtered)
-            bcm_save = bcm_save.append(bcm_save_filtered)
-           
-            idxSave = bcm_save_filtered.bin_num
-            bpp_save_filtered = bpp[bpp.bin_num.isin(idxSave)]
+            dat_store.append('bcm', bcm_filter)
+            bcm_save = bcm_save.append(bcm_filter)
 
             # Save the bpp dataframe
-            dat_store.append('bpp', bpp_save_filtered)
-            bpp_save = bpp_save.append(bpp_save_filtered)
+            dat_store.append('bpp', bpp_filter)
+            bpp_save = bpp_save.append(bpp_filter)
 
-            # Now let's select out the initial binaries that produce our data
-            initC = initCond.loc[initCond.bin_num.isin(idxSave)]
-
-            # Save the initial binaries 
-            dat_store.append('initCond', initC)
+            # Save the initial binaries
+            dat_store.append('initCond', initC_filter)
 
             # perform the convergence
-            match_all = Match.perform_convergence(args.convergence_params, filters['binary_state'],\
-                                                  convergence, bcm_save, bcm_save_filtered, bpp_save,\
+            match = Match.perform_convergence(args.convergence_params, filters['binary_state'],\
+                                                  convergence, bcm_save, bcm_filter, bpp_save,\
                                                   kstar1_range, kstar2_range, log_file)
-            if len(match_all) > 1:
+
+            if (len(match) > 1):
+                match_all = np.reshape(match, (-1,len(args.convergence_params)))
                 match_save = pd.DataFrame(np.atleast_2d(match_all), columns = args.convergence_params)
                 dat_store.append('match', match_save)
-            # save the total_sampled_mass so far
-            dat_store.append('totalMass', pd.DataFrame([total_sampled_mass]))
+
+            # reset the bcm_filter DataFrame
+            bcm_filter = pd.DataFrame()
         Nstep += args.Nstep
         log_file.flush()
+        n_bin_state = []
 
-    # Close the data storage file 
+    # Close the data storage file
     dat_store.close()
 
     log_file.write('All done friend!')
