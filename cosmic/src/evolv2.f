@@ -8,7 +8,7 @@
      \ sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
+     \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
       implicit none
       INCLUDE 'const_bse.h'
@@ -221,7 +221,7 @@
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
       REAL*8 ecsnptmp,ecsn_mlowtmp,sigmadivtmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,mergertmp,qc_fixed,qcrit_array(16)
+      REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
@@ -264,7 +264,6 @@ Cf2py intent(out) bppout,bcmout
       gamma = gammatmp
       bconst = bconsttmp
       CK = CKtmp
-      merger = mergertmp
       windflag = windflagtmp
       dtp = dtptmp
       idum = idumtmp
@@ -325,6 +324,7 @@ Cf2py intent(out) bppout,bcmout
       diskxip = 0.d0 !sets if diskxi is to be used (>0; 0.01) and is min diskxi value.
       formation(1) = 0 !helps determine formation channel of interesting systems.
       formation(2) = 0
+      merger = -1 !used in CMC to track systems that dynamically merge
       notamerger = 0 !if 0 you reset the merger NS product to new factory settings else you don't.
       mergemsp = 1 !if set to 1 any NS that merges with another star where the NS is an MSP stays an MSP...
       merge_mem = 0
