@@ -51,7 +51,6 @@
 * alpha1 is the common-envelope efficiency parameter (1.0).  
 * lambda is the binding energy factor for common envelope evolution (0.5).
 *
-* ceflag > 0 activates spin-energy correction in common-envelope (0). 
 * tflag > 0 activates tidal circularisation (1).
 * ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800 (0). 
 * wdflag > 0 uses modified-Mestel cooling for WDs (0). 
@@ -90,7 +89,7 @@
 * Read in the BSE parameters      
 *
       READ(10,*)neta,bwind,hewind,alpha1,lambda  
-      READ(10,*)ceflag,tflag,ifflag,wdflag
+      READ(10,*)tflag,ifflag,wdflag
       READ(10,*)bhflag, nsflag, mxns, pts1, pts2, pts3
       READ(10,*)sigma, beta, xi, acc2, epsnov, eddfac, gamma
       READ(10,*)bconst, CK, merger, windflag, fbkickswitch

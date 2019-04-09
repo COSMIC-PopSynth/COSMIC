@@ -1,14 +1,14 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,
-     \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
+     \ tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
      \ bhflagtmp,nsflagtmp,
      \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
      \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsnptmp,ecsn_mlowtmp,aictmp,
      \ sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,mergertmp,windflagtmp,dtptmp,idumtmp,
+     \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
       implicit none
       INCLUDE 'const_bse.h'
@@ -148,9 +148,6 @@
 * Sept 2004 *
 * Input options added/changed:
 *
-*    ceflag - set to 3 this uses de Kool (or Podsiadlowski) CE prescription,
-*             other options, such as Yungelson, could be added as well.
-*
 *    hewind - factor to control the amount of He star mass-loss, i.e.
 *             1.0e-13*hewind*L^(2/3) gives He star mass-loss.
 *
@@ -221,15 +218,14 @@
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
       REAL*8 ecsnptmp,ecsn_mlowtmp,sigmadivtmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,mergertmp,qc_fixed,qcrit_array(16)
+      REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
-      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
+      INTEGER tflagtmp,ifflagtmp,nsflagtmp,aictmp
       INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
-      ceflag = ceflagtmp
       tflag = tflagtmp
       ifflag = ifflagtmp
       nsflag = nsflagtmp
@@ -264,7 +260,6 @@ Cf2py intent(out) bppout,bcmout
       gamma = gammatmp
       bconst = bconsttmp
       CK = CKtmp
-      merger = mergertmp
       windflag = windflagtmp
       dtp = dtptmp
       idum = idumtmp

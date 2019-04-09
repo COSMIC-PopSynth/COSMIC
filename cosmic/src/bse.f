@@ -61,8 +61,6 @@
 * alpha1 is the common-envelope efficiency parameter (1.0).  
 * lambda is the binding energy factor for common envelope evolution (0.5).
 *
-* ceflag > 0 activates spin-energy correction in common-envelope (0). #defunct#
-* ceflag = 3 activates de Kool common-envelope model (0). 
 * tflag > 0 activates tidal circularisation (1).
 * ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800 (0). 
 * wdflag > 0 uses modified-Mestel cooling for WDs (0). 
@@ -94,7 +92,7 @@
       OPEN(22,file='binary.in', status='old')
       READ(22,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
       READ(22,*)neta,bwind,hewind,alpha1,lambda,windflag
-      READ(22,*)ceflag,tflag,ifflag,wdflag,bhflag,nsflag,mxns,idum
+      READ(22,*)tflag,ifflag,wdflag,bhflag,nsflag,mxns,idum
       READ(22,*)pts1,pts2,pts3
       READ(22,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
       if(kstar(1).lt.0.or.kstar(2).lt.0)then

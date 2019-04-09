@@ -23,8 +23,8 @@
       INTEGER KTYPE(0:14,0:14)
       INTEGER binstate,mergertype
       COMMON /TYPES/ KTYPE
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER tflag,ifflag,nsflag,wdflag,ST_tide
+      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag
       INTEGER cekickflag,cemergeflag,cehestarflag
       COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
       common /fall/fallback
@@ -108,9 +108,9 @@
 *
 * Calculate the initial orbital energy
 *
-         IF(CEFLAG.NE.3) EORBI = MC1*MC2/(2.D0*SEP)
+         EORBI = MC1*MC2/(2.D0*SEP)
       ELSE
-         IF(CEFLAG.NE.3) EORBI = MC1*M2/(2.D0*SEP)
+         EORBI = MC1*M2/(2.D0*SEP)
       ENDIF
 *
 * Allow for an eccentric orbit.

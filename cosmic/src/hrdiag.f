@@ -23,8 +23,8 @@
       implicit none
 *
       integer kw,kwp
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER tflag,ifflag,nsflag,wdflag,ST_tide
+      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
       real*8 r,lum,mc,rc,menv,renv,k2
