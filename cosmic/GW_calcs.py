@@ -604,15 +604,15 @@ def LISA_foreground_combo(foreground_freq, foreground_hc2):
     LISA_interp = LISA_hc()
 
     LISA_at_foreground = LISA_interp(foreground_freq)**2
-    power_combo = foreground_hc2 + LISA_at_foreground
+    power_combo = foreground_hc2
 
-    above_foreground_freq = np.logspace(np.log10(max(foreground_freq)+1e-4, 1e-1, 100))
+    above_foreground_freq = np.logspace(np.log10(max(foreground_freq)), -1, 1000)
     LISA_above_foreground = LISA_interp(above_foreground_freq)**2
 
     freqs_total = np.hstack([foreground_freq, above_foreground_freq])
-    hc2_total = np.hstact([power_combo, LISA_above_foreground])
+    hc2_total = np.hstack([power_combo, LISA_above_foreground])
 
-    LISA_combo_interp = interp1d(freqs_total, hc_total)
+    LISA_combo_interp = interp1d(freqs_total, hc2_total)
 
     return LISA_combo_interp
 
@@ -650,12 +650,12 @@ def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
     hc2_array = hc2_circ(m1, m2, f_orb, d_lum)
     freq_array = 2*f_orb
     bin_indices = np.digitize(freq_array, freq_bins_LISA)
-    psd_dat = pd.DataFrame(np.vstack([freq_array, hc_array, bin_indices]),\
+    psd_dat = pd.DataFrame(np.vstack([freq_array, hc2_array, bin_indices]).T,\
                            columns=['f_gw', 'hc2', 'bin_digits'])
 
     power_sum = psd_dat[['hc2', 'bin_digits']].groupby('bin_digits').sum()['hc2']
     power_tot = np.zeros(len(freq_bins_LISA)+1)
-    power_tot[power_sum.index[:len(freq_bins_LISA)-1]] = power_sum
+    power_tot[np.array(power_sum.index[:len(freq_bins_LISA)-1]).astype('int')] = power_sum
     foreground_dat = pd.DataFrame(np.vstack([freq_bins_LISA, power_tot[1:]]).T,\
                                   columns=['freq', 'hc2'])
     foreground_dat = foreground_dat.rolling(rolling_window).median()
