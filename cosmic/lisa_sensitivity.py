@@ -10,14 +10,14 @@ def lisa_characteristic_noise():
 
     Returns
     -------
-    LISA_hc : interpolation of LISA sensitivity curve 
-    ''' 
+    LISA_hc : interpolation of LISA sensitivity curve
+    '''
     freq = np.logspace(-9,1,10000)
     # note: freq [Hz], L_arm [m], S_n [Hz^-0.5]
     L_arm = 2.5e9
     f_star = 19.09*1e-3
 
-    P_oms = (1.5e-11)**2*(1. + (2.0e-3/freq)**4) 
+    P_oms = (1.5e-11)**2*(1. + (2.0e-3/freq)**4)
     P_acc = (3.0e-15)**2*(1. + (0.4e-3/freq)**2)*(1. + (freq/(8.0e-3))**4)
 
     P_n = (P_oms + 2.*(1. + np.cos(freq/f_star)**2)*P_acc/(2.*np.pi*freq)**4)/L_arm**2

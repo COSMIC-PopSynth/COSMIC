@@ -54,6 +54,16 @@ geo_mass = G/c**2
 
 
 def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
+    """Something
+
+    Parameters
+    ----------
+    final_kstar1 : `int`
+        name of the format to be registered
+
+    final_kstar2 : `int`
+        the class that the sampler returns
+    """
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
@@ -248,7 +258,7 @@ class Sample(object):
         """
         q = mass2/mass1
         RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
-        
+
         q2 = mass1/mass2
         RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
         try:
@@ -336,16 +346,12 @@ class Sample(object):
             'burst' assigns an evolution time assuming a burst of constant
             star formation for 1Gyr starting at component_age [Myr] in the past
             'delta_burst' assignes a t=0 evolution time until component age
-            'FIRE' assigns times and matallicities according to m12i
             DEFAULT: 'const'
         component_age: float
-            age of the Galactic component [Myr] 
-            Default: 10000.0
-            Deprecated if SFH_model='FIRE'
+            age of the Galactic component [Myr]; DEFAULT: 10000.0
         met : float
             metallicity of the population [Z_sun = 0.02]
             Default: 0.02
-            Deprecated if SFH_model='FIRE'
         size : int, optional
             number of evolution times to sample
             NOTE: this is set in runFixedPop call as Nstep
@@ -372,10 +378,6 @@ class Sample(object):
         elif SFH_model=='delta_burst':
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
-            return tphys, metallicity
-        elif SFH_model=='FIRE':
-            import cosmic.FIRE as FIRE
-            tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
 
     def set_kstar(self, mass):

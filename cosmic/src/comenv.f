@@ -25,27 +25,31 @@
       COMMON /TYPES/ KTYPE
       INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
       COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER cekickflag,cemergeflag,cehestarflag
+      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
       common /fall/fallback
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
       REAL*8 M02,M2,MC2,AJ2,JSPIN2,R2,L2,K22,MC22
       REAL*8 TSCLS1(20),TSCLS2(20),LUMS(10),GB(10),TM1,TM2,TN,ZPARS(20)
       REAL*8 EBINDI,EBINDF,EORBI,EORBF,ECIRC,SEPF,SEPL,MF,XX
+      REAL*8 SEP_postCE, M_postCE
       REAL*8 CONST,DELY,DERI,DELMF,MC3,FAGE1,FAGE2
       REAL*8 ECC,SEP,JORB,TB,OORB,OSPIN1,OSPIN2,TWOPI
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
+      REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 natal_kick(6)
       REAL*8 bkick(20),fallback,ecsnp,ecsn_mlow,M1i,M2i
       INTEGER formation1,formation2
       REAL*8 sigma,bhsigmafrac,sigmahold,sigmadiv
       COMMON /VALUE4/ sigma,bhsigmafrac
       REAL*8 AURSUN,K3,ALPHA1,LAMBDA
-      PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0) 
+      PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0)
       COMMON /VALUE2/ ALPHA1,LAMBDA
       LOGICAL COEL,output
-      REAL*8 CELAMF,CELAMF_XU_LI,RL,RZAMSF
-      EXTERNAL CELAMF,CELAMF_XU_LI,RL,RZAMSF
+      REAL*8 CELAMF,RL,RZAMSF
+      EXTERNAL CELAMF,RL,RZAMSF
 *
 * Common envelope evolution - entered only when KW1 = 2, 3, 4, 5, 6, 8 or 9.
 *
@@ -76,8 +80,6 @@
          LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDA)
       ELSEIF(LAMBDA.LT.0.d0)THEN
          LAMB1 = -1.0*LAMBDA
-      ELSE
-         LAMB1 = CELAMF_XU_LI(KW,M01,M1,MC1,R1,LAMBDA)
       ENDIF
       KW = KW2
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
@@ -101,8 +103,6 @@
             LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDA)
          ELSEIF(LAMBDA.LT.0.d0)THEN
             LAMB2 = -1.0*LAMBDA
-         ELSE
-            LAMB2 = CELAMF_XU_LI(KW,M02,M2,MC2,R2,LAMBDA)
          ENDIF
          EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
@@ -129,11 +129,24 @@
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
-         IF(RC1/RL1.GE.R2/RL2)THEN
+*
+* If cemergeflag is set, cause kstars without clear core-envelope
+* structure to merge automatically if they enter a CE
+*
+         IF(cemergeflag.eq.1)THEN
+            if(KW1.eq.0.or.KW1.eq.1.or.KW1.eq.2.or.KW1.eq.7.or.
+     &         KW1.eq.8.or.KW1.eq.10.or.KW1.eq.11.or.KW1.eq.12)then
+                  COEL = .TRUE.
+                  SEPL = RC1/RL1
+                  binstate = 1
+                  CALL CONCATKSTARS(KW1, KW2, mergertype)
+            endif
+         ENDIF
 *
 * The helium core of a very massive star of type 4 may actually fill
 * its Roche lobe in a wider orbit with a very low-mass secondary.
 *
+         IF(RC1/RL1.GE.R2/RL2)THEN
             IF(RC1.GT.RL1*SEPF)THEN
                COEL = .TRUE.
                SEPL = RC1/RL1
@@ -166,6 +179,20 @@
             M1 = MC1
             KW1i = KW1
             M1i = M1
+*
+* Choose which masses and separations to use in SN based on cekickflag
+*
+            IF(cekickflag.eq.0)then
+               SEP_postCE=SEPF
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.1)then
+               SEP_postCE=SEP
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.2)then
+               SEP_postCE=SEPF
+               M_postCE=MC1
+            ENDIF
+
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
@@ -213,8 +240,11 @@
                      formation1 = 6
                   endif
                endif
-               CALL kick(KW1,MF,M1,M2,ECC,SEPF,JORB,vk,star1,
-     &                   R2,fallback,bkick,natal_kick)
+               CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
+     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+* Returning variable state to original naming convention
+               MF = M_postCE
+               SEPF = SEP_postCE
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -239,6 +269,19 @@
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
+*
+* If cemergeflag is set, cause kstars without clear core-envelope
+* structure to merge automatically if they enter a CE
+*
+         IF(cemergeflag.eq.1)THEN
+            if(KW1.eq.0.or.KW1.eq.1.or.KW1.eq.2.or.KW1.eq.7.or.
+     &         KW1.eq.8.or.KW1.eq.10.or.KW1.eq.11.or.KW1.eq.12)then
+                  COEL = .TRUE.
+                  SEPL = RC1/RL1
+                  binstate = 1
+                  CALL CONCATKSTARS(KW1, KW2, mergertype)
+            endif
+         ENDIF
          IF(RC1/RL1.GE.RC2/RL2)THEN
             IF(RC1.GT.RL1*SEPF)THEN
                COEL = .TRUE.
@@ -322,6 +365,55 @@
             M1 = MC1
             KW1i = KW1
             M1i = M1
+*
+* Choose which masses and separations to use in SN based on cekickflag
+*
+            IF(cekickflag.eq.0)then
+               SEP_postCE=SEPF
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.1)then
+               SEP_postCE=SEP
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.2)then
+               SEP_postCE=SEPF
+               M_postCE=MC1
+            ENDIF
+*
+* If cehestarflag is specified, determine the post-CE separation and/or
+* mass for He-star/compact object system according to Tauris+2015
+*
+            IF(KW1.ge.7.and.KW1.le.9.and.KW2.ge.13)THEN
+                if(cehestarflag.ne.0)then
+* calculate G in Rsun/Msun/days, and initial Porb in days
+                    G = 2957.45d+0
+                    Porbi = (TWOPI/(G*(MF+M2))**(1d0/2d0)) *
+     &                  SEP**(3d0/2d0)
+                    Mcf = (1d0/(400d0*Porbi)+0.49d0)*MF -
+     &                  ((0.016d0/Porbi) - 0.106d0)
+                    if(Porbi.le.2d0)then
+                        Menvf = 0.18d0*Porbi**(0.45d0) *
+     &                      (LOG(Mcf**4d0) - 1.05d0)
+                    else
+                        Menvf = Mcf*(LOG(Porbi**(-0.2d0))+1) +
+     &                      LOG(Porbi**(0.5d0))-1.5d0
+                    endif
+                    qi = MF/M2
+* if cehestarflag is 1, use BSE's calculation of post-CE core mass
+                    if(cehestarflag.eq.1)then
+                        M_postCE = MC1
+                        qf = MC1/M2
+* elseif cehestarflag is 2, use Tauris fitting formula for post-CE mass
+                    elseif(cehestarflag.eq.2)then
+                        M_postCE = (Mcf+Menvf)
+                        qf = (Mcf+Menvf)/M2
+                    endif
+                    Porbf = (((qi+1)/(qf+1))**(2d0) * (qi/qf)**(3d0) *
+     &                      EXP(3d0*(qf-qi))) * Porbi
+                    SEP_postCE = (G*(M_postCE+M2) / (TWOPI**(2d0)) *
+     &                      Porbf**(2d0))**(1d0/3d0)
+                endif
+            ENDIF
+
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
@@ -369,8 +461,11 @@
                      formation1 = 6
                   endif
                endif
-               CALL kick(KW1,MF,M1,M2,ECC,SEPF,JORB,vk,star1,
-     &                   R2,fallback,bkick,natal_kick)
+               CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
+     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+* Returning variable state to original naming convention
+               MF = M_postCE
+               SEPF = SEP_postCE
                snp = 1
                if(M2.lt.0.d0)then
                   if(KW2.ge.10) M1 = M1-M2
@@ -389,6 +484,20 @@
             M2 = MC2
             KW2i = KW2
             M2i = M2
+*
+* Choose which masses and separations to use in SN based on cekickflag
+*
+            IF(cekickflag.eq.0)then
+               SEP_postCE=SEPF
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.1)then
+               SEP_postCE=SEP
+               M_postCE=MF
+            ELSEIF(cekickflag.eq.2)then
+               SEP_postCE=SEPF
+               M_postCE=MC2
+            ENDIF
+
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
@@ -436,8 +545,11 @@
                      formation2 = 6
                   endif
                endif
-               CALL kick(KW2,MF,M2,M1,ECC,SEPF,JORB,vk,star2,
-     &                   R1,fallback,bkick,natal_kick)
+               CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
+     &                   JORB,vk,star2,R1,fallback,bkick,natal_kick)
+* Returning variable state to original naming convention
+               MF = M_postCE
+               SEPF = SEP_postCE
                snp = 1
                if(M1.lt.0.d0)then
                   if(KW2.ge.10) M2 = M2-M1
@@ -457,7 +569,7 @@
       IF(COEL)THEN
          MC22 = MC2
          IF(KW.EQ.4.OR.KW.EQ.7)THEN
-* If making a helium burning star calculate the fractional age 
+* If making a helium burning star calculate the fractional age
 * depending on the amount of helium that has burnt.
             IF(KW1.LE.3)THEN
                FAGE1 = 0.D0
@@ -485,7 +597,7 @@
 *
       IF(COEL)THEN
 *
-* Calculate the orbital spin just before coalescence. 
+* Calculate the orbital spin just before coalescence.
 *
          TB = (SEPL/AURSUN)*SQRT(SEPL/(AURSUN*(MC1+MC2)))
          OORB = TWOPI/TB
@@ -608,9 +720,9 @@
          if(output) write(*,*)'coel 2 7:',KW1,M1,M01,R1,MENV,RENV
       ELSE
 *
-* Check if any eccentricity remains in the orbit by first using 
-* energy to circularise the orbit before removing angular momentum. 
-* (note this should not be done in case of CE SN ... fixed PDK).  
+* Check if any eccentricity remains in the orbit by first using
+* energy to circularise the orbit before removing angular momentum.
+* (note this should not be done in case of CE SN ... fixed PDK).
 *
          IF(snp.EQ.0)THEN
             IF(EORBF.LT.ECIRC)THEN
@@ -620,7 +732,7 @@
             ENDIF
          ENDIF
 *
-* Set both cores in co-rotation with the orbit on exit of CE, 
+* Set both cores in co-rotation with the orbit on exit of CE,
 *
          TB = (SEPF/AURSUN)*SQRT(SEPF/(AURSUN*(M1+M2)))
          OORB = TWOPI/TB
