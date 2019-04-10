@@ -24,20 +24,17 @@ k2_range_false = np.arange(0,12)
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 wrong_dict = {'test_wrong_dict' : False}
-alive_dict = {'mass_transfer_white_dwarf_to_co' : True, 
+alive_dict = {'mass_transfer_white_dwarf_to_co' : True,
              'select_final_state' : True,
              'binary_state' : [0],
-             'merger_type' : [-1],
              'lisa_sources' : True}
 noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
                'select_final_state' : True,
                'binary_state' : [0],
-               'merger_type' : [-1],
                'lisa_sources' : False}
 false_dict = {'mass_transfer_white_dwarf_to_co' : False,
              'select_final_state' : False,
              'binary_state' : [0,1,2],
-             'merger_type' : [-1,100],
              'lisa_sources' : False}
 conv_dict_true = {'lisa_convergence' : True}
 conv_dict_false = {'lisa_convergence' : False}
@@ -51,12 +48,11 @@ BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [41.0, 44.0, 50.0, 132.0, 320.0]
 MASS_SUM_MULTIPLE = 301.0
-X_TRANS_SUM = -2.7199038e-07  
+X_TRANS_SUM = -2.7199038e-07
 BW_KNUTH = 0.333
 _KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
                   'select_final_state',
                   'binary_state',
-                  'merger_type',
                   'lisa_sources']
 
 
@@ -67,21 +63,21 @@ class TestUtils(unittest2.TestCase):
         self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
 
         bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
-        
+
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
         self.assertTrue(len(bcm_true.loc[bcm_true.sep > 0.0]) >= 1)
         self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
         self.assertTrue(bcm_true.porb.all() < 5.0)
 
         bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
-        
+
         self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
         self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0]) > 1)
         self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
 
         bcm_no_LISA = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
         self.assertTrue(len(bcm_no_LISA.loc[bcm_no_LISA.porb < 4.0]) > 1)
- 
+
     def test_bcm_conv_select(self):
         self.assertRaises(ValueError, utils.bcm_conv_select, BCM_TEST, BPP_TEST, wrong_dict)
 
@@ -101,9 +97,9 @@ class TestUtils(unittest2.TestCase):
         # Give this custom integrator a simple integration
         # of a line from x = 0 to 1 and y= 0 to 1
         self.assertAlmostEqual(utils.idl_tabulate(x,f), IDL_TABULATE_ANSWER)
-    
+
     def test_idl_tabulate_Err(self):
-        # Force an error by sending in x = [0] 
+        # Force an error by sending in x = [0]
         self.assertEqual(utils.idl_tabulate(np.array([0]),f), 0)
 
     def test_min_max_mass_single_kstar(self):
@@ -117,12 +113,12 @@ class TestUtils(unittest2.TestCase):
         # Send in a range of types for a binary for both components
         m_list = utils.mass_min_max_select(kstar_double, kstar_double)
         self.assertEqual(np.sum([m_list]), MASS_SUM_MULTIPLE)
-    
+
     def test_param_transform(self):
-        # Send in a range of numbers that should have a 
+        # Send in a range of numbers that should have a
         # minimum of 0.0 and a maximum of 1.0 after transformation
         self.assertTrue(np.min(utils.param_transform(f)) >= 0.0)
-        self.assertTrue(np.max(utils.param_transform(f)) <= 1.0)         
+        self.assertTrue(np.max(utils.param_transform(f)) <= 1.0)
 
     def test_dat_transform(self):
         # send in DataFrame of 10*x (defined above)

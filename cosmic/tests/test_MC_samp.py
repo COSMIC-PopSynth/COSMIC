@@ -71,17 +71,17 @@ class TestMC_samp(unittest2.TestCase):
         self.assertEqual(bulge_mass, GX_COMPONENT_MASS_BULGE)
 
     def test_sample_sech_squared(self):
-        # Check that the mean & variance of the sampled distribution matches 
-        # the analytical mean & variance of the sech squared distribution   
+        # Check that the mean & variance of the sampled distribution matches
+        # the analytical mean & variance of the sech squared distribution
         sech_squared_sample = MC_samp.sample_sech_squared(N_SAMP, 2*SECH_SQUARED_SCALE_HEIGHT)
         dist_mean = np.mean(sech_squared_sample)
         self.assertTrue(np.abs(dist_mean - SECH_SQUARED_MEAN_TEST) < 1e-3)
         dist_var = np.var(sech_squared_sample)
         self.assertTrue(np.abs(dist_var - SECH_SQUARED_VAR_TEST) < 1e-3)
- 
+
     def test_sample_exponential_radial(self):
-        # Check that the mean & variance of the sampled distribution matches 
-        # the analytical mean & variance of the radial exponential distribution 
+        # Check that the mean & variance of the sampled distribution matches
+        # the analytical mean & variance of the radial exponential distribution
         exp_radial_sample = MC_samp.sample_exponential_radial(N_SAMP, EXP_RADIAL_SCALE_HEIGHT)
         dist_mean = np.mean(exp_radial_sample)
         self.assertTrue(np.abs(dist_mean - (EXP_RADIAL_MEAN_TEST)) < 1e-3)
@@ -89,17 +89,17 @@ class TestMC_samp(unittest2.TestCase):
         self.assertTrue(np.abs(dist_var - EXP_RADIAL_VAR_TEST) < 1e-3)
 
     def test_sample_exponential_vertical(self):
-        # Check that the mean & variance of the sampled distribution matches 
-        # the analytical mean & variance of the radial exponential distribution 
+        # Check that the mean & variance of the sampled distribution matches
+        # the analytical mean & variance of the radial exponential distribution
         exp_vertical_sample = MC_samp.sample_exponential_vertical(N_SAMP, EXP_VERT_SCALE_HEIGHT)
         dist_mean = np.mean(exp_vertical_sample)
         self.assertTrue(np.abs(dist_mean - (EXP_VERT_MEAN_TEST)) < 1e-3)
         dist_var = np.var(exp_vertical_sample)
         self.assertTrue(np.abs(dist_var - EXP_VERT_VAR_TEST) < 1e-3)
 
-    def test_sample_exponential_square_radial(self): 
-        # Check that the mean & variance of the sampled distribution matches 
-        # the analytical mean & variance of the radial exponential squared distribution 
+    def test_sample_exponential_square_radial(self):
+        # Check that the mean & variance of the sampled distribution matches
+        # the analytical mean & variance of the radial exponential squared distribution
         exp_square_radial_sample = MC_samp.sample_exponential_square_radial(N_SAMP, EXP_SQUARE_RAD_SCALE_HEIGHT)
         dist_mean = np.mean(exp_square_radial_sample)
         self.assertTrue(np.abs(dist_mean - (EXP_SQUARE_RAD_MEAN_TEST)) < 1e-3)
@@ -111,14 +111,14 @@ class TestMC_samp(unittest2.TestCase):
         np.random.seed(2)
         xGX, yGX, zGX, inc, OMEGA, omega = MC_samp.galactic_positions('ThinDisk', N_SAMP, model='McMillan')
         self.assertTrue(np.abs(np.mean((xGX**2+yGX**2)**0.5) - MCMILLAN_THINDISK_MEAN_TEST_XY) < 1e-2)
-        self.assertTrue(np.abs(np.mean(zGX) - MCMILLAN_THINDISK_MEAN_TEST_Z) < 1e-2) 
+        self.assertTrue(np.abs(np.mean(zGX) - MCMILLAN_THINDISK_MEAN_TEST_Z) < 1e-2)
         self.assertTrue(np.abs(np.mean(inc) - 1.0) < 1e-2)
         self.assertTrue(np.abs(np.mean(OMEGA) - np.pi) < 1e-2)
         self.assertTrue(np.abs(np.mean(omega) - np.pi) < 1e-2)
-       
+
         xGX, yGX, zGX, inc, OMEGA, omega = MC_samp.galactic_positions('ThinDisk', N_SAMP, model='sech_squared')
         self.assertTrue(np.abs(np.mean((xGX**2+yGX**2)**0.5) - SECHSQUARE_THINDISK_MEAN_TEST_XY) < 1e-2)
-        self.assertTrue(np.abs(np.mean(zGX) - SECHSQUARE_THINDISK_MEAN_TEST_Z) < 1e-2) 
+        self.assertTrue(np.abs(np.mean(zGX) - SECHSQUARE_THINDISK_MEAN_TEST_Z) < 1e-2)
         self.assertTrue(np.abs(np.mean(inc) - 1.0) < 1e-2)
         self.assertTrue(np.abs(np.mean(OMEGA) - np.pi) < 1e-2)
         self.assertTrue(np.abs(np.mean(omega) - np.pi) < 1e-2)

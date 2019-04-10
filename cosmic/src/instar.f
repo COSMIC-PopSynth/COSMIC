@@ -51,7 +51,7 @@
       ktype(6,7) = 4
       ktype(6,8) = 6
       ktype(6,9) = 6
-      ktype(6,10) = 5 
+      ktype(6,10) = 5
       ktype(6,11) = 6
       ktype(6,12) = 6
       ktype(7,8) = 8

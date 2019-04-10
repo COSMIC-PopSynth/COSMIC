@@ -179,7 +179,7 @@
 * Before we draw the kick from the maxwellian and then scale it
 * if desired, let us see if a pre-supplied set of natal kicks
 * and phi theta values associated with the kicks was passed.
-      if(natal_kick(snstar).gt.0.d0)then
+      if(natal_kick(snstar).ge.0.d0)then
           vk = natal_kick(snstar)
           vk2 = vk*vk
       else
@@ -237,13 +237,10 @@
 * Before we randomly draw a phi and theta,
 * let us see if a pre-supplied set of natal kicks
 * and phi/theta values associated with the kicks was passed.
-      if(natal_kick(snstar).gt.0.d0)then
+      if((natal_kick(snstar+2).ge.(-pi/2.d0)).and.
+     &       (natal_kick(snstar+2).le.(pi/2.d0)))then
           phi = natal_kick(snstar+2)
           sphi = SIN(phi)
-          cphi = COS(phi)
-          theta = natal_kick(snstar+4)
-          stheta = SIN(theta)
-          ctheta = COS(theta)
       else
 * CLR - Allow for a restricted opening angle for SN kicks
 *       Only relevant for binaries, obviously
@@ -257,11 +254,18 @@
             phi = -phi
             sphi = SIN(phi)
           endif
-          cphi = COS(phi)
-          theta = twopi*ran3(idum)
-          stheta = SIN(theta)
-          ctheta = COS(theta)
       endif
+      cphi = COS(phi)
+
+
+      if((natal_kick(snstar+4).ge.(0.d0)).and.
+     &       (natal_kick(snstar+4).le.(2.d0*pi)))then
+          theta = natal_kick(snstar+4)
+      else
+          theta = twopi*ran3(idum)
+      endif
+      stheta = SIN(theta)
+      ctheta = COS(theta)
 
 * CLR - if the orbit has already been kicked, then any polar kick
 *       needs to be tilted as well (since L_hat and S_hat are no longer

@@ -31,7 +31,7 @@ __all__ = ['Evolve']
 
 
 bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
-               'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type', 
+               'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta', 'bin_num']
 
 bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
@@ -57,13 +57,13 @@ class Evolve(Table):
         Parameters
         ----------
         nproc : `int`, optional, default: 1
-            number of CPUs to use for parallel file reading
+            number of CPUs to use to evolve systems
+            in parallel
         idx : `int`, optional, default: 0
             initial index of the bcm/bpp arrays
         dtp : `float`, optional: default: tphysf
             timestep size in Myr for bcm output where tphysf
             is total evolution time in Myr
-       
 
         Returns
         -------
@@ -87,6 +87,12 @@ class Evolve(Table):
             initialbinarytable['alpha1'] = BSEDict['alpha1']
         if 'lambdaf' not in initialbinarytable.keys():
             initialbinarytable['lambdaf'] = BSEDict['lambdaf']
+        if 'cekickflag' not in initialbinarytable.keys():
+            initialbinarytable['cekickflag'] = BSEDict['cekickflag']
+        if 'cemergeflag' not in initialbinarytable.keys():
+            initialbinarytable['cemergeflag'] = BSEDict['cemergeflag']
+        if 'cehestarflag' not in initialbinarytable.keys():
+            initialbinarytable['cehestarflag'] = BSEDict['cehestarflag']
         if 'ceflag' not in initialbinarytable.keys():
             initialbinarytable['ceflag'] = BSEDict['ceflag']
         if 'tflag' not in initialbinarytable.keys():
@@ -109,22 +115,20 @@ class Evolve(Table):
             initialbinarytable['pts2'] = BSEDict['pts2']
         if 'pts3' not in initialbinarytable.keys():
             initialbinarytable['pts3'] = BSEDict['pts3']
+        if 'ecsnp' not in initialbinarytable.keys():
+            initialbinarytable['ecsnp'] = BSEDict['ecsnp']
+        if 'ecsn_mlow' not in initialbinarytable.keys():
+            initialbinarytable['ecsn_mlow'] = BSEDict['ecsn_mlow']
+        if 'aic' not in initialbinarytable.keys():
+            initialbinarytable['aic'] = BSEDict['aic']
         if 'sigma' not in initialbinarytable.keys():
             initialbinarytable['sigma'] = BSEDict['sigma']
+        if 'sigmadiv' not in initialbinarytable.keys():
+            initialbinarytable['sigmadiv'] = BSEDict['sigmadiv']
         if 'bhsigmafrac' not in initialbinarytable.keys():
             initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
         if 'polar_kick_angle' not in initialbinarytable.keys():
             initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
-        if pd.Series(['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']).isin(initialbinarytable.keys()).all() and 'natal_kick' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick'] = initialbinarytable[['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']].values.tolist()
-        if 'natal_kick' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick'] = [BSEDict['natal_kick']] * len(initialbinarytable)
-            initialbinarytable.loc[:,'SNkick_1'] = pd.Series([BSEDict['natal_kick'][0]] * len(initialbinarytable), index=initialbinarytable.index, name='SNkick_1')
-            initialbinarytable.loc[:,'SNkick_2'] = pd.Series([BSEDict['natal_kick'][1]] * len(initialbinarytable), index=initialbinarytable.index, name='SNkick_2')
-            initialbinarytable.loc[:,'phi_1'] = pd.Series([BSEDict['natal_kick'][2]] * len(initialbinarytable), index=initialbinarytable.index, name='phi_1')
-            initialbinarytable.loc[:,'phi_2'] = pd.Series([BSEDict['natal_kick'][3]] * len(initialbinarytable), index=initialbinarytable.index, name='phi_2')
-            initialbinarytable.loc[:,'theta_1'] = pd.Series([BSEDict['natal_kick'][4]] * len(initialbinarytable), index=initialbinarytable.index, name='theta_1')
-            initialbinarytable.loc[:,'theta_2'] = pd.Series([BSEDict['natal_kick'][5]] * len(initialbinarytable), index=initialbinarytable.index, name='theta_2')
         if 'beta' not in initialbinarytable.keys():
             initialbinarytable['beta'] = BSEDict['beta']
         if 'xi' not in initialbinarytable.keys():
@@ -141,8 +145,6 @@ class Evolve(Table):
             initialbinarytable['bconst'] = BSEDict['bconst']
         if 'ck' not in initialbinarytable.keys():
             initialbinarytable['ck'] = BSEDict['ck']
-        if 'merger' not in initialbinarytable.keys():
-            initialbinarytable['merger'] = BSEDict['merger']
         if 'windflag' not in initialbinarytable.keys():
             initialbinarytable['windflag'] = BSEDict['windflag']
         if 'dtp' not in initialbinarytable.keys():
@@ -152,24 +154,50 @@ class Evolve(Table):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
 
+
+        natal_kick_columns = ['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']
+        if pd.Series(natal_kick_columns).isin(initialbinarytable.keys()).all() and 'natal_kick_array' not in initialbinarytable.keys():
+            initialbinarytable['natal_kick_array'] = initialbinarytable[natal_kick_columns].values.tolist()
+        if 'natal_kick_array' not in initialbinarytable.keys():
+            initialbinarytable['natal_kick_array'] = [BSEDict['natal_kick_array']] * len(initialbinarytable)
+            for idx, column_name in enumerate(natal_kick_columns):
+                initialbinarytable.loc[:, column_name] = pd.Series([BSEDict['natal_kick_array'][idx]] * len(initialbinarytable), index=initialbinarytable.index, name=column_name)
+
+        qcrit_columns = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
+        if pd.Series(qcrit_columns).isin(initialbinarytable.keys()).all() and 'qcrit_array' not in initialbinarytable.keys():
+            initialbinarytable['qcrit_array'] = initialbinarytable[qcrit_columns].values.tolist()
+
+        if 'qcrit_array' not in initialbinarytable.keys():
+            initialbinarytable['qcrit_array'] = [BSEDict['qcrit_array']] * len(initialbinarytable)
+            for kstar in range(0,16):
+                initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = pd.Series([BSEDict['qcrit_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='qcrit_{0}'.format(kstar))
+
         # need to ensure that the order of variables is correct
         initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                                 'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                                 'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
-                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
-                                                'polar_kick_angle', 'natal_kick',
+                                                'cekickflag', 'cemergeflag', 'cehestarflag',
+                                                'mxns', 'pts1', 'pts2', 'pts3',
+                                                'ecsnp', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                                                'natal_kick_array', 'qcrit_array',
                                                 'beta', 'xi', 'acc2', 'epsnov',
-                                                'eddfac', 'gamma', 'bconst', 'ck', 'merger', 'windflag', 'dtp',
+                                                'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'dtp',
                                                 'randomseed', 'bin_num']].values
 
-        initialbinarytable = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
-                                                'mxns', 'pts1', 'pts2', 'pts3', 'sigma', 'bhsigmafrac',
-                                                'polar_kick_angle', 'SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2',
-                                                'beta', 'xi', 'acc2', 'epsnov',
-                                                'eddfac', 'gamma', 'bconst', 'ck', 'merger', 'windflag', 'dtp',
-                                                'randomseed', 'bin_num']]
+        initial_binary_table_column_names = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                                             'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                             'cekickflag', 'cemergeflag', 'cehestarflag',
+                                             'mxns', 'pts1', 'pts2', 'pts3',
+                                             'ecsnp', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                                             'beta', 'xi', 'acc2', 'epsnov',
+                                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'dtp',
+                                             'randomseed', 'bin_num']
+
+        initial_binary_table_column_names.extend(natal_kick_columns)
+        initial_binary_table_column_names.extend(qcrit_columns)
+
+        initialbinarytable = initialbinarytable[initial_binary_table_column_names]
 
         # define multiprocessing method
         def _evolve_single_system(f):
@@ -178,13 +206,20 @@ class Evolve(Table):
                 [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
                                                f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                                f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
-                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39])
+                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39],
+                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46])
 
-                bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
-                bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
+                try:
+                    bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
+                    bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
+                except IndexError:
+                    bpp = bpp[:np.argwhere(bpp[:,0] > 0)[0][0]]
+                    bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
+                    raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
+                                   .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[40]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[40]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[47]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[47]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
@@ -192,10 +227,7 @@ class Evolve(Table):
                 return f, bpp, bcm
 
             except Exception as e:
-                if nproc == 1:
-                    raise
-                else:
-                    return f, e
+                raise
 
         # evolve sysyems
         output = mp_utils.multiprocess_with_queues(
@@ -218,4 +250,4 @@ class Evolve(Table):
         bpp.bin_num = bpp.bin_num.astype(int)
         bcm.bin_num = bcm.bin_num.astype(int)
 
-        return bpp, bcm, initialbinarytable 
+        return bpp, bcm, initialbinarytable

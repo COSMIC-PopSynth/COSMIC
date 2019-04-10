@@ -29,7 +29,7 @@
 *
 * This should only be entered with KW = 3, 4, 5, 6 or 9
 *
-* First we check that we don't have a CheB star 
+* First we check that we don't have a CheB star
 * with too small a core mass.
       if(kw.eq.4)then
 * Set the minimum CHeB core mass using M = Mflash
@@ -57,7 +57,7 @@
          mcy = 0.44d0*2.25d0 + 0.448d0
          if(mc.gt.mcy)then
 * A type 6 with this sized core mass cannot exist as it should
-* already have become a NS or BH as a type 5. 
+* already have become a NS or BH as a type 5.
 * We set it up so that it will.
             mcx = (mc + 0.35d0)/0.773d0
          elseif(mc.ge.0.8d0)then
