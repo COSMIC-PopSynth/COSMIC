@@ -110,7 +110,7 @@
          IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
          IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
       ELSE
-         IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
+         IF(CEFLAG.EQ.0) EORBI = MC1*M2/(2.D0*SEP)
          IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
       ENDIF
       if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,EORBI
