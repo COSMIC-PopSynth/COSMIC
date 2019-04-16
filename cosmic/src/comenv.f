@@ -93,9 +93,8 @@
       EBINDI = M1*(M1-MC1)/(LAMB1*R1)
 *
 * If the secondary star is also giant-like add its envelopes's energy.
+* Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
-      EORBI = M1*M2/(2.D0*SEP)
-      if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,EORBI
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
          RZAMS = RZAMSF(M02)
@@ -108,10 +107,13 @@
 *
 * Calculate the initial orbital energy
 *
-         IF(CEFLAG.NE.3) EORBI = MC1*MC2/(2.D0*SEP)
+         IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
+         IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
       ELSE
-         IF(CEFLAG.NE.3) EORBI = MC1*M2/(2.D0*SEP)
+         IF(CEFLAG.EQ.0) EORBI = MC1*M2/(2.D0*SEP)
+         IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
       ENDIF
+      if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,EORBI
 *
 * Allow for an eccentric orbit.
 *
