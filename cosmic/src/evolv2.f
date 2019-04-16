@@ -148,7 +148,7 @@
 * Sept 2004 *
 * Input options added/changed:
 *
-*    ceflag - set to 3 this uses de Kool (or Podsiadlowski) CE prescription,
+*    ceflag - set to 1 this uses de Kool (or Podsiadlowski) CE prescription,
 *             other options, such as Yungelson, could be added as well.
 *
 *    hewind - factor to control the amount of He star mass-loss, i.e.
