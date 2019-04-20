@@ -408,7 +408,7 @@ class Sample(object):
                     if age_prob < SFH_interp(rand_age):
                         t_samp.append(rand_age)
             # Convert from Gyr to Myr for BSE
-            tphys = np.array(t_samp)*1000.0
+            tphys = (max(times)-np.array(t_samp))*1000.0
             metallicity = met*np.ones(size)
             return tphys, metallicity
 
