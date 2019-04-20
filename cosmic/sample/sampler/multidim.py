@@ -25,6 +25,7 @@ import math
 import random
 import scipy.integrate
 
+from scipy.interpolate import interp1d
 from cosmic.utils import mass_min_max_select
 
 from .sampler import register_sampler

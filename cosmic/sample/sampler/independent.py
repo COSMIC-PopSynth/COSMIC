@@ -24,7 +24,7 @@ import multiprocessing as mp
 import math
 import random
 import scipy.integrate
-import scipy.interpolation.interp1d
+from scipy.interpolate import interp1d
 
 from cosmic.utils import mass_min_max_select
 
