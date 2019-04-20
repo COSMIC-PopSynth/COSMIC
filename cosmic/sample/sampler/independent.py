@@ -344,9 +344,15 @@ class Sample(object):
         SFH_model : str
             'const' assigns an evolution time assuming a constant star
             formation rate over the age of the MW disk: component_age [Myr]
+
             'burst' assigns an evolution time assuming a burst of constant
             star formation for 1Gyr starting at component_age [Myr] in the past
+
             'delta_burst' assignes a t=0 evolution time until component age
+
+            'PB99' assigns evolution time assuming Boissier+Prantzos (1999)
+            to match Korol+2017,2018 studies
+ 
             DEFAULT: 'const'
         component_age: float
             age of the Galactic component [Myr]; DEFAULT: 10000.0
@@ -380,6 +386,7 @@ class Sample(object):
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
+
         elif SFH_model=='BP99':
             m_tot = [2.08674344e+06, 6.74121011e+06, 7.31214106e+07,\
                      6.46021430e+08, 1.55217616e+09, 2.37961842e+09,\
@@ -400,7 +407,8 @@ class Sample(object):
                 age_prob = np.random.uniform(0,1,1)
                     if age_prob < SFH_interp(rand_age):
                         t_samp.append(rand_age)
-            tphys = np.array(t_samp)
+            # Convert from Gyr to Myr for BSE
+            tphys = np.array(t_samp)*1000.0
             metallicity = met*np.ones(size)
             return tphys, metallicity
 
