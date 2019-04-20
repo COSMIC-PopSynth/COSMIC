@@ -319,14 +319,24 @@ def hc2_circ(m1, m2, f_orb, D):
     """
     # Set the redshift based on the luminosity distance
     # For systems inside the Milky Way, assume z=0
-    if max(D) >= 1:
-        z = []
-        for d in D:
-            z.append(z_from_lum_distance(D))
-        z = np.array(z)
-    else:
-        z = np.zeros(len(D))
+    if not np.isscalar(D):
+        if max(D) >= 1:
+            z_list = []
+            for d in D:
+                z = z_from_lum_distance(d)
+                z_list.append(z)
+                D_list.append(comoving_distance(z))
+            z = np.array(z_list)
+            D = np.array(D_list)
 
+        else:
+            z = np.zeros(len(D))
+    else:
+        if D >= 1:
+            z = z_from_lum_distance(D)
+            D = comoving_distance(D)
+        else:
+            z = 0.0
     # assumes SI units!
     f_n = 2*f_orb
     f_n_z = f_n/(1+z)
@@ -364,13 +374,25 @@ def hc2(m1, m2, f_orb, D, e, n):
 
     # Set the redshift based on the luminosity distance
     # For systems inside the Milky Way, assume z=0
-    if max(D) >= 1:
-        z = []
-        for d in D:
-            z.append(z_from_lum_distance(D))
-        z = np.array(z)
+    if not np.isscalar(D):
+        if max(D) >= 1:
+            z_list = []
+            for d in D:
+                z = z_from_lum_distance(d)
+                z_list.append(z)
+                D_list.append(comoving_distance(z))
+            z = np.array(z_list)
+            D = np.array(D_list)
+            
+        else:
+            z = np.zeros(len(D))
     else:
-        z = np.zeros(len(D))
+        if D >= 1:
+            z = z_from_lum_distance(D)
+            D = comoving_distance(D)
+        else:
+            z = 0.0
+
 
     # assumes SI units!
     f_n = n*f_orb
@@ -553,12 +575,21 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
     LISA_interp = LISA_hc()
     # Set the redshift based on the luminosity distance
     # For systems inside the Milky Way, assume z=0
-    if max(d_lum) >= 1:
-        z = []
-        for d in d_lum:
-            z.append(z_from_lum_distance(d))
+    if not np.isscalar(d_lum):
+        if max(d_lum) >= 1:
+            z_list = []
+            for d in d_lum:
+                z = z_from_lum_distance(d)
+                z_list.append(z)
+            z = np.array(z_list)
+
+        else:
+            z = np.zeros(len(d_lum))
     else:
-        z = np.zeros(len(d_lum))
+        if d_lum >= 1:
+            z = z_from_lum_distance(d_lum)
+        else:
+            z = 0.0
     t_obs = t_obs * sec_in_year
     a_evol, e_evol, t_evol = peters_evolution(a,e,m1,m2,t_obs,1e3)
     porb = p_from_a(a, m1, m2) * sec_in_year
