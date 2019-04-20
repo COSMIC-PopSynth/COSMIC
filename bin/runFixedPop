@@ -221,6 +221,12 @@ if __name__ == '__main__':
     elif args.galaxy_component == 'DeltaBurst':
         SFH_model='delta_burst'
         component_age=13700.0
+    elif args.galaxy_component == 'DiskBP99':
+        SFH_model='BP99'
+        component_age=13500.0
+    elif args.galaxy_component == 'BulgeBP99':
+        SFH_model='BH99_bulge'
+        component_age=13500.0
 
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)

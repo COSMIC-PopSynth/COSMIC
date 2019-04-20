@@ -350,9 +350,12 @@ class Sample(object):
 
             'delta_burst' assignes a t=0 evolution time until component age
 
-            'PB99' assigns evolution time assuming Boissier+Prantzos (1999)
+            'BP99' assigns evolution time assuming Boissier+Prantzos (1999)
             to match Korol+2017,2018 studies
- 
+
+            'BP99_bulge' assigns evolution time assuming Korol+2018 bulge
+            which doubles Boissier+Prantzos (1999) from 0-3kpc 
+
             DEFAULT: 'const'
         component_age: float
             age of the Galactic component [Myr]; DEFAULT: 10000.0
@@ -393,6 +396,31 @@ class Sample(object):
                      3.19297191e+09, 3.43528641e+09, 6.07793699e+09,\
                      5.63155575e+09, 6.31298756e+09, 6.59641459e+09,\
                      4.00928950e+09, 4.34722710e+09, 4.05675657e+09]
+            times = [1.2000e-02, 3.2000e-02, 1.0100e-01, 3.0300e-01,\
+                     6.0700e-01, 1.0010e+00, 1.5050e+00, 2.0360e+00,\
+                     3.0430e+00, 4.1090e+00, 5.5960e+00, 7.6220e+00,\
+                     9.1080e+00, 1.1135e+01, 1.3566e+01]
+            delta_t = [0.012, 0.02 , 0.069, 0.202, 0.304, 0.394,\
+                       0.504, 0.531, 1.007, 1.066, 1.487, 2.026,\
+                       1.486, 2.027, 2.431]
+            SFH_interp = interp1d(times, m_tot/(np.sum(m_tot*delta_t)))
+            t_samp = []
+            while len(t_samp) < size:
+                rand_age = np.random.uniform(min(times),max(times),1)
+                age_prob = np.random.uniform(0,1,1)
+                if age_prob < SFH_interp(rand_age):
+                    t_samp.append(rand_age)
+            # Convert from Gyr to Myr for BSE
+            tphys = (max(times)-np.array(t_samp))*1000.0
+            metallicity = met*np.ones(size)
+            return tphys, metallicity
+
+        elif SFH_model=='BP99_bulge':
+            m_tot = [3.21992825e+06, 1.09562694e+07, 1.23225953e+08,\
+                     1.06381902e+09, 2.35725278e+09, 3.19587411e+09,\
+                     3.75511762e+09, 3.75121020e+09, 5.56639100e+09,\
+                     4.33825532e+09, 3.74024246e+09, 2.92531115e+09,\
+                     1.43969299e+09, 1.25018022e+09, 9.54729761e+08]
             times = [1.2000e-02, 3.2000e-02, 1.0100e-01, 3.0300e-01,\
                      6.0700e-01, 1.0010e+00, 1.5050e+00, 2.0360e+00,\
                      3.0430e+00, 4.1090e+00, 5.5960e+00, 7.6220e+00,\
