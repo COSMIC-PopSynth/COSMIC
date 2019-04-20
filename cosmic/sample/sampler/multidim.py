@@ -680,7 +680,7 @@ class MultiDim:
             delta_t = [0.012, 0.02 , 0.069, 0.202, 0.304, 0.394,\
                        0.504, 0.531, 1.007, 1.066, 1.487, 2.026,\
                        1.486, 2.027, 2.431]
-            SFH_interp = interp1d(times, m_tot/(np.sum(m_tot*delta_t))
+            SFH_interp = interp1d(times, m_tot/(np.sum(m_tot*delta_t)))
             t_samp = []
             while len(t_samp) < size:
                 rand_age = np.random.uniform(min(times),max(times),1)
