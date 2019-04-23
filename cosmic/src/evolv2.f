@@ -226,7 +226,7 @@
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
-
+      LOGICAL switchedCE
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
       ceflag = ceflagtmp
@@ -1358,6 +1358,16 @@ Cf2py intent(out) bppout,bcmout
                endif
             endif
             if(sgl)then
+               evolve_type = 14.d0 + FLOAT(k)
+               if(k.eq.1)then
+                   CALL writebpp(jp,tphys,evolve_type,
+     &                          mass(1),0.d0,kstar(1),kstar(2),
+     &                          -1.d0,-1.d0,0.d0,0.d0,0.d0,bkick)
+               else
+                   CALL writebpp(jp,tphys,evolve_type,
+     &                          0.d0,mass(2),kstar(1),kstar(2),
+     &                          -1.d0,-1.d0,0.d0,0.d0,0.d0,bkick)
+               endif
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,bkick,natal_kick_array)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -1376,6 +1386,11 @@ Cf2py intent(out) bppout,bcmout
                endif
 
             else
+               evolve_type = 14.d0 + FLOAT(k)
+               CALL writebpp(jp,tphys,evolve_type,
+     &                       mass(1),mass(2),kstar(1),kstar(2),
+     &                       sep,tb,ecc,rrl1,rrl2,bkick)
+            
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                   rad(k-3),fallback,bkick,natal_kick_array)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -1999,12 +2014,17 @@ Cf2py intent(out) bppout,bcmout
          m2ce = mass(j2)
          kcomp1 = kstar(j1) !PDK
          kcomp2 = kstar(j2)
+         if(j1.eq.2)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               binstate,mergertype,natal_kick_array,switchedCE)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -2994,6 +3014,11 @@ Cf2py intent(out) bppout,bcmout
                   formation(k) = 6
                endif
             endif
+
+            evolve_type = 14.d0 + FLOAT(k)
+            CALL writebpp(jp,tphys,evolve_type,
+     &                    mass(1),mass(2),kstar(1),kstar(2),
+     &                    sep,tb,ecc,rrl1,rrl2,bkick)
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                rad(3-k),fallback,bkick,natal_kick_array)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -3216,12 +3241,17 @@ Cf2py intent(out) bppout,bcmout
      & m1ce,m2ce
 *
       if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+         if(j1.eq.2)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               binstate,mergertype,natal_kick_array,switchedCE)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3242,12 +3272,18 @@ Cf2py intent(out) bppout,bcmout
             mergertype = -1
          endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
+         if(j1.eq.1)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               binstate,mergertype,natal_kick_array,
+     &               jp,tphys,switchedCE)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.

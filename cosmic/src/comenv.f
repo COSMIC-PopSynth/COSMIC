@@ -3,7 +3,8 @@
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,ecsnp,ecsn_mlow,formation1,formation2,
-     &                  ST_tide,binstate,mergertype,natal_kick)
+     &                  ST_tide,binstate,mergertype,natal_kick,
+     &                  jp, tphys, switchedCE)
 *
 * Common Envelope Evolution.
 *
@@ -50,6 +51,11 @@
       LOGICAL COEL,output
       REAL*8 CELAMF,RL,RZAMSF
       EXTERNAL CELAMF,RL,RZAMSF
+      INTEGER jp
+      REAL*8 tphys
+      LOGICAL switchedCE
+      REAL*8 mass1_bpp,mass2_bpp,kstar1_bpp,kstar2_bpp
+      REAL*8 rrl1_bpp, rrl2_bpp, evolve_type_bpp
 *
 * Common envelope evolution - entered only when KW1 = 2, 3, 4, 5, 6, 8 or 9.
 *
@@ -78,7 +84,7 @@
 *
       IF(LAMBDA.EQ.1.0)THEN
          LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDA)
-      ELSEIF(LAMBDA.LT.0.d0)THEN
+      ELSEIF(LAMBDA.LT.0.d0)THEN   
          LAMB1 = -1.0*LAMBDA
       ENDIF
       KW = KW2
@@ -152,7 +158,7 @@
                SEPL = RC1/RL1
                binstate = 1
                CALL CONCATKSTARS(KW1, KW2, mergertype)
-            ENDIF
+            ENDIF         
          ELSE
             IF(R2.GT.RL2*SEPF)THEN
                COEL = .TRUE.
@@ -240,6 +246,30 @@
                      formation1 = 6
                   endif
                endif
+*              Check if M1 and M2 were switched on pass to comenv
+               if(switchedCE)then
+                   mass1_bpp = M2
+                   mass2_bpp = M_postCE
+                   kstar1_bpp = KW2
+                   kstar2_bpp = KW1
+                   rrl1_bpp = RL2
+                   rrl2_bpp = RL1
+                   evolve_type_bpp = 16.5d0
+
+               else
+                   mass1_bpp = M_postCE
+                   mass2_bpp = M2
+                   kstar1_bpp = KW1
+                   kstar2_bpp = KW2
+                   rrl1_bpp = RL1
+                   rrl2_bpp = RL2
+                   evolve_type_bpp = 15.5d0
+               endif
+               TB = (SEP/AURSUN)*SQRT(SEP/(AURSUN*(M_postCE+M2)))
+               CALL writebpp(jp,tphys,evolve_type_bpp,
+     &                       mass1_bpp,mass2_bpp,kstar1_bpp,
+     &                       kstar2_bpp,SEP_postCE,TB,ECC,
+     &                       rrl1_bpp,rrl2_bpp,bkick)
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
 * Returning variable state to original naming convention
@@ -461,6 +491,30 @@
                      formation1 = 6
                   endif
                endif
+*              Check if M1 and M2 were switched on pass to comenv
+               if(switchedCE)then
+                   mass1_bpp = M2
+                   mass2_bpp = M_postCE
+                   kstar1_bpp = KW2
+                   kstar2_bpp = KW1
+                   rrl1_bpp = RL2
+                   rrl2_bpp = RL1
+                   evolve_type_bpp = 16.5d0
+
+               else
+                   mass1_bpp = M_postCE
+                   mass2_bpp = M2
+                   kstar1_bpp = KW1
+                   kstar2_bpp = KW2
+                   rrl1_bpp = RL1
+                   rrl2_bpp = RL2
+                   evolve_type_bpp = 15.5d0
+               endif
+               TB = (SEP/AURSUN)*SQRT(SEP/(AURSUN*(M_postCE+M2)))
+               CALL writebpp(jp,tphys,evolve_type_bpp,
+     &                       mass1_bpp,mass2_bpp,kstar1_bpp,
+     &                       kstar2_bpp,SEP_postCE,TB,ECC,
+     &                       rrl1_bpp,rrl2_bpp,bkick)
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
 * Returning variable state to original naming convention
@@ -545,6 +599,32 @@
                      formation2 = 6
                   endif
                endif
+*              Check if M1 and M2 were switched on pass to comenv
+               if(switchedCE)then
+                   mass1_bpp = M_postCE
+                   mass2_bpp = M1
+                   kstar1_bpp = KW2
+                   kstar2_bpp = KW1
+                   rrl1_bpp = RL2
+                   rrl2_bpp = RL1
+                   evolve_type_bpp = 15.5d0
+*              M2, which here is mass(1), undergoes SN
+
+               else
+                   mass1_bpp = M1
+                   mass2_bpp = M_postCE
+                   kstar1_bpp = KW1
+                   kstar2_bpp = KW2
+                   rrl1_bpp = RL1
+                   rrl2_bpp = RL2
+                   evolve_type_bpp = 16.5d0
+*              M2, which here is mass(2), undergoes SN
+               endif
+               TB = (SEP/AURSUN)*SQRT(SEP/(AURSUN*(M_postCE+M1)))
+               CALL writebpp(jp,tphys,evolve_type_bpp,
+     &                       mass1_bpp,mass2_bpp,kstar1_bpp,
+     &                       kstar2_bpp,SEP_postCE,TB,ECC,
+     &                       rrl1_bpp,rrl2_bpp,bkick)
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,bkick,natal_kick)
 * Returning variable state to original naming convention
@@ -710,6 +790,30 @@
                   formation1 = 6
                endif
             endif
+*              Check if M1 and M2 were switched on pass to comenv
+            if(switchedCE)then
+                mass1_bpp = 0.d0
+                mass2_bpp = MF
+                kstar1_bpp = KW2
+                kstar2_bpp = KW1
+                rrl1_bpp = 0.d0
+                rrl2_bpp = 0.d0
+                evolve_type_bpp = 16.5d0
+
+            else
+                mass1_bpp = MF
+                mass2_bpp = 0.d0
+                kstar1_bpp = KW1
+                kstar2_bpp = KW2
+                rrl1_bpp = 0.d0
+                rrl2_bpp = 0.d0
+                evolve_type_bpp = 15.5d0
+            endif
+            TB = 0.d0
+            CALL writebpp(jp,tphys,evolve_type_bpp,
+     &                       mass1_bpp,mass2_bpp,kstar1_bpp,
+     &                       kstar2_bpp,-1.d0,TB,0.d0,
+     &                       rrl1_bpp,rrl2_bpp,bkick)
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
      &                0.d0,fallback,bkick,natal_kick)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
