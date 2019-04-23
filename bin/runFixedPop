@@ -275,11 +275,11 @@ if __name__ == '__main__':
 
         # Filter the bcm and bpp arrays according to user specified filters
         if len(bcm_filter) > 1:
-            bcm_filter = bcm_filter.append(filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range))
+            bcm_filter, bin_state_fraction = bcm_filter.append(filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range))
             initC_filter = initC_filter.append(initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)])
             bpp_filter = bpp_filter.append(bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)])
         else:
-            bcm_filter = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+            bcm_filter, bin_state_fraction = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
             initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
             bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
 

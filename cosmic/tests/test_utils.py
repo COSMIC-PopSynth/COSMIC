@@ -62,20 +62,20 @@ class TestUtils(unittest2.TestCase):
     def test_filter_bpp_bcm(self):
         self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
 
-        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
+        bcm_true, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
 
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
         self.assertTrue(len(bcm_true.loc[bcm_true.sep > 0.0]) >= 1)
         self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
         self.assertTrue(bcm_true.porb.all() < 5.0)
 
-        bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
+        bcm_false, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
 
         self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
         self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0]) > 1)
         self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
 
-        bcm_no_LISA = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
+        bcm_no_LISA, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
         self.assertTrue(len(bcm_no_LISA.loc[bcm_no_LISA.porb < 4.0]) > 1)
 
     def test_bcm_conv_select(self):
