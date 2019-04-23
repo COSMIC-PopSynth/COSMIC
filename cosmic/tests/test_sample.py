@@ -27,6 +27,8 @@ THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
+BP99_SFR_SUM = 660745.2648859287
+BP99_BULGE_SFR_SUM = 811437.0508828465
 KSTAR_SOLAR = 1.0
 MOE_TOTAL_MASS = 31.134712126322306
 METALLICITY_1000 = 0.02
@@ -121,6 +123,23 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
+        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        np.random.seed(2)
+        times, met = SAMPLECLASS.sample_SFH(SFH_model='BP99',\
+                                            component_age=10000.0,\
+                                            met = 0.02, size=100)
+        self.assertTrue(np.max(times) <= 13566.0)
+        self.assertAlmostEqual(times.sum(), BP99_SFR_SUM)
+
+        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        np.random.seed(2)
+        times, met = SAMPLECLASS.sample_SFH(SFH_model='BP99_bulge',\
+                                            component_age=10000.0,\
+                                            met = 0.02, size=100)
+        self.assertTrue(np.max(times) <= 13566.0)
+        self.assertAlmostEqual(times.sum(), BP99_BULGE_SFR_SUM)
+
+
     def test_set_kstar(self):
         # Check that the kstar is selected properly
         kstar = SAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
@@ -153,6 +172,22 @@ class TestSample(unittest2.TestCase):
                                                     met = 0.02, size=100)
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)
+
+        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        np.random.seed(2)
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='BP99',\
+                                                    component_age=10000.0,\
+                                                    met = 0.02, size=100)
+        self.assertTrue(np.max(times) <= 13566.0)
+        self.assertAlmostEqual(times.sum(), BP99_SFR_SUM)
+
+        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        np.random.seed(2)
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='BP99_bulge',\
+                                                    component_age=10000.0,\
+                                                    met = 0.02, size=100)
+        self.assertTrue(np.max(times) <= 13566.0)
+        self.assertAlmostEqual(times.sum(), BP99_BULGE_SFR_SUM)
 
     def test_set_kstar_MultiDim(self):
         # Check that the kstar is selected properly
