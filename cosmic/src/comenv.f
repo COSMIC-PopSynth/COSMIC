@@ -443,17 +443,6 @@
                            sigma = -1.d0*sigmadiv
                         endif
                         formation1 = 5
-* MJZ: if cehestar is set, *always* have low kicks for USSN (SN=8)
-                     elseif(cehestarflag.ne.0)then
-                        if(KW1.eq.13.and.KW2.ge.13)then
-                           if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                              sigma = sigmahold/sigmadiv
-                              sigma = -sigma
-                           else
-                              sigma = -1.d0*sigmadiv
-                           endif
-                        formation1 = 8
-                        endif
                      endif
                   elseif(formation1.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -472,6 +461,18 @@
                         sigma = -1.d0*sigmadiv
                      endif
                      formation1 = 6
+                  endif
+               endif
+* MJZ: if cehestar is set, *always* have low kicks for USSN (SN=8)
+               if(KW1.eq.13.and.KW2.ge.13.and.cehestarflag.ne.0)then
+                  if(KW1i.ge.7.and.KW1i.le.9)then
+                     if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
+                        sigma = sigmahold/sigmadiv
+                        sigma = -sigma
+                     else
+                        sigma = -1.d0*sigmadiv
+                     endif
+                  formation1 = 8
                   endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
