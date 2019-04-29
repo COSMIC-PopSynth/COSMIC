@@ -65,7 +65,8 @@ def parse_commandline():
                         default="multidim")
     parser.add_argument("--galaxy_component",
                         help="Galaxy Components. Options include "
-                        "Bulge ThinDisk and ThickDisk", required=True)
+                        "Bulge, ThinDisk, ThickDisk, DeltaBurst, DiskBP99,"
+                        " and BulgeBP99", required=True)
     parser.add_argument("--metallicity", help="Metallicity of the population; "
                         "default: 0.02 (solar)", default=0.02, type=float)
     parser.add_argument("--Niter",
@@ -102,6 +103,11 @@ def parse_commandline():
     if args.initial_samp not in ['independent', 'multidim']:
         raise parser.error('Initial sample must either be '
                            'independent or multidim')
+    if args.galaxy_component not ['ThinDisk', 'ThickDisk', 'Bulge',
+                                  'DeltaBurst', 'DiskBP99', 'BulgeBP99']:
+        raise parser.error('The available Galaxy components are: '
+                           'ThinDisk, ThickDisk, Bulge, DeltaBurst,'
+                           'DiskBP99, BulgeBP99')
 
     return args
 
@@ -225,7 +231,7 @@ if __name__ == '__main__':
         SFH_model='BP99'
         component_age=13500.0
     elif args.galaxy_component == 'BulgeBP99':
-        SFH_model='BH99_bulge'
+        SFH_model='BP99_bulge'
         component_age=13500.0
 
     # Simulate the fixed population
