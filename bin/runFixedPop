@@ -103,8 +103,8 @@ def parse_commandline():
     if args.initial_samp not in ['independent', 'multidim']:
         raise parser.error('Initial sample must either be '
                            'independent or multidim')
-    if args.galaxy_component not ['ThinDisk', 'ThickDisk', 'Bulge',
-                                  'DeltaBurst', 'DiskBP99', 'BulgeBP99']:
+    if args.galaxy_component not in ['ThinDisk', 'ThickDisk', 'Bulge',
+                                     'DeltaBurst', 'DiskBP99', 'BulgeBP99']:
         raise parser.error('The available Galaxy components are: '
                            'ThinDisk, ThickDisk, Bulge, DeltaBurst,'
                            'DiskBP99, BulgeBP99')
