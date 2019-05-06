@@ -5,7 +5,7 @@
      \ bhflagtmp,nsflagtmp,
      \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
      \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsnptmp,ecsn_mlowtmp,aictmp,
-     \ sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
+     \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
@@ -223,7 +223,7 @@
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
-      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
+      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
 
@@ -245,6 +245,7 @@ Cf2py intent(out) bppout,bcmout
       ecsnp = ecsnptmp
       ecsn_mlow = ecsn_mlowtmp
       aic = aictmp
+      ussn = ussntmp
       sigma = sigmatmp
       sigmadiv = sigmadivtmp
       bhsigmafrac = bhsigmafractmp

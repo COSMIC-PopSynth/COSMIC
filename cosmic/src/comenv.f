@@ -25,8 +25,8 @@
       COMMON /TYPES/ KTYPE
       INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
       COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
-      INTEGER cekickflag,cemergeflag,cehestarflag
-      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
+      INTEGER cekickflag,cemergeflag,cehestarflag,ussn
+      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag,ussn
       common /fall/fallback
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
@@ -463,8 +463,8 @@
                      formation1 = 6
                   endif
                endif
-* MJZ: if cehestar is set, *always* have low kicks for USSN (SN=8)
-               if(KW1.eq.13.and.KW2.ge.13.and.cehestarflag.ne.0)then
+* USSN: if ussn flag is set, have reduced kicks for stripped He stars (SN=8)
+               if(KW1.eq.13.and.KW2.ge.13.and.ussn.eq.1)then
                   if(KW1i.ge.7.and.KW1i.le.9)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = sigmahold/sigmadiv
