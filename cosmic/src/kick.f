@@ -72,7 +72,7 @@
 *
       real*8 bconst,CK,polar_kick_angle,mu_SN1,omega_SN1
       COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
-      COMMON /VALUE4/ polar_kick_angle,mu_SN1,omega_SN1,bhflag
+      COMMON /VALUE6/ polar_kick_angle,mu_SN1,omega_SN1,bhflag
       real*8 mxns,neta,bwind,hewind
       COMMON /VALUE1/ neta,bwind,hewind,mxns
       real*8 bkick(20)
