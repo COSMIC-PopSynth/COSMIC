@@ -2,6 +2,8 @@
       SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,ST_tide,
      &                  ecsnp,ecsn_mlow)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 *
 *       H-R diagram for population I stars.
@@ -20,11 +22,9 @@
 *       to include Z=0.001 as well as Z=0.02, convective overshooting,
 *       MS hook and more elaborate CHeB
 *
-      implicit none
 *
       integer kw,kwp
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER ST_tide
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
       real*8 r,lum,mc,rc,menv,renv,k2
@@ -32,9 +32,6 @@
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
       parameter(mlp=12.d0,tiny=1.0d-14)
       real*8 mass0,mt0,mtc
-      REAL*8 neta,bwind,hewind,mxns
-      integer ppsn,windflag
-      COMMON /VALUE1/ neta,bwind,hewind,mxns,windflag,ppsn
       common /fall/fallback
       REAL*8 fallback
 *
@@ -42,10 +39,10 @@
 *
       real*8 avar,bvar
       real*8 thook,thg,tbagb,tau,tloop,taul,tauh,tau1,tau2,dtau,texp
-      real*8 lx,ly,dell,alpha,beta,eta
-      real*8 rx,ry,delr,rzams,rtms,gamma,rmin,taumin,rg
+      real*8 lx,ly,dell,alpha,betahrdiag,eta
+      real*8 rx,ry,delr,rzams,rtms,gammahrdiag,rmin,taumin,rg
       parameter(taumin=5.0d-08)
-      real*8 mcmax,mcx,mcy,mcbagb,lambda
+      real*8 mcmax,mcx,mcy,mcbagb,lambdahrdiag
       real*8 frac,kappa,sappa,alphap
       real*8 am,xx,fac,rdgen,mew,lum0,kap,zeta,ahe,aco
       parameter(lum0=7.0d+04,kap=-0.5d0,ahe=4.d0,aco=16.d0)
@@ -117,12 +114,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             dell = lhookf(mass,zpars(1))
             dtau = tau1**2 - tau2**2
             alpha = lalphf(mass)
-            beta = lbetaf(mass)
+            betahrdiag = lbetaf(mass)
             eta = lnetaf(mass)
             lx = LOG10(lums(2)/lums(1))
             if(tau.gt.taumin)then
-               xx = alpha*tau + beta*tau**eta +
-     &              (lx - alpha - beta)*tau**2 - dell*dtau
+               xx = alpha*tau + betahrdiag*tau**eta +
+     &              (lx - alpha - betahrdiag)*tau**2 - dell*dtau
             else
                xx = alpha*tau + (lx - alpha)*tau**2 - dell*dtau
             endif
@@ -131,14 +128,15 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             delr = rhookf(mass,zpars(1))
             dtau = tau1**3 - tau2**3
             alpha = ralphf(mass)
-            beta = rbetaf(mass)
-            gamma = rgammf(mass)
+            betahrdiag = rbetaf(mass)
+            gammahrdiag = rgammf(mass)
             rx = LOG10(rtms/rzams)
 * Note that the use of taumin is a slightly pedantic attempt to
 * avoid floating point underflow. It IS overkill!
             if(tau.gt.taumin)then
-               xx = alpha*tau + beta*tau**10 + gamma*tau**40 +
-     &              (rx - alpha - beta - gamma)*tau**3 - delr*dtau
+               xx = alpha*tau + betahrdiag*tau**10 +
+     &              gammahrdiag*tau**40 + (rx - alpha - betahrdiag -
+     &              gammahrdiag)*tau**3 - delr*dtau
             else
                xx = alpha*tau + (rx - alpha)*tau**3 - delr*dtau
             endif
@@ -429,11 +427,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 * Approximate 3rd Dredge-up on AGB by limiting Mc.
 *
-            lambda = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+            lambdahrdiag = MIN(0.9d0,0.3d0+0.001d0*mass**5)
             tau = tscls(13)
             mcx = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
             mcy = mc
-            mc = mc - lambda*(mcy-mcx)
+            mc = mc - lambdahrdiag*(mcy-mcx)
             mcx = mc
             mcmax = MIN(mt,mcmax)
          endif
