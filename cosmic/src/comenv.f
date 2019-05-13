@@ -4,6 +4,8 @@
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,ecsnp,ecsn_mlow,formation1,formation2,
      &                  ST_tide,binstate,mergertype,natal_kick)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 * Common Envelope Evolution.
 *
@@ -16,18 +18,11 @@
 *     Update : P. D. Kiel (for ECSN, fallback and bugs)
 *     Date : cmc version mid 2010
 *
-      IMPLICIT NONE
 *
       INTEGER KW1,KW2,KW,KW1i,KW2i,snp
       INTEGER star1,star2
-      INTEGER KTYPE(0:14,0:14)
       INTEGER binstate,mergertype
-      COMMON /TYPES/ KTYPE
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
-      INTEGER cekickflag,cemergeflag,cehestarflag,ussn
-      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag,ussn
-      common /fall/fallback
+      INTEGER ST_tide
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
       REAL*8 M02,M2,MC2,AJ2,JSPIN2,R2,L2,K22,MC22
@@ -41,12 +36,11 @@
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 natal_kick(6)
       REAL*8 bkick(20),fallback,ecsnp,ecsn_mlow,M1i,M2i
+      common /fall/fallback
       INTEGER formation1,formation2
-      REAL*8 sigma,bhsigmafrac,sigmahold,sigmadiv
-      COMMON /VALUE4/ sigma,bhsigmafrac
-      REAL*8 AURSUN,K3,ALPHA1,LAMBDA
+      REAL*8 sigmahold,sigmadiv
+      REAL*8 AURSUN,K3
       PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0)
-      COMMON /VALUE2/ ALPHA1,LAMBDA
       LOGICAL COEL,output
       REAL*8 CELAMF,RL,RZAMSF
       EXTERNAL CELAMF,RL,RZAMSF
