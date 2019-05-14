@@ -7,8 +7,8 @@
       COMMON /RAND2/ idum2,iy,ir
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
-      INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag,pisn
-      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag,pisn
+      INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag
+      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
 *
@@ -19,9 +19,10 @@
       COMMON /CEVARS/ alpha1,lambda
       REAL*8 bconst,CK
       COMMON /MAGVARS/ bconst,CK
-      REAL*8 sigma,bhsigmafrac,polar_kick_angle,mu_SN1,omega_SN1
-      COMMON /SNVARS/ sigma,bhsigmafrac,polar_kick_angle
-      COMMON /SNVARS/ mu_SN1,omega_SN1
+      REAL*8 sigma,bhsigmafrac,pisn
+      REAL*8 polar_kick_angle,mu_SN1,omega_SN1
+      COMMON /SNVARS/ sigma,bhsigmafrac,pisn
+      COMMON /SNVARS/ polar_kick_angle,mu_SN1,omega_SN1
 *
       INTEGER*8 id1_pass,id2_pass
       REAL*8 merger
