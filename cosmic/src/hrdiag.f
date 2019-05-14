@@ -635,10 +635,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
 * between 45 and 65 solar masses, and blow up anything between 65 and
 * 135 solar masses.  Cheap, but effective
-                     if(pisn.eq.1)then
-                        if(mcbagb.ge.45.d0.and.mcbagb.lt.65.d0)then
-                           mt = 45.d0
-                           mc = 45.d0
+                     if(pisn.gt.0)then
+                        if(mcbagb.ge.pisn.and.mcbagb.lt.65.d0)then
+                           mt = pisn
+                           mc = pisn
                         elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
                            mt = 0.d0
                            mc = 0.d0
@@ -650,7 +650,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * SEVN, not BSE.  In other words, I woud be careful using this (and in
 * practice, it doesn't vary that much from Belczynski's prescription,
 * since the He core masses are the same in both)
-                     elseif(pisn.eq.2)then
+                     elseif(pisn.eq.-1)then
                         frac = mcbagb/mt
                         kappa = 0.67d0*frac + 0.1d0
                         sappa = 0.5228d0*frac - 0.52974
