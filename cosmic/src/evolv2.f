@@ -10,7 +10,7 @@
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
-      implicit none
+      IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
 *
@@ -267,7 +267,7 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       windflag = windflagtmp
       dtp = dtptmp
-      idum = idumtmp
+      idum1 = idumtmp
 
       CALL instar
 
@@ -397,8 +397,8 @@ Cf2py intent(out) bppout,bcmout
 *
 * Set the seed for the random number generator.
 *
-*      idum = INT(sep*100)
-      if(idum.gt.0) idum = -idum
+*      idum1 = INT(sep*100)
+      if(idum1.gt.0) idum1 = -idum1
 
 *
 * Set the collision matrix.
@@ -1444,16 +1444,16 @@ Cf2py intent(out) bppout,bcmout
                if(kstar(k).eq.13.and.pulsar.gt.0)then
 *                  write(93,*)'birth start: ',tphys,k,B_0(k),ospin(k)
 *                  CALL FLUSH(93)
- 170              u1 = ran3(idum)
+ 170              u1 = ran3(idum1)
                   if(u1.ge.1.d0) goto 170
-                  u2 = ran3(idum)
+                  u2 = ran3(idum1)
                   s = sqrt(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
                   s = 0.7d0*s - 0.6d0
                   if(s.ge.0.013d0.or.s.le.-1.5d0) goto 170
                   ospin(k) = (twopi*yearsc)/(10.d0**s)
- 174              u1 = ran3(idum)
+ 174              u1 = ran3(idum1)
                   if(u1.ge.1.d0) goto 174
-                  u2 = ran3(idum)
+                  u2 = ran3(idum1)
                   s = sqrt(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
                   s = 0.68d0*s + 12.6d0
                   if(s.lt.11.5d0.or.s.gt.13.8d0) goto 174
@@ -1463,8 +1463,8 @@ Cf2py intent(out) bppout,bcmout
                   if((merger.le.-2.d0.and.merger.gt.-20.d0).or.
      &                merge_mem.eq.1)then
 * Reset as MSP.
- 175                 u1 = ran3(idum)
-                     u2 = ran3(idum)
+ 175                 u1 = ran3(idum1)
+                     u2 = ran3(idum1)
                      if(u1.gt.0.9999d0) u1 = 0.9999d0
                      if(u2.gt.1.d0) u2 = 1.d0
                      s = SQRT(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
@@ -1475,8 +1475,8 @@ Cf2py intent(out) bppout,bcmout
                      if(s.ge.-1.6457d0.or.s.le.-2.53d0) goto 175
                      ospin(k) = (twopi*yearsc)/(10.d0**s)!have commented this out to keeps same spin
 *                  write(*,*)'P=',s
- 176                 u1 = ran3(idum)
-                     u2 = ran3(idum)
+ 176                 u1 = ran3(idum1)
+                     u2 = ran3(idum1)
                      if(u1.gt.0.9999d0) u1 = 0.9999d0
                      if(u2.gt.1.d0) u2 = 1.d0
                      s = SQRT(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
