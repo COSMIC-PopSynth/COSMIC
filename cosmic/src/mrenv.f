@@ -1,7 +1,8 @@
 ***
       SUBROUTINE mrenv(kw,mass,mt,mc,lum,rad,rc,aj,tm,ltms,lbgb,lhei,
      &                 rzams,rtms,rg,menv,renv,k2e)
-      implicit none
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
       integer kw
       real*8 mass,mt,mc,lum,rad,rc,aj,tm
       real*8 k2e,menv,menvg,menvt,menvz,renv,renvg,renvt,renvz
