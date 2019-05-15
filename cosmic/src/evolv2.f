@@ -2019,12 +2019,19 @@ Cf2py intent(out) bppout,bcmout
          else
              switchedCE = .false.
          endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick)
+
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array,switchedCE)
+     &               binstate,mergertype,natal_kick_array,
+     &               jp,tphys,switchedCE)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -3246,12 +3253,18 @@ Cf2py intent(out) bppout,bcmout
          else
              switchedCE = .false.
          endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick)
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsnp,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array,switchedCE)
+     &               binstate,mergertype,natal_kick_array,
+     &               jp,tphys,switchedCE)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3277,6 +3290,11 @@ Cf2py intent(out) bppout,bcmout
          else
              switchedCE = .false.
          endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick)
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
