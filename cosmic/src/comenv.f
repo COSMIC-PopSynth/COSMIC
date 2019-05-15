@@ -54,8 +54,10 @@
       INTEGER jp
       REAL*8 tphys
       LOGICAL switchedCE
-      REAL*8 mass1_bpp,mass2_bpp,kstar1_bpp,kstar2_bpp
-      REAL*8 rrl1_bpp, rrl2_bpp, evolve_type_bpp
+      INTEGER kstar1_bpp,kstar2_bpp
+      REAL*8 mass1_bpp,mass2_bpp
+      REAL*8 rrl1_bpp,rrl2_bpp,evolve_type_bpp
+      REAL*8 q1_bpp,q2_bpp
 *
 * Common envelope evolution - entered only when KW1 = 2, 3, 4, 5, 6, 8 or 9.
 *
@@ -252,22 +254,28 @@
                if(switchedCE)then
                    mass1_bpp = M2
                    mass2_bpp = M_postCE
-                   kstar1_bpp = KW2
-                   kstar2_bpp = KW1
-                   rrl1_bpp = RL2
-                   rrl2_bpp = RL1
+                   kstar1_bpp = KW2i
+                   kstar2_bpp = KW1i
+                   q1 = mass1_bpp/mass2_bpp
+                   q2 = 1.d0/q1
+                   rrl1_bpp = R2/(RL(q1)*SEP_postCE)
+                   rrl2_bpp = RC1/(RL(q2)*SEP_postCE)
+
                    evolve_type_bpp = 16.5d0
 
                else
                    mass1_bpp = M_postCE
                    mass2_bpp = M2
-                   kstar1_bpp = KW1
-                   kstar2_bpp = KW2
-                   rrl1_bpp = RL1
-                   rrl2_bpp = RL2
+                   kstar1_bpp = KW1i
+                   kstar2_bpp = KW2i
+                   q1 = mass1_bpp/mass2_bpp
+                   q2 = 1.d0/q1
+                   rrl1_bpp = RC1/(RL(q1)*SEP_postCE)
+                   rrl2_bpp = R2/(RL(q2)*SEP_postCE)
                    evolve_type_bpp = 15.5d0
                endif
-               TB = (SEP/AURSUN)*SQRT(SEP/(AURSUN*(M_postCE+M2)))
+               TB = (SEP_postCE/AURSUN)*
+     &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
                CALL writebpp(jp,tphys,evolve_type_bpp,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
@@ -497,22 +505,27 @@
                if(switchedCE)then
                    mass1_bpp = M2
                    mass2_bpp = M_postCE
-                   kstar1_bpp = KW2
-                   kstar2_bpp = KW1
-                   rrl1_bpp = RL2
-                   rrl2_bpp = RL1
+                   kstar1_bpp = KW2i
+                   kstar2_bpp = KW1i
+                   q1 = mass1_bpp/mass2_bpp
+                   q2 = 1.d0/q1
+                   rrl1_bpp = R2/(RL(q1)*SEP_postCE)
+                   rrl2_bpp = RC1/(RL(q2)*SEP_postCE)
                    evolve_type_bpp = 16.5d0
 
                else
                    mass1_bpp = M_postCE
                    mass2_bpp = M2
-                   kstar1_bpp = KW1
-                   kstar2_bpp = KW2
-                   rrl1_bpp = RL1
-                   rrl2_bpp = RL2
+                   kstar1_bpp = KW1i
+                   kstar2_bpp = KW2i
+                   q1 = mass1_bpp/mass2_bpp
+                   q2 = 1.d0/q1
+                   rrl1_bpp = RC1/(RL(q1)*SEP_postCE)
+                   rrl2_bpp = R2/(RL(q2)*SEP_postCE)
                    evolve_type_bpp = 15.5d0
                endif
-               TB = (SEP/AURSUN)*SQRT(SEP/(AURSUN*(M_postCE+M2)))
+               TB = (SEP_postCE/AURSUN)*
+     &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
                CALL writebpp(jp,tphys,evolve_type_bpp,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
@@ -605,24 +618,29 @@
                if(switchedCE)then
                    mass1_bpp = M_postCE
                    mass2_bpp = M1
-                   kstar1_bpp = KW2
-                   kstar2_bpp = KW1
-                   rrl1_bpp = RL2
-                   rrl2_bpp = RL1
+                   kstar1_bpp = KW2i
+                   kstar2_bpp = KW1i
+                   q1 = mass1_bpp/mass2_bpp
+                   q2 = 1.d0/q1
+                   rrl1_bpp = RC2/(RL(q1)*SEP_postCE)
+                   rrl2_bpp = R1/(RL(q2)*SEP_postCE)
                    evolve_type_bpp = 15.5d0
 *              M2, which here is mass(1), undergoes SN
 
                else
                    mass1_bpp = M1
                    mass2_bpp = M_postCE
-                   kstar1_bpp = KW1
-                   kstar2_bpp = KW2
-                   rrl1_bpp = RL1
-                   rrl2_bpp = RL2
+                   kstar1_bpp = KW1i
+                   kstar2_bpp = KW2i
+                   q1 = mass1_bpp/mass2_bpp
+                   q2 = 1.d0/q1
+                   rrl1_bpp = R1/(RL(q1)*SEP_postCE)
+                   rrl2_bpp = RC2/(RL(q2)*SEP_postCE)
                    evolve_type_bpp = 16.5d0
 *              M2, which here is mass(2), undergoes SN
                endif
-               TB = (SEP/AURSUN)*SQRT(SEP/(AURSUN*(M_postCE+M1)))
+               TB = (SEP_postCE/AURSUN)*
+     &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M1)))
                CALL writebpp(jp,tphys,evolve_type_bpp,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
@@ -796,8 +814,8 @@
             if(switchedCE)then
                 mass1_bpp = 0.d0
                 mass2_bpp = MF
-                kstar1_bpp = KW2
-                kstar2_bpp = KW1
+                kstar1_bpp = KW2i
+                kstar2_bpp = KW1i
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
                 evolve_type_bpp = 16.5d0
@@ -805,8 +823,8 @@
             else
                 mass1_bpp = MF
                 mass2_bpp = 0.d0
-                kstar1_bpp = KW1
-                kstar2_bpp = KW2
+                kstar1_bpp = KW1i
+                kstar2_bpp = KW2i
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
                 evolve_type_bpp = 15.5d0
