@@ -19,8 +19,9 @@
       COMMON /CEVARS/ alpha1,lambda
       REAL*8 bconst,CK
       COMMON /MAGVARS/ bconst,CK
-      REAL*8 sigma,bhsigmafrac,polar_kick_angle,mu_SN1,omega_SN1
-      COMMON /SNVARS/ sigma,bhsigmafrac,polar_kick_angle
+      REAL*8 sigma,sigmadiv,bhsigmafrac,polar_kick_angle
+      REAL*8 mu_SN1,omega_SN1
+      COMMON /SNVARS/ sigma,sigmadiv,bhsigmafrac,polar_kick_angle
       COMMON /SNVARS/ mu_SN1,omega_SN1
 *
       INTEGER*8 id1_pass,id2_pass
