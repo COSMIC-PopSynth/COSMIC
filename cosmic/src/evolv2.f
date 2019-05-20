@@ -189,7 +189,7 @@
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
-      REAL*8 fallback,sigmahold,ecsnp,ecsn_mlow
+      REAL*8 fallback,sigmahold,ecsn,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
