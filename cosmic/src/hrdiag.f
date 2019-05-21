@@ -1,7 +1,9 @@
 ***
       SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,ST_tide,
-     &                  ecsnp,ecsn_mlow)
+     &                  ecsn,ecsn_mlow)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 *
 *       H-R diagram for population I stars.
@@ -20,11 +22,9 @@
 *       to include Z=0.001 as well as Z=0.02, convective overshooting,
 *       MS hook and more elaborate CHeB
 *
-      implicit none
 *
       integer kw,kwp
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
+      INTEGER ST_tide
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
       real*8 r,lum,mc,rc,menv,renv,k2
@@ -32,20 +32,17 @@
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
       parameter(mlp=12.d0,tiny=1.0d-14)
       real*8 mass0,mt0,mtc
-      REAL*8 neta,bwind,hewind,mxns
-      integer ppsn,windflag
-      COMMON /VALUE1/ neta,bwind,hewind,mxns,windflag,ppsn
       common /fall/fallback
       REAL*8 fallback
 *
-      real*8 ecsnp,ecsn_mlow,mchold
+      real*8 ecsn,ecsn_mlow,mchold
 *
       real*8 avar,bvar
       real*8 thook,thg,tbagb,tau,tloop,taul,tauh,tau1,tau2,dtau,texp
-      real*8 lx,ly,dell,alpha,beta,eta
-      real*8 rx,ry,delr,rzams,rtms,gamma,rmin,taumin,rg
+      real*8 lx,ly,dell,alpha,betahrdiag,eta
+      real*8 rx,ry,delr,rzams,rtms,gammahrdiag,rmin,taumin,rg
       parameter(taumin=5.0d-08)
-      real*8 mcmax,mcx,mcy,mcbagb,lambda
+      real*8 mcmax,mcx,mcy,mcbagb,lambdahrdiag
       real*8 frac,kappa,sappa,alphap
       real*8 am,xx,fac,rdgen,mew,lum0,kap,zeta,ahe,aco
       parameter(lum0=7.0d+04,kap=-0.5d0,ahe=4.d0,aco=16.d0)
@@ -117,12 +114,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             dell = lhookf(mass,zpars(1))
             dtau = tau1**2 - tau2**2
             alpha = lalphf(mass)
-            beta = lbetaf(mass)
+            betahrdiag = lbetaf(mass)
             eta = lnetaf(mass)
             lx = LOG10(lums(2)/lums(1))
             if(tau.gt.taumin)then
-               xx = alpha*tau + beta*tau**eta +
-     &              (lx - alpha - beta)*tau**2 - dell*dtau
+               xx = alpha*tau + betahrdiag*tau**eta +
+     &              (lx - alpha - betahrdiag)*tau**2 - dell*dtau
             else
                xx = alpha*tau + (lx - alpha)*tau**2 - dell*dtau
             endif
@@ -131,14 +128,15 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             delr = rhookf(mass,zpars(1))
             dtau = tau1**3 - tau2**3
             alpha = ralphf(mass)
-            beta = rbetaf(mass)
-            gamma = rgammf(mass)
+            betahrdiag = rbetaf(mass)
+            gammahrdiag = rgammf(mass)
             rx = LOG10(rtms/rzams)
 * Note that the use of taumin is a slightly pedantic attempt to
 * avoid floating point underflow. It IS overkill!
             if(tau.gt.taumin)then
-               xx = alpha*tau + beta*tau**10 + gamma*tau**40 +
-     &              (rx - alpha - beta - gamma)*tau**3 - delr*dtau
+               xx = alpha*tau + betahrdiag*tau**10 +
+     &              gammahrdiag*tau**40 + (rx - alpha - betahrdiag -
+     &              gammahrdiag)*tau**3 - delr*dtau
             else
                xx = alpha*tau + (rx - alpha)*tau**3 - delr*dtau
             endif
@@ -429,11 +427,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 * Approximate 3rd Dredge-up on AGB by limiting Mc.
 *
-            lambda = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+            lambdahrdiag = MIN(0.9d0,0.3d0+0.001d0*mass**5)
             tau = tscls(13)
             mcx = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
             mcy = mc
-            mc = mc - lambda*(mcy-mcx)
+            mc = mc - lambdahrdiag*(mcy-mcx)
             mcx = mc
             mcmax = MIN(mt,mcmax)
          endif
@@ -463,15 +461,15 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                endif
 *
                mt = mc
-               if(ecsnp.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
+               if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
                   kw = 11
-               elseif(ecsnp.eq.0.d0.and.mcbagb.lt.1.6d0)then !double check what this should be. should be ecsn_mlow. Remember need to add option if ecsnp = 0 (i.e. no ECSN!!!)
+               elseif(ecsn.eq.0.d0.and.mcbagb.lt.1.6d0)then !double check what this should be. should be ecsn_mlow. Remember need to add option if ecsn = 0 (i.e. no ECSN!!!)
 *
 * Zero-age Carbon/Oxygen White Dwarf
 *
                   kw = 11
-               elseif(ecsnp.gt.0.d0.and.mcbagb.ge.ecsn_mlow.and.
-     &                mcbagb.le.ecsnp.and.mc.lt.1.08d0)then
+               elseif(ecsn.gt.0.d0.and.mcbagb.ge.ecsn_mlow.and.
+     &                mcbagb.le.ecsn.and.mc.lt.1.08d0)then
                   kw = 11
 *               elseif(mcbagb.ge.1.6d0.and.mcbagb.le.2.5d0.and.
 *                      mc.lt.1.08d0)then !can introduce this into code at some point.
@@ -486,7 +484,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mass = mt
 *
             else
-               if(ecsnp.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
+               if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.
 * so no remnant is left after the SN
@@ -496,7 +494,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   mt = 0.d0
                   lum = 1.0d-10
                   r = 1.0d-10
-               elseif(ecsnp.eq.0.d0.and.mcbagb.lt.1.6d0)then
+               elseif(ecsn.eq.0.d0.and.mcbagb.lt.1.6d0)then
 *
 * Star is not massive enough to ignite C burning.
 * so no remnant is left after the SN
@@ -532,9 +530,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Use NS/BH masses given by Belczynski+08. PK.
 *
                      !First calculate the proto-core mass
-                     if(ecsnp.gt.0.d0.and.mcbagb.le.ecsnp)then
+                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
                         mcx = 1.38d0
-                     elseif(ecsnp.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsnp, unless ecsnp=0
+                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
 *                     if(mcbagb.le.2.35d0)then
                         mcx = 1.38d0
 *                     elseif(mc.lt.4.29d0)then
@@ -565,9 +563,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 *                    For this, we just set the proto-core mass to one
                      mcx = 1.d0
-                     if(ecsnp.gt.0.d0.and.mcbagb.le.ecsnp)then
+                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
                         mcx = 1.38d0
-                     elseif(ecsnp.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsnp, unless ecsnp=0
+                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
                         mcx = 1.38d0
                      endif
                      if(mc.le.2.5d0)then
@@ -637,10 +635,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
 * between 45 and 65 solar masses, and blow up anything between 65 and
 * 135 solar masses.  Cheap, but effective
-                     if(ppsn.eq.1)then
-                        if(mcbagb.ge.45.d0.and.mcbagb.lt.65.d0)then
-                           mt = 45.d0
-                           mc = 45.d0
+                     if(pisn.gt.0)then
+                        if(mcbagb.ge.pisn.and.mcbagb.lt.65.d0)then
+                           mt = pisn
+                           mc = pisn
                         elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
                            mt = 0.d0
                            mc = 0.d0
@@ -652,7 +650,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * SEVN, not BSE.  In other words, I woud be careful using this (and in
 * practice, it doesn't vary that much from Belczynski's prescription,
 * since the He core masses are the same in both)
-                     elseif(ppsn.eq.2)then
+                     elseif(pisn.eq.-1)then
                         frac = mcbagb/mt
                         kappa = 0.67d0*frac + 0.1d0
                         sappa = 0.5228d0*frac - 0.52974
@@ -737,17 +735,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                aj = 0.d0
                mc = mcmax
                if(mc.lt.mch)then
-                  if(ecsnp.gt.0.d0.and.mass.lt.ecsn_mlow)then
+                  if(ecsn.gt.0.d0.and.mass.lt.ecsn_mlow)then
                      mt = MAX(mc,(mc+0.31d0)/1.45d0)
                      kw = 11
-                  elseif(ecsnp.eq.0.d0.and.mass.lt.1.6d0)then
+                  elseif(ecsn.eq.0.d0.and.mass.lt.1.6d0)then
 *
 * Zero-age Carbon/Oxygen White Dwarf
 *
                      mt = MAX(mc,(mc+0.31d0)/1.45d0)
                      kw = 11
-                  elseif(ecsnp.gt.0.d0.and.mass.gt.ecsn_mlow.and.
-     &                   mass.le.ecsnp.and.mc.le.1.08d0)then
+                  elseif(ecsn.gt.0.d0.and.mass.gt.ecsn_mlow.and.
+     &                   mass.le.ecsn.and.mc.le.1.08d0)then
                      mt = MAX(mc,(mc+0.31d0)/1.45d0)
                      kw = 11
                   else
@@ -759,13 +757,13 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   endif
                   mass = mt
                else
-                  if(ecsnp.gt.0.d0.and.mass.lt.ecsn_mlow)then
+                  if(ecsn.gt.0.d0.and.mass.lt.ecsn_mlow)then
                      kw = 15
                      aj = 0.d0
                      mt = 0.d0
                      lum = 1.0d-10
                      r = 1.0d-10
-                  elseif(ecsnp.eq.0.d0.and.mass.lt.1.6d0)then
+                  elseif(ecsn.eq.0.d0.and.mass.lt.1.6d0)then
 *
 * Star is not massive enough to ignite C burning.
 * so no remnant is left after the SN
@@ -797,9 +795,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Use NS/BH masses given by Belczynski+08. PK.
 *
                      !First calculate the proto-core mass
-                     if(ecsnp.gt.0.d0.and.mcbagb.le.ecsnp)then
+                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
                         mcx = 1.38d0
-                     elseif(ecsnp.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsnp, unless ecsnp=0
+                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
 *                     if(mcbagb.le.2.35d0)then
                         mcx = 1.38d0
 *                     elseif(mc.lt.4.29d0)then
@@ -829,9 +827,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 *                    For this, we just set the proto-core mass to one
                      mcx = 1.d0
-                     if(ecsnp.gt.0.d0.and.mcbagb.le.ecsnp)then
+                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
                         mcx = 1.38d0
-                     elseif(ecsnp.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsnp, unless ecsnp=0
+                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
                         mcx = 1.38d0
                      endif
                      if(mc.le.2.5d0)then
@@ -901,7 +899,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
 * between 45 and 65 solar masses, and blow up anything between 65 and
 * 135 solar masses.  Cheap, but effective
-                     if(ppsn.eq.1)then
+                     if(pisn.eq.1)then
                         if(mcbagb.ge.45.d0.and.mcbagb.lt.65.d0)then
                            mt = 45.d0
                            mc = 45.d0
@@ -917,7 +915,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * practice, it doesn't vary that much from Belczynski's prescription,
 * since the He core masses are the same in both)
 
-                     elseif(ppsn.eq.2)then
+                     elseif(pisn.eq.2)then
                         frac = mcbagb/mt
                         kappa = 0.67d0*frac + 0.1d0
                         sappa = 0.5228d0*frac - 0.52974
@@ -968,7 +966,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
          mc = mt
          mchold = mch
-         if(ecsnp.gt.0.d0.and.kw.eq.12) mch = 1.38d0
+         if(ecsn.gt.0.d0.and.kw.eq.12) mch = 1.38d0
          if(mc.ge.mch)then
 *
 * Accretion induced supernova with no remnant
@@ -979,7 +977,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                kw = 13
                aj = 0.d0
                mt = 1.3d0
-               if(ecsnp.gt.0.d0)then
+               if(ecsn.gt.0.d0)then
                   mt = 1.38d0
                   mt = 0.9d0*mt !in ST this is a quadratic, will add in later.
                endif

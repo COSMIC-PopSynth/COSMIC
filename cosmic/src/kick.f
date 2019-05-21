@@ -1,7 +1,8 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
      &                r2,fallback,bkick,natal_kick)
-      implicit none
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 * Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
 *
@@ -38,15 +39,8 @@
 * bkick(5) was made negative in the bse_interface routine
 * (originaly it was kick(6)).
 * For cmc bkick array is zero, not negative.
-*
-* Perhaps move wdaflag to COMMON /VALUE4/ with bhflag etc?
-*
       integer kw,k,l,snstar
-      INTEGER idum
-      COMMON /VALUE3/ idum
-      INTEGER idum2,iy,ir(32)
-      COMMON /RAND3/ idum2,iy,ir
-      integer bhflag
+
       real*8 m1,m2,m1n,mbi,mbf,mdif
       real*8 ecc,sep,sepn,jorb,ecc2
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
@@ -60,7 +54,7 @@
       real*8 vr,vr2,vk2,vn2,hn2
       real*8 vs(3),v1,v2
       real*8 mx1,mx2,r2
-      real*8 sigma,sigmah,bhsigmafrac,RotInvX
+      real*8 sigmah,RotInvX
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
       real*8 csigns
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
@@ -70,19 +64,10 @@
       real*8 v2xout,v2yout,v2zout
       logical output
 *
-      real*8 bconst,CK,polar_kick_angle,mu_SN1,omega_SN1
-      COMMON /VALUE4/ sigma,bhsigmafrac,bconst,CK
-      COMMON /VALUE6/ polar_kick_angle,mu_SN1,omega_SN1,bhflag
-      real*8 mxns,neta,bwind,hewind
-      COMMON /VALUE1/ neta,bwind,hewind,mxns
       real*8 bkick(20)
       real*8 natal_kick(6)
-*      COMMON /VKICK/ bkick
       real ran3,xx
       external ran3
-      integer*8 id1_pass,id2_pass
-      real*8 merger
-      COMMON /cmcpass/ merger,id1_pass,id2_pass
 *
       output = .false. !useful for debugging...
 *       write(91,49)kw,m1,m1n,m2,ecc,sep,snstar,fallback,
@@ -147,8 +132,8 @@
 *
 * Find the initial separation by randomly choosing a mean anomaly.
       if(sep.gt.0.d0.and.ecc.ge.0.d0)then
-         xx = RAN3(idum)
-*         write(15,*)'kick 1:',xx,idum
+         xx = RAN3(idum1)
+*         write(15,*)'kick 1:',xx,idum1
          mm = xx*twopi
          em = mm
  2       dif = em - ecc*SIN(em) - mm
@@ -164,9 +149,9 @@
 * With a randomly selected quadrant of the orbit.
          salpha = SQRT((sep*sep*(1.d0-ecc*ecc))/(r*(2.d0*sep-r)))
          calpha = (-1.d0*ecc*SIN(em))/SQRT(1.d0-ecc*ecc*COS(em)*COS(em))
-*         xx = RAN3(idum) !randomise initial orientation... dont require...
+*         xx = RAN3(idum1) !randomise initial orientation... dont require...
 *         if(xx.gt.0.5d0) salpha = -1.d0*salpha
-*         xx = RAN3(idum)
+*         xx = RAN3(idum1)
 *         if(xx.gt.0.5d0) calpha = -1.d0*calpha
          vr2 = gmrkm*(m1+m2)*(2.d0/r - 1.d0/sep)
          vr = SQRT(vr2)
@@ -187,12 +172,12 @@
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
 * Use Henon's method for pairwise components (Douglas Heggie 22/5/97).
           do 20 k = 1,2
-             u1 = RAN3(idum)
-*             write(15,*)'kick 2:',u1,idum
-             u2 = RAN3(idum)
+             u1 = RAN3(idum1)
+*             write(15,*)'kick 2:',u1,idum1
+             u2 = RAN3(idum1)
              if(u1.gt.0.9999d0) u1 = 0.9999d0
              if(u2.gt.1.d0) u2 = 1.d0
-*             write(15,*)'kick 3:',u2,idum
+*             write(15,*)'kick 3:',u2,idum1
 * Generate two velocities from polar coordinates S & THETA.
              s = -2.d0*LOG(1.d0 - u1)
              s = sigma*SQRT(s)
@@ -246,11 +231,11 @@
 *       Only relevant for binaries, obviously
 *       Default value for polar_kick_angle = 90.0
           bound = SIN((90.d0 - polar_kick_angle)*pi/180.d0)
-          sphi = (1.d0-bound)*ran3(idum) + bound
+          sphi = (1.d0-bound)*ran3(idum1) + bound
           phi = ASIN(sphi)
 * MJZ - The constrained kick will hit at either the north
 *       or south pole, so randomly choose the hemisphere
-          if(RAN3(idum).ge.0.5)then
+          if(RAN3(idum1).ge.0.5)then
             phi = -phi
             sphi = SIN(phi)
           endif
@@ -262,7 +247,7 @@
      &       (natal_kick(snstar+4).le.(2.d0*pi)))then
           theta = natal_kick(snstar+4)
       else
-          theta = twopi*ran3(idum)
+          theta = twopi*ran3(idum1)
       endif
       stheta = SIN(theta)
       ctheta = COS(theta)
@@ -321,7 +306,7 @@
       cmu = (vr*salpha-vk*ctheta*cphi)/SQRT(v1 + v2)
       mu = ACOS(cmu)
       smu = SIN(mu)
-      omega = twopi*ran3(idum)
+      omega = twopi*ran3(idum1)
       comega = COS(omega)
       somega = SIN(omega)
 
@@ -364,9 +349,9 @@
 * Introduce random orientation of binary system to the Galaxy.
 * Not completed here but within binkin/cmc...
 *
-*      alpha = twopi*ran3(idum)
-*      gamma = twopi*ran3(idum)
-*      beta = pi*ran3(idum)
+*      alpha = twopi*ran3(idum1)
+*      gamma = twopi*ran3(idum1)
+*      beta = pi*ran3(idum1)
 *
       if(ecc.gt.1.d0)then
 *
@@ -587,7 +572,7 @@
          endif
       endif
 * Randomly rotate system
-      CALL randomness3(idum,bkick(2),bkick(3),bkick(4),bkick(6),
+      CALL randomness3(idum1,bkick(2),bkick(3),bkick(4),bkick(6),
      &            bkick(7),
      &            bkick(8),bkick(10),bkick(11),bkick(12))
 *
@@ -629,8 +614,6 @@
       INTEGER idum
       real ran3
       external ran3
-      INTEGER idum2,iy,ir(32)
-      COMMON /RAND3/ idum2,iy,ir
       REAL*8 vx1,vy1,vz1,alpha,gamma,beta,pi,twopi,vx2,vy2,vz2
       REAL*8 cg,sg,ca,sa,cb,sb,vx1s,vy1s,vz1s,vx2s,vy2s,vz2s
       REAL*8 vx3,vy3,vz3,vx3s,vy3s,vz3s

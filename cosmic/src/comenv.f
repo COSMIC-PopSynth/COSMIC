@@ -2,8 +2,10 @@
       SUBROUTINE COMENV(M01,M1,MC1,AJ1,JSPIN1,KW1,
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
-     &                  bkick,ecsnp,ecsn_mlow,formation1,formation2,
+     &                  bkick,ecsn,ecsn_mlow,formation1,formation2,
      &                  ST_tide,binstate,mergertype,natal_kick)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 * Common Envelope Evolution.
 *
@@ -16,18 +18,11 @@
 *     Update : P. D. Kiel (for ECSN, fallback and bugs)
 *     Date : cmc version mid 2010
 *
-      IMPLICIT NONE
 *
       INTEGER KW1,KW2,KW,KW1i,KW2i,snp
       INTEGER star1,star2
-      INTEGER KTYPE(0:14,0:14)
       INTEGER binstate,mergertype
-      COMMON /TYPES/ KTYPE
-      INTEGER ceflag,tflag,ifflag,nsflag,wdflag,ST_tide
-      COMMON /FLAGS/ ceflag,tflag,ifflag,nsflag,wdflag
-      INTEGER cekickflag,cemergeflag,cehestarflag
-      COMMON /CEFLAGS/ cekickflag,cemergeflag,cehestarflag
-      common /fall/fallback
+      INTEGER ST_tide
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
       REAL*8 M02,M2,MC2,AJ2,JSPIN2,R2,L2,K22,MC22
@@ -40,13 +35,12 @@
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 natal_kick(6)
-      REAL*8 bkick(20),fallback,ecsnp,ecsn_mlow,M1i,M2i
+      REAL*8 bkick(20),fallback,ecsn,ecsn_mlow,M1i,M2i
+      common /fall/fallback
       INTEGER formation1,formation2
-      REAL*8 sigma,bhsigmafrac,sigmahold,sigmadiv
-      COMMON /VALUE4/ sigma,bhsigmafrac
-      REAL*8 AURSUN,K3,ALPHA1,LAMBDA
+      REAL*8 sigmahold,sigmadiv
+      REAL*8 AURSUN,K3
       PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0)
-      COMMON /VALUE2/ ALPHA1,LAMBDA
       LOGICAL COEL,output
       REAL*8 CELAMF,RL,RZAMSF
       EXTERNAL CELAMF,RL,RZAMSF
@@ -68,7 +62,7 @@
       CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &            ecsnp,ecsn_mlow)
+     &            ecsn,ecsn_mlow)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
       RZAMS = RZAMSF(M01)
@@ -85,7 +79,7 @@
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
-     &            ecsnp,ecsn_mlow)
+     &            ecsn,ecsn_mlow)
       OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
@@ -198,10 +192,10 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &                  ecsnp,ecsn_mlow)
+     &                  ecsn,ecsn_mlow)
             IF(KW1.GE.13)THEN
                formation1 = 4
-               if(KW1.eq.13.and.ecsnp.gt.0.d0)then
+               if(KW1.eq.13.and.ecsn.gt.0.d0)then
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -213,7 +207,7 @@
                         formation1 = 5
                      endif
                   elseif(KW1i.ge.7.and.KW1i.le.9)then
-                     if(M1i.gt.ecsn_mlow.and.M1i.le.ecsnp)then
+                     if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                            sigma = sigmahold/sigmadiv
@@ -419,10 +413,10 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &                  ecsnp,ecsn_mlow)
+     &                  ecsn,ecsn_mlow)
             IF(KW1.GE.13)THEN
                formation1 = 4
-               if(KW1.eq.13.and.ecsnp.gt.0.d0)then
+               if(KW1.eq.13.and.ecsn.gt.0.d0)then
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -434,7 +428,7 @@
                         formation1 = 5
                      endif
                   elseif(KW1i.ge.7.and.KW1i.le.9)then
-                     if(M1i.gt.ecsn_mlow.and.M1i.le.ecsnp)then
+                     if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                            sigma = sigmahold/sigmadiv
@@ -461,6 +455,18 @@
                         sigma = -1.d0*sigmadiv
                      endif
                      formation1 = 6
+                  endif
+               endif
+* USSN: if ussn flag is set, have reduced kicks for stripped He stars (SN=8)
+               if(KW1.eq.13.and.KW2.ge.13.and.ussn.eq.1)then
+                  if(KW1i.ge.7.and.KW1i.le.9)then
+                     if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
+                        sigma = sigmahold/sigmadiv
+                        sigma = -sigma
+                     else
+                        sigma = -1.d0*sigmadiv
+                     endif
+                  formation1 = 8
                   endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
@@ -503,10 +509,10 @@
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
-     &                  ecsnp,ecsn_mlow)
+     &                  ecsn,ecsn_mlow)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 4
-               if(KW2.eq.13.and.ecsnp.gt.0.d0)then
+               if(KW2.eq.13.and.ecsn.gt.0.d0)then
                   if(KW2i.le.6)then
                      if(M2i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -518,7 +524,7 @@
                         formation2 = 5
                      endif
                   elseif(KW2i.ge.7.and.KW2i.le.9)then
-                     if(M2i.gt.ecsn_mlow.and.M2i.le.ecsnp)then
+                     if(M2i.gt.ecsn_mlow.and.M2i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                            sigma = sigmahold/sigmadiv
@@ -667,11 +673,11 @@
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &               ecsnp,ecsn_mlow)
+     &               ecsn,ecsn_mlow)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 4
-            if(KW1.eq.13.and.ecsnp.gt.0.d0)then
+            if(KW1.eq.13.and.ecsn.gt.0.d0)then
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -683,7 +689,7 @@
                      formation1 = 5
                   endif
                elseif(KW1i.ge.7.and.KW1i.le.9)then
-                  if(M1i.gt.ecsn_mlow.and.M1i.le.ecsnp)then
+                  if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = sigmahold/sigmadiv

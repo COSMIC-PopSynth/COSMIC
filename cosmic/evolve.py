@@ -101,8 +101,8 @@ class Evolve(Table):
             initialbinarytable['ifflag'] = BSEDict['ifflag']
         if 'wdflag' not in initialbinarytable.keys():
             initialbinarytable['wdflag'] = BSEDict['wdflag']
-        if 'ppsn' not in initialbinarytable.keys():
-            initialbinarytable['ppsn'] = BSEDict['ppsn']
+        if 'pisn' not in initialbinarytable.keys():
+            initialbinarytable['pisn'] = BSEDict['pisn']
         if 'bhflag' not in initialbinarytable.keys():
             initialbinarytable['bhflag'] = BSEDict['bhflag']
         if 'nsflag' not in initialbinarytable.keys():
@@ -115,12 +115,14 @@ class Evolve(Table):
             initialbinarytable['pts2'] = BSEDict['pts2']
         if 'pts3' not in initialbinarytable.keys():
             initialbinarytable['pts3'] = BSEDict['pts3']
-        if 'ecsnp' not in initialbinarytable.keys():
-            initialbinarytable['ecsnp'] = BSEDict['ecsnp']
+        if 'ecsn' not in initialbinarytable.keys():
+            initialbinarytable['ecsn'] = BSEDict['ecsn']
         if 'ecsn_mlow' not in initialbinarytable.keys():
             initialbinarytable['ecsn_mlow'] = BSEDict['ecsn_mlow']
         if 'aic' not in initialbinarytable.keys():
             initialbinarytable['aic'] = BSEDict['aic']
+        if 'ussn' not in initialbinarytable.keys():
+            initialbinarytable['ussn'] = BSEDict['ussn']
         if 'sigma' not in initialbinarytable.keys():
             initialbinarytable['sigma'] = BSEDict['sigma']
         if 'sigmadiv' not in initialbinarytable.keys():
@@ -175,10 +177,10 @@ class Evolve(Table):
         # need to ensure that the order of variables is correct
         initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                                 'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
                                                 'cekickflag', 'cemergeflag', 'cehestarflag',
                                                 'mxns', 'pts1', 'pts2', 'pts3',
-                                                'ecsnp', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                                                'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                                                 'natal_kick_array', 'qcrit_array',
                                                 'beta', 'xi', 'acc2', 'epsnov',
                                                 'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'dtp',
@@ -186,10 +188,10 @@ class Evolve(Table):
 
         initial_binary_table_column_names = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
                                              'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'ppsn', 'bhflag', 'nsflag',
+                                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
                                              'cekickflag', 'cemergeflag', 'cehestarflag',
                                              'mxns', 'pts1', 'pts2', 'pts3',
-                                             'ecsnp', 'ecsn_mlow', 'aic', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                                             'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                                              'beta', 'xi', 'acc2', 'epsnov',
                                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'dtp',
                                              'randomseed', 'bin_num']
@@ -207,7 +209,7 @@ class Evolve(Table):
                                                f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                                f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
                                                f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39],
-                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46])
+                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47])
 
                 try:
                     bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
@@ -218,8 +220,8 @@ class Evolve(Table):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[47]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[47]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[48]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[48]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
