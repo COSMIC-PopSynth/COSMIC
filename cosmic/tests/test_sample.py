@@ -173,7 +173,7 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
-        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        # Check that the sample SFH function samples SFH='BP99_disk' correctly
         np.random.seed(2)
         times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='BP99',\
                                                     component_age=10000.0,\
@@ -181,7 +181,7 @@ class TestSample(unittest2.TestCase):
         self.assertTrue(np.max(times) <= 13566.0)
         self.assertAlmostEqual(times.sum(), BP99_SFR_SUM)
 
-        # Check that the sample SFH function samples SFH='delta_burst' correctly
+        # Check that the sample SFH function samples SFH='BP99_bulge' correctly
         np.random.seed(2)
         times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='BP99_bulge',\
                                                     component_age=10000.0,\
