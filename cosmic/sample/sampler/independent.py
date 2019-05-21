@@ -86,7 +86,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     metallicity[metallicity > 0.03] = 0.03
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
-
+    
     return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), sampled_mass, size
 
 
@@ -409,9 +409,11 @@ class Sample(object):
                 rand_age = np.random.uniform(min(times),max(times),1)
                 age_prob = np.random.uniform(0,1,1)
                 if age_prob < SFH_interp(rand_age):
-                    t_samp.append(rand_age)
+                    t_samp.append(rand_age[0])
+            t_samp = np.array(t_samp)
             # Convert from Gyr to Myr for BSE
-            tphys = (max(times)-np.array(t_samp))*1000.0
+            t_max = max(times)
+            tphys = (t_max-t_samp)*1000.0
             metallicity = met*np.ones(size)
             return tphys, metallicity
 
@@ -434,7 +436,7 @@ class Sample(object):
                 rand_age = np.random.uniform(min(times),max(times),1)
                 age_prob = np.random.uniform(0,1,1)
                 if age_prob < SFH_interp(rand_age):
-                    t_samp.append(rand_age)
+                    t_samp.extend(rand_age[0])
             # Convert from Gyr to Myr for BSE
             tphys = (max(times)-np.array(t_samp))*1000.0
             metallicity = met*np.ones(size)
