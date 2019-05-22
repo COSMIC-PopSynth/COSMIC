@@ -500,8 +500,9 @@ def error_check(BSEDict, filters=None, convergence=None):
         if BSEDict[flag] not in [0,1]:
             raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='cehestarflag'
-    if BSEDict[flag] not in [0,1,2]:
-        raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
     flag='qcrit_array'
     if flag in BSEDict.keys():
         if any(x < 0.0 for x in BSEDict[flag]):
