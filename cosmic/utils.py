@@ -200,16 +200,16 @@ def mass_min_max_select(kstar_1, kstar_2):
         kstar_1_lo = kstar_1[0]
         kstar_1_hi = kstar_1[0]
     else:
-        kstar_1_lo = kstar_1[0]
-        kstar_1_hi = kstar_1[1]
+        kstar_1_lo = min(kstar_1)
+        kstar_1_hi = max(kstar_1)
 
     if len(kstar_2) == 1:
         # there is a range of final kstar_1s to save
         kstar_2_lo = kstar_2[0]
         kstar_2_hi = kstar_2[0]
     else:
-        kstar_2_lo = kstar_2[0]
-        kstar_2_hi = kstar_2[1]
+        kstar_2_lo = min(kstar_2)
+        kstar_2_hi = max(kstar_2)
 
     kstar_lo = [kstar_1_lo, kstar_2_lo]
     kstar_hi = [kstar_1_hi, kstar_2_hi]
