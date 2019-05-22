@@ -38,7 +38,7 @@
       REAL*8 bkick(20),fallback,ecsn,ecsn_mlow,M1i,M2i
       common /fall/fallback
       INTEGER formation1,formation2
-      REAL*8 sigmahold,sigmadiv
+      REAL*8 sigmahold
       REAL*8 AURSUN,K3
       PARAMETER (AURSUN = 214.95D0,K3 = 0.21D0)
       LOGICAL COEL,output
@@ -52,7 +52,6 @@
       TWOPI = 2.D0*ACOS(-1.D0)
       COEL = .FALSE.
       sigmahold = sigma
-      sigmadiv = -20.d0
       snp = 0
       output = .false.
 *
