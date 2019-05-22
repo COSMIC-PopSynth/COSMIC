@@ -58,7 +58,7 @@
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
       real*8 csigns
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
-      real*8 fallback,kickscale,bound
+      real*8 fallback,bound
 * Output
       real*8 v1xout,v1yout,v1zout,vkout1,vkout2
       real*8 v2xout,v2yout,v2zout
@@ -83,13 +83,9 @@
       vkout1 = 0.d0
       vkout2 = 0.d0
 
-* Scaling owing to ECSN.
-      kickscale = 0.d0
-*
-*
+* sigma is negative for ECSN
       if(sigma.lt.0.d0)then
          sigma = -1.d0*sigma
-         kickscale = 10.d0
       endif
       sigmah = sigma
 *Test: Checking if we can make customized sigma for blackholes only
@@ -192,10 +188,6 @@
 *          if(kw.eq.14)then
 * Limit BH kick with fallback only if wanted
 *          write(20,*)'BH FORM', m1,vk,fallback,kw
-          if(kickscale.gt.0.d0)then
-             vk = vk/kickscale
-             vk2 = vk2/kickscale/kickscale
-          endif
           if(kw.eq.14.and.bhflag.eq.0)then
              vk2 = 0.d0
              vk = 0.d0
