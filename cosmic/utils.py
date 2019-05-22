@@ -63,9 +63,13 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     for meth, use in method.items():
         if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_save = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                (bpp.kstar_2.isin([10,11,12])) &
-                                (bpp.evol_type == 3.0)].bin_num.tolist()
+            idx_save_1 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                  (bpp.kstar_2.isin([10,11,12])) &
+                                  (bpp.RROL_1 > 1)].bin_num.tolist()
+            idx_save_2 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                  (bpp.kstar_2.isin([10,11,12])) &
+                                  (bpp.RROL_1 > 2)].bin_num.tolist()
+            idx_save = np.intersect1d(idx_save_1, idx_save_2)
             bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
