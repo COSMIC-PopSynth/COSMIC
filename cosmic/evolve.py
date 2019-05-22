@@ -22,6 +22,7 @@
 import numpy as np
 from gwpy.utils import mp as mp_utils
 from cosmic import _evolvebin
+from utils import error_check
 import pandas as pd
 from astropy.table import Table
 
@@ -173,6 +174,9 @@ class Evolve(Table):
             initialbinarytable['qcrit_array'] = [BSEDict['qcrit_array']] * len(initialbinarytable)
             for kstar in range(0,16):
                 initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = pd.Series([BSEDict['qcrit_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='qcrit_{0}'.format(kstar))
+
+        # error check the initial binary table
+        error_check(initialbinarytable)
 
         # need to ensure that the order of variables is correct
         initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
