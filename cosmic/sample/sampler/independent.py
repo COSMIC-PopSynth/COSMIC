@@ -290,7 +290,11 @@ class Sample(object):
                 rad2 = 1.33*mass1**0.555
 
         # include the factor for the eccentricity
-        a_min = max(2*rad1/RL_fac, 2*rad2/RL_fac2)*(1+ecc)
+        RL_max = 2*rad1/RL_fac
+        ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
+        if len(ind_switch) >= 1:
+            RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
+        a_min = RL_max*(1+ecc)
         a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
         # convert out of log space
