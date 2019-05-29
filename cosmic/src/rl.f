@@ -1,6 +1,7 @@
 ***
       REAL*8 FUNCTION RL(Q)
       IMPLICIT NONE
+      INCLUDE 'const_bse.h'
       REAL*8 Q,P
 *
 * A function to evaluate R_L/a(q), Eggleton 1983.

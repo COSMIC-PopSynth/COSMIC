@@ -7,6 +7,12 @@ cosmic currently implements binary evolutionary processes using BSE (Hurley+2002
 
 <https://cosmic-popsynth.github.io/>
 
+# Release Status
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2642803.svg)](https://doi.org/10.5281/zenodo.2642803)
+[![PyPI version](https://badge.fury.io/py/cosmic-popsynth.svg)](https://badge.fury.io/py/cosmic-popsynth)
+
+
 # Installation
 
 The easiest method to install cosmic is using pip directly:

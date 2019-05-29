@@ -1,17 +1,18 @@
 ***
       SUBROUTINE star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 *
 *       Stellar luminosity & evolution time.
 *       ------------------------------------
 *
-      implicit none
 *
       integer kw
 *
       real*8 mass,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
       real*8 tgb,tbagb,mch,mcmax,mc1,mc2,mcbagb,dx,am
-      real*8 lambda,tau,mtc,mass0
+      real*8 lambdastar,tau,mtc,mass0
       parameter(mch=1.44d0)
 *
       real*8 lzamsf,lzahbf,lzhef
@@ -216,8 +217,8 @@ C      if(mass0.gt.100.d0) mass = 100.d0
       else
 * Star is on SAGB and we need to increase mcmax if any 3rd
 * dredge-up has occurred.
-         lambda = MIN(0.9d0,0.3d0+0.001d0*mass**5)
-         mcmax = (mcmax - lambda*mc1)/(1.d0 - lambda)
+         lambdastar = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+         mcmax = (mcmax - lambdastar*mc1)/(1.d0 - lambdastar)
          if(mcmax.le.GB(7))then
             tscls(14) = tscls(10) - (1.d0/((GB(5)-1.d0)*GB(2)*GB(4)))*
      &                      (mcmax**(1.d0-GB(5)))
@@ -247,8 +248,8 @@ C      endif
 * from CHeB or from the AGB we need to check the current stellar type.
          if(mt.gt.mcbagb.or.(mt.ge.mc1.and.kw.gt.4))then
             if(kw.eq.6)then
-               lambda = MIN(0.9d0,0.3d0+0.001d0*mass**5)
-               mc1 = (mt - lambda*mc1)/(1.d0 - lambda)
+               lambdastar = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+               mc1 = (mt - lambdastar*mc1)/(1.d0 - lambdastar)
             else
                mc1 = mt
             endif

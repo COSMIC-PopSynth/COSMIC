@@ -1,16 +1,16 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
      \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,
-     \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,ppsntmp,
+     \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,pisntmp,
      \ bhflagtmp,nsflagtmp,
      \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
-     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsnptmp,ecsn_mlowtmp,aictmp,
-     \ sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
+     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsntmp,ecsn_mlowtmp,aictmp,
+     \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
      \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
      \ bppout,bcmout)
-      implicit none
+      IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
 *
@@ -148,7 +148,7 @@
 * Sept 2004 *
 * Input options added/changed:
 *
-*    ceflag - set to 3 this uses de Kool (or Podsiadlowski) CE prescription,
+*    ceflag - set to 1 this uses de Kool (or Podsiadlowski) CE prescription,
 *             other options, such as Yungelson, could be added as well.
 *
 *    hewind - factor to control the amount of He star mass-loss, i.e.
@@ -189,7 +189,7 @@
 *
       INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
-      REAL*8 fallback,sigmahold,sigmadiv,ecsnp,ecsn_mlow
+      REAL*8 fallback,sigmahold,ecsn,ecsn_mlow
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
@@ -219,13 +219,13 @@
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
       REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
       REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
-      REAL*8 ecsnptmp,ecsn_mlowtmp,sigmadivtmp
+      REAL*8 ecsntmp,ecsn_mlowtmp,sigmadivtmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
-      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp
+      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
-      INTEGER wdflagtmp,ppsntmp,bhflagtmp,windflagtmp,idumtmp
+      INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
@@ -234,7 +234,7 @@ Cf2py intent(out) bppout,bcmout
       ifflag = ifflagtmp
       nsflag = nsflagtmp
       wdflag = wdflagtmp
-      ppsn = ppsntmp
+      pisn = pisntmp
       bhflag = bhflagtmp
       nsflag = nsflagtmp
       mxns = mxnstmp
@@ -242,9 +242,10 @@ Cf2py intent(out) bppout,bcmout
       pts1 = pts1tmp
       pts2 = pts2tmp
       pts3 = pts3tmp
-      ecsnp = ecsnptmp
+      ecsn = ecsntmp
       ecsn_mlow = ecsn_mlowtmp
       aic = aictmp
+      ussn = ussntmp
       sigma = sigmatmp
       sigmadiv = sigmadivtmp
       bhsigmafrac = bhsigmafractmp
@@ -266,7 +267,7 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       windflag = windflagtmp
       dtp = dtptmp
-      idum = idumtmp
+      idum1 = idumtmp
 
       CALL instar
 
@@ -396,8 +397,8 @@ Cf2py intent(out) bppout,bcmout
 *
 * Set the seed for the random number generator.
 *
-*      idum = INT(sep*100)
-      if(idum.gt.0) idum = -idum
+*      idum1 = INT(sep*100)
+      if(idum1.gt.0) idum1 = -idum1
 
 *
 * Set the collision matrix.
@@ -477,7 +478,7 @@ Cf2py intent(out) bppout,bcmout
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,ST_tide,
-     &               ecsnp,ecsn_mlow)
+     &               ecsn,ecsn_mlow)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -1258,7 +1259,7 @@ Cf2py intent(out) bppout,bcmout
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,
-     &               ecsnp,ecsn_mlow)
+     &               ecsn,ecsn_mlow)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -1269,7 +1270,7 @@ Cf2py intent(out) bppout,bcmout
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
             if(formation(k).ne.11) formation(k) = 4
-            if(kw.eq.13.and.ecsnp.gt.0.d0)then
+            if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1281,7 +1282,7 @@ Cf2py intent(out) bppout,bcmout
                      formation(k) = 5
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
-                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsnp)then
+                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = sigmahold/sigmadiv
@@ -1443,16 +1444,16 @@ Cf2py intent(out) bppout,bcmout
                if(kstar(k).eq.13.and.pulsar.gt.0)then
 *                  write(93,*)'birth start: ',tphys,k,B_0(k),ospin(k)
 *                  CALL FLUSH(93)
- 170              u1 = ran3(idum)
+ 170              u1 = ran3(idum1)
                   if(u1.ge.1.d0) goto 170
-                  u2 = ran3(idum)
+                  u2 = ran3(idum1)
                   s = sqrt(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
                   s = 0.7d0*s - 0.6d0
                   if(s.ge.0.013d0.or.s.le.-1.5d0) goto 170
                   ospin(k) = (twopi*yearsc)/(10.d0**s)
- 174              u1 = ran3(idum)
+ 174              u1 = ran3(idum1)
                   if(u1.ge.1.d0) goto 174
-                  u2 = ran3(idum)
+                  u2 = ran3(idum1)
                   s = sqrt(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
                   s = 0.68d0*s + 12.6d0
                   if(s.lt.11.5d0.or.s.gt.13.8d0) goto 174
@@ -1462,8 +1463,8 @@ Cf2py intent(out) bppout,bcmout
                   if((merger.le.-2.d0.and.merger.gt.-20.d0).or.
      &                merge_mem.eq.1)then
 * Reset as MSP.
- 175                 u1 = ran3(idum)
-                     u2 = ran3(idum)
+ 175                 u1 = ran3(idum1)
+                     u2 = ran3(idum1)
                      if(u1.gt.0.9999d0) u1 = 0.9999d0
                      if(u2.gt.1.d0) u2 = 1.d0
                      s = SQRT(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
@@ -1474,8 +1475,8 @@ Cf2py intent(out) bppout,bcmout
                      if(s.ge.-1.6457d0.or.s.le.-2.53d0) goto 175
                      ospin(k) = (twopi*yearsc)/(10.d0**s)!have commented this out to keeps same spin
 *                  write(*,*)'P=',s
- 176                 u1 = ran3(idum)
-                     u2 = ran3(idum)
+ 176                 u1 = ran3(idum1)
+                     u2 = ran3(idum1)
                      if(u1.gt.0.9999d0) u1 = 0.9999d0
                      if(u2.gt.1.d0) u2 = 1.d0
                      s = SQRT(-2.d0*LOG(1.d0-u1))*COS(twopi*u2)
@@ -2002,7 +2003,7 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -2945,7 +2946,7 @@ Cf2py intent(out) bppout,bcmout
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,ecsnp,ecsn_mlow)
+     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,ecsn,ecsn_mlow)
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
@@ -2953,7 +2954,7 @@ Cf2py intent(out) bppout,bcmout
      &      (kw.eq.13.or.kw.eq.14))then
             dms(k) = mass(k) - mt
             if(formation(k).ne.11) formation(k) = 4
-            if(kw.eq.13.and.ecsnp.gt.0.d0)then
+            if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -2965,7 +2966,7 @@ Cf2py intent(out) bppout,bcmout
                      formation(k) = 5
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
-                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsnp)then
+                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = sigmahold/sigmadiv
@@ -3219,7 +3220,7 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
@@ -3245,7 +3246,7 @@ Cf2py intent(out) bppout,bcmout
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsnp,ecsn_mlow,
+     &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,

@@ -91,9 +91,13 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     for meth, use in method.items():
         if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_save = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                (bpp.kstar_2.isin([10,11,12])) &
-                                (bpp.evol_type == 3.0)].bin_num.tolist()
+            idx_save_1 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                  (bpp.kstar_2.isin([10,11,12])) &
+                                  (bpp.RROL_1 > 1)].bin_num.tolist()
+            idx_save_2 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
+                                  (bpp.kstar_2.isin([10,11,12])) &
+                                  (bpp.RROL_1 > 2)].bin_num.tolist()
+            idx_save = np.intersect1d(idx_save_1, idx_save_2)
             bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
@@ -224,16 +228,16 @@ def mass_min_max_select(kstar_1, kstar_2):
         kstar_1_lo = kstar_1[0]
         kstar_1_hi = kstar_1[0]
     else:
-        kstar_1_lo = kstar_1[0]
-        kstar_1_hi = kstar_1[1]
+        kstar_1_lo = min(kstar_1)
+        kstar_1_hi = max(kstar_1)
 
     if len(kstar_2) == 1:
         # there is a range of final kstar_1s to save
         kstar_2_lo = kstar_2[0]
         kstar_2_hi = kstar_2[0]
     else:
-        kstar_2_lo = kstar_2[0]
-        kstar_2_hi = kstar_2[1]
+        kstar_2_lo = min(kstar_2)
+        kstar_2_hi = max(kstar_2)
 
     kstar_lo = [kstar_1_lo, kstar_2_lo]
     kstar_hi = [kstar_1_hi, kstar_2_hi]
