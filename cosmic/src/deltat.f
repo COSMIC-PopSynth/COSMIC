@@ -1,12 +1,11 @@
 ***
       SUBROUTINE deltat(kw,age,tm,tn,tscls,dt,dtr)
-      implicit none
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
       INTEGER kw
       REAL*8 age,tm,tn,tscls(20)
       REAL*8 dt,dtr
-      REAL*8 pts1,pts2,pts3
-      COMMON /POINTS/ pts1,pts2,pts3
 *
 *     Base new time scale for changes in radius & mass on stellar type.
 *

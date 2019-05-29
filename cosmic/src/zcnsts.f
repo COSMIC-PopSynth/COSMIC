@@ -1,7 +1,8 @@
 ***
       SUBROUTINE zcnsts(z,zpars)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
-      implicit none
       integer kw
 *
       real*8 z,zpars(20)
