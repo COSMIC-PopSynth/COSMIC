@@ -160,15 +160,6 @@ if __name__ == '__main__':
     filters = dictionary['filters']
     convergence = dictionary['convergence']
 
-    if seed_int != 0:
-        np.random.seed(seed_int)
-    else:
-        np.random.seed(0)
-
-    # ---- Check that values in the BSEDict are viable
-    if BSEDict['polar_kick_angle']<0 or BSEDict['polar_kick_angle']>90:
-        raise ValueError("{0:0.1f} is outside the allowed range of [0,90] for specifying polar kicks".format(BSEDict['polar_kick_angle']))
-
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2:
         kstar1_range = np.arange(args.final_kstar1[0], args.final_kstar1[1]+1)
@@ -230,12 +221,16 @@ if __name__ == '__main__':
     bpp_filter = pd.DataFrame()
 
     while (Nstep < args.Niter) & (np.max(np.array(match_all)) > args.match):
+        # Set random seed such that each iteration gets a unique, determinable seed
+        rand_seed = seed_int + Nstep
+        np.random.seed(rand_seed)
+
         # Select the initial binary sample method from user input
         if args.initial_samp == 'independent':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
+            IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
