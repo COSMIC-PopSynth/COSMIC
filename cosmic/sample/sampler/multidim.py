@@ -485,11 +485,8 @@ class MultiDim:
             # get unique and replicatable seed for each process
             process = mp.Process()
             mp_seed = (process._identity[0]-1)+(nproc*(process._identity[1]-1))
+            np.random.seed(seed + mp_seed)
 
-            if seed > 0:
-                np.random.seed(seed + mp_seed)
-            else:
-                np.random.seed()
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
