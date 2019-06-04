@@ -161,9 +161,9 @@ if __name__ == '__main__':
     convergence = dictionary['convergence']
 
     if seed_int != 0:
-        np.random.seed(seed_int)
+        rand_seed = seed_int
     else:
-        np.random.seed(0)
+        rand_seed = np.random.random()
 
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2:
@@ -231,7 +231,7 @@ if __name__ == '__main__':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
 
         if args.initial_samp == 'multidim':
-            IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, np.random.randint(0,1e6,1), args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
+            IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
