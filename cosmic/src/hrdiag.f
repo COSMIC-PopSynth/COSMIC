@@ -795,12 +795,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Use NS/BH masses given by Belczynski+08. PK.
 *
                      !First calculate the proto-core mass
-                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
+                     if(ecsn.gt.0.d0.and.mc.le.ecsn)then
                         mcx = 1.38d0
-                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
-*                     if(mcbagb.le.2.35d0)then
+                     elseif(ecsn.eq.0.d0.and.mc.le.2.25d0)then !this should be ecsn, unless ecsn=0
                         mcx = 1.38d0
-*                     elseif(mc.lt.4.29d0)then
                      elseif(mc.lt.4.82d0)then
                         mcx = 1.5d0
                      elseif(mc.ge.4.82d0.and.mc.lt.6.31d0)then
@@ -827,9 +825,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 *                    For this, we just set the proto-core mass to one
                      mcx = 1.d0
-                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
+                     if(ecsn.gt.0.d0.and.mc.le.ecsn)then
                         mcx = 1.38d0
-                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
+                     elseif(ecsn.eq.0.d0.and.mc.le.2.25d0)then !this should be ecsn, unless ecsn=0
                         mcx = 1.38d0
                      endif
                      if(mc.le.2.5d0)then
@@ -899,56 +897,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
 * between 45 and 65 solar masses, and blow up anything between 65 and
 * 135 solar masses.  Cheap, but effective
-                     if(pisn.eq.1)then
-                        if(mcbagb.ge.45.d0.and.mcbagb.lt.65.d0)then
-                           mt = 45.d0
-                           mc = 45.d0
-                        elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
+                     if(pisn.gt.0)then
+                        if(mc.ge.pisn.and.mc.lt.65.d0)then
+                           mt = pisn
+                           mc = pisn
+                        elseif(mc.ge.65.d0.and.mc.lt.135.d0)then
                            mt = 0.d0
                            mc = 0.d0
                            kw = 15
                         endif
-* The Spera+Mapelli2017 prescription is a tad more sophisticated:
-* complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
-* were done using the ZAMS mass/core mass/remnant mass relationships for
-* SEVN, not BSE.  In other words, I woud be careful using this (and in
-* practice, it doesn't vary that much from Belczynski's prescription,
-* since the He core masses are the same in both)
-
-                     elseif(pisn.eq.2)then
-                        frac = mcbagb/mt
-                        kappa = 0.67d0*frac + 0.1d0
-                        sappa = 0.5228d0*frac - 0.52974
-                        if(mcbagb.le.32.d0)then
-                           alphap = 1.0d0
-                        elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
-                           alphap = 0.2d0*(kappa-1.d0)*mcbagb +
-     &                              0.2d0*(37.d0 - 32.d0*kappa)
-                        elseif(mcbagb.le.60d0.and.frac.lt.0.9d0)then
-                           alphap = kappa
-                        elseif(frac.ge.0.9.and.mcbagb.le.37d0)then
-                           alphap = sappa*(mcbagb - 32.d0) + 1.d0
-                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
-     &                        sappa.lt.0.82916)then
-                           alphap = 5.d0*sappa + 1.d0
-                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
-     &                        sappa.ge.0.82916)then
-                           alphap = (-0.1381*frac + 0.1309)*
-     &                              (mcbagb - 56.d0) + 0.82916
-                        elseif(frac.ge.0.9.and.mcbagb.gt.56.and.
-     &                        mcbagb.lt.64)then
-                           alphap = -0.103645*mcbagb + 6.63328
-                        elseif(mcbagb.ge.64.and.mcbagb.lt.135)then
-                           alphap = 0.d0
-                           kw = 15
-                        elseif(mcbagb.ge.135)then
-                           alphap = 1.0d0
-                        endif
-
-                        mt = alphap*mt
+* Note that the Sprea+Mapelli2017 prescription is not for nake He stars
                      endif
-
-
 
 
 * Convert baryonic mass to gravitational mass (approx for BHs)
