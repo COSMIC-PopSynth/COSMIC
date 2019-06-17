@@ -74,7 +74,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
     # add in the total sampled primary mass
     sampled_mass += total_mass1
-    mass1_binary, mass_singles = initconditions.binary_select(mass1)
+    mass1_binary, mass_singles = initconditions.binary_select(mass1, model='half')
     mass2_binary = initconditions.sample_secondary(mass1_binary)
     # add in the sampled secondary mass
     sampled_mass += np.sum(mass2_binary)
@@ -102,10 +102,10 @@ class Sample(object):
 
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-        between 0.1 and 100 Msun
+        between 0.1 and 150 Msun
         salpter55 follows
         `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-        between 0.1 and 100 Msun
+        between 0.1 and 150 Msun
 
         Parameters
         ----------
@@ -143,23 +143,23 @@ class Sample(object):
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if primary_max >= 150.0:
-                a_0 = np.random.uniform(0.0, 0.9999797, size*500)
+            if primary_max >= 100.0:
+                a_0 = np.random.uniform(0.0, 1, size*500)
             elif primary_max >= 30.0:
-                a_0 = np.random.uniform(0.0, 0.9999797, size*50)
+                a_0 = np.random.uniform(0.0, 1, size*50)
             else:
-                a_0 = np.random.uniform(0.0, 0.9999797, size)
+                a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.740074
-            high_cutoff=0.908422
+            low_cutoff = 0.925
+            high_cutoff = 0.986
 
             lowIdx, = np.where(a_0 <= low_cutoff)
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = ((0.1) ** (-3.0/10.0) - (a_0[lowIdx] / 0.968533)) ** (-10.0/3.0)
-            a_0[midIdx] = ((0.5) ** (-6.0/5.0) - ((a_0[midIdx] - low_cutoff) / 0.129758)) ** (-5.0/6.0)
-            a_0[highIdx] = (1 - ((a_0[highIdx] - high_cutoff) / 0.0915941)) ** (-10.0/17.0)
+            a_0[lowIdx] = rndm(a=0.1, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
             total_sampled_mass = np.sum(a_0)
 
@@ -171,12 +171,12 @@ class Sample(object):
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if primary_max == 150.0:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*500)
-            elif primary_max == 50.0:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*50)
+            if primary_max >= 100.0:
+                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*500)
+            elif primary_max >= 30.0:
+                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*50)
             else:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size)
+                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size)
 
             total_sampled_mass = np.sum(a_0)
 
@@ -209,8 +209,9 @@ class Sample(object):
         return secondary_mass
 
 
-    def binary_select(self, primary_mass):
-        """Select the which primary masses will have a compution using a
+    def binary_select(self, primary_mass, model='half'):
+        """Select the which primary masses will have a companion using 
+        either a binary fraction of fifty percent or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
 
@@ -218,6 +219,10 @@ class Sample(object):
         ----------
         primary_mass : array
             Mass that determines the binary fraction
+        model : string
+            half - every two stars selected are in a binary
+            vanHaaften - primary mass dependent and ONLY VALID 
+                         up to 100 Msun
 
         Returns
         -------
@@ -227,11 +232,17 @@ class Sample(object):
             primary masses that will be single stars
         """
 
-        binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-        binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
+        if model == 'half':
+            binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
+            binaryIdx, = np.where(binary_choose >= 0.5)
+            singleIdx, = np.where(binary_choose < 0.5)
 
-        binaryIdx, = np.where(binary_fraction > binary_choose)
-        singleIdx, = np.where(binary_fraction < binary_choose)
+        elif model == 'vanHaaften':
+            binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
+            binary_choose =  np.random.uniform(0, 1.0, primary_mass.size)
+
+            binaryIdx, = np.where(binary_fraction > binary_choose)
+            singleIdx, = np.where(binary_fraction < binary_choose)
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
