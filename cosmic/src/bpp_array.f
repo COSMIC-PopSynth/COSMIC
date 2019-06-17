@@ -106,8 +106,10 @@
         bcm(ip,34) = B_0_2
         bcm(ip,35) = SNkick_1
         bcm(ip,36) = SNkick_2
-        bcm(ip,37) = Vsys_final
-        bcm(ip,38) = SNtheta_final
+        if(bin_state.ne.2.d0)then
+            bcm(ip,37) = Vsys_final
+            bcm(ip,38) = SNtheta_final
+        endif
         bcm(ip,39) = float(SN_1)
         bcm(ip,40) = float(SN_2)
         bcm(ip,41) = bin_state
