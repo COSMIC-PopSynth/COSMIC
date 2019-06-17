@@ -278,6 +278,8 @@ if __name__ == '__main__':
             initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
             bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
 
+        dat_store.append('binary_fraction', bin_state_fraction)
+
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
         n_bin_state = []

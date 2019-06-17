@@ -89,7 +89,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
             # this will tell use the binary state fraction of the systems with a certain final kstar type
             # before we throw out certain binary states if a user requested that.
-            bin_state_fraction = bcm.groupby('bin_state').count()
+            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
 
             bcm = bcm.loc[bcm.bin_state.isin(use)]
 
