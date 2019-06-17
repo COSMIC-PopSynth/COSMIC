@@ -640,7 +640,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = pisn
                            mc = pisn
                            pisn_track(kidx)=8
-                        elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
+                        elseif(mcbagb.ge.65.d0.and.mcbagb.lt.125.d0)then
                            mt = 0.d0
                            mc = 0.d0
                            kw = 15
@@ -912,7 +912,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = pisn
                            mc = pisn
                            pisn_track(kidx)=8
-                        elseif(mc.ge.65.d0.and.mc.lt.135.d0)then
+                        elseif(mc.ge.65.d0.and.mc.lt.125.d0)then
                            mt = 0.d0
                            mc = 0.d0
                            kw = 15
