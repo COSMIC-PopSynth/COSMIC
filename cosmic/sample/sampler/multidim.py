@@ -481,11 +481,12 @@ class MultiDim:
         ecc_list = []
 
 
-        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, seed, output):
-            if seed > 0:
-                np.random.seed(seed)
-            else:
-                np.random.seed()
+        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, nproc, seed, output):
+            # get unique and replicatable seed for each process
+            process = mp.Process()
+            mp_seed = (process._identity[0]-1)+(nproc*(process._identity[1]-1))
+            np.random.seed(seed + mp_seed)
+
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
@@ -583,7 +584,7 @@ class MultiDim:
 
         output = mp.Queue()
         processes = [mp.Process(target = _sample_initial_pop,\
-                                args = (M1min, M2min, M1max, M2max, size/nproc, rand_seed, output))\
+                                args = (M1min, M2min, M1max, M2max, size/nproc, nproc, rand_seed, output))\
                                 for x in range(nproc)]
         for p in processes:
             p.daemon = True
