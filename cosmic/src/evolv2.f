@@ -1369,10 +1369,10 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(17).gt.0.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(20).gt.0.d0)then
                   theta_bcm=bkick(20)
                endif
 
@@ -1387,10 +1387,10 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(17).gt.0.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(20).gt.0.d0)then
                   theta_bcm=bkick(20)
                endif
                if(mass(3-k).lt.0.d0)then
@@ -2026,10 +2026,10 @@ Cf2py intent(out) bppout,bcmout
          if(bkick(14).gt.0.d0)then
              vk2_bcm=bkick(14)
          endif
-         if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+         if(bkick(17).gt.0.d0)then
              vsys_bcm=bkick(17)
          endif
-         if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+         if(bkick(20).gt.0.d0)then
              theta_bcm=bkick(20)
          endif
 *
@@ -3006,10 +3006,10 @@ Cf2py intent(out) bppout,bcmout
             if(bkick(14).gt.0.d0)then
                vk2_bcm=bkick(14)
             endif
-            if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+            if(bkick(17).gt.0.d0)then
                vsys_bcm=bkick(17)
             endif
-            if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+            if(bkick(20).gt.0.d0)then
                theta_bcm=bkick(20)
             endif
 
@@ -3279,10 +3279,10 @@ Cf2py intent(out) bppout,bcmout
       if(bkick(14).gt.0.d0)then
          vk2_bcm=bkick(14)
       endif
-      if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+      if(bkick(17).gt.0.d0)then
          vsys_bcm=bkick(17)
       endif
-      if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+      if(bkick(20).gt.0.d0)then
          theta_bcm=bkick(20)
       endif
 
