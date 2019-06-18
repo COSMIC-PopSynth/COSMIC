@@ -1,43 +1,63 @@
-language: python
+matrix:
+  include:
+    - language: python
 
-dist: xenial
+        dist: xenial
 
-os:
-  - linux
+        os:
+          - linux
 
-addons:
-  apt:
-    packages:
-    - gfortran
-    - swig
-    - libhdf5-serial-dev
+        addons:
+          apt:
+            packages:
+            - gfortran
+            - swig
+            - libhdf5-serial-dev
 
-python:
-  - '2.7'
-  - '3.5'
-  - '3.6'
-  - '3.7'
+        python:
+          - '2.7'
+          - '3.5'
+          - '3.6'
+          - '3.7'
 
-before_install:
-  - pip install pip setuptools --upgrade
+        before_install:
+          - pip install pip setuptools --upgrade
 
-install:
-  - python -m pip install .
+        install:
+          - python -m pip install .
 
-before_script:
-  - python -m pip install coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
+        before_script:
+          - python -m pip install coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
 
-script:
-  # run unit tests
-  - coverage run ./setup.py test
-  - coverage run --append `which runFixedPop` --help
+        script:
+          # run unit tests
+          - coverage run ./setup.py test
+          - coverage run --append `which runFixedPop` --help
 
-  # build documentation
-  - cd docs && make html; cd ../
+          # build documentation
+          - cd docs && make html; cd ../
 
-after_success:
-- coveralls
+        after_success:
+        - coveralls
 
-cache:
-  pip: true
-  apt: true
+        cache:
+          pip: true
+          apt: true
+
+    - language: c
+
+        dist: xenial
+
+        os:
+          - linux
+
+        addons:
+          apt:
+            packages:
+            - gfortran
+
+        script:
+          - bash .travis/compile_benchmark.sh
+
+        after_success:
+        - bash <(curl -s https://codecov.io/bash)
