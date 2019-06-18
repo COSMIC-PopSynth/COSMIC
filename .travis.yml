@@ -14,3 +14,7 @@ script:
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+
+cache:
+  apt: true
+  pip: true
