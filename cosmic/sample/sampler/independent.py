@@ -78,8 +78,8 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     mass2_binary = initconditions.sample_secondary(mass1_binary)
     # add in the sampled secondary mass
     sampled_mass += np.sum(mass2_binary)
-    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, size=mass1_binary.size)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
+    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
@@ -236,7 +236,7 @@ class Sample(object):
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
 
-    def sample_porb(self, mass1, mass2, size=None):
+    def sample_porb(self, mass1, mass2, ecc, size=None):
         """Sample the semi-major axis flat in log space from RROL < 0.5 up
         to 1e5 Rsun according to
         `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
@@ -249,6 +249,8 @@ class Sample(object):
             primary masses
         mass2 : array
             secondary masses
+        ecc : array
+            eccentricities
 
         Returns
         -------
@@ -287,7 +289,12 @@ class Sample(object):
             else:
                 rad2 = 1.33*mass1**0.555
 
-        a_min = 2*rad1/RL_fac + 2*rad2/RL_fac2
+        # include the factor for the eccentricity
+        RL_max = 2*rad1/RL_fac
+        ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
+        if len(ind_switch) >= 1:
+            RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
+        a_min = RL_max*(1+ecc)
         a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
         # convert out of log space
