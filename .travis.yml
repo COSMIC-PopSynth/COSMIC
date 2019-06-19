@@ -1,4 +1,4 @@
-language: c
+language: python
 
 dist: xenial
 
@@ -8,17 +8,37 @@ os:
 addons:
   apt_packages:
     - gfortran
+    - swig
+    - libhdf5-serial-dev
+
+python:
+  - '2.7'
+  - '3.5'
+  - '3.6'
+  - '3.7'
 
 before_install:
-  - pip install --user cpp-coveralls
+  - pip install pip setuptools --upgrade
+
+install:
+  - python -m pip install .
+
+before_script:
+  - python -m pip install cpp-coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
 
 script:
+  # run unit tests
   - bash .travis/compile_benchmark.sh
+  - coverage run ./setup.py test
+  - coverage run --append `which runFixedPop` --help
+
+  # build documentation
+  - cd docs && make html; cd ../
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
 
 cache:
-  apt: true
   pip: true
+  apt: true
