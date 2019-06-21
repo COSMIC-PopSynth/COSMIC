@@ -325,6 +325,9 @@ Cf2py intent(out) bppout,bcmout
       diskxip = 0.d0 !sets if diskxi is to be used (>0; 0.01) and is min diskxi value.
       formation(1) = 0 !helps determine formation channel of interesting systems.
       formation(2) = 0
+      pisn_track(1) = 0 !tracks whether a PISN occurred for each
+component.
+      pisn_track(2) = 0
       merger = -1 !used in CMC to track systems that dynamically merge
       notamerger = 0 !if 0 you reset the merger NS product to new factory settings else you don't.
       mergemsp = 1 !if set to 1 any NS that merges with another star where the NS is an MSP stays an MSP...
@@ -478,7 +481,7 @@ Cf2py intent(out) bppout,bcmout
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,ST_tide,
-     &               ecsn,ecsn_mlow)
+     &               ecsn,ecsn_mlow,k)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -1259,7 +1262,7 @@ Cf2py intent(out) bppout,bcmout
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,
-     &               ecsn,ecsn_mlow)
+     &               ecsn,ecsn_mlow,k)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -1369,10 +1372,10 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(17).gt.0.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(20).gt.0.d0)then
                   theta_bcm=bkick(20)
                endif
 
@@ -1387,10 +1390,10 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(17).gt.0.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(20).gt.0.d0)then
                   theta_bcm=bkick(20)
                endif
                if(mass(3-k).lt.0.d0)then
@@ -1615,6 +1618,9 @@ Cf2py intent(out) bppout,bcmout
             rrl2 = rad(2)/rol(2)
             deltam1_bcm = dmt(1) - dmr(1)
             deltam2_bcm = dmt(2) - dmr(2)
+* Check if PISN occurred, and if so overwrite formation
+            if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+            if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
             CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                    lumin(1),rad(1),teff1,massc(1),
      &                    radc(1),menv(1),renv(1),epoch(1),
@@ -1833,6 +1839,9 @@ Cf2py intent(out) bppout,bcmout
           rrl2 = rad(2)/rol(2)
           deltam1_bcm = 0.0
           deltam2_bcm = 0.0
+* Check if PISN occurred, and if so overwrite formation
+          if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+          if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -2026,10 +2035,10 @@ Cf2py intent(out) bppout,bcmout
          if(bkick(14).gt.0.d0)then
              vk2_bcm=bkick(14)
          endif
-         if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+         if(bkick(17).gt.0.d0)then
              vsys_bcm=bkick(17)
          endif
-         if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+         if(bkick(20).gt.0.d0)then
              theta_bcm=bkick(20)
          endif
 *
@@ -2946,7 +2955,7 @@ Cf2py intent(out) bppout,bcmout
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,ecsn,ecsn_mlow)
+     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,ecsn,ecsn_mlow,k)
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
@@ -3006,10 +3015,10 @@ Cf2py intent(out) bppout,bcmout
             if(bkick(14).gt.0.d0)then
                vk2_bcm=bkick(14)
             endif
-            if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+            if(bkick(17).gt.0.d0)then
                vsys_bcm=bkick(17)
             endif
-            if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+            if(bkick(20).gt.0.d0)then
                theta_bcm=bkick(20)
             endif
 
@@ -3134,6 +3143,9 @@ Cf2py intent(out) bppout,bcmout
               deltam1_bcm = (dm2 - dms(1))/dt
               deltam2_bcm = (-1.0*dm1 - dms(2))/dt
           endif
+* Check if PISN occurred, and if so overwrite formation
+          if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+          if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -3279,10 +3291,10 @@ Cf2py intent(out) bppout,bcmout
       if(bkick(14).gt.0.d0)then
          vk2_bcm=bkick(14)
       endif
-      if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+      if(bkick(17).gt.0.d0)then
          vsys_bcm=bkick(17)
       endif
-      if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+      if(bkick(20).gt.0.d0)then
          theta_bcm=bkick(20)
       endif
 
@@ -3483,6 +3495,9 @@ Cf2py intent(out) bppout,bcmout
               deltam1_bcm = (dm2 - dms(1))/dt
               deltam2_bcm = (-1.0*dm1 - dms(2))/dt
           endif
+* Check if PISN occurred, and if so overwrite formation
+          if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+          if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),

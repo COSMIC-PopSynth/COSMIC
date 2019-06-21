@@ -11,6 +11,8 @@
       COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
+      INTEGER pisn_track(2)
+      COMMON /TRACKERS/ pisn_track
 *
       REAL*8 neta,bwind,hewind,mxns,beta,xi,acc2,epsnov,eddfac,gamma
       COMMON /WINDVARS/ neta,bwind,hewind,mxns,beta,xi,acc2,epsnov

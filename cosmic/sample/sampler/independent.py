@@ -143,47 +143,46 @@ class Sample(object):
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if primary_max >= 100.0:
-                a_0 = np.random.uniform(0.0, 1, size*500)
-            elif primary_max >= 30.0:
-                a_0 = np.random.uniform(0.0, 1, size*50)
-            else:
+            a_0_all = np.array([])
+            total_sampled_mass = 0
+            while a_0_all.size < size:
                 a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.925
-            high_cutoff = 0.986
+                low_cutoff = 0.925
+                high_cutoff = 0.986
 
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            highIdx, = np.where(a_0 >= high_cutoff)
+                lowIdx, = np.where(a_0 <= low_cutoff)
+                midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
+                highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.1, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
-            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
+                a_0[lowIdx] = rndm(a=0.1, b=0.5, g=-1.3, size=len(lowIdx))
+                a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+                a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
-            total_sampled_mass = np.sum(a_0)
+                total_sampled_mass += np.sum(a_0)
 
-            a_0 = a_0[a_0 >= primary_min]
-            a_0 = a_0[a_0 <= primary_max]
-            return a_0, total_sampled_mass
+                a_0 = a_0[a_0 >= primary_min]
+                a_0 = a_0[a_0 <= primary_max]
+                a_0_all = np.append(a_0_all,a_0)
+
+            return a_0_all, total_sampled_mass
 
         elif primary_model=='salpeter55':
             # If the final binary contains a compact object (BH or NS),
             # we want to evolve 'size' binaries that could form a compact
             # object so we over sample the initial population
-            if primary_max >= 100.0:
-                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*500)
-            elif primary_max >= 30.0:
-                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*50)
-            else:
+            a_0_all = np.array([])
+            total_sampled_mass = 0
+            while a_0_all.size < size:
                 a_0 = rndm(a=0.08, b=150, g=-2.35, size=size)
 
-            total_sampled_mass = np.sum(a_0)
+                total_sampled_mass += np.sum(a_0)
 
-            a_0 = a_0[a_0 >= primary_min]
-            a_0 = a_0[a_0 <= primary_max]
+                a_0 = a_0[a_0 >= primary_min]
+                a_0 = a_0[a_0 <= primary_max]
+                a_0_all = np.append(a_0_all,a_0)
 
-            return a_0, total_sampled_mass
+            return a_0_all, total_sampled_mass
 
     # sample secondary mass
     def sample_secondary(self, primary_mass):
