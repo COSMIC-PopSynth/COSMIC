@@ -285,8 +285,8 @@ if __name__ == '__main__':
             bcm_filter_match = bcm_filter_match.append(bcm_filter)
             bpp_filter_match = bpp_filter_match.append(bpp_filter)
         else:
-            bcm_filter_match = bcm_filter
-            bpp_filter_match = bpp_filter
+            bcm_filter_match = bcm_filter.copy()
+            bpp_filter_match = bpp_filter.copy()
 
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
@@ -308,8 +308,8 @@ if __name__ == '__main__':
                 dat_store.append('match', match_save)
 
             # reset the bcm_filter DataFrame
-            bcm_filter_match = pd.DataFrame()
-            bpp_filter_match = pd.DataFrame() 
+            bcm_filter_match = []
+            bpp_filter_match = [] 
         Nstep += args.Nstep
         log_file.flush()
         n_bin_state = []
