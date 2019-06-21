@@ -216,9 +216,8 @@ if __name__ == '__main__':
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
-    bcm_filter = pd.DataFrame()
-    initC_filter = pd.DataFrame()
-    bpp_filter = pd.DataFrame()
+    bcm_filter_match = []
+    bpp_filter_match = []
 
     while (Nstep < args.Niter) & (np.max(np.array(match_all)) > args.match):
         # Set random seed such that each iteration gets a unique, determinable seed
@@ -268,36 +267,39 @@ if __name__ == '__main__':
         idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
 
+        bcm_filter = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+        initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
+        bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
+
+        # Save the bcm dataframe
+        dat_store.append('bcm', bcm_filter)
+
+        # Save the bpp dataframe
+        dat_store.append('bpp', bpp_filter)
+
+        # Save the initial binaries
+        dat_store.append('initCond', initC_filter)
+
         # Filter the bcm and bpp arrays according to user specified filters
-        if len(bcm_filter) > 1:
-            bcm_filter = bcm_filter.append(filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range))
-            initC_filter = initC_filter.append(initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)])
-            bpp_filter = bpp_filter.append(bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)])
+        if len(bcm_filter_match) > 1:
+            bcm_filter_match = bcm_filter_match.append(bcm_filter)
+            bpp_filter_match = bpp_filter_match.append(bpp_filter)
         else:
-            bcm_filter = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
-            initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
-            bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
+            bcm_filter_match = bcm_filter.copy()
+            bpp_filter_match = bpp_filter.copy()
 
         # Run the match on short period binaries, such that we get a better sampling
         # for the highest signal systems
         n_bin_state = []
         for bin_state in filters['binary_state']:
-            n_bin_state.append(len(bcm_filter.loc[bcm_filter.bin_state == bin_state]))
+            n_bin_state.append(len(bcm_filter_match.loc[bcm_filter_match.bin_state == bin_state]))
         if all(i >= 50 for i in n_bin_state):
-            # Save the bcm dataframe
-            dat_store.append('bcm', bcm_filter)
-            bcm_save = bcm_save.append(bcm_filter)
-
-            # Save the bpp dataframe
-            dat_store.append('bpp', bpp_filter)
-            bpp_save = bpp_save.append(bpp_filter)
-
-            # Save the initial binaries
-            dat_store.append('initCond', initC_filter)
+            bcm_save = bcm_save.append(bcm_filter_match)
+            bpp_save = bpp_save.append(bpp_filter_match)            
 
             # perform the convergence
             match = Match.perform_convergence(args.convergence_params, filters['binary_state'],\
-                                                  convergence, bcm_save, bcm_filter, bpp_save,\
+                                                  convergence, bcm_save, bcm_filter_match, bpp_save,\
                                                   kstar1_range, kstar2_range, log_file)
 
             if (len(match) > 1):
@@ -306,7 +308,8 @@ if __name__ == '__main__':
                 dat_store.append('match', match_save)
 
             # reset the bcm_filter DataFrame
-            bcm_filter = pd.DataFrame()
+            bcm_filter_match = []
+            bpp_filter_match = [] 
         Nstep += args.Nstep
         log_file.flush()
         n_bin_state = []
