@@ -304,7 +304,7 @@ def idl_tabulate(x, f, p=5) :
 
 
 def rndm(a, b, g, size):
-    """Power-law generator for pdf(x)\propto x^{g-1} for a<=x<=b
+    """Power-law generator for pdf(x)\propto x^{g} for a<=x<=b
 
     Parameters
     ----------
