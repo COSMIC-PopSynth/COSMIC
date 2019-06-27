@@ -145,8 +145,12 @@ class Sample(object):
             # object so we over sample the initial population
             a_0_all = np.array([])
             total_sampled_mass = 0
+            multiplier = 1
             while a_0_all.size < size:
-                a_0 = np.random.uniform(0.0, 1, size)
+                # scale the size way up in order to hopefully get enough
+                # samples in the requested region,
+                # if we get more than we will scale down
+                a_0 = np.random.uniform(0.0, 1, size*multiplier)
 
                 low_cutoff = 0.925
                 high_cutoff = 0.986
@@ -161,8 +165,11 @@ class Sample(object):
 
                 total_sampled_mass += np.sum(a_0)
 
-                a_0 = a_0[a_0 >= primary_min]
-                a_0 = a_0[a_0 <= primary_max]
+                a_0 = a_0[(a_0 >= primary_min) & (a_0 <= primary_max)]
+                if not a_0.size:
+                    # well this size clearly is not working time to increase
+                    # the multiplier by an order of magintiude
+                    multiplier *= 10
                 a_0_all = np.append(a_0_all,a_0)
 
             return a_0_all, total_sampled_mass
@@ -173,13 +180,17 @@ class Sample(object):
             # object so we over sample the initial population
             a_0_all = np.array([])
             total_sampled_mass = 0
+            multiplier = 1
             while a_0_all.size < size:
-                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size)
+                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
 
                 total_sampled_mass += np.sum(a_0)
 
-                a_0 = a_0[a_0 >= primary_min]
-                a_0 = a_0[a_0 <= primary_max]
+                a_0 = a_0[(a_0 >= primary_min) & (a_0 <= primary_max)]
+                if not a_0.size:
+                    # well this size clearly is not working time to increase
+                    # the multiplier by an order of magintiude
+                    multiplier *= 10
                 a_0_all = np.append(a_0_all,a_0)
 
             return a_0_all, total_sampled_mass
