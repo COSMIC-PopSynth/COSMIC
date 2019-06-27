@@ -46,7 +46,7 @@ BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
 
 
 IDL_TABULATE_ANSWER = 0.5
-MASS_SUM_SINGLE = [41.0, 44.0, 50.0, 132.0, 320.0]
+MASS_SUM_SINGLE = [41.0, 41.6, 50.0, 132.0, 320.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07
 BW_KNUTH = 0.333
