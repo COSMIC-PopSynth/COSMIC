@@ -76,9 +76,16 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
         elif (meth == 'binary_state'):
             bin_num_save = []
 
-            bcm_0 = bcm.loc[(bcm.bin_state != 1)]
-            bin_num_save.extend(bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)) &
-                                          (bcm_0.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of disrupted or systems
+            # that are alive today we can simply check the last entry in the bcm
+            # array for the system and see what its properities are today
+            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
+                                          (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of merged systems
+            # we actually need to search in the BPP array for the properities
+            # of the objects right at merge because the bcm will report
+            # the post merge object only
             bcm_1 = bcm.loc[bcm.bin_state == 1]
             bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
             bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
