@@ -51,7 +51,7 @@
 * alpha1 is the common-envelope efficiency parameter (1.0).  
 * lambda is the binding energy factor for common envelope evolution (0.5).
 *
-* ceflag > 0 activates spin-energy correction in common-envelope (0). 
+* ceflag = 1 activates spin-energy correction in common-envelope (0). 
 * tflag > 0 activates tidal circularisation (1).
 * ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800 (0). 
 * wdflag > 0 uses modified-Mestel cooling for WDs (0). 

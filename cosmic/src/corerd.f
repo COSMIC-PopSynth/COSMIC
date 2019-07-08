@@ -1,5 +1,7 @@
 ***
       REAL*8 FUNCTION CORERD(KW,MC,M0,MFLASH)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 * A function to determine the radius of the core of a giant-like star.
 * NOTE: this is out of date so rc should be obtained using HRDIAG!
@@ -10,7 +12,6 @@
 *     Date :   26th February 1997
 *     Updated 6/1/98 by J. Hurley
 *
-      IMPLICIT NONE
       INTEGER KW
       REAL*8 MC,MCH,M0,MFLASH
       PARAMETER (MCH = 1.44d0)
