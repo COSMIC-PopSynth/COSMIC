@@ -22,6 +22,7 @@ class TestEvolve(unittest2.TestCase):
     """
     def test_single_evolve(self):
         # Check that the sample_primary function samples mass correctly
+        INIT_CONDITIONS['bhflag'] = 0
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond = Evolve.evolve(
             initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict)
 
