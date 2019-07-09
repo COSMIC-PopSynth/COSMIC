@@ -12,7 +12,7 @@ dependencies:
   - attrs=19.1.0=py_0
   - babel=2.7.0=py_0
   - bzip2=1.0.6=h14c3975_1002
-  - ca-certificates=2019.5.15=0
+  - ca-certificates=2019.6.16=hecc5488_0
   - certifi=2019.6.16=py37_0
   - cffi=1.12.3=py37h8022711_0
   - chardet=3.0.4=py37_1003
@@ -69,7 +69,7 @@ dependencies:
   - ncurses=6.1=hf484d3e_1002
   - numpy=1.16.4=py37h95a1406_0
   - openblas=0.3.6=h6e990d7_4
-  - openssl=1.1.1=h7b6447c_0
+  - openssl=1.1.1b=h14c3975_1
   - packaging=19.0=py_0
   - pandas=0.24.2=py37hb3f55d8_0
   - pcre=8.41=hf484d3e_1003
