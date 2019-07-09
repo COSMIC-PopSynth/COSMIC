@@ -22,6 +22,7 @@
 import numpy as np
 from gwpy.utils import mp as mp_utils
 from cosmic import _evolvebin
+from utils import error_check
 import pandas as pd
 from astropy.table import Table
 
@@ -79,6 +80,9 @@ class Evolve(Table):
         """
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
+
+        # error check the initial binary table
+        error_check(BSEDict)
 
         if 'neta' not in initialbinarytable.keys():
             initialbinarytable['neta'] = BSEDict['neta']
