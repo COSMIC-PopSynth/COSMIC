@@ -528,8 +528,8 @@ def error_check(BSEDict, filters=None, convergence=None):
             raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='ecsn_mlow'
     if flag in BSEDict.keys():
-        if (BSEDict[flag]>BSEDict['ecsnp']) or (BSEDict[flag]<0.0):
-            raise ValueError("'{0:s}' needs to be less than 'ecsnp', and must be greater than or equal to 0 (you set it to '{0:0.2f}')".format(flag, BSEDict[flag]))
+        if (BSEDict[flag]>BSEDict['ecsn']) or (BSEDict[flag]<0.0):
+            raise ValueError("'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 (you set it to '{0:0.2f}')".format(flag, BSEDict[flag]))
     flag='sigmadiv'
     if flag in BSEDict.keys():
         if BSEDict[flag] == 0:
@@ -544,8 +544,8 @@ def error_check(BSEDict, filters=None, convergence=None):
             raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='pisn'
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0,1]:
-            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+        if not ((BSEDict[flag] > 0) or (BSEDict[flag] == -1)):
+            raise ValueError("'{0:s}' needs to be set to either greater than 0 or -1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='bhsigmafrac'
     if flag in BSEDict.keys():
         if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
