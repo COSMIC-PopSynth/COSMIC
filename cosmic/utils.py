@@ -74,27 +74,31 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
-
-            # CREATE A LIST OF BIN_NUM INDICES TO APPEND TO
             bin_num_save = []
-            if 0 in use:
-                bcm_0 = bcm.loc[(bcm.bin_state == 0)]
-                bin_num_save.extend(bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)) &
-                                              (bcm_0.kstar_2.isin(kstar2_range))].bin_num.tolist())
-            if 1 in use:
-                bcm_1 = bcm.loc[bcm.bin_state == 1]
-                bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
-                bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
-                                              (bpp_1.kstar_2.isin(kstar2_range)) &
-                                              (bpp_1.evol_type == 3)].bin_num.tolist())
 
-            if 2 in use:
-                # SHOULD BE DISRUPTED AND kstar_1.isin(kstar1_range) and kstar_2.isin(kstar2_range)
-                bcm_2 = bcm.loc[bcm.bin_state == 2]
-                bin_num_save.extend(bcm_2.loc[(bcm_2.kstar_1.isin(kstar1_range)) &
-                                              (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of disrupted or systems
+            # that are alive today we can simply check the last entry in the bcm
+            # array for the system and see what its properities are today
+            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
+                                          (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of merged systems
+            # we actually need to search in the BPP array for the properities
+            # of the objects right at merge because the bcm will report
+            # the post merge object only
+            bcm_1 = bcm.loc[bcm.bin_state == 1]
+            bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
+            bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
+                                          (bpp_1.kstar_2.isin(kstar2_range)) &
+                                          (bpp_1.evol_type == 3)].bin_num.tolist())
+
             bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
+
+            # this will tell use the binary state fraction of the systems with a certain final kstar type
+            # before we throw out certain binary states if a user requested that.
+            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+
+            bcm = bcm.loc[bcm.bin_state.isin(use)]
 
         elif (meth == 'lisa_sources') and use:
             if 0 in method['binary_state']:
@@ -104,7 +108,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             else:
                 raise ValueError("You must have bin state = 0 for lisa"
                                  "sources filter")
-    return bcm
+    return bcm, bin_state_fraction
 
 def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
     """Select bcm data for special convergence cases
