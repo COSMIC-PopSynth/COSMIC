@@ -409,3 +409,193 @@ def knuth_bw_selector(dat_list):
         bw_list.append(bw)
     return np.mean(bw_list)
 
+
+def error_check(BSEDict, filters=None, convergence=None):
+    """Checks that values in BSEDict, filters, and convergence are viable
+    """
+
+    # filters
+    if filters:
+        flag='mass_transfer_white_dwarf_to_co'
+        if flag in BSEDict.keys():
+            if filters[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
+
+        flag='select_final_state'
+        if flag in BSEDict.keys():
+            if filters[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
+
+        flag='binary_state'
+        if flag in BSEDict.keys():
+            if any(x not in [0,1,2] for x in filters[flag]):
+                raise ValueError("'{0:s}' needs to be a subset of [0,1,2] (you set it to '[{1:d}]')".format(flag, *filters[flag]))
+
+    # convergence
+    if convergence:
+        flag='lisa_convergence'
+        if flag in BSEDict.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+
+    # BSEDict
+    flag='dtp'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater than or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts1'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts2'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts3'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='windflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='neta'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bwind'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='hewind'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='beta'
+    # --- all numbers are valid
+    flag='xi'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='acc2'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='alpha1'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='lambdaf'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>0) and (BSEDict[flag]!=1):
+            raise ValueError("'{0:s}' needs to either be set to 1 for variable lambda or a negative number for fixed lambda (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ceflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='cekickflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='cemergeflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='cehestarflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='qcrit_array'
+    if flag in BSEDict.keys():
+        if any(x < 0.0 for x in BSEDict[flag]):
+            raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
+        if len(BSEDict[flag]) != 16:
+            raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+
+    flag='sigma'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='ecsn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ecsn_mlow'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>BSEDict['ecsnp']) or (BSEDict[flag]<0.0):
+            raise ValueError("'{0:s}' needs to be less than 'ecsnp', and must be greater than or equal to 0 (you set it to '{0:0.2f}')".format(flag, BSEDict[flag]))
+    flag='sigmadiv'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] == 0:
+            raise ValueError("'{0:s}' must be positive or negative (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='aic'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='ussn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='pisn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='bhsigmafrac'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be greater than 0 and less than or equal to 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='polar_kick_angle'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 90):
+            raise ValueError("'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='natal_kick_array'
+    if flag in BSEDict.keys():
+        if len(BSEDict[flag]) != 6:
+            raise ValueError("'{0:s}' must be supplied 6 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+
+    flag='nsflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3,4]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='mxns'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='eddfac'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='gamma'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]<=0) and (BSEDict[flag]!=-1) and (BSEDict[flag]!=-2):
+            raise ValueError("'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='tflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='ifflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='wdflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='epsnov'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bconst'
+    # --- all numbers are valid
+    flag='ck'
+    # --- all numbers are valid
+
+    return

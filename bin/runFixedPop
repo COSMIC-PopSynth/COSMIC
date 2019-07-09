@@ -33,7 +33,7 @@ import warnings
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match
 from cosmic.evolve import Evolve
-from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select
+from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select, error_check
 
 ###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -159,6 +159,14 @@ if __name__ == '__main__':
     seed_int = int(dictionary['rand_seed']['seed'])
     filters = dictionary['filters']
     convergence = dictionary['convergence']
+
+    # Check that the values in BSEDict, filters, and convergence are valid
+    error_check(BSEDict, filters, convergence)
+
+    if seed_int != 0:
+        np.random.seed(seed_int)
+    else:
+        np.random.seed(0)
 
     # Set up final_kstar1 and final_kstar2 strings for saved data files
     if len(args.final_kstar1) == 2:
