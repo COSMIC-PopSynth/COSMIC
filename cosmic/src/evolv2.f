@@ -213,7 +213,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,15)
+      REAL*8 bppout(1000,23)
       REAL*8 bcmout(50000,42)
 
       REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
@@ -656,7 +656,9 @@ component.
                rrl2 = rad(2)/rol(2)
                CALL writebpp(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                      tb,ecc,rrl1,rrl2,bkick)
+     &                      tb,ecc,rrl1,rrl2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
                DO jj = 13,20
                    bkick(jj) = 0.0
                ENDDO
@@ -1543,7 +1545,9 @@ component.
             rrl2 = rad(2)/rol(2)
             CALL writebpp(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                    tb,ecc,rrl1,rrl2,bkick)
+     &                    tb,ecc,rrl1,rrl2,bkick,
+     &                    aj(1),aj(2),tms(1),tms(2),
+     &                    massc(1),massc(2),rad(1),rad(2))
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
@@ -1582,7 +1586,9 @@ component.
           rrl2 = rad(2)/rol(2)
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                  tb,ecc,rrl1,rrl2,bkick)
+     &                  tb,ecc,rrl1,rrl2,bkick,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1748,7 +1754,9 @@ component.
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1811,7 +1819,9 @@ component.
       rrl2 = rad(2)/rol(2)
       CALL writebpp(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
-     &              tb,ecc,rrl1,rrl2,bkick)
+     &              tb,ecc,rrl1,rrl2,bkick,
+     &              aj(1),aj(2),tms(1),tms(2),
+     &              massc(1),massc(2),rad(1),rad(2))
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -2052,7 +2062,9 @@ component.
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass1_bpp,mass2_bpp,
      &                 kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -2353,7 +2365,9 @@ component.
                   CALL writebpp(jp,tphys,evolve_type,
      &                          mass1_bpp,mass2_bpp,
      &                          kstar1_bpp,kstar2_bpp,sep,
-     &                          tb,ecc,rrl1,rrl2,bkick)
+     &                          tb,ecc,rrl1,rrl2,bkick,
+     &                          aj(1),aj(2),tms(1),tms(2),
+     &                          massc(1),massc(2),rad(1),rad(2))
                endif
             endif
          elseif(kstar(j1).le.6.and.
@@ -2410,7 +2424,9 @@ component.
                   CALL writebpp(jp,tphys,evolve_type,
      &                          mass1_bpp,mass2_bpp,
      &                          kstar1_bpp,kstar2_bpp,sep,
-     &                          tb,ecc,rrl1,rrl2,bkick)
+     &                          tb,ecc,rrl1,rrl2,bkick,
+     &                          aj(1),aj(2),tms(1),tms(2),
+     &                          massc(1),massc(2),rad(1),rad(2))
                   DO jj = 13,20
                      bkick(jj) = 0.0
                   ENDDO
@@ -3095,7 +3111,9 @@ component.
             rrl2 = rad(2)/rol(2)
             CALL writebpp(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                    tb,ecc,rrl1,rrl2,bkick)
+     &                    tb,ecc,rrl1,rrl2,bkick,
+     &                    aj(1),aj(2),tms(1),tms(2),
+     &                    massc(1),massc(2),rad(1),rad(2))
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
@@ -3170,7 +3188,9 @@ component.
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3191,7 +3211,9 @@ component.
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3217,7 +3239,9 @@ component.
       evolve_type = 5.0
       CALL writebpp(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
-     &              tb,ecc,rrl1,rrl2,bkick)
+     &              tb,ecc,rrl1,rrl2,bkick,
+     &              aj(1),aj(2),tms(1),tms(2),
+     &              massc(1),massc(2),rad(1),rad(2))
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -3309,7 +3333,9 @@ component.
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass1_bpp,mass2_bpp,
      &                  kstar(1),kstar(2),sep,
-     &                  tb,ecc,rrl1,rrl2,bkick)
+     &                  tb,ecc,rrl1,rrl2,bkick,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3370,7 +3396,9 @@ component.
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
-     &                        0.d0,0.d0,0.d0,ngtv,bkick)
+     &                        0.d0,0.d0,0.d0,ngtv,bkick,
+     &                        aj(1),aj(2),tms(1),tms(2),
+     &                        massc(1),massc(2),rad(1),rad(2))
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -3381,13 +3409,17 @@ component.
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
-     &                        tb,ecc,0.d0,ngtv2,bkick)
+     &                        tb,ecc,0.d0,ngtv2,bkick,
+     &                        aj(1),aj(2),tms(1),tms(2),
+     &                        massc(1),massc(2),rad(1),rad(2))
             else
                 evolve_type = 9.0
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
-     &                        0.d0,0.d0,0.d0,ngtv,bkick)
+     &                        0.d0,0.d0,0.d0,ngtv,bkick,
+     &                        aj(1),aj(2),tms(1),tms(2),
+     &                        massc(1),massc(2),rad(1),rad(2))
             endif
             DO jj = 13,20
                bkick(jj) = 0.0
@@ -3441,7 +3473,9 @@ component.
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
-     &                      0.d0,0.d0,0.d0,ngtv,bkick)
+     &                      0.d0,0.d0,0.d0,ngtv,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -3451,7 +3485,9 @@ component.
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
-     &                      0.d0,0.d0,0.d0,ngtv2,bkick)
+     &                      0.d0,0.d0,0.d0,ngtv2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
           else
               evolve_type = 10.0
               rrl1 = rad(1)/rol(1)
@@ -3459,7 +3495,9 @@ component.
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),sep,
-     &                      tb,ecc,rrl1,rrl2,bkick)
+     &                      tb,ecc,rrl1,rrl2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
           endif
           DO jj = 13,20
               bkick(jj) = 0.0
