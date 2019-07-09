@@ -96,7 +96,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
     mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
-    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = size)
+    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4

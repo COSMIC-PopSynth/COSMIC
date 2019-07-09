@@ -267,7 +267,12 @@ if __name__ == '__main__':
         idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
 
-        bcm_filter = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+        bcm_filter, bin_state_fraction = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+        if bcm_filter.empty:
+            warnings.warn("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
+            log_file.write("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
+            continue
+
         initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
 
@@ -279,6 +284,9 @@ if __name__ == '__main__':
 
         # Save the initial binaries
         dat_store.append('initCond', initC_filter)
+
+        # Save number of systems in each bin state
+        dat_store.append('bin_state_fraction', bin_state_fraction)
 
         # Filter the bcm and bpp arrays according to user specified filters
         if len(bcm_filter_match) > 1:
