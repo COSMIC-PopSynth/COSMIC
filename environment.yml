@@ -1,5 +1,6 @@
 name: cosmic-development
 channels:
+  - anaconda
   - conda-forge
   - defaults
 dependencies:
@@ -11,10 +12,11 @@ dependencies:
   - attrs=19.1.0=py_0
   - babel=2.7.0=py_0
   - bzip2=1.0.6=h14c3975_1002
-  - ca-certificates=2019.6.16=hecc5488_0
+  - ca-certificates=2019.5.15=0
   - certifi=2019.6.16=py37_0
   - cffi=1.12.3=py37h8022711_0
   - chardet=3.0.4=py37_1003
+  - cloog=0.18.0=0
   - cryptography=2.7=py37h72c5cf5_0
   - cycler=0.10.0=py_1
   - dbus=1.13.6=he372182_0
@@ -23,8 +25,10 @@ dependencies:
   - expat=2.2.5=he1b5a44_1003
   - fontconfig=2.13.1=he4413a7_1000
   - freetype=2.10.0=he983fc9_0
+  - gcc=4.8.5=7
   - gettext=0.19.8.1=hc5be6a0_1002
   - glib=2.58.3=h6f030ca_1001
+  - gmp=6.1.2=hb3b607b_0
   - gst-plugins-base=1.14.5=h0935bb2_0
   - gstreamer=1.14.5=h36ae1b5_0
   - gwdatafind=1.0.4=py_0
@@ -36,6 +40,7 @@ dependencies:
   - idna=2.8=py37_1000
   - imagesize=1.1.0=py_0
   - importlib_metadata=0.18=py37_0
+  - isl=0.12.2=0
   - jinja2=2.10.1=py_0
   - jpeg=9c=h14c3975_1001
   - kiwisolver=1.1.0=py37hc9558a2_0
@@ -59,10 +64,12 @@ dependencies:
   - matplotlib=3.1.1=py37_0
   - matplotlib-base=3.1.1=py37hfd891ef_0
   - more-itertools=7.1.0=py_0
+  - mpc=1.1.0=h10f8cd9_1
+  - mpfr=4.0.1=hdf1c602_3
   - ncurses=6.1=hf484d3e_1002
   - numpy=1.16.4=py37h95a1406_0
   - openblas=0.3.6=h6e990d7_4
-  - openssl=1.1.1b=h14c3975_1
+  - openssl=1.1.1=h7b6447c_0
   - packaging=19.0=py_0
   - pandas=0.24.2=py37hb3f55d8_0
   - pcre=8.41=hf484d3e_1003
