@@ -139,3 +139,10 @@ class TestUtils(unittest2.TestCase):
         bw = utils.knuth_bw_selector(np.array([x]))
         self.assertTrue(bw.round(3) == BW_KNUTH)
 
+    def test_error_check(self):
+        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 0, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.6, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0}
+        filters = {'mass_transfer_white_dwarf_to_co': False, 'select_final_state': True, 'binary_state': [0], 'lisa_sources': False}
+        convergence = {'lisa_convergence': False}
+        utils.error_check(BSEDict,filters,convergence)
+        utils.error_check(BSEDict)
+        assert 1==1

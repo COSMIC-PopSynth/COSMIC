@@ -88,7 +88,7 @@
          sigma = -1.d0*sigma
       endif
       sigmah = sigma
-*Test: Checking if we can make customized sigma for blackholes only
+* scale down BH kicks if bhsigmafrac is specified
       if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
            sigma = sigmah*bhsigmafrac
       endif
