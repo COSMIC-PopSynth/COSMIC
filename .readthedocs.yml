@@ -12,6 +12,14 @@ sphinx:
 # Build documentation with MkDocs
 #mkdocs:
 #  configuration: mkdocs.yml
+python:
+    install:
+      - method: pip
+        path: .
+        extra_requirements:
+           - docs
+      - method: setuptools
+        path: cosmic
 
 conda:
   environment: environment.yml
