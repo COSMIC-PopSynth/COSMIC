@@ -413,28 +413,38 @@ def knuth_bw_selector(dat_list):
 def error_check(BSEDict, filters=None, convergence=None):
     """Checks that values in BSEDict, filters, and convergence are viable
     """
+    if not isinstance(BSEDict, dict):
+        raise ValueError('BSE flags must be supplied via a dictionary')
+
+    if filters is not None:
+        if not isinstance(filters, dict):
+            raise ValueError('Filters criteria must be supplied via a dictionary')
+
+    if convergence is not None:
+        if not isinstance(convergence, dict):
+            raise ValueError('Convergence criteria must be supplied via a dictionary')
 
     # filters
-    if filters:
+    if filters is not None:
         flag='mass_transfer_white_dwarf_to_co'
-        if flag in BSEDict.keys():
+        if flag in filters.keys():
             if filters[flag] not in [True,False]:
                 raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
 
         flag='select_final_state'
-        if flag in BSEDict.keys():
+        if flag in filters.keys():
             if filters[flag] not in [True,False]:
                 raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
 
         flag='binary_state'
-        if flag in BSEDict.keys():
+        if flag in filters.keys():
             if any(x not in [0,1,2] for x in filters[flag]):
                 raise ValueError("'{0:s}' needs to be a subset of [0,1,2] (you set it to '[{1:d}]')".format(flag, *filters[flag]))
 
     # convergence
-    if convergence:
+    if convergence is not None:
         flag='lisa_convergence'
-        if flag in BSEDict.keys():
+        if flag in convergence.keys():
             if convergence[flag] not in [True,False]:
                 raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
 
