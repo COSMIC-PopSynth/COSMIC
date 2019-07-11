@@ -1903,15 +1903,19 @@ component.
       if(kstar(j1).eq.2)then
          qc = 4.d0
       elseif(kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6)then
-*        qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+        qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
 * Alternatively use condition of Hjellming & Webbink, 1987, ApJ, 318, 794.
-         qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+*         qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
 * Or allow all cases to avoid common-envelope.
 *        qc = 100.d0
-      elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
-         qc = 0.784d0
-      else
-         qc = 3.d0
+      elseif(kstar(j1).eq.8)then
+         qc = 4.d0
+      elseif(kstar(j1).eq.8)then
+         qc = 1.0/1.28d0
+      elseif(kstar(j1).eq.1)then
+         qc = 1.0/1.44d0
+      elseif(kstar(j1).eq.0)then
+         qc = 1.0/0.625d0
       endif
 *
 * Allow for manually overriding qcrit values with fixed
