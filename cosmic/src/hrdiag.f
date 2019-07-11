@@ -655,7 +655,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(pisn.eq.-1)then
                         frac = mcbagb/mt
                         kappa = 0.67d0*frac + 0.1d0
-                        sappa = 0.5228d0*frac - 0.52974
+                        sappa = 0.5226d0*frac - 0.52974d0
                         if(mcbagb.le.32.d0)then
                            alphap = 1.0d0
                            pisn_track(kidx)=8
@@ -663,26 +663,28 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            alphap = 0.2d0*(kappa-1.d0)*mcbagb +
      &                             0.2d0*(37.d0 - 32.d0*kappa)
                            pisn_track(kidx)=8
-                        elseif(mcbagb.le.60d0.and.frac.lt.0.9d0)then
+                        elseif(frac.lt.0.9d0.and.mcbagb.le.60.d0)then
                            alphap = kappa
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.le.37d0)then
+                        elseif(frac.lt.0.9d0.and.mcbagb.lt.64.d0)then
+                           alphap = kappa*(-0.25d0)*mcbagb + kappa*16.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = sappa*(mcbagb - 32.d0) + 1.d0
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
-     &                         sappa.lt.0.82916)then
+                        elseif(frac.ge.0.9d0.and.mcbagb.le.56.d0.and.
+     &                         sappa.lt.-0.034168d0)then
                            alphap = 5.d0*sappa + 1.d0
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
-     &                         sappa.ge.0.82916)then
-                           alphap = (-0.1381*frac + 0.1309)*
-     &                              (mcbagb - 56.d0) + 0.82916
+                        elseif(frac.ge.0.9d0.and.mcbagb.le.56.d0.and.
+     &                         sappa.ge.-0.034168d0)then
+                           alphap = (-0.1381d0*frac + 0.1309d0)*
+     &                              (mcbagb - 56.d0) + 0.82916d0
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.gt.56.and.
-     &                         mcbagb.lt.64)then
+                        elseif(frac.ge.0.9d0.and.mcbagb.lt.64.d0)then
                            alphap = -0.103645*mcbagb + 6.63328
                            pisn_track(kidx)=8
-                        elseif(mcbagb.ge.64.and.mcbagb.lt.135)then
+                        elseif(mcbagb.ge.64.d0.and.mcbagb.lt.135.d0)then
                            alphap = 0.d0
                            kw = 15
                            pisn_track(kidx)=9
