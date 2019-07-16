@@ -968,6 +968,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
 
                         mt = alphap*mt
+* From Stevenson2019 added a polynomial fit to a table in Marchant2018.
                      elseif(pisn.eq.-2)then
                         poly = 7390.d0 - (1130.d0*mc) + (75.4d0*mc**2) -
      &                         (2.69d0*mc**3) + (0.0583d0*mc**4) -
