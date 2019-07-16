@@ -43,7 +43,7 @@
       real*8 rx,ry,delr,rzams,rtms,gammahrdiag,rmin,taumin,rg
       parameter(taumin=5.0d-08)
       real*8 mcmax,mcx,mcy,mcbagb,lambdahrdiag
-      real*8 frac,kappa,sappa,alphap
+      real*8 frac,kappa,sappa,alphap,poly
       real*8 am,xx,fac,rdgen,mew,lum0,kap,zeta,ahe,aco
       parameter(lum0=7.0d+04,kap=-0.5d0,ahe=4.d0,aco=16.d0)
 *
@@ -682,17 +682,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                              (mcbagb - 56.d0) + 0.82916d0
                            pisn_track(kidx)=8
                         elseif(frac.ge.0.9d0.and.mcbagb.lt.64.d0)then
-                           alphap = -0.103645*mcbagb + 6.63328
+                           alphap = -0.103645d0*mcbagb + 6.63328d0
                            pisn_track(kidx)=8
                         elseif(mcbagb.ge.64.d0.and.mcbagb.lt.135.d0)then
                            alphap = 0.d0
                            kw = 15
                            pisn_track(kidx)=9
-                        elseif(mcbagb.ge.135)then
+                        elseif(mcbagb.ge.135.d0)then
                            alphap = 1.0d0
                         endif
 
-                     mt = alphap*mt
+                        mt = alphap*mt
                      endif
 
 * Convert baryonic mass to gravitational mass (approx for BHs)
@@ -920,7 +920,60 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            kw = 15
                            pisn_track(kidx)=9
                         endif
-* Note that the Sprea+Mapelli2017 prescription is not for nake He stars
+* The Spera+Mapelli2017 prescription is a tad more sophisticated:
+* complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
+* were done using the ZAMS mass/core mass/remnant mass relationships for
+* SEVN, not BSE.  In other words, I woud be careful using this (and in
+* practice, it doesn't vary that much from Belczynski's prescription,
+* since the He core masses are the same in both)
+* Mario said this prescription works here as well.
+                     elseif(pisn.eq.-1)then
+                        frac = mc/mt
+                        kappa = 0.67d0*frac + 0.1d0
+                        sappa = 0.5226d0*frac - 0.52974d0
+                        if(mc.le.32.d0)then
+                           alphap = 1.0d0
+                           pisn_track(kidx)=8
+                        elseif(frac.lt.0.9d0.and.mc.le.37.d0)then
+                           alphap = 0.2d0*(kappa-1.d0)*mc +
+     &                             0.2d0*(37.d0 - 32.d0*kappa)
+                           pisn_track(kidx)=8
+                        elseif(frac.lt.0.9d0.and.mc.le.60.d0)then
+                           alphap = kappa
+                           pisn_track(kidx)=8
+                        elseif(frac.lt.0.9d0.and.mc.lt.64.d0)then
+                           alphap = kappa*(-0.25d0)*mc+ kappa*16.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.le.37.d0)then
+                           alphap = sappa*(mc- 32.d0) + 1.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.le.56.d0.and.
+     &                         sappa.lt.-0.034168d0)then
+                           alphap = 5.d0*sappa + 1.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.le.56.d0.and.
+     &                         sappa.ge.-0.034168d0)then
+                           alphap = (-0.1381d0*frac + 0.1309d0)*
+     &                              (mc- 56.d0) + 0.82916d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.lt.64.d0)then
+                           alphap = -0.103645d0*mc+ 6.63328d0
+                           pisn_track(kidx)=8
+                        elseif(mc.ge.64.d0.and.mc.lt.135.d0)then
+                           alphap = 0.d0
+                           kw = 15
+                           pisn_track(kidx)=9
+                        elseif(mc.ge.135.d0)then
+                           alphap = 1.0d0
+                        endif
+
+                        mt = alphap*mt
+                     elseif(pisn.eq.-2)then
+                        poly = 7390.d0 - (1130.d0*mc) + (75.4d0*mc**2) -
+     &                         (2.69d0*mc**3) + (0.0583d0*mc**4) -
+     &                         (0.000752d0*mc**5) + (0.00000536d0*mc**6)
+     &                         - (0.0000000163d0*mc**7)
+                        mt = poly*mc
                      endif
 
 
