@@ -33,27 +33,7 @@ __all__ = ['mass_weighted_number', 'select_component_mass',
            'galactic_positions']
 
 
-G = 6.67384*math.pow(10, -11.0)
-c = 2.99792458*math.pow(10, 8.0)
-parsec = 3.08567758*math.pow(10, 16)
-Rsun = 6.955*math.pow(10, 8)
-Msun = 1.9891*math.pow(10,30)
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569*10**7.0
-Tobs = 3.15569*10**7.0
-geo_mass = G/c**2
 
-# solar coordinates in the galaxy: in parsecs from
-# (Chaper 8 of Galactic Structure and stellar Pops book) Yoshii (2013)
-############################################################################
-x_sun = 8.0
-y_sun = 0.0
-z_sun = 25.0/1000.0
 
 def mass_weighted_number(dat, total_sampled_mass, component_mass):
     """Compute the total number of systems in the synthetic catalog

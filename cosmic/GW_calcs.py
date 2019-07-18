@@ -29,6 +29,7 @@ from scipy.optimize import brentq
 from lisa_sensitivity import lisa_characteristic_noise as LISA_hc
 import pandas as pd
 from scipy.interpolate import interp1d
+import constants as c
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -38,23 +39,7 @@ __all__ = ['sep_from_p', 'p_from_a', 'comoving_distance', 'luminosity_distance',
            'snr_calc', 'snr_chirping', 'LISA_foreground_combo', 'LISA_foreground']
 
 
-G = 6.67384e-11
-c = 2.99792458e8
-parsec = 3.08567758e16
-Rsun = 6.955e8
-Msun = 1.9891e30
-day = 86400.0
-m_in_au = 1.496e+11
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569e7
-geo_mass = G/c**2
-x_sun = 8.5
-y_sun = 0.0
-z_sun = 0.02
+
 
 def sep_from_p(p,m1,m2):
     """Computes the separation from orbital period with KEPLER III
@@ -206,9 +191,9 @@ def peak_gw_freq(m1, m2, ecc, porb):
     """
 
     # convert the orbital period into a separation using Kepler III
-    sep_m = (G/(4*np.pi**2)*porb**2*(m1+m2))**(1./3.)
+    sep_m = (c.G/(4*np.pi**2)*porb**2*(m1+m2))**(1./3.)
 
-    f_gw_peak = ((G*(m1+m2))**0.5/np.pi) * (1+ecc)**1.1954/(sep_m*(1-ecc)**2)**1.5
+    f_gw_peak = ((c.G*(m1+m2))**0.5/np.pi) * (1+ecc)**1.1954/(sep_m*(1-ecc)**2)**1.5
     return f_gw_peak
 
 def peters_g(e, n):
@@ -323,9 +308,9 @@ def hc2_circ(m1, m2, f_orb, D):
     # assumes SI units!
     f_n = 2*f_orb
     f_n_z = f_n/(1+z)
-    m_c_z = m_chirp(m1, m2, z=z)*Msun
-    front_fac = 2./3.*np.pi**(-4./3.)*G**(5./3.)/c**3
-    variables = (m_c_z)**(5./3.)*(D*parsec*1e6)**(-2)*\
+    m_c_z = m_chirp(m1, m2, z=z)*c.Msun
+    front_fac = 2./3.*np.pi**(-4./3.)*c.G**(5./3.)/c.c**3
+    variables = (m_c_z)**(5./3.)*(D*c.parsec*1e6)**(-2)*\
                 (f_n_z)**(-1./3.)*(1+z)**(-2)
     hc2_circ = front_fac*variables
     return hc2_circ
@@ -361,9 +346,9 @@ def hc2(m1, m2, f_orb, D, e, n):
     # assumes SI units!
     f_n = n*f_orb
     f_n_z = f_n/(1+z)
-    m_c_z = m_chirp(m1, m2, z=z)*Msun
-    D = D * parsec * 1e6
-    front_fac = 2./3.*np.pi**(-4./3.)*G**(5./3.)/c**3
+    m_c_z = m_chirp(m1, m2, z=z)*c.Msun
+    D = D * c.parsec * 1e6
+    front_fac = 2./3.*np.pi**(-4./3.)*c.G**(5./3.)/c.c**3
     variables = (m_c_z)**(5./3.)*(D)**(-2)*(2./n)**(2./3)*\
                 (f_n_z)**(-1./3.)*(1+z)**(-2)*peters_g(e,n)/F_e(e)
     hc2_n = front_fac*variables
@@ -390,7 +375,7 @@ def da_dt(m1, m2, a, e):
         semimajor axis rate of change [m/s]
     """
 
-    front_fac = -64./5.*G**3/c**5
+    front_fac = -64./5.*c.G**3/c**5
     nominator = m1*m2*(m1+m2)*F_e(e)
     denominator = a**3
 
@@ -419,7 +404,7 @@ def de_dt(m1, m2, a, e):
     """
 
 
-    front_fac = -304./15.*G**3/c**5
+    front_fac = -304./15.*c.G**3/c.c**5
     nominator = m1*m2*(m1+m2)*F_e(e)
     denominator = a**4
 
@@ -459,9 +444,9 @@ def peters_evolution(a_0,e_0,m1,m2,t_evol,nstep):
     """
     t_start = 0.0
     t_end = t_evol
-    a_0 = a_0*m_in_au
-    m1 = m1*Msun
-    m2 = m2*Msun
+    a_0 = a_0*c.m_in_au
+    m1 = m1*c.Msun
+    m2 = m2*c.Msun
     a_array = []
     e_array = []
     t_array = []
@@ -470,9 +455,9 @@ def peters_evolution(a_0,e_0,m1,m2,t_evol,nstep):
     deltas = times[1:] - times[:-1]
 
     for t, delta in zip(times[1:], deltas):
-        a_array.append(a_0/m_in_au)
+        a_array.append(a_0/c.m_in_au)
         e_array.append(e_0)
-        t_array.append(t/sec_in_year)
+        t_array.append(t/c.sec_in_year)
         if (e_0 > 0):
             a = a_0 + da_dt(m1, m2, a_0, e_0)*delta
             e = e_0 + de_dt(m1, m2, a_0, e_0)*delta
@@ -538,17 +523,17 @@ def snr_chirping(m1, m2, a, e, d_lum, t_obs):
     """
     LISA_interp = LISA_hc()
     z = z_from_lum_distance(d_lum)
-    t_obs = t_obs * sec_in_year
+    t_obs = t_obs * c.sec_in_year
     a_evol, e_evol, t_evol = peters_evolution(a,e,m1,m2,t_obs,1e3)
-    porb = p_from_a(a, m1, m2) * sec_in_year
+    porb = p_from_a(a, m1, m2) * c.sec_in_year
     f_orb_start = 1/porb
-    f_orb_evol = 1/(p_from_a(a_evol, m1, m2) * sec_in_year)
+    f_orb_evol = 1/(p_from_a(a_evol, m1, m2) * c.sec_in_year)
     t_evol_log = np.logspace(-6, np.log10(t_obs), 5000)
     forb_evol_log = np.interp(t_evol_log,
-                              xp = t_evol * sec_in_year,
+                              xp = t_evol * c.sec_in_year,
                               fp = f_orb_evol)
     e_evol_log = np.interp(t_evol_log,
-                           xp = t_evol * sec_in_year,
+                           xp = t_evol * c.sec_in_year,
                            fp = e_evol)
     n_harm = int(n_max(np.array([e]))[0])
     h_c_squared = []
@@ -624,7 +609,7 @@ def LISA_foreground(m1, m2, f_orb, d_lum, t_obs, rolling_window=100):
     foreground_hc2 : array
         array of characteristic power of the LISA foreground
     """
-    t_obs = t_obs * sec_in_year
+    t_obs = t_obs * c.sec_in_year
 
     binwidth = 1.0/t_obs
     freq_bins_LISA = np.arange(1e-8,5e-3,binwidth)

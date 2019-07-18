@@ -26,23 +26,14 @@ import cosmic.MC_samp as MC_sample
 import cosmic.utils as utils
 import scipy.stats as stats
 import cosmic.GW_calcs as GW_calcs
+import constants as c
+
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['GxReal']
 
-G = 6.67384e-11
-c = 2.99792458e8
-parsec = 3.08567758e16
-Rsun = 6.955e8
-Msun = 1.9891e30
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569e7
+
 
 class GxReal(object):
     def __init__(self, fixed_pop, m_tot_samp, gx_model, gx_component, dat_list):

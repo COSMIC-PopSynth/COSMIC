@@ -23,6 +23,28 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 
+
+def calc_Roche_radius(M1, M2, A):
+    """ Get Roche lobe radius (Eggleton 1983)
+
+    Parameters
+    ----------
+    M1 : float
+        Primary mass [any unit]
+    M2 : float
+        Secondary mass [any unit]
+    A : float
+        Orbital separation [any unit]
+
+    Returns
+    -------
+    Roche radius : float
+        in units of input, A
+    """
+    q = M1 / M2
+    return A * 0.49*q**(2.0/3.0) / (0.6*q**(2.0/3.0) + np.log(1.0 + q**(1.0/3.0)))
+
+
 def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
 
