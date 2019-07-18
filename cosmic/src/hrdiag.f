@@ -633,8 +633,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * CLR - (Pulsational) Pair-Instability Supernova
 
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
-* between 45 and 65 solar masses, and blow up anything between 65 and
-* 135 solar masses.  Cheap, but effective
+* between 45 and 65 solar masses (provided the pisn flag is set at 45),
+* and blow up anything between 65 and 135 solar masses.  
+* Cheap, but effective
                      if(pisn.gt.0)then
                         if(mcbagb.ge.pisn.and.mcbagb.lt.65.d0)then
                            mt = pisn
@@ -693,6 +694,39 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
 
                         mt = alphap*mt
+* From Stevenson2019 added a polynomial fit to a table in Marchant+2018.
+                     elseif(pisn.eq.-2)then
+                        if(mcbagb.gt.35.d0.and.mcbagb.le.60.d0)then
+                           poly = 7390.d0 - (1130.d0*mcbagb) + 
+     &                            (75.4d0*mcbagb**2) -
+     &                            (2.69d0*mcbagb**3) + 
+     &                            (0.0583d0*mcbagb**4) -
+     &                            (0.000752d0*mcbagb**5) + 
+     &                            (0.00000536d0*mcbagb**6) -
+     &                            (0.0000000163d0*mcbagb**7)
+                           mt = poly*mcbagb
+                           pisn_track(kidx)=8
+                        elseif(mcbagb.gt.60.d0.and.mcbagb.le.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+* From Stevenson2019 added same fit but with lower He core limit of
+* 30 from Woosley2019
+                     elseif(pisn.eq.-3)then
+                        if(mcbagb.gt.30.d0.and.mcbagb.le.60.d0)then
+                           poly = 7390.d0 - (1130.d0*mcbagb) + 
+     &                            (75.4d0*mcbagb**2) -
+     &                            (2.69d0*mcbagb**3) + 
+     &                            (0.0583d0*mcbagb**4) -
+     &                            (0.000752d0*mcbagb**5) + 
+     &                            (0.00000536d0*mcbagb**6) -
+     &                            (0.0000000163d0*mcbagb**7)
+                           mt = poly*mcbagb
+                           pisn_track(kidx)=8
+                        elseif(mcbagb.gt.60.d0.and.mcbagb.le.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
                      endif
 
 * Convert baryonic mass to gravitational mass (approx for BHs)
@@ -970,11 +1004,35 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = alphap*mt
 * From Stevenson2019 added a polynomial fit to a table in Marchant2018.
                      elseif(pisn.eq.-2)then
-                        poly = 7390.d0 - (1130.d0*mc) + (75.4d0*mc**2) -
-     &                         (2.69d0*mc**3) + (0.0583d0*mc**4) -
-     &                         (0.000752d0*mc**5) + (0.00000536d0*mc**6)
-     &                         - (0.0000000163d0*mc**7)
-                        mt = poly*mc
+                        if(mc.gt.35.d0.and.mc.le.60.d0)then
+                           poly = 7390.d0 - (1130.d0*mc) + (75.4d0*mc**2)
+     &                            - (2.69d0*mc**3) + (0.0583d0*mc**4) -
+     &                            (0.000752d0*mc**5) + 
+     &                            (0.00000536d0*mc**6) -
+     &                            (0.0000000163d0*mc**7)
+                           mt = poly*mc
+                           pisn_track(kidx)=8
+                        elseif(mc.gt.60.d0.and.mc.le.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+* From Stevenson2019 added same fit but with lower He core limit of
+* 30 from Woosley2019
+                     elseif(pisn.eq.-3)then
+                        if(mc.gt.30.d0.and.mc.le.60.d0)then
+                           poly = 7390.d0 - (1130.d0*mc) + 
+     &                            (75.4d0*mc**2) -
+     &                            (2.69d0*mc**3) + 
+     &                            (0.0583d0*mc**4) -
+     &                            (0.000752d0*mc**5) + 
+     &                            (0.00000536d0*mc**6) -
+     &                            (0.0000000163d0*mc**7)
+                           mt = poly*mc
+                           pisn_track(kidx)=8
+                        elseif(mc.gt.60.d0.and.mc.le.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
                      endif
 
 
