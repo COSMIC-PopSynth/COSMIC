@@ -1005,8 +1005,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * From Stevenson2019 added a polynomial fit to a table in Marchant2018.
                      elseif(pisn.eq.-2)then
                         if(mc.gt.35.d0.and.mc.le.60.d0)then
-                           poly = 7390.d0 - (1130.d0*mc) + (75.4d0*mc**2)
-     &                            - (2.69d0*mc**3) + (0.0583d0*mc**4) -
+                           poly = 7390.d0 - (1130.d0*mc) +
+     &                            (75.4d0*mc**2) -
+     &                            (2.69d0*mc**3) + (0.0583d0*mc**4) -
      &                            (0.000752d0*mc**5) + 
      &                            (0.00000536d0*mc**6) -
      &                            (0.0000000163d0*mc**7)
