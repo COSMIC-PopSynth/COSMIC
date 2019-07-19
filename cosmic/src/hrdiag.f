@@ -662,7 +662,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            pisn_track(kidx)=8
                         elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = 0.2d0*(kappa-1.d0)*mcbagb +
-     &                             0.2d0*(37.d0 - 32.d0*kappa)
+     &                              0.2d0*(37.d0 - 32.d0*kappa)
                            pisn_track(kidx)=8
                         elseif(frac.lt.0.9d0.and.mcbagb.le.60.d0)then
                            alphap = kappa
@@ -970,7 +970,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            pisn_track(kidx)=8
                         elseif(frac.lt.0.9d0.and.mc.le.37.d0)then
                            alphap = 0.2d0*(kappa-1.d0)*mc +
-     &                             0.2d0*(37.d0 - 32.d0*kappa)
+     &                              0.2d0*(37.d0 - 32.d0*kappa)
                            pisn_track(kidx)=8
                         elseif(frac.lt.0.9d0.and.mc.le.60.d0)then
                            alphap = kappa
