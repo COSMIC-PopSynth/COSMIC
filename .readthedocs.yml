@@ -20,7 +20,7 @@ python:
         extra_requirements:
            - doc
       - method: setuptools
-        path: cosmic
+        path: .
 
 conda:
   environment: environment.yml
