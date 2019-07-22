@@ -18,7 +18,7 @@ python:
       - method: pip
         path: .
         extra_requirements:
-           - docs
+           - doc
       - method: setuptools
         path: cosmic
 
