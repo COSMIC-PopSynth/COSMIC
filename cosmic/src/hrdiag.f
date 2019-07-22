@@ -659,7 +659,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         sappa = 0.5226d0*frac - 0.52974d0
                         if(mcbagb.le.32.d0)then
                            alphap = 1.0d0
-                           pisn_track(kidx)=8
                         elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = 0.2d0*(kappa-1.d0)*mcbagb +
      &                              0.2d0*(37.d0 - 32.d0*kappa)
@@ -697,13 +696,13 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * From Stevenson2019 added a polynomial fit to a table in Marchant+2018.
                      elseif(pisn.eq.-2)then
                         if(mcbagb.gt.35.d0.and.mcbagb.le.60.d0)then
-                           poly = 7390.d0 - (1130.d0*mcbagb) + 
+                           poly = 7390.d0 - (1130.d0*mcbagb) +
      &                            (75.4d0*mcbagb**2) -
-     &                            (2.69d0*mcbagb**3) + 
-     &                            (0.0583d0*mcbagb**4) -
-     &                            (0.000752d0*mcbagb**5) + 
-     &                            (0.00000536d0*mcbagb**6) -
-     &                            (0.0000000163d0*mcbagb**7)
+     &                            (2.69d0*mcbagb**3) +
+     &                            (5.83d-2*mcbagb**4) -
+     &                            (7.52d-4*mcbagb**5) +
+     &                            (5.36d-6*mcbagb**6) -
+     &                            (1.63d-8*mcbagb**7)
                            mt = poly*mcbagb
                            pisn_track(kidx)=8
                         elseif(mcbagb.gt.60.d0.and.mcbagb.le.135.d0)then
@@ -716,11 +715,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         if(mcbagb.gt.30.d0.and.mcbagb.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mcbagb) + 
      &                            (75.4d0*mcbagb**2) -
-     &                            (2.69d0*mcbagb**3) + 
-     &                            (0.0583d0*mcbagb**4) -
-     &                            (0.000752d0*mcbagb**5) + 
-     &                            (0.00000536d0*mcbagb**6) -
-     &                            (0.0000000163d0*mcbagb**7)
+     &                            (2.69d0*mcbagb**3) +
+     &                            (5.83d-2*mcbagb**4) -
+     &                            (7.52d-4*mcbagb**5) +
+     &                            (5.36d-6*mcbagb**6) -
+     &                            (1.63d-8*mcbagb**7)
                            mt = poly*mcbagb
                            pisn_track(kidx)=8
                         elseif(mcbagb.gt.60.d0.and.mcbagb.le.135.d0)then
@@ -1000,6 +999,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            pisn_track(kidx)=9
                         elseif(mc.ge.135.d0)then
                            alphap = 1.0d0
+                           pisn_track(kidx)=8
                         endif
 
                         mt = alphap*mt
@@ -1007,11 +1007,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(pisn.eq.-2)then
                         if(mc.gt.35.d0.and.mc.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mc) +
-     &                            (75.4d0*mc**2) -
-     &                            (2.69d0*mc**3) + (0.0583d0*mc**4) -
-     &                            (0.000752d0*mc**5) + 
-     &                            (0.00000536d0*mc**6) -
-     &                            (0.0000000163d0*mc**7)
+     &                            (75.4d0*mc**2) - (2.69d0*mc**3) + 
+     &                            (5.83d-2*mc**4) - (7.52d-4*mc**5) + 
+     &                            (5.36d-6*mc**6) - (1.63d-8*mc**7)
                            mt = poly*mc
                            pisn_track(kidx)=8
                         elseif(mc.gt.60.d0.and.mc.le.135.d0)then
@@ -1023,12 +1021,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(pisn.eq.-3)then
                         if(mc.gt.30.d0.and.mc.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mc) + 
-     &                            (75.4d0*mc**2) -
-     &                            (2.69d0*mc**3) + 
-     &                            (0.0583d0*mc**4) -
-     &                            (0.000752d0*mc**5) + 
-     &                            (0.00000536d0*mc**6) -
-     &                            (0.0000000163d0*mc**7)
+     &                            (75.4d0*mc**2) - (2.69d0*mc**3) + 
+     &                            (5.83d-2*mc**4) - (7.52d-4*mc**5) + 
+     &                            (5.36d-6*mc**6) - (1.63d-8*mc**7)
                            mt = poly*mc
                            pisn_track(kidx)=8
                         elseif(mc.gt.60.d0.and.mc.le.135.d0)then
