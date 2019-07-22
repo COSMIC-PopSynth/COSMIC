@@ -4,6 +4,7 @@ channels:
 dependencies:
 - certifi=2019.6.16=py36_0
 - cycler=0.10.0=py36_0
+- docutils=0.15=py36_0
 - importlib_metadata=0.17=py36_1
 - ligo-common=1.0.3=py_0
 - ligo-segments=1.2.0=py36h14c3975_0
@@ -84,4 +85,3 @@ dependencies:
 - xz=5.2.4=h14c3975_4
 - zlib=1.2.11=h7b6447c_3
 prefix: /projects/b1095/ligo_software/envs/cosmic-development-linux
-
