@@ -7,8 +7,8 @@
       COMMON /RAND2/ idum2,iy,ir
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
-      INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag
-      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag
+      INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag,qcflag
+      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag,qcflag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
