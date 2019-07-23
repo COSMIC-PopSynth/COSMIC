@@ -58,6 +58,7 @@
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rrl1_bpp,rrl2_bpp,evolve_type_bpp
       REAL*8 q1_bpp,q2_bpp
+      REAL*8 KW1_TEMP, KW2_TEMP
 *
 * Common envelope evolution - entered only when KW1 = 2, 3, 4, 5, 6, 8 or 9.
 *
@@ -181,6 +182,8 @@
 *
             EORBF = MAX(MC1*M2/(2.D0*SEPL),EORBI)
             EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            KW1_TEMP = KW
+            KW2_TEMP = 15
          ELSE
 *
 * Primary becomes a black hole, neutron star, white dwarf or helium star.
@@ -254,8 +257,8 @@
                if(switchedCE)then
                    mass1_bpp = M2
                    mass2_bpp = M_postCE
-                   kstar1_bpp = KW2i
-                   kstar2_bpp = KW1i
+                   kstar1_bpp = KW2
+                   kstar2_bpp = KW1
                    q1 = mass1_bpp/mass2_bpp
                    q2 = 1.d0/q1
                    rrl1_bpp = R2/(RL(q1)*SEP_postCE)
@@ -266,8 +269,8 @@
                else
                    mass1_bpp = M_postCE
                    mass2_bpp = M2
-                   kstar1_bpp = KW1i
-                   kstar2_bpp = KW2i
+                   kstar1_bpp = KW1
+                   kstar2_bpp = KW2
                    q1 = mass1_bpp/mass2_bpp
                    q2 = 1.d0/q1
                    rrl1_bpp = RC1/(RL(q1)*SEP_postCE)
@@ -505,8 +508,8 @@
                if(switchedCE)then
                    mass1_bpp = M2
                    mass2_bpp = M_postCE
-                   kstar1_bpp = KW2i
-                   kstar2_bpp = KW1i
+                   kstar1_bpp = KW2
+                   kstar2_bpp = KW1
                    q1 = mass1_bpp/mass2_bpp
                    q2 = 1.d0/q1
                    rrl1_bpp = R2/(RL(q1)*SEP_postCE)
@@ -516,8 +519,8 @@
                else
                    mass1_bpp = M_postCE
                    mass2_bpp = M2
-                   kstar1_bpp = KW1i
-                   kstar2_bpp = KW2i
+                   kstar1_bpp = KW1
+                   kstar2_bpp = KW2
                    q1 = mass1_bpp/mass2_bpp
                    q2 = 1.d0/q1
                    rrl1_bpp = RC1/(RL(q1)*SEP_postCE)
@@ -618,8 +621,8 @@
                if(switchedCE)then
                    mass1_bpp = M_postCE
                    mass2_bpp = M1
-                   kstar1_bpp = KW2i
-                   kstar2_bpp = KW1i
+                   kstar1_bpp = KW2
+                   kstar2_bpp = KW1
                    q1 = mass1_bpp/mass2_bpp
                    q2 = 1.d0/q1
                    rrl1_bpp = RC2/(RL(q1)*SEP_postCE)
@@ -630,8 +633,8 @@
                else
                    mass1_bpp = M1
                    mass2_bpp = M_postCE
-                   kstar1_bpp = KW1i
-                   kstar2_bpp = KW2i
+                   kstar1_bpp = KW1
+                   kstar2_bpp = KW2
                    q1 = mass1_bpp/mass2_bpp
                    q2 = 1.d0/q1
                    rrl1_bpp = R1/(RL(q1)*SEP_postCE)
@@ -814,8 +817,8 @@
             if(switchedCE)then
                 mass1_bpp = 0.d0
                 mass2_bpp = MF
-                kstar1_bpp = KW2i
-                kstar2_bpp = KW1i
+                kstar1_bpp = KW2
+                kstar2_bpp = KW1
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
                 evolve_type_bpp = 16.5d0
@@ -823,8 +826,8 @@
             else
                 mass1_bpp = MF
                 mass2_bpp = 0.d0
-                kstar1_bpp = KW1i
-                kstar2_bpp = KW2i
+                kstar1_bpp = KW1
+                kstar2_bpp = KW2
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
                 evolve_type_bpp = 15.5d0
