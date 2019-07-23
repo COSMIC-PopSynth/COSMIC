@@ -241,19 +241,42 @@ def plot_binary_evol(bcm, file_out=None, sys_obs={}):
     # plot_HR_diagram(ax[7], L1_out[k1_out<10], L2_out[k2_out<10], Teff1_out[k1_out<10], Teff2_out[k2_out<10])
 
 
-    plt.tight_layout()
-    if file_out is not None:
-        plt.savefig(file_out)
-    else:
-        plt.show()
+    return fig
 
 
 
 
 def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, file_out=None, sys_obs={}):
+    """
+    Evolve and plot binaries. Detailed docstring to be added.
+    """
 
-    # Evolve binary
-    bcm = evolve_binary(initC, t_min=t_min, t_max=t_max, BSEDict=BSEDict)
+    # Throw an error if user is plotting more than 10 binaries
+    if len(initC) > 10:
+        raise ValueError("You have asked to plot more than 10 separate binaries. This could cause problems...")
 
-    # Plot binary
-    plot_binary_evol(bcm, file_out=file_out, sys_obs=sys_obs)
+    # Iterate over all binaries in initC
+    all_figs = []
+    for i in initC.bin_num.unique():
+
+        # Check if t_min and t_max are lists
+        if isinstance(t_min, list):
+            t_min_tmp = t_min[i]
+        else:
+            t_min_tmp = t_min
+        if isinstance(t_max, list):
+            t_max_tmp = t_max[i]
+        else:
+            t_max_tmp = t_max
+
+        # Evolve binary
+        bcm = evolve_binary(initC.loc[initC.bin_num == i], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict)
+
+        # Plot binary
+        fig = plot_binary_evol(bcm, file_out=file_out, sys_obs=sys_obs)
+
+        # Add to list of figs
+        all_figs.append(fig)
+
+    # Return list of figs
+    return all_figs
