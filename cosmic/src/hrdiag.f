@@ -694,8 +694,44 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
 
                         mt = alphap*mt
-* From Stevenson2019 added a polynomial fit to a table in Marchant+2018.
+* Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
+                        if(mcbagb.ge.27.69d0.and.mcbagb.le.54.48d0)then
+                           poly = -430343.4d0 + (90279.6d0*mcbagb) -
+     &                            (8225.8d0*mcbagb**2) +
+     &                            (425.05d0*mcbagb**3) -
+     &                            (13.629d0*mcbagb**4) +
+     &                            (2.7768d-1*mcbagb**5) -
+     &                            (3.511d-3*mcbagb**6) +
+     &                            (2.5192d-5*mcbagb**7) -
+     &                            (7.8542d-8*mcbagb**8)
+                           mt = poly*mcbagb
+                           pisn_track(kidx)=8
+                        elseif(mcbagb.gt.54.48d0.and.
+     &                         mcbagb.le.113.29d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+* Fit (8th order polynomial) to Table 5 in Woosley2019.
+                     elseif(pisn.eq.-3)then
+                        if(mcbagb.ge.29.53d0.and.mcbagb.le.60.12d0)then
+                           poly = -314610.9d0 + (61369.96d0*mcbagb) -
+     &                            (5192.5d0*mcbagb**2) +
+     &                            (248.91d0*mcbagb**3) -
+     &                            (7.3949d0*mcbagb**4) +
+     &                            (1.3944d-1*mcbagb**5) -
+     &                            (1.6301d-3*mcbagb**6) +
+     &                            (1.0805d-5*mcbagb**7) -
+     &                            (3.1102d-8*mcbagb**8)
+                           mt = poly*mcbagb
+                           pisn_track(kidx)=8
+                        elseif(mcbagb.gt.60.12d0.and.
+     &                         mcbagb.le.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+* From Stevenson2019 added a polynomial fit to a table in Marchant+2018.
+                     elseif(pisn.eq.-4)then
                         if(mcbagb.gt.35.d0.and.mcbagb.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mcbagb) +
      &                            (75.4d0*mcbagb**2) -
@@ -712,7 +748,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
 * From Stevenson2019 added same fit but with lower He core limit of
 * 30 from Woosley2019
-                     elseif(pisn.eq.-3)then
+                     elseif(pisn.eq.-5)then
                         if(mcbagb.gt.30.d0.and.mcbagb.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mcbagb) + 
      &                            (75.4d0*mcbagb**2) -
@@ -1004,8 +1040,42 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
 
                         mt = alphap*mt
-* From Stevenson2019 added a polynomial fit to a table in Marchant2018.
+* Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
+                        if(mc.ge.27.69d0.and.mc.le.54.48d0)then
+                           poly = -430343.4d0 + (90279.6d0*mc) -
+     &                            (8225.8d0*mc**2) +
+     &                            (425.05d0*mc**3) -
+     &                            (13.629d0*mc**4) +
+     &                            (2.7768d-1*mc**5) -
+     &                            (3.511d-3*mc**6) +
+     &                            (2.5192d-5*mc**7) -
+     &                            (7.8542d-8*mc**8)
+                           mt = poly*mc
+                           pisn_track(kidx)=8
+                        elseif(mc.gt.54.48d0.and.mc.le.113.29d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+* Fit (8th order polynomial) to Table 5 in Woosley2019.
+                     elseif(pisn.eq.-3)then
+                        if(mc.ge.29.53d0.and.mc.le.60.12d0)then
+                           poly = -314610.9d0 + (61369.96d0*mc) -
+     &                            (5192.5d0*mc**2) +
+     &                            (248.91d0*mc**3) -
+     &                            (7.3949d0*mc**4) +
+     &                            (1.3944d-1*mc**5) -
+     &                            (1.6301d-3*mc**6) +
+     &                            (1.0805d-5*mc**7) -
+     &                            (3.1102d-8*mc**8)
+                           mt = poly*mc
+                           pisn_track(kidx)=8
+                        elseif(mc.gt.60.12d0.and.mc.le.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+* From Stevenson2019 added a polynomial fit to a table in Marchant2018.
+                     elseif(pisn.eq.-4)then
                         if(mc.gt.35.d0.and.mc.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mc) +
      &                            (75.4d0*mc**2) - (2.69d0*mc**3) + 
@@ -1019,7 +1089,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
 * From Stevenson2019 added same fit but with lower He core limit of
 * 30 from Woosley2019
-                     elseif(pisn.eq.-3)then
+                     elseif(pisn.eq.-5)then
                         if(mc.gt.30.d0.and.mc.le.60.d0)then
                            poly = 7390.d0 - (1130.d0*mc) + 
      &                            (75.4d0*mc**2) - (2.69d0*mc**3) + 
