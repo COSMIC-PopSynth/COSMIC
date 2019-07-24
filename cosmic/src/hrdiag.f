@@ -708,7 +708,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = poly*mcbagb
                            pisn_track(kidx)=8
                         elseif(mcbagb.gt.54.48d0.and.
-     &                         mcbagb.le.113.29d0)then
+     &                         mcbagb.lt.113.29d0)then
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
@@ -726,7 +726,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = poly*mcbagb
                            pisn_track(kidx)=8
                         elseif(mcbagb.gt.60.12d0.and.
-     &                         mcbagb.le.135.d0)then
+     &                         mcbagb.lt.135.d0)then
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
@@ -1053,7 +1053,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            (7.8542d-8*mc**8)
                            mt = poly*mc
                            pisn_track(kidx)=8
-                        elseif(mc.gt.54.48d0.and.mc.le.113.29d0)then
+                        elseif(mc.gt.54.48d0.and.mc.lt.113.29d0)then
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
@@ -1070,7 +1070,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            (3.1102d-8*mc**8)
                            mt = poly*mc
                            pisn_track(kidx)=8
-                        elseif(mc.gt.60.12d0.and.mc.le.135.d0)then
+                        elseif(mc.gt.60.12d0.and.mc.lt.135.d0)then
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
