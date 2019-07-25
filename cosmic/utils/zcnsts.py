@@ -50,9 +50,6 @@ def zcnsts(z):
     zpars[7] = max(0.950,max(0.95-(10.0/3.0)*(z-0.01),
                min(0.990,0.98-(100.0/7.0)*(z-0.001))))
 
-    import pdb
-    pdb.set_trace()
-
     # Lzams
 
     msp[0] = zdata.xz[0]+lzs*(zdata.xz[1]+lzs*(zdata.xz[2]+lzs*(zdata.xz[3]+lzs*zdata.xz[4])))
@@ -223,6 +220,8 @@ def zcnsts(z):
     else:
         msp[96] = 20.0
 
+    # converting the below from fortran to python still needs work
+    """
     # Lbgb
     gbp[0] = zdata.xg[0]+lzs*(zdata.xg[1]+lzs*(zdata.xg[2]+lzs*zdata.xg[3]))
     gbp[1] = zdata.xg[4]+lzs*(zdata.xg[5]+lzs*(zdata.xg[6]+lzs*zdata.xg[7]))
@@ -366,6 +365,8 @@ def zcnsts(z):
     gbp[75] = zdata.xh[91] + lzs*(zdata.xh[92] + lzs*(zdata.xh[93] + lzs*zdata.xh[94]))
     gbp[76] = zdata.xh[95] + lzs*(zdata.xh[96] + lzs*(zdata.xh[97] + lzs*zdata.xh[98]))
 
+    import pdb
+    pdb.set_trace()
     # finish Lbagb
     mhefl = 0.0
     lx = lbagbf(zpars[1], mhefl)
@@ -406,4 +407,5 @@ def zcnsts(z):
 
     zpars[13] = z**0.40
     #
-    return
+    """
+    return zpars, msp
