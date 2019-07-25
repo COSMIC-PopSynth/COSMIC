@@ -623,73 +623,11 @@ def check_initial_conditions(initial_binary_table):
 
         return rzams
 
-    def ralphf(m):
-        """A function to evaluate the radius alpha coefficent. (JH 24/11/97)
-        """
-        if (m <= 0.5):
-            ralph = a[73]
-        elif (m <= 0.65):
-            ralph = a[73] + ((a[74] - a[73])/0.15)*(m - 0.5)
-        elif (m <= a[70]):
-            ralph = a[74] + ((a[75]-a[74])/(a[70]-0.65))*(m - 0.65)
-        elif (m <= a[71]):
-            ralph = a[75] + ((a[76] - a[75])/(a[71] - a[70]))*(m - a[70])
-        elif (m <= a[72]):
-            ralph = (a[65]*m**a[67])/(a[66] + m**a[68])
-        else:
-            a5 = (a[65]*a[72]**a[67])/(a[66] + a[72]**a[68])
-            ralph = a5 + a[69]*(m - a[72])
-
-        return ralph
-
-    def rtmsf(m):
-        """A function to evaluate the radius at the end of the MS
-        Note that a safety check is added to ensure Rtms > Rzams
-        when extrapolating the function to low masses.
-        (JH 24/11/97)
-        """
-        m2 = a[62] + 0.1
-
-        if m <= a[62]:
-            rchk = 1.5*rzamsf(m)
-            rtms = max(rchk, (a[52] + a[53]*m**a[55])/(a[54] + m**a[56]))
-        elif (m >= m2):
-            rtms = (a[57]*m**3+a[58]*m**a[61]+a[59]*m**(a[61]+1.5))/(a[60] + m**5)
-        else:
-            rtms = a[63] + ((a[64] - a[63])/0.1)*(m - a[62])
-
-        return rtms
-
-    def rhookf(m, mhook):
-        """A function to evalute the radius at the start of
-        the MS hook ( for those stars that have one ).
-        Note that this function is only valid for M > Mhook.
-        (JH 24/11/97)
-        """
-        if (m <= mhook):
-            rhook = 0.
-        elif (m <= a[94]):
-            rhook = a[95]*np.sqrt((m-mhook)/(a[94]-mhook))
-        elif (m <= 2.):
-            m2 = 2.
-            b2 = (a[90] + a[91]*m2**(7.0/2.0))/(a[92]*m2**3 + m2**a[93]) - 1.0
-            rhook = a[95] + (b2-a[95])*((m-a[94])/(m2-a[94]))**a[96]
-        else:
-            rhook = (a[90] + a[91]*m**(7.0/2.0))/(a[92]*m**3 + m**a[93]) - 1.0
-
-        return rhook
-
-    def thookf(m):
-        """A function to evaluate the lifetime to the end of the MS
-        hook ( for those models that have one ) as a fraction of
-        the lifetime to the BGB
-        Note that this function is only valid for M > Mhook.
-        (JH 24/11/97)
-        """
-        thook = 1.0 - 0.01*max(a[22]/m**a[23], a[24] + a[25]/m**a[26])
-        thook = max(thook,0.5)
-
-        return thook
+    def rl(Q):
+        """A function to evaluate R_L/a(q), Eggleton 1983."""
+        P = Q**(1.0/3.0)
+        RL = 0.49*P*P/(0.6*P*P + np.log(1.0+P))
+        return RL
 
     z = np.unique(np.asarray(initial_binary_table['metallicity']))
     zpars, a = zcnsts(z)
@@ -699,3 +637,18 @@ def check_initial_conditions(initial_binary_table):
 
     rzams1 = rzamsf(mass1)
     rzams2 = rzamsf(mass2)
+
+    # assume some time step in order to calculate sep
+    tb = 0.0002737925747453729
+    aursun = 214.95
+    sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
+
+    q1 = mass1/mass2
+    q2 = mass2/mass1
+    rol1 = rl(q1)*sep
+    rol2 = rl(q2)*sep
+    import pdb
+    pdb.set_trace()
+
+    if (rzams1 >= rol1).any() or (rzams2 >= rol2).any():
+        raise Warning("One of your initial binaries is starting in Roche Lobe Overflow")
