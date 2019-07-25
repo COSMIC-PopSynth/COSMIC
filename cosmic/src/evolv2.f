@@ -207,7 +207,7 @@
       LOGICAL coel,com,prec,inttry,change,snova,sgl,bsymb,esymb,bss
       LOGICAL supedd,novae,disk
       LOGICAL isave,iplot
-      REAL*8 rl,mlwind,vrotf,corerd
+      REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
 *
       REAL*8 kw3,wsun,wx
@@ -2309,8 +2309,26 @@ component.
 *
          WRITE(*,*)'stable: ',kstar(j1),q(j1),qc
 
-         dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &         MIN(mass(j1),5.d0)**2
+*
+* KB: adding in stable mass transfer factor from
+*     eqs 10-11 of Claeys+2014
+*
+         if(qcflag.gt.1.and.qcflag.le.3)then
+            if(q(j1).gt.1)then
+               f_fac=1000.d0
+            else
+               f_fac=1000*q(j1)*
+     &               EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+               if(f_fac.lt.1)then
+                  f_fac=1
+               endif
+            endif
+            dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &            MIN(mass(j1),5.d0)**2
+         else
+            dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &            MIN(mass(j1),5.d0)**2
+         endif
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
