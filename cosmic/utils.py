@@ -619,10 +619,10 @@ def check_initial_conditions(initial_binary_table):
         ( from Tout et al., 1996, MNRAS, 281, 257 ).
         """
         mx = np.sqrt(m)
-        rzams = ((a[8]*m**2 + a[9]*m**6)*mx + a[10]*m**11 +
-                   (a[11] + a[12]*mx)*m**19)/
-                  (a[13] + a[14]*m**2 +
-                   (a[15]*m**8 + m**18 + a[16]*m**19)*mx)
+        rzams = (((a[8]*m**2 + a[9]*m**6)*mx + a[10]*m**11 + 
+                  (a[11] + a[12]*mx)*m**19)/
+                  (a[13] + a[14]*m**2 + (a[15]*m**8 + m**18 + a[16]*m**19)*mx))
+
         return rzams
 
     def ralphf(m):
@@ -641,6 +641,7 @@ def check_initial_conditions(initial_binary_table):
         else:
             a5 = (a[65]*a[72]**a[67])/(a[66] + a[72]**a[68])
             ralph = a5 + a[69]*(m - a[72])
+
         return ralph
 
     def rtmsf(m):
@@ -649,8 +650,8 @@ def check_initial_conditions(initial_binary_table):
         when extrapolating the function to low masses.
         (JH 24/11/97)
         """
-
         m2 = a[62] + 0.1
+
         if m <= a[62]:
             rchk = 1.5*rzamsf(m)
             rtms = max(rchk, (a[52] + a[53]*m**a[55])/(a[54] + m**a[56]))
@@ -668,17 +669,17 @@ def check_initial_conditions(initial_binary_table):
         (JH 24/11/97)
         """
         if (m <= mhook):
-            rhookf = 0.
+            rhook = 0.
         elif (m <= a[94]):
-            rhookf = a[95]*np.sqrt((m-mhook)/(a[94]-mhook))
+            rhook = a[95]*np.sqrt((m-mhook)/(a[94]-mhook))
         elif (m <= 2.):
             m2 = 2.
             b2 = (a[90] + a[91]*m2**(7.0/2.0))/(a[92]*m2**3 + m2**a[93]) - 1.0
-            rhookf = a[95] + (b2-a[95])*((m-a[94])/(m2-a[94]))**a[96]
+            rhook = a[95] + (b2-a[95])*((m-a[94])/(m2-a[94]))**a[96]
         else:
-            rhookf = (a[90] + a[91]*m**(7.0/2.0))/(a[92]*m**3 + m**a[93]) - 1.0
+            rhook = (a[90] + a[91]*m**(7.0/2.0))/(a[92]*m**3 + m**a[93]) - 1.0
 
-      return rhook
+        return rhook
 
 
     # Mass below which hook doesn't appear on MS, Mhook.
