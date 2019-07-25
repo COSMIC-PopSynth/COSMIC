@@ -2032,8 +2032,6 @@ component.
          qc = qc_fixed
       endif
 
-      WRITE(*,*)kstar(j1),kstar(j2),q(j1),qc
-
       if(kstar(j1).eq.0.and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
@@ -2128,7 +2126,6 @@ component.
 *
 * Common-envelope evolution.
 *
-         WRITE(*,*)'CE: ',kstar(j1),kstar(j2),q(j1),qc
          m1ce = mass(j1)
          m2ce = mass(j2)
          kcomp1 = kstar(j1) !PDK
@@ -2307,8 +2304,6 @@ component.
 *
 * Mass transfer in one Kepler orbit.
 *
-         WRITE(*,*)'stable: ',kstar(j1),q(j1),qc
-
 *
 * KB: adding in stable mass transfer factor from
 *     eqs 10-11 of Claeys+2014
