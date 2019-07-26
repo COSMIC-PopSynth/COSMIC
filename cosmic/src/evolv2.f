@@ -2022,14 +2022,15 @@ component.
                 qc = 0.625d0
             endif
          endif
-      endif
+      elseif(qcflag.eq.4)then
 *
 * Allow for manually overriding qcrit values with fixed
 * values supplied from ini file.
 *
-      qc_fixed = qcrit_array(kstar(j1)+1)
-      if(qc_fixed.ne.0)then
-         qc = qc_fixed
+         qc_fixed = qcrit_array(kstar(j1)+1)
+         if(qc_fixed.ne.0)then
+            qc = qc_fixed
+         endif
       endif
 
       if(kstar(j1).eq.0.and.q(j1).gt.qc)then
