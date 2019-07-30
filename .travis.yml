@@ -1,44 +1,37 @@
 language: python
-
 dist: xenial
-
 os:
-  - linux
-
+- linux
 addons:
   apt_packages:
-    - gfortran
-    - swig
-    - libhdf5-serial-dev
-
+  - gfortran
+  - swig
+  - libhdf5-serial-dev
 python:
-  - '2.7'
-  - '3.5'
-  - '3.6'
-  - '3.7'
-
+- '2.7'
+- '3.5'
+- '3.6'
+- '3.7'
 before_install:
-  - pip install pip setuptools --upgrade
-
+- pip install pip setuptools --upgrade
 install:
-  - python -m pip install .
-
+- python -m pip install .
 before_script:
-  - python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
-
+- python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner sphinx
+  numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2
+  ipython
 script:
-  # run unit tests
-  - bash .travis/compile_benchmark.sh
-  - coverage run ./setup.py test
-  - coverage run --append `which runFixedPop` --help
-
-  # build documentation
-  - cd docs && make html; cd ../
-
+- bash .travis/compile_benchmark.sh
+- coverage run ./setup.py test
+- coverage run --append `which runFixedPop` --help
+- cd docs && make html; cd ../
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - coveralls --gcov-options '\-lp'
-
 cache:
   pip: true
   apt: true
+
+notifications:
+  slack:
+    secure: KISPBprmYQTQ9UR2NYFvDxQi0Q40SxqPRDvyJF+fhJkJJ6IenYtgKqsapy1O6pz05AH2wPqtc4Gn22vFHejJN7kh+75b7kOu7HKSdzq6RQshADdrY6QSJI3NMo2K1CAIy7jKVFGL9gfDYMhL+6XXlSeKb9fpcIRLB5OCPKXNtlAsr2pDJ98TO7pVdrCHG1yih7KAqCytfUd364KYjwHZp+86FwpFYByBa7MnsjqXGsx6ImuSUxSHJPbdTpuvpxKLxY7LQw6LhZwaEyCXEcjm39Ju7nQ0W0zeS1d2LXD6tgeTbV4SuuqtjHqrYpl2PKnAVX7ZT+KMf4ALquTAs8/+eiYx/hp9AJD2FN6+rXIq7MlE1ZWEjthXIZta8pQ32iViFZkL8MXkK4lNh5QLzwBHtlIBRy5UHbthhvi/cdxCQlbnciRbzR3fcrH7xN7YhAcvh+g9Fj8tPANdF8tLT0U1OohXYUYxb1Hxyd0qzBMlYUe066BWEoCaws4vxsBDfXWuy3ESGxllzZh5S1gIcSt6vWwuqlio16cFQbDgf5kB4uekKttvhQgEvLDkxM5YkUyWv5sYrLHcLuQWTk9wG2C+6q7qQuFqhezvNwBeMpVAoKAREA1IfvcLzwm767+CG+PuLXSSKWYF8KMMDXB2uIjgM5W/+omlZUj8viKqGl895IQ=
