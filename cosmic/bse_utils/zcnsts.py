@@ -1,5 +1,5 @@
 import numpy
-import zdata
+from . import zdata
 
 c = numpy.array([3.040581e-01, 8.049509e-02, 8.967485e-02, 8.780198e-02, 2.219170e-02])
 
@@ -15,12 +15,12 @@ def zcnsts(z):
     *              5; M above which C ignites in the centre, Mec.
     *              6; value of log D for M<= zpars[2]
     *              7; value of x for Rgb propto M^(-x)
-    *              8; value of x for tMS = max(tHOOK,x*tBGB)
+    *              8; value of x for tMS = numpy.maximum(tHOOK,x*tBGB)
     *              9; constant for McHeIf when computing Mc,BGB, mchefl.
     *             10; constant for McHeIf when computing Mc,HeI, mchefl.
     *             11; hydrogen abundance.
     *             12; helium abundance.
-    *             13; constant x in rmin = rgb*x**y used by LM CHeB.
+    *             13; constant x in rnumpy.minimum = rgb*x**y used by LM CHeB.
     *             14; z**0.4 to be used for WD L formula.
     *
     *       ------------------------------------------------------------
@@ -28,12 +28,12 @@ def zcnsts(z):
     """
 
     # initialize arrays
-    msp = numpy.zeros(200)
-    gbp = numpy.zeros(200)
-    zpars = numpy.zeros(20)
-    tscls = numpy.zeros(20)
-    lums = numpy.zeros(10)
-    GB = numpy.zeros(10)
+    msp = numpy.zeros(shape=(200, len(z)))
+    gbp = numpy.zeros(shape=(200, len(z)))
+    zpars = numpy.zeros(shape=(20, len(z)))
+    tscls = numpy.zeros(shape=(20, len(z)))
+    lums = numpy.zeros(shape=(10, len(z)))
+    GB = numpy.zeros(shape=(10, len(z)))
 
     lzs = numpy.log10(z/0.020)
     dlzs = 1.0/(z*numpy.log(10.0))
@@ -43,12 +43,12 @@ def zcnsts(z):
     zpars[0] = 1.01850 + lzs*(0.16015 + lzs*0.0892)
     zpars[1] = 1.9950 + lzs*(0.25 + lzs*0.087)
     zpars[2] = 16.50*z**0.06/(1.0 + (1.0e-04/z)**1.27)
-    zpars[3] = max(6.110440 + 1.02167*lzs, 5.0)
+    zpars[3] = numpy.maximum(6.110440 + 1.02167*lzs, 5.0)
     zpars[4] = zpars[3] + 1.80
     zpars[5] = 5.370 + lzs*0.135
     zpars[6] = c[0] + lzs*(c[1] + lzs*(c[2] + lzs*(c[3] + lzs*c[4])))
-    zpars[7] = max(0.950,max(0.95-(10.0/3.0)*(z-0.01),
-               min(0.990,0.98-(100.0/7.0)*(z-0.001))))
+    zpars[7] = numpy.maximum(0.950,numpy.maximum(0.95-(10.0/3.0)*(z-0.01),
+               numpy.minimum(0.990,0.98-(100.0/7.0)*(z-0.001))))
 
     # Lzams
 
@@ -109,16 +109,16 @@ def zcnsts(z):
     msp[33] = zdata.xl[31]+lzs*(zdata.xl[32]+lzs*(zdata.xl[33]+lzs*zdata.xl[34]))
     msp[34] = zdata.xl[35]+lzs*(zdata.xl[36]+lzs*(zdata.xl[37]+lzs*zdata.xl[38]))
     msp[35] = zdata.xl[39]+lzs*(zdata.xl[40]+lzs*(zdata.xl[41]+lzs*zdata.xl[42]))
-    msp[36] = max(0.90,1.1064+lzs*(0.415+0.18*lzs))
-    msp[37] = max(1.0,1.19+lzs*(0.377+0.176*lzs))
+    msp[36] = numpy.maximum(0.90,1.1064+lzs*(0.415+0.18*lzs))
+    msp[37] = numpy.maximum(1.0,1.19+lzs*(0.377+0.176*lzs))
 
-    if (z > 0.010):
-        msp[36] = min(msp[36],1.0)
-        msp[37] = min(msp[37],1.10)
+    if (z > 0.010).any():
+        msp[36, z > 0.010] = numpy.minimum(msp[36, z > 0.010],1.0)
+        msp[37, z > 0.010] = numpy.minimum(msp[37, z > 0.010],1.10)
 
-    msp[38] = max(0.1450,0.0977-lzs*(0.231+0.0753*lzs))
-    msp[39] = min(0.240+lzs*(0.18+0.595*lzs),0.306+0.053*lzs)
-    msp[40] = min(0.330+lzs*(0.132+0.218*lzs),
+    msp[38] = numpy.maximum(0.1450,0.0977-lzs*(0.231+0.0753*lzs))
+    msp[39] = numpy.minimum(0.240+lzs*(0.18+0.595*lzs),0.306+0.053*lzs)
+    msp[40] = numpy.minimum(0.330+lzs*(0.132+0.218*lzs),
                   0.36250+0.062*lzs)
     msp[41] = (msp[32]+msp[33]*m2**msp[35])/(m2**0.40+msp[34]*m2**1.9)
 
@@ -126,16 +126,16 @@ def zcnsts(z):
     msp[42] = zdata.xl[43]+lzs*(zdata.xl[44]+lzs*(zdata.xl[45]+lzs*(zdata.xl[46]+lzs*zdata.xl[47])))
     msp[43] = zdata.xl[48]+lzs*(zdata.xl[49]+lzs*(zdata.xl[50]+lzs*(zdata.xl[51]+lzs*zdata.xl[52])))
     msp[44] = zdata.xl[53]+lzs*(zdata.xl[54]+lzs*zdata.xl[55])
-    msp[45] = min(1.40,1.5135+0.3769*lzs)
-    msp[45] = max(0.63550-0.4192*lzs,max(1.25,msp[45]))
+    msp[45] = numpy.minimum(1.40,1.5135+0.3769*lzs)
+    msp[45] = numpy.maximum(0.63550-0.4192*lzs,numpy.maximum(1.25,msp[45]))
 
     # Lhook
     msp[46] = zdata.xl[56]+lzs*(zdata.xl[57]+lzs*(zdata.xl[58]+lzs*zdata.xl[59]))
     msp[47] = zdata.xl[60]+lzs*(zdata.xl[61]+lzs*(zdata.xl[62]+lzs*zdata.xl[63]))
     msp[48] = zdata.xl[64]+lzs*(zdata.xl[65]+lzs*(zdata.xl[66]+lzs*zdata.xl[67]))
     msp[49] = zdata.xl[68]+lzs*(zdata.xl[69]+lzs*(zdata.xl[70]+lzs*zdata.xl[71]))
-    msp[50] = min(1.40,1.5135+0.3769*lzs)
-    msp[50] = max(0.63550-0.4192*lzs,max(1.25,msp[50]))
+    msp[50] = numpy.minimum(1.40,1.5135+0.3769*lzs)
+    msp[50] = numpy.maximum(0.63550-0.4192*lzs,numpy.maximum(1.25,msp[50]))
 
     # Rtms
     msp[51] = zdata.xr[0]+lzs*(zdata.xr[1]+lzs*(zdata.xr[2]+lzs*(zdata.xr[3]+lzs*zdata.xr[4])))
@@ -151,7 +151,7 @@ def zcnsts(z):
     msp[59] = zdata.xr[32]+lzs*(zdata.xr[33]+lzs*(zdata.xr[34]+lzs*zdata.xr[35]))
     msp[60] = zdata.xr[36]+lzs*(zdata.xr[37]+lzs*(zdata.xr[38]+lzs*zdata.xr[39]))
     #
-    msp[61] = max(0.0970-0.1072*(lz+3.0),max(0.097,min(0.1461,
+    msp[61] = numpy.maximum(0.0970-0.1072*(lz+3.0),numpy.maximum(0.097,numpy.minimum(0.1461,
                   0.14610+0.1237*(lz+2.0))))
     msp[61] = 10.0**msp[61]
     m2 = msp[61] + 0.10
@@ -164,21 +164,21 @@ def zcnsts(z):
     msp[66] = zdata.xr[48]+lzs*(zdata.xr[49]+lzs*(zdata.xr[50]+lzs*zdata.xr[51]))
     msp[67] = zdata.xr[52]+lzs*(zdata.xr[53]+lzs*(zdata.xr[54]+lzs*zdata.xr[55]))
     msp[68] = zdata.xr[56]+lzs*(zdata.xr[57]+lzs*(zdata.xr[58]+lzs*(zdata.xr[59]+lzs*zdata.xr[60])))
-    msp[69] = max(0.90,min(1.0,1.116+0.166*lzs))
-    msp[70] = max(1.4770+0.296*lzs,min(1.6,-0.308-1.046*lzs))
-    msp[70] = max(0.80,min(0.8-2.0*lzs,msp[70]))
+    msp[69] = numpy.maximum(0.90,numpy.minimum(1.0,1.116+0.166*lzs))
+    msp[70] = numpy.maximum(1.4770+0.296*lzs,numpy.minimum(1.6,-0.308-1.046*lzs))
+    msp[70] = numpy.maximum(0.80,numpy.minimum(0.8-2.0*lzs,msp[70]))
     msp[71] = zdata.xr[61]+lzs*(zdata.xr[62]+lzs*zdata.xr[63])
-    msp[72] = max(0.0650,0.0843-lzs*(0.0475+0.0352*lzs))
+    msp[72] = numpy.maximum(0.0650,0.0843-lzs*(0.0475+0.0352*lzs))
     msp[73] = 0.07360+lzs*(0.0749+0.04426*lzs)
-    if (z < 0.0040):
-        msp[73] = min(0.055,msp[73])
+    if (z < 0.0040).any():
+        msp[73, z < 0.0040] = numpy.minimum(0.055, msp[73, z < 0.0040])
 
-    msp[74] = max(0.0910, min(0.121, 0.136+0.0352*lzs))
+    msp[74] = numpy.maximum(0.0910, numpy.minimum(0.121, 0.136+0.0352*lzs))
     msp[75] = (msp[64]*msp[70]**msp[66])/(msp[65] + msp[70]**msp[67])
 
-    if (msp[69] > msp[70]):
-        msp[69] = msp[70]
-        msp[74] = msp[75]
+    if (msp[69] > msp[70]).any():
+        msp[69, msp[69] > msp[70]] = msp[70, msp[69] > msp[70]]
+        msp[74, msp[69] > msp[70]] = msp[75, msp[69] > msp[70]]
 
     # Rbeta
     msp[76] = zdata.xr[64]+lzs*(zdata.xr[65]+lzs*(zdata.xr[66]+lzs*zdata.xr[67]))
@@ -186,39 +186,37 @@ def zcnsts(z):
     msp[78] = zdata.xr[72]+lzs*(zdata.xr[73]+lzs*(zdata.xr[74]+lzs*zdata.xr[75]))
     msp[79] = zdata.xr[76]+lzs*(zdata.xr[77]+lzs*(zdata.xr[78]+lzs*zdata.xr[79]))
     msp[80] = zdata.xr[80]+lzs*(zdata.xr[81]+lzs*lzs*zdata.xr[82])
-    if (z > 0.010):
-        msp[80] = max(msp[80], 0.95)
+    if (z > 0.010).any():
+        msp[80, z > 0.010] = numpy.maximum(msp[80, z > 0.010], 0.95)
 
-    msp[81] = max(1.40, min(1.6, 1.6+lzs*(0.764+0.3322*lzs)))
+    msp[81] = numpy.maximum(1.40, numpy.minimum(1.6, 1.6+lzs*(0.764+0.3322*lzs)))
 
     # Rgamma
-    msp[82] = max(zdata.xr[83]+lzs*(zdata.xr[84]+lzs*(zdata.xr[85]+lzs*zdata.xr[86])),
+    msp[82] = numpy.maximum(zdata.xr[83]+lzs*(zdata.xr[84]+lzs*(zdata.xr[85]+lzs*zdata.xr[86])),
                   zdata.xr[95]+lzs*(zdata.xr[96]+lzs*zdata.xr[97]))
-    msp[83] = min(0.0, zdata.xr[87]+lzs*(zdata.xr[88]+lzs*(zdata.xr[89]+lzs*zdata.xr[90])))
-    msp[83] = max(msp[83], zdata.xr[98]+lzs*(zdata.xr[99]+lzs*zdata.xr[100]))
+    msp[83] = numpy.minimum(0.0, zdata.xr[87]+lzs*(zdata.xr[88]+lzs*(zdata.xr[89]+lzs*zdata.xr[90])))
+    msp[83] = numpy.maximum(msp[83], zdata.xr[98]+lzs*(zdata.xr[99]+lzs*zdata.xr[100]))
     msp[84] = zdata.xr[91]+lzs*(zdata.xr[92]+lzs*(zdata.xr[93]+lzs*zdata.xr[94]))
-    msp[84] = max(0.0, min(msp[84], 7.454+9.046*lzs))
-    msp[85] = min(zdata.xr[101]+lzs*zdata.xr[102], max(2.0, -13.3-18.6*lzs))
-    msp[86] = min(1.50,max(0.4,2.493+1.1475*lzs))
-    msp[87] = max(1.0,min(1.27,0.8109-0.6282*lzs))
-    msp[87] = max(msp[87],0.63550-0.4192*lzs)
-    msp[88] = max(5.855420e-02,-0.27110-lzs*(0.5756+0.0838*lzs))
+    msp[84] = numpy.maximum(0.0, numpy.minimum(msp[84], 7.454+9.046*lzs))
+    msp[85] = numpy.minimum(zdata.xr[101]+lzs*zdata.xr[102], numpy.maximum(2.0, -13.3-18.6*lzs))
+    msp[86] = numpy.minimum(1.50,numpy.maximum(0.4,2.493+1.1475*lzs))
+    msp[87] = numpy.maximum(1.0,numpy.minimum(1.27,0.8109-0.6282*lzs))
+    msp[87] = numpy.maximum(msp[87],0.63550-0.4192*lzs)
+    msp[88] = numpy.maximum(5.855420e-02,-0.27110-lzs*(0.5756+0.0838*lzs))
 
     # Rhook
     msp[89] = zdata.xr[103]+lzs*(zdata.xr[104]+lzs*(zdata.xr[105]+lzs*zdata.xr[106]))
     msp[90] = zdata.xr[107]+lzs*(zdata.xr[108]+lzs*(zdata.xr[109]+lzs*zdata.xr[110]))
     msp[91] = zdata.xr[111]+lzs*(zdata.xr[112]+lzs*(zdata.xr[113]+lzs*zdata.xr[114]))
     msp[92] = zdata.xr[115]+lzs*(zdata.xr[116]+lzs*(zdata.xr[117]+lzs*zdata.xr[118]))
-    msp[93] = min(1.250,
-              max(1.10,1.9848+lzs*(1.1386+0.3564*lzs)))
+    msp[93] = numpy.minimum(1.250,
+              numpy.maximum(1.10,1.9848+lzs*(1.1386+0.3564*lzs)))
     msp[94] = 0.0630 + lzs*(0.0481 + 0.00984*lzs)
-    msp[95] = min(1.30,max(0.45,1.2+2.45*lzs))
+    msp[95] = numpy.minimum(1.30,numpy.maximum(0.45,1.2+2.45*lzs))
 
     # Lneta
-    if (z > 0.00090):
-        msp[96] = 10.0
-    else:
-        msp[96] = 20.0
+    msp[96, z > 0.00090] = 10.0
+    msp[96, z < 0.00090] = 20.0
 
     # converting the below from fortran to python still needs work
     """
@@ -250,13 +248,13 @@ def zcnsts(z):
     # Rgb
     gbp[16] = -4.67390-0.9394*lz
     gbp[16] = 10.0**gbp[16]
-    gbp[16] = max(gbp[16],-0.041670+55.67*z)
-    gbp[16] = min(gbp[16],0.47710-9329.21*z**2.94)
-    gbp[17] = min(0.540,0.397+lzs*(0.28826+0.5293*lzs))
-    gbp[18] = max(-0.14510,-2.2794-lz*(1.5175+0.254*lz))
+    gbp[16] = numpy.maximum(gbp[16],-0.041670+55.67*z)
+    gbp[16] = numpy.minimum(gbp[16],0.47710-9329.21*z**2.94)
+    gbp[17] = numpy.minimum(0.540,0.397+lzs*(0.28826+0.5293*lzs))
+    gbp[18] = numpy.maximum(-0.14510,-2.2794-lz*(1.5175+0.254*lz))
     gbp[18] = 10.0**gbp[18]
     if (z > 0.0040):
-        gbp[18] = max(gbp[18],0.73070+14265.1*z**3.395)
+        gbp[18] = numpy.maximum(gbp[18],0.73070+14265.1*z**3.395)
 
     gbp[19] = zdata.xg[44]+lzs*(zdata.xg[45]+lzs*(zdata.xg[46]+lzs*(zdata.xg[47]+lzs*(zdata.xg[48]+lzs*zdata.xg[49]))))
     gbp[20] = zdata.xg[50]+lzs*(zdata.xg[51]+lzs*(zdata.xg[52]+lzs*(zdata.xg[53]+lzs*zdata.xg[54])))
@@ -264,7 +262,7 @@ def zcnsts(z):
     gbp[22] = zdata.xg[61]+lzs*(zdata.xg[62]+lzs*(zdata.xg[63]+lzs*(zdata.xg[64]+lzs*zdata.xg[65])))
 
     # Ragb
-    gbp[23] = min(0.991640-743.123*z**2.83,
+    gbp[23] = numpy.minimum(0.991640-743.123*z**2.83,
                   1.04220+lzs*(0.13156+0.045*lzs))
     gbp[24] = zdata.xg[66]+lzs*(zdata.xg[67]+lzs*(zdata.xg[68]+lzs*(zdata.xg[69]+ lzs*(zdata.xg[70]+lzs*zdata.xg[71]))))
     gbp[25] = zdata.xg[72]+lzs*(zdata.xg[73]+lzs*(zdata.xg[74]+lzs*(zdata.xg[75]+lzs*zdata.xg[76])))
@@ -274,7 +272,7 @@ def zcnsts(z):
     gbp[29] = zdata.xg[94]+lzs*(zdata.xg[95]+lzs*(zdata.xg[96]+lzs*(zdata.xg[97]+lzs*(zdata.xg[98]+lzs*zdata.xg[99]))))
     m1 = zpars[1] - 0.20
     gbp[30] = gbp[28] + gbp[29]*m1
-    gbp[31] = min(gbp[24]/zpars[1]**gbp[25],gbp[26]/zpars[1]**gbp[27])
+    gbp[31] = numpy.minimum(gbp[24]/zpars[1]**gbp[25],gbp[26]/zpars[1]**gbp[27])
 
     # Mchei
     gbp[32] = zdata.xg[100]**4
@@ -313,7 +311,7 @@ def zcnsts(z):
     gbp[46] = gbp[46]**gbp[47]
     gbp[45] = gbp[45]/zpars[2]**0.10+(gbp[45]*gbp[46]-gbp[44])/zpars[2]**(gbp[47]+0.10)
 
-    # Rmin
+    # Rnumpy.minimum
 
     gbp[48] = zdata.xh[25]+lzs*(zdata.xh[26]+lzs*(zdata.xh[27]+lzs*zdata.xh[28]))
     gbp[49] = zdata.xh[29]+lzs*(zdata.xh[30]+lzs*(zdata.xh[31]+lzs*zdata.xh[32]))
@@ -328,7 +326,7 @@ def zcnsts(z):
     # call to Thef using mass = zpars[1], mc = 0.0  and mhefl = 0.0
     gbp[53] = zdata.xh[43]+lzs*(zdata.xh[44]+lzs*(zdata.xh[45]+lzs*zdata.xh[46]))
     gbp[54] = zdata.xh[47]+lzs*(zdata.xh[48]+lzs*zdata.xh[49])
-    gbp[54] = max(gbp[54],1.0)
+    gbp[54] = numpy.maximum(gbp[54],1.0)
     gbp[55] = zdata.xh[50]
     gbp[56] = -1.0
     gbp[57] = zdata.xh[51]+lzs*(zdata.xh[52]+lzs*(zdata.xh[53]+lzs*zdata.xh[54]))
@@ -365,8 +363,6 @@ def zcnsts(z):
     gbp[75] = zdata.xh[91] + lzs*(zdata.xh[92] + lzs*(zdata.xh[93] + lzs*zdata.xh[94]))
     gbp[76] = zdata.xh[95] + lzs*(zdata.xh[96] + lzs*(zdata.xh[97] + lzs*zdata.xh[98]))
 
-    import pdb
-    pdb.set_trace()
     # finish Lbagb
     mhefl = 0.0
     lx = lbagbf(zpars[1], mhefl)
@@ -383,8 +379,8 @@ def zcnsts(z):
 
     # finish Tblf
     rb = ragbf(zpars[2],lheif(zpars[2],zpars[1]),mhefl)
-    rr = 1.0 - rminf(zpars[2])/rb
-    rr = max(rr,1.0e-12)
+    rr = 1.0 - rnumpy.minimumf(zpars[2])/rb
+    rr = numpy.maximum(rr,1.0e-12)
     gbp[65] = gbp[65]/(zpars[2]**gbp[66]*rr**gbp[67])
 
     # finish Lzahb
@@ -402,7 +398,7 @@ def zcnsts(z):
     zpars[11] = 0.240 + 2.0*z
 
     # set constant for low-mass CHeB stars
-    zpars[12] = (rminf(zpars[1])/
+    zpars[12] = (rnumpy.minimumf(zpars[1])/
                 rgbf(zpars[1],lzahbf(zpars[1],zpars[8],zpars[1])))
 
     zpars[13] = z**0.40

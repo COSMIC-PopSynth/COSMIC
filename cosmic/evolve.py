@@ -22,7 +22,7 @@
 import numpy as np
 from gwpy.utils import mp as mp_utils
 from cosmic import _evolvebin
-from utils import error_check
+from .utils import error_check
 import pandas as pd
 from astropy.table import Table
 

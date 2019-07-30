@@ -22,6 +22,7 @@ import scipy.integrate
 import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
+import warnings
 from .bse_utils.zcnsts import zcnsts
 
 def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
@@ -629,7 +630,7 @@ def check_initial_conditions(initial_binary_table):
         RL = 0.49*P*P/(0.6*P*P + np.log(1.0+P))
         return RL
 
-    z = np.unique(np.asarray(initial_binary_table['metallicity']))
+    z = np.asarray(initial_binary_table['metallicity'])
     zpars, a = zcnsts(z)
 
     mass1 = np.asarray(initial_binary_table['mass1_binary'])
@@ -639,16 +640,19 @@ def check_initial_conditions(initial_binary_table):
     rzams2 = rzamsf(mass2)
 
     # assume some time step in order to calculate sep
-    tb = 0.0002737925747453729
+    yeardy = 365.24
     aursun = 214.95
+    tb = np.asarray(initial_binary_table['porb'])/yeardy
     sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
 
     q1 = mass1/mass2
     q2 = mass2/mass1
     rol1 = rl(q1)*sep
     rol2 = rl(q2)*sep
-    import pdb
-    pdb.set_trace()
 
-    if (rzams1 >= rol1).any() or (rzams2 >= rol2).any():
-        raise Warning("One of your initial binaries is starting in Roche Lobe Overflow")
+    # check for a ZAMS that starts in RFOL
+    mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
+    if mask.any(): 
+        warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
+
+    return

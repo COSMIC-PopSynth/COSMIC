@@ -31,9 +31,8 @@ import pandas as pd
 import warnings
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
-from cosmic import Match
+from cosmic import Match, utils
 from cosmic.evolve import Evolve
-from cosmic.utils import param_transform, filter_bpp_bcm, bcm_conv_select, error_check
 
 ###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
@@ -161,7 +160,7 @@ if __name__ == '__main__':
     convergence = dictionary['convergence']
 
     # Check that the values in BSEDict, filters, and convergence are valid
-    error_check(BSEDict, filters, convergence)
+    utils.error_check(BSEDict, filters, convergence)
 
     if seed_int != 0:
         np.random.seed(seed_int)
@@ -239,6 +238,8 @@ if __name__ == '__main__':
         if args.initial_samp == 'multidim':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
+        utils.check_initial_conditions(IBT)
+
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
@@ -275,7 +276,7 @@ if __name__ == '__main__':
         idx = int(bcm.bin_num.max()+1)
         dat_store.append('idx', pd.DataFrame([idx]))
 
-        bcm_filter, bin_state_fraction = filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+        bcm_filter, bin_state_fraction = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
             warnings.warn("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
             log_file.write("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
