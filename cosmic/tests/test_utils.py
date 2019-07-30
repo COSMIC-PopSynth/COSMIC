@@ -3,12 +3,15 @@
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
+from cosmic.sample import InitialBinaryTable
+
 import os
 import unittest2
 import numpy as np
 import scipy.integrate
 import pandas as pd
 import scipy.special as special
+import pytest
 
 import cosmic.utils as utils
 
@@ -44,6 +47,7 @@ TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 BPP_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bpp')
 BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
 
+IBT = InitialBinaryTable.MultipleBinary(m1=[100.0, 11.8,10**1.5], m2=[85.0, 11.1,21], porb=[10000.0,2211.0,0.1], ecc=[0.65,0.55,0.0], tphysf=[13700.0,13700.0,13700.0], kstar1=[1,1,1], kstar2=[1,1,14], metallicity=[0.005,0.02,0.002])
 
 IDL_TABULATE_ANSWER = 0.5
 MASS_SUM_SINGLE = [41.0, 41.6, 50.0, 132.0, 320.0]
@@ -54,7 +58,6 @@ _KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
                   'select_final_state',
                   'binary_state',
                   'lisa_sources']
-
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
@@ -146,3 +149,7 @@ class TestUtils(unittest2.TestCase):
         utils.error_check(BSEDict,filters,convergence)
         utils.error_check(BSEDict)
         assert 1==1
+
+    def test_warning_check(self):
+        with pytest.warns(UserWarning, match='At least one of your initial binaries is starting in Roche Lobe Overflow'):
+            utils.check_initial_conditions(IBT)
