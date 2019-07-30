@@ -238,8 +238,6 @@ if __name__ == '__main__':
         if args.initial_samp == 'multidim':
             IBT, sampled_mass, n_samp = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
 
-        utils.check_initial_conditions(IBT)
-
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_sampled_mass += sampled_mass
