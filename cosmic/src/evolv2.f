@@ -8,8 +8,8 @@
      \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
-     \ bppout,bcmout)
+     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     \ dtptmp,idumtmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -207,7 +207,7 @@
       LOGICAL coel,com,prec,inttry,change,snova,sgl,bsymb,esymb,bss
       LOGICAL supedd,novae,disk
       LOGICAL isave,iplot
-      REAL*8 rl,mlwind,vrotf,corerd
+      REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
 *
       REAL*8 kw3,wsun,wx
@@ -225,6 +225,7 @@
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
+      INTEGER qcflagtmp
       INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
@@ -266,6 +267,7 @@ Cf2py intent(out) bppout,bcmout
       bconst = bconsttmp
       CK = CKtmp
       windflag = windflagtmp
+      qcflag = qcflagtmp
       dtp = dtptmp
       idum1 = idumtmp
 
@@ -1900,18 +1902,126 @@ component.
 *
 * Set default qcrit values and identify special cases.
 *
-      if(kstar(j1).eq.2)then
-         qc = 4.d0
-      elseif(kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6)then
-*        qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
-* Alternatively use condition of Hjellming & Webbink, 1987, ApJ, 318, 794.
-         qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
-* Or allow all cases to avoid common-envelope.
-*        qc = 100.d0
-      elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
-         qc = 0.784d0
-      else
-         qc = 3.d0
+
+      if(qcflag.eq.0)then
+*
+* Use the BSE equations and defaults:
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+
+         if(kstar(j1).eq.2)then
+            qc = 4.d0
+         elseif(kstar(j1).eq.3.or.kstar(j1).eq.5
+     &          .or.kstar(j1).eq.6)then
+            qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+         elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
+            qc = 0.784d0
+         elseif(kstar(j1).eq.1)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.0)then
+            qc = 0.695
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+      elseif(qcflag.eq.1)then
+*
+* Use the BSE equations and Hjellming & Webbink, 1987, ApJ, 318, 794.
+* for the GB/AGB:
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j1).eq.2)then
+            qc = 4.d0
+         elseif(kstar(j1).eq.3.or.kstar(j1).eq.5
+     &          .or.kstar(j1).eq.6)then
+            qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
+            qc = 0.784d0
+         elseif(kstar(j1).eq.1)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.0)then
+            qc = 0.695
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+      elseif(qcflag.eq.2)then
+*
+* Use the binary_c prescriptions taken from Claeys+2014 Table 2 
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j2).lt.10)then
+            if(kstar(j1).eq.2)then
+                qc = 4.d0
+            elseif(kstar(j1).eq.3.or.kstar(j1).eq.5
+     &             .or.kstar(j1).eq.6)then
+               qc = (1.67d0-zpars(7)+
+     &               2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+            elseif(kstar(j1).eq.8)then
+               qc = 4.d0
+            elseif(kstar(j1).eq.9)then
+               qc = 0.784d0
+            elseif(kstar(j1).eq.1)then
+               qc = 1.6d0
+            elseif(kstar(j1).eq.0)then
+               qc = 0.695d0
+            endif
+         elseif(kstar(j2).ge.10)then
+            if(kstar(j1).eq.2)then
+                qc = 4.7619d0
+            elseif(kstar(j1).eq.3.or.kstar(j1).eq.5
+     &             .or.kstar(j1).eq.6)then
+               qc = 1.1494d0
+            elseif(kstar(j1).eq.8)then
+               qc = 4.7619d0
+            elseif(kstar(j1).eq.9)then
+               qc = 1.1494d0
+            elseif(kstar(j1).eq.1)then
+               qc = 1.0d0
+            elseif(kstar(j1).eq.0)then
+               qc = 1.0d0
+            elseif(kstar(j1).ge.10)then
+               qc = 0.625d0
+            endif
+         endif
+      elseif(qcflag.eq.3)then
+*
+* Use the binary_c prescriptions taken from Claeys+2014 Table 2
+* but w/ Hjellming & Webbing for GB/AGB 
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j2).lt.10)then
+            if(kstar(j1).eq.2)then
+                qc = 4.d0
+            elseif(kstar(j1).eq.3.or.kstar(j1).eq.5
+     &             .or.kstar(j1).eq.6)then
+               qc = 0.362 +
+     &              1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+            elseif(kstar(j1).eq.8)then
+               qc = 4.d0
+            elseif(kstar(j1).eq.9)then
+               qc = 0.784d0
+            elseif(kstar(j1).eq.1)then
+               qc = 1.6d0
+            elseif(kstar(j1).eq.0)then
+               qc = 0.695d0
+            endif
+         elseif(kstar(j2).ge.10)then
+            if(kstar(j1).eq.2)then
+                qc = 4.7619d0
+            elseif(kstar(j1).eq.3.or.kstar(j1).eq.5
+     &             .or.kstar(j1).eq.6)then
+               qc = 1.1494d0
+            elseif(kstar(j1).eq.8)then
+               qc = 4.7619d0
+            elseif(kstar(j1).eq.9)then
+               qc = 1.1494d0
+            elseif(kstar(j1).eq.1)then
+               qc = 1.0d0
+            elseif(kstar(j1).eq.0)then
+               qc = 1.0d0
+            elseif(kstar(j1).ge.10)then
+                qc = 0.625d0
+            endif
+         endif
       endif
 *
 * Allow for manually overriding qcrit values with fixed
@@ -1921,8 +2031,8 @@ component.
       if(qc_fixed.ne.0)then
          qc = qc_fixed
       endif
-
-      if(kstar(j1).eq.0.and.q(j1).gt.0.695d0)then
+      
+      if(kstar(j1).eq.0.and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
 * common-envelope evolution.  The result is always a single
@@ -2008,10 +2118,11 @@ component.
             kstar(j2) = 15
          endif
          goto 135
-      elseif(((ABS(ABS(2*kstar(j1)-11)-3).eq.2.or.kstar(j1).eq.9).
-     &        and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
+      elseif(((ABS(ABS(2*kstar(j1)-11)-3).eq.2.or.kstar(j1).eq.9)
+     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
      &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
+         
 *
 * Common-envelope evolution.
 *
@@ -2099,7 +2210,7 @@ component.
          tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
          oorb = twopi/tb
       elseif(kstar(j1).ge.10.and.kstar(j1).le.12.and.
-     &       q(j1).gt.0.628d0)then
+     &       q(j1).gt.qc)then
 *
 * Dynamic transfer from a white dwarf.  Secondary will have KW > 9.
 *
@@ -2121,7 +2232,7 @@ component.
 *
             kstar(j2) = 15
             mass(j2) = 0.d0
-         elseif(kstar(j1).eq.10.or.kstar(j2).eq.10)then
+         elseif(kstar(j1).eq.10.or.kstar(j2).gt.10)then
 *
 * Should be helium overflowing onto a CO or ONe core in which case the
 * helium swells up to form a giant envelope so a HeGB star is formed.
@@ -2193,8 +2304,26 @@ component.
 *
 * Mass transfer in one Kepler orbit.
 *
-         dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &         MIN(mass(j1),5.d0)**2
+*
+* KB: adding in stable mass transfer factor from
+*     eqs 10-11 of Claeys+2014
+*
+         if(qcflag.gt.1.and.qcflag.le.3)then
+            if(q(j1).gt.1)then
+               f_fac=1000.d0
+            else
+               f_fac=1000*q(j1)*
+     &               EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+               if(f_fac.lt.1)then
+                  f_fac=1
+               endif
+            endif
+            dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &            MIN(mass(j1),5.d0)**2
+         else
+            dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &            MIN(mass(j1),5.d0)**2
+         endif
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
