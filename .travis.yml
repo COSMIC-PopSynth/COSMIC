@@ -6,8 +6,7 @@ os:
   - linux
 
 addons:
-  apt:
-    packages:
+  apt_packages:
     - gfortran
     - swig
     - libhdf5-serial-dev
@@ -25,10 +24,11 @@ install:
   - python -m pip install .
 
 before_script:
-  - python -m pip install coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
+  - python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner sphinx numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2 ipython
 
 script:
   # run unit tests
+  - bash .travis/compile_benchmark.sh
   - coverage run ./setup.py test
   - coverage run --append `which runFixedPop` --help
 
@@ -36,7 +36,8 @@ script:
   - cd docs && make html; cd ../
 
 after_success:
-- coveralls
+- bash <(curl -s https://codecov.io/bash)
+- coveralls --gcov-options '\-lp'
 
 cache:
   pip: true

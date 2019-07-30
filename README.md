@@ -25,3 +25,5 @@ pip install cosmic-popsynth
 
 [![Coverage Status](https://coveralls.io/repos/github/COSMIC-PopSynth/COSMIC/badge.svg?branch=develop)](https://coveralls.io/github/COSMIC-PopSynth/COSMIC?branch=develop)
 
+[![codecov](https://codecov.io/gh/COSMIC-PopSynth/COSMIC/branch/develop/graph/badge.svg)](https://codecov.io/gh/COSMIC-PopSynth/COSMIC)
+

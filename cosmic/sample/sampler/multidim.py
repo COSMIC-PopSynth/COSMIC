@@ -96,7 +96,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
     mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
-    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = size)
+    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
@@ -481,11 +481,12 @@ class MultiDim:
         ecc_list = []
 
 
-        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, seed, output):
-            if seed > 0:
-                np.random.seed(seed)
-            else:
-                np.random.seed()
+        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, nproc, seed, output):
+            # get unique and replicatable seed for each process
+            process = mp.Process()
+            mp_seed = (process._identity[0]-1)+(nproc*(process._identity[1]-1))
+            np.random.seed(seed + mp_seed)
+
             total_mass = 0.0
             primary_mass_list = []
             secondary_mass_list = []
@@ -583,7 +584,7 @@ class MultiDim:
 
         output = mp.Queue()
         processes = [mp.Process(target = _sample_initial_pop,\
-                                args = (M1min, M2min, M1max, M2max, size/nproc, rand_seed, output))\
+                                args = (M1min, M2min, M1max, M2max, size/nproc, nproc, rand_seed, output))\
                                 for x in range(nproc)]
         for p in processes:
             p.daemon = True

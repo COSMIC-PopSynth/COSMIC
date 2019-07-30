@@ -1,5 +1,7 @@
 ***
       SUBROUTINE gntage(mc,mt,kw,zpars,m0,aj)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 * A routine to determine the age of a giant from its core mass and type.
 *
@@ -11,7 +13,6 @@
 *                  the new evolution routines and to include new stellar
 *                  types.
 *
-      implicit none
 *
       integer kw
       integer j,jmax

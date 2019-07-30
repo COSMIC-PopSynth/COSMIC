@@ -14,15 +14,15 @@ from cosmic.sample.sampler.multidim import MultiDim
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
-TOTAL_SAMPLED_MASS_150_KROUPA93 = 25169.078513680262
-TOTAL_SAMPLED_MASS_50_KROUPA93 = 2375.7308462270503
-TOTAL_SAMPLED_MASS_KROUPA93 = 41.585324999945854
-TOTAL_SAMPLED_MASS_150_SALPETER55 = 17593.2866338113
-TOTAL_SAMPLED_MASS_50_SALPETER55 = 1615.8593881185334
-TOTAL_SAMPLED_MASS_SALPETER55 = 28.182278678238717
+TOTAL_SAMPLED_MASS_150_KROUPA93 = 81084014.09705302
+TOTAL_SAMPLED_MASS_50_KROUPA93 = 911480.6442456255
+TOTAL_SAMPLED_MASS_KROUPA93 = 21.72892745293822
+TOTAL_SAMPLED_MASS_150_SALPETER55 = 69781737.39377913
+TOTAL_SAMPLED_MASS_50_SALPETER55 = 1282485.065915339
+TOTAL_SAMPLED_MASS_SALPETER55 = 12.798883571264902
 TOTAL_SECONDARY_MASS = 16.15470927770034
-N_BINARY_SELECT = 92
-PORB = 855.304181220944
+N_BINARY_SELECT = 43
+PORB = 670.53502604
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
@@ -82,12 +82,6 @@ class TestSample(unittest2.TestCase):
         m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100))
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
 
-    def test_sample_porb_abt(self):
-        np.random.seed(2)
-        # Check that the sample_porb function samples porb properly
-        porb = SAMPLECLASS.sample_porb(1.0, 1.0, size=1)
-        self.assertAlmostEqual(porb[0], PORB)
-
     def test_sample_ecc(self):
         np.random.seed(2)
         # Check that the sample_ecc function samples ecc properly
@@ -98,6 +92,12 @@ class TestSample(unittest2.TestCase):
         # Check that the sample_ecc function samples ecc properly
         ecc = SAMPLECLASS.sample_ecc(ecc_model='uniform', size=10)
         self.assertEqual(ecc.sum(), UNIFORM_ECC_SUM)
+
+    def test_sample_porb_abt(self):
+        np.random.seed(2)
+        # Check that the sample_porb function samples porb properly
+        porb = SAMPLECLASS.sample_porb(1.0, 1.0, 0.5, size=1)
+        self.assertAlmostEqual(porb[0], PORB)
 
     def test_sample_SFH(self):
         np.random.seed(2)

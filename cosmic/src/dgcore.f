@@ -1,11 +1,12 @@
 ***
       SUBROUTINE dgcore(kw1,kw2,kw3,m1,m2,m3,ebinde)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
 *
 * A routine to determine the outcome of a collision or coalescence
 * of two degenerate cores.
 * Entered with kw1,kw2 = 2 or 3 with M <= Mflash, 6, 10, 11 or 12
 *
-      implicit none
 *
       integer kw1,kw2,kw3
 *
