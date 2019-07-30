@@ -608,7 +608,7 @@ def error_check(BSEDict, filters=None, convergence=None):
             raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='qcflag'
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0,1,2,3,4]:
+        if BSEDict[flag] not in [0,1,2,3]:
             raise ValueError("'{0:s}' needs to be set to 0, 1, 2, or 3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='epsnov'
     if flag in BSEDict.keys():
