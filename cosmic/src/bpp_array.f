@@ -1,7 +1,9 @@
 ***
         SUBROUTINE WRITEBPP(jp,tphys,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
-     &                      tb,ecc,rrl1,rrl2,bkick)
+     &                      tb,ecc,rrl1,rrl2,bkick,
+     &                      aj1,aj2,tms1,tms2,
+     &                      massc1,massc2,rad1,rad2)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
 *
@@ -12,6 +14,7 @@
 *
         REAL*8 bkick(20),mass1,mass2
         REAL*8 evolve_type,sep,tb,ecc,tphys,rrl1,rrl2
+        REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
         INTEGER jp,jj
         INTEGER kstar1,kstar2
 
@@ -39,6 +42,14 @@
         DO jj = 13,20
             bkick(jj) = 0.0
         ENDDO
+        bpp(jp,16) = aj1
+        bpp(jp,17) = aj2
+        bpp(jp,18) = tms1
+        bpp(jp,19) = tms2
+        bpp(jp,20) = massc1
+        bpp(jp,21) = massc2
+        bpp(jp,22) = rad1
+        bpp(jp,23) = rad2
         END
 
 ***
@@ -106,8 +117,10 @@
         bcm(ip,34) = B_0_2
         bcm(ip,35) = SNkick_1
         bcm(ip,36) = SNkick_2
-        bcm(ip,37) = Vsys_final
-        bcm(ip,38) = SNtheta_final
+        if(bin_state.ne.2.d0)then
+            bcm(ip,37) = Vsys_final
+            bcm(ip,38) = SNtheta_final
+        endif
         bcm(ip,39) = float(SN_1)
         bcm(ip,40) = float(SN_2)
         bcm(ip,41) = bin_state
