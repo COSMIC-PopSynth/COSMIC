@@ -7,8 +7,8 @@
       COMMON /RAND2/ idum2,iy,ir
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
-      INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag
-      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag
+      INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag,qcflag
+      COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag,qcflag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
@@ -35,6 +35,6 @@
       COMMON /TSTEPC/ dmmax,drmax
       REAL*8 scm(50000,14),spp(20,3)
       COMMON /SINGLE/ scm,spp
-      REAL*8 bcm(50000,42),bpp(1000,15)
+      REAL*8 bcm(50000,42),bpp(1000,23)
       COMMON /BINARY/ bcm,bpp
 *

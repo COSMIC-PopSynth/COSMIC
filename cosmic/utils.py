@@ -22,6 +22,8 @@ import scipy.integrate
 import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
+import warnings
+from .bse_utils.zcnsts import zcnsts
 
 def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
@@ -74,27 +76,31 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
         elif (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
-
-            # CREATE A LIST OF BIN_NUM INDICES TO APPEND TO
             bin_num_save = []
-            if 0 in use:
-                bcm_0 = bcm.loc[(bcm.bin_state == 0)]
-                bin_num_save.extend(bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)) &
-                                              (bcm_0.kstar_2.isin(kstar2_range))].bin_num.tolist())
-            if 1 in use:
-                bcm_1 = bcm.loc[bcm.bin_state == 1]
-                bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
-                bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
-                                              (bpp_1.kstar_2.isin(kstar2_range)) &
-                                              (bpp_1.evol_type == 3)].bin_num.tolist())
 
-            if 2 in use:
-                # SHOULD BE DISRUPTED AND kstar_1.isin(kstar1_range) and kstar_2.isin(kstar2_range)
-                bcm_2 = bcm.loc[bcm.bin_state == 2]
-                bin_num_save.extend(bcm_2.loc[(bcm_2.kstar_1.isin(kstar1_range)) &
-                                              (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of disrupted or systems
+            # that are alive today we can simply check the last entry in the bcm
+            # array for the system and see what its properities are today
+            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
+                                          (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of merged systems
+            # we actually need to search in the BPP array for the properities
+            # of the objects right at merge because the bcm will report
+            # the post merge object only
+            bcm_1 = bcm.loc[bcm.bin_state == 1]
+            bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
+            bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
+                                          (bpp_1.kstar_2.isin(kstar2_range)) &
+                                          (bpp_1.evol_type == 3)].bin_num.tolist())
+
             bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
+
+            # this will tell use the binary state fraction of the systems with a certain final kstar type
+            # before we throw out certain binary states if a user requested that.
+            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+
+            bcm = bcm.loc[bcm.bin_state.isin(use)]
 
         elif (meth == 'lisa_sources') and use:
             if 0 in method['binary_state']:
@@ -104,7 +110,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             else:
                 raise ValueError("You must have bin state = 0 for lisa"
                                  "sources filter")
-    return bcm
+    return bcm, bin_state_fraction
 
 def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
     """Select bcm data for special convergence cases
@@ -405,3 +411,259 @@ def knuth_bw_selector(dat_list):
         bw_list.append(bw)
     return np.mean(bw_list)
 
+
+def error_check(BSEDict, filters=None, convergence=None):
+    """Checks that values in BSEDict, filters, and convergence are viable
+    """
+    if not isinstance(BSEDict, dict):
+        raise ValueError('BSE flags must be supplied via a dictionary')
+
+    if filters is not None:
+        if not isinstance(filters, dict):
+            raise ValueError('Filters criteria must be supplied via a dictionary')
+
+    if convergence is not None:
+        if not isinstance(convergence, dict):
+            raise ValueError('Convergence criteria must be supplied via a dictionary')
+
+    # filters
+    if filters is not None:
+        flag='mass_transfer_white_dwarf_to_co'
+        if flag in filters.keys():
+            if filters[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
+
+        flag='select_final_state'
+        if flag in filters.keys():
+            if filters[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
+
+        flag='binary_state'
+        if flag in filters.keys():
+            if any(x not in [0,1,2] for x in filters[flag]):
+                raise ValueError("'{0:s}' needs to be a subset of [0,1,2] (you set it to '[{1:d}]')".format(flag, *filters[flag]))
+
+    # convergence
+    if convergence is not None:
+        flag='lisa_convergence'
+        if flag in convergence.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+
+    # BSEDict
+    flag='dtp'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater than or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts1'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts2'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts3'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='windflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='neta'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bwind'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='hewind'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='beta'
+    # --- all numbers are valid
+    flag='xi'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='acc2'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='alpha1'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='lambdaf'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>0) and (BSEDict[flag]!=1):
+            raise ValueError("'{0:s}' needs to either be set to 1 for variable lambda or a negative number for fixed lambda (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ceflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='cekickflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='cemergeflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='cehestarflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='qcflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3,4]:
+            raise ValueError("'{0:s}' needs to be set to 0, 1, 2, or 3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='qcrit_array'
+    if flag in BSEDict.keys():
+        if any(x < 0.0 for x in BSEDict[flag]):
+            raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
+        if len(BSEDict[flag]) != 16:
+            raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+        if (any( x != 0.0 for x in BSEDict[flag])) and (BSEDict['qcflag'] != 4):
+            raise ValueError("If '{0:s}' is used, qcflag must be set to 4".format(flag))
+
+    flag='sigma'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='ecsn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ecsn_mlow'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>BSEDict['ecsn']) or (BSEDict[flag]<0.0):
+            raise ValueError("'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 (you set it to '{0:0.2f}')".format(flag, BSEDict[flag]))
+    flag='sigmadiv'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] == 0:
+            raise ValueError("'{0:s}' must be positive or negative (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='aic'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='ussn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='pisn'
+    if flag in BSEDict.keys():
+        if not ((BSEDict[flag] > 0) or (BSEDict[flag] == -1)):
+            raise ValueError("'{0:s}' needs to be set to either greater than 0 or -1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhsigmafrac'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be greater than 0 and less than or equal to 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='polar_kick_angle'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 90):
+            raise ValueError("'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='natal_kick_array'
+    if flag in BSEDict.keys():
+        if len(BSEDict[flag]) != 6:
+            raise ValueError("'{0:s}' must be supplied 6 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+
+    flag='nsflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3,4]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='mxns'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='eddfac'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='gamma'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]<=0) and (BSEDict[flag]!=-1) and (BSEDict[flag]!=-2):
+            raise ValueError("'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='tflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='ifflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='wdflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='qcflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to 0, 1, 2, or 3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='epsnov'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bconst'
+    # --- all numbers are valid
+    flag='ck'
+    # --- all numbers are valid
+
+    return
+
+def check_initial_conditions(initial_binary_table):
+    def rzamsf(m):
+        """A function to evaluate Rzams
+        ( from Tout et al., 1996, MNRAS, 281, 257 ).
+        """
+        mx = np.sqrt(m)
+        rzams = (((a[7]*m**2 + a[8]*m**6)*mx + a[9]*m**11 + 
+                  (a[10] + a[11]*mx)*m**19)/
+                  (a[12] + a[13]*m**2 + (a[14]*m**8 + m**18 + a[15]*m**19)*mx))
+
+        return rzams
+
+    def rl(Q):
+        """A function to evaluate R_L/a(q), Eggleton 1983."""
+        P = Q**(1.0/3.0)
+        RL = 0.49*P*P/(0.6*P*P + np.log(1.0+P))
+        return RL
+
+    z = np.asarray(initial_binary_table['metallicity'])
+    zpars, a = zcnsts(z)
+
+    mass1 = np.asarray(initial_binary_table['mass1_binary'])
+    mass2 = np.asarray(initial_binary_table['mass2_binary'])
+
+    rzams1 = rzamsf(mass1)
+    rzams2 = rzamsf(mass2)
+
+    # assume some time step in order to calculate sep
+    yeardy = 365.24
+    aursun = 214.95
+    tb = np.asarray(initial_binary_table['porb'])/yeardy
+    sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
+
+    q1 = mass1/mass2
+    q2 = mass2/mass1
+    rol1 = rl(q1)*sep
+    rol2 = rl(q2)*sep
+
+    # check for a ZAMS that starts in RFOL
+    mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
+    if mask.any(): 
+        warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
+
+    return
