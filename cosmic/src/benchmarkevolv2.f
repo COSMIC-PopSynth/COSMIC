@@ -15,7 +15,7 @@
         REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
         REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
         INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
-        INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
+        INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp,qcflagtmp
         INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 
         kstar1 = 1
@@ -64,6 +64,7 @@
         bconsttmp = -3000
         CKtmp = -1000
         windflagtmp = 3
+        qcflagtmp = 1
         dtptmp = 13700.d0
         idumtmp = 113271
         bppout = 0.d0
@@ -78,6 +79,6 @@
      & ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      & natal_kick_array,qcrit_array,betatmp,xitmp,
      & acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     & bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
-     & bppout,bcmout)
+     & bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     & dtptmp,idumtmp,bppout,bcmout)
         END PROGRAM benchmarkevolv2
