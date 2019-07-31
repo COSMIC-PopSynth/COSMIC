@@ -26,7 +26,7 @@ Table of Contents
    :maxdepth: 1
 
    install/index
-   bse/index
+   inifile/index
    examples/index
    runpop/index
    fixedpop/index
