@@ -23,9 +23,11 @@ Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    install/index
+   inifile/index
+   output_info/index
    examples/index
    runpop/index
    fixedpop/index
