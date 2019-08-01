@@ -27,6 +27,7 @@ Table of Contents
 
    install/index
    inifile/index
+   output_info/index
    examples/index
    runpop/index
    fixedpop/index
