@@ -947,9 +947,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
 * between 45 and 65 solar masses, and blow up anything between 65 and
 * 135 solar masses.  Cheap, but effective
-                     print*,"Entered stripped envelope loop"
                      if(pisn.gt.0)then
                         if(mc.ge.pisn.and.mc.lt.65.d0)then
+                           print*,"Entered stripped envelope loop"
                            mt = pisn
                            mc = pisn
                            pisn_track(kidx)=8
