@@ -692,8 +692,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         elseif(mcbagb.ge.135.d0)then
                            alphap = 1.0d0
                         endif
-
                         mt = alphap*mt
+
 * Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
                         if(mcbagb.ge.27.69d0.and.mcbagb.le.54.48d0)then
@@ -712,6 +712,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
+
 * Fit (8th order polynomial) to Table 5 in Woosley2019.
                      elseif(pisn.eq.-3)then
                         if(mcbagb.ge.29.53d0.and.mcbagb.le.60.12d0)then
@@ -1003,10 +1004,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            pisn_track(kidx)=9
                         elseif(mc.ge.135.d0)then
                            alphap = 1.0d0
-                           pisn_track(kidx)=8
                         endif
-
                         mt = alphap*mt
+
+
 * Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
                         if(mc.ge.27.69d0.and.mc.le.54.48d0)then
@@ -1024,6 +1025,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
+
 * Fit (8th order polynomial) to Table 5 in Woosley2019.
                      elseif(pisn.eq.-3)then
                         if(mc.ge.29.53d0.and.mc.le.60.12d0)then
