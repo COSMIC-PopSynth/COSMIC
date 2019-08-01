@@ -730,39 +730,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
-* From Stevenson2019 added a polynomial fit to a table in Marchant+2018.
-                     elseif(pisn.eq.-4)then
-                        if(mcbagb.gt.35.d0.and.mcbagb.le.60.d0)then
-                           poly = 7390.d0 - (1130.d0*mcbagb) +
-     &                            (75.4d0*mcbagb**2) -
-     &                            (2.69d0*mcbagb**3) +
-     &                            (5.83d-2*mcbagb**4) -
-     &                            (7.52d-4*mcbagb**5) +
-     &                            (5.36d-6*mcbagb**6) -
-     &                            (1.63d-8*mcbagb**7)
-                           mt = poly*mcbagb
-                           pisn_track(kidx)=8
-                        elseif(mcbagb.gt.60.d0.and.mcbagb.le.135.d0)then
-                           mt = 0.d0
-                           pisn_track(kidx)=9
-                        endif
-* From Stevenson2019 added same fit but with lower He core limit of
-* 30 from Woosley2019
-                     elseif(pisn.eq.-5)then
-                        if(mcbagb.gt.30.d0.and.mcbagb.le.60.d0)then
-                           poly = 7390.d0 - (1130.d0*mcbagb) + 
-     &                            (75.4d0*mcbagb**2) -
-     &                            (2.69d0*mcbagb**3) +
-     &                            (5.83d-2*mcbagb**4) -
-     &                            (7.52d-4*mcbagb**5) +
-     &                            (5.36d-6*mcbagb**6) -
-     &                            (1.63d-8*mcbagb**7)
-                           mt = poly*mcbagb
-                           pisn_track(kidx)=8
-                        elseif(mcbagb.gt.60.d0.and.mcbagb.le.135.d0)then
-                           mt = 0.d0
-                           pisn_track(kidx)=9
-                        endif
                      endif
 
 * Convert baryonic mass to gravitational mass (approx for BHs)
@@ -1071,33 +1038,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = poly*mc
                            pisn_track(kidx)=8
                         elseif(mc.gt.60.12d0.and.mc.lt.135.d0)then
-                           mt = 0.d0
-                           pisn_track(kidx)=9
-                        endif
-* From Stevenson2019 added a polynomial fit to a table in Marchant2018.
-                     elseif(pisn.eq.-4)then
-                        if(mc.gt.35.d0.and.mc.le.60.d0)then
-                           poly = 7390.d0 - (1130.d0*mc) +
-     &                            (75.4d0*mc**2) - (2.69d0*mc**3) + 
-     &                            (5.83d-2*mc**4) - (7.52d-4*mc**5) + 
-     &                            (5.36d-6*mc**6) - (1.63d-8*mc**7)
-                           mt = poly*mc
-                           pisn_track(kidx)=8
-                        elseif(mc.gt.60.d0.and.mc.le.135.d0)then
-                           mt = 0.d0
-                           pisn_track(kidx)=9
-                        endif
-* From Stevenson2019 added same fit but with lower He core limit of
-* 30 from Woosley2019
-                     elseif(pisn.eq.-5)then
-                        if(mc.gt.30.d0.and.mc.le.60.d0)then
-                           poly = 7390.d0 - (1130.d0*mc) + 
-     &                            (75.4d0*mc**2) - (2.69d0*mc**3) + 
-     &                            (5.83d-2*mc**4) - (7.52d-4*mc**5) + 
-     &                            (5.36d-6*mc**6) - (1.63d-8*mc**7)
-                           mt = poly*mc
-                           pisn_track(kidx)=8
-                        elseif(mc.gt.60.d0.and.mc.le.135.d0)then
                            mt = 0.d0
                            pisn_track(kidx)=9
                         endif
