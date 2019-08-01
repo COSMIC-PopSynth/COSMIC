@@ -636,9 +636,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * between 45 and 65 solar masses (provided the pisn flag is set at 45),
 * and blow up anything between 65 and 135 solar masses.  
 * Cheap, but effective
-                     print*,"Entered first pisn loop"
                      if(pisn.gt.0)then
                         if(mcbagb.ge.pisn.and.mcbagb.lt.65.d0)then
+                           print*,"Entered first pisn loop"
                            mt = pisn
                            mc = pisn
                            pisn_track(kidx)=8
