@@ -118,7 +118,7 @@ All values with a `_1` label refer to the primary; the BCM DataFrame also includ
 ``menv_1``         Primary envelope mass [:math:`{\mathrm{M}_\odot}`]
 ``renv_1``         Primary envelope radius [:math:`{\mathrm{R}_\odot}`]
 ``epoch_1``        Primary epoch [:math:`\rm{Myr}`]
-``ospin_1``        Primary spin 
+``ospin_1``        Primary spin [:math:`\rm{rad/yr}`] 
 ``deltam_1``       Primary mass transfer rate [:math:`{\mathrm{M}_\odot/\rm{yr}}`]
 ``RROL_1``         Primary radius divided by Roche lobe radius
 ``porb``           Orbital period [:math:`\rm{days}`]
