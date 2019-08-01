@@ -1367,19 +1367,11 @@ component.
             endif
             if(sgl)then
                evolve_type = 14.d0 + FLOAT(k)
-               if(k.eq.1)then
-                   CALL writebpp(jp,tphys,evolve_type,
-     &                          mass(1),0.d0,kstar(1),kstar(2),
-     &                          -1.d0,-1.d0,0.d0,0.d0,0.d0,bkick,
-     &                          aj(1),aj(2),tms(1),tms(2),
-     &                          massc(1),massc(2),rad(1),rad(2))
-               else
-                   CALL writebpp(jp,tphys,evolve_type,
-     &                          0.d0,mass(2),kstar(1),kstar(2),
-     &                          -1.d0,-1.d0,0.d0,0.d0,0.d0,bkick,
-     &                          aj(1),aj(2),tms(1),tms(2),
-     &                          massc(1),massc(2),rad(1),rad(2))
-               endif
+               CALL writebpp(jp,tphys,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),
+     &                      sep,tb,ecc,rrl1,rrl2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,bkick,natal_kick_array)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
