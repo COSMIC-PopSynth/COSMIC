@@ -25,7 +25,7 @@
         bpp(jp,4) = float(kstar1)
         bpp(jp,5) = float(kstar2)
         bpp(jp,6) = sep
-        bpp(jp,7) = tb
+        bpp(jp,7) = tb*365.25
         bpp(jp,8) = ecc
         bpp(jp,9) = rrl1
         bpp(jp,10) = rrl2
@@ -85,9 +85,9 @@
         bcm(ip,2) = float(kstar_1)
         bcm(ip,3) = mass0_1
         bcm(ip,4) = mass_1
-        bcm(ip,5) = log10(lumin_1)
-        bcm(ip,6) = log10(rad_1)
-        bcm(ip,7) = log10(teff_1)
+        bcm(ip,5) = lumin_1
+        bcm(ip,6) = rad_1
+        bcm(ip,7) = teff_1
         bcm(ip,8) = massc_1
         bcm(ip,9) = radc_1
         bcm(ip,10) = menv_1
@@ -99,9 +99,9 @@
         bcm(ip,16) = float(kstar_2)
         bcm(ip,17) = mass0_2
         bcm(ip,18) = mass_2
-        bcm(ip,19) = log10(lumin_2)
-        bcm(ip,20) = log10(rad_2)
-        bcm(ip,21) = log10(teff_2)
+        bcm(ip,19) = lumin_2
+        bcm(ip,20) = rad_2
+        bcm(ip,21) = teff_2
         bcm(ip,22) = massc_2
         bcm(ip,23) = radc_2
         bcm(ip,24) = menv_2
@@ -110,7 +110,7 @@
         bcm(ip,27) = ospin_2
         bcm(ip,28) = deltam_2
         bcm(ip,29) = RROL_2
-        bcm(ip,30) = porb
+        bcm(ip,30) = porb*365.25
         bcm(ip,31) = sep
         bcm(ip,32) = ecc
         bcm(ip,33) = B_0_1
