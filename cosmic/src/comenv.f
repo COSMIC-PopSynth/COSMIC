@@ -258,7 +258,7 @@
                    rrl1_bpp = R2/(RL(q1)*SEP_postCE)
                    rrl2_bpp = RC1/(RL(q2)*SEP_postCE)
 
-                   evolve_type_bpp = 16.5d0
+                   evolve_type_bpp = 16.0d0
 
                else
                    mass1_bpp = M_postCE
@@ -269,7 +269,7 @@
                    q2 = 1.d0/q1
                    rrl1_bpp = RC1/(RL(q1)*SEP_postCE)
                    rrl2_bpp = R2/(RL(q2)*SEP_postCE)
-                   evolve_type_bpp = 15.5d0
+                   evolve_type_bpp = 15.0d0
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
@@ -509,7 +509,7 @@
                    q2 = 1.d0/q1
                    rrl1_bpp = R2/(RL(q1)*SEP_postCE)
                    rrl2_bpp = RC1/(RL(q2)*SEP_postCE)
-                   evolve_type_bpp = 16.5d0
+                   evolve_type_bpp = 16.d0
 
                else
                    mass1_bpp = M_postCE
@@ -520,7 +520,7 @@
                    q2 = 1.d0/q1
                    rrl1_bpp = RC1/(RL(q1)*SEP_postCE)
                    rrl2_bpp = R2/(RL(q2)*SEP_postCE)
-                   evolve_type_bpp = 15.5d0
+                   evolve_type_bpp = 15.0d0
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
@@ -635,7 +635,7 @@
                    q2 = 1.d0/q1
                    rrl1_bpp = RC2/(RL(q1)*SEP_postCE)
                    rrl2_bpp = R1/(RL(q2)*SEP_postCE)
-                   evolve_type_bpp = 15.5d0
+                   evolve_type_bpp = 15.0d0
 *              M2, which here is mass(1), undergoes SN
 
                else
@@ -647,7 +647,7 @@
                    q2 = 1.d0/q1
                    rrl1_bpp = R1/(RL(q1)*SEP_postCE)
                    rrl2_bpp = RC2/(RL(q2)*SEP_postCE)
-                   evolve_type_bpp = 16.5d0
+                   evolve_type_bpp = 16.0d0
 *              M2, which here is mass(2), undergoes SN
                endif
                TB = (SEP_postCE/AURSUN)*
@@ -829,7 +829,7 @@
                 kstar2_bpp = KW1i
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
-                evolve_type_bpp = 16.5d0
+                evolve_type_bpp = 16.0d0
 
             else
                 mass1_bpp = MF
@@ -838,7 +838,7 @@
                 kstar2_bpp = KW2i
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
-                evolve_type_bpp = 15.5d0
+                evolve_type_bpp = 15.0d0
             endif
             TB = 0.d0
             CALL writebpp(jp,tphys,evolve_type_bpp,
