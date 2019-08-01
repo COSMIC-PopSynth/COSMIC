@@ -1,3 +1,6 @@
+.. _inifile:
+
+##############################
 Configuration files for COSMIC
 ##############################
 
@@ -140,11 +143,11 @@ Each of the below sections lists the valid options and a description of what the
     WIND FLAGS
 
 ============  ============================================================
-``windflag``  0=bse (as outlined in SSE paper),
+``windflag``  windflag=0: bse (as outlined in SSE paper),
 
-              1=StarTrack (`Belczynski et al. 2010 <http://iopscience.iop.org/article/10.1088/0004-637X/714/2/1217/meta>`_)
+              windflag=1: StarTrack (`Belczynski et al. 2010 <http://iopscience.iop.org/article/10.1088/0004-637X/714/2/1217/meta>`_)
 
-              2=Vink (`Vink et al 2001 <http://adsabs.harvard.edu/abs/2001A&amp;A...369..574V>`_)
+              windflag=2: Vink (`Vink et al 2001 <http://adsabs.harvard.edu/abs/2001A&amp;A...369..574V>`_)
 
               windflag=3: Vink+2005 (Vink plus LBV winds)
 
