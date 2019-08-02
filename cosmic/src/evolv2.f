@@ -2162,7 +2162,7 @@ component.
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
-     &               jp,tphys,switchedCE,rad,tms)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -3393,7 +3393,7 @@ component.
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
-     &               jp,tphys,switchedCE,rad,tms)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3432,7 +3432,7 @@ component.
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
-     &               jp,tphys,switchedCE,rad,tms)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3554,6 +3554,9 @@ component.
                 evolve_type = 11.0
                 binstate = 2
                 mergertype = -1
+                tb = -1.d0
+                sep = -1.d0
+                ecc = -1.d0
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
@@ -3594,7 +3597,14 @@ component.
             epoch(2) = tphys
          endif
          ecc = -1.d0
-         sep = 0.d0
+         if(binstate.eq.2)then
+*            Check if disrupted then we want sep=ecc=porb=-1
+             sep = -1.d0
+         elseif(binstate.eq.1)then
+*            check if merge then sep=0
+             tb = 0.d0
+             sep = 0.d0
+         endif
          dtm = 0.d0
          coel = .false.
          goto 4

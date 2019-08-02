@@ -4,7 +4,7 @@
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,ecsn,ecsn_mlow,formation1,formation2,
      &                  ST_tide,binstate,mergertype,natal_kick,
-     &                  jp, tphys, switchedCE, rad, tms)
+     &                  jp, tphys, switchedCE, rad, tms, evolve_type)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -50,7 +50,7 @@
       LOGICAL switchedCE
       INTEGER kstar1_bpp,kstar2_bpp
       REAL*8 mass1_bpp,mass2_bpp
-      REAL*8 rrl1_bpp,rrl2_bpp,evolve_type_bpp
+      REAL*8 rrl1_bpp,rrl2_bpp,evolve_type
       REAL*8 aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp
       REAL*8 massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp
       REAL*8 q1_bpp,q2_bpp
@@ -280,7 +280,7 @@
                    aj1_bpp = AJ2
                    aj2_bpp = AJ1
 
-                   evolve_type_bpp = 16.0d0
+                   evolve_type = 16.0d0
 
                else
                    mass1_bpp = M_postCE
@@ -294,13 +294,13 @@
                    q2_bpp = 1.d0/q1_bpp
                    rrl1_bpp = RC1/(RL(q1_bpp)*SEP_postCE)
                    rrl2_bpp = R2/(RL(q2_bpp)*SEP_postCE)
-                   evolve_type_bpp = 15.0d0
+                   evolve_type = 15.0d0
                    aj1_bpp = AJ1
                    aj2_bpp = AJ2
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
-               CALL writebpp(jp,tphys,evolve_type_bpp,
+               CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,bkick,
@@ -543,7 +543,7 @@
                    rrl2_bpp = RC1/(RL(q2_bpp)*SEP_postCE)
                    aj1_bpp = AJ2
                    aj2_bpp = AJ1
-                   evolve_type_bpp = 16.d0
+                   evolve_type = 16.d0
 
                else
                    mass1_bpp = M_postCE
@@ -559,11 +559,11 @@
                    rrl2_bpp = R2/(RL(q2_bpp)*SEP_postCE)
                    aj1_bpp = AJ1
                    aj2_bpp = AJ2
-                   evolve_type_bpp = 15.0d0
+                   evolve_type = 15.0d0
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
-               CALL writebpp(jp,tphys,evolve_type_bpp,
+               CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,bkick,
@@ -679,7 +679,7 @@
                    q2_bpp = 1.d0/q1_bpp
                    rrl1_bpp = RC2/(RL(q1_bpp)*SEP_postCE)
                    rrl2_bpp = R1/(RL(q2_bpp)*SEP_postCE)
-                   evolve_type_bpp = 15.0d0
+                   evolve_type = 15.0d0
                    aj1_bpp = AJ2
                    aj2_bpp = AJ1
 *              M2, which here is mass(1), undergoes SN
@@ -696,14 +696,14 @@
                    q2_bpp = 1.d0/q1_bpp
                    rrl1_bpp = R1/(RL(q1_bpp)*SEP_postCE)
                    rrl2_bpp = RC2/(RL(q2_bpp)*SEP_postCE)
-                   evolve_type_bpp = 16.0d0
+                   evolve_type = 16.0d0
                    aj1_bpp = AJ1
                    aj2_bpp = AJ2
 *              M2, which here is mass(2), undergoes SN
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M1)))
-               CALL writebpp(jp,tphys,evolve_type_bpp,
+               CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,bkick,
@@ -885,7 +885,7 @@
                 kstar2_bpp = KW1i
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
-                evolve_type_bpp = 16.0d0
+                evolve_type = 16.0d0
                 aj1_bpp = AJ2
                 aj2_bpp = AJ1
             else
@@ -898,12 +898,12 @@
                 kstar2_bpp = KW2i
                 rrl1_bpp = 0.d0
                 rrl2_bpp = 0.d0
-                evolve_type_bpp = 15.0d0
+                evolve_type = 15.0d0
                 aj1_bpp = AJ1
                 aj2_bpp = AJ2
             endif
             TB = 0.d0
-            CALL writebpp(jp,tphys,evolve_type_bpp,
+            CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,bkick,
