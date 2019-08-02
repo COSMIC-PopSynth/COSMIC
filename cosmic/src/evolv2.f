@@ -2163,6 +2163,15 @@ component.
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
      &               jp,tphys,switchedCE,rad,tms,evolve_type)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+             ecc = -1.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+             ecc = -1.d0
+         endif
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -3394,6 +3403,15 @@ component.
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
      &               jp,tphys,switchedCE,rad,tms,evolve_type)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+             ecc = -1.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+             ecc = -1.d0
+         endif
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3433,6 +3451,15 @@ component.
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
      &               jp,tphys,switchedCE,rad,tms,evolve_type)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+             ecc = -1.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+             ecc = -1.d0
+         endif
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
