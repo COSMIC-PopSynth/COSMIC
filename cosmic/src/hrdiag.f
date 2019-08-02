@@ -949,7 +949,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * 135 solar masses.  Cheap, but effective
                      if(pisn.gt.0)then
                         if(mc.ge.pisn.and.mc.lt.65.d0)then
-                           print*,"Entered stripped envelope loop",mass
+                           print*,"Entered stripped envelope loop",mass0
                            mt = pisn
                            mc = pisn
                            pisn_track(kidx)=8
