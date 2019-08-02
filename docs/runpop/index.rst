@@ -94,10 +94,12 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
     In [6]: print(InitialBinaries)
 
-NOTE: the length of the initial binary data set, InitialBinaries, does not match 
-the size parameter provided to InitialBinaryTable.sampler. 
-This is becuase the sampler begins by sampling a set of stellar masses of size=size, then assigns each of the stellar masses to be either single or in a binary system following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
-Since we are interested in binaries, we only retain the binary systems. However, we also keep track of the total mass sampled so that we can scale our results to a full Milky Way population.
+.. note::
+
+    NOTE: the length of the initial binary data set, InitialBinaries, does not match 
+    the size parameter provided to InitialBinaryTable.sampler. 
+    This is becuase the sampler begins by sampling a set of stellar masses of size=size, then assigns each of the stellar masses to be either single or in a binary system following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
+    Since we are interested in binaries, we only retain the binary systems. However, we also keep track of the total mass sampled so that we can scale our results to a full Milky Way population.
 
 ********
 multidim
@@ -130,7 +132,9 @@ The multidimensional sample is generated as follows:
 
     In [6]: print(InitialBinaries)
 
-NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
+.. note::
+
+    NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
 
 *************************************
 Evolving an initial binary population

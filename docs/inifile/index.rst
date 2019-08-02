@@ -364,18 +364,26 @@ Each of the below sections lists the valid options and a description of what the
                       StarTrack=1.85
 ``sigmadiv``          sigmadiv sets the modified ECSN kick
                       negative values sets the ECSN sigma value, positive values divide sigma above by sigmadiv
+
                       **default=-20.0**
 ``aic``               aic=1 turns on low kicks for accretion induced collapse works even if ecsn=0
+
                       **default=1**
 ``ussn``              ussn=1 uses reduced kicks (drawn from the sigmadiv distritbuion) for ultra-stripped supernovae
                       these happen whenever a He-star undergoes a CE with a compact companion
+
                       **default=0**
 ``pisn``              pisn>0 allows for (pulsational) pair instability supernovae
                       and sets the maximum mass of the remnant
 
                       pisn=-1 uses the formulae from Spera+Mapelli 2017 for the mass
 
+                      pisn=-2 uses a polynomial fit to Table 1 Marchant 2018
+
+                      pisn=-3 uses a polynomial fit to Table 5 in Woosley 2019
+
                       pisn=0 turns off (pulsational) pair instability supernovae
+
                       **default=45.0**
 ``bhsigmafrac``       bhsigmafrac sets the fractional modification used for scaling down the sigma for BHs
                       this works in addition to whatever is chosen for bhflag, and is applied to the sigma beforehand these prescriptions are implemented
