@@ -80,6 +80,7 @@
 *
       mch = 1.44d0 !set here owing to AIC ECSN model.
 *
+      print*,mass
       mass0 = mass
 C      if(mass0.gt.100.d0) mass = 100.d0
       mt0 = mt
@@ -949,7 +950,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * 135 solar masses.  Cheap, but effective
                      if(pisn.gt.0)then
                         if(mc.ge.pisn.and.mc.lt.65.d0)then
-                           print*,"Entered stripped envelope loop",mt0
+                           print*,"Entered stripped envelope loop"
                            mt = pisn
                            mc = pisn
                            pisn_track(kidx)=8
