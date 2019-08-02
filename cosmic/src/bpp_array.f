@@ -17,6 +17,8 @@
         REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
         INTEGER jp,jj
         INTEGER kstar1,kstar2
+        REAL*8 yeardy
+        PARAMETER(yeardy=365.24d0)
 
         jp = MIN(80,jp + 1)
         bpp(jp,1) = tphys
@@ -25,7 +27,7 @@
         bpp(jp,4) = float(kstar1)
         bpp(jp,5) = float(kstar2)
         bpp(jp,6) = sep
-        bpp(jp,7) = tb*365.25
+        bpp(jp,7) = tb*yeardy
         bpp(jp,8) = ecc
         bpp(jp,9) = rrl1
         bpp(jp,10) = rrl2
@@ -79,6 +81,8 @@
         REAL*8 SNkick_1,SNkick_2,Vsys_final,SNtheta_final
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
+        REAL*8 yeardy
+        PARAMETER(yeardy=365.24d0)
 
         ip = ip + 1
         bcm(ip,1) = tphys
@@ -110,7 +114,7 @@
         bcm(ip,27) = ospin_2
         bcm(ip,28) = deltam_2
         bcm(ip,29) = RROL_2
-        bcm(ip,30) = porb*365.25
+        bcm(ip,30) = porb*yeardy
         bcm(ip,31) = sep
         bcm(ip,32) = ecc
         bcm(ip,33) = B_0_1
