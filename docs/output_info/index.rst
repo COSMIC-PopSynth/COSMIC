@@ -4,15 +4,12 @@
 Describing the output of COSMIC/BSE: Columns names/Values/Units
 ###############################################################
 
-What do all the stupid numbers mean?
-------------------------------------
+Evolutionary states of stars/binaries
+-------------------------------------
 
-Have you ever asked yourself "where are all the black holes"? 
-Well, it's as easy as finding a system with kstar=14. 
-If you want to learn about all types of stars in the Cosmos, you can
-use the easily-accessible keys in the tables below. Shibby. 
+Since COSMIC uses BSE as it's core binary evolution algorithm, the output of COSMIC follows most of the same conventions as BSE. The kstar values and evolution stages are nearly identical to their BSE counterparts. 
 
-The kstar specifies the evolutionary state of the star:
+The kstar value specifies the evolutionary state of the star:
 
 .. _kstar-table:
 
@@ -21,8 +18,8 @@ The kstar specifies the evolutionary state of the star:
     =====   ==================
     kstar   evolutionary state
     =====   ==================
-    0       Main Sequence (MS), < 0.7[:math:`{\mathrm{M}_\odot}`]
-    1       MS, > 0.7[:math:`{\mathrm{M}_\odot}`]
+    0       Main Sequence (MS), < 0.7 :math:`{\mathrm{M}_\odot}`
+    1       MS, > 0.7 :math:`{\mathrm{M}_\odot}`
     2       Hertzsprung Gap
     3       First Giant Branch
     4       Core Helium Burning
@@ -39,9 +36,7 @@ The kstar specifies the evolutionary state of the star:
     15      Massless Remnant
     =====   ==================
 
-In addition, you may be intersted in the properties of the binary at
-key moments in its evolution. These are also tracked by integer values
-whose real meaning relates as follows:
+The evolutionary changes of the binary are logged in the evol_type column, which is filled with integer values. The key for each integer is listed below:
 
 .. _evolve-type-table:
 
@@ -72,34 +67,33 @@ whose real meaning relates as follows:
 BPP DataFrame
 -------------
 
-This `pandas.DataFrame` tracks certain astrophysical information about your
-binary at key moments in its evolution. 
+This `pandas.DataFrame` tracks a selection of binary parameters at key evolutionary changes. 
 Entries are added with changes in the :ref:`evolve-type-table`. 
 
 =============  =====================================================
-``tphys``      Evolution time [Myr]
+``tphys``      Evolution time [:math:`{\rm{Myr}}`]
 ``mass_1``     Primary mass [:math:`{\mathrm{M}_\odot}`]
 ``mass_2``     Secondary mass [:math:`{\mathrm{M}_\odot}`]
 ``kstar_1``    Evolutionary state of primary (see :ref:`kstar-table`)
 ``kstar_2``    Evolutionary state of secondary (see :ref:`kstar-table`)
 ``sep``        Semimajor axis [:math:`{\mathrm{R}_\odot}`]
-``porb``       Orbital period [days]
+``porb``       Orbital period [:matH:`{\rm{days}}`]
 ``ecc``        Eccentricity
-``RROL_1``     Stellar radius divided by Roche lobe radius for primary
-``RROL_2``     Stellar radius divided by Roche lobe radius for secondary
+``RROL_1``     Primary radius divided by Roche lobe radius
+``RROL_2``     Secondary radius divided by Roche lobe radius
 ``evol_type``  Key moment in evolution (see :ref:`evolve-type-table`)
-``Vsys_1``     Change in systemic velocity due to first SN [km/s]
-``Vsys_2``     Change in systemic velocity due to second SN [km/s]
-``SNkick``     Magnitude of supernova natal kick [km/s]
-``SNtheta``    Angular change in orbital plane due to supernova [degrees]
-``aj_1``       Effective age of the primary [Myr]
-``aj_2``       Effective age of the secondary [Myr]
-``tms_1``      Main sequence lifetime [Myr]
-``tms_2``      Main sequence lifetime [Myr]
-``massc_1``    Core mass of primary [:math:`{\mathrm{M}_\odot}`]
-``massc_2``    Core mass of secondary [:math:`{\mathrm{M}_\odot}`]
-``rad_1``      Stellar radius of primary [:math:`{\mathrm{R}_\odot}`]
-``rad_2``      Stellar radius of secondary [:math:`{\mathrm{R}_\odot}`]
+``Vsys_1``     Change in systemic velocity due to first SN [:math:`{\rm{km/s}}`]
+``Vsys_2``     Change in systemic velocity due to second SN [:math:`{\rm{km/s}}`]
+``SNkick``     Magnitude of supernova natal kick [:math:`{\rm{km/s}}`]
+``SNtheta``    Angular change in orbital plane due to supernova [:math:`{\rm{degrees}}`]
+``aj_1``       Effective age of the primary [:math:`{\rm{Myr}}`]
+``aj_2``       Effective age of the secondary [:math:`{\rm{Myr}}`]
+``tms_1``      Primary main sequence lifetime [:math:`{\rm{Myr}}`]
+``tms_2``      Secondary main sequence lifetime [:math:`{\rm{Myr}}`]
+``massc_1``    Primary core mass [:math:`{\mathrm{M}_\odot}`]
+``massc_2``    Secondary core mass [:math:`{\mathrm{M}_\odot}`]
+``rad_1``      Primary radius [:math:`{\mathrm{R}_\odot}`]
+``rad_2``      Secondary radius [:math:`{\mathrm{R}_\odot}`]
 ``bin_num``    Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames
 =============  =====================================================
 
@@ -107,52 +101,35 @@ Entries are added with changes in the :ref:`evolve-type-table`.
 
 BCM DataFrame
 -------------
-This `pandas.DataFrame` provides detailed parameters of the binary at user-specified timesteps in the evolution.
-By default, only the first and last timestep are output in the BCM DataFrame. 
+This `pandas.DataFrame` provides several binary parameters at user-specified timesteps in the evolution.
+By default, COSMIC saves only the first and last timestep in the BCM DataFrame. 
+All values with a `_1` label refer to the primary; the BCM DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
 
 =================  =====================================================
-``tphys``          Evolution time [Myr]
+``tphys``          Evolution time [:math:`\rm{Myr}`]
 ``kstar_1``        Evolutionary state of primary (see :ref:`kstar-table`)
-``mass0_1``        ??
-``mass_1``         ??
-``lumin_1``        ??
-``rad_1``          ??
-``teff_1``         ??
-``massc_1``        ??
-``radc_1``         ??
-``menv_1``         ??
-``renv_1``         ??
-``epoch_1``        ??
-``ospin_1``        ??
-``deltam_1``       ??
-``RROL_1``         ??
-``kstar_2``        Evolutionary state of secondary (see :ref:`kstar-table`)
-``mass0_2``        ??
-``mass_2``         ??
-``lumin_2``        ??
-``rad_2``          ??
-``teff_2``         ??
-``massc_2``        ??
-``radc_2``         ??
-``menv_2``         ??
-``renv_2``         ??
-``epoch_2``        ??
-``ospin_2``        ??
-``deltam_2``       ??
-``RROL_2``         ??
-``porb``           ??
-``sep``            ??
-``ecc``            ??
-``B_0_1``          ??
-``B_0_2``          ??
-``SNkick_1``       ??
-``SNkick_2``       ??
-``Vsys_final``     ??
-``SNtheta_final``  ??
-``SN_1``           ??
-``SN_2``           ??
-``bin_state``      ??
-``merger_type``    ??
-``bin_num``        An index that allows the user to track infomation about this
-                   system across the initial conditions, BCM and BPP DataFrames
+``mass0_1``        Previous evolutionary stage primary mass [:math:`{\mathrm{M}_\odot}`]
+``mass_1``         Primary mass [:math:`{\mathrm{M}_\odot}`]
+``lumin_1``        Primary luminosity [:math:`{\mathrm{L}_\odot}`]
+``rad_1``          Primary radius [:math:`{\mathrm{R}_\odot}`]
+``teff_1``         Primary effective temperature [:math:`{\rm{K}}`]
+``massc_1``        Primary core mass [:math:`{\mathrm{M}_\odot}`]
+``radc_1``         Primary core radius [:math:`{\mathrm{R}_\odot}`]
+``menv_1``         Primary envelope mass [:math:`{\mathrm{M}_\odot}`]
+``renv_1``         Primary envelope radius [:math:`{\mathrm{R}_\odot}`]
+``epoch_1``        Primary epoch [:math:`\rm{Myr}`]
+``ospin_1``        Primary spin [:math:`\rm{rad/yr}`] 
+``deltam_1``       Primary mass transfer rate [:math:`{\mathrm{M}_\odot/\rm{yr}}`]
+``RROL_1``         Primary radius divided by Roche lobe radius
+``porb``           Orbital period [:math:`\rm{days}`]
+``sep``            Semimajor axis [:math:`\mathrm{R}_{\odot}`]
+``ecc``            Eccentricity
+``B_0_1``          Initial neutron star magnetic field [:math:`{\rm{G}}`]
+``SNkick_1``       Magnitude of first natal kick [:math:`{\rm{km/s}}`]
+``Vsys_final``     Final systemic velocity magnitude [:math:`{\rm{km/s}}`]
+``SNtheta_final``  Final systemic velocity angle [:math:`{\rm{degrees}}`]
+``SN_1``           Supernova type: 4: Fe Core-collapse SN, 5: Electron capture SN, 6: Accretion induced collapse SN, 7: Merger induced collapse, 8: Pulsational-pair instability, 9: Pair instability SN
+``bin_state``      State of the binary: 0 [binary], 1 [merged], 2 [disrupted]
+``merger_type``    String of the kstar's in the merger, '-001' if not merged
+``bin_num``        Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames 
 =================  =====================================================
