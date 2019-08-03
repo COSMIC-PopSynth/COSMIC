@@ -3571,7 +3571,7 @@ component.
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
-     &                        0.d0,0.d0,0.d0,ngtv,bkick,
+     &                        0.d0,-1.d0,0.d0,ngtv,bkick,
      &                        aj(1),aj(2),tms(1),tms(2),
      &                        massc(1),massc(2),rad(1),rad(2))
             elseif(ecc.gt.1.d0)then
@@ -3658,7 +3658,7 @@ component.
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
-     &                      0.d0,0.d0,0.d0,ngtv,bkick,
+     &                      0.d0,-1.d0,0.d0,ngtv,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
