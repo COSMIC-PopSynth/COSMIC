@@ -1,10 +1,12 @@
 ***
-      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
+      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z,xh)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       integer kw,testflag
-      real*8 lum,r,mt,mc,rl,z,teff
+      real*8 lum,r,mt,mc,rl,z,teff,xh,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
+      real*8 eddlimalpha
+      external eddlimalpha
       parameter(lum0=7.0d+04,kap=-0.5d0)
 
       character*30 label(16)
@@ -169,17 +171,23 @@
             dms = MAX(dms,dml)
          endif
 * Apply Vink, de Koter & lamers (2001) OB star winds.
-* First check if hot massive H-rich O/B star in appropriate temperature ranges.
+* First, calculate the alpha metallicty factor
+         if(eddlimflag.eq.0)then
+            alpha = 0.85d0
+         elseif(eddlimflag.eq.1)then
+            alpha = eddlimalpha(mt,lum,xh)
+         endif
+* Next check if hot massive H-rich O/B star in appropriate temperature ranges.
          if(teff.ge.12500.and.teff.le.25000)then
             dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
      &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
-     &            0.85d0*LOG10(z/0.02d0) + 1.07d0*LOG10(teff/2.0d+04)
+     &            alpha*LOG10(z/0.02d0) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
             testflag = 2
          elseif(teff.gt.25000.and.teff.le.50000)then
             dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
      &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
-     &            0.85d0*LOG10(z/0.02d0) +0.933d0*LOG10(teff/4.0d+04) -
+     &            alpha*LOG10(z/0.02d0) +0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
             dms = 10.d0**dms
             testflag = 2
@@ -197,7 +205,7 @@
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) reduced WR winds with
 * Vink & de Koter (2005) metallicity dependence.
-            dms = 1.0d-13*(lum**1.5d0)*((z/0.02d0)**0.86d0)
+            dms = 1.0d-13*(lum**1.5d0)*((z/0.02d0)**alpha)
             testflag = 4
          endif
 *
