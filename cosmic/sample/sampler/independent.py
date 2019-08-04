@@ -37,22 +37,6 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-G = 6.67384*math.pow(10, -11.0)
-c = 2.99792458*math.pow(10, 8.0)
-parsec = 3.08567758*math.pow(10, 16)
-Rsun = 6.955*math.pow(10, 8)
-Msun = 1.9891*math.pow(10,30)
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569*10**7.0
-Tobs = 3.15569*10**7.0
-geo_mass = G/c**2
-
-
 def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
     """Something
 
@@ -320,12 +304,14 @@ class Sample(object):
 
         # convert out of log space
         a_0 = np.exp(a_0)
-        # convert to meters
-        a_0 = a_0*Rsun
+        # convert to au
+        rsun_au = 0.00465047
+        a_0 = a_0*rsun_au
 
-        # convert to orbital period in seconds
-        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5
-        return porb_sec/sec_in_day
+        # convert to orbital period in years
+        yr_day = 365.24
+        porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
+        return porb_yr*yr_day
 
 
     def sample_ecc(self, ecc_model='thermal', size=None):

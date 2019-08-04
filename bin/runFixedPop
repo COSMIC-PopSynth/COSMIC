@@ -117,23 +117,6 @@ if __name__ == '__main__':
     ###########################################################################
     start_time = time.time()
 
-    # CONSTANTS
-    ###########################################################################
-    G = 6.67384*math.pow(10, -11.0)
-    c = 2.99792458*math.pow(10, 8.0)
-    parsec = 3.08567758*math.pow(10, 16)
-    Rsun = 6.955*math.pow(10, 8)
-    Msun = 1.9891*math.pow(10,30)
-    day = 86400.0
-    rsun_in_au = 215.0954
-    day_in_year = 365.242
-    sec_in_day = 86400.0
-    sec_in_hour = 3600.0
-    hrs_in_day = 24.0
-    sec_in_year = 3.15569*10**7.0
-    Tobs = 3.15569*10**7.0
-    geo_mass = G/c**2
-
     # ---- Create configuration-file-parser object and read parameters file.
     cp = ConfigParser()
     cp.optionxform = str
@@ -256,12 +239,6 @@ if __name__ == '__main__':
             dtp = IBT['tphysf'].values
 
         bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
-
-        # Convert the orbital period from years to log seconds
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", message="divide by zero encountered in log10")
-            bcm['porb'] = np.log10(bcm['porb']*sec_in_year)
-            bpp['porb'] = np.log10(bpp['porb']*sec_in_year)
 
         met = []
         for num in bcm.bin_num.unique():
