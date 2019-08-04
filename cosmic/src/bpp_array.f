@@ -27,7 +27,12 @@
         bpp(jp,4) = float(kstar1)
         bpp(jp,5) = float(kstar2)
         bpp(jp,6) = sep
-        bpp(jp,7) = tb*yeardy
+        if(tb.le.0.d0)then
+* system was disrupted and tb=-1 and should stay that way
+            bpp(jp,7) = tb
+        else
+            bpp(jp,7) = tb*yeardy
+        endif
         bpp(jp,8) = ecc
         bpp(jp,9) = rrl1
         bpp(jp,10) = rrl2
@@ -114,7 +119,12 @@
         bcm(ip,27) = ospin_2
         bcm(ip,28) = deltam_2
         bcm(ip,29) = RROL_2
-        bcm(ip,30) = porb*yeardy
+        if(porb.le.0.d0)then
+* system was disrupted and porb=-1 and should stay that way
+            bcm(ip,30) = porb
+        else
+            bcm(ip,30) = porb*yeardy
+        endif
         bcm(ip,31) = sep
         bcm(ip,32) = ecc
         bcm(ip,33) = B_0_1
