@@ -17,6 +17,8 @@
         REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
         INTEGER jp,jj
         INTEGER kstar1,kstar2
+        REAL*8 yeardy
+        PARAMETER(yeardy=365.24d0)
 
         jp = MIN(80,jp + 1)
         bpp(jp,1) = tphys
@@ -25,7 +27,12 @@
         bpp(jp,4) = float(kstar1)
         bpp(jp,5) = float(kstar2)
         bpp(jp,6) = sep
-        bpp(jp,7) = tb
+        if(tb.le.0.d0)then
+* system was disrupted and tb=-1 and should stay that way
+            bpp(jp,7) = tb
+        else
+            bpp(jp,7) = tb*yeardy
+        endif
         bpp(jp,8) = ecc
         bpp(jp,9) = rrl1
         bpp(jp,10) = rrl2
@@ -79,15 +86,17 @@
         REAL*8 SNkick_1,SNkick_2,Vsys_final,SNtheta_final
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
+        REAL*8 yeardy
+        PARAMETER(yeardy=365.24d0)
 
         ip = ip + 1
         bcm(ip,1) = tphys
         bcm(ip,2) = float(kstar_1)
         bcm(ip,3) = mass0_1
         bcm(ip,4) = mass_1
-        bcm(ip,5) = log10(lumin_1)
-        bcm(ip,6) = log10(rad_1)
-        bcm(ip,7) = log10(teff_1)
+        bcm(ip,5) = lumin_1
+        bcm(ip,6) = rad_1
+        bcm(ip,7) = teff_1
         bcm(ip,8) = massc_1
         bcm(ip,9) = radc_1
         bcm(ip,10) = menv_1
@@ -99,9 +108,9 @@
         bcm(ip,16) = float(kstar_2)
         bcm(ip,17) = mass0_2
         bcm(ip,18) = mass_2
-        bcm(ip,19) = log10(lumin_2)
-        bcm(ip,20) = log10(rad_2)
-        bcm(ip,21) = log10(teff_2)
+        bcm(ip,19) = lumin_2
+        bcm(ip,20) = rad_2
+        bcm(ip,21) = teff_2
         bcm(ip,22) = massc_2
         bcm(ip,23) = radc_2
         bcm(ip,24) = menv_2
@@ -110,7 +119,12 @@
         bcm(ip,27) = ospin_2
         bcm(ip,28) = deltam_2
         bcm(ip,29) = RROL_2
-        bcm(ip,30) = porb
+        if(porb.le.0.d0)then
+* system was disrupted and porb=-1 and should stay that way
+            bcm(ip,30) = porb
+        else
+            bcm(ip,30) = porb*yeardy
+        endif
         bcm(ip,31) = sep
         bcm(ip,32) = ecc
         bcm(ip,33) = B_0_1
