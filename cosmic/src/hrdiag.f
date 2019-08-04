@@ -43,7 +43,7 @@
       real*8 rx,ry,delr,rzams,rtms,gammahrdiag,rmin,taumin,rg
       parameter(taumin=5.0d-08)
       real*8 mcmax,mcx,mcy,mcbagb,lambdahrdiag
-      real*8 frac,kappa,sappa,alphap
+      real*8 frac,kappa,sappa,alphap,poly
       real*8 am,xx,fac,rdgen,mew,lum0,kap,zeta,ahe,aco
       parameter(lum0=7.0d+04,kap=-0.5d0,ahe=4.d0,aco=16.d0)
 *
@@ -633,8 +633,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * CLR - (Pulsational) Pair-Instability Supernova
 
 * Belczynski+2016 prescription: just shrink any BH with a He core mass
-* between 45 and 65 solar masses, and blow up anything between 65 and
-* 135 solar masses.  Cheap, but effective
+* between 45 and 65 solar masses (provided the pisn flag is set at 45),
+* and blow up anything between 65 and 135 solar masses.  
+* Cheap, but effective
                      if(pisn.gt.0)then
                         if(mcbagb.ge.pisn.and.mcbagb.lt.65.d0)then
                            mt = pisn
@@ -655,42 +656,80 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(pisn.eq.-1)then
                         frac = mcbagb/mt
                         kappa = 0.67d0*frac + 0.1d0
-                        sappa = 0.5228d0*frac - 0.52974
+                        sappa = 0.5226d0*frac - 0.52974d0
                         if(mcbagb.le.32.d0)then
                            alphap = 1.0d0
-                           pisn_track(kidx)=8
                         elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = 0.2d0*(kappa-1.d0)*mcbagb +
-     &                             0.2d0*(37.d0 - 32.d0*kappa)
+     &                              0.2d0*(37.d0 - 32.d0*kappa)
                            pisn_track(kidx)=8
-                        elseif(mcbagb.le.60d0.and.frac.lt.0.9d0)then
+                        elseif(frac.lt.0.9d0.and.mcbagb.le.60.d0)then
                            alphap = kappa
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.le.37d0)then
+                        elseif(frac.lt.0.9d0.and.mcbagb.lt.64.d0)then
+                           alphap = kappa*(-0.25d0)*mcbagb + kappa*16.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = sappa*(mcbagb - 32.d0) + 1.d0
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
-     &                         sappa.lt.0.82916)then
+                        elseif(frac.ge.0.9d0.and.mcbagb.le.56.d0.and.
+     &                         sappa.lt.-0.034168d0)then
                            alphap = 5.d0*sappa + 1.d0
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.le.56.and.
-     &                         sappa.ge.0.82916)then
-                           alphap = (-0.1381*frac + 0.1309)*
-     &                              (mcbagb - 56.d0) + 0.82916
+                        elseif(frac.ge.0.9d0.and.mcbagb.le.56.d0.and.
+     &                         sappa.ge.-0.034168d0)then
+                           alphap = (-0.1381d0*frac + 0.1309d0)*
+     &                              (mcbagb - 56.d0) + 0.82916d0
                            pisn_track(kidx)=8
-                        elseif(frac.ge.0.9.and.mcbagb.gt.56.and.
-     &                         mcbagb.lt.64)then
-                           alphap = -0.103645*mcbagb + 6.63328
+                        elseif(frac.ge.0.9d0.and.mcbagb.lt.64.d0)then
+                           alphap = -0.103645d0*mcbagb + 6.63328d0
                            pisn_track(kidx)=8
-                        elseif(mcbagb.ge.64.and.mcbagb.lt.135)then
+                        elseif(mcbagb.ge.64.d0.and.mcbagb.lt.135.d0)then
                            alphap = 0.d0
                            kw = 15
                            pisn_track(kidx)=9
-                        elseif(mcbagb.ge.135)then
+                        elseif(mcbagb.ge.135.d0)then
                            alphap = 1.0d0
                         endif
+                        mt = alphap*mt
 
-                     mt = alphap*mt
+* Fit (8th order polynomial) to Table 1 in Marchant+2018.
+                     elseif(pisn.eq.-2)then
+                        if(mcbagb.ge.27.69d0.and.mcbagb.le.54.48d0)then
+                           poly = -430343.4d0 + (90279.6d0*mcbagb) -
+     &                            (8225.8d0*mcbagb**2) +
+     &                            (425.05d0*mcbagb**3) -
+     &                            (13.629d0*mcbagb**4) +
+     &                            (2.7768d-1*mcbagb**5) -
+     &                            (3.511d-3*mcbagb**6) +
+     &                            (2.5192d-5*mcbagb**7) -
+     &                            (7.8542d-8*mcbagb**8)
+                           mt = poly*mcbagb
+                           pisn_track(kidx)=8
+                        elseif(mcbagb.gt.54.48d0.and.
+     &                         mcbagb.lt.113.29d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+
+* Fit (8th order polynomial) to Table 5 in Woosley2019.
+                     elseif(pisn.eq.-3)then
+                        if(mcbagb.ge.29.53d0.and.mcbagb.le.60.12d0)then
+                           poly = -314610.9d0 + (61369.96d0*mcbagb) -
+     &                            (5192.5d0*mcbagb**2) +
+     &                            (248.91d0*mcbagb**3) -
+     &                            (7.3949d0*mcbagb**4) +
+     &                            (1.3944d-1*mcbagb**5) -
+     &                            (1.6301d-3*mcbagb**6) +
+     &                            (1.0805d-5*mcbagb**7) -
+     &                            (3.1102d-8*mcbagb**8)
+                           mt = poly*mcbagb
+                           pisn_track(kidx)=8
+                        elseif(mcbagb.gt.60.12d0.and.
+     &                         mcbagb.lt.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
                      endif
 
 * Convert baryonic mass to gravitational mass (approx for BHs)
@@ -918,7 +957,90 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            kw = 15
                            pisn_track(kidx)=9
                         endif
-* Note that the Sprea+Mapelli2017 prescription is not for nake He stars
+* The Spera+Mapelli2017 prescription is a tad more sophisticated:
+* complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
+* were done using the ZAMS mass/core mass/remnant mass relationships for
+* SEVN, not BSE.  In other words, I woud be careful using this (and in
+* practice, it doesn't vary that much from Belczynski's prescription,
+* since the He core masses are the same in both)
+* Mario said this prescription works here as well.
+                     elseif(pisn.eq.-1)then
+                        frac = mc/mt
+                        kappa = 0.67d0*frac + 0.1d0
+                        sappa = 0.5226d0*frac - 0.52974d0
+                        if(mc.le.32.d0)then
+                           alphap = 1.0d0
+                           pisn_track(kidx)=8
+                        elseif(frac.lt.0.9d0.and.mc.le.37.d0)then
+                           alphap = 0.2d0*(kappa-1.d0)*mc +
+     &                              0.2d0*(37.d0 - 32.d0*kappa)
+                           pisn_track(kidx)=8
+                        elseif(frac.lt.0.9d0.and.mc.le.60.d0)then
+                           alphap = kappa
+                           pisn_track(kidx)=8
+                        elseif(frac.lt.0.9d0.and.mc.lt.64.d0)then
+                           alphap = kappa*(-0.25d0)*mc+ kappa*16.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.le.37.d0)then
+                           alphap = sappa*(mc- 32.d0) + 1.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.le.56.d0.and.
+     &                         sappa.lt.-0.034168d0)then
+                           alphap = 5.d0*sappa + 1.d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.le.56.d0.and.
+     &                         sappa.ge.-0.034168d0)then
+                           alphap = (-0.1381d0*frac + 0.1309d0)*
+     &                              (mc- 56.d0) + 0.82916d0
+                           pisn_track(kidx)=8
+                        elseif(frac.ge.0.9d0.and.mc.lt.64.d0)then
+                           alphap = -0.103645d0*mc+ 6.63328d0
+                           pisn_track(kidx)=8
+                        elseif(mc.ge.64.d0.and.mc.lt.135.d0)then
+                           alphap = 0.d0
+                           kw = 15
+                           pisn_track(kidx)=9
+                        elseif(mc.ge.135.d0)then
+                           alphap = 1.0d0
+                        endif
+                        mt = alphap*mt
+
+
+* Fit (8th order polynomial) to Table 1 in Marchant+2018.
+                     elseif(pisn.eq.-2)then
+                        if(mc.ge.27.69d0.and.mc.le.54.48d0)then
+                           poly = -430343.4d0 + (90279.6d0*mc) -
+     &                            (8225.8d0*mc**2) +
+     &                            (425.05d0*mc**3) -
+     &                            (13.629d0*mc**4) +
+     &                            (2.7768d-1*mc**5) -
+     &                            (3.511d-3*mc**6) +
+     &                            (2.5192d-5*mc**7) -
+     &                            (7.8542d-8*mc**8)
+                           mt = poly*mc
+                           pisn_track(kidx)=8
+                        elseif(mc.gt.54.48d0.and.mc.lt.113.29d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
+
+* Fit (8th order polynomial) to Table 5 in Woosley2019.
+                     elseif(pisn.eq.-3)then
+                        if(mc.ge.29.53d0.and.mc.le.60.12d0)then
+                           poly = -314610.9d0 + (61369.96d0*mc) -
+     &                            (5192.5d0*mc**2) +
+     &                            (248.91d0*mc**3) -
+     &                            (7.3949d0*mc**4) +
+     &                            (1.3944d-1*mc**5) -
+     &                            (1.6301d-3*mc**6) +
+     &                            (1.0805d-5*mc**7) -
+     &                            (3.1102d-8*mc**8)
+                           mt = poly*mc
+                           pisn_track(kidx)=8
+                        elseif(mc.gt.60.12d0.and.mc.lt.135.d0)then
+                           mt = 0.d0
+                           pisn_track(kidx)=9
+                        endif
                      endif
 
 
