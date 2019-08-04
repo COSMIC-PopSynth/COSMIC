@@ -225,9 +225,9 @@
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
+      LOGICAL switchedCE
       INTEGER qcflagtmp
       INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
-
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
       ceflag = ceflagtmp
@@ -1366,6 +1366,12 @@ component.
                endif
             endif
             if(sgl)then
+               evolve_type = 14.d0 + FLOAT(k)
+               CALL writebpp(jp,tphys,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),
+     &                      sep,tb,ecc,rrl1,rrl2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,bkick,natal_kick_array)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -1384,6 +1390,13 @@ component.
                endif
 
             else
+               evolve_type = 14.d0 + FLOAT(k)
+               CALL writebpp(jp,tphys,evolve_type,
+     &                       mass(1),mass(2),kstar(1),kstar(2),
+     &                       sep,tb,ecc,rrl1,rrl2,bkick,
+     &                       aj(1),aj(2),tms(1),tms(2),
+     &                       massc(1),massc(2),rad(1),rad(2))
+            
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                   rad(k-3),fallback,bkick,natal_kick_array)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -2130,12 +2143,35 @@ component.
          m2ce = mass(j2)
          kcomp1 = kstar(j1) !PDK
          kcomp2 = kstar(j2)
+         if(j1.eq.2)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
+
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               binstate,mergertype,natal_kick_array,
+     &               jp,tphys,switchedCE,rad,tms,evolve_type)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+             ecc = -1.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+             ecc = -1.d0
+         endif
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -2163,7 +2199,7 @@ component.
              theta_bcm=bkick(20)
          endif
 *
-         evolve_type = 7.0
+         evolve_type = 8.0
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
          if(kstar(1).eq.15) mass1_bpp = mass0(1)
@@ -2476,27 +2512,6 @@ component.
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
                   CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
-*
-                  evolve_type = 8.0
-                  if(j1.eq.2)then
-                      kstar1_bpp = kst
-                      kstar2_bpp = kstar(j1)
-                      mass1_bpp = mt2
-                      mass2_bpp = mass(j1)
-                  else
-                      kstar1_bpp = kstar(j1)
-                      kstar2_bpp = kst
-                      mass1_bpp = mass(j1)
-                      mass2_bpp = mt2
-                  endif
-                  rrl1 = rad(1)/rol(1)
-                  rrl2 = rad(2)/rol(2)
-                  CALL writebpp(jp,tphys,evolve_type,
-     &                          mass1_bpp,mass2_bpp,
-     &                          kstar1_bpp,kstar2_bpp,sep,
-     &                          tb,ecc,rrl1,rrl2,bkick,
-     &                          aj(1),aj(2),tms(1),tms(2),
-     &                          massc(1),massc(2),rad(1),rad(2))
                endif
             endif
          elseif(kstar(j1).le.6.and.
@@ -2536,26 +2551,6 @@ component.
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  evolve_type = 8.0
-                  if(j1.eq.2)then
-                      kstar1_bpp = kst
-                      kstar2_bpp = kstar(j1)
-                      mass1_bpp = mt2
-                      mass2_bpp = mass(j1)
-                  else
-                      kstar1_bpp = kstar(j1)
-                      kstar2_bpp = kst
-                      mass1_bpp = mass(j1)
-                      mass2_bpp = mt2
-                  endif
-                  rrl1 = rad(1)/rol(1)
-                  rrl2 = rad(2)/rol(2)
-                  CALL writebpp(jp,tphys,evolve_type,
-     &                          mass1_bpp,mass2_bpp,
-     &                          kstar1_bpp,kstar2_bpp,sep,
-     &                          tb,ecc,rrl1,rrl2,bkick,
-     &                          aj(1),aj(2),tms(1),tms(2),
-     &                          massc(1),massc(2),rad(1),rad(2))
                   DO jj = 13,20
                      bkick(jj) = 0.0
                   ENDDO
@@ -3149,6 +3144,13 @@ component.
                   formation(k) = 6
                endif
             endif
+
+            evolve_type = 14.d0 + FLOAT(k)
+            CALL writebpp(jp,tphys,evolve_type,
+     &                    mass(1),mass(2),kstar(1),kstar(2),
+     &                    sep,tb,ecc,rrl1,rrl2,bkick,
+     &                    aj(1),aj(2),tms(1),tms(2),
+     &                    massc(1),massc(2),rad(1),rad(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                rad(3-k),fallback,bkick,natal_kick_array)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -3382,12 +3384,34 @@ component.
      & m1ce,m2ce
 *
       if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+         if(j1.eq.2)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               binstate,mergertype,natal_kick_array,
+     &               jp,tphys,switchedCE,rad,tms,evolve_type)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+             ecc = -1.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+             ecc = -1.d0
+         endif
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3408,12 +3432,34 @@ component.
             mergertype = -1
          endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
+         if(j1.eq.1)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               binstate,mergertype,natal_kick_array,
+     &               jp,tphys,switchedCE,rad,tms,evolve_type)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+             ecc = -1.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+             ecc = -1.d0
+         endif
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3452,7 +3498,7 @@ component.
       endif
 
       if(com)then
-          evolve_type = 7.0
+          evolve_type = 8.0
           mass1_bpp = mass(1)
           mass2_bpp = mass(2)
           if(kstar(1).eq.15) mass1_bpp = mass0(1)
@@ -3525,7 +3571,7 @@ component.
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
-     &                        0.d0,0.d0,0.d0,ngtv,bkick,
+     &                        0.d0,-1.d0,0.d0,ngtv,bkick,
      &                        aj(1),aj(2),tms(1),tms(2),
      &                        massc(1),massc(2),rad(1),rad(2))
             elseif(ecc.gt.1.d0)then
@@ -3535,6 +3581,9 @@ component.
                 evolve_type = 11.0
                 binstate = 2
                 mergertype = -1
+                tb = -1.d0
+                sep = -1.d0
+                ecc = -1.d0
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
@@ -3575,7 +3624,14 @@ component.
             epoch(2) = tphys
          endif
          ecc = -1.d0
-         sep = 0.d0
+         if(binstate.eq.2)then
+*            Check if disrupted then we want sep=ecc=porb=-1
+             sep = -1.d0
+         elseif(binstate.eq.1)then
+*            check if merge then sep=0
+             tb = 0.d0
+             sep = 0.d0
+         endif
          dtm = 0.d0
          coel = .false.
          goto 4
@@ -3602,7 +3658,7 @@ component.
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
-     &                      0.d0,0.d0,0.d0,ngtv,bkick,
+     &                      0.d0,-1.d0,0.d0,ngtv,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
