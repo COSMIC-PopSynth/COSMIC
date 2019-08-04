@@ -37,22 +37,6 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_multidim_sampler','MultiDim']
 
 
-G = 6.67384*math.pow(10, -11.0)
-c = 2.99792458*math.pow(10, 8.0)
-parsec = 3.08567758*math.pow(10, 16)
-Rsun = 6.955*math.pow(10, 8)
-Msun = 1.9891*math.pow(10,30)
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569*10**7.0
-Tobs = 3.15569*10**7.0
-geo_mass = G/c**2
-
-
 def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, met, size, **kwargs):
     """adapted version of Maxwell Moe's IDL code that generates a population of single and binary stars
 
