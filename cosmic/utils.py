@@ -563,8 +563,8 @@ def error_check(BSEDict, filters=None, convergence=None):
             raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='pisn'
     if flag in BSEDict.keys():
-        if not ((BSEDict[flag] > 0) or (BSEDict[flag] == -1)):
-            raise ValueError("'{0:s}' needs to be set to either greater than 0 or -1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+        if not ((BSEDict[flag] > 0) or (BSEDict[flag] == -1) or (BSEDict[flag] == -2) or (BSEDict[flag] == -3)):
+            raise ValueError("'{0:s}' needs to be set to either greater than 0 or equal to -1, -2, or -3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='bhsigmafrac'
     if flag in BSEDict.keys():
         if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
