@@ -970,4 +970,21 @@
       return
       end
 ***
-
+      real*8 FUNCTION eddlimalpha(m,lum,xh)
+      implicit none
+      real*8 m,lum,xh,loggammae,gammae
+*
+* A function for calculating the alpha factor for Eddinton-limited winds
+* from Grafener et al. 2011
+* (MZ 04/08/19)
+*
+      loggammae = -4.813d0 + LOG10(1+xh) + LOG10(lum) - LOG10(m)
+      gammae = 10.0d0**(loggammae)
+      if(gammae.lt.(2.d0/3.d0))then
+         eddlimalpha = 0.85d0
+      else
+         eddlimalpha = 2.45d0 - (2.4d0 * gammae)
+      endif
+*
+      return
+      end
