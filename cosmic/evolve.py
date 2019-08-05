@@ -19,12 +19,16 @@
 """`evolve`
 """
 
-import numpy as np
-from gwpy.utils import mp as mp_utils
 from cosmic import _evolvebin
 from . import utils
-import pandas as pd
+
 from astropy.table import Table
+from configparser import ConfigParser
+from gwpy.utils import mp as mp_utils
+
+import numpy as np
+import pandas as pd
+import json
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -54,17 +58,50 @@ class Evolve(Table):
         '''
 
     @classmethod
-    def evolve(cls, initialbinarytable, BSEDict, **kwargs):
+    def evolve(cls, initialbinarytable, **kwargs):
         """After setting a number of initial conditions
         we evolve the system.
 
         Parameters
         ----------
+        initialbinarytable : DataFrame
+
+        **kwargs :
+
+        There are three ways to tell evolve and thus the fortran
+        what you want all the flags and other BSE specific
+        parameters to be
+
+        NUMBER 1: PASS A DICTIONARY OF FLAGS
+
+             BSEDict
+
+        NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
+
+             All you need is the initialbinarytable with columns,
+             If you pass both a dictionary of flags and/or a inifile
+             and a table with the columns, the column values for the flags
+             take precedent
+
+        NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+
+            params
+
+        randomseed : `int`, optional, default let numpy choose for you
+            If you would like the random seed that the underlying fortran code
+            uses to be the same for all of the initial conditions you passed
+            then you can send this keyword argument in. It is recommended
+            to just let numpy choose a random number as the Fortran random seed
+            and then this number will be returned as a column in the
+            initial binary table so that you can reproduce the results.
+
         nproc : `int`, optional, default: 1
             number of CPUs to use to evolve systems
             in parallel
+
         idx : `int`, optional, default: 0
             initial index of the bcm/bpp arrays
+
         dtp : `float`, optional: default: tphysf
             timestep size in Myr for bcm output where tphysf
             is total evolution time in Myr
@@ -81,103 +118,150 @@ class Evolve(Table):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
 
+        # There are three ways to tell evolve and thus the fortran
+        # what you want all the flags and other BSE specific
+        # parameters to be
+
+        # NUMBER 1: PASS A DICTIONARY OF FLAGS
+        BSEDict = kwargs.pop('BSEDict', {})
+
+        # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
+
+             # All you need is the initialbinarytable with columns,
+             # If you pass both a dictionary of flags and/or a inifile
+             # and a table with the columns, the column values for the flags
+             # take precedent
+
+        # NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+        params = kwargs.pop('params', None)
+
+        if BSEDict and params is not None:
+            raise ValueError('Please pass either a dictionary '
+                             'of BSE flags or a path to an inifle not both.')
+
+        if params is not None:
+            # then we construct a BSEDict out of the inifile contents
+            # ---- Create configuration-file-parser object and read parameters file.
+            cp = ConfigParser()
+            cp.optionxform = str
+            cp.read(params)
+
+            # ---- Read needed variables from the inifile
+            dictionary = {}
+            for section in cp.sections():
+                dictionary[section] = {}
+                for option in cp.options(section):
+                    opt = cp.get(section, option)
+                    if opt == 'False':
+                        opt = False
+                    elif opt == 'True':
+                        opt = True
+                    try:
+                        dictionary[section][option] = json.loads(opt)
+                    except:
+                        dictionary[section][option] = opt
+
+            BSEDict = dictionary['bse']
+
         # error check the initial binary table
         utils.error_check(BSEDict)
         utils.check_initial_conditions(initialbinarytable)
 
         if 'neta' not in initialbinarytable.keys():
-            initialbinarytable['neta'] = BSEDict['neta']
+            initialbinarytable = initialbinarytable.assign(neta=BSEDict['neta'])
         if 'bwind' not in initialbinarytable.keys():
-            initialbinarytable['bwind'] = BSEDict['bwind']
+            initialbinarytable = initialbinarytable.assign(bwind=BSEDict['bwind'])
         if 'hewind' not in initialbinarytable.keys():
-            initialbinarytable['hewind'] = BSEDict['hewind']
+            initialbinarytable = initialbinarytable.assign(hewind=BSEDict['hewind'])
         if 'alpha1' not in initialbinarytable.keys():
-            initialbinarytable['alpha1'] = BSEDict['alpha1']
+            initialbinarytable = initialbinarytable.assign(alpha1=BSEDict['alpha1'])
         if 'lambdaf' not in initialbinarytable.keys():
-            initialbinarytable['lambdaf'] = BSEDict['lambdaf']
+            initialbinarytable = initialbinarytable.assign(lambdaf=BSEDict['lambdaf'])
         if 'cekickflag' not in initialbinarytable.keys():
-            initialbinarytable['cekickflag'] = BSEDict['cekickflag']
+            initialbinarytable = initialbinarytable.assign(cekickflag=BSEDict['cekickflag'])
         if 'cemergeflag' not in initialbinarytable.keys():
-            initialbinarytable['cemergeflag'] = BSEDict['cemergeflag']
+            initialbinarytable = initialbinarytable.assign(cemergeflag=BSEDict['cemergeflag'])
         if 'cehestarflag' not in initialbinarytable.keys():
-            initialbinarytable['cehestarflag'] = BSEDict['cehestarflag']
+            initialbinarytable = initialbinarytable.assign(cehestarflag=BSEDict['cehestarflag'])
         if 'ceflag' not in initialbinarytable.keys():
-            initialbinarytable['ceflag'] = BSEDict['ceflag']
+            initialbinarytable = initialbinarytable.assign(ceflag=BSEDict['ceflag'])
         if 'tflag' not in initialbinarytable.keys():
-            initialbinarytable['tflag'] = BSEDict['tflag']
+            initialbinarytable = initialbinarytable.assign(tflag=BSEDict['tflag'])
         if 'ifflag' not in initialbinarytable.keys():
-            initialbinarytable['ifflag'] = BSEDict['ifflag']
+            initialbinarytable = initialbinarytable.assign(ifflag=BSEDict['ifflag'])
         if 'wdflag' not in initialbinarytable.keys():
-            initialbinarytable['wdflag'] = BSEDict['wdflag']
+            initialbinarytable = initialbinarytable.assign(wdflag=BSEDict['wdflag'])
         if 'pisn' not in initialbinarytable.keys():
-            initialbinarytable['pisn'] = BSEDict['pisn']
+            initialbinarytable = initialbinarytable.assign(pisn=BSEDict['pisn'])
         if 'bhflag' not in initialbinarytable.keys():
-            initialbinarytable['bhflag'] = BSEDict['bhflag']
+            initialbinarytable = initialbinarytable.assign(bhflag=BSEDict['bhflag'])
         if 'nsflag' not in initialbinarytable.keys():
-            initialbinarytable['nsflag'] = BSEDict['nsflag']
+            initialbinarytable = initialbinarytable.assign(nsflag=BSEDict['nsflag'])
         if 'mxns' not in initialbinarytable.keys():
-            initialbinarytable['mxns'] = BSEDict['mxns']
+            initialbinarytable = initialbinarytable.assign(mxns=BSEDict['mxns'])
         if 'pts1' not in initialbinarytable.keys():
-            initialbinarytable['pts1'] = BSEDict['pts1']
+            initialbinarytable = initialbinarytable.assign(pts1=BSEDict['pts1'])
         if 'pts2' not in initialbinarytable.keys():
-            initialbinarytable['pts2'] = BSEDict['pts2']
+            initialbinarytable = initialbinarytable.assign(pts2=BSEDict['pts2'])
         if 'pts3' not in initialbinarytable.keys():
-            initialbinarytable['pts3'] = BSEDict['pts3']
+            initialbinarytable = initialbinarytable.assign(pts3=BSEDict['pts3'])
         if 'ecsn' not in initialbinarytable.keys():
-            initialbinarytable['ecsn'] = BSEDict['ecsn']
+            initialbinarytable = initialbinarytable.assign(ecsn=BSEDict['ecsn'])
         if 'ecsn_mlow' not in initialbinarytable.keys():
-            initialbinarytable['ecsn_mlow'] = BSEDict['ecsn_mlow']
+            initialbinarytable = initialbinarytable.assign(ecsn_mlow=BSEDict['ecsn_mlow'])
         if 'aic' not in initialbinarytable.keys():
-            initialbinarytable['aic'] = BSEDict['aic']
+            initialbinarytable = initialbinarytable.assign(aic=BSEDict['aic'])
         if 'ussn' not in initialbinarytable.keys():
-            initialbinarytable['ussn'] = BSEDict['ussn']
+            initialbinarytable = initialbinarytable.assign(ussn=BSEDict['ussn'])
         if 'sigma' not in initialbinarytable.keys():
-            initialbinarytable['sigma'] = BSEDict['sigma']
+            initialbinarytable = initialbinarytable.assign(sigma=BSEDict['sigma'])
         if 'sigmadiv' not in initialbinarytable.keys():
-            initialbinarytable['sigmadiv'] = BSEDict['sigmadiv']
+            initialbinarytable = initialbinarytable.assign(sigmadiv=BSEDict['sigmadiv'])
         if 'bhsigmafrac' not in initialbinarytable.keys():
-            initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
+            initialbinarytable = initialbinarytable.assign(bhsigmafrac=BSEDict['bhsigmafrac'])
         if 'polar_kick_angle' not in initialbinarytable.keys():
-            initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
+            initialbinarytable = initialbinarytable.assign(polar_kick_angle=BSEDict['polar_kick_angle'])
         if 'beta' not in initialbinarytable.keys():
-            initialbinarytable['beta'] = BSEDict['beta']
+            initialbinarytable = initialbinarytable.assign(beta=BSEDict['beta'])
         if 'xi' not in initialbinarytable.keys():
-            initialbinarytable['xi'] = BSEDict['xi']
+            initialbinarytable = initialbinarytable.assign(xi=BSEDict['xi'])
         if 'acc2' not in initialbinarytable.keys():
-            initialbinarytable['acc2'] = BSEDict['acc2']
+            initialbinarytable = initialbinarytable.assign(acc2=BSEDict['acc2'])
         if 'epsnov' not in initialbinarytable.keys():
-            initialbinarytable['epsnov'] = BSEDict['epsnov']
+            initialbinarytable = initialbinarytable.assign(epsnov=BSEDict['epsnov'])
         if 'eddfac' not in initialbinarytable.keys():
-            initialbinarytable['eddfac'] = BSEDict['eddfac']
+            initialbinarytable = initialbinarytable.assign(eddfac=BSEDict['eddfac'])
         if 'gamma' not in initialbinarytable.keys():
-            initialbinarytable['gamma'] = BSEDict['gamma']
+            initialbinarytable = initialbinarytable.assign(gamma=BSEDict['gamma'])
         if 'bconst' not in initialbinarytable.keys():
-            initialbinarytable['bconst'] = BSEDict['bconst']
+            initialbinarytable = initialbinarytable.assign(bconst=BSEDict['bconst'])
         if 'ck' not in initialbinarytable.keys():
-            initialbinarytable['ck'] = BSEDict['ck']
+            initialbinarytable = initialbinarytable.assign(ck=BSEDict['ck'])
         if 'windflag' not in initialbinarytable.keys():
-            initialbinarytable['windflag'] = BSEDict['windflag']
+            initialbinarytable = initialbinarytable.assign(windflag=BSEDict['windflag'])
         if 'qcflag' not in initialbinarytable.keys():
-            initialbinarytable['qcflag'] = BSEDict['qcflag']
+            initialbinarytable = initialbinarytable.assign(qcflag=BSEDict['qcflag'])
         if 'dtp' not in initialbinarytable.keys():
-            initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
+            initialbinarytable = initialbinarytable.assign(dtp=kwargs.pop('dtp', initialbinarytable['tphysf']))
         if 'randomseed' not in initialbinarytable.keys():
-            initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
+            initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed',
+                                                                                 np.random.randint(1, 1000000, size=len(initialbinarytable))
+                                                                                 )
+                                                           )
         if 'bin_num' not in initialbinarytable.keys():
-            initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
-
+            initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
         natal_kick_columns = ['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']
         if pd.Series(natal_kick_columns).isin(initialbinarytable.keys()).all() and 'natal_kick_array' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick_array'] = initialbinarytable[natal_kick_columns].values.tolist()
+            initialbinarytable = initialbinarytable.assign(natal_kick_array=initialbinarytable[natal_kick_columns].values.tolist())
         if 'natal_kick_array' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick_array'] = [BSEDict['natal_kick_array']] * len(initialbinarytable)
+            initialbinarytable = initialbinarytable.assign(natal_kick_array=[BSEDict['natal_kick_array']] * len(initialbinarytable))
             for idx, column_name in enumerate(natal_kick_columns):
                 initialbinarytable.loc[:, column_name] = pd.Series([BSEDict['natal_kick_array'][idx]] * len(initialbinarytable), index=initialbinarytable.index, name=column_name)
 
         qcrit_columns = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
         if pd.Series(qcrit_columns).isin(initialbinarytable.keys()).all() and 'qcrit_array' not in initialbinarytable.keys():
-            initialbinarytable['qcrit_array'] = initialbinarytable[qcrit_columns].values.tolist()
+            initialbinarytable = initialbinarytable.assign(qcrit_array=initialbinarytable[qcrit_columns].values.tolist())
 
         if 'qcrit_array' not in initialbinarytable.keys():
             initialbinarytable['qcrit_array'] = [BSEDict['qcrit_array']] * len(initialbinarytable)
