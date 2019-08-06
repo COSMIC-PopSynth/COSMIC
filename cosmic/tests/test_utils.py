@@ -154,9 +154,9 @@ class TestUtils(unittest2.TestCase):
         with pytest.warns(UserWarning, match='At least one of your initial binaries is starting in Roche Lobe Overflow'):
             utils.check_initial_conditions(IBT)
 
-    def test_convert_kstar_evolve_type_to_string(self):
+    def test_convert_kstar_evol_type(self):
         # convert to string
-        bpp = utils.convert_kstar_evolve_type_to_string(BPP_TEST)
+        bpp = utils.convert_kstar_evol_type(BPP_TEST)
         # convert back and then make sure that it is the same
-        bpp = utils.convert_kstar_evolve_type_to_string(BPP_TEST)
+        bpp = utils.convert_kstar_evol_type(BPP_TEST)
         pd.testing.assert_frame_equal(bpp, BPP_TEST)
