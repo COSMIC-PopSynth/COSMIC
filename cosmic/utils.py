@@ -673,7 +673,7 @@ def check_initial_conditions(initial_binary_table):
 
     return
 
-def convert_kstar_evolve_type_to_string(bpp):
+def convert_kstar_evol_type(bpp):
     """Provides way to convert integer values to their string counterpart
 
         The underlying fortran code relies on integers to indicate
