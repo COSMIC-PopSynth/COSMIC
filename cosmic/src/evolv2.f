@@ -223,6 +223,7 @@
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
+      REAL*8 fprimc(16)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       LOGICAL switchedCE
@@ -913,7 +914,8 @@ component.
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
-                  tcqr = 2.d0*f*q(3-k)*raa6*menv(k)/(21.d0*tc*mass(k))
+                  tcqr = fprimc(kstar(k))*f*q(3-k)*raa6*menv(k)/
+     &                 (21.d0*tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
 *
@@ -2936,7 +2938,8 @@ component.
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc)**2))
-                  tcqr = 2.d0*f*q(3-k)*raa6*menv(k)/(21.d0*tc*mass(k))
+                  tcqr = fprimc(kstar(k))*f*q(3-k)*raa6*menv(k)/
+     &                 (21.d0*tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
 *Degenerate damping
