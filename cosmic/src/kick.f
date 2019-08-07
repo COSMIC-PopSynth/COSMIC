@@ -583,7 +583,7 @@
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
      &         bkick(9).eq.2.d0)then
             bkick(14) = vk
-*       SECOND SN AFTER SYSTEM SIRUPTION FROM FIRST SN
+*       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
      &         bkick(9).eq.2.d0)then
             bkick(14) = vk
