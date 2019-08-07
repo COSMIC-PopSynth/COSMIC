@@ -74,29 +74,53 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     InitialBinaryTable : `pandas.DataFrame`
         DataFrame in the format of the InitialBinaryTable
 
-    sampled_mass : `float`
-        Total mass, including single stars, needed to generate population
+    mass_singles : `float`
+        Total mass in single stars needed to generate population
 
-    binary_total_mass : `float`
+    mass_binaries : `float`
         Total mass in binaries needed to generate population
 
     size : `int`
-        Size of the population sampled
+        Size of the returned binary population
     """
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
-    sampled_mass = 0.0
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = Sample()
-    mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
-    # add in the total sampled primary mass
-    sampled_mass += total_mass1
-    mass1_binary, mass_singles = initconditions.binary_select(mass1, model='half')
-    mass2_binary = initconditions.sample_secondary(mass1_binary)
-    # add in the sampled secondary mass
-    sampled_mass += np.sum(mass2_binary)
+
+    #set up multiplier if the mass sampling is inefficient
+    multiplier = 1
+    mass1_binary = []
+    mass2_binary = []
+
+    # track the mass in singles and the mass in binaries
+    mass_singles = 0.0
+    mass_binaries = 0.0
+    while len(mass1_binary) < size:
+        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier) 
+        mass1_binaries, mass_singles = initconditions.binary_select(mass1, model=bin_frac)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+
+        # track the mass sampled
+        mass_singles += np.sum(mass_singles)
+        mass_binaries += np.sum(mass1_binaries)
+        mass_binaries += np.sum(mass2_binaries)
+
+        # select out the primaries and secondaries that will produce the final kstars
+        ind_select_primary, = np.where((mass1_binaries > primary_min) & (mass1_binaries < primary_max))
+        ind_select_secondary, = np.where((mass2_binaries > secondary_min) & (mass2_binaries < secondary_max))
+        ind_select = list(set(ind_select_primary).intersection(ind_select_secondary))
+        mass1_binary.extend(mass1_binaries[ind_select])
+        mass2_binary.extend(mass2_binaries[ind_select])
+        # check to see if we should increase the multiplier factor to sample the population more quickly
+
+        if not ind_select.size:
+            # well this size clearly is not working time to increase
+            # the multiplier by an order of magnitude
+            multiplier *= 10
+
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
@@ -105,18 +129,18 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), sampled_mass, size
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), mass_singles, mass_binaries, mass1_binary.size
 
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
+                 usage="final_kstar1, final_kstar2, bin_frac, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
 
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_min, primary_max, primary_model='kroupa93', size=None):
+    def sample_primary(self, primary_model='kroupa93', size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
@@ -128,12 +152,6 @@ class Sample(object):
 
         Parameters
         ----------
-        primary_min : float
-            minimum initial primary mass [Msun]
-
-        primary_max : float
-            maximum initial primary mass [Msun]
-
         primary_model : str, optional
             model for mass distribution; choose from:
 
@@ -159,60 +177,33 @@ class Sample(object):
         """
 
         if primary_model=='kroupa93':
-            # If the final binary contains a compact object (BH or NS),
-            # we want to evolve 'size' binaries that could form a compact
-            # object so we over sample the initial population
-            a_0_all = np.array([])
             total_sampled_mass = 0
             multiplier = 1
-            while a_0_all.size < size:
-                # scale the size way up in order to hopefully get enough
-                # samples in the requested region,
-                # if we get more than we will scale down
-                a_0 = np.random.uniform(0.0, 1, size*multiplier)
+            a_0 = np.random.uniform(0.0, 1, size)
 
-                low_cutoff = 0.925
-                high_cutoff = 0.986
+            low_cutoff = 0.925
+            high_cutoff = 0.986
 
-                lowIdx, = np.where(a_0 <= low_cutoff)
-                midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-                highIdx, = np.where(a_0 >= high_cutoff)
+            lowIdx, = np.where(a_0 <= low_cutoff)
+            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
+            highIdx, = np.where(a_0 >= high_cutoff)
 
-                a_0[lowIdx] = rndm(a=0.1, b=0.5, g=-1.3, size=len(lowIdx))
-                a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
-                a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.1, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
-                total_sampled_mass += np.sum(a_0)
+            total_sampled_mass += np.sum(a_0)
 
-                a_0 = a_0[(a_0 >= primary_min) & (a_0 <= primary_max)]
-                if not a_0.size:
-                    # well this size clearly is not working time to increase
-                    # the multiplier by an order of magintiude
-                    multiplier *= 10
-                a_0_all = np.append(a_0_all,a_0)
-
-            return a_0_all, total_sampled_mass
+            return a_0, total_sampled_mass
 
         elif primary_model=='salpeter55':
-            # If the final binary contains a compact object (BH or NS),
-            # we want to evolve 'size' binaries that could form a compact
-            # object so we over sample the initial population
-            a_0_all = np.array([])
             total_sampled_mass = 0
             multiplier = 1
-            while a_0_all.size < size:
-                a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
+            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
 
-                total_sampled_mass += np.sum(a_0)
+            total_sampled_mass += np.sum(a_0)
 
-                a_0 = a_0[(a_0 >= primary_min) & (a_0 <= primary_max)]
-                if not a_0.size:
-                    # well this size clearly is not working time to increase
-                    # the multiplier by an order of magintiude
-                    multiplier *= 10
-                a_0_all = np.append(a_0_all,a_0)
-
-            return a_0_all, total_sampled_mass
+            return a_0, total_sampled_mass
 
     # sample secondary mass
     def sample_secondary(self, primary_mass):
