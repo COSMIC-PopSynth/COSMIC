@@ -37,16 +37,51 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
-    """Something
+def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
+    """Generates an initial binary sample according to user specified models
 
     Parameters
     ----------
-    final_kstar1 : `int`
-        name of the format to be registered
+    final_kstar1 : `int or list`
+        Int or list of final kstar1        
 
-    final_kstar2 : `int`
-        the class that the sampler returns
+    final_kstar2 : `int or list`
+        Int or list of final kstar2
+
+    bin_frac : `str or float`
+        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+
+    primary_model : `str`
+        Model to sample primary mass; choices include: kroupa93, salpeter55
+
+    ecc_model : `str`
+        Model to sample eccentricity; choices include: thermal, uniform
+
+    SFH_model : `str`
+        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+
+    component_age : `float`
+        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
+
+    met : `float`
+        Sets the metallicity of the binary population where solar metallicity is 0.02
+
+    size : `int`
+        Size of the population to sample
+
+    Returns
+    -------
+    InitialBinaryTable : `pandas.DataFrame`
+        DataFrame in the format of the InitialBinaryTable
+
+    sampled_mass : `float`
+        Total mass, including single stars, needed to generate population
+
+    binary_total_mass : `float`
+        Total mass in binaries needed to generate population
+
+    size : `int`
+        Size of the population sampled
     """
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
@@ -119,7 +154,7 @@ class Sample(object):
         -------
         a_0 : array
             Sampled primary masses
-        total_sampled_mass : float
+        sampled_mass : float
             Total amount of mass sampled
         """
 
@@ -205,7 +240,7 @@ class Sample(object):
 
     def binary_select(self, primary_mass, model='half'):
         """Select the which primary masses will have a companion using 
-        either a binary fraction of fifty percent or a
+        either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
 
@@ -213,10 +248,10 @@ class Sample(object):
         ----------
         primary_mass : array
             Mass that determines the binary fraction
-        model : string
-            half - every two stars selected are in a binary
+        model : str or float
             vanHaaften - primary mass dependent and ONLY VALID 
                          up to 100 Msun
+            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1 means every star is in a binary pair
 
         Returns
         -------
@@ -226,17 +261,21 @@ class Sample(object):
             primary masses that will be single stars
         """
 
-        if model == 'half':
+        if type(model) == str:
+            if model == 'vanHaaften':
+                binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
+                binary_choose =  np.random.uniform(0, 1.0, primary_mass.size)
+
+                binaryIdx, = np.where(binary_fraction > binary_choose)
+                singleIdx, = np.where(binary_fraction < binary_choose)
+            else:
+                raise Error('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
+        elif type(model) == float:
             binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
-            binaryIdx, = np.where(binary_choose >= 0.5)
-            singleIdx, = np.where(binary_choose < 0.5)
-
-        elif model == 'vanHaaften':
-            binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-            binary_choose =  np.random.uniform(0, 1.0, primary_mass.size)
-
-            binaryIdx, = np.where(binary_fraction > binary_choose)
-            singleIdx, = np.where(binary_fraction < binary_choose)
+            binaryIdx, = np.where(binary_choose >= model)
+            singleIdx, = np.where(binary_choose < model)
+        else:
+            raise Error('You have not supplied a model or a fraction. Please choose either vanHaaften or a float'
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
@@ -338,14 +377,14 @@ class Sample(object):
         if ecc_model=='thermal':
             a_0 = np.random.uniform(0.0, 1.0, size)
             ecc = a_0**0.5
-
             return ecc
 
-        if ecc_model=='uniform':
+        elif ecc_model=='uniform':
             ecc = np.random.uniform(0.0, 1.0, size)
-
             return ecc
 
+        else:
+            raise Error('You have specified an unsupported model. Please choose from thermal or uniform')
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -393,6 +432,9 @@ class Sample(object):
             tphys = component_age*np.ones(size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
+
+        else:
+            raise Error('You have specified an unsupported model. Please choose from const, burst, or delta_burst'
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
