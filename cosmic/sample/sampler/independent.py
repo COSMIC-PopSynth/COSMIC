@@ -80,8 +80,11 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     mass_binaries : `float`
         Total mass in binaries needed to generate population
 
-    size : `int`
-        Size of the returned binary population
+    n_singles : `int`
+        Number of single stars needed to generate a population
+
+    n_binaries : `int`
+        Number of binaries needed to generate a population
     """
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
@@ -98,15 +101,23 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     # track the mass in singles and the mass in binaries
     mass_singles = 0.0
     mass_binaries = 0.0
+
+    # track the total number of stars sampled
+    n_singles = 0
+    n_binaries = 0
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier) 
-        mass1_binaries, mass_singles = initconditions.binary_select(mass1, model=bin_frac)
+        mass1_binaries, mass_single = initconditions.binary_select(mass1, model=bin_frac)
         mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
         # track the mass sampled
-        mass_singles += np.sum(mass_singles)
+        mass_singles += np.sum(mass_single)
         mass_binaries += np.sum(mass1_binaries)
         mass_binaries += np.sum(mass2_binaries)
+
+        # track the total number sampled
+        n_singles += len(mass_single)
+        n_binaries += len(mass1_binaries)
 
         # select out the primaries and secondaries that will produce the final kstars
         ind_select_primary, = np.where((mass1_binaries > primary_min) & (mass1_binaries < primary_max))
@@ -116,11 +127,13 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
         mass2_binary.extend(mass2_binaries[ind_select])
         # check to see if we should increase the multiplier factor to sample the population more quickly
 
-        if not ind_select.size:
+        if len(mass1_binary) < size/100:
             # well this size clearly is not working time to increase
             # the multiplier by an order of magnitude
             multiplier *= 10
 
+    mass1_binary = np.array(mass1_binary)
+    mass2_binary = np.array(mass2_binary)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
@@ -129,7 +142,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), mass_singles, mass_binaries, mass1_binary.size
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), mass_singles, mass_binaries, n_singles, n_binaries
 
 
 
@@ -145,10 +158,10 @@ class Sample(object):
 
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-        between 0.1 and 150 Msun
+        between 0.08 and 150 Msun
         salpter55 follows
         `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-        between 0.1 and 150 Msun
+        between 0.08 and 150 Msun
 
         Parameters
         ----------
@@ -188,7 +201,7 @@ class Sample(object):
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.1, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
             a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
             a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
@@ -263,10 +276,10 @@ class Sample(object):
                 raise Error('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
         elif type(model) == float:
             binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
-            binaryIdx, = np.where(binary_choose >= model)
-            singleIdx, = np.where(binary_choose < model)
+            binaryIdx, = np.where(binary_choose <= model)
+            singleIdx, = np.where(binary_choose > model)
         else:
-            raise Error('You have not supplied a model or a fraction. Please choose either vanHaaften or a float'
+            raise Error('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
@@ -425,7 +438,7 @@ class Sample(object):
             return tphys, metallicity
 
         else:
-            raise Error('You have specified an unsupported model. Please choose from const, burst, or delta_burst'
+            raise Error('You have specified an unsupported model. Please choose from const, burst, or delta_burst')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
