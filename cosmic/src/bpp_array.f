@@ -66,7 +66,7 @@
      &         bkick(9).eq.2.d0)then
 *           write the natal kick for secondary object
             bpp(jp,14) = bkick(14)
-*       SECOND SN AFTER SYSTEM SIRUPTION FROM FIRST SN
+*       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
      &         bkick(9).eq.2.d0)then
 *           write the natal kick for secondary object
