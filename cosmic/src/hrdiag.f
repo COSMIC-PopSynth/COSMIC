@@ -1012,7 +1012,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
-                        if(mcbagb.ge.27.69d0.and.mcbagb.le.54.48d0)then
+                        if(mc.ge.27.69d0.and.mc.le.54.48d0)then
                            polyfit = -4.30343374d5
      &                            + 9.02795937d4*mc
      &                            - 8.22480314d3*mc**2d0
