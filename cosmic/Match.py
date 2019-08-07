@@ -141,13 +141,10 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
            bpp_conv_2 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_2.bin_num)]
 
            # note that we compute the match for values other than the bcm array
-           if bin_state == 1:
-               bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
-                                           (bpp_conv_1.kstar_2.isin(final_kstar_2)) &\
-                                           (bpp_conv_1.evol_type == 3)]
-               bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
-                                           (bpp_conv_2.kstar_2.isin(final_kstar_2)) &\
-                                           (bpp_conv_2.evol_type == 3)]
+           bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
+                                       (bpp_conv_1.kstar_2.isin(final_kstar_2))]
+           bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
+                                       (bpp_conv_2.kstar_2.isin(final_kstar_2))]
 
            # select the formation parameters
            bcm_conv_1 = bcm_conv_1.groupby('bin_num').first()
