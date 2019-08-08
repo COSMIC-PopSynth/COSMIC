@@ -189,10 +189,8 @@ if __name__ == '__main__':
         idx = 0
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
-    # Initialize the step counter
+    # Initialize the step counter and convergence array/list
     Nstep = 0
-
-    # Initialize convergence arrays/lists
     match_all = np.zeros(len(args.convergence_params))
     match_list = []
 
