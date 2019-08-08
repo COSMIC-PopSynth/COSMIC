@@ -239,7 +239,7 @@ if __name__ == '__main__':
         # save the total_sampled_mass so far
         dat_store.append('mass_singles', pd.DataFrame([total_mass_singles]))
         dat_store.append('mass_binaries', pd.DataFrame([total_mass_binaries]))
-        dat_store.append('mass_stars', pd.DataFrame([total_mass_singles + total_mass_binaries])
+        dat_store.append('mass_stars', pd.DataFrame([total_mass_singles + total_mass_binaries]))
         dat_store.append('n_singles', pd.DataFrame([total_n_singles]))
         dat_store.append('n_binaries', pd.DataFrame([total_n_binaries]))
         dat_store.append('n_stars', pd.DataFrame([total_n_singles + 2*total_n_binaries])
