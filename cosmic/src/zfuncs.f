@@ -970,27 +970,47 @@
       return
       end
 ***
-      real*8 FUNCTION eddlimalpha(m,lum,xh)
+      real*8 FUNCTION MLalpha(m,lum,kw)
       implicit none
-      real*8 m,lum,xh,loggammae,gammae
+      integer kw
+      real*8 m,lum,loggammae,gammae,Xh
 *
-* A function for calculating the alpha factor for Eddinton-limited winds
-* from Grafener et al. 2011
+* A function for calculating the alpha factor for metallicity-dependent
+* winds from Grafener et al. 2011
 * (MZ 04/08/19)
 *
-      loggammae = -4.813d0 + LOG10(1+xh) + LOG10(lum) - LOG10(m)
+
+* First, determine the hydrogen fraction as in Graefener et al. 2011
+      if(kw.ge.7 .and. kw.lt.10)then
+*        WR stars
+         Xh = 0.d0
+      else
+*        Assume metallicities for different kstars
+         if(kw.eq.0 .or. kw.eq.1)then
+            Xh = 0.7d0
+         elseif(kw.eq.2)then
+            Xh = 0.6d0
+         elseif(kw.eq.3)then
+            Xh = 0.5d0
+         elseif(kw.eq.4)then
+            Xh = 0.4d0
+         elseif(kw.eq.5 .or. kw.eq.6)then
+            Xh = 0.2d0
+        endif
+      endif
+
+      loggammae = -4.813d0 + LOG10(1.d0+xh) + LOG10(lum) - LOG10(m)
       gammae = 10.0d0**(loggammae)
       if(gammae.gt.1d0)then
-         gammae = 1d0
+         gammae = 1.d0
       endif
 
 * calculate metallicity scaling parameter alpha
       if(gammae.lt.(2.d0/3.d0))then
-         eddlimalpha = 0.85d0
+         MLalpha = 0.85d0
       elseif(gammae.ge.(2.d0/3.d0))then
-         eddlimalpha = 2.45d0 - (2.4d0 * gammae)
+         MLalpha = 2.45d0 - (2.4d0 * gammae)
       endif
 *
-      write(*,*), gammae,eddlimalpha,m,lum,xh
       return
       end

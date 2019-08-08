@@ -1,12 +1,12 @@
 ***
-      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z,xh)
+      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       integer kw,testflag
-      real*8 lum,r,mt,mc,rl,z,teff,xh,alpha
+      real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
-      real*8 eddlimalpha
-      external eddlimalpha
+      real*8 MLalpha
+      external MLalpha
       parameter(lum0=7.0d+04,kap=-0.5d0)
 
       character*30 label(16)
@@ -35,11 +35,8 @@
          if(lum.gt.4000.d0)then
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
-            if(eddlimflag.eq.0)then
-               alpha = 0.5d0
-            elseif(eddlimflag.eq.1)then
-               alpha = eddlimalpha(mt,lum,xh)
-            endif
+            if(mlmetflag.eq.0) alpha = 0.5d0
+            if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = dms*(z/0.02d0)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
@@ -98,11 +95,8 @@
                x = 0.1d0/500.d0
             endif !or is it simply x = Min(1, lum/500)?
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
-            if(eddlimflag.eq.0)then
-               alpha = 0.5d0
-            elseif(eddlimflag.eq.1)then
-               alpha = eddlimalpha(mt,lum,xh)
-            endif
+            if(mlmetflag.eq.0) alpha = 0.5d0
+            if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = dms*(z/0.02d0)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
@@ -159,11 +153,8 @@
 * for massive stars over the entire HRD after OB stars accounted for.
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
-            if(eddlimflag.eq.0)then
-               alpha = 0.5d0
-            elseif(eddlimflag.eq.1)then
-               alpha = eddlimalpha(mt,lum,xh)
-            endif
+            if(mlmetflag.eq.0) alpha = 0.5d0
+            if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = dms*(z/0.02d0)**(alpha)
             testflag = 1
          endif
@@ -188,22 +179,16 @@
 * Apply Vink, de Koter & lamers (2001) OB star winds.
 * Next check if hot massive H-rich O/B star in appropriate temperature ranges.
          if(teff.ge.12500.and.teff.le.25000)then
-            if(eddlimflag.eq.0)then
-               alpha = 0.85d0
-            elseif(eddlimflag.eq.1)then
-               alpha = eddlimalpha(mt,lum,xh)
-            endif
+            if(mlmetflag.eq.0) alpha = 0.85d0
+            if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
      &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
      &            alpha*LOG10(z/0.02d0) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
             testflag = 2
          elseif(teff.gt.25000.and.teff.le.50000)then
-            if(eddlimflag.eq.0)then
-               alpha = 0.85d0
-            elseif(eddlimflag.eq.1)then
-               alpha = eddlimalpha(mt,lum,xh)
-            endif
+            if(mlmetflag.eq.0) alpha = 0.85d0
+            if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
      &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
      &            alpha*LOG10(z/0.02d0) +0.933d0*LOG10(teff/4.0d+04) -
@@ -218,22 +203,16 @@
 *past the limit, or just for giant, evolved stars
             x = 1.0d-5*r*sqrt(lum)
             if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-               if(eddlimflag.eq.0)then
-                  alpha = 0.d0
-               elseif(eddlimflag.eq.1)then
-                  alpha = eddlimalpha(mt,lum,xh)
-               endif
+               if(mlmetflag.eq.0) alpha = 0.d0
+               if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
                dms = 1.5d0*1.0d-04*((z/0.02d0)**alpha)
                testflag = 3
             endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) reduced WR winds with
 * Vink & de Koter (2005) metallicity dependence.
-            if(eddlimflag.eq.0)then
-               alpha = 0.86d0
-            elseif(eddlimflag.eq.1)then
-               alpha = eddlimalpha(mt,lum,xh)
-            endif
+            if(mlmetflag.eq.0) alpha = 0.86d0
+            if(mlmetflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = 1.0d-13*(lum**1.5d0)*((z/0.02d0)**alpha)
             testflag = 4
          endif
