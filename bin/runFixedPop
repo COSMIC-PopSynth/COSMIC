@@ -184,9 +184,15 @@ if __name__ == '__main__':
         idx = 0
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
-    match_all = np.zeros(len(args.convergence_params))
+    # Initialize counters
     Nstep = 0
+    total_mass_singles += mass_singles
+    total_mass_binaries += mass_binaries
+    total_n_singles += n_singles
+    total_n_binaries += n_binaries
 
+    # Initialize convergence arrays/lists
+    match_all = np.zeros(len(args.convergence_params))
     match_list = []
 
     # Select the Galactic component from user input
