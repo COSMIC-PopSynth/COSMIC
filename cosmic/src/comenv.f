@@ -4,7 +4,7 @@
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,ecsn,ecsn_mlow,formation1,formation2,
      &                  ST_tide,binstate,mergertype,natal_kick,
-     &                  jp, tphys, switchedCE, rad, tms, evolve_type)
+     &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -47,7 +47,7 @@
       EXTERNAL CELAMF,RL,RZAMSF
       INTEGER jp
       REAL*8 tphys
-      LOGICAL switchedCE
+      LOGICAL switchedCE,disrupt
       INTEGER kstar1_bpp,kstar2_bpp
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rrl1_bpp,rrl2_bpp,evolve_type
@@ -307,7 +307,8 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+     &                   JORB,vk,star1,R2,fallback,bkick,
+     &                   natal_kick,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -582,7 +583,8 @@
                   endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+     &                   JORB,vk,star1,R2,fallback,bkick,
+     &                   natal_kick,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -710,7 +712,8 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
-     &                   JORB,vk,star2,R1,fallback,bkick,natal_kick)
+     &                   JORB,vk,star2,R1,fallback,bkick,
+     &                   natal_kick,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -910,7 +913,8 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,bkick,natal_kick)
+     &                0.d0,fallback,bkick,natal_kick,
+     &                natal_kick,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
