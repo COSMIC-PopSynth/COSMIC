@@ -19,26 +19,33 @@
 """`evolve`
 """
 
-import numpy as np
-from gwpy.utils import mp as mp_utils
 from cosmic import _evolvebin
 from . import utils
-import pandas as pd
+
 from astropy.table import Table
+from configparser import ConfigParser
+from gwpy.utils import mp as mp_utils
+
+import numpy as np
+import pandas as pd
+import json
+import warnings
+import os
+import sys
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['Evolve']
 
 
-bpp_columns = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
+BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
                'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
                'massc_1', 'massc_2', 'rad_1', 'rad_2',
                'bin_num']
 
-bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
+BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
                'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
                'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
@@ -47,6 +54,31 @@ bcm_columns = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
                'SNkick_1', 'SNkick_2', 'Vsys_final', 'SNtheta_final',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
+INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                             'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
+                             'cekickflag', 'cemergeflag', 'cehestarflag',
+                             'mxns', 'pts1', 'pts2', 'pts3',
+                             'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
+                             'natal_kick_array', 'qcrit_array',
+                             'beta', 'xi', 'acc2', 'epsnov',
+                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'dtp',
+                             'randomseed', 'bin_num']
+
+if sys.version_info.major == 2 and sys.version_info.minor == 7:
+    INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
+else:
+    INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS.copy()
+
+for col in ['natal_kick_array', 'qcrit_array',]:
+    INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
+
+NATAL_KICK_COLUMNS = ['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']
+QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
+
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(NATAL_KICK_COLUMNS)
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
+
 class Evolve(Table):
     def __init__():
         '''
@@ -54,17 +86,50 @@ class Evolve(Table):
         '''
 
     @classmethod
-    def evolve(cls, initialbinarytable, BSEDict, **kwargs):
+    def evolve(cls, initialbinarytable, **kwargs):
         """After setting a number of initial conditions
         we evolve the system.
 
         Parameters
         ----------
+        initialbinarytable : DataFrame
+
+        **kwargs :
+
+        There are three ways to tell evolve and thus the fortran
+        what you want all the flags and other BSE specific
+        parameters to be
+
+        NUMBER 1: PASS A DICTIONARY OF FLAGS
+
+             BSEDict
+
+        NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
+
+             All you need is the initialbinarytable with columns,
+             If you pass both a dictionary of flags and/or a inifile
+             and a table with the columns, the column values will be
+             overwritten by what is in the dictionary or ini file
+
+        NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+
+            params
+
+        randomseed : `int`, optional, default let numpy choose for you
+            If you would like the random seed that the underlying fortran code
+            uses to be the same for all of the initial conditions you passed
+            then you can send this keyword argument in. It is recommended
+            to just let numpy choose a random number as the Fortran random seed
+            and then this number will be returned as a column in the
+            initial binary table so that you can reproduce the results.
+
         nproc : `int`, optional, default: 1
             number of CPUs to use to evolve systems
             in parallel
+
         idx : `int`, optional, default: 0
             initial index of the bcm/bpp arrays
+
         dtp : `float`, optional: default: tphysf
             timestep size in Myr for bcm output where tphysf
             is total evolution time in Myr
@@ -81,137 +146,129 @@ class Evolve(Table):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
 
-        # error check the initial binary table
+        # There are three ways to tell evolve and thus the fortran
+        # what you want all the flags and other BSE specific
+        # parameters to be
+
+        # NUMBER 1: PASS A DICTIONARY OF FLAGS
+        BSEDict = kwargs.pop('BSEDict', {})
+
+        # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
+
+            # All you need is the initialbinarytable with columns,
+            # If you pass both a dictionary of flags and/or a inifile
+            # and a table with the columns, the column values will be
+            # overwritten by what is in the dictionary or ini file
+
+        # NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+        params = kwargs.pop('params', None)
+
+        if BSEDict and params is not None:
+            raise ValueError('Please pass either a dictionary '
+                             'of BSE flags or a path to an inifle not both.')
+
+        if params is not None:
+            if not os.path.isfile(params):
+                raise ValueError("File does not exist, probably supplied incorrect "
+                                 "path to the inifile.")
+            # then we construct a BSEDict out of the inifile contents
+            # ---- Create configuration-file-parser object and read parameters file.
+            cp = ConfigParser()
+            cp.optionxform = str
+            cp.read(params)
+
+            # ---- Read needed variables from the inifile
+            dictionary = {}
+            for section in cp.sections():
+                dictionary[section] = {}
+                for option in cp.options(section):
+                    opt = cp.get(section, option)
+                    if opt == 'False':
+                        opt = False
+                    elif opt == 'True':
+                        opt = True
+                    try:
+                        dictionary[section][option] = json.loads(opt)
+                    except:
+                        dictionary[section][option] = opt
+
+            BSEDict = dictionary['bse']
+
+        # error check the parameters you are trying to pass to BSE 
+        # if we sent in a table with the parameter names
+        # then we will temporarily create a dictionary
+        # in order to verify that the values in the table
+        # are valid
         utils.error_check(BSEDict)
+
+        # check the initial conditions of the system and warn user if
+        # anything is weird about them, such as the star starts
+        # in Roche Lobe overflow
         utils.check_initial_conditions(initialbinarytable)
 
-        if 'neta' not in initialbinarytable.keys():
-            initialbinarytable['neta'] = BSEDict['neta']
-        if 'bwind' not in initialbinarytable.keys():
-            initialbinarytable['bwind'] = BSEDict['bwind']
-        if 'hewind' not in initialbinarytable.keys():
-            initialbinarytable['hewind'] = BSEDict['hewind']
-        if 'alpha1' not in initialbinarytable.keys():
-            initialbinarytable['alpha1'] = BSEDict['alpha1']
-        if 'lambdaf' not in initialbinarytable.keys():
-            initialbinarytable['lambdaf'] = BSEDict['lambdaf']
-        if 'cekickflag' not in initialbinarytable.keys():
-            initialbinarytable['cekickflag'] = BSEDict['cekickflag']
-        if 'cemergeflag' not in initialbinarytable.keys():
-            initialbinarytable['cemergeflag'] = BSEDict['cemergeflag']
-        if 'cehestarflag' not in initialbinarytable.keys():
-            initialbinarytable['cehestarflag'] = BSEDict['cehestarflag']
-        if 'ceflag' not in initialbinarytable.keys():
-            initialbinarytable['ceflag'] = BSEDict['ceflag']
-        if 'tflag' not in initialbinarytable.keys():
-            initialbinarytable['tflag'] = BSEDict['tflag']
-        if 'ifflag' not in initialbinarytable.keys():
-            initialbinarytable['ifflag'] = BSEDict['ifflag']
-        if 'wdflag' not in initialbinarytable.keys():
-            initialbinarytable['wdflag'] = BSEDict['wdflag']
-        if 'pisn' not in initialbinarytable.keys():
-            initialbinarytable['pisn'] = BSEDict['pisn']
-        if 'bhflag' not in initialbinarytable.keys():
-            initialbinarytable['bhflag'] = BSEDict['bhflag']
-        if 'nsflag' not in initialbinarytable.keys():
-            initialbinarytable['nsflag'] = BSEDict['nsflag']
-        if 'mxns' not in initialbinarytable.keys():
-            initialbinarytable['mxns'] = BSEDict['mxns']
-        if 'pts1' not in initialbinarytable.keys():
-            initialbinarytable['pts1'] = BSEDict['pts1']
-        if 'pts2' not in initialbinarytable.keys():
-            initialbinarytable['pts2'] = BSEDict['pts2']
-        if 'pts3' not in initialbinarytable.keys():
-            initialbinarytable['pts3'] = BSEDict['pts3']
-        if 'ecsn' not in initialbinarytable.keys():
-            initialbinarytable['ecsn'] = BSEDict['ecsn']
-        if 'ecsn_mlow' not in initialbinarytable.keys():
-            initialbinarytable['ecsn_mlow'] = BSEDict['ecsn_mlow']
-        if 'aic' not in initialbinarytable.keys():
-            initialbinarytable['aic'] = BSEDict['aic']
-        if 'ussn' not in initialbinarytable.keys():
-            initialbinarytable['ussn'] = BSEDict['ussn']
-        if 'sigma' not in initialbinarytable.keys():
-            initialbinarytable['sigma'] = BSEDict['sigma']
-        if 'sigmadiv' not in initialbinarytable.keys():
-            initialbinarytable['sigmadiv'] = BSEDict['sigmadiv']
-        if 'bhsigmafrac' not in initialbinarytable.keys():
-            initialbinarytable['bhsigmafrac'] = BSEDict['bhsigmafrac']
-        if 'polar_kick_angle' not in initialbinarytable.keys():
-            initialbinarytable['polar_kick_angle'] = BSEDict['polar_kick_angle']
-        if 'beta' not in initialbinarytable.keys():
-            initialbinarytable['beta'] = BSEDict['beta']
-        if 'xi' not in initialbinarytable.keys():
-            initialbinarytable['xi'] = BSEDict['xi']
-        if 'acc2' not in initialbinarytable.keys():
-            initialbinarytable['acc2'] = BSEDict['acc2']
-        if 'epsnov' not in initialbinarytable.keys():
-            initialbinarytable['epsnov'] = BSEDict['epsnov']
-        if 'eddfac' not in initialbinarytable.keys():
-            initialbinarytable['eddfac'] = BSEDict['eddfac']
-        if 'gamma' not in initialbinarytable.keys():
-            initialbinarytable['gamma'] = BSEDict['gamma']
-        if 'bconst' not in initialbinarytable.keys():
-            initialbinarytable['bconst'] = BSEDict['bconst']
-        if 'ck' not in initialbinarytable.keys():
-            initialbinarytable['ck'] = BSEDict['ck']
-        if 'windflag' not in initialbinarytable.keys():
-            initialbinarytable['windflag'] = BSEDict['windflag']
-        if 'qcflag' not in initialbinarytable.keys():
-            initialbinarytable['qcflag'] = BSEDict['qcflag']
-        if 'eddlimflag' not in initialbinarytable.keys():
-            initialbinarytable['eddlimflag'] = BSEDict['eddlimflag']
+
+        # assign some columns based on keyword arguments but that
+        # can be overwritten by the params or BSEDict
         if 'dtp' not in initialbinarytable.keys():
-            initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
+            initialbinarytable = initialbinarytable.assign(dtp=kwargs.pop('dtp', initialbinarytable['tphysf']))
         if 'randomseed' not in initialbinarytable.keys():
-            initialbinarytable['randomseed'] = np.random.randint(1, 1000000, size=len(initialbinarytable))
+            initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed',
+                                                                                 np.random.randint(1, 1000000, size=len(initialbinarytable))
+                                                                                 )
+                                                           )
         if 'bin_num' not in initialbinarytable.keys():
-            initialbinarytable['bin_num'] = np.arange(idx, idx + len(initialbinarytable))
+            initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
+        for k,v in BSEDict.items():
+            if k in initialbinarytable.keys():
+                warnings.warn("The value for {0} in initial binary table is being "
+                              "overwritten by the value of {0} from either the params "
+                              "file or the BSEDict.".format(k))
+            # special columns that need to be handled differently
+            if k == 'natal_kick_array':
+                initialbinarytable = initialbinarytable.assign(natal_kick_array=[BSEDict['natal_kick_array']] * len(initialbinarytable))
+                for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
+                    kwargs1 = {column_name : pd.Series([BSEDict['natal_kick_array'][idx]] * len(initialbinarytable), index=initialbinarytable.index, name=column_name)}
+                    initialbinarytable = initialbinarytable.assign(**kwargs1)
+            elif k == 'qcrit_array':
+                initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
+                for kstar in range(0,16):
+                    initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = pd.Series([BSEDict['qcrit_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='qcrit_{0}'.format(kstar))
+            else: 
+                # assigning values this way work for most of the parameters.
+                kwargs1 = {k:v}
+                initialbinarytable = initialbinarytable.assign(**kwargs1)
 
-        natal_kick_columns = ['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']
-        if pd.Series(natal_kick_columns).isin(initialbinarytable.keys()).all() and 'natal_kick_array' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick_array'] = initialbinarytable[natal_kick_columns].values.tolist()
-        if 'natal_kick_array' not in initialbinarytable.keys():
-            initialbinarytable['natal_kick_array'] = [BSEDict['natal_kick_array']] * len(initialbinarytable)
-            for idx, column_name in enumerate(natal_kick_columns):
-                initialbinarytable.loc[:, column_name] = pd.Series([BSEDict['natal_kick_array'][idx]] * len(initialbinarytable), index=initialbinarytable.index, name=column_name)
+        # Here we perform two checks
+        # First, if the BSE parameters are not in the initial binary table
+        # and either a dictionary or an inifile was not provided
+        # then we need to raise an ValueError and tell the user to provide
+        # either a dictionary or an inifile or add more columns
+        if not BSEDict:
+            if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
+                (not set(INITIAL_BINARY_TABLE_PASS_COLUMNS).issubset(initialbinarytable.columns))):
+                raise ValueError("You are passing BSE parameters as columns in the "
+                                 "initial binary table but not all BSE parameters are defined. "
+                                 "Please pass a BSEDict or a params file or make sure "
+                                 "you have all BSE parameters as columns {0} or {1}.".format(
+                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_BINARY_TABLE_PASS_COLUMNS))
 
-        qcrit_columns = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
-        if pd.Series(qcrit_columns).isin(initialbinarytable.keys()).all() and 'qcrit_array' not in initialbinarytable.keys():
-            initialbinarytable['qcrit_array'] = initialbinarytable[qcrit_columns].values.tolist()
+        # If you did not supply the natal kick or q crit array in the BSEdict then we construct
+        # it from the initial conditions table
+        if (pd.Series(NATAL_KICK_COLUMNS).isin(initialbinarytable.keys()).all()) and ('natal_kick_array' not in BSEDict):
+            initialbinarytable = initialbinarytable.assign(natal_kick_array=initialbinarytable[NATAL_KICK_COLUMNS].values.tolist())
 
-        if 'qcrit_array' not in initialbinarytable.keys():
-            initialbinarytable['qcrit_array'] = [BSEDict['qcrit_array']] * len(initialbinarytable)
-            for kstar in range(0,16):
-                initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = pd.Series([BSEDict['qcrit_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='qcrit_{0}'.format(kstar))
+        if (pd.Series(QCRIT_COLUMNS).isin(initialbinarytable.keys()).all()) and ('qcrit_array' not in BSEDict):
+            initialbinarytable = initialbinarytable.assign(qcrit_array=initialbinarytable[QCRIT_COLUMNS].values.tolist())
 
-        # need to ensure that the order of variables is correct
-        initial_conditions = initialbinarytable[['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                                'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                                'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
-                                                'cekickflag', 'cemergeflag', 'cehestarflag',
-                                                'mxns', 'pts1', 'pts2', 'pts3',
-                                                'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
-                                                'natal_kick_array', 'qcrit_array',
-                                                'beta', 'xi', 'acc2', 'epsnov',
-                                                'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag', 'dtp',
-                                                'randomseed', 'bin_num']].values
+        # need to ensure that the order of parameters that we pass to BSE
+        # is correct
+        initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].values
 
-        initial_binary_table_column_names = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                                             'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
-                                             'cekickflag', 'cemergeflag', 'cehestarflag',
-                                             'mxns', 'pts1', 'pts2', 'pts3',
-                                             'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
-                                             'beta', 'xi', 'acc2', 'epsnov',
-                                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag', 'dtp',
-                                             'randomseed', 'bin_num']
-
-        initial_binary_table_column_names.extend(natal_kick_columns)
-        initial_binary_table_column_names.extend(qcrit_columns)
-
-        initialbinarytable = initialbinarytable[initial_binary_table_column_names]
+        # we use different columns to save the BSE parameters because some
+        # of the parameters are list/arrays which we instead save as
+        # individual values because it makes saving to HDF5 easier/more efficient.
+        initialbinarytable = initialbinarytable[INITIAL_BINARY_TABLE_SAVE_COLUMNS]
 
         # define multiprocessing method
         def _evolve_single_system(f):
@@ -252,11 +309,11 @@ class Evolve(Table):
         bcm_arrays = np.vstack(output[:, 2])
 
         bpp = pd.DataFrame(bpp_arrays,
-                           columns=bpp_columns,
+                           columns=BPP_COLUMNS,
                            index=bpp_arrays[:, -1].astype(int))
 
         bcm = pd.DataFrame(bcm_arrays,
-                           columns=bcm_columns,
+                           columns=BCM_COLUMNS,
                            index=bcm_arrays[:, -1].astype(int))
 
         bcm.merger_type = bcm.merger_type.astype(int).astype(str).apply(lambda x: x.zfill(4))
