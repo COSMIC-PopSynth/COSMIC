@@ -173,23 +173,24 @@ if __name__ == '__main__':
         log_file.write('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
-        total_mass = pd.read_hdf(dat_store, 'totalMass')[0][0]
-        total_sampled_mass = np.max(total_mass)
+        total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
+        total_mass_binaries = np.max(pd.read_hdf(dat_store, 'mass_binaries'))[0]
+        total_n_singles = np.max(pd.read_hdf(dat_store, 'n_singles'))[0]
+        total_n_binaries = np.max(pd.read_hdf(dat_store, 'n_binaries'))[0]
         idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
-        total_sampled_mass = 0.0
+        total_mass_singles = 0  
+        total_mass_binaries = 0
+        total_n_singles = 0
+        total_n_binaries = 0
         idx = 0
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
-    # Initialize counters
+    # Initialize the step counter
     Nstep = 0
-    total_mass_singles += mass_singles
-    total_mass_binaries += mass_binaries
-    total_n_singles += n_singles
-    total_n_binaries += n_binaries
 
     # Initialize convergence arrays/lists
     match_all = np.zeros(len(args.convergence_params))
