@@ -31,6 +31,7 @@ import pandas as pd
 import json
 import warnings
 import os
+import sys
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -64,7 +65,10 @@ INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_
                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'dtp',
                              'randomseed', 'bin_num']
 
-INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS.copy()
+if sys.version_info.major == 2 and sys.version_info.minor == 7:
+    INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
+else:
+    INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS.copy()
 
 for col in ['natal_kick_array', 'qcrit_array',]:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
