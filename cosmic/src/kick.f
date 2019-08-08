@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,natal_kick)
+     &                r2,fallback,bkick,natal_kick,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -62,7 +62,7 @@
 * Output
       real*8 v1xout,v1yout,v1zout,vkout1,vkout2
       real*8 v2xout,v2yout,v2zout
-      logical output
+      logical output,disrupt
 *
       real*8 bkick(20)
       real*8 natal_kick(6)
@@ -575,6 +575,7 @@
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
      &         bkick(9).eq.0.d0)then
             bkick(13) = vk
+            disrupt = .true.
 *       SURVIVES SECOND SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
      &         bkick(9).eq.0.d0)then
@@ -583,6 +584,7 @@
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
      &         bkick(9).eq.2.d0)then
             bkick(14) = vk
+            disrupt = .true.
 *       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
      &         bkick(9).eq.2.d0)then
