@@ -242,7 +242,7 @@ if __name__ == '__main__':
         dat_store.append('mass_stars', pd.DataFrame([total_mass_singles + total_mass_binaries]))
         dat_store.append('n_singles', pd.DataFrame([total_n_singles]))
         dat_store.append('n_binaries', pd.DataFrame([total_n_binaries]))
-        dat_store.append('n_stars', pd.DataFrame([total_n_singles + 2*total_n_binaries])
+        dat_store.append('n_stars', pd.DataFrame([total_n_singles + 2*total_n_binaries]))
         log_file.write('The total mass sampled so far is: {0}\n'.format(total_mass_singles + total_mass_binaries))
 
         # Now that we have all these initial conditions
