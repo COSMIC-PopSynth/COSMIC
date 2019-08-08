@@ -628,6 +628,11 @@ def error_check(BSEDict, filters=None, convergence=None):
     return
 
 def check_initial_conditions(initial_binary_table):
+    """Checks initial conditions and reports warnings
+
+        Only warning provided right now is if star begins in Roche lobe
+        overflow
+    """
     def rzamsf(m):
         """A function to evaluate Rzams
         ( from Tout et al., 1996, MNRAS, 281, 257 ).
@@ -671,3 +676,84 @@ def check_initial_conditions(initial_binary_table):
         warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
 
     return
+
+def convert_kstar_evol_type(bpp):
+    """Provides way to convert integer values to their string counterpart
+
+        The underlying fortran code relies on integers to indicate
+        things like the evoltuionary stage of the star as well as
+        key moments in its evolutionary track. If you pass the
+        data frame returned from running
+
+            ```Evolve.evolve```
+
+        you can convert the columns with these integer proxies
+        to their true astrophysical meaning.
+    """
+    kstar_int_to_string_dict = {
+        0 : 'Main Sequence (MS), < 0.7 M⊙',
+        1 : 'MS, > 0.7 M⊙',
+        2 : 'Hertzsprung Gap',
+        3 : 'First Giant Branch',
+        4 : 'Core Helium Burning',
+        5 : 'Early Asymptotic Giant Branch (AGB)',
+        6 : 'Thermally Pulsing AGB',
+        7 : 'Naked Helium Star MS',
+        8 : 'Naked Helium Star Hertzsprung Gap',
+        9 : 'Naked Helium Star Giant Branch',
+        10 : 'Helium White Dwarf',
+        11 : 'Carbon/Oxygen White Dwarf',
+        12 : 'Oxygen/Neon White Dwarf',
+        13 : 'Neutron Star',
+        14 : 'Black Hole',
+        15 : 'Massless Remnant',
+    }
+
+    kstar_string_to_int_dict = {v:k for k,v in kstar_int_to_string_dict.items()}
+
+    evolve_type_int_to_string_dict = {
+        1 : 'initial state',
+        2 : 'kstar change',
+        3 : 'begin Roche lobe overflow',
+        4 : 'end Roche lobe overlow',
+        5 : 'contact',
+        6 : 'coalescence',
+        7 : 'begin common envelope',
+        8 : 'end common envelope',
+        9 : 'no remnant leftover',
+        10 : 'max evolution time',
+        11 : 'binary disruption',
+        12 : 'begin symbiotic phase',
+        13 : 'end symbiotic phase',
+        14 : 'blue straggler',
+        15 : 'supernova of primary',
+        16 : 'supernova of secondary',
+    }
+
+    evolve_type_string_to_int_dict = {v:k for k,v in evolve_type_int_to_string_dict.items()}
+
+    if bpp.kstar_1.dtype in [int,float]:
+        # convert from integer to string
+        bpp['kstar_1'] = bpp['kstar_1'].astype(int)
+        bpp['kstar_1'] = bpp['kstar_1'].apply(lambda x: kstar_int_to_string_dict[x])
+    else:
+        # convert from string to integer
+        bpp['kstar_1'] = bpp['kstar_1'].apply(lambda x: kstar_string_to_int_dict[x])
+
+    if bpp.kstar_2.dtype in [int,float]:
+        # convert from integer to string
+        bpp['kstar_2'] = bpp['kstar_2'].astype(int)
+        bpp['kstar_2'] = bpp['kstar_2'].apply(lambda x: kstar_int_to_string_dict[x])
+    else:
+        # convert from string to integer
+        bpp['kstar_2'] = bpp['kstar_2'].apply(lambda x: kstar_string_to_int_dict[x])
+
+    if bpp.evol_type.dtype in [int,float]:
+        # convert from integer to string
+        bpp['evol_type'] = bpp['evol_type'].astype(int)
+        bpp['evol_type'] = bpp['evol_type'].apply(lambda x: evolve_type_int_to_string_dict[x])
+    else:
+        # convert from string to integer
+        bpp['evol_type'] = bpp['evol_type'].apply(lambda x: evolve_type_string_to_int_dict[x])
+
+    return bpp
