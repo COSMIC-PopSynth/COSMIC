@@ -980,11 +980,17 @@
 *
       loggammae = -4.813d0 + LOG10(1+xh) + LOG10(lum) - LOG10(m)
       gammae = 10.0d0**(loggammae)
+      if(gammae.gt.1d0)then
+         gammae = 1d0
+      endif
+
+* calculate metallicity scaling parameter alpha
       if(gammae.lt.(2.d0/3.d0))then
          eddlimalpha = 0.85d0
-      else
+      elseif(gammae.ge.(2.d0/3.d0))then
          eddlimalpha = 2.45d0 - (2.4d0 * gammae)
       endif
 *
+      write(*,*), gammae,eddlimalpha,m,lum,xh
       return
       end

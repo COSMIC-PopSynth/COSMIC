@@ -35,7 +35,12 @@
          if(lum.gt.4000.d0)then
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
-            dms = dms*(z/0.02d0)**(1.d0/2.d0)
+            if(eddlimflag.eq.0)then
+               alpha = 0.5d0
+            elseif(eddlimflag.eq.1)then
+               alpha = eddlimalpha(mt,lum,xh)
+            endif
+            dms = dms*(z/0.02d0)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
@@ -93,7 +98,12 @@
                x = 0.1d0/500.d0
             endif !or is it simply x = Min(1, lum/500)?
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
-            dms = dms*(z/0.02d0)**(1.d0/2.d0)
+            if(eddlimflag.eq.0)then
+               alpha = 0.5d0
+            elseif(eddlimflag.eq.1)then
+               alpha = eddlimalpha(mt,lum,xh)
+            endif
+            dms = dms*(z/0.02d0)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
@@ -149,7 +159,12 @@
 * for massive stars over the entire HRD after OB stars accounted for.
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
-            dms = dms*(z/0.02d0)**(1.d0/2.d0)
+            if(eddlimflag.eq.0)then
+               alpha = 0.5d0
+            elseif(eddlimflag.eq.1)then
+               alpha = eddlimalpha(mt,lum,xh)
+            endif
+            dms = dms*(z/0.02d0)**(alpha)
             testflag = 1
          endif
          if(kw.ge.2.and.kw.le.6)then
