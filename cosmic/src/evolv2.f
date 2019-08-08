@@ -8,7 +8,7 @@
      \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
+     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,mlmetflagtmp,
      \ dtptmp,idumtmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -226,7 +226,7 @@
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       LOGICAL switchedCE
-      INTEGER qcflagtmp,eddlimflagtmp
+      INTEGER qcflagtmp,mlmetflagtmp
       INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
@@ -268,7 +268,7 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       windflag = windflagtmp
       qcflag = qcflagtmp
-      eddlimflag = eddlimflagtmp
+      mlmetflag = mlmetflagtmp
       dtp = dtptmp
       idum1 = idumtmp
 
