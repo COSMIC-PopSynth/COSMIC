@@ -159,8 +159,8 @@ class Evolve(Table):
             initialbinarytable['windflag'] = BSEDict['windflag']
         if 'qcflag' not in initialbinarytable.keys():
             initialbinarytable['qcflag'] = BSEDict['qcflag']
-        if 'mlmetflag' not in initialbinarytable.keys():
-            initialbinarytable['mlmetflag'] = BSEDict['mlmetflag']
+        if 'eddlimflag' not in initialbinarytable.keys():
+            initialbinarytable['eddlimflag'] = BSEDict['eddlimflag']
         if 'dtp' not in initialbinarytable.keys():
             initialbinarytable['dtp'] = kwargs.pop('dtp', initialbinarytable['tphysf'])
         if 'randomseed' not in initialbinarytable.keys():
@@ -195,7 +195,7 @@ class Evolve(Table):
                                                 'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                                                 'natal_kick_array', 'qcrit_array',
                                                 'beta', 'xi', 'acc2', 'epsnov',
-                                                'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'mlmetflag', 'dtp',
+                                                'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag', 'dtp',
                                                 'randomseed', 'bin_num']].values
 
         initial_binary_table_column_names = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
@@ -205,7 +205,7 @@ class Evolve(Table):
                                              'mxns', 'pts1', 'pts2', 'pts3',
                                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                                              'beta', 'xi', 'acc2', 'epsnov',
-                                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'mlmetflag', 'dtp',
+                                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag', 'dtp',
                                              'randomseed', 'bin_num']
 
         initial_binary_table_column_names.extend(natal_kick_columns)
