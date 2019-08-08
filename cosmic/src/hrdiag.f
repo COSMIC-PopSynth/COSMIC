@@ -640,12 +640,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         if(mcbagb.ge.pisn.and.mcbagb.lt.65.d0)then
                            mt = pisn
                            mc = pisn
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mcbagb.ge.65.d0.and.mcbagb.lt.135.d0)then
                            mt = 0.d0
                            mc = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         endif
 * The Spera+Mapelli2017 prescription is a tad more sophisticated:
 * complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
@@ -662,32 +662,32 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         elseif(frac.lt.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = 0.2d0*(kappa-1.d0)*mcbagb +
      &                              0.2d0*(37.d0 - 32.d0*kappa)
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.lt.0.9d0.and.mcbagb.le.60.d0)then
                            alphap = kappa
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.lt.0.9d0.and.mcbagb.lt.64.d0)then
                            alphap = kappa*(-0.25d0)*mcbagb + kappa*16.d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mcbagb.le.37.d0)then
                            alphap = sappa*(mcbagb - 32.d0) + 1.d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mcbagb.le.56.d0.and.
      &                         sappa.lt.-0.034168d0)then
                            alphap = 5.d0*sappa + 1.d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mcbagb.le.56.d0.and.
      &                         sappa.ge.-0.034168d0)then
                            alphap = (-0.1381d0*frac + 0.1309d0)*
      &                              (mcbagb - 56.d0) + 0.82916d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mcbagb.lt.64.d0)then
                            alphap = -0.103645d0*mcbagb + 6.63328d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mcbagb.ge.64.d0.and.mcbagb.lt.135.d0)then
                            alphap = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         elseif(mcbagb.ge.135.d0)then
                            alphap = 1.0d0
                         endif
@@ -706,12 +706,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            + 2.51918414d-5*mcbagb**7d0
      &                            - 7.85424404d-8*mcbagb**8d0
                            mt = polyfit
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mcbagb.gt.54.48d0.and.
      &                         mcbagb.lt.113.29d0)then
                            mt = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         endif
 
 * Fit (8th order polynomial) to Table 5 in Woosley2019.
@@ -727,12 +727,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            + 1.08052344d-5*mcbagb**7d0
      &                            - 3.11019088d-8*mcbagb**8d0
                            mt = polyfit
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mcbagb.gt.60.12d0.and.
      &                         mcbagb.lt.135.d0)then
                            mt = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         endif
                      endif
 
@@ -954,12 +954,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         if(mc.ge.pisn.and.mc.lt.65.d0)then
                            mt = pisn
                            mc = pisn
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mc.ge.65.d0.and.mc.lt.135.d0)then
                            mt = 0.d0
                            mc = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         endif
 * The Spera+Mapelli2017 prescription is a tad more sophisticated:
 * complex fitting formula to Stan Woosley's PSN models.  HOWEVER, these
@@ -974,36 +974,36 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         sappa = 0.5226d0*frac - 0.52974d0
                         if(mc.le.32.d0)then
                            alphap = 1.0d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.lt.0.9d0.and.mc.le.37.d0)then
                            alphap = 0.2d0*(kappa-1.d0)*mc +
      &                              0.2d0*(37.d0 - 32.d0*kappa)
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.lt.0.9d0.and.mc.le.60.d0)then
                            alphap = kappa
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.lt.0.9d0.and.mc.lt.64.d0)then
                            alphap = kappa*(-0.25d0)*mc+ kappa*16.d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mc.le.37.d0)then
                            alphap = sappa*(mc- 32.d0) + 1.d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mc.le.56.d0.and.
      &                         sappa.lt.-0.034168d0)then
                            alphap = 5.d0*sappa + 1.d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mc.le.56.d0.and.
      &                         sappa.ge.-0.034168d0)then
                            alphap = (-0.1381d0*frac + 0.1309d0)*
      &                              (mc- 56.d0) + 0.82916d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(frac.ge.0.9d0.and.mc.lt.64.d0)then
                            alphap = -0.103645d0*mc+ 6.63328d0
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mc.ge.64.d0.and.mc.lt.135.d0)then
                            alphap = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         elseif(mc.ge.135.d0)then
                            alphap = 1.0d0
                         endif
@@ -1023,11 +1023,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            + 2.51918414d-5*mc**7d0
      &                            - 7.85424404d-8*mc**8d0
                            mt = polyfit
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mc.gt.54.48d0.and.mc.lt.113.29d0)then
                            mt = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         endif
 
 * Fit (8th order polynomial) to Table 5 in Woosley2019.
@@ -1043,11 +1043,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            + 1.08052344d-5*mc**7d0
      &                            - 3.11019088d-8*mc**8d0
                            mt = polyfit
-                           pisn_track(kidx)=8
+                           pisn_track(kidx)=6
                         elseif(mc.gt.60.12d0.and.mc.lt.135.d0)then
                            mt = 0.d0
                            kw = 15
-                           pisn_track(kidx)=9
+                           pisn_track(kidx)=7
                         endif
                      endif
 
