@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,natal_kick)
+     &                r2,fallback,bkick,natal_kick,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -62,7 +62,7 @@
 * Output
       real*8 v1xout,v1yout,v1zout,vkout1,vkout2
       real*8 v2xout,v2yout,v2zout
-      logical output
+      logical output,disrupt
 *
       real*8 bkick(20)
       real*8 natal_kick(6)
@@ -199,13 +199,6 @@
              vk = vk * mxns / m1n
              vk2 = vk*vk
           endif
-      endif
-
-* Set natal kick magnitude in the bkick array
-      if(bkick(1).le.0.d0)then
-        bkick(13) = vk
-      elseif(bkick(5).le.0.d0)then
-        bkick(14) = vk
       endif
 
       sigma = sigmah
@@ -573,6 +566,36 @@
 * Set systemic velocities in the bkick array
       bkick(15) = vkout1
       bkick(16) = vkout2
+* Set natal kick magnitude in the bkick array
+*       SURVIVES FIRST SN
+        if(bkick(1).eq.1.d0.and.bkick(5).eq.0.d0.and.
+     &         bkick(9).eq.0.d0)then
+            bkick(13) = vk
+*       DISRUPTS FIRST SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
+     &         bkick(9).eq.0.d0)then
+            bkick(13) = vk
+            disrupt = .true.
+*       SURVIVES SECOND SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
+     &         bkick(9).eq.0.d0)then
+            bkick(14) = vk
+*       DISRUPTS SECOND SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
+     &         bkick(9).eq.2.d0)then
+            bkick(14) = vk
+            disrupt = .true.
+*       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
+     &         bkick(9).eq.2.d0)then
+            bkick(14) = vk
+        endif
+
+      if(bkick(1).le.0.d0)then
+        bkick(13) = vk
+      elseif(bkick(5).le.0.d0)then
+        bkick(14) = vk
+      endif
 * Set the total final systemic velocities in the bkick array
       if(ecc.lt.1.d0.and.bkick(1).eq.1.d0.and.bkick(5).eq.2.d0)then
          bkick(17) = SQRT((bkick(2)+bkick(6))*(bkick(2)+bkick(6))+
