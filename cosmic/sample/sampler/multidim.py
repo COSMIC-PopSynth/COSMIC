@@ -559,7 +559,7 @@ class MultiDim:
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
                         ecc_list.append(mye)
-                    mass_binares += myM1
+                    mass_binaries += myM1
                     mass_binaries += myq * myM1
                     n_binaries += 1
                 else:
