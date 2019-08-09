@@ -142,40 +142,48 @@ Each of the below sections lists the valid options and a description of what the
 
     WIND FLAGS
 
-============  ============================================================
-``windflag``  windflag=0: bse (as outlined in SSE paper),
+==============  ============================================================
+``windflag``    windflag=0: bse (as outlined in SSE paper),
 
-              windflag=1: StarTrack (`Belczynski et al. 2010 <http://iopscience.iop.org/article/10.1088/0004-637X/714/2/1217/meta>`_)
+                windflag=1: StarTrack (`Belczynski et al. 2010 <http://iopscience.iop.org/article/10.1088/0004-637X/714/2/1217/meta>`_)
 
-              windflag=2: Vink (`Vink et al 2001 <http://adsabs.harvard.edu/abs/2001A&amp;A...369..574V>`_)
+                windflag=2: Vink (`Vink et al 2001 <http://adsabs.harvard.edu/abs/2001A&amp;A...369..574V>`_)
 
-              windflag=3: Vink+2005 (Vink plus LBV winds)
+                windflag=3: Vink+2005 (Vink plus LBV winds)
 
-              **default=3**
-``neta``      *neta* is the Reimers mass-loss coefficent.
-              `Equation 106 SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_ (due to a typo there's an extra :math:`{\eta}` out front. The rate is directly proportional to :math:`{\eta}`).
-              See `Section Vb <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1978A%26A....70..227K&link_type=ARTICLE&db_key=AST&high=#page=12>`_ in Kudritzki R. P., Reimers D., 1978, A&A, 70, 227 for discussion.
+                **default=3**
+``eddlimflag``
+                eddlimflag turns on metallicity dependence on winds, affecting the
+                mass-loss rate of low-metallicity stars near the Eddington limit
+                (see Grafener et al. 2011, Giacobbo et al. 2017)
 
-              **default=0.5**
-``bwind``     *bwind* is the binary enhanced mass loss parameter. See `Equation 12 BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
-              **Defaults to 0, inactive for single**
-``hewind``    *hewind* is the helium star mass loss parameter. 10\ :sup:`-13` hewind L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_.
+                eddlimflag = 0 off (**default**)
 
-              **default=1.0**
-``beta``      *beta* is the wind velocity factor. v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+                eddlimflag = 1 on
+``neta``        *neta* is the Reimers mass-loss coefficent.
+                `Equation 106 SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_ (due to a typo there's an extra :math:`{\eta}` out front. The rate is directly proportional to :math:`{\eta}`).
+                See `Section Vb <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1978A%26A....70..227K&link_type=ARTICLE&db_key=AST&high=#page=12>`_ in Kudritzki R. P., Reimers D., 1978, A&A, 70, 227 for discussion.
 
-              beta<0: follows StarTrack 2008
+                **default=0.5**
+``bwind``       *bwind* is the binary enhanced mass loss parameter. See `Equation 12 BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+                **Defaults to 0, inactive for single**
+``hewind``      *hewind* is the helium star mass loss parameter. 10\ :sup:`-13` hewind L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_.
 
-              beta=0.125: BSE default
+                **default=1.0**
+``beta``        *beta* is the wind velocity factor. v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
 
-              **default=-1.0**
-``xi``        *xi* is the wind accretion efficiency factor. It gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion. Corresponds to :math:`{\mu}`\ :sub:`w` in `Equation 11 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+                beta<0: follows StarTrack 2008
 
-              **default=0.5**
-``acc2``      *acc2* is the Bondi-Hoyle wind accretion factor. The mean wind accretion rate onto the secondary is proportional to acc2. See `Equation 6 in BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=2>`_.
+                beta=0.125: BSE default
 
-              **default=1.5**
-============  ============================================================
+                **default=-1.0**
+``xi``          *xi* is the wind accretion efficiency factor. It gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion. Corresponds to :math:`{\mu}`\ :sub:`w` in `Equation 11 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+
+                **default=0.5**
+``acc2``        *acc2* is the Bondi-Hoyle wind accretion factor. The mean wind accretion rate onto the secondary is proportional to acc2. See `Equation 6 in BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=2>`_.
+
+                **default=1.5**
+==============  ============================================================
 
 .. code-block:: ini
 
