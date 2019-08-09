@@ -8,7 +8,7 @@
      \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
      \ dtptmp,idumtmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -226,7 +226,7 @@
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       LOGICAL switchedCE,disrupt
-      INTEGER qcflagtmp
+      INTEGER qcflagtmp,eddlimflagtmp
       INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
@@ -268,6 +268,7 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       windflag = windflagtmp
       qcflag = qcflagtmp
+      eddlimflag = eddlimflagtmp
       dtp = dtptmp
       idum1 = idumtmp
 
@@ -604,7 +605,7 @@ component.
                rlperi = rol(k)*(1.d0-ecc)
                if(ST_tide.gt.1) rlperi = rol(k)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z,zpars(11))
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -971,7 +972,7 @@ component.
             if(neta.gt.tiny)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z,zpars(11))
             else
                dmr(k) = 0.d0
             endif
@@ -1279,7 +1280,7 @@ component.
 *
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
-            if(formation(k).ne.11) formation(k) = 4
+            if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
@@ -1289,7 +1290,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
@@ -1300,7 +1301,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
 * MIC
@@ -1310,7 +1311,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1319,14 +1320,14 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                elseif(merger.ge.20.d0)then
                   sigma = merger
                   fallback = 0.d0
                   if(merger.ge.200.d0)then!estimate CC SN
-                     formation(k) = 4
+                     formation(k) = 1
                   else
-                     formation(k) = 7
+                     formation(k) = 5
                   endif
                elseif(merger.le.-20.d0)then
                   sigma = ABS(merger)
@@ -1334,9 +1335,9 @@ component.
                   if(merger.ge.200.d0)then!estimate CC SN
 *Sourav:Possible bug in the line above. merger should really be sigms!!
 *                  if(sigma.ge.200.d0)then!estimate CC SN
-                     formation(k) = 4
+                     formation(k) = 1
                   else
-                     formation(k) = 7
+                     formation(k) = 5
                   endif
                endif
             elseif(kw.eq.13.and.aic.gt.0)then
@@ -1348,7 +1349,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1357,15 +1358,15 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                endif
             elseif(ABS(merger).ge.20.d0)then
                sigma = ABS(merger)
                fallback = 0.d0
                if(merger.ge.200.d0)then!estimate CC SN
-                  formation(k) = 4
+                  formation(k) = 1
                else
-                  formation(k) = 7
+                  formation(k) = 5
                endif
             endif
             if(sgl)then
@@ -2448,7 +2449,7 @@ component.
                endif
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z,tphys)
+     &                         mass(k),massc(k),rlperi,z,zpars(11))
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
@@ -3104,7 +3105,7 @@ component.
          if(kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14))then
             dms(k) = mass(k) - mt
-            if(formation(k).ne.11) formation(k) = 4
+            if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
@@ -3114,7 +3115,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
@@ -3125,7 +3126,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -3134,7 +3135,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -3143,7 +3144,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                endif
             endif
 
