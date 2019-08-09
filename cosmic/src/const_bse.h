@@ -14,9 +14,10 @@
       INTEGER pisn_track(2)
       COMMON /TRACKERS/ pisn_track
 *
-      REAL*8 neta,bwind,hewind,mxns,beta,xi,acc2,epsnov,eddfac,gamma
+      REAL*8 neta,bwind,hewind,mxns,beta,xi,acc2,epsnov
+      REAL*8 eddfac,gamma,eddlimflag
       COMMON /WINDVARS/ neta,bwind,hewind,mxns,beta,xi,acc2,epsnov
-      COMMON /WINDVARS/ eddfac,gamma
+      COMMON /WINDVARS/ eddfac,gamma,eddlimflag
       REAL*8 alpha1,lambda
       COMMON /CEVARS/ alpha1,lambda
       REAL*8 bconst,CK
