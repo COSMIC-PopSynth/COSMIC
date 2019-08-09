@@ -99,8 +99,8 @@ def match(dataCm):
     return match[0], binwidth;
 
 def perform_convergence(conv_params, bin_states, conv_filter,\
-                        bcm_save, bcm_save_filtered,\
-                        bpp_save, final_kstar_1, final_kstar_2, log_file):
+                        bcm_save_tot, bcm_save_last,\
+                        bpp_save_tot, final_kstar_1, final_kstar_2, log_file):
     """Performs the convergence calculations for each convergence parameter
        and binary state
 
@@ -112,11 +112,11 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
            List of user supplied binary states
        conv_filter : dict
            List of user supplied convergence filters
-       bcm_save : DataFrame
+       bcm_save_tot : DataFrame
            Cumulative data set of bcm arrays
-       bcm_save_filtered : DataFrame
+       bcm_save_last : DataFrame
            Most recent data set of bcm array from most recent BSE run
-       bpp_save : DataFrame
+       bpp_save_tot : DataFrame
            Cumulative data set of bpp arrays
        log_file : file write
            File to log matches or if the convergence params are not appropriate
@@ -130,36 +130,54 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
 
     match_lists = []
     for bin_state in bin_states:
-        bcm_save_conv = bcm_save.loc[bcm_save.bin_state==bin_state]
-        bcm_save_filtered_conv = bcm_save_filtered.loc[bcm_save_filtered.bin_state==bin_state]
-        bcm_conv_1, bcm_conv_2 = bcm_conv_select(bcm_save_conv, bcm_save_filtered_conv, conv_filter)
-        if (bin_state == 1) or (bin_state == 2):
-           # select the formation parameters of the mergers and disruptions
+        bcm_save_tot_conv = bcm_save_tot.loc[bcm_save_tot.bin_state==bin_state]
+        bcm_save_last_conv = bcm_save_last.loc[bcm_save_last.bin_state==bin_state]
+        bpp_save_tot_conv = bpp_save_tot.loc[bpp_save_tot.bin_num.isin(bcm_save_tot_conv.bin_num)]
+        if bin_state == 1:
+            conv_filter = {'formation' : True}
+        elif bin_state == 2:
+            conv_filter = {'disruption' : True}    
+        else:
+            # bin_state == 0
+            if (conv_filter['formation'] & conv_filter['1_SN']) or
+               (conv_filter['formation'] & conv_filter['2_SN']) or
+               (conv_filter['formation'] & conv_filter['disruption']) or
+               (conv_filter['formation'] & conv_filter['final_state']) or
+               (conv_filter['formation'] & conv_filter['XRB_form']) or
+               (conv_filter['1_SN'] & conv_filter['2_SN']) or
+               (conv_filter['1_SN'] & conv_filter['final_state']) or
+               (conv_filter['1_SN'] & conv_filter['XRB_form']) or
+               (conv_filter['2_SN'] & conv_filter['final_state']) or
+               (conv_filter['2_SN'] & conv_filter['XRB_form']) or
+               (conv_filter['final_state'] & conv_filter['XRB_form']) :
+                raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
 
-           # select out the bpp arrays of interest
-           bpp_conv_1 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_1.bin_num)]
-           bpp_conv_2 = bpp_save.loc[bpp_save.bin_num.isin(bcm_conv_2.bin_num)]
-
-           # note that we compute the match for values other than the bcm array
-           bcm_conv_1 = bpp_conv_1.loc[(bpp_conv_1.kstar_1.isin(final_kstar_1)) &\
-                                       (bpp_conv_1.kstar_2.isin(final_kstar_2))]
-           bcm_conv_2 = bpp_conv_2.loc[(bpp_conv_2.kstar_1.isin(final_kstar_1)) &\
-                                       (bpp_conv_2.kstar_2.isin(final_kstar_2))]
-
-           # select the formation parameters
-           bcm_conv_1 = bcm_conv_1.groupby('bin_num').first()
-           bcm_conv_2 = bcm_conv_2.groupby('bin_num').first()
-
+        conv_1, conv_2 = bcm_conv_select(bcm_save_tot_conv, bcm_save_last_conv,\
+                                         bpp_save_tot_conv, final_kstar_1, \
+                                         final_kstar_2, conv_filter)
+        
         # Perform the Match calculations for all interested parameters
         # supplied by user in conv_params
-        if len(bcm_conv_2) > 3:
+        if len(conv_2) > 3:
             match_all = []
             for conv_param in conv_params:
-                close_test = np.isclose(bcm_conv_1[conv_param],  bcm_conv_1[conv_param].mean())
-                if close_test.all():
-                    log_file.write('convergence param: {0} for all bcm is {1}\n'.format(conv_param,\
-                                    np.mean(bcm_conv_1[conv_param])))
+                if (conv_param == 'ecc') and (np.all(conv_1[conv_param] < 1e-7)) and (np.all(conv_1[conv_param] >=0.0) and (bin_state == 0):
+                    log_file.write('{0} is circular for all binstate {1} binaries\n'.format(conv_param, \
+                                                                                            bin_state))
                     match_all.append(-9)
+                elif (conv_param == 'ecc') and (bin_state >= 1):
+                    log_file.write('{0} is the same for all binstate {1} binaries\n'.format(conv_param, \
+                                                                                            bin_state))
+                    match_all.append(-9)
+                elif (conv_param == 'porb') and (bin_state >= 1):
+                    log_file.write('{0} is the same for all binstate {1} binaries\n'.format(conv_param, \
+                                                                                            bin_state))
+                    match_all.append(-9)
+                elif (conv_param == 'sep') and (bin_state >= 1):
+                    log_file.write('{0} is the same for all binstate {1} binaries\n'.format(conv_param, \
+                                                                                            bin_state))
+                    match_all.append(-9)
+
                 else:
                     match_compute, bw = match([dat_transform(bcm_conv_1, [conv_param])[0].tolist(),\
                                                dat_transform(bcm_conv_2, [conv_param])[0].tolist()])
