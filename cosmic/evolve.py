@@ -246,12 +246,12 @@ class Evolve(Table):
         # either a dictionary or an inifile or add more columns
         if not BSEDict:
             if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
-                (not set(INITIAL_BINARY_TABLE_PASS_COLUMNS).issubset(initialbinarytable.columns))):
+                (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
                 raise ValueError("You are passing BSE parameters as columns in the "
                                  "initial binary table but not all BSE parameters are defined. "
                                  "Please pass a BSEDict or a params file or make sure "
                                  "you have all BSE parameters as columns {0} or {1}.".format(
-                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_BINARY_TABLE_PASS_COLUMNS))
+                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
 
         # If you did not supply the natal kick or q crit array in the BSEdict then we construct
         # it from the initial conditions table
