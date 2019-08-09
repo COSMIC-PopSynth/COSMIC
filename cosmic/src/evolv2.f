@@ -8,7 +8,7 @@
      \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
      \ dtptmp,idumtmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -226,7 +226,7 @@
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       LOGICAL switchedCE,disrupt
-      INTEGER qcflagtmp
+      INTEGER qcflagtmp,eddlimflagtmp
       INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
@@ -268,6 +268,7 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       windflag = windflagtmp
       qcflag = qcflagtmp
+      eddlimflag = eddlimflagtmp
       dtp = dtptmp
       idum1 = idumtmp
 
@@ -604,7 +605,7 @@ component.
                rlperi = rol(k)*(1.d0-ecc)
                if(ST_tide.gt.1) rlperi = rol(k)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z,zpars(11))
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -971,7 +972,7 @@ component.
             if(neta.gt.tiny)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z,zpars(11))
             else
                dmr(k) = 0.d0
             endif
@@ -2448,7 +2449,7 @@ component.
                endif
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z,tphys)
+     &                         mass(k),massc(k),rlperi,z,zpars(11))
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)

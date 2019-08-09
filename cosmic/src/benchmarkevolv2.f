@@ -17,6 +17,7 @@
         INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
         INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp,qcflagtmp
         INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
+        INTEGER eddlimflagtmp
 
         kstar1 = 1; kstar2 = 1; mass1 = 33.41813720577207;
         mass2 = 27.46995284892487; tb = 673.3728182337667
@@ -34,7 +35,7 @@
         betatmp = -1.0; xitmp = 0.5; acc2tmp = 1.5; epsnovtmp = 0.001
         eddfactmp = 1.0; gammatmp = -2.0
         bconsttmp = -3000; CKtmp = -1000; windflagtmp = 3; qcflagtmp = 1
-        dtptmp = 13700.d0; idumtmp = 113271
+        eddlimflagtmp = 0; dtptmp = 13700.d0; idumtmp = 113271
         bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
@@ -46,7 +47,7 @@
      & ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      & natal_kick_array,qcrit_array,betatmp,xitmp,
      & acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     & bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     & bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
      & dtptmp,idumtmp,bppout,bcmout)
 
         kstar1 = 1; kstar2 = 1; mass1 = 53.4;
@@ -65,7 +66,7 @@
         betatmp = -1.0; xitmp = 0.5; acc2tmp = 1.5; epsnovtmp = 0.001
         eddfactmp = 1.0; gammatmp = -2.0
         bconsttmp = -3000; CKtmp = -1000; windflagtmp = 3; qcflagtmp = 1
-        dtptmp = 13700.d0; idumtmp = 121025
+        eddlimflagtmp = 0; dtptmp = 13700.d0; idumtmp = 121025
         bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
@@ -77,6 +78,6 @@
      & ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      & natal_kick_array,qcrit_array,betatmp,xitmp,
      & acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     & bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     & bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
      & dtptmp,idumtmp,bppout,bcmout)
         END PROGRAM benchmarkevolv2
