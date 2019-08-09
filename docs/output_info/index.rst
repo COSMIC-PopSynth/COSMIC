@@ -130,17 +130,19 @@ All values with a `_1` label refer to the primary; the BCM DataFrame also includ
 ``SNtheta_final``  Final systemic velocity angle [:math:`{\rm{degrees}}`]
 ``SN_1``           Supernova type:
 
-                   4: Fe Core-collapse SN
+                    1: Fe Core-collapse SN
 
-                   5: Electron capture SN
+                    2: Electron capture SN
 
-                   6: Accretion induced collapse SN
+                    3: Ultra-stripped supernovae (these happen whenever a He-star undergoes a CE with a compact companion)
 
-                   7: Merger induced collapse
+                    4: Accretion induced collapse SN
 
-                   8: Pulsational-pair instability
+                    5: Merger induced collapse
 
-                   9: Pair instability SN
+                    6: Pulsational-pair instability
+
+                    7: Pair instability SN
 ``bin_state``      State of the binary: 0 [binary], 1 [merged], 2 [disrupted]
 ``merger_type``    String of the kstar's in the merger, '-001' if not merged
 ``bin_num``        Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames 

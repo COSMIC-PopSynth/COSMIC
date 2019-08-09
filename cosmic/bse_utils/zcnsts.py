@@ -1,5 +1,26 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) Scott Coughlin (2017 - 2019)
+#
+# This file is part of cosmic.
+#
+# cosmic is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cosmic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy
 from . import zdata
+
+__author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
+__all__ = ['zcnsts']
 
 c = numpy.array([3.040581e-01, 8.049509e-02, 8.967485e-02, 8.780198e-02, 2.219170e-02])
 
