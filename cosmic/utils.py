@@ -38,8 +38,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     method : `dict`,
         one or more methods by which to filter the
-        bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
-        This means you do *not* want disrupted_binaries in your table
+        bpp or bcm table, e.g. ``{'select_final_state' : False}``;
+        This means you do *not* want to select the final state of the binaries in the bcm array
 
     kstar1_range : `list`
         list containing all kstar1 values to retain
@@ -52,10 +52,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     bcm : `pandas.DataFrame`
         filtered bcm dataframe
     """
-    _known_methods = ['mass_transfer_white_dwarf_to_co',
-                      'select_final_state',
-                      'binary_state',
-                      'lisa_sources']
+    _known_methods = ['select_final_state',
+                      'binary_state']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -64,16 +62,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
-        if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_save_1 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                  (bpp.kstar_2.isin([10,11,12])) &
-                                  (bpp.RROL_1 > 1)].bin_num.tolist()
-            idx_save_2 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                  (bpp.kstar_2.isin([10,11,12])) &
-                                  (bpp.RROL_1 > 2)].bin_num.tolist()
-            idx_save = np.intersect1d(idx_save_1, idx_save_2)
-            bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
-        elif (meth == 'select_final_state') and use:
+        if (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
             bin_num_save = []
@@ -102,14 +91,6 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
             bcm = bcm.loc[bcm.bin_state.isin(use)]
 
-        elif (meth == 'lisa_sources') and use:
-            if 0 in method['binary_state']:
-                bcm_0 = bcm.loc[bcm.bin_state==0]
-                bcm_0_LISAflag = bcm_0.loc[bcm_0.porb > 5].bin_num
-                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_LISAflag)]
-            else:
-                raise ValueError("You must have bin state = 0 for lisa"
-                                 "sources filter")
     return bcm, bin_state_fraction
 
 def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
