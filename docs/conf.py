@@ -34,16 +34,33 @@ sys.path.insert(0, os.path.abspath('.'))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
-    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.imgmath',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.inheritance_diagram',
+    'sphinx.ext.linkcode',
+    'sphinx.ext.ifconfig',
+    'sphinx_automodapi.automodapi',
+    'sphinxcontrib.programoutput',
+
+    'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.mathjax',
     'numpydoc',
-    'sphinxcontrib.programoutput',
 ]
+
+# -- Extensions ---------------------------------------------------------------
+
+# -- autodoc ------------------------------------
+
+autoclass_content = 'class'
+autodoc_default_flags = ['show-inheritance', 'members', 'inherited-members']
+
+# -- autosummary --------------------------------
+
+autosummary_generate = True
 
 # -- numpydoc -----------------------------------
 
@@ -334,3 +351,61 @@ intersphinx_mapping = {
     'matplotlib': ('http://matplotlib.org/', None),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
 }
+
+# -- linkcode -----------------------------------------------------------------
+
+def linkcode_resolve(domain, info):
+    """Determine the URL corresponding to Python object
+
+    This code is stolen with thanks from the scipy team.
+    """
+    if domain != 'py':
+        return None
+
+    modname = info['module']
+    fullname = info['fullname']
+
+    submod = sys.modules.get(modname)
+    if submod is None:
+        return None
+
+    obj = submod
+    for part in fullname.split('.'):
+        try:
+            obj = getattr(obj, part)
+        except:
+            return None
+    # try and sneak past a decorator
+    try:
+        obj = obj.im_func.func_closure[0].cell_contents
+    except (AttributeError, TypeError):
+        pass
+
+    try:
+        fn = inspect.getsourcefile(obj)
+    except:
+        fn = None
+    if not fn:
+        try:
+            fn = inspect.getsourcefile(sys.modules[obj.__module__])
+        except:
+            fn = None
+    if not fn:
+        return None
+
+    try:
+        source, lineno = inspect.findsource(obj)
+    except:
+        lineno = None
+
+    if lineno:
+        linespec = "#L%d" % (lineno + 1)
+    else:
+        linespec = ""
+
+    fn = os.path.relpath(fn, start=os.path.dirname(gwpy.__file__))
+    if fn.startswith(os.path.pardir):
+        return None
+
+    return ("http://github.com/gwpy/gwpy/tree/%s/gwpy/%s%s"
+            % (GWPY_VERSION['full-revisionid'], fn, linespec))

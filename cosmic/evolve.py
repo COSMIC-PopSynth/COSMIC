@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Scott Coughlin (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -22,7 +22,6 @@
 from cosmic import _evolvebin
 from . import utils
 
-from astropy.table import Table
 from configparser import ConfigParser
 from gwpy.utils import mp as mp_utils
 
@@ -33,8 +32,9 @@ import warnings
 import os
 import sys
 
-__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
-__credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
+__author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
+__credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
+               'Michael Zevin <zevin@northwestern.edu>']
 __all__ = ['Evolve']
 
 
@@ -79,7 +79,7 @@ QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
 
-class Evolve(Table):
+class Evolve(object):
     def __init__():
         '''
         initialize Evolve
@@ -87,33 +87,33 @@ class Evolve(Table):
 
     @classmethod
     def evolve(cls, initialbinarytable, **kwargs):
-        """After setting a number of initial conditions
-        we evolve the system.
+        """After setting a number of initial conditions we evolve the system.
 
         Parameters
         ----------
         initialbinarytable : DataFrame
+            Initial conditions of the binary
 
-        **kwargs :
+        **kwargs:
+            There are three ways to tell evolve and thus the fortran
+            what you want all the flags and other BSE specific
+            parameters to be. If you pass both a dictionary of flags and/or a inifile
+            and a table with the BSE parameters in the columns,
+            the column values will be overwritten by
+            what is in the dictionary or ini file.
 
-        There are three ways to tell evolve and thus the fortran
-        what you want all the flags and other BSE specific
-        parameters to be
+            NUMBER 1: PASS A DICTIONARY OF FLAGS
 
-        NUMBER 1: PASS A DICTIONARY OF FLAGS
+                 BSEDict
 
-             BSEDict
+            NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
 
-        NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
+                 All you need is the initialbinarytable if the all
+                 the BSE parameters are defined as columns
 
-             All you need is the initialbinarytable with columns,
-             If you pass both a dictionary of flags and/or a inifile
-             and a table with the columns, the column values will be
-             overwritten by what is in the dictionary or ini file
+            NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
 
-        NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
-
-            params
+                params
 
         randomseed : `int`, optional, default let numpy choose for you
             If you would like the random seed that the underlying fortran code
@@ -138,8 +138,10 @@ class Evolve(Table):
         -------
         output_bpp : DataFrame
             Evolutionary history of each binary
+
         output_bcm : DataFrame
             Final state of each binary
+
         initialbinarytable : DataFrame
             Initial conditions for each binary
         """
@@ -194,7 +196,7 @@ class Evolve(Table):
 
             BSEDict = dictionary['bse']
 
-        # error check the parameters you are trying to pass to BSE 
+        # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
         # then we will temporarily create a dictionary
         # in order to verify that the values in the table
@@ -233,7 +235,7 @@ class Evolve(Table):
                 initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
                 for kstar in range(0,16):
                     initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = pd.Series([BSEDict['qcrit_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='qcrit_{0}'.format(kstar))
-            else: 
+            else:
                 # assigning values this way work for most of the parameters.
                 kwargs1 = {k:v}
                 initialbinarytable = initialbinarytable.assign(**kwargs1)
