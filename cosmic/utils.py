@@ -93,7 +93,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     return bcm, bin_state_fraction
 
-def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, method):
+def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_kstar_2, method):
     """Select bcm data for special convergence cases
 
     Parameters
@@ -104,6 +104,15 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, method):
     bcm_save_last : `pandas.DataFrame`
         bcm dataframe containing bcm data from last
         iteration
+
+    bpp_save_tot : `pandas.DataFrame`
+        bpp dataframe containing all saved bpp data
+
+    final_kstar_1 : `list`
+        contains list of final primary kstars specified by user
+
+    final_kstar_2 : `list`
+        contains list of final primary kstars specified by user
 
     method : `dict`,
         one or more methods by which to filter the
