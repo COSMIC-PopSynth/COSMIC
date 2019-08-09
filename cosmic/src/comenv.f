@@ -458,12 +458,16 @@
      &                  SEP**(3d0/2d0)
                     Mcf = (1d0/(400d0*Porbi)+0.49d0)*MF -
      &                  ((0.016d0/Porbi) - 0.106d0)
-                    if(Porbi.le.2d0)then
+                    if(Porbi.le.2d0.and.Porbi.gt.0.06d0)then
                         Menvf = 0.18d0*Porbi**(0.45d0) *
      &                      (LOG(Mcf**4d0) - 1.05d0)
-                    else
+                    elseif(Porbi.gt.2.d0)then
                         Menvf = Mcf*(LOG(Porbi**(-0.2d0))+1) +
      &                      LOG(Porbi**(0.5d0))-1.5d0
+                    elseif(Porbi.le.0.06d0)then
+*                       outside range of validity, use BSE masses
+                        Menvf = 0d0
+                        Mcf = MC1
                     endif
                     qi = MF/M2
 * if cehestarflag is 1, use BSEs calculation of post-CE core mass
@@ -472,7 +476,12 @@
                         qf = MC1/M2
 * elseif cehestarflag is 2, use Tauris fitting formula for post-CE mass
                     elseif(cehestarflag.eq.2)then
-                        M_postCE = (Mcf+Menvf)
+*                   first, check that the mass is more than core mass
+                        if((Mcf+Menvf).lt.MC1)then
+                           M_postCE = MC1
+                        else
+                           M_postCE = (Mcf+Menvf)
+                        endif
                         qf = (Mcf+Menvf)/M2
                     endif
                     Porbf = (((qi+1)/(qf+1))**(2d0) * (qi/qf)**(3d0) *
