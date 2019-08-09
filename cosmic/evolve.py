@@ -62,8 +62,8 @@ INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_
                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                              'natal_kick_array', 'qcrit_array',
                              'beta', 'xi', 'acc2', 'epsnov',
-                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'dtp',
-                             'randomseed', 'bin_num']
+                             'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag',
+                             'dtp', 'randomseed', 'bin_num']
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
@@ -206,6 +206,7 @@ class Evolve(Table):
         # in Roche Lobe overflow
         utils.check_initial_conditions(initialbinarytable)
 
+
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
         if 'dtp' not in initialbinarytable.keys():
@@ -245,12 +246,12 @@ class Evolve(Table):
         # either a dictionary or an inifile or add more columns
         if not BSEDict:
             if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
-                (not set(INITIAL_BINARY_TABLE_PASS_COLUMNS).issubset(initialbinarytable.columns))):
+                (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
                 raise ValueError("You are passing BSE parameters as columns in the "
                                  "initial binary table but not all BSE parameters are defined. "
                                  "Please pass a BSEDict or a params file or make sure "
                                  "you have all BSE parameters as columns {0} or {1}.".format(
-                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_BINARY_TABLE_PASS_COLUMNS))
+                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
 
         # If you did not supply the natal kick or q crit array in the BSEdict then we construct
         # it from the initial conditions table
@@ -277,7 +278,7 @@ class Evolve(Table):
                                                f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                                f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
                                                f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39],
-                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47], f[48])
+                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47], f[48], f[49])
 
                 try:
                     bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
@@ -288,8 +289,8 @@ class Evolve(Table):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[49]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[49]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[50]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[50]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
