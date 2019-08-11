@@ -516,11 +516,6 @@ def error_check(BSEDict, filters=None, convergence=None):
 
     # filters
     if filters is not None:
-        flag='mass_transfer_white_dwarf_to_co'
-        if flag in filters.keys():
-            if filters[flag] not in [True,False]:
-                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
-
         flag='select_final_state'
         if flag in filters.keys():
             if filters[flag] not in [True,False]:
@@ -533,7 +528,32 @@ def error_check(BSEDict, filters=None, convergence=None):
 
     # convergence
     if convergence is not None:
-        flag='lisa_convergence'
+        flag='formation'
+        if flag in convergence.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+
+        flag='1_SN'
+        if flag in convergence.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+      
+        flag='2_SN'
+        if flag in convergence.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+
+        flag='disruption'
+        if flag in convergence.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+
+        flag='final_state'
+        if flag in convergence.keys():
+            if convergence[flag] not in [True,False]:
+                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+
+        flag='XRB_form'
         if flag in convergence.keys():
             if convergence[flag] not in [True,False]:
                 raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
