@@ -159,7 +159,7 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, fi
         elif meth == '1_SN' and use:
             # select out the systems which will undergo a supernova
             conv_tot_sn_ind = bpp_save_tot.loc[bpp_save_tot.evol_type.isin([15.0, 16.0])].bin_num
-            conv_last_sn_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0]).bin_num
+            conv_last_sn_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0])].bin_num
 
             # select out the systems which will produce the user specified final kstars
             # and undergo a supernova
@@ -182,7 +182,7 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, fi
         elif meth == '2_SN' and use:
             # select out the systems which will undergo a supernova
             conv_tot_sn_ind = bpp_save_tot.loc[bpp_save_tot.evol_type.isin([15.0, 16.0])].bin_num
-            conv_last_sn_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0]).bin_num
+            conv_last_sn_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0])].bin_num
 
             # select out the systems which will produce the user specified final kstars
             # and undergo a supernova
