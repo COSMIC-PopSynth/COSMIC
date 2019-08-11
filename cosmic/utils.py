@@ -171,9 +171,9 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, fi
                                                  (bpp_save_last.kstar_2.isin(final_star_2))].bin_num            
             # select out the values just before the supernova(e)
             conv_tot_sn = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
-                                           (bpp_save_tot.evol_type.isin([15.0, 16.0])]
+                                           (bpp_save_tot.evol_type.isin([15.0, 16.0]))]
             conv_last_sn = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
-                                             (bpp_save_last.evol_type.isin([15.0, 16.0])]
+                                             (bpp_save_last.evol_type.isin([15.0, 16.0]))]
 
             # make sure to select out only the first supernova
             conv_tot = conv_tot_sn.groupby('bin_num').first()
@@ -194,9 +194,9 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, fi
                                                  (bpp_save_last.kstar_2.isin(final_star_2))].bin_num            
             # select out the values just before the supernova(e)
             conv_tot_sn = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
-                                           (bpp_save_tot.evol_type.isin([15.0, 16.0])]
+                                           (bpp_save_tot.evol_type.isin([15.0, 16.0]))]
             conv_last_sn = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
-                                             (bpp_save_last.evol_type.isin([15.0, 16.0])]         
+                                             (bpp_save_last.evol_type.isin([15.0, 16.0]))]         
 
             # select out only the systems that go through 2 supernovae
             conv_tot_sn_2 = conv_tot_sn.loc[conv_tot_sn.groupby('bin_num').size() == 2]
@@ -214,8 +214,8 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, fi
             conv_last_ind = bpp_save_last.loc[(bpp_save_last.kstar_1.isin(final_kstar_1)) &\
                                               (bpp_save_last.kstar_2.isin(final_kstar_2))].bin_num.unique()
 
-            conv_tot = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_ind)]
-            conv_last = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_ind)]
+            conv_tot = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_ind))]
+            conv_last = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_ind))]
 
             # select out the parameters just before disruption
             # first reset the index:
@@ -243,11 +243,11 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, fi
             conv_last_sn = bpp_save_last.loc[bpp_save_last.bin_num.isin(conv_last_ind)]
 
             # select out systems when they first enter RLO after the 1st SN
-            conv_tot_xrb = conv_tot_sn.loc[(conv_tot_sn.kstar_1.isin(final_kstar_1) &\
-                                           (conv_tot_sn.kstar_2.isin(final_kstar_2) &\
+            conv_tot_xrb = conv_tot_sn.loc[(conv_tot_sn.kstar_1.isin(final_kstar_1)) &\
+                                           (conv_tot_sn.kstar_2.isin(final_kstar_2)) &\
                                            (conv_tot_sn.RROL_2 >= 1.0)]
-            conv_last_xrb = conv_last_sn.loc[(conv_last_sn.kstar_1.isin(final_kstar_1) &\
-                                             (conv_last_sn.kstar_2.isin(final_kstar_2) &\
+            conv_last_xrb = conv_last_sn.loc[(conv_last_sn.kstar_1.isin(final_kstar_1)) &\
+                                             (conv_last_sn.kstar_2.isin(final_kstar_2)) &\
                                              (conv_last_sn.RROL_2 >= 1.0)]
             conv_tot = conv_tot_xrb.groupby('bin_num').first()
             conv_last = conv_last.groupby('bin_num').first()
@@ -528,6 +528,29 @@ def error_check(BSEDict, filters=None, convergence=None):
 
     # convergence
     if convergence is not None:
+        if (convergence['formation'] and convergence['1_SN']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['formation'] and convergence['2_SN']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['formation'] and convergence['disruption']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['formation'] and convergence['final_state']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['formation'] and convergence['XRB_form']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['1_SN'] and convergence['2_SN']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['1_SN'] and convergence['final_state']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['1_SN'] and convergence['XRB_form']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['2_SN'] and convergence['final_state']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['2_SN'] and convergence['XRB_form']):
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+        elif (convergence['final_state'] & convergence['XRB_form']) :
+            raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
+
         flag='formation'
         if flag in convergence.keys():
             if convergence[flag] not in [True,False]:

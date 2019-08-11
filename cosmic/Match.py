@@ -139,19 +139,7 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
             conv_filter = {'disruption' : True}    
         else:
             # bin_state == 0
-            if (conv_filter['formation'] & conv_filter['1_SN']) or
-               (conv_filter['formation'] & conv_filter['2_SN']) or
-               (conv_filter['formation'] & conv_filter['disruption']) or
-               (conv_filter['formation'] & conv_filter['final_state']) or
-               (conv_filter['formation'] & conv_filter['XRB_form']) or
-               (conv_filter['1_SN'] & conv_filter['2_SN']) or
-               (conv_filter['1_SN'] & conv_filter['final_state']) or
-               (conv_filter['1_SN'] & conv_filter['XRB_form']) or
-               (conv_filter['2_SN'] & conv_filter['final_state']) or
-               (conv_filter['2_SN'] & conv_filter['XRB_form']) or
-               (conv_filter['final_state'] & conv_filter['XRB_form']) :
-                raise ValueError('You specified bin_state == 0 and set more than one convergence filter to True, please set only one formation filter to True')
-
+            continue
         conv_1, conv_2 = bcm_conv_select(bcm_save_tot_conv, bcm_save_last_conv,\
                                          bpp_save_tot_conv, final_kstar_1, \
                                          final_kstar_2, conv_filter)
@@ -161,7 +149,7 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
         if len(conv_2) > 3:
             match_all = []
             for conv_param in conv_params:
-                if (conv_param == 'ecc') and (np.all(conv_1[conv_param] < 1e-7)) and (np.all(conv_1[conv_param] >=0.0) and (bin_state == 0):
+                if (conv_param == 'ecc') and (np.all(conv_1[conv_param] < 1e-7)) and (np.all(conv_1[conv_param] >=0.0)) and (bin_state == 0):
                     log_file.write('{0} is circular for all binstate {1} binaries\n'.format(conv_param, \
                                                                                             bin_state))
                     match_all.append(-9)
@@ -179,18 +167,18 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                     match_all.append(-9)
 
                 else:
-                    match_compute, bw = match([dat_transform(bcm_conv_1, [conv_param])[0].tolist(),\
-                                               dat_transform(bcm_conv_2, [conv_param])[0].tolist()])
+                    match_compute, bw = match([dat_transform(conv_1, [conv_param])[0].tolist(),\
+                                               dat_transform(conv_2, [conv_param])[0].tolist()])
                     match_all.append(match_compute)
 
             log_file.write('matches for bin state {0} are: {1}\n'.format(bin_state, match_all))
-            log_file.write('Number of binaries is: {0}\n'.format(len(bcm_save_conv)))
+            log_file.write('Number of binaries in converging population is: {0}\n'.format(len(conv_2)))
             log_file.write('Binwidth is: {0}\n'.format(bw))
             log_file.write('\n')
             match_lists.extend(match_all)
 
         else:
-            log_file.write('The filtered bcm array for bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
+            log_file.write('The filtered array for bin state: {0} does not have >3 values in it yet\n'.format(bin_state))
             log_file.write('Consider larger Nstep sizes\n')
             log_file.write('\n')
 
