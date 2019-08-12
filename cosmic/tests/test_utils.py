@@ -27,20 +27,14 @@ k2_range_false = np.arange(0,12)
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 wrong_dict = {'test_wrong_dict' : False}
-alive_dict = {'mass_transfer_white_dwarf_to_co' : True,
-             'select_final_state' : True,
-             'binary_state' : [0],
-             'lisa_sources' : True}
-noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
-               'select_final_state' : True,
-               'binary_state' : [0],
-               'lisa_sources' : False}
-false_dict = {'mass_transfer_white_dwarf_to_co' : False,
-             'select_final_state' : False,
-             'binary_state' : [0,1,2],
-             'lisa_sources' : False}
-conv_dict_true = {'lisa_convergence' : True}
-conv_dict_false = {'lisa_convergence' : False}
+alive_dict = {'select_final_state' : True,
+             'binary_state' : [0]}
+noLISA_dict = {'select_final_state' : True,
+               'binary_state' : [0]}
+false_dict = {'select_final_state' : False,
+             'binary_state' : [0,1,2]}
+conv_dict_true = {'formation' : True}
+conv_dict_false = {'formation' : True, '1_SN': True}
 
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -54,10 +48,8 @@ MASS_SUM_SINGLE = [41.0, 41.6, 50.0, 132.0, 320.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07
 BW_KNUTH = 0.333
-_KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
-                  'select_final_state',
-                  'binary_state',
-                  'lisa_sources']
+_KNOWN_METHODS = ['select_final_state',
+                  'binary_state']
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
@@ -68,33 +60,19 @@ class TestUtils(unittest2.TestCase):
         bcm_true, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
 
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
-        self.assertTrue(len(bcm_true.loc[bcm_true.sep > 0.0]) >= 1)
-        self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
-        self.assertTrue(bcm_true.porb.all() < 5.0)
 
         bcm_false, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
 
-        self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
-        self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0]) > 1)
-        self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
+
 
         bcm_no_LISA, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
-        self.assertTrue(len(bcm_no_LISA.loc[bcm_no_LISA.porb < 4.0]) > 1)
 
     def test_bcm_conv_select(self):
-        self.assertRaises(ValueError, utils.bcm_conv_select, BCM_TEST, BPP_TEST, wrong_dict)
+        self.assertRaises(ValueError, utils.bcm_conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], wrong_dict)
 
-        bcm_1, bcm_2 = utils.bcm_conv_select(BCM_TEST, BCM_TEST, conv_dict_true)
-        self.assertEqual(len(bcm_2), int(len(bcm_1)/2))
-        self.assertTrue(bcm_1.porb.all() < np.log10(5000))
-        self.assertTrue(bcm_2.porb.all() < np.log10(5000))
-
-        bcm_1_F, bcm_2_F = utils.bcm_conv_select(BCM_TEST[:len(BCM_TEST)-10],\
-                                                 BCM_TEST,\
-                                                 conv_dict_false)
-        self.assertEqual(len(BCM_TEST[len(BCM_TEST)-10:]), len(bcm_1_F)-len(bcm_2_F))
-        self.assertTrue(len(bcm_1_F.porb.loc[bcm_1_F.porb > np.log10(5000)]) > 1)
-        self.assertTrue(len(bcm_2_F.porb.loc[bcm_2_F.porb > 3.0]) > 1)
+        bcm_1, bcm_2 = utils.bcm_conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_true)
+        self.assertEqual(len(bcm_2), 22)
+        self.assertRaises(ValueError, utils.bcm_conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], false_dict)
 
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
@@ -144,8 +122,8 @@ class TestUtils(unittest2.TestCase):
 
     def test_error_check(self):
         BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 0, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.6, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0}
-        filters = {'mass_transfer_white_dwarf_to_co': False, 'select_final_state': True, 'binary_state': [0], 'lisa_sources': False}
-        convergence = {'lisa_convergence': False}
+        filters = {'select_final_state': True, 'binary_state': [0]}
+        convergence = {'formation': False, '1_SN': True, '2_SN': False, 'final_state': False, 'XRB_form': False}
         utils.error_check(BSEDict,filters,convergence)
         utils.error_check(BSEDict)
         assert 1==1
