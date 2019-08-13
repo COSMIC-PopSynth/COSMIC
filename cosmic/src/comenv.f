@@ -4,7 +4,7 @@
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,ecsn,ecsn_mlow,formation1,formation2,
      &                  ST_tide,binstate,mergertype,natal_kick,
-     &                  jp, tphys, switchedCE, rad, tms, evolve_type)
+     &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -47,7 +47,7 @@
       EXTERNAL CELAMF,RL,RZAMSF
       INTEGER jp
       REAL*8 tphys
-      LOGICAL switchedCE
+      LOGICAL switchedCE,disrupt
       INTEGER kstar1_bpp,kstar2_bpp
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rrl1_bpp,rrl2_bpp,evolve_type
@@ -222,7 +222,7 @@
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
      &                  ecsn,ecsn_mlow,1)
             IF(KW1.GE.13)THEN
-               formation1 = 4
+               formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
@@ -232,7 +232,7 @@
                         else
                            sigma = -1.d0*sigmadiv
                         endif
-                        formation1 = 5
+                        formation1 = 2
                      endif
                   elseif(KW1i.ge.7.and.KW1i.le.9)then
                      if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
@@ -243,7 +243,7 @@
                         else
                            sigma = -1.d0*sigmadiv
                         endif
-                        formation1 = 5
+                        formation1 = 2
                      endif
                   elseif(formation1.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -252,7 +252,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation1 = 7
+                     formation1 = 5
                   elseif(KW1i.ge.10.or.KW1i.eq.12)then
 * AIC formation, will never happen here but...
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -261,7 +261,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation1 = 6
+                     formation1 = 4
                   endif
                endif
 *              Check if M1 and M2 were switched on pass to comenv
@@ -307,7 +307,8 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+     &                   JORB,vk,star1,R2,fallback,bkick,
+     &                   natal_kick,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -457,12 +458,16 @@
      &                  SEP**(3d0/2d0)
                     Mcf = (1d0/(400d0*Porbi)+0.49d0)*MF -
      &                  ((0.016d0/Porbi) - 0.106d0)
-                    if(Porbi.le.2d0)then
+                    if(Porbi.le.2d0.and.Porbi.gt.0.06d0)then
                         Menvf = 0.18d0*Porbi**(0.45d0) *
      &                      (LOG(Mcf**4d0) - 1.05d0)
-                    else
+                    elseif(Porbi.gt.2.d0)then
                         Menvf = Mcf*(LOG(Porbi**(-0.2d0))+1) +
      &                      LOG(Porbi**(0.5d0))-1.5d0
+                    elseif(Porbi.le.0.06d0)then
+*                       outside range of validity, use BSE masses
+                        Menvf = 0d0
+                        Mcf = MC1
                     endif
                     qi = MF/M2
 * if cehestarflag is 1, use BSEs calculation of post-CE core mass
@@ -471,7 +476,12 @@
                         qf = MC1/M2
 * elseif cehestarflag is 2, use Tauris fitting formula for post-CE mass
                     elseif(cehestarflag.eq.2)then
-                        M_postCE = (Mcf+Menvf)
+*                   first, check that the mass is more than core mass
+                        if((Mcf+Menvf).lt.MC1)then
+                           M_postCE = MC1
+                        else
+                           M_postCE = (Mcf+Menvf)
+                        endif
                         qf = (Mcf+Menvf)/M2
                     endif
                     Porbf = (((qi+1)/(qf+1))**(2d0) * (qi/qf)**(3d0) *
@@ -486,7 +496,7 @@
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
      &                  ecsn,ecsn_mlow,1)
             IF(KW1.GE.13)THEN
-               formation1 = 4
+               formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
@@ -496,7 +506,7 @@
                         else
                            sigma = -1.d0*sigmadiv
                         endif
-                        formation1 = 5
+                        formation1 = 2
                      endif
                   elseif(KW1i.ge.7.and.KW1i.le.9)then
                      if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
@@ -507,7 +517,7 @@
                         else
                            sigma = -1.d0*sigmadiv
                         endif
-                        formation1 = 5
+                        formation1 = 2
                      endif
                   elseif(formation1.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -516,7 +526,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation1 = 7
+                     formation1 = 5
                   elseif(KW1i.ge.10.or.KW1i.eq.12)then
 * AIC formation, will never happen here but...
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -525,7 +535,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation1 = 6
+                     formation1 = 4
                   endif
                endif
 *              Check if M1 and M2 were switched on pass to comenv
@@ -578,11 +588,12 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                  formation1 = 8
+                  formation1 = 3
                   endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,bkick,natal_kick)
+     &                   JORB,vk,star1,R2,fallback,bkick,
+     &                   natal_kick,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -624,7 +635,7 @@
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
      &                  ecsn,ecsn_mlow,2)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
-               formation2 = 4
+               formation2 = 1
                if(KW2.eq.13.and.ecsn.gt.0.d0)then
                   if(KW2i.le.6)then
                      if(M2i.le.zpars(5))then
@@ -634,7 +645,7 @@
                         else
                            sigma = -1.d0*sigmadiv
                         endif
-                        formation2 = 5
+                        formation2 = 2
                      endif
                   elseif(KW2i.ge.7.and.KW2i.le.9)then
                      if(M2i.gt.ecsn_mlow.and.M2i.le.ecsn)then
@@ -645,7 +656,7 @@
                         else
                            sigma = -1.d0*sigmadiv
                         endif
-                        formation2 = 5
+                        formation2 = 2
                      endif
                   elseif(formation2.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -654,7 +665,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation2 = 7
+                     formation2 = 5
                   elseif(KW2i.ge.10.or.KW2i.eq.12)then
 * AIC formation, will never happen here but...
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -663,7 +674,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation2 = 6
+                     formation2 = 4
                   endif
                endif
 *              Check if M1 and M2 were switched on pass to comenv
@@ -710,7 +721,8 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
-     &                   JORB,vk,star2,R1,fallback,bkick,natal_kick)
+     &                   JORB,vk,star2,R1,fallback,bkick,
+     &                   natal_kick,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -832,7 +844,7 @@
      &               ecsn,ecsn_mlow,1)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
-            formation1 = 4
+            formation1 = 1
             if(KW1.eq.13.and.ecsn.gt.0.d0)then
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
@@ -842,7 +854,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation1 = 5
+                     formation1 = 2
                   endif
                elseif(KW1i.ge.7.and.KW1i.le.9)then
                   if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
@@ -853,7 +865,7 @@
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation1 = 5
+                     formation1 = 2
                   endif
                elseif(formation1.eq.11)then
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -862,7 +874,7 @@
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation1 = 7
+                  formation1 = 5
                elseif(KW1i.ge.10.or.KW1i.eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -871,7 +883,7 @@
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation1 = 6
+                  formation1 = 4
                endif
             endif
 *              Check if M1 and M2 were switched on pass to comenv
@@ -910,7 +922,8 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,bkick,natal_kick)
+     &                0.d0,fallback,bkick,natal_kick,
+     &                natal_kick,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
