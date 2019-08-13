@@ -144,6 +144,8 @@ def perform_convergence(conv_params, bin_states, conv_filter,\
                                          bpp_save_tot_conv, final_kstar_1, \
                                          final_kstar_2, conv_filter)
         
+        log_file.write('Length of the convergence array is: {}s\n'.format(len(conv_1)))
+
         # Perform the Match calculations for all interested parameters
         # supplied by user in conv_params
         if len(conv_2) > 3:
