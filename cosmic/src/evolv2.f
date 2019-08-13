@@ -8,7 +8,7 @@
      \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
      \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,
+     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
      \ dtptmp,idumtmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -225,8 +225,8 @@
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
-      LOGICAL switchedCE
-      INTEGER qcflagtmp
+      LOGICAL switchedCE,disrupt
+      INTEGER qcflagtmp,eddlimflagtmp
       INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
@@ -268,6 +268,7 @@ Cf2py intent(out) bppout,bcmout
       CK = CKtmp
       windflag = windflagtmp
       qcflag = qcflagtmp
+      eddlimflag = eddlimflagtmp
       dtp = dtptmp
       idum1 = idumtmp
 
@@ -300,6 +301,9 @@ Cf2py intent(out) bppout,bcmout
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
 
+* disrupt tracks if system get disrupted by a SN during the common
+* envelope
+      disrupt = .false.
 * value for bcm[ii,37] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
       binstate = 0
 * value for bcm[ii,38] which tracks merger types; only set when binstate is 1
@@ -601,7 +605,7 @@ component.
                rlperi = rol(k)*(1.d0-ecc)
                if(ST_tide.gt.1) rlperi = rol(k)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z,zpars(11))
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -968,7 +972,7 @@ component.
             if(neta.gt.tiny)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z,zpars(11))
             else
                dmr(k) = 0.d0
             endif
@@ -1276,7 +1280,7 @@ component.
 *
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
-            if(formation(k).ne.11) formation(k) = 4
+            if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
@@ -1286,7 +1290,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
@@ -1297,7 +1301,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
 * MIC
@@ -1307,7 +1311,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1316,14 +1320,14 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                elseif(merger.ge.20.d0)then
                   sigma = merger
                   fallback = 0.d0
                   if(merger.ge.200.d0)then!estimate CC SN
-                     formation(k) = 4
+                     formation(k) = 1
                   else
-                     formation(k) = 7
+                     formation(k) = 5
                   endif
                elseif(merger.le.-20.d0)then
                   sigma = ABS(merger)
@@ -1331,9 +1335,9 @@ component.
                   if(merger.ge.200.d0)then!estimate CC SN
 *Sourav:Possible bug in the line above. merger should really be sigms!!
 *                  if(sigma.ge.200.d0)then!estimate CC SN
-                     formation(k) = 4
+                     formation(k) = 1
                   else
-                     formation(k) = 7
+                     formation(k) = 5
                   endif
                endif
             elseif(kw.eq.13.and.aic.gt.0)then
@@ -1345,7 +1349,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1354,15 +1358,15 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                endif
             elseif(ABS(merger).ge.20.d0)then
                sigma = ABS(merger)
                fallback = 0.d0
                if(merger.ge.200.d0)then!estimate CC SN
-                  formation(k) = 4
+                  formation(k) = 1
                else
-                  formation(k) = 7
+                  formation(k) = 5
                endif
             endif
             if(sgl)then
@@ -1373,7 +1377,7 @@ component.
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,natal_kick_array)
+     &                   0.d0,fallback,bkick,natal_kick_array,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1398,7 +1402,8 @@ component.
      &                       massc(1),massc(2),rad(1),rad(2))
             
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(k-3),fallback,bkick,natal_kick_array)
+     &                   rad(k-3),fallback,bkick,
+     &                   natal_kick_array,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -2162,15 +2167,13 @@ component.
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
-             ecc = -1.d0
          elseif(binstate.eq.2.d0)then
              sep = -1.d0
              tb = -1.d0
-             ecc = -1.d0
          endif
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
@@ -2446,7 +2449,7 @@ component.
                endif
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z,tphys)
+     &                         mass(k),massc(k),rlperi,z,zpars(11))
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
@@ -3102,7 +3105,7 @@ component.
          if(kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14))then
             dms(k) = mass(k) - mt
-            if(formation(k).ne.11) formation(k) = 4
+            if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
@@ -3112,7 +3115,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
@@ -3123,7 +3126,7 @@ component.
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -3132,7 +3135,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -3141,7 +3144,7 @@ component.
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                endif
             endif
 
@@ -3152,7 +3155,7 @@ component.
      &                    aj(1),aj(2),tms(1),tms(2),
      &                    massc(1),massc(2),rad(1),rad(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick,natal_kick_array)
+     &                rad(3-k),fallback,bkick,natal_kick_array,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
 * set kick values for the bcm array
@@ -3402,16 +3405,7 @@ component.
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type)
-         if(binstate.eq.1.d0)then
-             sep = 0.d0
-             tb = 0.d0
-             ecc = -1.d0
-         elseif(binstate.eq.2.d0)then
-             sep = -1.d0
-             tb = -1.d0
-             ecc = -1.d0
-         endif
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3427,9 +3421,28 @@ component.
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         if(com.and..not.coel)then
+         if(com.and..not.coel.and..not.disrupt)then
+* if it went through common envelope
+* did not disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system is still in binary
             binstate = 0
             mergertype = -1
+         elseif(com.and..not.coel.and.disrupt)then
+* if it went through common envelope
+* and did disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system should be marked as disrupted
+            binstate = 2
+            mergertype = -1
+         endif
+* else it merged in the common envelope
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
          endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
          if(j1.eq.1)then
@@ -3450,16 +3463,7 @@ component.
      &               vk,bkick,ecsn,ecsn_mlow,
      &               formation(j1),formation(j2),ST_tide,
      &               binstate,mergertype,natal_kick_array,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type)
-         if(binstate.eq.1.d0)then
-             sep = 0.d0
-             tb = 0.d0
-             ecc = -1.d0
-         elseif(binstate.eq.2.d0)then
-             sep = -1.d0
-             tb = -1.d0
-             ecc = -1.d0
-         endif
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3475,9 +3479,28 @@ component.
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         if(com.and..not.coel)then
+         if(com.and..not.coel.and..not.disrupt)then
+* if it went through common envelope
+* did not disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system is still in binary
             binstate = 0
             mergertype = -1
+         elseif(com.and..not.coel.and.disrupt)then
+* if it went through common envelope
+* and did disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system should be marked as disrupted
+            binstate = 2
+            mergertype = -1
+         endif
+* else it merged in the common envelope
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
          endif
       else
          CALL mix(mass0,mass,aj,kstar,zpars)
