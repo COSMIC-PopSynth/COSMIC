@@ -1,4 +1,24 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) Scott Coughlin (2017 - 2019)
+#
+# This file is part of cosmic.
+#
+# cosmic is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cosmic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy
+
+__author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 
 """
 
@@ -11,19 +31,19 @@ import numpy
 *
 """
 xz = numpy.array([
-       3.970417e-01, -3.2913574e-01, 3.4776688e-01, 3.7470851e-01, 
+       3.970417e-01, -3.2913574e-01, 3.4776688e-01, 3.7470851e-01,
        9.011915e-02,
-       8.527626e+00,-2.441225973e+01, 5.643597107e+01, 3.706152575e+01, 
+       8.527626e+00,-2.441225973e+01, 5.643597107e+01, 3.706152575e+01,
        5.4562406e+00,
-       2.5546e-04, -1.23461e-03, -2.3246e-04,  4.5519e-04, 
+       2.5546e-04, -1.23461e-03, -2.3246e-04,  4.5519e-04,
        1.6176e-04,
-       5.432889e+00, -8.62157806e+00, 1.344202049e+01, 
+       5.432889e+00, -8.62157806e+00, 1.344202049e+01,
        1.451584135e+01, 3.39793084e+00,
-       5.563579e+00,-1.032345224e+01, 1.944322980e+01, 
+       5.563579e+00,-1.032345224e+01, 1.944322980e+01,
        1.897361347e+01, 4.16903097e+00,
-       7.8866060e-01, -2.90870942e+00,  6.54713531e+00, 
+       7.8866060e-01, -2.90870942e+00,  6.54713531e+00,
        4.05606657e+00, 5.3287322e-01,
-       5.86685e-03, -1.704237e-02, 3.872348e-02, 2.570041e-02, 
+       5.86685e-03, -1.704237e-02, 3.872348e-02, 2.570041e-02,
        3.83376e-03,
        1.715359e+00, 6.2246212e-01, -9.2557761e-01, -1.16996966e+00,
       -3.0631491e-01,
@@ -33,7 +53,7 @@ xz = numpy.array([
       -2.424848322e+01,-5.33608972e+00,
        1.012495e+00, 3.2699690e-01, -9.23418e-03, -3.876858e-02,
       -4.12750e-03,
-       7.490166e-02, 2.410413e-02, 7.233664e-02, 3.040467e-02, 
+       7.490166e-02, 2.410413e-02, 7.233664e-02, 3.040467e-02,
        1.97741e-03, 1.077422e-02,
        3.082234e+00, 9.447205e-01, -2.15200882e+00, -2.49219496e+00,
       -6.3848738e-01,
@@ -186,7 +206,7 @@ xg = numpy.array([9.511033e+01, 6.819618e+01,-1.045625e+01,
                  -1.160850e-02])
 """
 *
-* eata for Lhei(1->14), Lhe(15->25) Rmin(26->43), The(44->65), 
+* eata for Lhei(1->14), Lhe(15->25) Rmin(26->43), The(44->65),
 * Tbl(66->79), Lzahb(80->87) ane Rzahb(88->99)
 *
 """

@@ -1,5 +1,26 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) Katelyn Breivik (2017 - 2019)
+#
+# This file is part of cosmic.
+#
+# cosmic is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cosmic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy as np
 from scipy.interpolate import interp1d
+
+__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
+__all__ = ['lisa_characteristic_noise']
 
 def lisa_characteristic_noise():
     '''Computes LISA characteristic strain sensitivity curve according to `Cornish and Robson 2018 <https://arxiv.org/pdf/1803.01944.pdf>`_ without the Galactic foreground
