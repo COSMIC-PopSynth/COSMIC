@@ -273,16 +273,16 @@ class Sample(object):
                 binaryIdx, = np.where(binary_fraction > binary_choose)
                 singleIdx, = np.where(binary_fraction < binary_choose)
             else:
-                raise Error('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
+                raise ValueError('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
         elif type(model) == float:
             if (model <= 1.0) & (model >= 0.0):
                 binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
                 binaryIdx, = np.where(binary_choose <= model)
                 singleIdx, = np.where(binary_choose > model)
             else:
-                raise Error('You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1.')
+                raise ValueError('You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1.')
         else:
-            raise Error('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
+            raise ValueError('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
 
         return primary_mass[binaryIdx], primary_mass[singleIdx]
 
