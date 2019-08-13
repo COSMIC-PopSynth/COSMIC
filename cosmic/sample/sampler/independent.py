@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Katelyn Breivik (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -204,7 +204,7 @@ class Sample(object):
 
 
     def binary_select(self, primary_mass, model='half'):
-        """Select the which primary masses will have a companion using 
+        """Select the which primary masses will have a companion using
         either a binary fraction of fifty percent or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
@@ -215,7 +215,7 @@ class Sample(object):
             Mass that determines the binary fraction
         model : string
             half - every two stars selected are in a binary
-            vanHaaften - primary mass dependent and ONLY VALID 
+            vanHaaften - primary mass dependent and ONLY VALID
                          up to 100 Msun
 
         Returns
