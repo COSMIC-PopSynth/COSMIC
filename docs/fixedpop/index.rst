@@ -44,7 +44,10 @@ New implementations of SFHs will be added to the sample_SFH modules in the indep
 Params.ini
 ----------
 
+PLEASE SEE :ref:`inifile` for detailed information about the inifile and how it is constructed
+
 The inifile contains four subsections: filters, convergence, rand_seed, and bse. 
+
 The `filters` subsection allows you to specify how you would like to filter the binary population. See the inifile for a description of each flag.
 
 The `convergence` subsection allows you to specify a particular region of parameter space where you would like the convergence of each binary parameter distribution to be tested. The only implemented convergence filter is for LISA binaries, where the convergence is computed only for binaries with orbital period less than 5000 s. This allows for low probability, but high signal to noise binaries with very short orbital periods to be fully accounted for. 
@@ -92,6 +95,10 @@ There are two stopping conditions for runFixedPop:
 =====================
 Output of runFixedPop
 =====================
+
+PLEASE SEE :ref:`output_info` for more information about the output data frames including
+what each column means and the units.
+
 The output of runFixed pop is the `fixed population`, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the runFixedPop call above is: dat_ThinDisk_11_10_11.h5. 
 
 The fixed population contains three pandas DataFrames accessed by the following keys:
