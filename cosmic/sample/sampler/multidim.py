@@ -168,9 +168,16 @@ class MultiDim:
             array of orbital periods in days with size=size
         ecc_list : array
             array of eccentricities with size=size
-        total_mass : float
-            total mass including single and binary stars
-            required to generate the initial population
+        mass_singles : `float`
+            Total mass in single stars needed to generate population
+        mass_binaries : `float`
+            Total mass in binaries needed to generate population
+        n_singles : `int`
+            Number of single stars needed to generate a population
+        n_binaries : `int`
+            Number of binaries needed to generate a population
+        binfrac_list : array
+            array of binary probabilities based on primary mass and period
         """
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
@@ -479,6 +486,7 @@ class MultiDim:
             secondary_mass_list = []
             porb_list = []
             ecc_list = []
+            binfrac_list = []
 
             #; Full primary mass vector across 0.08 < M1 < 150
             M1 = np.linspace(0,150,150000) + 0.08
@@ -526,6 +534,9 @@ class MultiDim:
                 myrand = np.random.rand()
                 #; If random number < binary star fraction, generate a binary
                 if(myrand < mybinfrac):
+                    #; store the binary fraction for this system
+                    binfrac_list.append(mybinfrac)
+
                     #; Given myrand, select P and corresponding index in logPv
                     mylogP = np.interp(myrand, mycumPbindist_flat, logPv)
                     indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
@@ -565,7 +576,7 @@ class MultiDim:
                 else:
                     mass_singles += myM1
                     n_singles += 1
-            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries])
+            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries, binfrac_list])
             return
 
         output = mp.Queue()
@@ -587,7 +598,8 @@ class MultiDim:
         mass_binaries = []
         n_singles = []
         n_binaries = []
-        dat_lists = [[],[],[],[],[],[],[],[]]
+        binfrac_list = []
+        dat_lists = [[],[],[],[],[],[],[],[],[]]
 
         for output_list in results:
             ii = 0
@@ -603,8 +615,9 @@ class MultiDim:
         mass_binaries = np.sum(dat_lists[5])
         n_singles = np.sum(dat_lists[6])
         n_binaries = np.sum(dat_lists[7])
+        binfrac_list = np.hstack(dat_lists[8])
 
-        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries
+        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries, binfrac_list
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, met = 0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
