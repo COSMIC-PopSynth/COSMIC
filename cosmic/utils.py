@@ -633,6 +633,13 @@ def error_check(BSEDict, filters=None, convergence=None):
     flag='ck'
     # --- all numbers are valid
 
+    flag='fprimc_array'
+    if flag in BSEDict.keys():
+        if any(x < 0.0 for x in BSEDict[flag]):
+            raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
+        if len(BSEDict[flag]) != 16:
+            raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+
     return
 
 def check_initial_conditions(initial_binary_table):
