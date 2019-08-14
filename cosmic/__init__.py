@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) Katie Breivik (2017)
+# Copyright (C) Katie Breivik (2017 - 2019)
 #
 # This file is part of COSMIC
 #
@@ -23,5 +23,6 @@
 from ._version import get_versions
 __version__ = get_versions()['version']
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
-__credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>']
+__credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
+               'Michael Zevin <zevin@northwestern.edu>']
 del get_versions

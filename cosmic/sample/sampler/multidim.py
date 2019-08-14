@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Katelyn Breivik (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -79,13 +79,13 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
         final_kstar2 = [final_kstar2]
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), sampled_mass, n_sampled
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), mass_singles, mass_binaries, n_singles, n_binaries
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
                  usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size")
@@ -471,7 +471,10 @@ class MultiDim:
             mp_seed = (process._identity[0]-1)+(nproc*(process._identity[1]-1))
             np.random.seed(seed + mp_seed)
 
-            total_mass = 0.0
+            mass_singles = 0.0
+            mass_binaries = 0.0
+            n_singles = 0
+            n_binaries = 0
             primary_mass_list = []
             secondary_mass_list = []
             porb_list = []
@@ -493,7 +496,6 @@ class MultiDim:
             #; Value of primary mass CDF where M1 = M1min
             #; Minimum primary mass to generate (must be >0.080 Msun)
             cumf_M1min = np.interp(0.08, M1, cumfM1)
-            n_sampled = 0
             while len(primary_mass_list) < size:
 
                 #; Select primary M1 > M1min from primary mass function
@@ -557,13 +559,13 @@ class MultiDim:
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
                         ecc_list.append(mye)
-                    total_mass += myM1
-                    total_mass += myq * myM1
-                    n_sampled += 1
+                    mass_binaries += myM1
+                    mass_binaries += myq * myM1
+                    n_binaries += 1
                 else:
-                    total_mass += myM1
-                    n_sampled += 1
-            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass, n_sampled])
+                    mass_singles += myM1
+                    n_singles += 1
+            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries])
             return
 
         output = mp.Queue()
@@ -581,9 +583,11 @@ class MultiDim:
         secondary_mass_list = []
         porb_list = []
         ecc_list = []
-        total_mass = []
-        n_sampled = []
-        dat_lists = [[],[],[],[],[],[]]
+        mass_singles = []
+        mass_binaries = []
+        n_singles = []
+        n_binaries = []
+        dat_lists = [[],[],[],[],[],[],[],[]]
 
         for output_list in results:
             ii = 0
@@ -595,10 +599,12 @@ class MultiDim:
         secondary_mass_list = np.hstack(dat_lists[1])
         porb_list = np.hstack(dat_lists[2])
         ecc_list = np.hstack(dat_lists[3])
-        total_mass = np.sum(dat_lists[4])
-        n_sampled = np.sum(dat_lists[5])
+        mass_singles = np.sum(dat_lists[4])
+        mass_binaries = np.sum(dat_lists[5])
+        n_singles = np.sum(dat_lists[6])
+        n_binaries = np.sum(dat_lists[7])
 
-        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass, n_sampled
+        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, met = 0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified

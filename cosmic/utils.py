@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Scott Coughlin (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -24,6 +24,14 @@ import scipy.special as ss
 import astropy.stats as astrostats
 import warnings
 from .bse_utils.zcnsts import zcnsts
+
+__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
+__credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
+               'Michael Zevin <zevin@northwestern.edu>']
+__all__ = ['filter_bpp_bcm', 'bcm_conv_select', 'mass_min_max_select',
+           'idl_tabulate', 'rndm', 'param_transform', 'dat_transform',
+           'dat_un_transform', 'knuth_bw_selector', 'error_check',
+           'check_initial_conditions', 'convert_kstar_evol_type']
 
 def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
@@ -769,7 +777,7 @@ def check_initial_conditions(initial_binary_table):
         ( from Tout et al., 1996, MNRAS, 281, 257 ).
         """
         mx = np.sqrt(m)
-        rzams = (((a[7]*m**2 + a[8]*m**6)*mx + a[9]*m**11 + 
+        rzams = (((a[7]*m**2 + a[8]*m**6)*mx + a[9]*m**11 +
                   (a[10] + a[11]*mx)*m**19)/
                   (a[12] + a[13]*m**2 + (a[14]*m**8 + m**18 + a[15]*m**19)*mx))
 
@@ -803,7 +811,7 @@ def check_initial_conditions(initial_binary_table):
 
     # check for a ZAMS that starts in RFOL
     mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
-    if mask.any(): 
+    if mask.any():
         warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
 
     return
