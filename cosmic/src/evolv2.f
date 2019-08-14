@@ -7,8 +7,8 @@
      \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsntmp,ecsn_mlowtmp,aictmp,
      \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
      \ natal_kick_array,qcrit_array,betatmp,xitmp,
-     \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,
+     \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,bconsttmp,
+     \ CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,fprimc_array,
      \ dtptmp,idumtmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -223,7 +223,7 @@
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
       REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
-      REAL*8 fprimc(16)
+      REAL*8 fprimc_array(16)
       INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
       INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
       LOGICAL switchedCE,disrupt
@@ -918,7 +918,8 @@ component.
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
-                  tcqr = fprimc(kstar(k))*2.d0*f*q(3-k)*raa6*menv(k)/
+                  tcqr = fprimc_array(kstar(k))*
+     &                 2.d0*f*q(3-k)*raa6*menv(k)/
      &                 (21.d0*tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
@@ -2941,7 +2942,8 @@ component.
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
-                  tcqr = fprimc(kstar(k))*2.d0*f*q(3-k)*raa6*menv(k)/
+                  tcqr = fprimc_array(kstar(k))*
+     &                 2.d0*f*q(3-k)*raa6*menv(k)/
      &                 (21.d0*tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then

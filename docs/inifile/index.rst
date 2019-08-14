@@ -554,20 +554,26 @@ Each of the below sections lists the valid options and a description of what the
 
     MISCELLANEOUS FLAGS
 
-==========  ============================================================
-``tflag``   *tflag* activates tidal circularisation.
-            **default=1**
-``ifflag``  *ifflag* activates the initial-final white dwarf mass relation from Han, Podsiadlowski & Eggleton, 1995, MNRAS, 272, 800 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
-            **default=0**
-``wdflag``  *wdflag* activates the alternate cooling law found in the description immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_ in Hurley & Shara, 2003, Apj, May 20. Equation 1 gives the default Mestel cooling law (wdflag=0).
-            **default=0**
-``epsnov``  *epsnov* is the fraction of accreted matter retained in a nova eruption, set by **default to 0.001**. This is relevant for accretion onto degenerate objects (See Section 2.6.6.2 in BSE paper)
-            **default=0.001**
-``bconst``  *bconst* related to magnetic field evolution of pulsars. Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
-            **default=-3000**
-``ck``      *ck* related to magnetic field evolution of pulsars, . Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
-            **default=-1000**
-==========  ============================================================
+================  ============================================================
+``tflag``         *tflag* activates tidal circularisation.
+                  **default=1**
+``ifflag``        *ifflag* activates the initial-final white dwarf mass relation from Han, Podsiadlowski & Eggleton, 1995, MNRAS, 272, 800 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
+                  **default=0**
+``wdflag``        *wdflag* activates the alternate cooling law found in the description immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_ in Hurley & Shara, 2003, Apj, May 20. Equation 1 gives the default Mestel cooling law (wdflag=0).
+                  **default=0**
+``epsnov``        *epsnov* is the fraction of accreted matter retained in a nova eruption, set by **default to 0.001**. This is relevant for accretion onto degenerate objects (See Section 2.6.6.2 in BSE paper)
+                  **default=0.001**
+``bconst``        *bconst* related to magnetic field evolution of pulsars. Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                  **default=-3000**
+``ck``            *ck* related to magnetic field evolution of pulsars, . Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                  **default=-1000**
+
+``fprimc_array``  fprimc_array controls the scaling factor for convective tides
+                  each item is set individually for its associated kstar
+                  default is the original BSE value of 2.0 for every kstar
+
+                  **default=[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]**
+================  ============================================================
 
 .. code-block:: ini
 
@@ -598,3 +604,8 @@ Each of the below sections lists the valid options and a description of what the
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-1000
     ck=-1000
+
+    ; fprimc controls the scaling factor for convective tides
+    ; each item is set individually for its associated kstar
+    ; default is the original BSE value of 2.0 for every kstar
+    fprimc=[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
