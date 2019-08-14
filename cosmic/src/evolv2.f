@@ -918,7 +918,7 @@ component.
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
-                  tcqr = fprimc(kstar(k))*f*q(3-k)*raa6*menv(k)/
+                  tcqr = fprimc(kstar(k))*2.d0*f*q(3-k)*raa6*menv(k)/
      &                 (21.d0*tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
@@ -2940,8 +2940,8 @@ component.
                   tc = mr23yr*(menv(k)*renv(k)*(radx(k)-0.5d0*renv(k))/
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
-                  f = MIN(1.d0,(ttid/(2.d0*tc)**2))
-                  tcqr = fprimc(kstar(k))*f*q(3-k)*raa6*menv(k)/
+                  f = MIN(1.d0,(ttid/(2.d0*tc))**2)
+                  tcqr = fprimc(kstar(k))*2.d0*f*q(3-k)*raa6*menv(k)/
      &                 (21.d0*tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
