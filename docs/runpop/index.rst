@@ -43,29 +43,7 @@ You can access the available models using the independent sampler help call:
 The final_kstar1 and final_kstar2 parameters are lists that contain the kstar types
 that you would like the final population to contain. 
 
-The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming conventions. The conventions are as follows:
-
-
-=====     ==================================
-kstar     evolutionary stage
-=====     ==================================
-0         MS, < 0.7 Msun
-1         MS, > 0.7 Msun
-2         Hertzsprung Gap
-3         First Giant Branch
-4         Core Helium Burning
-5         Early Asymptotic Giant Branch
-6         Thermally Pulsing AGB
-7         Naked Helium Star MS
-8         Naked Helium Star Hertzsprung Gap
-9         Naked Helium Star Giant Branch
-10        Helium White Dwarf
-11        Carbon/Oxygen White Dwarf
-12        Oxygen/Neon White Dwarf
-13        Neutron Star
-14        Black Hole
-15        Massless Remnant
-=====     ==================================
+The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming convention, see :ref:`kstar-table` for more information.
 
 Thus, if you want to generate a 
 population containing double white dwarfs with CO and ONe WD primaries and He-WD secondaries, 
@@ -84,20 +62,24 @@ history (SFH) below:
 
 .. ipython::
 
-    In [4]: help(independent.Sample.sample_SFH)
+    In [6]: help(independent.Sample.sample_SFH)
 
 Using the final kstar inputs above, the initial binary population is sampled as:
 
 .. ipython::
 
-    In [5]: InitialBinaries, sampled_mass, n_sampled = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, met=0.02, size=10000)
+    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, bin_frac=0.5, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, met=0.02, size=10000)
 
-    In [6]: print(InitialBinaries)
+    In [7]: print(InitialBinaries)
 
 NOTE: the length of the initial binary data set, InitialBinaries, does not match 
 the size parameter provided to InitialBinaryTable.sampler. 
-This is becuase the sampler begins by sampling a set of stellar masses of size=size, then assigns each of the stellar masses to be either single or in a binary system following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
-Since we are interested in binaries, we only retain the binary systems. However, we also keep track of the total mass sampled so that we can scale our results to a full Milky Way population.
+This is becuase the sampler accounts for a binary fraction specified by the user with the bin_frac parameter, which is either a fraction between 0 and 1 or mass dependend following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
+Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types. However, we also keep track of the total mass of the single and binary stars as well as the numbre of binary and single stars so that we can scale our results to larger populations. If you don't want to filter the binaries, you can supply final kstars as 
+
+.. ipython::
+
+    In [8]: final_kstar = range(0,15)
 
 ********
 multidim
@@ -126,11 +108,13 @@ The multidimensional sample is generated as follows:
 
 .. ipython::
 
-    In [5]: InitialBinaries, sampled_mass, n_sampled = InitialBinaryTable.sampler('multidim', [11], [11], 2, 1, 'const', 10000.0, 0.02, 10)
+    In [4]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('multidim', final_kstar1=[11], final_kstar2=[11], rand_seed=2, nproc=1, SFH_model='const', component_age=10000.0, met=0.02, size=10)
 
-    In [6]: print(InitialBinaries)
+    In [5]: print(InitialBinaries)
 
-NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
+.. note::
+
+    NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
 
 *************************************
 Evolving an initial binary population
@@ -141,14 +125,14 @@ The syntax for the Evolve class is as follows:
 
 .. ipython::
 
-    In [2]: from cosmic.evolve import Evolve   
+    In [1]: from cosmic.evolve import Evolve   
 
-    In [4]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0}
+    In [2]: BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0}
 
-    In [5]: bpp, bcm, initC  = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
+    In [3]: bpp, bcm, initC  = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
 
-    In [6]: print(bcm.iloc[:10])
+    In [4]: print(bcm.iloc[:10])
 
-    In [7]: print(bpp)
+    In [5]: print(bpp)
 
 Note that this process doesn't try to choose the `right` number of binaries to evolve. If you are interested in generating a realistic synthetic Milky Way population, you should head over to :ref:`fixedpop`. For details on the process to generate synthetic Milky Way binary populations, see Breivik+2018 (in prep). 
