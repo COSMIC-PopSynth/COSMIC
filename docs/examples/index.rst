@@ -95,27 +95,7 @@ You can see the different parameters included in each DataFrame using the column
 
 The units are broadly consistent with BSE; masses, radii are in Solar units, temperatures are in log-Kelvin, luminosities are in log-Solar luminosity, orbital periods are in log-seconds, semi-major axes are in solar radii, and times are in units of Myr.
 
-The evol_type column in bpp indicates the evolutionary change that occured for each line. The meaning of each number is below:
-
-=========   =====================
-evol_type   evolutionary change   
-=========   =====================
-1           initial state         
-2           kstar change          
-3           begin RL overflow     
-4           end RL overlow        
-5           contact               
-6           coalescence           
-7           common envelope       
-8           gntage called         
-9           no remnant leftover   
-10          max evolution time    
-11          binary disruption     
-12          begin symbiotic phase 
-13          end symbiotic phase   
-14          blue straggler        
-=========   =====================
-
+The evol_type column in bpp indicates the evolutionary change that occured for each line. The meaning of each number is described here, :ref:`evolve-type-table`.
 
 Each of the parameters in bpp or bcm can be accessed in the usual way for DataFrames.
 

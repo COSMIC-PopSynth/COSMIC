@@ -93,11 +93,13 @@ if sys.version_info < (2, 7):
     tests_require.append('unittest2')
 extras_require = {
     'doc': [
+        'sphinx >= 1.6.1',
+        'numpydoc >= 0.8.0',
+        'sphinx-bootstrap-theme >= 0.6',
+        'sphinxcontrib-programoutput',
+        'sphinx-automodapi',
         'ipython',
-        'sphinx',
-        'numpydoc',
         'sphinx_rtd_theme',
-        'sphinxcontrib_programoutput',
     ],
 }
 
