@@ -37,18 +37,18 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
     ----------
     final_kstar1 : `int or list`
-        Int or list of final kstar1        
+        Int or list of final kstar1
 
     final_kstar2 : `int or list`
         Int or list of final kstar2
 
-    bin_frac : `str or float`
+    binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
 
     primary_model : `str`
@@ -106,8 +106,8 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     n_singles = 0
     n_binaries = 0
     while len(mass1_binary) < size:
-        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier) 
-        mass1_binaries, mass_single = initconditions.binary_select(mass1, model=bin_frac)
+        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
+        mass1_binaries, mass_single, binfrac = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
         mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
         # track the mass sampled
@@ -142,12 +142,12 @@ def get_independent_sampler(final_kstar1, final_kstar2, bin_frac, primary_model,
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), mass_singles, mass_binaries, n_singles, n_binaries
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac), mass_singles, mass_binaries, n_singles, n_binaries
 
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="final_kstar1, final_kstar2, bin_frac, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
+                 usage="final_kstar1, final_kstar2, binfrac_model, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
 
 class Sample(object):
@@ -242,8 +242,8 @@ class Sample(object):
         return secondary_mass
 
 
-    def binary_select(self, primary_mass, model='half'):
-        """Select  which primary masses will have a companion using 
+    def binary_select(self, primary_mass, binfrac_model=0.5):
+        """Select which primary masses will have a companion using
         either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
@@ -252,8 +252,8 @@ class Sample(object):
         ----------
         primary_mass : array
             Mass that determines the binary fraction
-        model : str or float
-            vanHaaften - primary mass dependent and ONLY VALID 
+        binfrac_model : str or float
+            vanHaaften - primary mass dependent and ONLY VALID
                          up to 100 Msun
             float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1 means every star is in a binary pair
 
@@ -263,28 +263,32 @@ class Sample(object):
             primary masses that will have a binary companion
         primary_mass[singleIdx] : array
             primary masses that will be single stars
+        binary_fraction[binaryIdx] : array
+            system-specific probability of being in a binary
         """
 
-        if type(model) == str:
-            if model == 'vanHaaften':
+        if type(binfrac_model) == str:
+            if binfrac_model == 'vanHaaften':
                 binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
                 binary_choose =  np.random.uniform(0, 1.0, primary_mass.size)
 
-                binaryIdx, = np.where(binary_fraction > binary_choose)
                 singleIdx, = np.where(binary_fraction < binary_choose)
+                binaryIdx, = np.where(binary_fraction >= binary_choose)
             else:
                 raise ValueError('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
-        elif type(model) == float:
-            if (model <= 1.0) & (model >= 0.0):
+        elif type(binfrac_model) == float:
+            if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
+                binary_fraction = binfrac_model * np.ones(primary_mass.size)
                 binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
-                binaryIdx, = np.where(binary_choose <= model)
-                singleIdx, = np.where(binary_choose > model)
+
+                singleIdx, = np.where(binary_choose > binary_fraction)
+                binaryIdx, = np.where(binary_choose <= binary_fraction)
             else:
                 raise ValueError('You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1.')
         else:
             raise ValueError('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
 
-        return primary_mass[binaryIdx], primary_mass[singleIdx]
+        return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
     def sample_porb(self, mass1, mass2, ecc, size=None):

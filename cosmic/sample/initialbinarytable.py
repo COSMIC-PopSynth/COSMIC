@@ -54,7 +54,7 @@ geo_mass = G/c**2
 
 class InitialBinaryTable():
     @classmethod
-    def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
+    def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac):
         """Create single binary
 
         Parameters
@@ -75,8 +75,10 @@ class InitialBinaryTable():
         kstar2 : array
             0-14 Initial stellar type of the smaller object;
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-        metallicity:float
+        metallicity : float
             Metallicity of the binaries; Z_sun = 0.02
+        binfrac : float
+            System-specific probability of the primary star being in a binary
 
         Returns
         -------
@@ -86,16 +88,16 @@ class InitialBinaryTable():
         """
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
                                           m1, m2, porb, ecc,
-                                          metallicity, tphysf]).T,
+                                          metallicity, binfrac, tphysf]).T,
                                columns = ['kstar_1', 'kstar_2',
                                           'mass1_binary', 'mass2_binary',
                                           'porb', 'ecc', 'metallicity',
-                                          'tphysf'])
+                                          'binfrac', 'tphysf'])
 
         return bin_dat
 
     @classmethod
-    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity):
+    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac):
         """Create multiple binaries
 
         Parameters
@@ -116,8 +118,10 @@ class InitialBinaryTable():
         kstar2 : array
             0-14 Initial stellar type of the smaller object;
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-        metallicity:float
+        metallicity : float
             Metallicity of the binaries; Z_sun = 0.02
+        binfrac : float
+            System-specific probability of the primary star being in a binary
 
         Returns
         -------
@@ -128,11 +132,11 @@ class InitialBinaryTable():
         """
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
                                           m1, m2, porb, ecc,
-                                          metallicity, tphysf]).T,
+                                          metallicity, binfrac, tphysf]).T,
                                columns = ['kstar_1', 'kstar_2',
                                           'mass1_binary', 'mass2_binary',
                                           'porb', 'ecc', 'metallicity',
-                                          'tphysf'])
+                                          'binfrac', 'tphysf'])
         return bin_dat
 
     @classmethod
