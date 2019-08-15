@@ -55,11 +55,11 @@ class TestSample(unittest2.TestCase):
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), model=0.0)
+        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
         self.assertEqual(len(m1_b), 0)
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), model=1.0)
+        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
         self.assertEqual(len(m1_b), 99)
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), model='vanHaaften')
+        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
 
     def test_sample_ecc(self):
@@ -107,7 +107,7 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
     def test_Moe_sample(self):
-        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
+        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
 
     def test_sample_MultiDim_SFH(self):

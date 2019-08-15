@@ -15,7 +15,7 @@ TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
 
-init_conds_columns = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc', 'metallicity', 'tphysf']
+init_conds_columns = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc', 'metallicity', 'binfrac', 'tphysf']
 
 INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
