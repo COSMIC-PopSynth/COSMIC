@@ -79,16 +79,16 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
         final_kstar2 = [final_kstar2]
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), mass_singles, mass_binaries, n_singles, n_binaries
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac), mass_singles, mass_binaries, n_singles, n_binaries
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
-                 usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size")
+                 usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size, binfrac")
 
 
 
@@ -177,7 +177,7 @@ class MultiDim:
         n_binaries : `int`
             Number of binaries needed to generate a population
         binfrac_list : array
-            array of binary probabilities based on primary mass and period
+            array of binary probabilities based on primary mass and period with size=size
         """
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
@@ -534,9 +534,6 @@ class MultiDim:
                 myrand = np.random.rand()
                 #; If random number < binary star fraction, generate a binary
                 if(myrand < mybinfrac):
-                    #; store the binary fraction for this system
-                    binfrac_list.append(mybinfrac)
-
                     #; Given myrand, select P and corresponding index in logPv
                     mylogP = np.interp(myrand, mycumPbindist_flat, logPv)
                     indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
@@ -570,6 +567,7 @@ class MultiDim:
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
                         ecc_list.append(mye)
+                        binfrac_list.append(mybinfrac)
                     mass_binaries += myM1
                     mass_binaries += myq * myM1
                     n_binaries += 1
