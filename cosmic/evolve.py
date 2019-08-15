@@ -79,6 +79,9 @@ QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
 
+# BSE doesn't need the binary fraction, so just add to columns for saving
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.insert(7, 'binfrac')
+
 class Evolve(object):
     def __init__():
         '''

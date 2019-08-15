@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, binfrac_model, component_age, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
@@ -48,9 +48,6 @@ def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_m
     final_kstar2 : `int or list`
         Int or list of final kstar2
 
-    binfrac_model : `str or float`
-        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
-
     primary_model : `str`
         Model to sample primary mass; choices include: kroupa93, salpeter55
 
@@ -59,6 +56,9 @@ def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_m
 
     SFH_model : `str`
         Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+
+    binfrac_model : `str or float`
+        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
 
     component_age : `float`
         Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
@@ -97,6 +97,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_m
     multiplier = 1
     mass1_binary = []
     mass2_binary = []
+    binfrac = []
 
     # track the mass in singles and the mass in binaries
     mass_singles = 0.0
@@ -107,7 +108,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_m
     n_binaries = 0
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
-        mass1_binaries, mass_single, binfrac = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
+        mass1_binaries, mass_single, binfrac_binaries = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
         mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
         # track the mass sampled
@@ -125,6 +126,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_m
         ind_select = list(set(ind_select_primary).intersection(ind_select_secondary))
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
+        binfrac.extend(binfrac_binaries[ind_select])
         # check to see if we should increase the multiplier factor to sample the population more quickly
 
         if len(mass1_binary) < size/100:
@@ -134,6 +136,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, binfrac_model, primary_m
 
     mass1_binary = np.array(mass1_binary)
     mass2_binary = np.array(mass2_binary)
+    binfrac = np.asarray(binfrac)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
