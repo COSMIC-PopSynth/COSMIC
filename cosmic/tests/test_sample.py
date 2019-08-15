@@ -55,11 +55,11 @@ class TestSample(unittest2.TestCase):
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
         self.assertEqual(len(m1_b), 0)
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
         self.assertEqual(len(m1_b), 99)
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
 
     def test_sample_ecc(self):
