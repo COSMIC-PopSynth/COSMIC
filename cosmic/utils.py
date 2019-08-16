@@ -155,9 +155,11 @@ def conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_
         # filter the bpp array to find the systems that match the user-specified 
         # final kstars
         conv_tot = bpp_save_tot.loc[(bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
-                                    (bpp_save_tot.kstar_2.isin(final_kstar_2))]
+                                    (bpp_save_tot.kstar_2.isin(final_kstar_2)) &\
+                                    (bpp_save_tot.sep > 0)]
         conv_last = bpp_save_last.loc[(bpp_save_last.kstar_1.isin(final_kstar_1)) &\
-                                      (bpp_save_last.kstar_2.isin(final_kstar_2))]
+                                      (bpp_save_last.kstar_2.isin(final_kstar_2)) &\
+                                      (bpp_save_last.sep > 0)]
 
         # select the formation parameters
         conv_tot = conv_tot.groupby('bin_num').first().reset_index()
@@ -172,10 +174,12 @@ def conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_
         # and undergo a supernova
         conv_tot_sn_ind = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
                                            (bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
-                                           (bpp_save_tot.kstar_2.isin(final_kstar_2))].bin_num
+                                           (bpp_save_tot.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_save_tot.sep > 0)].bin_num
         conv_last_sn_ind = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
                                              (bpp_save_last.kstar_1.isin(final_kstar_1)) &\
-                                             (bpp_save_last.kstar_2.isin(final_kstar_2))].bin_num            
+                                             (bpp_save_last.kstar_2.isin(final_kstar_2)) &\
+                                             (bpp_save_last.sep > 0)].bin_num            
         # select out the values just before the supernova(e)
         conv_tot_sn = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
                                        (bpp_save_tot.evol_type.isin([15.0, 16.0]))]
@@ -195,10 +199,12 @@ def conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_
         # and undergo a supernova
         conv_tot_sn_ind = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
                                            (bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
-                                           (bpp_save_tot.kstar_2.isin(final_kstar_2))].bin_num
+                                           (bpp_save_tot.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_save_tot.sep > 0)].bin_num
         conv_last_sn_ind = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
                                              (bpp_save_last.kstar_1.isin(final_kstar_1)) &\
-                                             (bpp_save_last.kstar_2.isin(final_kstar_2))].bin_num            
+                                             (bpp_save_last.kstar_2.isin(final_kstar_2)) &\
+                                             (bpp_save_last.sep > 0)].bin_num 
         # select out the values just before the supernova(e)
         conv_tot_sn = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
                                        (bpp_save_tot.evol_type.isin([15.0, 16.0]))]
@@ -252,10 +258,12 @@ def conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_
         # select out systems when they first enter RLO after the 1st SN
         conv_tot_xrb = conv_tot_sn.loc[(conv_tot_sn.kstar_1.isin(final_kstar_1)) &\
                                        (conv_tot_sn.kstar_2.isin(final_kstar_2)) &\
-                                       (conv_tot_sn.RROL_2 >= 1.0)]
+                                       (conv_tot_sn.RROL_2 >= 1.0) &\
+                                       (conv_tot_sn.sep > 0)]
         conv_last_xrb = conv_last_sn.loc[(conv_last_sn.kstar_1.isin(final_kstar_1)) &\
                                          (conv_last_sn.kstar_2.isin(final_kstar_2)) &\
-                                         (conv_last_sn.RROL_2 >= 1.0)]
+                                         (conv_last_sn.RROL_2 >= 1.0)\
+                                         (conv_last_sn.sep > 0)]
         conv_tot = conv_tot_xrb.groupby('bin_num').first().reset_index()
         conv_last = conv_last_xrb.groupby('bin_num').first().reset_index()
 
