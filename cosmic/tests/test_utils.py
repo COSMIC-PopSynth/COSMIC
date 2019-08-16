@@ -76,7 +76,8 @@ class TestUtils(unittest2.TestCase):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], wrong_dict)
 
         bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'])
-        self.assertEqual(len(bcm_2), 22)
+        self.assertTrue(np.all(bcm_2.evol_type.isin([2,7])))
+        self.assertTrue(np.all(bcm_2.sep >= 0))
 
         bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_1_SN['conv_filter'])
         self.assertEqual(len(bcm_2), 0)

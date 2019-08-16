@@ -262,7 +262,7 @@ def conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_
                                        (conv_tot_sn.sep > 0)]
         conv_last_xrb = conv_last_sn.loc[(conv_last_sn.kstar_1.isin(final_kstar_1)) &\
                                          (conv_last_sn.kstar_2.isin(final_kstar_2)) &\
-                                         (conv_last_sn.RROL_2 >= 1.0)\
+                                         (conv_last_sn.RROL_2 >= 1.0)& \
                                          (conv_last_sn.sep > 0)]
         conv_tot = conv_tot_xrb.groupby('bin_num').first().reset_index()
         conv_last = conv_last_xrb.groupby('bin_num').first().reset_index()
