@@ -790,9 +790,11 @@ def parse_inifile(inifile):
     }
 
     def arithmetic_eval(s):
+        """Allows us to control how the strings from the inifile get parses"""
         node = ast.parse(s, mode='eval')
 
         def _eval(node):
+            """Different strings receive different evaluation"""
             if isinstance(node, ast.Expression):
                 return _eval(node.body)
             elif isinstance(node, ast.Str):
@@ -845,3 +847,19 @@ def parse_inifile(inifile):
 
     return BSEDict, seed_int, filters, convergence
 
+class VariableKey(object):
+    """
+    A dictionary key which is a variable.
+    @ivar item: The variable AST object.
+    """
+    def __init__(self, item):
+        self.name = item.id
+
+    def __eq__(self, compare):
+        return (
+            compare.__class__ == self.__class__
+            and compare.name == self.name
+        )
+
+    def __hash__(self):
+        return hash(self.name)
