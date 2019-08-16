@@ -23,6 +23,11 @@ import numpy as np
 import scipy.special as ss
 import astropy.stats as astrostats
 import warnings
+import ast
+import operator
+import json
+
+from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
@@ -772,3 +777,71 @@ def convert_kstar_evol_type(bpp):
         bpp['evol_type'] = bpp['evol_type'].apply(lambda x: evolve_type_string_to_int_dict[x])
 
     return bpp
+
+def parse_inifile(inifile):
+    """Provides a method for parsing the inifile and returning dicts of each section
+    """
+    binOps = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.Mod: operator.mod
+    }
+
+    def arithmetic_eval(s):
+        node = ast.parse(s, mode='eval')
+
+        def _eval(node):
+            if isinstance(node, ast.Expression):
+                return _eval(node.body)
+            elif isinstance(node, ast.Str):
+                return node.s
+            elif isinstance(node, ast.Num):
+                return node.n
+            elif isinstance(node, ast.BinOp):
+                return binOps[type(node.op)](_eval(node.left), _eval(node.right))
+            elif isinstance(node, ast.List):
+                return [_eval(x) for x in node.elts]
+            elif isinstance(node, ast.Name):
+                result = VariableKey(item=node)
+                constants_lookup = {
+                    'True': True,
+                    'False': False,
+                    'None': None,
+                }
+                return constants_lookup.get(
+                    result.name,
+                    result,
+                )
+            elif isinstance(node, ast.NameConstant):
+                # None, True, False are nameconstants in python3, but names in 2
+                return node.value
+            else:
+                raise Exception('Unsupported type {}'.format(node))
+
+        return _eval(node.body)
+
+    # ---- Create configuration-file-parser object and read parameters file.
+    cp = ConfigParser()
+    cp.optionxform = str
+    cp.read(inifile)
+
+    # ---- Read needed variables from the inifile
+    dictionary = {}
+    for section in cp.sections():
+        dictionary[section] = {}
+        for option in cp.options(section):
+            opt = cp.get(section, option)
+            try:
+                dictionary[section][option] = arithmetic_eval(opt)
+            except:
+                dictionary[section][option] = json.loads(opt)
+
+    BSEDict = dictionary['bse']
+    seed_int = int(dictionary['rand_seed']['seed'])
+    filters = dictionary['filters']
+    convergence = dictionary['convergence']
+
+    return BSEDict, seed_int, filters, convergence
+
