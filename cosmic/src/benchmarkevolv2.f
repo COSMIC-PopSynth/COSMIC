@@ -32,7 +32,7 @@
         sigmatmp = 265.0; sigmadivtmp = -20.0
         bhsigmafractmp = 1.0; polar_kick_angletmp = 90.0
         natal_kick_array = -100.d0; qcrit_array = 0.d0;
-        fprimc_array = 1.d0;
+        fprimc_array = 2.d0/21.d0;
         betatmp = -1.0; xitmp = 0.5; acc2tmp = 1.5; epsnovtmp = 0.001
         eddfactmp = 1.0; gammatmp = -2.0
         bconsttmp = -3000; CKtmp = -1000; windflagtmp = 3; qcflagtmp = 1

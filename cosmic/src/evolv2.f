@@ -914,13 +914,18 @@ component.
 *
 * Convective damping (Hut, 1981, A&A, 99, 126).
 *
+* In BSE paper Equation 30, the default scaling coefficient is 2./21
+* the fprimc_array kstar dependent array that is fed in
+* keeps this same coefficient by default but allows user to
+* specify their own
+*
                   tc = mr23yr*(menv(k)*renv(k)*(rad(k)-0.5d0*renv(k))/
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
                   tcqr = fprimc_array(kstar(k))*
-     &                 2.d0*f*q(3-k)*raa6*menv(k)/
-     &                 (21.d0*tc*mass(k))
+     &                 f*q(3-k)*raa6*menv(k)/
+     &                 (tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
 *
@@ -2936,6 +2941,12 @@ component.
                   rg2 = k2str(k)
                elseif(kstar(k).le.9)then
 * Convective damping
+
+* In BSE paper Equation 30, the default scaling coefficient is 2./21
+* the fprimc_array kstar dependent array that is fed in
+* keeps this same coefficient by default but allows user to
+* specify their own
+*
                   renv(k) = MIN(renv(k),radx(k)-radc(k))
                   renv(k) = MAX(renv(k),1.0d-10)
                   tc = mr23yr*(menv(k)*renv(k)*(radx(k)-0.5d0*renv(k))/
@@ -2943,8 +2954,8 @@ component.
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
                   tcqr = fprimc_array(kstar(k))*
-     &                 2.d0*f*q(3-k)*raa6*menv(k)/
-     &                 (21.d0*tc*mass(k))
+     &                 f*q(3-k)*raa6*menv(k)/
+     &                 (tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
 *Degenerate damping

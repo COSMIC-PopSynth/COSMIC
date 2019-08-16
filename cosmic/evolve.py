@@ -175,28 +175,7 @@ class Evolve(object):
             if not os.path.isfile(params):
                 raise ValueError("File does not exist, probably supplied incorrect "
                                  "path to the inifile.")
-            # then we construct a BSEDict out of the inifile contents
-            # ---- Create configuration-file-parser object and read parameters file.
-            cp = ConfigParser()
-            cp.optionxform = str
-            cp.read(params)
-
-            # ---- Read needed variables from the inifile
-            dictionary = {}
-            for section in cp.sections():
-                dictionary[section] = {}
-                for option in cp.options(section):
-                    opt = cp.get(section, option)
-                    if opt == 'False':
-                        opt = False
-                    elif opt == 'True':
-                        opt = True
-                    try:
-                        dictionary[section][option] = json.loads(opt)
-                    except:
-                        dictionary[section][option] = opt
-
-            BSEDict = dictionary['bse']
+            BSEDict, _, _, _ = utils.parse_inifile(params)
 
         # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
