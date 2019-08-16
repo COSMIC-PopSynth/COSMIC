@@ -17,9 +17,9 @@ before_install:
 install:
 - python -m pip install .
 before_script:
-- python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner sphinx
-  numpydoc sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2
-  ipython
+- python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner "sphinx>=1.6.1"
+  "numpydoc>=0.8.0" sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2
+  ipython sphinx-automodapi
 script:
 - bash .travis/compile_benchmark.sh
 - coverage run ./setup.py test

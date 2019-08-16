@@ -63,21 +63,23 @@ INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_
                              'natal_kick_array', 'qcrit_array',
                              'beta', 'xi', 'acc2', 'epsnov',
                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag',
-                             'dtp', 'randomseed', 'bin_num']
+                             'fprimc_array', 'dtp', 'randomseed', 'bin_num']
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
 else:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS.copy()
 
-for col in ['natal_kick_array', 'qcrit_array',]:
+for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
 NATAL_KICK_COLUMNS = ['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']
 QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
+FPRIMC_COLUMNS = ['fprimc_{0}'.format(kstar) for kstar in range(0,16)]
 
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FPRIMC_COLUMNS)
 
 class Evolve(object):
     def __init__():
@@ -173,28 +175,7 @@ class Evolve(object):
             if not os.path.isfile(params):
                 raise ValueError("File does not exist, probably supplied incorrect "
                                  "path to the inifile.")
-            # then we construct a BSEDict out of the inifile contents
-            # ---- Create configuration-file-parser object and read parameters file.
-            cp = ConfigParser()
-            cp.optionxform = str
-            cp.read(params)
-
-            # ---- Read needed variables from the inifile
-            dictionary = {}
-            for section in cp.sections():
-                dictionary[section] = {}
-                for option in cp.options(section):
-                    opt = cp.get(section, option)
-                    if opt == 'False':
-                        opt = False
-                    elif opt == 'True':
-                        opt = True
-                    try:
-                        dictionary[section][option] = json.loads(opt)
-                    except:
-                        dictionary[section][option] = opt
-
-            BSEDict = dictionary['bse']
+            BSEDict, _, _, _ = utils.parse_inifile(params)
 
         # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
@@ -236,6 +217,10 @@ class Evolve(object):
                 initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
                 for kstar in range(0,16):
                     initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = pd.Series([BSEDict['qcrit_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='qcrit_{0}'.format(kstar))
+            elif k == 'fprimc_array':
+                initialbinarytable = initialbinarytable.assign(fprimc_array=[BSEDict['fprimc_array']] * len(initialbinarytable))
+                for kstar in range(0,16):
+                    initialbinarytable.loc[:, 'fprimc_{0}'.format(kstar)] = pd.Series([BSEDict['fprimc_array'][kstar]]* len(initialbinarytable), index=initialbinarytable.index, name='fprimc_{0}'.format(kstar))
             else:
                 # assigning values this way work for most of the parameters.
                 kwargs1 = {k:v}
@@ -255,13 +240,16 @@ class Evolve(object):
                                  "you have all BSE parameters as columns {0} or {1}.".format(
                                   INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
 
-        # If you did not supply the natal kick or q crit array in the BSEdict then we construct
+        # If you did not supply the natal kick or qcrit_array or fprimc_array in the BSEdict then we construct
         # it from the initial conditions table
         if (pd.Series(NATAL_KICK_COLUMNS).isin(initialbinarytable.keys()).all()) and ('natal_kick_array' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(natal_kick_array=initialbinarytable[NATAL_KICK_COLUMNS].values.tolist())
 
         if (pd.Series(QCRIT_COLUMNS).isin(initialbinarytable.keys()).all()) and ('qcrit_array' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(qcrit_array=initialbinarytable[QCRIT_COLUMNS].values.tolist())
+
+        if (pd.Series(FPRIMC_COLUMNS).isin(initialbinarytable.keys()).all()) and ('fprimc_array' not in BSEDict):
+            initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
 
         # need to ensure that the order of parameters that we pass to BSE
         # is correct
@@ -280,7 +268,8 @@ class Evolve(object):
                                                f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
                                                f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
                                                f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39],
-                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47], f[48], f[49])
+                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47], f[48], f[49],
+                                               f[50])
 
                 try:
                     bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
@@ -291,8 +280,8 @@ class Evolve(object):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[50]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[50]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[51]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[51]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
