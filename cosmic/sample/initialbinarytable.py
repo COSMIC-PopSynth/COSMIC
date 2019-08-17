@@ -137,8 +137,6 @@ class InitialBinaryTable():
                                           metallicity, binfrac, tphysf]).T,
                                columns = ['kstar_1', 'kstar_2',
                                           'mass1_binary', 'mass2_binary',
-                                          'porb', 'ecc', 'metallicity',
-                                          'binfrac', 'tphysf'])
                                           'porb', 'ecc', 'metallicity', 'binfrac',
                                           'tphysf'])
         return bin_dat
