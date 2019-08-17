@@ -145,7 +145,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac), mass_singles, mass_binaries, n_singles, n_binaries
+    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac=binfrac), mass_singles, mass_binaries, n_singles, n_binaries
 
 
 
