@@ -73,9 +73,6 @@ def parse_commandline():
                         help="Number of binaries to try before checking for "
                         "convergence, it will check ever Nstep binaries until "
                         "it reach Niter binaries", type=int, default=10000)
-    parser.add_argument("--match",
-                        help="Match value for convergence tests",
-                        type=float, default=-5.0)
     parser.add_argument("-n", "--nproc",
                         help="number of processors", type=int, default=1)
     parser.add_argument("--verbose", action="store_true", default=False,
@@ -171,8 +168,7 @@ if __name__ == '__main__':
 
     # Initialize the step counter and convergence array/list
     Nstep = 0
-    match_all = np.zeros(len(args.convergence_params))
-    match_list = []
+    match = np.zeros(len(args.convergence_params))
 
     # Select the Galactic component from user input
     if args.galaxy_component == 'ThinDisk':
@@ -194,7 +190,7 @@ if __name__ == '__main__':
     bcm_filter_match = []
     bpp_filter_match = []
 
-    while (Nstep < args.Niter) & (np.max(np.array(match_all)) > args.match):
+    while (Nstep < args.Niter) & (np.max(match) > convergence['match']):
         # Set random seed such that each iteration gets a unique, determinable seed
         rand_seed = seed_int + Nstep
         np.random.seed(rand_seed)
@@ -273,23 +269,23 @@ if __name__ == '__main__':
             bcm_filter_match = bcm_filter.copy()
             bpp_filter_match = bpp_filter.copy()
 
-        # Run the match on short period binaries, such that we get a better sampling
-        # for the highest signal systems
-        n_bin_state = []
-        for bin_state in filters['binary_state']:
-            n_bin_state.append(len(bcm_filter_match.loc[bcm_filter_match.bin_state == bin_state]))
-        if all(i >= 50 for i in n_bin_state):
+        if len(bcm_filter_match) >= 50:
             bcm_save = bcm_save.append(bcm_filter_match)
-            bpp_save = bpp_save.append(bpp_filter_match)            
+            bpp_save = bpp_save.append(bpp_filter_match)
+
+            # Now get the converging population
+            conv_tot, conv_last = utils.conv_select(bcm_save, bcm_filter_match,\
+                                                    bpp_save, kstar1_range, kstar2_range,\
+                                                    convergence['conv_filter'])
+
+            # save the converging population
+            dat_store.append('conv', conv_last)
 
             # perform the convergence
-            match = Match.perform_convergence(args.convergence_params, filters['binary_state'],\
-                                                  convergence, bcm_save, bcm_filter_match, bpp_save,\
-                                                  kstar1_range, kstar2_range, log_file)
+            match = Match.perform_convergence(args.convergence_params, conv_tot, conv_last, log_file)
 
             if (len(match) > 1):
-                match_all = np.reshape(match, (-1,len(args.convergence_params)))
-                match_save = pd.DataFrame(np.atleast_2d(match_all), columns = args.convergence_params)
+                match_save = pd.DataFrame(np.atleast_2d(match), columns = args.convergence_params)
                 dat_store.append('match', match_save)
 
             # reset the bcm_filter DataFrame
@@ -297,8 +293,6 @@ if __name__ == '__main__':
             bpp_filter_match = [] 
         Nstep += args.Nstep
         log_file.flush()
-        n_bin_state = []
-
     # Close the data storage file
     dat_store.close()
 

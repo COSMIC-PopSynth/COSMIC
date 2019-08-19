@@ -197,7 +197,7 @@ class Sample(object):
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.925
+            low_cutoff = 0.935
             high_cutoff = 0.986
 
             lowIdx, = np.where(a_0 <= low_cutoff)
