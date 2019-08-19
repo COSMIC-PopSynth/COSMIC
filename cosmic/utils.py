@@ -33,7 +33,7 @@ from .bse_utils.zcnsts import zcnsts
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
                'Michael Zevin <zevin@northwestern.edu>']
-__all__ = ['filter_bpp_bcm', 'bcm_conv_select', 'mass_min_max_select',
+__all__ = ['filter_bpp_bcm', 'conv_select', 'mass_min_max_select',
            'idl_tabulate', 'rndm', 'param_transform', 'dat_transform',
            'dat_un_transform', 'knuth_bw_selector', 'error_check',
            'check_initial_conditions', 'convert_kstar_evol_type']
@@ -51,8 +51,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     method : `dict`,
         one or more methods by which to filter the
-        bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
-        This means you do *not* want disrupted_binaries in your table
+        bpp or bcm table, e.g. ``{'select_final_state' : False}``;
+        This means you do *not* want to select the final state of the binaries in the bcm array
 
     kstar1_range : `list`
         list containing all kstar1 values to retain
@@ -65,10 +65,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     bcm : `pandas.DataFrame`
         filtered bcm dataframe
     """
-    _known_methods = ['mass_transfer_white_dwarf_to_co',
-                      'select_final_state',
-                      'binary_state',
-                      'lisa_sources']
+    _known_methods = ['select_final_state',
+                      'binary_state']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -77,16 +75,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
-        if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_save_1 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                  (bpp.kstar_2.isin([10,11,12])) &
-                                  (bpp.RROL_1 > 1)].bin_num.tolist()
-            idx_save_2 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                  (bpp.kstar_2.isin([10,11,12])) &
-                                  (bpp.RROL_1 > 2)].bin_num.tolist()
-            idx_save = np.intersect1d(idx_save_1, idx_save_2)
-            bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
-        elif (meth == 'select_final_state') and use:
+        if (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
             bin_num_save = []
@@ -115,17 +104,9 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
             bcm = bcm.loc[bcm.bin_state.isin(use)]
 
-        elif (meth == 'lisa_sources') and use:
-            if 0 in method['binary_state']:
-                bcm_0 = bcm.loc[bcm.bin_state==0]
-                bcm_0_LISAflag = bcm_0.loc[bcm_0.porb > 5].bin_num
-                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_LISAflag)]
-            else:
-                raise ValueError("You must have bin state = 0 for lisa"
-                                 "sources filter")
     return bcm, bin_state_fraction
 
-def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
+def conv_select(bcm_save_tot, bcm_save_last, bpp_save_tot, final_kstar_1, final_kstar_2, method):
     """Select bcm data for special convergence cases
 
     Parameters
@@ -137,12 +118,20 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
         bcm dataframe containing bcm data from last
         iteration
 
+    bpp_save_tot : `pandas.DataFrame`
+        bpp dataframe containing all saved bpp data
+
+    final_kstar_1 : `list`
+        contains list of final primary kstars specified by user
+
+    final_kstar_2 : `list`
+        contains list of final primary kstars specified by user
+
     method : `dict`,
         one or more methods by which to filter the
-        bcm table, e.g. ``{'lisa_convergence' : True}``;
+        bcm table, e.g. ``{'formation' : True}``;
         This means you want to only compute the convergence
-        over the region specified for the lisa_convergence
-        method below
+        of the population at formation, e.g. BH-BH formation
 
     Returns
     -------
@@ -155,29 +144,135 @@ def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
         data from last iteration
 
     """
-    _known_methods = ['lisa_convergence']
+    _known_methods = ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']
 
-    if not set(method.keys()).issubset(set(_known_methods)):
+    if not method in _known_methods:
         raise ValueError("You have supplied an "
                          "unknown method to filter the "
                          "bcm array for convergence. Known methods are "
                          "{0}".format(_known_methods))
-    bcm_conv_tot = bcm_save_tot
+
     if len(bcm_save_tot) == len(bcm_save_last):
-        bcm_conv_last = bcm_save_last
-    else:
-        bcm_conv_last = bcm_save_tot.iloc[:len(bcm_save_tot)-len(bcm_save_last)]
-    for meth, use in method.items():
-        if meth == 'lisa_convergence' and use:
-            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(5000)]
-            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(5000)]
+        bcm_save_last = bcm_save_tot[:int(len(bcm_save_tot)/2)]
+    bpp_save_last = bpp_save_tot.loc[bpp_save_tot.bin_num.isin(bcm_save_last.bin_num)]
 
-    # If it is the first iteration, divide the bcm array in two
-    # for convergence computation
-    if len(bcm_conv_tot) == len(bcm_conv_last):
-        bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
+    if method == 'formation':
+        # filter the bpp array to find the systems that match the user-specified 
+        # final kstars
+        conv_tot = bpp_save_tot.loc[(bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
+                                    (bpp_save_tot.kstar_2.isin(final_kstar_2)) &\
+                                    (bpp_save_tot.sep > 0)]
+        conv_last = bpp_save_last.loc[(bpp_save_last.kstar_1.isin(final_kstar_1)) &\
+                                      (bpp_save_last.kstar_2.isin(final_kstar_2)) &\
+                                      (bpp_save_last.sep > 0)]
 
-    return bcm_conv_tot, bcm_conv_last
+        # select the formation parameters
+        conv_tot = conv_tot.groupby('bin_num').first().reset_index()
+        conv_last = conv_last.groupby('bin_num').first().reset_index()
+
+    elif method == '1_SN':
+        # select out the systems which will undergo a supernova
+        conv_tot_sn_ind = bpp_save_tot.loc[bpp_save_tot.evol_type.isin([15.0, 16.0])].bin_num
+        conv_last_sn_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0])].bin_num
+
+        # select out the systems which will produce the user specified final kstars
+        # and undergo a supernova
+        conv_tot_sn_ind = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
+                                           (bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
+                                           (bpp_save_tot.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_save_tot.sep > 0)].bin_num
+        conv_last_sn_ind = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
+                                             (bpp_save_last.kstar_1.isin(final_kstar_1)) &\
+                                             (bpp_save_last.kstar_2.isin(final_kstar_2)) &\
+                                             (bpp_save_last.sep > 0)].bin_num            
+        # select out the values just before the supernova(e)
+        conv_tot_sn = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
+                                       (bpp_save_tot.evol_type.isin([15.0, 16.0]))]
+        conv_last_sn = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
+                                         (bpp_save_last.evol_type.isin([15.0, 16.0]))]
+
+        # make sure to select out only the first supernova
+        conv_tot = conv_tot_sn.groupby('bin_num').first().reset_index()
+        conv_last = conv_last_sn.groupby('bin_num').first().reset_index()
+
+    elif method == '2_SN':
+        # select out the systems which will undergo a supernova
+        conv_tot_sn_ind = bpp_save_tot.loc[bpp_save_tot.evol_type.isin([15.0, 16.0])].bin_num
+        conv_last_sn_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0])].bin_num
+
+        # select out the systems which will produce the user specified final kstars
+        # and undergo a supernova
+        conv_tot_sn_ind = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
+                                           (bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
+                                           (bpp_save_tot.kstar_2.isin(final_kstar_2)) &\
+                                           (bpp_save_tot.sep > 0)].bin_num
+        conv_last_sn_ind = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
+                                             (bpp_save_last.kstar_1.isin(final_kstar_1)) &\
+                                             (bpp_save_last.kstar_2.isin(final_kstar_2)) &\
+                                             (bpp_save_last.sep > 0)].bin_num 
+        # select out the values just before the supernova(e)
+        conv_tot_sn = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_sn_ind)) &\
+                                       (bpp_save_tot.evol_type.isin([15.0, 16.0]))]
+        conv_last_sn = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_sn_ind)) &\
+                                         (bpp_save_last.evol_type.isin([15.0, 16.0]))]         
+
+        # select out only the systems that go through 2 supernovae
+        conv_tot_sn_2 = conv_tot_sn.loc[conv_tot_sn.groupby('bin_num').size() == 2]
+        conv_last_sn_2 = conv_last_sn.loc[conv_last_sn.groupby('bin_num').size() == 2]
+
+        # make sure to select out only the second supernova
+        conv_tot = conv_tot_sn_2.groupby('bin_num').nth(1).reset_index()
+        conv_last = conv_last_sn_2.groupby('bin_num').nth(1).reset_index()
+
+    elif method == 'disruption':
+        # filter the bpp array to find the systems that match the user-specified 
+        # final kstars
+        conv_tot_ind = bpp_save_tot.loc[(bpp_save_tot.kstar_1.isin(final_kstar_1)) &\
+                                        (bpp_save_tot.kstar_2.isin(final_kstar_2))].bin_num.unique()
+        conv_last_ind = bpp_save_last.loc[(bpp_save_last.kstar_1.isin(final_kstar_1)) &\
+                                          (bpp_save_last.kstar_2.isin(final_kstar_2))].bin_num.unique()
+
+        conv_tot = bpp_save_tot.loc[(bpp_save_tot.bin_num.isin(conv_tot_ind))]
+        conv_last = bpp_save_last.loc[(bpp_save_last.bin_num.isin(conv_last_ind))]
+
+        # select out the parameters just before disruption
+        # first reset the index:
+        conv_tot_reset = conv_tot.reset_index()
+        conv_last_reset = conv_last.reset_index()
+
+        # next select out the index for the disrupted systems using evol_type == 11
+        conv_tot_reset_ind = conv_tot_reset.loc[conv_tot_reset.evol_type == 11.0].index
+        conv_last_reset_ind = conv_last_reset.loc[conv_last_reset.evol_type == 11.0].index
+
+        conv_tot = conv_tot_reset.iloc[conv_tot_reset_ind]
+        conv_last = conv_last_reset.iloc[conv_last_reset_ind]
+
+    elif method == 'final_state':
+        # the bcm array is all that we need!
+        conv_tot = bcm_save_tot
+        conv_last = bcm_save_last
+
+    elif method == 'XRB_form':
+        # select out the systems which undergo a SN
+        conv_tot_ind = bpp_save_tot.loc[bpp_save_tot.evol_type.isin([15.0, 16.0])].bin_num.unique()
+        conv_last_ind = bpp_save_last.loc[bpp_save_last.evol_type.isin([15.0, 16.0])].bin_num.unique()
+ 
+        conv_tot_sn = bpp_save_tot.loc[bpp_save_tot.bin_num.isin(conv_tot_ind)]
+        conv_last_sn = bpp_save_last.loc[bpp_save_last.bin_num.isin(conv_last_ind)]
+
+        # select out systems when they first enter RLO after the 1st SN
+        conv_tot_xrb = conv_tot_sn.loc[(conv_tot_sn.kstar_1.isin(final_kstar_1)) &\
+                                       (conv_tot_sn.kstar_2.isin(final_kstar_2)) &\
+                                       (conv_tot_sn.RROL_2 >= 1.0) &\
+                                       (conv_tot_sn.sep > 0)]
+        conv_last_xrb = conv_last_sn.loc[(conv_last_sn.kstar_1.isin(final_kstar_1)) &\
+                                         (conv_last_sn.kstar_2.isin(final_kstar_2)) &\
+                                         (conv_last_sn.RROL_2 >= 1.0)& \
+                                         (conv_last_sn.sep > 0)]
+        conv_tot = conv_tot_xrb.groupby('bin_num').first().reset_index()
+        conv_last = conv_last_xrb.groupby('bin_num').first().reset_index()
+
+    return conv_tot, conv_last
 
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial
@@ -441,11 +536,6 @@ def error_check(BSEDict, filters=None, convergence=None):
 
     # filters
     if filters is not None:
-        flag='mass_transfer_white_dwarf_to_co'
-        if flag in filters.keys():
-            if filters[flag] not in [True,False]:
-                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
-
         flag='select_final_state'
         if flag in filters.keys():
             if filters[flag] not in [True,False]:
@@ -458,10 +548,15 @@ def error_check(BSEDict, filters=None, convergence=None):
 
     # convergence
     if convergence is not None:
-        flag='lisa_convergence'
+        flag='conv_filter'
         if flag in convergence.keys():
-            if convergence[flag] not in [True,False]:
-                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, convergence[flag]))
+            if not convergence[flag] in ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']:
+                raise ValueError("'{0:s}' needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] (you set it to '{1:s}'".format(flag, convergence[flag]))
+        flag='match'
+        if flag in convergence.keys():
+            if not isinstance(convergence[flag], float):
+                raise ValueError("'{0:s}' must be a float (you set it to '{1:0.2f}')".format(flag, convergence[flag]))
+
 
     # BSEDict
     flag='dtp'
