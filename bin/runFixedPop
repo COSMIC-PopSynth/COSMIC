@@ -15,7 +15,6 @@
 from collections import OrderedDict
 import warnings
 import argparse
-from configparser import ConfigParser
 
 import math
 import random
@@ -23,7 +22,6 @@ import time
 from time import sleep
 import string
 import os.path
-import json
 
 import numpy as np
 import scipy.special as ss
@@ -117,30 +115,9 @@ if __name__ == '__main__':
     ###########################################################################
     start_time = time.time()
 
-    # ---- Create configuration-file-parser object and read parameters file.
-    cp = ConfigParser()
-    cp.optionxform = str
-    cp.read(args.inifile)
-
-    # ---- Read needed variables from the inifile
-    dictionary = {}
-    for section in cp.sections():
-        dictionary[section] = {}
-        for option in cp.options(section):
-            opt = cp.get(section, option)
-            if opt == 'False':
-                opt = False
-            elif opt == 'True':
-                opt = True
-            try:
-                dictionary[section][option] = json.loads(opt)
-            except:
-                dictionary[section][option] = opt
-
-    BSEDict = dictionary['bse']
-    seed_int = int(dictionary['rand_seed']['seed'])
-    filters = dictionary['filters']
-    convergence = dictionary['convergence']
+    # READ AND PARSE INIFILE
+    ###########################################################################
+    BSEDict, seed_int, filters, convergence = utils.parse_inifile(args.inifile)
 
     # Check that the values in BSEDict, filters, and convergence are valid
     utils.error_check(BSEDict, filters, convergence)

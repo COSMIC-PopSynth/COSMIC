@@ -54,7 +54,7 @@ geo_mass = G/c**2
 
 class InitialBinaryTable():
     @classmethod
-    def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac):
+    def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
         """Create single binary
 
         Parameters
@@ -86,18 +86,19 @@ class InitialBinaryTable():
             Single binary initial conditions
 
         """
+        binfrac = kwargs.pop('binfrac', np.ones(np.array(m1).size))
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
                                           m1, m2, porb, ecc,
-                                          metallicity, binfrac, tphysf]).T,
+                                          metallicity, binfrac,tphysf]).T,
                                columns = ['kstar_1', 'kstar_2',
                                           'mass1_binary', 'mass2_binary',
-                                          'porb', 'ecc', 'metallicity',
-                                          'binfrac', 'tphysf'])
+                                          'porb', 'ecc', 'metallicity','binfrac',
+                                          'tphysf'])
 
         return bin_dat
 
     @classmethod
-    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac):
+    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
         """Create multiple binaries
 
         Parameters
@@ -130,13 +131,14 @@ class InitialBinaryTable():
         sampled_mass : int
             Total mass of population conatining the initial binaries [Msun]
         """
+        binfrac = kwargs.pop('binfrac', np.ones(np.array(m1).size))
         bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
                                           m1, m2, porb, ecc,
                                           metallicity, binfrac, tphysf]).T,
                                columns = ['kstar_1', 'kstar_2',
                                           'mass1_binary', 'mass2_binary',
-                                          'porb', 'ecc', 'metallicity',
-                                          'binfrac', 'tphysf'])
+                                          'porb', 'ecc', 'metallicity', 'binfrac',
+                                          'tphysf'])
         return bin_dat
 
     @classmethod

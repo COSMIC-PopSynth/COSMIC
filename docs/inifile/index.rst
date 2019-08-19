@@ -554,20 +554,27 @@ Each of the below sections lists the valid options and a description of what the
 
     MISCELLANEOUS FLAGS
 
-==========  ============================================================
-``tflag``   *tflag* activates tidal circularisation.
-            **default=1**
-``ifflag``  *ifflag* activates the initial-final white dwarf mass relation from Han, Podsiadlowski & Eggleton, 1995, MNRAS, 272, 800 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
-            **default=0**
-``wdflag``  *wdflag* activates the alternate cooling law found in the description immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_ in Hurley & Shara, 2003, Apj, May 20. Equation 1 gives the default Mestel cooling law (wdflag=0).
-            **default=0**
-``epsnov``  *epsnov* is the fraction of accreted matter retained in a nova eruption, set by **default to 0.001**. This is relevant for accretion onto degenerate objects (See Section 2.6.6.2 in BSE paper)
-            **default=0.001**
-``bconst``  *bconst* related to magnetic field evolution of pulsars. Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
-            **default=-3000**
-``ck``      *ck* related to magnetic field evolution of pulsars, . Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
-            **default=-1000**
-==========  ============================================================
+================  ============================================================
+``tflag``         *tflag* activates tidal circularisation.
+                  **default=1**
+``ifflag``        *ifflag* activates the initial-final white dwarf mass relation from Han, Podsiadlowski & Eggleton, 1995, MNRAS, 272, 800 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
+                  **default=0**
+``wdflag``        *wdflag* activates the alternate cooling law found in the description immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_ in Hurley & Shara, 2003, Apj, May 20. Equation 1 gives the default Mestel cooling law (wdflag=0).
+                  **default=0**
+``epsnov``        *epsnov* is the fraction of accreted matter retained in a nova eruption, set by **default to 0.001**. This is relevant for accretion onto degenerate objects (See Section 2.6.6.2 in BSE paper)
+                  **default=0.001**
+``bconst``        *bconst* related to magnetic field evolution of pulsars. Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                  **default=-3000**
+``ck``            *ck* related to magnetic field evolution of pulsars, . Implemented by Paul Kiel -- see Section 3 of `Kiel et al. 2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                  **default=-1000**
+
+``fprimc_array``  *fprimc_array* controls the scaling factor for convective tides
+                  each item is set individually for its associated kstar
+                  The releveant equation is `Equation 21 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_
+                  The default is keep the 2/21 coefficient value as seen in the equation.
+
+                  **default=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]**
+================  ============================================================
 
 .. code-block:: ini
 
@@ -598,3 +605,10 @@ Each of the below sections lists the valid options and a description of what the
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-1000
     ck=-1000
+
+    ; fprimc_array controls the scaling factor for convective tides
+    ; each item is set individually for its associated kstar
+    ; The releveant equation is Equation 21 from the BSE paper
+    ; The default is to send the same coefficient (2/21) as is in the equation
+    ; for every kstar
+    fprimc_array=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
