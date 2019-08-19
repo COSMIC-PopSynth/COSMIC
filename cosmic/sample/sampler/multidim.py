@@ -253,9 +253,9 @@ class MultiDim:
         M1_hi = 40
 
         M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), numM1)
-
         #; 0.15 < log P < 8.0
         #; or use user specified values
+        print(porb_lo, porb_hi)
         log10_porb_lo = porb_lo
         log10_porb_hi = porb_hi
         logPv = np.arange(log10_porb_lo, log10_porb_hi + bwlogP, bwlogP)
@@ -621,7 +621,7 @@ class MultiDim:
                     #; Given M1 & P, select q from cumulative mass ratio distribution
                     myq = np.interp(np.random.rand(), mycumqdist, qv)
 
-                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max:
+                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max and mylogP < porb_hi and mylogP > porb_lo:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
