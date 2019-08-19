@@ -68,13 +68,13 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
 .. ipython::
 
-    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, bin_frac=0.5, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, met=0.02, size=10000)
+    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa93', ecc_model='thermal', SFH_model='const', component_age=10000.0, met=0.02, size=10000)
 
     In [7]: print(InitialBinaries)
 
 NOTE: the length of the initial binary data set, InitialBinaries, does not match 
 the size parameter provided to InitialBinaryTable.sampler. 
-This is becuase the sampler accounts for a binary fraction specified by the user with the bin_frac parameter, which is either a fraction between 0 and 1 or mass dependend following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
+This is becuase the sampler accounts for a binary fraction specified by the user with the binfrac_model parameter, which is either a fraction between 0 and 1 or mass dependend following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
 Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types. However, we also keep track of the total mass of the single and binary stars as well as the numbre of binary and single stars so that we can scale our results to larger populations. If you don't want to filter the binaries, you can supply final kstars as 
 
 .. ipython::
