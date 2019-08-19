@@ -81,6 +81,9 @@ INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FPRIMC_COLUMNS)
 
+# BSE doesn't need the binary fraction, so just add to columns for saving
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.insert(7, 'binfrac')
+
 class Evolve(object):
     def __init__():
         '''

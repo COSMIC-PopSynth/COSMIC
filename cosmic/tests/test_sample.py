@@ -18,6 +18,10 @@ TOTAL_SAMPLED_MASS_KROUPA93 = 19.122329747503645
 TOTAL_SAMPLED_MASS_SALPETER55 = 12.798883571264902
 TOTAL_SECONDARY_MASS = 16.15470927770034
 N_BINARY_SELECT = 85
+VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
+VANHAAFTEN_BINFRAC_MIN = 0.6192803136799157
+MULTIDIM_BINFRAC_MAX = 0.6146916774140262
+MULTIDIM_BINFRAC_MIN = 0.13786300908773025
 PORB = 670.88711347
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
@@ -55,12 +59,21 @@ class TestSample(unittest2.TestCase):
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), model=0.0)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
         self.assertEqual(len(m1_b), 0)
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), model=1.0)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
         self.assertEqual(len(m1_b), 99)
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), model='vanHaaften')
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
+
+    def test_binary_fraction(self):
+        np.random.seed(2)
+        # Check that the binary fraction tracking is correct
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.5)
+        self.assertEqual(binfrac.max(), 0.5)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
+        self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
+        self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
 
     def test_sample_ecc(self):
         np.random.seed(2)
@@ -107,8 +120,11 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
     def test_Moe_sample(self):
-        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
+        # Test the multidim sampler and system-by-system binary fraction
+        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
+        self.assertEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
+        self.assertEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)
 
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
