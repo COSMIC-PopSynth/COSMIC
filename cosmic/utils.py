@@ -934,6 +934,8 @@ def parse_inifile(inifile):
                 dictionary[section][option] = arithmetic_eval(opt)
             except:
                 dictionary[section][option] = json.loads(opt)
+            if type(dictionary[section][option]) == VariableKey:
+                dictionary[section][option] = dictionary[section][option].name
 
     BSEDict = dictionary['bse']
     seed_int = int(dictionary['rand_seed']['seed'])
