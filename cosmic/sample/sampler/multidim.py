@@ -255,7 +255,6 @@ class MultiDim:
         M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), numM1)
         #; 0.15 < log P < 8.0
         #; or use user specified values
-        print(porb_lo, porb_hi)
         log10_porb_lo = porb_lo
         log10_porb_hi = porb_hi
         logPv = np.arange(log10_porb_lo, log10_porb_hi + bwlogP, bwlogP)

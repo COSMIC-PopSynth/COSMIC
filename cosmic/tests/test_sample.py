@@ -124,7 +124,7 @@ class TestSample(unittest2.TestCase):
         m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
         self.assertEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
-        self.assertEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)
+        self.assertEqual(np.round(binfrac.min(), 5), np.round(MULTIDIM_BINFRAC_MIN, 5))
 
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
