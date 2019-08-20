@@ -73,28 +73,28 @@ class TestUtils(unittest2.TestCase):
         bcm_no_LISA, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
 
     def test_conv_select(self):
-        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], wrong_dict)
+        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'])
-        self.assertTrue(np.all(bcm_2.evol_type.isin([2,7])))
-        self.assertTrue(np.all(bcm_2.sep >= 0))
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'])
+        self.assertTrue(np.all(conv.evol_type.isin([2,7])))
+        self.assertTrue(np.all(conv.sep >= 0))
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_1_SN['conv_filter'])
-        self.assertEqual(len(bcm_2), 0)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['conv_filter'])
+        self.assertEqual(len(conv), 0)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_2_SN['conv_filter'])
-        self.assertEqual(len(bcm_2), 0)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['conv_filter'])
+        self.assertEqual(len(conv), 0)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_disruption['conv_filter'])
-        self.assertEqual(len(bcm_2), 1)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['conv_filter'])
+        self.assertEqual(len(conv), 4)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['conv_filter'])
-        self.assertEqual(len(bcm_2), int(len(BCM_TEST)/2))
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['conv_filter'])
+        self.assertEqual(len(conv), int(len(BCM_TEST)))
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_XRB_form['conv_filter'])
-        self.assertEqual(len(bcm_2), 0)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['conv_filter'])
+        self.assertEqual(len(conv), 0)
 
-        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], false_dict)
+        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict)
 
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
