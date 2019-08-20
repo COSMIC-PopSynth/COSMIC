@@ -102,6 +102,13 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             # this will tell use the binary state fraction of the systems with a certain final kstar type
             # before we throw out certain binary states if a user requested that.
             bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+            bin_states = []
+            for ii in use:
+                try:
+                    bin_states.append(bin_state_fraction.loc[ii])
+                except:
+                    bin_states.append(0)
+            bin_state_fraction = pd.DataFrame([bin_states], columns=[0,1,2])
 
             bcm = bcm.loc[bcm.bin_state.isin(use)]
 
@@ -230,7 +237,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method):
 
     return conv_save
 
-def fixed_pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_fraction, match, idx):
+def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_nums, match, idx):
     """Writes all the good stuff that you want to save from runFixedPop in a
        single function
 
@@ -261,7 +268,7 @@ def fixed_pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC
     conv : `pandas.DataFrame`
         conv array to write
 
-    bin_state_fraction : `list`
+    bin_state_nums : `list`
         contains the count of binstates 0,1,2
 
     match : pandas.DataFrame
@@ -297,7 +304,7 @@ def fixed_pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC
     dat_store.append('conv', conv)
 
     # Save number of systems in each bin state
-    dat_store.append('bin_state_fraction', pd.DataFrame([bin_state_fraction]))
+    dat_store.append('bin_state_nums', bin_state_nums)
 
     # Save the matches
     dat_store.append('match', match)
