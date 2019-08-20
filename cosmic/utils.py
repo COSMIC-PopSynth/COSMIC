@@ -226,6 +226,8 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method):
                                (conv_sn.sep > 0)]
         conv_save = conv_xrb.groupby('bin_num').first().reset_index()
 
+    conv_save[['bin_num']] = conv_save[['bin_num']].astype(float)
+
     return conv_save
 
 def fixed_pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_fraction, match, idx):
