@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # Open the hdf5 file to store the fixed population data
     try:
         dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
-        conv_save = pd.read_hdf(dat_store, 'bcm')
+        conv_save = pd.read_hdf(dat_store, 'conv')
         log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
