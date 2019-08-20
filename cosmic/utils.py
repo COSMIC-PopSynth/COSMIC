@@ -103,7 +103,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             # before we throw out certain binary states if a user requested that.
             bin_state_fraction = bcm.groupby('bin_state').tphys.count()
             bin_states = []
-            for ii in use:
+            for ii in range(3):
                 try:
                     bin_states.append(bin_state_fraction.loc[ii])
                 except:
@@ -114,7 +114,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     return bcm, bin_state_fraction
 
-def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method):
+def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_lims):
     """Select bcm data for special convergence cases
 
     Parameters
@@ -131,11 +131,16 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method):
     final_kstar_2 : `list`
         contains list of final primary kstars specified by user
 
-    method : `dict`,
-        one or more methods by which to filter the
-        bcm table, e.g. ``{'formation' : True}``;
-        This means you want to only compute the convergence
-        of the population at formation, e.g. BH-BH formation
+    method : `str`
+        stage in binary evolution to check convergence for
+        only one method may be supplied and they are specified
+        in the inifile
+
+    conv_lims : `dict`
+        dictionary where keys are convergence params and the 
+        values are lists containing a [lo, hi] value to filter the
+        convergence param between 
+        any non-specified convergence params will not be filtered
 
     Returns
     -------
@@ -233,8 +238,12 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method):
                                (conv_sn.sep > 0)]
         conv_save = conv_xrb.groupby('bin_num').first().reset_index()
 
-    conv_save[['bin_num']] = conv_save[['bin_num']].astype(float)
-
+    if conv_lims:
+        for key in conv_lims.keys():
+            filter_lo = conv_lims[key][0]
+            filter_hi = conv_lims[key][1]
+            conv_save = conv_save.loc[conv_save[key] < filter_hi]
+            conv_save = conv_save.loc[conv_save[key] > filter_lo]        
     return conv_save
 
 def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_nums, match, idx):
@@ -596,7 +605,11 @@ def error_check(BSEDict, filters=None, convergence=None):
         if flag in convergence.keys():
             if not isinstance(convergence[flag], float):
                 raise ValueError("'{0:s}' must be a float (you set it to '{1:0.2f}')".format(flag, convergence[flag]))
-
+        flag='conv_lims'
+        if convergence[flag]:
+            for item, key in zip(convergence.items(), convergence.keys()):
+                if len(item) != 2:
+                    raise ValueError("The value for key '{0:s}' needs to be a list of length 2, it is length: {1:i}".format(key, len(item)))
 
     # BSEDict
     flag='dtp'

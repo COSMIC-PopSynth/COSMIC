@@ -40,7 +40,7 @@ conv_dict_disruption = {'conv_filter' : 'disruption'}
 conv_dict_final_state = {'conv_filter' : 'final_state'}
 conv_dict_XRB_form = {'conv_filter' : 'XRB_form'}
 conv_dict_false = {'conv_filter' : 'wrong'}
-
+conv_lim_dict = {"sep" : [10, 5000]}
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 BPP_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bpp')
@@ -69,32 +69,34 @@ class TestUtils(unittest2.TestCase):
         bcm_false, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
 
 
-
-        bcm_no_LISA, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
-
     def test_conv_select(self):
-        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict)
+        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'])
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'], {})
         self.assertTrue(np.all(conv.evol_type.isin([2,7])))
         self.assertTrue(np.all(conv.sep >= 0))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['conv_filter'])
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['conv_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['conv_filter'])
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['conv_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['conv_filter'])
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['conv_filter'], {})
         self.assertEqual(len(conv), 4)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['conv_filter'])
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['conv_filter'], {})
         self.assertEqual(len(conv), int(len(BCM_TEST)))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['conv_filter'])
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['conv_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict)
+        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict, {})
+
+    def test_conv_lims(self):
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'], conv_lim_dict)
+        self.assertTrue(conv.sep.max() < conv_lim_dict["sep"][1])
+        self.assertTrue(conv.sep.min() > conv_lim_dict["sep"][0])
 
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
@@ -145,7 +147,7 @@ class TestUtils(unittest2.TestCase):
     def test_error_check(self):
         BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 0, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.6, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0}
         filters = {'select_final_state': True, 'binary_state': [0]}
-        convergence = {'formation': False, '1_SN': True, '2_SN': False, 'final_state': False, 'XRB_form': False}
+        convergence = {'conv_filter' : 'formation', 'conv_lims' : {"sep" : [0,1000]}, 'match' : -3.0, 'bcm_bpp_initCond_filter' : True}
         utils.error_check(BSEDict,filters,convergence)
         utils.error_check(BSEDict)
         assert 1==1
