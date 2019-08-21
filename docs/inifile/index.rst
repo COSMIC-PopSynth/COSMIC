@@ -94,7 +94,7 @@ Each of the below sections lists the valid options and a description of what the
                         Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
                         ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
 
-``convergence_filter``         Specify the stage of the evolution at which you would like
+``convergence_filter``  Specify the stage of the evolution at which you would like
                         to check for convergence. for example if you are looking
                         for BH-BH mergers you may care about the convergence of the 
                         properities of those BH-BH merger when they first formed a BH-BH system (formation) or
