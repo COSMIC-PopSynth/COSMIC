@@ -79,7 +79,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
         final_kstar2 = [final_kstar2]
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.sampling_methodle(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
@@ -133,7 +133,7 @@ class MultiDim:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
+    def sampling_methodle(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
@@ -156,7 +156,7 @@ class MultiDim:
             DEFAULT: 0
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in run-fixed-population call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -639,7 +639,7 @@ class MultiDim:
             Default: 0.02
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in run-fixed-population call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------

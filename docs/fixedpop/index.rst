@@ -5,22 +5,22 @@ Generate a population the `cosmic` way
 ######################################
 There are two executables that are installed when you pip install cosmic:
 
-* run-fixed-population
+* cosmic-pop
 
 * gxRealization
 
 These two executables generate the two components of a cosmic Milky Way population.
 
 ********************
-run-fixed-population
+cosmic-pop
 ********************
-The `fixed population` is simulated first and is designed to fully describe the population of binaries that results from a user specified star formation history (SFH) and binary evolution model (BSEDict, specified in an inifile). The fixed population is only simulated once and only contains information about the intrinsic properties of the binary (e.g. masses, semimajor axes, metallicities, etc.) Information about the location in the Galaxy of each binary is `not` contained in the fixed population. The arguments necessary to run the run-fixed-population executable can be found using the help command:
+The `fixed population` is simulated first and is designed to fully describe the population of binaries that results from a user specified star formation history (SFH) and binary evolution model (BSEDict, specified in an inifile). The fixed population is only simulated once and only contains information about the intrinsic properties of the binary (e.g. masses, semimajor axes, metallicities, etc.) Information about the location in the Galaxy of each binary is `not` contained in the fixed population. The arguments necessary to run the cosmic-pop executable can be found using the help command:
 
 .. code-block:: bash
 
-   run-fixed-population -h
+   cosmic-pop -h
 
-.. program-output:: run-fixed-population -h
+.. program-output:: cosmic-pop -h
 
 ======
 Inputs
@@ -48,11 +48,11 @@ The ``bse`` subsection is where all the bse flags are specified.
 Sample command line
 -------------------
 
-Below is an example command line call for run-fixed-population:
+Below is an example command line call for cosmic-pop:
 
 .. code-block:: bash
 
-   run-fixed-population --final-kstar1 13 14 --final-kstar2 13 14 --inifile Params.ini --Nstep 1000 --Niter 1000000000 -n 2
+   cosmic-pop --final-kstar1 13 14 --final-kstar2 13 14 --inifile Params.ini --Nstep 1000 --Niter 1000000000 -n 2
 
 A breakdown of each argument follows:
 
@@ -66,20 +66,20 @@ A breakdown of each argument follows:
 Stopping conditions
 ===================
 
-There are two stopping conditions for ``run-fixed-population``:
+There are two stopping conditions for ``cosmic-pop``:
 
 1. The shape of the parameter distributions for the parameters specified in convergence_params section of the inifile file converge to a shape, regardless of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2019 in prep
 
 2. The number of binaries sampled exceeds ``--Niter``.
 
 ==============================
-Output of run-fixed-population
+Output of cosmic-pop
 ==============================
 
 PLEASE SEE :ref:`output_info` for more information about the output data frames including
 what each column means and the units.
 
-The output of ``run-fixed-population`` is the `fixed population`, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the run-fixed-population call above is: dat_DeltaBurst_13_14_13_14.h5.
+The output of ``cosmic-pop`` is the `fixed population`, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the cosmic-pop call above is: dat_DeltaBurst_13_14_13_14.h5.
 
 The fixed population contains three pandas DataFrames accessed by the following keys:
 

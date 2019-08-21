@@ -121,7 +121,7 @@ class TestSample(unittest2.TestCase):
 
     def test_Moe_sample(self):
         # Test the multidim sampler and system-by-system binary fraction
-        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
+        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.sampling_methodle(rand_seed = 2, size=10, nproc=1)
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
         self.assertAlmostEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
         self.assertAlmostEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)

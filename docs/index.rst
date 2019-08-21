@@ -11,7 +11,7 @@ Using cosmic
 cosmic's primary purpose is to generate synthetic populations. 
 This is done through two executables that are installed when cosmic is installed:
 
-* run-fixed-population (see :ref:`fixedpop`)
+* cosmic-pop (see :ref:`fixedpop`)
 
 For more information on how to use this executable in the command line, see :ref:`fixedpop`. 
 
