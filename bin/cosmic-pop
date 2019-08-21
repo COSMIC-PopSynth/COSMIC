@@ -248,8 +248,8 @@ if __name__ == '__main__':
         # Now get the converging population
         conv_filter = utils.conv_select(bcm_filter, bpp_filter,\
                                         kstar1_range, kstar2_range,\
-                                        convergence['conv_filter'],\
-                                        convergence['conv_lims'])
+                                        convergence['convergence_filter'],\
+                                        convergence['convergence_lims'])
         if convergence['bcm_bpp_initCond_filter']:
             bcm_filter = bcm_filter.loc[bcm_filter.bin_num.isin(conv_filter.bin_num)]
             bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_filter.bin_num)]
