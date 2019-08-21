@@ -94,22 +94,22 @@ Each of the below sections lists the valid options and a description of what the
                         Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
                         ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
 
-``conv_filter``         Specify the stage of the evolution at which you would like
+``convergence_filter``         Specify the stage of the evolution at which you would like
                         to check for convergence. for example if you are looking
                         for BH-BH mergers you may care about the convergence of the 
                         properities of those BH-BH merger when they first formed a BH-BH system (formation) or
                         care about the properities right before they actually merged (final_state)
 
-                        ``formation``: computes the convergence on the formation properties
-                        of the binaries with user specified final kstars if True
+                        ``formation``: computes convergence on binary properties
+                        at formation with user-specified final kstars if True
 
-                        ``1_SN computes``: convergence on binary properties
+                        ``1_SN``: computes convergence on binary properties
                         just before the first supernova for the population with
                         user-specified final kstars if True
 
-                        ``2_SN computes``: the convergence on the binary properties 
-                        just before the second supernova on the population with 
-                        user specified final kstars if True
+                        ``2_SN``: computes convergence on binary properties
+                        just before the second supernova for the population with
+                        user-specified final kstars if True
 
                         ``disruption``: computes convergence on binary properties
                         just before disruption of the population with
@@ -138,16 +138,16 @@ Each of the below sections lists the valid options and a description of what the
     ; rad_1, rad_2
     convergence_params = [mass_1,mass_2,porb,ecc]
 
-    ; formation computes the convergence on the formation properties
-    ; of the binaries with user specified final kstars if True
+    ; formation computes convergence on binary properties
+    ; at formation with user-specified final kstars if True
 
     ; 1_SN computes convergence on binary properties
     ; just before the first supernova for the population with
     ; user-specified final kstars if True
 
-    ; 2_SN computes the convergence on the binary properties 
-    ; just before the second supernova on the population with 
-    ; user specified final kstars if True
+    ; 2_SN computes convergence on binary properties
+    ; just before the second supernova for the population with
+    ; user-specified final kstars if True
 
     ; disruption computes convergence on binary properties
     ; just before disruption of the population with
@@ -160,7 +160,7 @@ Each of the below sections lists the valid options and a description of what the
     ; XRB_form computes convergence on binary properties
     ; at the start of RLO following the first supernova on the population with
     ; user-specified final kstars if True
-    conv_filter = formation
+    convergence_filter = formation
 
     ; match provides the tolerance for the convergence calculation
     ; and is calculated as match = log10(1-convergence)

@@ -536,7 +536,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if convergence is not None:
         if not isinstance(convergence, dict):
             raise ValueError('Convergence criteria must be supplied via a dictionary')
-        for option in ['convergence_params', 'conv_filter', 'match']:
+        for option in ['convergence_params', 'convergence_filter', 'match']:
             if option not in convergence.keys():
                 raise ValueError("Inifile section convergence must have option {0} supplied".format(option))
 
@@ -559,7 +559,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     # convergence
     if convergence is not None:
-        flag='conv_filter'
+        flag='convergence_filter'
         if not convergence[flag] in ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']:
             raise ValueError("{0} needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] (you set it to {1})".format(flag, convergence[flag]))
 

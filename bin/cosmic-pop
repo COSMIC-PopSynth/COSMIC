@@ -262,7 +262,7 @@ if __name__ == '__main__':
             # Now get the converging population
             conv_tot, conv_last = utils.conv_select(bcm_save, bcm_filter_match,\
                                                     bpp_save, kstar1_range, kstar2_range,\
-                                                    convergence['conv_filter'])
+                                                    convergence['convergence_filter'])
 
             # save the converging population
             dat_store.append('conv', conv_last)
