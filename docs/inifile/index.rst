@@ -12,7 +12,7 @@ inifile for COSMIC: `Stable Version INIFILE <https://github.com/COSMIC-PopSynth/
 
 Here is a link to the unstable development version of the default inifile for COSMIC: `Development Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini>`_
 
-The `run-fixed-population` command-line executable cannot run without a configuration file.
+The `cosmic-pop` command-line executable cannot run without a configuration file.
 Each of the below sections lists the valid options and a description of what the value should be, and then an example of what that section might look like in the INI format:
 
 [filters]
@@ -21,7 +21,7 @@ Each of the below sections lists the valid options and a description of what the
 ===================================  =====================================================
 ``select_final_state``               The bcm array generally returns the first and last
                                      state of the binary system. Since we already
-                                     save the initial conditions in run-fixed-population, usually
+                                     save the initial conditions in cosmic-pop, usually
                                      we opt to throw out the initial state of the binary
                                      from this array and only keep the final state 
 ``binary_state``                     Each binary system at the end of its evolution
@@ -49,7 +49,7 @@ Each of the below sections lists the valid options and a description of what the
 ----------
 
 ===================================  =====================================================
-``initial_samp``                     Determine how to sample your initial binaries which will be evolved
+``sampling_method``                     Determine how to sample your initial binaries which will be evolved
 
                                         ``independent`` : initialize the binaries with a indepdent parameter distribution
 
@@ -75,7 +75,7 @@ Each of the below sections lists the valid options and a description of what the
     ; Specify if you woud like to sample initial conditions via
     ; the independent method (indepedent) or would like to sample
     ; initial conditions follow Moe & Di Stefano (2017) (multidim)
-    initial_samp=multidim
+    sampling_method=multidim
 
     ; Galaxy Components. Options include Bulge, ThinDisk, ThickDisk, and DeltaBurst
     ; Think Star Formation History with which to use as your basis for sampling
@@ -103,26 +103,25 @@ Each of the below sections lists the valid options and a description of what the
                         ``formation``: computes the convergence on the formation properties
                         of the binaries with user specified final kstars if True
 
-                        ``1_SN``: computes the convergence on the binary properties 
-                        just before the first super nova on the population with 
+                        ``1_SN computes``: convergence on binary properties
+                        just before the first supernova for the population with
+                        user-specified final kstars if True
+
+                        ``2_SN computes``: the convergence on the binary properties 
+                        just before the second supernova on the population with 
                         user specified final kstars if True
 
-                        ``2_SN``: computes the convergence on the binary properties 
-                        just before the second super nova on the population with 
-                        user specified final kstars if True
+                        ``disruption``: computes convergence on binary properties
+                        just before disruption of the population with
+                        user-specified final kstars if True
 
-                        ``disruption``: computes the convergence on the binary properties 
-                        just before disruption on the population with 
-                        user specified final kstars if True
+                        ``final_state``: computes convergence on binary properties
+                        after the full evolution specified by the user-supplied evolution time
+                        and with the user specified final kstars if True
 
-                        ``final_state``: computes the convergence on the binary properties 
-                        at the present day after the full evolution specified by the 
-                        user supplied star formation history and with the 
-                        user specified final kstars if True
-
-                        ``XRB_form``: computes the convergence on the binary properties 
-                        at the start of RLO after the first super nova on the population with 
-                        user specified final kstars if True
+                        ``XRB_form``: computes convergence on binary properties
+                        at the start of RLO following the first supernova on the population with
+                        user-specified final kstars if True
 
 ``match``
                         match provides the tolerance for the convergence calculation
@@ -142,26 +141,25 @@ Each of the below sections lists the valid options and a description of what the
     ; formation computes the convergence on the formation properties
     ; of the binaries with user specified final kstars if True
 
-    ; 1_SN computes the convergence on the binary properties 
-    ; just before the first super nova on the population with 
-    ; user specified final kstars if True
+    ; 1_SN computes convergence on binary properties
+    ; just before the first supernova for the population with
+    ; user-specified final kstars if True
 
     ; 2_SN computes the convergence on the binary properties 
-    ; just before the second super nova on the population with 
+    ; just before the second supernova on the population with 
     ; user specified final kstars if True
 
-    ; disruption computes the convergence on the binary properties 
-    ; just before disruption on the population with 
-    ; user specified final kstars if True
+    ; disruption computes convergence on binary properties
+    ; just before disruption of the population with
+    ; user-specified final kstars if True
 
-    ; final_state computes the convergence on the binary properties 
-    ; at the present day after the full evolution specified by the 
-    ; user supplied star formation history and with the 
-    ; user specified final kstars if True
+    ; final_state computes convergence on binary properties
+    ; after the full evolution specified by the user-supplied evolution time
+    ; and with the user specified final kstars if True
 
-    ; XRB_form computes the convergence on the binary properties 
-    ; at the start of RLO after the first super nova on the population with 
-    ; user specified final kstars if True
+    ; XRB_form computes convergence on binary properties
+    ; at the start of RLO following the first supernova on the population with
+    ; user-specified final kstars if True
     conv_filter = formation
 
     ; match provides the tolerance for the convergence calculation
