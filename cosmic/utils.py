@@ -608,7 +608,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     # convergence
     if convergence is not None:
-        flag='conv_lims'
+        flag='convergence_limits'
         if convergence[flag]:
             for item, key in zip(convergence.items(), convergence.keys()):
                 if len(item) != 2:
