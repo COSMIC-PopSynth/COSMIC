@@ -33,13 +33,13 @@ noLISA_dict = {'select_final_state' : True,
                'binary_state' : [0]}
 false_dict = {'select_final_state' : False,
              'binary_state' : [0,1,2]}
-conv_dict_formation = {'conv_filter' : 'formation'}
-conv_dict_1_SN = {'conv_filter' : '1_SN'}
-conv_dict_2_SN = {'conv_filter' : '2_SN'}
-conv_dict_disruption = {'conv_filter' : 'disruption'}
-conv_dict_final_state = {'conv_filter' : 'final_state'}
-conv_dict_XRB_form = {'conv_filter' : 'XRB_form'}
-conv_dict_false = {'conv_filter' : 'wrong'}
+conv_dict_formation = {'convergence_filter' : 'formation'}
+conv_dict_1_SN = {'convergence_filter' : '1_SN'}
+conv_dict_2_SN = {'convergence_filter' : '2_SN'}
+conv_dict_disruption = {'convergence_filter' : 'disruption'}
+conv_dict_final_state = {'convergence_filter' : 'final_state'}
+conv_dict_XRB_form = {'convergence_filter' : 'XRB_form'}
+conv_dict_false = {'convergence_filter' : 'wrong'}
 
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -75,23 +75,23 @@ class TestUtils(unittest2.TestCase):
     def test_conv_select(self):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], wrong_dict)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'])
+        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'])
         self.assertTrue(np.all(bcm_2.evol_type.isin([2,7])))
         self.assertTrue(np.all(bcm_2.sep >= 0))
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_1_SN['conv_filter'])
+        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_1_SN['convergence_filter'])
         self.assertEqual(len(bcm_2), 0)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_2_SN['conv_filter'])
+        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_2_SN['convergence_filter'])
         self.assertEqual(len(bcm_2), 0)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_disruption['conv_filter'])
+        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_disruption['convergence_filter'])
         self.assertEqual(len(bcm_2), 1)
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['conv_filter'])
+        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['convergence_filter'])
         self.assertEqual(len(bcm_2), int(len(BCM_TEST)/2))
 
-        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_XRB_form['conv_filter'])
+        bcm_1, bcm_2 = utils.conv_select(BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], conv_dict_XRB_form['convergence_filter'])
         self.assertEqual(len(bcm_2), 0)
 
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BCM_TEST, BPP_TEST, [11], [11], false_dict)
@@ -143,10 +143,11 @@ class TestUtils(unittest2.TestCase):
         self.assertTrue(bw.round(3) == BW_KNUTH)
 
     def test_error_check(self):
-        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 0, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.6, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0}
+        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]}
         filters = {'select_final_state': True, 'binary_state': [0]}
-        convergence = {'formation': False, '1_SN': True, '2_SN': False, 'final_state': False, 'XRB_form': False}
-        utils.error_check(BSEDict,filters,convergence)
+        convergence = {'convergence_params': ['mass_1', 'mass_2', 'porb', 'ecc'], 'convergence_filter': 'formation', 'match': -5.0}
+        sampling = {'sampling_method': 'multidim', 'galaxy_component': 'DeltaBurst', 'metallicity': 0.02}
+        utils.error_check(BSEDict,filters,convergence,sampling)
         utils.error_check(BSEDict)
         assert 1==1
 
