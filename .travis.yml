@@ -23,7 +23,7 @@ before_script:
 script:
 - bash .travis/compile_benchmark.sh
 - coverage run ./setup.py test
-- coverage run --append `which runFixedPop` --help
+- coverage run --append `which cosmic-pop` --help
 - cd docs && make html; cd ../
 after_success:
 - bash <(curl -s https://codecov.io/bash)

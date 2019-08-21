@@ -211,7 +211,7 @@ class MultiDim:
             DEFAULT: 0
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -697,7 +697,7 @@ class MultiDim:
             Default: 0.02
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
