@@ -249,7 +249,7 @@ if __name__ == '__main__':
         conv_filter = utils.conv_select(bcm_filter, bpp_filter,\
                                         kstar1_range, kstar2_range,\
                                         convergence['convergence_filter'],\
-                                        convergence['convergence_lims'])
+                                        convergence['convergence_limits'])
         if convergence['bcm_bpp_initCond_filter']:
             bcm_filter = bcm_filter.loc[bcm_filter.bin_num.isin(conv_filter.bin_num)]
             bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_filter.bin_num)]
