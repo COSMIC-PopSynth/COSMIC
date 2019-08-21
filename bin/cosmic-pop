@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Code: runFixedPop.py
+# Code: cosmic-pop.py
 # Version: 1
 # Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE;
 #                  COMPUTE RATES AND NUMBERS FOR EACH POPULATION ACCORDING
@@ -42,29 +42,14 @@ def parse_commandline():
     parser.add_argument("--inifile",
                         help="Name of ini file of params",
                         required=True)
-    parser.add_argument("--final_kstar1",
+    parser.add_argument("--final-kstar1",
                         help="Specify the final condition of kstar1 "
                         ", you want systems to end at for your samples",
                         required=True, type=int, nargs='+')
-    parser.add_argument("--final_kstar2",
+    parser.add_argument("--final-kstar2",
                         help="Specify the final condition of kstar2, you want "
                         "systems to end at for your samples",
                         required=True, type=int, nargs='+')
-    parser.add_argument("--convergence-params",
-                        help="A space separated list of parameters you would "
-                        "like to verify have converged to a single distribution shape"
-                        , nargs='+',
-                        default=['mass_1', 'mass_2', 'porb', 'ecc'])
-    parser.add_argument("--initial_samp",
-                        help="Specify if independent binary initial "
-                        "conditions: independent, or following "
-                        "Moe & Di Stefano (2017): multidim",
-                        default="multidim")
-    parser.add_argument("--galaxy_component",
-                        help="Galaxy Components. Options include "
-                        "Bulge ThinDisk and ThickDisk", required=True)
-    parser.add_argument("--metallicity", help="Metallicity of the population; "
-                        "default: 0.02 (solar)", default=0.02, type=float)
     parser.add_argument("--Niter",
                         help="Number of iterations of binaries "
                         "to try, will check ever Nstep for convergence",
@@ -87,15 +72,16 @@ def parse_commandline():
 
     if (len(args.final_kstar1) == 2):
         if (args.final_kstar1[0] >= args.final_kstar1[1]):
-            raise parser.error('Range provided for kstar1 invalid')
+            raise parser.error('Range provided for final-kstar1 invalid')
 
     if (len(args.final_kstar2) == 2):
         if (args.final_kstar2[0] >= args.final_kstar2[1]):
-            raise parser.error('Range provided for kstar2 invalid')
+            raise parser.error('Range provided for final-kstar2 invalid')
 
-    if args.initial_samp not in ['independent', 'multidim']:
-        raise parser.error('Initial sample must either be '
-                           'independent or multidim')
+    if (len(args.final_kstar2) == 1) and (len(args.final_kstar1) == 1):
+        if (args.final_kstar2 > args.final_kstar1):
+            raise parser.error('final-kstar1 must be greater than or equal to '
+                               'final-kstar2.')
 
     return args
 
@@ -114,10 +100,10 @@ if __name__ == '__main__':
 
     # READ AND PARSE INIFILE
     ###########################################################################
-    BSEDict, seed_int, filters, convergence = utils.parse_inifile(args.inifile)
+    BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
 
     # Check that the values in BSEDict, filters, and convergence are valid
-    utils.error_check(BSEDict, filters, convergence)
+    utils.error_check(BSEDict, filters, convergence, sampling)
 
     if seed_int != 0:
         np.random.seed(seed_int)
@@ -141,9 +127,9 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         bcm_save = pd.read_hdf(dat_store, 'bcm')
-        log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
+        log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
         log_file.write('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         bpp_save = pd.read_hdf(dat_store, 'bpp')
@@ -157,30 +143,30 @@ if __name__ == '__main__':
     except:
         bcm_save = pd.DataFrame()
         bpp_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_mass_singles = 0  
         total_mass_binaries = 0
         total_n_singles = 0
         total_n_binaries = 0
         total_n_stars = 0
         idx = 0
-        log_file = open('log_'+args.galaxy_component+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
+        log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
 
     # Initialize the step counter and convergence array/list
     Nstep = 0
-    match = np.zeros(len(args.convergence_params))
+    match = np.zeros(len(convergence['convergence_params']))
 
     # Select the Galactic component from user input
-    if args.galaxy_component == 'ThinDisk':
+    if sampling['galaxy_component'] == 'ThinDisk':
         SFH_model='const'
         component_age=10000.0
-    elif args.galaxy_component == 'Bulge':
+    elif sampling['galaxy_component'] == 'Bulge':
         SFH_model='burst'
         component_age=10000.0
-    elif args.galaxy_component == 'ThickDisk':
+    elif sampling['galaxy_component'] == 'ThickDisk':
         SFH_model='burst'
         component_age=11000.0
-    elif args.galaxy_component == 'DeltaBurst':
+    elif sampling['galaxy_component'] == 'DeltaBurst':
         SFH_model='delta_burst'
         component_age=13700.0
 
@@ -196,11 +182,11 @@ if __name__ == '__main__':
         np.random.seed(rand_seed)
 
         # Select the initial binary sample method from user input
-        if args.initial_samp == 'independent':
-            IBT, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, 0.5, 'kroupa93', 'thermal', SFH_model, component_age, args.metallicity, args.Nstep)
+        if sampling['sampling_method'] == 'independent':
+            IBT, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(sampling['sampling_method'], kstar1_range, kstar2_range, 0.5, 'kroupa93', 'thermal', SFH_model, component_age, sampling['metallicity'], args.Nstep)
 
-        if args.initial_samp == 'multidim':
-            IBT, mass_singles, mass_binaries, n_singles, n_binaries= InitialBinaryTable.sampler(args.initial_samp, kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, args.metallicity, args.Nstep)
+        if sampling['sampling_method'] == 'multidim':
+            IBT, mass_singles, mass_binaries, n_singles, n_binaries= InitialBinaryTable.sampler(sampling['sampling_method'], kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, sampling['metallicity'], args.Nstep)
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
@@ -276,16 +262,16 @@ if __name__ == '__main__':
             # Now get the converging population
             conv_tot, conv_last = utils.conv_select(bcm_save, bcm_filter_match,\
                                                     bpp_save, kstar1_range, kstar2_range,\
-                                                    convergence['conv_filter'])
+                                                    convergence['convergence_filter'])
 
             # save the converging population
             dat_store.append('conv', conv_last)
 
             # perform the convergence
-            match = Match.perform_convergence(args.convergence_params, conv_tot, conv_last, log_file)
+            match = Match.perform_convergence(convergence['convergence_params'], conv_tot, conv_last, log_file)
 
             if (len(match) > 1):
-                match_save = pd.DataFrame(np.atleast_2d(match), columns = args.convergence_params)
+                match_save = pd.DataFrame(np.atleast_2d(match), columns = convergence['convergence_params'])
                 dat_store.append('match', match_save)
 
             # reset the bcm_filter DataFrame

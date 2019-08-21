@@ -11,10 +11,9 @@ Using cosmic
 cosmic's primary purpose is to generate synthetic populations. 
 This is done through two executables that are installed when cosmic is installed:
 
-* runFixedPop (see :ref:`fixedpop`)
-* gxRealization
+* cosmic-pop (see :ref:`fixedpop`)
 
-For more information on how to use these executables in the command line, see :ref:`fixedpop`. 
+For more information on how to use this executable in the command line, see :ref:`fixedpop`. 
 
 For more details on how to use cosmic to run BSE in python, see :ref:`examples` and :ref:`runpop`.
 

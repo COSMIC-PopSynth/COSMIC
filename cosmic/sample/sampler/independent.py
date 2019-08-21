@@ -182,7 +182,7 @@ class Sample(object):
             Default kroupa93
         size : int, optional
             number of initial primary masses to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -380,7 +380,7 @@ class Sample(object):
 
         size : int, optional
             number of eccentricities to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -421,7 +421,7 @@ class Sample(object):
             Default: 0.02
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
