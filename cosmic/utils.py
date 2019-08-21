@@ -569,7 +569,7 @@ def knuth_bw_selector(dat_list):
     return np.mean(bw_list)
 
 
-def error_check(BSEDict, filters=None, convergence=None):
+def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     """Checks that values in BSEDict, filters, and convergence are viable
     """
     if not isinstance(BSEDict, dict):
@@ -578,38 +578,74 @@ def error_check(BSEDict, filters=None, convergence=None):
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError('Filters criteria must be supplied via a dictionary')
+        for option in ['select_final_state', 'binary_state']:
+            if option not in filters.keys():
+                raise ValueError("Inifile section filters must have option {0} supplied".format(option))
 
     if convergence is not None:
         if not isinstance(convergence, dict):
             raise ValueError('Convergence criteria must be supplied via a dictionary')
+        for option in ['convergence_params', 'convergence_filter', 'match']:
+            if option not in convergence.keys():
+                raise ValueError("Inifile section convergence must have option {0} supplied".format(option))
+
+    if sampling is not None:
+        if not isinstance(sampling, dict):
+            raise ValueError('Sampling criteria must be supplied via a dictionary')
+        for option in ['sampling_method', 'galaxy_component', 'metallicity']:
+            if option not in sampling.keys():
+                raise ValueError("Inifile section sampling must have option {0} supplied".format(option))
 
     # filters
     if filters is not None:
         flag='select_final_state'
-        if flag in filters.keys():
-            if filters[flag] not in [True,False]:
-                raise ValueError("'{0:s}' needs to be either True or False (you set it to '{1:s}')".format(flag, filters[flag]))
+        if filters[flag] not in [True,False]:
+            raise ValueError("{0} needs to be either True or False (you set it to {1})".format(flag, filters[flag]))
 
         flag='binary_state'
-        if flag in filters.keys():
-            if any(x not in [0,1,2] for x in filters[flag]):
-                raise ValueError("'{0:s}' needs to be a subset of [0,1,2] (you set it to '[{1:d}]')".format(flag, *filters[flag]))
+        if any(x not in [0,1,2] for x in filters[flag]):
+            raise ValueError("{0} needs to be a subset of [0,1,2] (you set it to {1})".format(flag, filters[flag]))
 
     # convergence
     if convergence is not None:
-        flag='conv_filter'
-        if flag in convergence.keys():
-            if not convergence[flag] in ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']:
-                raise ValueError("'{0:s}' needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] (you set it to '{1:s}'".format(flag, convergence[flag]))
-        flag='match'
-        if flag in convergence.keys():
-            if not isinstance(convergence[flag], float):
-                raise ValueError("'{0:s}' must be a float (you set it to '{1:0.2f}')".format(flag, convergence[flag]))
         flag='conv_lims'
         if convergence[flag]:
             for item, key in zip(convergence.items(), convergence.keys()):
                 if len(item) != 2:
                     raise ValueError("The value for key '{0:s}' needs to be a list of length 2, it is length: {1:i}".format(key, len(item)))
+        flag='convergence_filter'
+        if not convergence[flag] in ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']:
+            raise ValueError("{0} needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] (you set it to {1})".format(flag, convergence[flag]))
+
+        flag='match'
+        if not isinstance(convergence[flag], float):
+            raise ValueError("{0} must be a float (you set it to {1})".format(flag, convergence[flag]))
+
+        flag='convergence_params'
+        acceptable_convergence_params = ['mass_1', 'mass_2', 'sep', 'porb',
+                                         'ecc', 'massc_1','massc_2', 'rad_1', 'rad_2']
+        for param in convergence[flag]:
+            if param not in acceptable_convergence_params:
+                raise ValueError("Supplied convergence parameter {0} is not in list of "
+                                 "acceptable convergence parameters {1}".format(param, acceptable_convergence_params))
+
+    # sampling
+    if sampling is not None:
+        flag='sampling_method'
+        acceptable_sampling = ['multidim', 'indepdent']
+        if sampling[flag] not in acceptable_sampling:
+            raise ValueError("sampling_method must be one of {0} you supplied {1}.".format(acceptable_sampling, sampling[flag]))
+
+        flag='galaxy_component'
+        acceptable_galaxy_components = ['Bulge', 'ThinDisk', 'ThickDisk', 'DeltaBurst']
+        if sampling[flag] not in acceptable_galaxy_components:
+            raise ValueError("galaxy_component must be one of {0} you supplied {1}.".format(acceptable_galaxy_components, sampling[flag]))
+
+        flag = 'metallicity'
+        if not isinstance(sampling[flag], float):
+            raise ValueError("{0} must be a float (you set it to {1})".format(flag, sampling[flag]))
+        if sampling[flag] <= 0:
+            raise ValueError("{0} needs to be greater than or equal to 0 (you set it to {1})".format(flag, sampling[flag]))
 
     # BSEDict
     flag='dtp'
@@ -960,10 +996,13 @@ def parse_inifile(inifile):
                     'False': False,
                     'None': None,
                 }
-                return constants_lookup.get(
-                    result.name,
-                    result,
-                )
+                value = constants_lookup.get(result.name,result,)
+                if type(value) == VariableKey:
+                    # return regular string
+                    return value.name
+                else:
+                    # return special string like True or False
+                    return value
             elif isinstance(node, ast.NameConstant):
                 # None, True, False are nameconstants in python3, but names in 2
                 return node.value
@@ -987,15 +1026,14 @@ def parse_inifile(inifile):
                 dictionary[section][option] = arithmetic_eval(opt)
             except:
                 dictionary[section][option] = json.loads(opt)
-            if type(dictionary[section][option]) == VariableKey:
-                dictionary[section][option] = dictionary[section][option].name
 
     BSEDict = dictionary['bse']
     seed_int = int(dictionary['rand_seed']['seed'])
     filters = dictionary['filters']
     convergence = dictionary['convergence']
+    sampling = dictionary['sampling']
 
-    return BSEDict, seed_int, filters, convergence
+    return BSEDict, seed_int, filters, convergence, sampling
 
 class VariableKey(object):
     """
