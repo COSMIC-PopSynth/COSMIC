@@ -12,19 +12,16 @@ inifile for COSMIC: `Stable Version INIFILE <https://github.com/COSMIC-PopSynth/
 
 Here is a link to the unstable development version of the default inifile for COSMIC: `Development Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini>`_
 
-The `runFixedPop` command-line executable cannot run without a configuration file.
+The `cosmic-pop` command-line executable cannot run without a configuration file.
 Each of the below sections lists the valid options and a description of what the value should be, and then an example of what that section might look like in the INI format:
 
 [filters]
 ---------
 
 ===================================  =====================================================
-``mass_transfer_white_dwarf_to_co``  Do not retain systems which are some point during
-                                     their evolution a white dwarf mass transferred
-                                     onto a compact object
 ``select_final_state``               The bcm array generally returns the first and last
                                      state of the binary system. Since we already
-                                     save the initial conditions in runFixedPop, usually
+                                     save the initial conditions in cosmic-pop, usually
                                      we opt to throw out the initial state of the binary
                                      from this array and only keep the final state 
 ``binary_state``                     Each binary system at the end of its evolution
@@ -34,18 +31,11 @@ Each of the below sections lists the valid options and a description of what the
                                      is no longer a binary as it was disrupted
                                      at some point in its evolution (likely due one
                                      of the objects undergoing a Supernova).
-``lisa_sources``                     A boolean flag which, if True, will retain
-                                     only sources within LISA's frequency
-                                     range (porb<1e5 sec)
 ===================================  =====================================================
 
 .. code-block:: ini
 
     [filters]
-    ; mass_transfer_white_dwarf_to_co gets rid of any binary where this happens
-    ; default=False
-    mass_transfer_white_dwarf_to_co = False
-
     ; select_final_state will retain only the final entry of the bcm arry if set to True
     ; default=True
     select_final_state = True
@@ -55,28 +45,127 @@ Each of the below sections lists the valid options and a description of what the
     ; default=[0,1,2]
     binary_state = [0,1,2]
 
-    ; lisa_sources decides whether to retain only sources within LISA's frequency range (porb<1e5 sec)
-    ; default=False
-    lisa_sources = False
+[sampling]
+----------
+
+===================================  =====================================================
+``sampling_method``                     Determine how to sample your initial binaries which will be evolved
+
+                                        ``independent`` : initialize the binaries with a indepdent parameter distribution
+
+                                        ``multidim`` : initialize the binaries with multidimensional parameter distributions according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
+``galaxy_component``                 
+                                     There are currently four SFHs implemented in cosmic, one each for the Milky Way thin disk, thick disk and bulge. In addition a Deltaburst SFH can be used. Their assumptions are as follows:
+
+                                        ``ThinDisk`` : constant star formation over 10 Gyr; the metallicity for the thin disk is traditionally set to solar
+
+                                        ``ThickDisk`` : a 1 Gyr burst of constant star formation 11 Gyr in the past; the metallicity for the thick disk is traditionally set to be subsolar, we reccommend 15% solar
+
+                                        ``Bulge`` : a 1 Gyr burst of constant 10 Gyr in the past; the metallicity for the bulge is traditionally set to solar
+
+                                        ``DeltaBurst`` : ??
+
+``metallicity``                      Metallicity of the population of initial binaries
+
+===================================  =====================================================
+
+.. code-block:: ini
+
+    [sampling]
+    ; Specify if you woud like to sample initial conditions via
+    ; the independent method (indepedent) or would like to sample
+    ; initial conditions follow Moe & Di Stefano (2017) (multidim)
+    sampling_method=multidim
+
+    ; Galaxy Components. Options include Bulge, ThinDisk, ThickDisk, and DeltaBurst
+    ; Think Star Formation History with which to use as your basis for sampling
+    galaxy_component = DeltaBurst
+
+    ; Metallicity of the population of initial binaries
+    metallicity = 0.02
 
 [convergence]
 -------------
 
-====================  ============================================================
-``lisa_convergence``  One of the steps performed during `runFixedPop`
-                      is to check whether the properities of your evolved binaries
-                      have converged to be representative of the underlying
-                      distribution. This boolean flag, if True, restricts the
-                      systems it checks further to be only systems with
-                      porb < 5000 sec 
-====================  ============================================================
+======================  ============================================================
+``convergence_params``  
+                        A list of parameters you would like to verify have converged
+                        to a single distribution shape.
+                        Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
+                        ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
+
+``convergence_filter``  Specify the stage of the evolution at which you would like
+                        to check for convergence. for example if you are looking
+                        for BH-BH mergers you may care about the convergence of the 
+                        properities of those BH-BH merger when they first formed a BH-BH system (formation) or
+                        care about the properities right before they actually merged (final_state)
+
+                        ``formation``: computes convergence on binary properties
+                        at formation with user-specified final kstars if True
+
+                        ``1_SN``: computes convergence on binary properties
+                        just before the first supernova for the population with
+                        user-specified final kstars if True
+
+                        ``2_SN``: computes convergence on binary properties
+                        just before the second supernova for the population with
+                        user-specified final kstars if True
+
+                        ``disruption``: computes convergence on binary properties
+                        just before disruption of the population with
+                        user-specified final kstars if True
+
+                        ``final_state``: computes convergence on binary properties
+                        after the full evolution specified by the user-supplied evolution time
+                        and with the user specified final kstars if True
+
+                        ``XRB_form``: computes convergence on binary properties
+                        at the start of RLO following the first supernova on the population with
+                        user-specified final kstars if True
+
+``match``
+                        match provides the tolerance for the convergence calculation
+                        and is calculated as match = log10(1-convergence)
+
+======================  ============================================================
 
 .. code-block:: ini
 
     [convergence]
-    ; perform convergence over porb < 5000 sec for LISA Galaxies
-    ; default=False
-    lisa_convergence=False
+    ; A list of parameters you would like to verify have converged
+    ; to a single distribution shape.
+    ; Options include mass_1, mass_2, sep, porb, ecc, massc_1, massc_2
+    ; rad_1, rad_2
+    convergence_params = [mass_1,mass_2,porb,ecc]
+
+    ; formation computes convergence on binary properties
+    ; at formation with user-specified final kstars if True
+
+    ; 1_SN computes convergence on binary properties
+    ; just before the first supernova for the population with
+    ; user-specified final kstars if True
+
+    ; 2_SN computes convergence on binary properties
+    ; just before the second supernova for the population with
+    ; user-specified final kstars if True
+
+    ; disruption computes convergence on binary properties
+    ; just before disruption of the population with
+    ; user-specified final kstars if True
+
+    ; final_state computes convergence on binary properties
+    ; after the full evolution specified by the user-supplied evolution time
+    ; and with the user specified final kstars if True
+
+    ; XRB_form computes convergence on binary properties
+    ; at the start of RLO following the first supernova on the population with
+    ; user-specified final kstars if True
+    convergence_filter = formation
+
+    ; match provides the tolerance for the convergence calculation
+    ; and is calculated as match = log10(1-convergence)
+    ; default = -5.0
+    match = -5.0
 
 [rand_seed]
 -----------
