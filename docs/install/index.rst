@@ -12,7 +12,7 @@ MacOS
 -----
 .. code-block:: bash
 
-    conda create -n cosmic gcc numpy h5py python=3.7
+    conda create -n cosmic gfortran_osx-64 numpy h5py python=3.7
     source activate cosmic
     pip install --upgrade cosmic-popsynth
 
@@ -26,7 +26,7 @@ Unix
 ----
 .. code-block:: bash
 
-    conda create --name cosmic python=3.7 numpy h5py
+    conda create --name cosmic python=3.7 gfortran_linux-64 numpy h5py
     source activate cosmic
     pip install --upgrade cosmic-popsynth
 
