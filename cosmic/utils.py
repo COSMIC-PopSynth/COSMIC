@@ -632,7 +632,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     # sampling
     if sampling is not None:
         flag='sampling_method'
-        acceptable_sampling = ['multidim', 'indepdent']
+        acceptable_sampling = ['multidim', 'independent']
         if sampling[flag] not in acceptable_sampling:
             raise ValueError("sampling_method must be one of {0} you supplied {1}.".format(acceptable_sampling, sampling[flag]))
 
