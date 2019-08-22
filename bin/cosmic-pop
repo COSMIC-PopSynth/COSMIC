@@ -191,7 +191,7 @@ if __name__ == '__main__':
                                                         ecc_model = 'thermal',\
                                                         SFH_model = SFH_model,\
                                                         component_age = component_age,\
-                                                        met = args.metallicity,\
+                                                        met = sampling['metallicity'],\
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
@@ -203,7 +203,7 @@ if __name__ == '__main__':
                                                         nproc = args.nproc,\
                                                         SFH_model = SFH_model,\
                                                         component_age = component_age,\
-                                                        met = args.metallicity,\
+                                                        met = sampling['metallicity'],\
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
