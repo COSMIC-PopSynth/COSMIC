@@ -71,15 +71,66 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     ;          analytic fits to corrected binary star populations.
     ; Step 2 - Implement Monte Carlo method to generate stellar
     ;          population from those density functions.
+
+    Parameters
+    ----------
+    final_kstar1 : `list` or `int`
+        Int or list of final kstar1
+
+    final_kstar2 : `list` or `int`
+        Int or list of final kstar2
+
+    rand_seed : `int`
+        Int to seed random number generator
+
+    nproc : `int`
+        Number of processors to use to generate population
+
+    SFH_model : `str`
+        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+
+    component_age : `float`
+        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
+
+    met : `float`
+        Sets the metallicity of the binary population where solar metallicity is 0.02
+
+    size : `int`
+        Size of the population to sample
+
+    **porb_lo : `float`
+        Lower limit in days for the orbital period distribution
+
+    **porb_hi: `float`
+        Upper limit in days for the orbital period distribution
+
+    Returns
+    -------
+    InitialBinaryTable : `pandas.DataFrame`
+        DataFrame in the format of the InitialBinaryTable
+
+    mass_singles : `float`
+        Total mass in single stars needed to generate population
+
+    mass_binaries : `float`
+        Total mass in binaries needed to generate population
+
+    n_singles : `int`
+        Number of single stars needed to generate a population
+
+    n_binaries : `int`
+        Number of binaries needed to generate a population
     """
 
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
+    porb_lo = kwargs.pop('porb_lo', 0.15)
+    porb_hi = kwargs.pop('porb_hi', 8.0)
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
@@ -133,24 +184,28 @@ class MultiDim:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, porb_lo=0.15, porb_hi=8.0, rand_seed=0, size=None, nproc=1):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
         Parameters
         ----------
-        M1min : float
+        M1min : `float`
             minimum primary mass to sample [Msun]
             DEFAULT: 0.08
-        M2min : float
+        M2min : `float`
             minimum secondary mass to sample [Msun]
             DEFAULT: 0.08
-        M1max : float
+        M1max : `float`
             maximum primary mass to sample [Msun]
             DEFAULT: 150.0
-        M2max : float
+        M2max : `float`
             maximum primary mass to sample [Msun]
             DEFAULT: 150.0
+        porb_lo : `float`
+            minimum orbital period to sample [log10(days)]
+        porb_hi : `float`
+            maximum orbital period to sample [log10(days)]
         rand_seed : int
             random seed generator
             DEFAULT: 0
@@ -184,7 +239,9 @@ class MultiDim:
         #analytic fits to corrected binary star populations.
 
         numM1 = 101
-        numlogP = 158
+        #use binwidths to maintain structure of original array
+        # default size is: numlogP=158
+        bwlogP = 0.05
         numq = 91
         nume = 100
 
@@ -196,11 +253,12 @@ class MultiDim:
         M1_hi = 40
 
         M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), numM1)
-
         #; 0.15 < log P < 8.0
-        log10_porb_lo = 0.15
-        log10_porb_hi = 8.0
-        logPv = np.linspace(log10_porb_lo, log10_porb_hi, numlogP)
+        #; or use user specified values
+        log10_porb_lo = porb_lo
+        log10_porb_hi = porb_hi
+        logPv = np.arange(log10_porb_lo, log10_porb_hi + bwlogP, bwlogP)
+        numlogP = len(logPv)
 
         #; 0.10 < q < 1.00
         q_lo = 0.1
@@ -562,7 +620,7 @@ class MultiDim:
                     #; Given M1 & P, select q from cumulative mass ratio distribution
                     myq = np.interp(np.random.rand(), mycumqdist, qv)
 
-                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max:
+                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max and mylogP < porb_hi and mylogP > porb_lo:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
