@@ -272,10 +272,10 @@ if __name__ == '__main__':
             conv_save = conv_save.append(conv_filter_match)
 
             # perform the convergence
-            match = Match.perform_convergence(args.convergence_params, conv_save,\
+            match = Match.perform_convergence(convergence['convergence_params'], conv_save,\
                                               conv_filter_match, log_file)
 
-            match_save = pd.DataFrame(np.atleast_2d(match), columns = args.convergence_params)
+            match_save = pd.DataFrame(np.atleast_2d(match), columns = convergence['convergence_params'])
 
             # write the data and the logs!
             mass_list = [total_mass_singles, total_mass_binaries, total_mass_stars]
