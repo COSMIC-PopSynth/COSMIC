@@ -45,7 +45,6 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinxcontrib.programoutput',
 
-    'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'numpydoc',
@@ -348,7 +347,6 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-    'matplotlib': ('http://matplotlib.org/', None),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
 }
 
@@ -403,9 +401,9 @@ def linkcode_resolve(domain, info):
     else:
         linespec = ""
 
-    fn = os.path.relpath(fn, start=os.path.dirname(gwpy.__file__))
+    fn = os.path.relpath(fn, start=os.path.dirname(cosmic.__file__))
     if fn.startswith(os.path.pardir):
         return None
 
-    return ("http://github.com/gwpy/gwpy/tree/%s/gwpy/%s%s"
+    return ("http://github.com/COSMIC-PopSynth/COSMIC/tree/%s/COSMIC/%s%s"
             % (GWPY_VERSION['full-revisionid'], fn, linespec))
