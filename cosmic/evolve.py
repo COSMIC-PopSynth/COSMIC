@@ -23,7 +23,7 @@ from cosmic import _evolvebin
 from . import utils
 
 from configparser import ConfigParser
-from gwpy.utils import mp as mp_utils
+from .mp import mp as mp_utils
 
 import numpy as np
 import pandas as pd

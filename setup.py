@@ -77,11 +77,10 @@ setup_requires = [
 install_requires = [
     'numpy >= 1.16',
     'scipy >= 0.12.1',
-    'matplotlib >= 1.2.0, != 2.1.0, != 2.1.1',
     'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
     'astropy >= 1.1.1 ; python_version >= \'3\'',
     'configparser',
-    'gwpy >= 0.14',
+    'tqdm >= 4.0',
     'pandas >= 0.24',
     'tables > 3.5.0',
     'h5py >= 1.3',
