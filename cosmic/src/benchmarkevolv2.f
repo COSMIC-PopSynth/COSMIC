@@ -7,17 +7,25 @@
         REAL*8 bppout(1000,15)
         REAL*8 bcmout(50000,42)
 
-        REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
-        REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
-        REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
-        REAL*8 ecsntmp,ecsn_mlowtmp,sigmadivtmp
-        REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-        REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16),fprimc_array(16)
-        REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
-        INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
-        INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp,qcflagtmp
-        INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
+        INTEGER tflagtmp,ifflagtmp,nsflagtmp,wdflagtmp
+        INTEGER bhflagtmp,windflagtmp,qcflagtmp
+        INTEGER ceflagtmp,cekickflagtmp,cemergeflagtmp,cehestarflagtmp
+        INTEGER ussntmp
+*
         INTEGER eddlimflagtmp
+        REAL*8 netatmp,bwindtmp,hewindtmp,mxnstmp,betatmp,xitmp
+        REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
+        REAL*8 alpha1tmp,lambdatmp
+        REAL*8 bconsttmp,CKtmp
+        REAL*8 sigmatmp,sigmadivtmp,bhsigmafractmp,pisntmp
+        REAL*8 polar_kick_angletmp
+*
+        REAL*8 pts1tmp,pts2tmp,pts3tmp
+
+        REAL*8 dtptmp
+        REAL*8 ecsntmp,ecsn_mlowtmp
+        REAL*8 qcrit_array(16),fprimc_array(16),natal_kick_array(6)
+        INTEGER aictmp,idumtmp
 
         kstar1 = 1; kstar2 = 1; mass1 = 33.41813720577207;
         mass2 = 27.46995284892487; tb = 673.3728182337667
