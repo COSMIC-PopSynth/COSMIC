@@ -128,11 +128,10 @@ if __name__ == '__main__':
     # Open the hdf5 file to store the fixed population data
     try:
         dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
-        bcm_save = pd.read_hdf(dat_store, 'bcm')
+        conv_save = pd.read_hdf(dat_store, 'conv')
         log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
-        log_file.write('There are already: '+str(bcm_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
+        log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
-        bpp_save = pd.read_hdf(dat_store, 'bpp')
         total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
         total_mass_binaries = np.max(pd.read_hdf(dat_store, 'mass_binaries'))[0]
         total_mass_stars = np.max(pd.read_hdf(dat_store, 'mass_stars'))[0]
@@ -141,11 +140,11 @@ if __name__ == '__main__':
         total_n_stars = np.max(pd.read_hdf(dat_store, 'n_stars'))[0]
         idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
-        bcm_save = pd.DataFrame()
-        bpp_save = pd.DataFrame()
+        conv_save = pd.DataFrame()
         dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
         total_mass_singles = 0  
         total_mass_binaries = 0
+        total_mass_stars = 0
         total_n_singles = 0
         total_n_binaries = 0
         total_n_stars = 0
@@ -175,6 +174,7 @@ if __name__ == '__main__':
     steps = 0
     bcm_filter_match = []
     bpp_filter_match = []
+    initC_filter_match = []
 
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']):
         # Set random seed such that each iteration gets a unique, determinable seed
@@ -183,26 +183,38 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
-            IBT, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(sampling['sampling_method'], kstar1_range, kstar2_range, 0.5, 'kroupa93', 'thermal', SFH_model, component_age, sampling['metallicity'], args.Nstep)
+            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],\
+                                                        final_kstar1 = kstar1_range,\
+                                                        final_kstar2 = kstar2_range,\
+                                                        binfrac_model = 0.5,\
+                                                        primary_model = 'kroupa93',\
+                                                        ecc_model = 'thermal',\
+                                                        SFH_model = SFH_model,\
+                                                        component_age = component_age,\
+                                                        met = sampling['metallicity'],\
+                                                        size = args.Nstep)
+            IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
-            IBT, mass_singles, mass_binaries, n_singles, n_binaries= InitialBinaryTable.sampler(sampling['sampling_method'], kstar1_range, kstar2_range, rand_seed, args.nproc, SFH_model, component_age, sampling['metallicity'], args.Nstep)
+            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],\
+                                                        final_kstar1 = kstar1_range,\
+                                                        final_kstar2 = kstar2_range,\
+                                                        rand_seed = rand_seed,\
+                                                        nproc = args.nproc,\
+                                                        SFH_model = SFH_model,\
+                                                        component_age = component_age,\
+                                                        met = sampling['metallicity'],\
+                                                        size = args.Nstep)
+            IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         # Log the total sampled mass from the initial binary sample
         # for future Galactic occurence rate calculation
         total_mass_singles += mass_singles
         total_mass_binaries += mass_binaries
+        total_mass_stars += mass_singles + mass_binaries
         total_n_singles += n_singles
         total_n_binaries += n_binaries
-
-        # save the total_sampled_mass so far
-        dat_store.append('mass_singles', pd.DataFrame([total_mass_singles]))
-        dat_store.append('mass_binaries', pd.DataFrame([total_mass_binaries]))
-        dat_store.append('mass_stars', pd.DataFrame([total_mass_singles + total_mass_binaries]))
-        dat_store.append('n_singles', pd.DataFrame([total_n_singles]))
-        dat_store.append('n_binaries', pd.DataFrame([total_n_binaries]))
-        dat_store.append('n_stars', pd.DataFrame([total_n_singles + 2*total_n_binaries]))
-        log_file.write('The total mass sampled so far is: {0}\n'.format(total_mass_singles + total_mass_binaries))
+        total_n_stars += n_singles + 2*n_binaries
 
         # Now that we have all these initial conditions
         # let's create an Evolve class and evolve these systems
@@ -224,9 +236,8 @@ if __name__ == '__main__':
 
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
-        dat_store.append('idx', pd.DataFrame([idx]))
 
-        bcm_filter, bin_state_fraction = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
+        bcm_filter, bin_state_nums = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
             warnings.warn("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
             log_file.write("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
@@ -234,49 +245,51 @@ if __name__ == '__main__':
 
         initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
+        # Now get the converging population
+        conv_filter = utils.conv_select(bcm_filter, bpp_filter,\
+                                        kstar1_range, kstar2_range,\
+                                        convergence['convergence_filter'],\
+                                        convergence['convergence_limits'])
+        if convergence['bcm_bpp_initCond_filter']:
+            bcm_filter = bcm_filter.loc[bcm_filter.bin_num.isin(conv_filter.bin_num)]
+            bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_filter.bin_num)]
+            initC_filter = initC_filter.loc[initC_filter.bin_num.isin(conv_filter.bin_num)]
 
-        # Save the bcm dataframe
-        dat_store.append('bcm', bcm_filter)
-
-        # Save the bpp dataframe
-        dat_store.append('bpp', bpp_filter)
-
-        # Save the initial binaries
-        dat_store.append('initCond', initC_filter)
-
-        # Save number of systems in each bin state
-        dat_store.append('bin_state_fraction', bin_state_fraction)
 
         # Filter the bcm and bpp arrays according to user specified filters
-        if len(bcm_filter_match) > 1:
-            bcm_filter_match = bcm_filter_match.append(bcm_filter)
-            bpp_filter_match = bpp_filter_match.append(bpp_filter)
-        else:
+        if len(bcm_filter_match) == 0:
             bcm_filter_match = bcm_filter.copy()
             bpp_filter_match = bpp_filter.copy()
+            initC_filter_match = initC_filter.copy()
+            conv_filter_match = conv_filter.copy()
+        else:
+            bcm_filter_match = bcm_filter_match.append(bcm_filter)
+            bpp_filter_match = bpp_filter_match.append(bpp_filter)
+            initC_filter_match = initC_filter_match.append(initC_filter)
+            conv_filter_match = conv_filter_match.append(conv_filter)
 
-        if len(bcm_filter_match) >= 50:
-            bcm_save = bcm_save.append(bcm_filter_match)
-            bpp_save = bpp_save.append(bpp_filter_match)
-
-            # Now get the converging population
-            conv_tot, conv_last = utils.conv_select(bcm_save, bcm_filter_match,\
-                                                    bpp_save, kstar1_range, kstar2_range,\
-                                                    convergence['convergence_filter'])
-
-            # save the converging population
-            dat_store.append('conv', conv_last)
+        if len(conv_filter_match) >= 50:
+            conv_save = conv_save.append(conv_filter_match)
 
             # perform the convergence
-            match = Match.perform_convergence(convergence['convergence_params'], conv_tot, conv_last, log_file)
+            match = Match.perform_convergence(convergence['convergence_params'], conv_save,\
+                                              conv_filter_match, log_file)
 
-            if (len(match) > 1):
-                match_save = pd.DataFrame(np.atleast_2d(match), columns = convergence['convergence_params'])
-                dat_store.append('match', match_save)
+            match_save = pd.DataFrame(np.atleast_2d(match), columns = convergence['convergence_params'])
+
+            # write the data and the logs!
+            mass_list = [total_mass_singles, total_mass_binaries, total_mass_stars]
+            n_list = [total_n_singles, total_n_binaries, total_n_stars]
+            utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,\
+                            bpp_filter_match, initC_filter_match, conv_filter_match,\
+                            bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
             bcm_filter_match = []
             bpp_filter_match = [] 
+            initC_filter_match = []
+            conv_filter_match = []
+            log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
     # Close the data storage file

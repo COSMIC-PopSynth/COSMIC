@@ -119,7 +119,6 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
        match : array
            Matches for each cumulative data set
     """
-
     match_all = []
     for conv_param in conv_params:
         if (conv_param == 'ecc') and (np.all(conv_1[conv_param] < 1e-7)) and (np.all(conv_1[conv_param] >=0.0)) and (bin_state == 0):
@@ -128,6 +127,15 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
         elif (conv_param == 'ecc') and (np.all(conv_1[conv_param] == -1.0)):
             log_file.write('{0} is the same for all disrupted binaries\n'.format(conv_param))
             match_all.append(-9)
+        elif (conv_param == 'ecc'):
+            conv_1_ecc = conv_1.loc[conv_1.ecc > 0]
+            conv_2_ecc = conv_2.loc[conv_2.ecc > 0]
+            if len(conv_2_ecc) == len(conv_1_ecc):
+               conv_2_ecc = conv_2[:int(len(conv_2_ecc)/2)]
+            match_compute, bw = match([dat_transform(conv_1_ecc, [conv_param])[0].tolist(),\
+                                       dat_transform(conv_2_ecc, [conv_param])[0].tolist()])
+            match_all.append(match_compute)
+
         elif (conv_param == 'porb') and ((np.all(conv_1[conv_param] == 0.0)) or (np.all(conv_1[conv_param] == -1.0))):
             log_file.write('{0} is the same for all converging binaries\n'.format(conv_param))
             match_all.append(-9)
@@ -135,6 +143,8 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
             log_file.write('{0} is the same for all converging binaries\n'.format(conv_param))
             match_all.append(-9)
         else:
+            if len(conv_2) == len(conv_1):
+               conv_2 = conv_2[:int(len(conv_2)/2)]
             match_compute, bw = match([dat_transform(conv_1, [conv_param])[0].tolist(),\
                                        dat_transform(conv_2, [conv_param])[0].tolist()])
             match_all.append(match_compute)
@@ -142,6 +152,5 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
     log_file.write('matches for converging population are are: {0}\n'.format(match_all))
     log_file.write('Number of binaries in converging population is: {0}\n'.format(len(conv_1)))
     log_file.write('Binwidth is: {0}\n'.format(bw))
-    log_file.write('\n')
 
     return match_all
