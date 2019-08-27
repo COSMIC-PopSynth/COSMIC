@@ -197,16 +197,16 @@ class Sample(object):
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.935
-            high_cutoff = 0.986
+            low_cutoff = 0.740074
+            high_cutoff = 0.908422
 
             lowIdx, = np.where(a_0 <= low_cutoff)
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
-            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-1.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-1.7, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -215,7 +215,7 @@ class Sample(object):
         elif primary_model=='salpeter55':
             total_sampled_mass = 0
             multiplier = 1
-            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
+            a_0 = rndm(a=0.08, b=150, g=-1.35, size=size*multiplier)
 
             total_sampled_mass += np.sum(a_0)
 
