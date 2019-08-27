@@ -27,6 +27,7 @@ import warnings
 import ast
 import operator
 import json
+import itertools
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
