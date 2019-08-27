@@ -33,13 +33,13 @@ noLISA_dict = {'select_final_state' : True,
                'binary_state' : [0]}
 false_dict = {'select_final_state' : False,
              'binary_state' : [0,1,2]}
-conv_dict_formation = {'conv_filter' : 'formation'}
-conv_dict_1_SN = {'conv_filter' : '1_SN'}
-conv_dict_2_SN = {'conv_filter' : '2_SN'}
-conv_dict_disruption = {'conv_filter' : 'disruption'}
-conv_dict_final_state = {'conv_filter' : 'final_state'}
-conv_dict_XRB_form = {'conv_filter' : 'XRB_form'}
-conv_dict_false = {'conv_filter' : 'wrong'}
+conv_dict_formation = {'convergence_filter' : 'formation'}
+conv_dict_1_SN = {'convergence_filter' : '1_SN'}
+conv_dict_2_SN = {'convergence_filter' : '2_SN'}
+conv_dict_disruption = {'convergence_filter' : 'disruption'}
+conv_dict_final_state = {'convergence_filter' : 'final_state'}
+conv_dict_XRB_form = {'convergence_filter' : 'XRB_form'}
+conv_dict_false = {'convergence_filter' : 'wrong'}
 conv_lim_dict = {"sep" : [10, 5000]}
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -72,29 +72,29 @@ class TestUtils(unittest2.TestCase):
     def test_conv_select(self):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'], {})
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], {})
         self.assertTrue(np.all(conv.evol_type.isin([2,7])))
         self.assertTrue(np.all(conv.sep >= 0))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['conv_filter'], {})
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['convergence_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['conv_filter'], {})
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['convergence_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['conv_filter'], {})
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['convergence_filter'], {})
         self.assertEqual(len(conv), 4)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['conv_filter'], {})
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['convergence_filter'], {})
         self.assertEqual(len(conv), int(len(BCM_TEST)))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['conv_filter'], {})
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['convergence_filter'], {})
         self.assertEqual(len(conv), 0)
 
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict, {})
 
     def test_conv_lims(self):
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['conv_filter'], conv_lim_dict)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], conv_lim_dict)
         self.assertTrue(conv.sep.max() < conv_lim_dict["sep"][1])
         self.assertTrue(conv.sep.min() > conv_lim_dict["sep"][0])
 
