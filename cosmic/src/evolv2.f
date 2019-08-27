@@ -216,19 +216,28 @@
       REAL*8 bppout(1000,23)
       REAL*8 bcmout(50000,42)
 
-      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
-      REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
-      REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
-      REAL*8 ecsntmp,ecsn_mlowtmp,sigmadivtmp
+      INTEGER tflagtmp,ifflagtmp,nsflagtmp,wdflagtmp
+      INTEGER bhflagtmp,windflagtmp,qcflagtmp
+      INTEGER ceflagtmp,cekickflagtmp,cemergeflagtmp,cehestarflagtmp
+      INTEGER ussntmp
+*
+      INTEGER eddlimflagtmp
+      REAL*8 netatmp,bwindtmp,hewindtmp,mxnstmp,betatmp,xitmp
       REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
-      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
-      REAL*8 fprimc_array(16)
-      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
-      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
+      REAL*8 alpha1tmp,lambdatmp
+      REAL*8 bconsttmp,CKtmp
+      REAL*8 sigmatmp,sigmadivtmp,bhsigmafractmp,pisntmp
+      REAL*8 polar_kick_angletmp
+*
+      REAL*8 pts1tmp,pts2tmp,pts3tmp
+
+      REAL*8 dtptmp
+      REAL*8 ecsntmp,ecsn_mlowtmp
+      REAL*8 qcrit_array(16),fprimc_array(16),natal_kick_array(6)
+      INTEGER aictmp,idumtmp
+      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
+      REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
-      INTEGER qcflagtmp,eddlimflagtmp
-      INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
       ceflag = ceflagtmp
