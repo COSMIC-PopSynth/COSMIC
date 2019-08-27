@@ -272,8 +272,16 @@ if __name__ == '__main__':
             conv_save = conv_save.append(conv_filter_match)
 
             # perform the convergence
-            match = Match.perform_convergence(convergence['convergence_params'], conv_save,\
-                                              conv_filter_match, log_file)
+            if len(conv_save) == len(conv_filter_match):
+                match = Match.perform_convergence(convergence['convergence_params'],
+                                                  conv_save,
+                                                  conv_filter_match,
+                                                  log_file)
+            else:
+                match = Match.perform_convergence(convergence['convergence_params'],
+                                                  conv_save,
+                                                  conv_save.loc[~conv_save.bin_num.isin(conv_filter_match.bin_num)],
+                                                  log_file)
 
             match_save = pd.DataFrame(np.atleast_2d(match), columns = convergence['convergence_params'])
 
