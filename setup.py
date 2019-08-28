@@ -65,14 +65,16 @@ else:
 cmdclass["sdist"] = sdist
 
 # read description
-with open('README.md', 'rb') as f:
-    longdesc = f.read().decode().strip()
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 # -- dependencies -------------------------------------------------------------
 
 setup_requires = [
     'setuptools',
     'pytest-runner',
+    'numpy',
 ]
 install_requires = [
     'numpy >= 1.16',
@@ -114,7 +116,7 @@ setup(name=DISTNAME,
       provides=[PACKAGENAME],
       version=__version__,
       description="Compact Object Synthesis and Monte Carlo Investigation Code",
-      long_description=longdesc,
+      long_description=long_description,
       long_description_content_type='text/markdown',
       ext_modules = [wrapper],
       author=AUTHOR,
