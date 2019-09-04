@@ -549,7 +549,7 @@ sampling
                             use ecsn = 2.25, while `Podsiadlowksi+2004 <https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract>`_ 
                             use ecsn = 2.5
 
-                         **ecsn = 2.25**
+                         **ecsn = 2.5**
 ``ecsn_mlow``            Sets the low end of the ECSN mass range
 
                             ``positive values`` : `BSE (Hurley+2002) <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
@@ -557,7 +557,7 @@ sampling
                             use ecsn_mlow = 1.85, while `Podsiadlowksi+2004 <https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract>`_
                             use ecsn_mlow = 1.4
 
-                         **ecsn_mlow = 1.6**
+                         **ecsn_mlow = 1.4**
 ``sigmadiv``             Sets the modified ECSN kick strength
                          
                          ``positive values`` : divide *sigma* above by *sigmadiv*
