@@ -16,8 +16,11 @@ sampled from observationally motivated distribution functions.
 In cosmic, the initial sample is done through an initial binary sampler which works
 with the InitialBinaryTable class. There are two samplers available: 
 
-1. `independent` : initial binary parameters are distributed independently
-2. `multidim` : accounts for parameter dependencies following `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
+1. `independent` : initialize binaries with independent parameter 
+distributions for the primary mass, mass ratio, eccentricity, separation, 
+and binary fraction
+2. `multidim` : initialize binaries with multidimensional parameter 
+distributions according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
 We consider both cases below. 
 
@@ -72,7 +75,7 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
     In [7]: print(InitialBinaries)
 
-NOTE: the length of the initial binary data set, InitialBinaries, does not match 
+NOTE: the length of the initial binary data set, InitialBinaries, does not always match 
 the size parameter provided to InitialBinaryTable.sampler. 
 This is becuase the sampler accounts for a binary fraction specified by the user with the binfrac_model parameter, which is either a fraction between 0 and 1 or mass dependend following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_. 
 Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types. However, we also keep track of the total mass of the single and binary stars as well as the numbre of binary and single stars so that we can scale our results to larger populations. If you don't want to filter the binaries, you can supply final kstars as 
@@ -114,7 +117,7 @@ The multidimensional sample is generated as follows:
 
 .. note::
 
-    NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass to scale our simulated population to the full Milky Way.
+    NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass of singles and binaries as well as the total number of single and binary stars to scale thesimulated population to astrophysical populations.
 
 *************************************
 Evolving an initial binary population
@@ -134,5 +137,3 @@ The syntax for the Evolve class is as follows:
     In [4]: print(bcm.iloc[:10])
 
     In [5]: print(bpp)
-
-Note that this process doesn't try to choose the `right` number of binaries to evolve. If you are interested in generating a realistic synthetic Milky Way population, you should head over to :ref:`fixedpop`. For details on the process to generate synthetic Milky Way binary populations, see Breivik+2018 (in prep). 
