@@ -9,13 +9,6 @@ cosmic can evolve binaries for several different use cases. Below
 you'll find examples to run a single binary system, multiple binary
 systems or a grid of binaries.
 
-See 'Running a Milky Way population' below for the process to simulate
-a population of binaries consistent with a user-supplied star formation 
-history for a single compact object population (e.g. BH-BH) or a range
-of compact object populations (e.g. combinations of BH, NS, WD) as 
-described in Breivik+2018.
-
-
 
 *************
 single binary
