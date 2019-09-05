@@ -27,6 +27,7 @@ import warnings
 import ast
 import operator
 import json
+import itertools
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -92,10 +93,14 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             # of the objects right at merge because the bcm will report
             # the post merge object only
             bcm_1 = bcm.loc[bcm.bin_state == 1]
-            bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
-            bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
-                                          (bpp_1.kstar_2.isin(kstar2_range)) &
-                                          (bpp_1.evol_type == 3)].bin_num.tolist())
+
+            # We now find the product of the kstar range lists so we can match the
+            # merger_type column from the bcm array which tells us what objects
+            # merged
+            merger_objects_to_track = []
+            merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar1_range, kstar2_range)))))
+            merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar2_range, kstar1_range)))))
+            bin_num_save.extend(bcm_1.loc[bcm_1.merger_type.isin(merger_objects_to_track)].bin_num.tolist())
 
             bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
 
