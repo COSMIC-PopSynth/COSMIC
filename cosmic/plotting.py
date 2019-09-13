@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) Katelyn Breivik (2017 - 2019)
+#
+# This file is part of cosmic.
+#
+# cosmic is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cosmic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -5,8 +25,13 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
 from GW_calcs import sep_from_p, p_from_a
-from utils import calc_Roche_radius
 from evolve import Evolve
+
+
+__author__ = 'Jeff Andrews <andrews.jeff@gmail.com>'
+__all__ = ['calc_Roche_radius','evolve_binary', 'plot_k_type', 'plot_radius',
+           'plot_mass','plot_Teff','plot_Mdot','plot_P_orb','plot_ecc',
+           'plot_HR_diagram','plot_binary_evol','evolve_and_plot']
 
 
 rsun_in_au = 215.0954
@@ -16,6 +41,28 @@ day_in_year = 365.242
 # Colors
 primary_color = 'C0'
 secondary_color = 'C1'
+
+
+
+def calc_Roche_radius(M1, M2, A):
+    """ Get Roche lobe radius (Eggleton 1983)
+
+    Parameters
+    ----------
+    M1 : float
+        Primary mass [any unit]
+    M2 : float
+        Secondary mass [any unit]
+    A : float
+        Orbital separation [any unit]
+
+    Returns
+    -------
+    Roche radius : float
+        in units of input 'A'
+    """
+    q = M1 / M2
+    return A * 0.49*q**(2.0/3.0) / (0.6*q**(2.0/3.0) + np.log(1.0 + q**(1.0/3.0)))
 
 
 
