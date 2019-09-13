@@ -4,12 +4,13 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
-import constants as c
 from GW_calcs import sep_from_p, p_from_a
 from utils import calc_Roche_radius
 from evolve import Evolve
 
 
+rsun_in_au = 215.0954
+day_in_year = 365.242
 
 
 # Colors
@@ -90,7 +91,7 @@ def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, s
     ax.plot(times, R2_out, color=secondary_color)
 
     # Plot Roche radii - at periastron
-    A_out = sep_from_p(M1_out, M2_out, P_orb_out) * c.rsun_in_au # in Rsun
+    A_out = sep_from_p(M1_out, M2_out, P_orb_out) * rsun_in_au # in Rsun
     R1_Roche = calc_Roche_radius(M1_out, M2_out, A_out*(1.0-ecc_out)) # in Rsun
     R2_Roche = calc_Roche_radius(M2_out, M1_out, A_out*(1.0-ecc_out)) # in Rsun
     ax.plot(times, R1_Roche, color=primary_color, linestyle='--')
@@ -156,7 +157,7 @@ def plot_Mdot(ax, times, Mdot1_out, Mdot2_out):
 
 def plot_P_orb(ax, times, P_orb_out, t_max, sys_obs):
 
-    ax.plot(times, P_orb_out*c.day_in_year, color='k')
+    ax.plot(times, P_orb_out*day_in_year, color='k')
 
     for key, value in sys_obs.items():
         if key == 'P_orb': ax.axhline(value, color='k', linestyle='dashed')
