@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
 
-
+'''`plotting`
+'''
 
 import numpy as np
 import matplotlib
