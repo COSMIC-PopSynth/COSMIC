@@ -25,8 +25,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
-from GW_calcs import sep_from_p, p_from_a
-from evolve import Evolve
+from .utils import a_from_p, p_from_a
+from .evolve import Evolve
 
 
 __author__ = 'Jeff Andrews <andrews.jeff@gmail.com>'
@@ -134,12 +134,13 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
 
 def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, sys_obs):
 
+
     # Radius
     ax.plot(times, R1_out, color=primary_color)
     ax.plot(times, R2_out, color=secondary_color)
 
     # Plot Roche radii - at periastron
-    A_out = sep_from_p(M1_out, M2_out, P_orb_out) * rsun_in_au # in Rsun
+    A_out = a_from_p(M1_out, M2_out, P_orb_out) # in Rsun
     R1_Roche = calc_Roche_radius(M1_out, M2_out, A_out*(1.0-ecc_out)) # in Rsun
     R2_Roche = calc_Roche_radius(M2_out, M1_out, A_out*(1.0-ecc_out)) # in Rsun
     ax.plot(times, R1_Roche, color=primary_color, linestyle='--')
@@ -266,13 +267,13 @@ def plot_binary_evol(bcm, file_out=None, sys_obs={}):
     plot_k_type(ax[0], ax[1], ax_k_type_list, bcm.tphys, bcm.kstar_1.astype(int), bcm.kstar_2.astype(int))
 
     # Radius panel
-    plot_radius(ax[2], bcm.tphys, 10**bcm.rad_1, 10**bcm.rad_2, bcm.mass_1, bcm.mass_2, bcm.porb, bcm.ecc, sys_obs)
+    plot_radius(ax[2], bcm.tphys, bcm.rad_1, bcm.rad_2, bcm.mass_1, bcm.mass_2, bcm.porb, bcm.ecc, sys_obs)
 
     # Mass panel
     plot_mass(ax[4], bcm.tphys, bcm.mass_1, bcm.mass_2, sys_obs)
 
     # Teff panel
-    plot_Teff(ax[6], bcm.tphys, 10**bcm.teff_1, 10**bcm.teff_2, sys_obs)
+    plot_Teff(ax[6], bcm.tphys, bcm.teff_1, bcm.teff_2, sys_obs)
 
     # Mass accretion rate panel
     plot_Mdot(ax[3], bcm.tphys, bcm.deltam_1, bcm.deltam_2)
@@ -306,7 +307,7 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, file_out=None, 
 
     # Iterate over all binaries in initC
     all_figs = []
-    for i in initC.bin_num.unique():
+    for i in range(len(initC)):
 
         # Check if t_min and t_max are lists
         if isinstance(t_min, list):
@@ -319,7 +320,7 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, file_out=None, 
             t_max_tmp = t_max
 
         # Evolve binary
-        bcm = evolve_binary(initC.loc[initC.bin_num == i], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict)
+        bcm = evolve_binary(initC.iloc[i:i+1], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict)
 
         # Plot binary
         fig = plot_binary_evol(bcm, file_out=file_out, sys_obs=sys_obs)
