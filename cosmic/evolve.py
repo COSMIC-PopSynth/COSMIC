@@ -199,8 +199,8 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(dtp=kwargs.pop('dtp', initialbinarytable['tphysf']))
         if 'randomseed' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed',
-                                                                                 np.random.randint(np.iinfo(int).min,
-                                                                                 np.iinfo(int).max, 
+                                                                                 np.random.randint(np.iinfo(np.int32).min,
+                                                                                 np.iinfo(np.int32).max, 
                                                                                  size=len(initialbinarytable))
                                                                                  )
                                                            )
