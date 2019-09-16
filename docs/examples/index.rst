@@ -1,20 +1,13 @@
 .. _examples:
 
 #######################
-Using cosmic to run BSE
+Using COSMIC to run BSE
 #######################
 
 
-cosmic can evolve binaries for several different use cases. Below 
+COSMIC can evolve binaries for several different use cases. Below 
 you'll find examples to run a single binary system, multiple binary
 systems or a grid of binaries.
-
-See 'Running a Milky Way population' below for the process to simulate
-a population of binaries consistent with a user-supplied star formation 
-history for a single compact object population (e.g. BH-BH) or a range
-of compact object populations (e.g. combinations of BH, NS, WD) as 
-described in Breivik+2018.
-
 
 
 *************
@@ -22,7 +15,7 @@ single binary
 *************
 
 Below is the process to initialize and evolve a binary that 
-could have formed a GW150914-like binary. First, import the modules in cosmic
+could have formed a GW150914-like binary. First, import the modules in COSMIC
 that initialize and evolve the binary.
 
 .. ipython::
@@ -60,11 +53,11 @@ InitialBinaryTable class. Each initialized binary requires the following paramet
 
 The flags for the various binary evolution prescriptions used in BSE also need to be set. 
 Each flag is saved in the BSEDict dictionary. Note that the BSEDict
-only needs to be specified the first time a binary is evolved with cosmic or
+only needs to be specified the first time a binary is evolved with COSMIC or
 if you need to change the binary evolution prescriptions. 
 
 If you are unfamiliar with these prescriptions, it is highly 
-advised to either run the defaults from the cosmic install (which are consistent
+advised to either run the defaults from the COSMIC install (which are consistent
 with `Rodriguez+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120o1101R>`_ and `Kremer+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120s1103K>`_) or refer to `Hurley+2002 <http://adsabs.harvard.edu/abs/2002MNRAS.329..897H>`_.
 
 .. ipython::
@@ -79,11 +72,11 @@ the Evolve class, which calls the evolv2.f subroutine in the BSE source code.
     In [6]: bpp, bcm, initC = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
 
 
-For every evolved binary system, BSE generates two arrays, which are stored as pandas DataFrames in cosmic:
+For every evolved binary system, BSE generates two arrays, which are stored as pandas DataFrames in COSMIC:
 
 * bpp - contains binary parameters at important stages in the binary's evolution, including stellar evolutionary phase changes or mass transfer episodes.
 
-* bcm - contains several binary parameters at user specified time steps during the binary's evolution. The default setting in cosmic is to output the final stage of the binary at the evolution time specified by the user.
+* bcm - contains several binary parameters at user specified time steps during the binary's evolution. The default setting in COSMIC is to output the final stage of the binary at the evolution time specified by the user.
 
 You can see the different parameters included in each DataFrame using the columns attribute of the DataFrame:
 
