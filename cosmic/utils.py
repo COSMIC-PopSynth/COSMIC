@@ -38,7 +38,8 @@ __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
 __all__ = ['filter_bpp_bcm', 'conv_select', 'mass_min_max_select',
            'idl_tabulate', 'rndm', 'param_transform', 'dat_transform',
            'dat_un_transform', 'knuth_bw_selector', 'error_check',
-           'check_initial_conditions', 'convert_kstar_evol_type']
+           'check_initial_conditions', 'convert_kstar_evol_type',
+           'pop_write', 'a_from_p', 'p_from_a']
 
 def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     """Filter the output of bpp and bcm
@@ -327,6 +328,52 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
     dat_store.append('idx', pd.DataFrame([idx]))
     return
 
+def a_from_p(p, m1, m2):
+    """Computes the separation from orbital period with KEPLER III
+
+    Parameters
+    ----------
+    p : float/array
+        orbital period [day]
+    m1 : float/array
+        primary mass [msun]
+    m2 : float/array
+        secondary mass [msun]
+
+    Returns
+    -------
+    sep : float/array
+        separation [rsun]
+    """
+
+    p_yr = p/365.25
+    sep_3 = p_yr**2 * (m1 + m2)
+    sep = sep_3**(1 / 3.)
+    sep_rsun = sep * 215.032
+    return sep_rsun
+
+def p_from_a(sep, m1, m2):
+    """ Computes separation from orbital period with kepler III
+
+    Parameters
+    ----------
+    sep : float/array
+        separation [rsun]
+    m1 : float/array
+        primary mass [msun]
+    m2 : float/array
+        secondary mass [msun]
+
+    Returns
+    -------
+    p : float/array
+        orbital period [day]
+    """
+
+    sep_au = sep / 215.032
+    p_2 = sep_au**3 / (m1 + m2)
+    p_day = (p_2**0.5) * 365.25
+    return p_day
 
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial
