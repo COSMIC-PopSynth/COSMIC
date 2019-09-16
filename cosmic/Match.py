@@ -85,9 +85,9 @@ def match(dataCm):
     denominator1Sum.append(np.sum(denominator1))
     denominator2Sum.append(np.sum(denominator2))
 
-    nominatorSum = np.array(nominatorSum, dtype=np.float128)
-    denominator1Sum = np.array(denominator1Sum, dtype=np.float128)
-    denominator2Sum = np.array(denominator2Sum, dtype=np.float128)
+    nominatorSum = np.array(nominatorSum)
+    denominator1Sum = np.array(denominator1Sum)
+    denominator2Sum = np.array(denominator2Sum)
 
     binwidth = binEdges[1]-binEdges[0]
     if binwidth < 1e-7:

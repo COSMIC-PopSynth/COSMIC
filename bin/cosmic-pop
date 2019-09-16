@@ -183,27 +183,27 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
-            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],\
-                                                        final_kstar1 = kstar1_range,\
-                                                        final_kstar2 = kstar2_range,\
-                                                        binfrac_model = 0.5,\
-                                                        primary_model = 'kroupa93',\
-                                                        ecc_model = 'thermal',\
-                                                        SFH_model = SFH_model,\
-                                                        component_age = component_age,\
-                                                        met = sampling['metallicity'],\
+            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],
+                                                        final_kstar1 = kstar1_range,
+                                                        final_kstar2 = kstar2_range,
+                                                        binfrac_model = 0.5,
+                                                        primary_model = 'kroupa93',
+                                                        ecc_model = 'thermal',
+                                                        SFH_model = SFH_model,
+                                                        component_age = component_age,
+                                                        met = sampling['metallicity'],
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
-            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],\
-                                                        final_kstar1 = kstar1_range,\
-                                                        final_kstar2 = kstar2_range,\
-                                                        rand_seed = rand_seed,\
-                                                        nproc = args.nproc,\
-                                                        SFH_model = SFH_model,\
-                                                        component_age = component_age,\
-                                                        met = sampling['metallicity'],\
+            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],
+                                                        final_kstar1 = kstar1_range,
+                                                        final_kstar2 = kstar2_range,
+                                                        rand_seed = rand_seed,
+                                                        nproc = args.nproc,
+                                                        SFH_model = SFH_model,
+                                                        component_age = component_age,
+                                                        met = sampling['metallicity'],
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
@@ -226,30 +226,27 @@ if __name__ == '__main__':
             dtp = IBT['tphysf'].values
 
         bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
-
-        met = []
-        for num in bcm.bin_num.unique():
-            n_met = len(bcm.loc[bcm.bin_num==num])
-            met_val = np.array(initCond.loc[initCond.bin_num==num].metallicity)[0]
-            met.extend(np.ones(n_met)*met_val)
-        bcm['metallicity'] = met
-
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
 
         bcm_filter, bin_state_nums = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
-            warnings.warn("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
-            log_file.write("After filtering for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
+            warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
+            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
             continue
 
         initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
         # Now get the converging population
-        conv_filter = utils.conv_select(bcm_filter, bpp_filter,\
-                                        kstar1_range, kstar2_range,\
-                                        convergence['convergence_filter'],\
+        conv_filter = utils.conv_select(bcm_filter, bpp_filter,
+                                        kstar1_range, kstar2_range,
+                                        convergence['convergence_filter'],
                                         convergence['convergence_limits'])
+        if conv_filter.empty:
+            warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
+            log_file.write("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
+            continue
+
         if convergence['bcm_bpp_initCond_filter']:
             bcm_filter = bcm_filter.loc[bcm_filter.bin_num.isin(conv_filter.bin_num)]
             bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_filter.bin_num)]
@@ -268,7 +265,7 @@ if __name__ == '__main__':
             initC_filter_match = initC_filter_match.append(initC_filter)
             conv_filter_match = conv_filter_match.append(conv_filter)
 
-        if len(conv_filter_match) >= 50:
+        if len(conv_filter_match) >= np.min([50, args.Niter]):
             conv_save = conv_save.append(conv_filter_match)
 
             # perform the convergence
@@ -288,8 +285,8 @@ if __name__ == '__main__':
             # write the data and the logs!
             mass_list = [total_mass_singles, total_mass_binaries, total_mass_stars]
             n_list = [total_n_singles, total_n_binaries, total_n_stars]
-            utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,\
-                            bpp_filter_match, initC_filter_match, conv_filter_match,\
+            utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
+                            bpp_filter_match, initC_filter_match, conv_filter_match,
                             bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
