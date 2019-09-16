@@ -39,8 +39,8 @@ Installation Notes/FAQ
     USING IPYTHON OR JUPYTER-NOTEBOOKS WITH COSMIC ENVIRONMENT
 
     Please note that using the global instance of the conda jupyter-notebook
-    or ipython will most likely fail when trying to use cosmic.
-    PLEASE explicitly install both into the cosmic environment with either
+    or ipython will most likely fail when trying to use COSMIC.
+    PLEASE explicitly install both into the COSMIC environment with either
 
     ``conda install jupyter ipython``
 
