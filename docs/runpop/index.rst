@@ -13,7 +13,7 @@ with assigned primary and secondary masses, orbital periods, eccentricities,
 metallicities, and star formation histories. These parameters are randomly
 sampled from observationally motivated distribution functions. 
 
-In cosmic, the initial sample is done through an initial binary sampler which works
+In COSMIC, the initial sample is done through an initial binary sampler which works
 with the InitialBinaryTable class. There are two samplers available: 
 
 1. `independent` : initialize binaries with independent parameter 
@@ -88,9 +88,9 @@ Since we are interested in binaries, we only retain the binary systems that are 
 multidim
 ********
 
-cosmic implements multidimensionally distributed initial binaries according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_. The python code used in cosmic to create this sample was written by Mads Sorenson, and is based on the IDL codes written to accompany `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_. 
+COSMIC implements multidimensionally distributed initial binaries according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_. The python code used in COSMIC to create this sample was written by Mads Sorenson, and is based on the IDL codes written to accompany `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_. 
 
-The multidimensional initial binary data is sampled in cosmic as follows:
+The multidimensional initial binary data is sampled in COSMIC as follows:
 
 .. ipython::
 
