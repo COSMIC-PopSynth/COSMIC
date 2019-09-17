@@ -25,6 +25,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
+from matplotlib.lines import Line2D
 from .utils import a_from_p, p_from_a
 from .evolve import Evolve
 
@@ -132,7 +133,7 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
 
 
 
-def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, sys_obs):
+def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, sys_obs, legend=True):
 
 
     # Radius
@@ -158,6 +159,11 @@ def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, s
     ax.set_ylabel(r'Radius ($R_{\odot}$)')
 
     ax.set_xlim(np.min(times), np.max(times))
+
+    if legend:
+        custom_lines = [Line2D([0], [0], color='k', linestyle='solid'),
+                        Line2D([0], [0], color='k', linestyle='dashed')]
+        ax.legend(custom_lines, ['Stellar Radius', 'Roche Radius'], frameon=False)
 
 
 def plot_mass(ax, times, M1_out, M2_out, sys_obs):
@@ -193,7 +199,7 @@ def plot_Teff(ax, times, Teff1_out, Teff2_out, sys_obs):
     ax.set_xlabel("Time (Myr)")
 
 
-def plot_Mdot(ax, times, Mdot1_out, Mdot2_out):
+def plot_Mdot(ax, times, Mdot1_out, Mdot2_out, legend=True):
 
     # Mass accretion rate
     ax.plot(times, np.log10(np.clip(Mdot1_out, 1.0e-16, None)), color=primary_color)
@@ -202,6 +208,12 @@ def plot_Mdot(ax, times, Mdot1_out, Mdot2_out):
 
     ax.set_ylim(-14, ax.get_ylim()[1])
     ax.set_xlim(np.min(times), np.max(times))
+
+    if legend:
+        custom_lines = [Line2D([0], [0], color='C0', linestyle='solid'),
+                        Line2D([0], [0], color='C1', linestyle='solid')]
+        ax.legend(custom_lines, ['Primary', 'Secondary'], loc=2, frameon=False)
+
 
 
 def plot_P_orb(ax, times, P_orb_out, t_max, sys_obs):
