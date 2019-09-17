@@ -85,6 +85,7 @@ install_requires = [
     'pandas >= 0.24',
     'tables > 3.5.0',
     'h5py >= 1.3',
+    'matplotlib >= 2.0.0'
 ]
 tests_require = [
     'pytest'
