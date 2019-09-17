@@ -26,12 +26,12 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
-from .utils import a_from_p, p_from_a
+from .utils import a_from_p, p_from_a, calc_Roche_radius
 from .evolve import Evolve
 
 
 __author__ = 'Jeff Andrews <andrews.jeff@gmail.com>'
-__all__ = ['calc_Roche_radius','evolve_binary', 'plot_k_type', 'plot_radius',
+__all__ = ['evolve_binary', 'plot_k_type', 'plot_radius',
            'plot_mass','plot_Teff','plot_Mdot','plot_P_orb','plot_ecc',
            'plot_HR_diagram','plot_binary_evol','evolve_and_plot']
 
@@ -43,30 +43,6 @@ day_in_year = 365.242
 # Colors
 primary_color = 'C0'
 secondary_color = 'C1'
-
-
-
-def calc_Roche_radius(M1, M2, A):
-    """ Get Roche lobe radius (Eggleton 1983)
-
-    Parameters
-    ----------
-    M1 : float
-        Primary mass [any unit]
-    M2 : float
-        Secondary mass [any unit]
-    A : float
-        Orbital separation [any unit]
-
-    Returns
-    -------
-    Roche radius : float
-        in units of input 'A'
-    """
-    q = M1 / M2
-    return A * 0.49*q**(2.0/3.0) / (0.6*q**(2.0/3.0) + np.log(1.0 + q**(1.0/3.0)))
-
-
 
 
 def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
