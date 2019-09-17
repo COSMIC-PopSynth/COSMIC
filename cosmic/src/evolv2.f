@@ -1,15 +1,6 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,
-     \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,pisntmp,
-     \ bhflagtmp,nsflagtmp,
-     \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
-     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsntmp,ecsn_mlowtmp,aictmp,
-     \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
-     \ natal_kick_array,qcrit_array,betatmp,xitmp,
-     \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,bconsttmp,
-     \ CKtmp,windflagtmp,qcflagtmp,eddlimflagtmp,fprimc_array,
-     \ dtptmp,idumtmp,bppout,bcmout)
+     \ dtptmp,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -187,9 +178,9 @@
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
-      INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
+      INTEGER pulsar,bdecayfac,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
-      REAL*8 fallback,sigmahold,ecsn,ecsn_mlow
+      REAL*8 fallback,sigmahold
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
@@ -215,72 +206,14 @@
       LOGICAL output
       REAL*8 bppout(1000,23)
       REAL*8 bcmout(50000,42)
-
-      INTEGER tflagtmp,ifflagtmp,nsflagtmp,wdflagtmp
-      INTEGER bhflagtmp,windflagtmp,qcflagtmp
-      INTEGER ceflagtmp,cekickflagtmp,cemergeflagtmp,cehestarflagtmp
-      INTEGER ussntmp
 *
-      INTEGER eddlimflagtmp
-      REAL*8 netatmp,bwindtmp,hewindtmp,mxnstmp,betatmp,xitmp
-      REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 alpha1tmp,lambdatmp
-      REAL*8 bconsttmp,CKtmp
-      REAL*8 sigmatmp,sigmadivtmp,bhsigmafractmp,pisntmp
-      REAL*8 polar_kick_angletmp
-*
-      REAL*8 pts1tmp,pts2tmp,pts3tmp
-
       REAL*8 dtptmp
-      REAL*8 ecsntmp,ecsn_mlowtmp
-      REAL*8 qcrit_array(16),fprimc_array(16),natal_kick_array(6)
-      INTEGER aictmp,idumtmp
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
 Cf2py intent(out) bppout,bcmout
-      ceflag = ceflagtmp
-      tflag = tflagtmp
-      ifflag = ifflagtmp
-      nsflag = nsflagtmp
-      wdflag = wdflagtmp
-      pisn = pisntmp
-      bhflag = bhflagtmp
-      nsflag = nsflagtmp
-      mxns = mxnstmp
-      alpha1 = alpha1tmp
-      pts1 = pts1tmp
-      pts2 = pts2tmp
-      pts3 = pts3tmp
-      ecsn = ecsntmp
-      ecsn_mlow = ecsn_mlowtmp
-      aic = aictmp
-      ussn = ussntmp
-      sigma = sigmatmp
-      sigmadiv = sigmadivtmp
-      bhsigmafrac = bhsigmafractmp
-      polar_kick_angle = polar_kick_angletmp
-      beta = betatmp
-      neta = netatmp
-      lambda = lambdatmp
-      cekickflag = cekickflagtmp
-      cemergeflag = cemergeflagtmp
-      cehestarflag = cehestarflagtmp
-      hewind = hewindtmp
-      bwind = bwindtmp
-      xi = xitmp
-      acc2 = acc2tmp
-      epsnov = epsnovtmp
-      eddfac = eddfactmp
-      gamma = gammatmp
-      bconst = bconsttmp
-      CK = CKtmp
-      windflag = windflagtmp
-      qcflag = qcflagtmp
-      eddlimflag = eddlimflagtmp
       dtp = dtptmp
-      idum1 = idumtmp
 
       CALL instar
 
@@ -497,7 +430,7 @@ component.
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,ST_tide,
-     &               ecsn,ecsn_mlow,k)
+     &               k)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -1287,7 +1220,7 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,
-     &               ecsn,ecsn_mlow,k)
+     &               k)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -1394,7 +1327,7 @@ component.
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,natal_kick_array,disrupt)
+     &                   0.d0,fallback,bkick,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1420,7 +1353,7 @@ component.
             
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                   rad(k-3),fallback,bkick,
-     &                   natal_kick_array,disrupt)
+     &                   disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -2177,9 +2110,8 @@ component.
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsn,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array,
+     &               vk,bkick,formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(binstate.eq.1.d0)then
              sep = 0.d0
@@ -2417,7 +2349,7 @@ component.
                formation(1) = 11
                formation(2) = 11
             endif
-            CALL mix(mass0,mass,aj,kstar,zpars,ecsn)
+            CALL mix(mass0,mass,aj,kstar,zpars)
             dm1 = m1ce - mass(j1)
             dm2 = mass(j2) - m2ce
 *
@@ -3119,7 +3051,7 @@ component.
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,ecsn,ecsn_mlow,k)
+     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,k)
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
@@ -3176,7 +3108,7 @@ component.
      &                    aj(1),aj(2),tms(1),tms(2),
      &                    massc(1),massc(2),rad(1),rad(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick,natal_kick_array,disrupt)
+     &                rad(3-k),fallback,bkick,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
 * set kick values for the bcm array
@@ -3423,9 +3355,8 @@ component.
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsn,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array,
+     &               vk,bkick,formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
@@ -3481,9 +3412,8 @@ component.
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsn,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array,
+     &               vk,bkick,formation(j1),formation(j2),ST_tide,
+     &               binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
@@ -3524,7 +3454,7 @@ component.
              tb = -1.d0
          endif
       else
-         CALL mix(mass0,mass,aj,kstar,zpars,ecsn)
+         CALL mix(mass0,mass,aj,kstar,zpars)
       endif
 
 * set kick values for the bcm array

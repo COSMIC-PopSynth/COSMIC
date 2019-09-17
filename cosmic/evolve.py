@@ -267,12 +267,50 @@ class Evolve(object):
         def _evolve_single_system(f):
             try:
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9],
-                                               f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19],
-                                               f[20], f[21], f[22], f[23], f[24], f[25], f[26], f[27], f[28], f[29],
-                                               f[30], f[31], f[32], f[33], f[34], f[35], f[36], f[37], f[38], f[39],
-                                               f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47], f[48], f[49],
-                                               f[50])
+                _evolvebin.windvars.neta = f[8]
+                _evolvebin.windvars.bwind = f[9]
+                _evolvebin.windvars.hewind = f[10]
+                _evolvebin.cevars.alpha1 = f[11]
+                _evolvebin.cevars.lambdaf = f[12]
+                _evolvebin.ceflags.ceflag = f[13]
+                _evolvebin.flags.tflag = f[14]
+                _evolvebin.flags.ifflag = f[15]
+                _evolvebin.flags.wdflag = f[16]
+                _evolvebin.snvars.pisn = f[17]
+                _evolvebin.flags.bhflag = f[18]
+                _evolvebin.flags.nsflag = f[19]
+                _evolvebin.ceflags.cekickflag = f[20]
+                _evolvebin.ceflags.cemergeflag = f[21]
+                _evolvebin.ceflags.cehestarflag = f[22]
+                _evolvebin.windvars.mxns = f[23]
+                _evolvebin.points.pts1 = f[24]
+                _evolvebin.points.pts2 = f[25]
+                _evolvebin.points.pts3 = f[26]
+                _evolvebin.snvars.ecsn = f[27]
+                _evolvebin.snvars.ecsn_mlow = f[28]
+                _evolvebin.snvars.aic = f[29]
+                _evolvebin.ceflags.ussn = f[30]
+                _evolvebin.snvars.sigma = f[31]
+                _evolvebin.snvars.sigmadiv = f[32]
+                _evolvebin.snvars.bhsigmafrac = f[33]
+                _evolvebin.snvars.polar_kick_angle = f[34]
+                _evolvebin.snvars.natal_kick_array = f[35]
+                _evolvebin.cevars.qcrit_array = f[36]
+                _evolvebin.windvars.beta = f[37]
+                _evolvebin.windvars.xi = f[38]
+                _evolvebin.windvars.acc2 = f[39]
+                _evolvebin.windvars.epsnov = f[40]
+                _evolvebin.windvars.eddfac = f[41]
+                _evolvebin.windvars.gamma = f[42]
+                _evolvebin.magvars.bconst = f[43]
+                _evolvebin.magvars.ck = f[44]
+                _evolvebin.flags.windflag = f[45]
+                _evolvebin.flags.qcflag = f[46]
+                _evolvebin.windvars.eddlimflag = f[47]
+                _evolvebin.tidalvars.fprimc_array = f[48]
+                _evolvebin.rand1.idum1 = f[50]
+
+                [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[49])
 
                 try:
                     bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
