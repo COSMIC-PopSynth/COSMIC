@@ -2,8 +2,8 @@
       SUBROUTINE COMENV(M01,M1,MC1,AJ1,JSPIN1,KW1,
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
-     &                  bkick,ecsn,ecsn_mlow,formation1,formation2,
-     &                  ST_tide,binstate,mergertype,natal_kick,
+     &                  bkick,formation1,formation2,
+     &                  ST_tide,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -35,8 +35,7 @@
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
-      REAL*8 natal_kick(6)
-      REAL*8 bkick(20),fallback,ecsn,ecsn_mlow,M1i,M2i
+      REAL*8 bkick(20),fallback,M1i,M2i
       common /fall/fallback
       INTEGER formation1,formation2
       REAL*8 sigmahold
@@ -87,7 +86,7 @@
       CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &            ecsn,ecsn_mlow,1)
+     &            1)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
       RZAMS = RZAMSF(M01)
@@ -95,16 +94,16 @@
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      IF(LAMBDA.EQ.1.0)THEN
-         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDA)
-      ELSEIF(LAMBDA.LT.0.d0)THEN
-         LAMB1 = -1.0*LAMBDA
+      IF(LAMBDAF.EQ.1.0)THEN
+         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      ELSEIF(LAMBDAF.LT.0.d0)THEN
+         LAMB1 = -1.0*LAMBDAF
       ENDIF
       KW = KW2
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
-     &            ecsn,ecsn_mlow,2)
+     &            2)
       OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
@@ -117,10 +116,10 @@
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
          RZAMS = RZAMSF(M02)
-         IF(LAMBDA.EQ.1.0)THEN
-            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDA)
-         ELSEIF(LAMBDA.LT.0.d0)THEN
-            LAMB2 = -1.0*LAMBDA
+         IF(LAMBDAF.EQ.1.0)THEN
+            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+         ELSEIF(LAMBDAF.LT.0.d0)THEN
+            LAMB2 = -1.0*LAMBDAF
          ENDIF
          EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
@@ -220,7 +219,7 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &                  ecsn,ecsn_mlow,1)
+     &                  1)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -308,7 +307,7 @@
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,
-     &                   natal_kick,disrupt)
+     &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -494,7 +493,7 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &                  ecsn,ecsn_mlow,1)
+     &                  1)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -593,7 +592,7 @@
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,
-     &                   natal_kick,disrupt)
+     &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -633,7 +632,7 @@
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
-     &                  ecsn,ecsn_mlow,2)
+     &                  2)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 1
                if(KW2.eq.13.and.ecsn.gt.0.d0)then
@@ -722,7 +721,7 @@
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,bkick,
-     &                   natal_kick,disrupt)
+     &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -841,7 +840,7 @@
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &               ecsn,ecsn_mlow,1)
+     &               1)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
@@ -922,8 +921,7 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,bkick,natal_kick,
-     &                natal_kick,disrupt)
+     &                0.d0,fallback,bkick,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)

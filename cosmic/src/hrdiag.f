@@ -1,7 +1,7 @@
 ***
       SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,ST_tide,
-     &                  ecsn,ecsn_mlow,kidx)
+     &                  kidx)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -35,7 +35,7 @@
       common /fall/fallback
       REAL*8 fallback
 *
-      real*8 ecsn,ecsn_mlow,mchold
+      real*8 mchold
 *
       real*8 avar,bvar
       real*8 thook,thg,tbagb,tau,tloop,taul,tauh,tau1,tau2,dtau,texp
