@@ -143,9 +143,9 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         in the inifile
 
     conv_lims : `dict`
-        dictionary where keys are convergence params and the 
+        dictionary where keys are convergence params and the
         values are lists containing a [lo, hi] value to filter the
-        convergence param between 
+        convergence param between
         any non-specified convergence params will not be filtered
 
     Returns
@@ -164,7 +164,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
                          "{0}".format(_known_methods))
 
     if method == 'formation':
-        # filter the bpp array to find the systems that match the user-specified 
+        # filter the bpp array to find the systems that match the user-specified
         # final kstars
         conv_save = bpp_save.loc[(bpp_save.kstar_1.isin(final_kstar_1)) &\
                                  (bpp_save.kstar_2.isin(final_kstar_2)) &\
@@ -183,7 +183,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
                                    (bpp_save.kstar_1.isin(final_kstar_1)) &\
                                    (bpp_save.kstar_2.isin(final_kstar_2)) &\
                                    (bpp_save.sep > 0)].bin_num
-        
+
         # select out the values just before the supernova(e)
         conv_sn = bpp_save.loc[(bpp_save.bin_num.isin(conv_sn_ind)) &\
                                (bpp_save.evol_type.isin([15.0, 16.0]))]
@@ -212,11 +212,11 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         conv_save = conv_sn_2.groupby('bin_num').nth(1).reset_index()
 
     elif method == 'disruption':
-        # filter the bpp array to find the systems that match the user-specified 
+        # filter the bpp array to find the systems that match the user-specified
         # final kstars
         conv_ind = bpp_save.loc[(bpp_save.kstar_1.isin(final_kstar_1)) &\
                                 (bpp_save.kstar_2.isin(final_kstar_2))].bin_num.unique()
-        
+
         conv_save = bpp_save.loc[(bpp_save.bin_num.isin(conv_ind))]
 
         # select out the parameters just before disruption
@@ -249,7 +249,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
             filter_lo = conv_lims[key][0]
             filter_hi = conv_lims[key][1]
             conv_save = conv_save.loc[conv_save[key] < filter_hi]
-            conv_save = conv_save.loc[conv_save[key] > filter_lo]        
+            conv_save = conv_save.loc[conv_save[key] > filter_lo]
     return conv_save
 
 def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_nums, match, idx):
@@ -264,11 +264,11 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
     log_file : `file write`
         log file to write to
     mass_list : `list`
-        list containing the mass of the singles, mass of the binaries, 
+        list containing the mass of the singles, mass of the binaries,
         and mass of the stars
 
     n_list : `list`
-        list containing the number of singles, number of binaries, 
+        list containing the number of singles, number of binaries,
         and number of stars
 
     bcm : `pandas.DataFrame`
@@ -290,14 +290,14 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
         contains the match values for each conv_param
 
     idx : `int`
-        contains the index of the bcm so we can pick up where we left off 
+        contains the index of the bcm so we can pick up where we left off
         if runFixedPop hits a wall time
 
     Returns
     -------
     Nothing!
     """
-    
+
     m_keys = ['mass_singles', 'mass_binaries', 'mass_stars']
     n_keys = ['n_singles', 'n_binaries', 'n_stars']
     for m_write, m_key, n_write, n_key in zip(mass_list, m_keys, number_list, n_keys):
@@ -374,6 +374,26 @@ def p_from_a(sep, m1, m2):
     p_2 = sep_au**3 / (m1 + m2)
     p_day = (p_2**0.5) * 365.25
     return p_day
+
+def calc_Roche_radius(M1, M2, A):
+    """ Get Roche lobe radius (Eggleton 1983)
+
+    Parameters
+    ----------
+    M1 : float
+        Primary mass [any unit]
+    M2 : float
+        Secondary mass [any unit]
+    A : float
+        Orbital separation [any unit]
+
+    Returns
+    -------
+    Roche radius : float
+        in units of input 'A'
+    """
+    q = M1 / M2
+    return A * 0.49*q**(2.0/3.0) / (0.6*q**(2.0/3.0) + np.log(1.0 + q**(1.0/3.0)))
 
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial
@@ -900,12 +920,6 @@ def check_initial_conditions(initial_binary_table):
 
         return rzams
 
-    def rl(Q):
-        """A function to evaluate R_L/a(q), Eggleton 1983."""
-        P = Q**(1.0/3.0)
-        RL = 0.49*P*P/(0.6*P*P + np.log(1.0+P))
-        return RL
-
     z = np.asarray(initial_binary_table['metallicity'])
     zpars, a = zcnsts(z)
 
@@ -921,10 +935,8 @@ def check_initial_conditions(initial_binary_table):
     tb = np.asarray(initial_binary_table['porb'])/yeardy
     sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
 
-    q1 = mass1/mass2
-    q2 = mass2/mass1
-    rol1 = rl(q1)*sep
-    rol2 = rl(q2)*sep
+    rol1 = calc_Roche_radius(mass1, mass2, sep)
+    rol2 = calc_Roche_radius(mass2, mass1, sep)
 
     # check for a ZAMS that starts in RFOL
     mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
