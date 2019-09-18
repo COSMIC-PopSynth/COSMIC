@@ -1,7 +1,7 @@
 ***
       SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,ST_tide,
-     &                  kidx)
+     &                  bhspin,kidx)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -27,6 +27,7 @@
       INTEGER ST_tide
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
+      real*8 bhspin
       real*8 r,lum,mc,rc,menv,renv,k2
       real*8 mch,mlp,tiny
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
@@ -34,6 +35,8 @@
       real*8 mass0,mt0,mtc
       common /fall/fallback
       REAL*8 fallback
+      REAL ran3
+      EXTERNAL ran3
 *
       real*8 mchold
 *
@@ -556,7 +559,20 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(mc.gt.7.60)then
                         fallback = 1.d0
                      endif
-                      mc = mt
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
+                     endif
+                     mc = mt
                   elseif(nsflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
@@ -583,6 +599,19 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.gt.11.d0)then
                         fallback = 1.d0
+                     endif
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
                      endif
                      mc = mt
                   elseif(nsflag.eq.4)then
@@ -612,6 +641,19 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.ge.11.d0)then
                         fallback = 1.d0
+                     endif
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
                      endif
                      mc = mt
                   endif
@@ -871,7 +913,20 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(mc.gt.7.60)then
                         fallback = 1.d0
                      endif
-                      mc = mt
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
+                     endif
+                     mc = mt
                   elseif(nsflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
@@ -898,6 +953,19 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.gt.11.d0)then
                         fallback = 1.d0
+                     endif
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
                      endif
                      mc = mt
                   elseif(nsflag.eq.4)then
@@ -927,6 +995,19 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.ge.11.d0)then
                         fallback = 1.d0
+                     endif
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
                      endif
                      mc = mt
                   endif

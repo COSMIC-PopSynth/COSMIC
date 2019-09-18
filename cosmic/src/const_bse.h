@@ -8,9 +8,9 @@
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
       INTEGER tflag,ifflag,nsflag,wdflag,bhflag,windflag,qcflag
-      INTEGER eddlimflag,aic
+      INTEGER eddlimflag,bhspinflag,aic
       COMMON /FLAGS/ tflag,ifflag,nsflag,wdflag,bhflag,windflag,qcflag
-      COMMON /FLAGS/ eddlimflag,aic
+      COMMON /FLAGS/ eddlimflag,bhspinflag,aic
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
@@ -27,11 +27,11 @@
       COMMON /MAGVARS/ bconst,CK
       REAL*8 sigma,sigmadiv,bhsigmafrac,pisn
       REAL*8 polar_kick_angle,mu_SN1,omega_SN1
-      REAL*8 ecsn,ecsn_mlow
+      REAL*8 ecsn,ecsn_mlow,bhspinmag
       REAL*8 natal_kick_array(6)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac
       COMMON /SNVARS/ polar_kick_angle,mu_SN1,omega_SN1
-      COMMON /SNVARS/ pisn,ecsn,ecsn_mlow
+      COMMON /SNVARS/ pisn,ecsn,ecsn_mlow,bhspinmag
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
 *
