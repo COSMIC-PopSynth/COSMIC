@@ -1,6 +1,6 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ dtptmp,bppout,bcmout)
+     \ dtptmp,bppout,bcmout,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -175,6 +175,7 @@
       REAL*8 k3,mr23yr,twopi
       PARAMETER(k3=0.21d0,mr23yr=0.4311d0)
       REAL*8 jspin(2),ospin(2),jorb,oorb,jspbru,ospbru
+      REAL*8 bhspin(2)
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
@@ -407,6 +408,8 @@ component.
          sep = 1.0d+10
          oorb = 0.d0
          jorb = 0.d0
+         bhspin(1) = 0.d0
+         bhspin(2) = 0.d0
          if(ospin(1).lt.0.0) ospin(1) = 1.0d-10
          if(ospin(2).lt.0.0) ospin(2) = 1.0d-10
          q(1) = 1.0d+10
@@ -430,7 +433,7 @@ component.
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,ST_tide,
-     &               k)
+     &               bhspin(k),k)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -1220,7 +1223,7 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,
-     &               k)
+     &               bhspin(k),k)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -2111,7 +2114,7 @@ component.
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,
+     &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(binstate.eq.1.d0)then
              sep = 0.d0
@@ -3051,7 +3054,7 @@ component.
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,k)
+     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,bhspin(k),k)
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
@@ -3356,7 +3359,7 @@ component.
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,
+     &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
@@ -3413,7 +3416,7 @@ component.
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,
+     &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
