@@ -1,6 +1,6 @@
 ***
       SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ dtptmp,bppout,bcmout,bhspin)
+     \ dtptmp,bhspin,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -213,6 +213,7 @@
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
 Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
+Cf2py intent(in,out) bhspin 
 Cf2py intent(out) bppout,bcmout
       dtp = dtptmp
 
