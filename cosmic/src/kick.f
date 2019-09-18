@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,natal_kick,disrupt)
+     &                r2,fallback,bkick,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -65,7 +65,6 @@
       logical output,disrupt
 *
       real*8 bkick(20)
-      real*8 natal_kick(6)
       real ran3,xx
       external ran3
 *
@@ -160,8 +159,8 @@
 * Before we draw the kick from the maxwellian and then scale it
 * if desired, let us see if a pre-supplied set of natal kicks
 * and phi theta values associated with the kicks was passed.
-      if(natal_kick(snstar).ge.0.d0)then
-          vk = natal_kick(snstar)
+      if(natal_kick_array(snstar).ge.0.d0)then
+          vk = natal_kick_array(snstar)
           vk2 = vk*vk
       else
 *
@@ -207,9 +206,9 @@
 * Before we randomly draw a phi and theta,
 * let us see if a pre-supplied set of natal kicks
 * and phi/theta values associated with the kicks was passed.
-      if((natal_kick(snstar+2).ge.(-pi/2.d0)).and.
-     &       (natal_kick(snstar+2).le.(pi/2.d0)))then
-          phi = natal_kick(snstar+2)
+      if((natal_kick_array(snstar+2).ge.(-pi/2.d0)).and.
+     &       (natal_kick_array(snstar+2).le.(pi/2.d0)))then
+          phi = natal_kick_array(snstar+2)
           sphi = SIN(phi)
       else
 * CLR - Allow for a restricted opening angle for SN kicks
@@ -228,9 +227,9 @@
       cphi = COS(phi)
 
 
-      if((natal_kick(snstar+4).ge.(0.d0)).and.
-     &       (natal_kick(snstar+4).le.(2.d0*pi)))then
-          theta = natal_kick(snstar+4)
+      if((natal_kick_array(snstar+4).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar+4).le.(2.d0*pi)))then
+          theta = natal_kick_array(snstar+4)
       else
           theta = twopi*ran3(idum1)
       endif
