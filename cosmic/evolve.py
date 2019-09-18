@@ -64,7 +64,7 @@ INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_
                              'beta', 'xi', 'acc2', 'epsnov',
                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed', 
-                             'bhspinflag','bhspinmag' 'bin_num']
+                             'bhspinflag','bhspinmag', 'bin_num']
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
