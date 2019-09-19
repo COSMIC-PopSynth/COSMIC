@@ -326,11 +326,11 @@ class Evolve(object):
                 _evolvebin.flags.qcflag = f[75]
                 _evolvebin.windvars.eddlimflag = f[76]
                 _evolvebin.tidalvars.fprimc_array = f[77]
-                _evolvebin.rand1.idum1 = f[78]
-                _evolvebin.flags.bhspinflag = f[79]
-                _evolvebin.snvars.bhspinmag = f[80]
+                _evolvebin.rand1.idum1 = f[79]
+                _evolvebin.flags.bhspinflag = f[80]
+                _evolvebin.snvars.bhspinmag = f[81]
 
-                [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[49],
+                [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[78],
                                                 [f[8],f[9]], [f[10],f[11]], [f[12],f[13]],
                                                 [f[14],f[15]], [f[16],f[17]], [f[18],f[19]],
                                                 [f[20],f[21]], [f[22],f[23]], [f[24],f[25]],
@@ -347,8 +347,8 @@ class Evolve(object):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[81]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[81]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[82]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[82]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
