@@ -889,6 +889,14 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
             raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhspinflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to 0, 1, or 2 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhspinmag'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='bconst'
     # --- all numbers are valid
     flag='ck'
