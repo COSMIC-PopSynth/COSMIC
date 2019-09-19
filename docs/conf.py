@@ -44,7 +44,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx_automodapi.automodapi',
     'sphinxcontrib.programoutput',
-
+    'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'numpydoc',
