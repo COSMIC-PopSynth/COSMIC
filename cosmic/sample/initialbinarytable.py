@@ -24,6 +24,7 @@ import multiprocessing as mp
 import math
 import random
 import scipy.integrate
+import sys
 
 from astropy.table import Table, Column
 from astropy import units
@@ -51,6 +52,23 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
+INITIAL_CONDITIONS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+                             'metallicity', 'tphysf', 'mass0_1', 'mass0_2',
+                             'rad1', 'rad2', 'lumin1', 'lumin2', 'massc1', 'massc2',
+                             'radc1', 'radc2', 'menv1', 'menv2', 'renv1', 'renv2',
+                             'ospin1', 'ospin2', 'b_0_1', 'b_0_2', 'bacc1', 'bacc2',
+                             'tacc1', 'tacc2', 'epoch1', 'epoch2', 'tms1', 'tms2',
+                             'bhspin1','bhspin2', 'tphys']
+
+INITIAL_CONDITIONS_MISC_COLUMNS = ['binfrac']
+
+if sys.version_info.major == 2 and sys.version_info.minor == 7:
+    INITIAL_CONDITIONS_COLUMNS_ALL = INITIAL_CONDITIONS_COLUMNS[:]
+else:
+    INITIAL_CONDITIONS_COLUMNS_ALL = INITIAL_CONDITIONS_COLUMNS.copy()
+
+INITIAL_CONDITIONS_COLUMNS_ALL.extend(INITIAL_CONDITIONS_MISC_COLUMNS)
+
 
 class InitialBinaryTable():
     @classmethod
@@ -77,8 +95,17 @@ class InitialBinaryTable():
             main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
         metallicity : float
             Metallicity of the binaries; Z_sun = 0.02
-        binfrac : float
-            System-specific probability of the primary star being in a binary
+
+        **kwargs
+
+            binfrac : float
+                System-specific probability of the primary star being in a binary
+
+            mass0_1,mass0_2,rad1,rad2,lumin1,lumin2,
+            massc1,massc2,radc1,radc2,menv1,renv2,
+            ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
+            tacc1,tacc2,epoch1,epoch2,tms1,tms2
+            bhspin1,bhspin2
 
         Returns
         -------
@@ -86,14 +113,55 @@ class InitialBinaryTable():
             Single binary initial conditions
 
         """
+        # System-specific probability of the primary star being in a binary
         binfrac = kwargs.pop('binfrac', np.ones(np.array(m1).size))
-        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
-                                          m1, m2, porb, ecc,
-                                          metallicity, binfrac,tphysf]).T,
-                               columns = ['kstar_1', 'kstar_2',
-                                          'mass1_binary', 'mass2_binary',
-                                          'porb', 'ecc', 'metallicity','binfrac',
-                                          'tphysf'])
+
+        # The following are in general not needed for COSMIC, however
+        # if you wish to start a binary at a very specific point in its evolution
+        # these kwarg arguments can help you do this.
+        # For instance the Globular Cluster code CMC requires this behavior.
+        mass0_1 = kwargs.pop('mass0_1', np.zeros(np.array(m1).size))
+        mass0_2 = kwargs.pop('mass0_2', np.zeros(np.array(m1).size))
+        rad1 = kwargs.pop('rad1', np.zeros(np.array(m1).size))
+        rad2 = kwargs.pop('rad2', np.zeros(np.array(m1).size))
+        lumin1 = kwargs.pop('lumin1', np.zeros(np.array(m1).size))
+        lumin2 = kwargs.pop('lumin2', np.zeros(np.array(m1).size))
+        massc1 = kwargs.pop('massc1', np.zeros(np.array(m1).size))
+        massc2 = kwargs.pop('massc2', np.zeros(np.array(m1).size))
+        radc1 = kwargs.pop('radc1', np.zeros(np.array(m1).size))
+        radc2 = kwargs.pop('radc2', np.zeros(np.array(m1).size))
+        menv1 = kwargs.pop('menv1', np.zeros(np.array(m1).size))
+        menv2 = kwargs.pop('menv2', np.zeros(np.array(m1).size))
+        renv1 = kwargs.pop('renv1', np.zeros(np.array(m1).size))
+        renv2 = kwargs.pop('renv2', np.zeros(np.array(m1).size))
+        ospin1 = kwargs.pop('ospin1', np.zeros(np.array(m1).size))
+        ospin2 = kwargs.pop('ospin2', np.zeros(np.array(m1).size))
+        b_0_1 = kwargs.pop('b_0_1', np.zeros(np.array(m1).size))
+        b_0_2 = kwargs.pop('b_0_2', np.zeros(np.array(m1).size))
+        bacc1 = kwargs.pop('bacc1', np.zeros(np.array(m1).size))
+        bacc2 = kwargs.pop('bacc2', np.zeros(np.array(m1).size))
+        tacc1 = kwargs.pop('tacc1', np.zeros(np.array(m1).size))
+        tacc2 = kwargs.pop('tacc2', np.zeros(np.array(m1).size))
+        epoch1 = kwargs.pop('epoch1', np.zeros(np.array(m1).size))
+        epoch2 = kwargs.pop('epoch2', np.zeros(np.array(m1).size))
+        tms1 = kwargs.pop('tms1', np.zeros(np.array(m1).size))
+        tms2 = kwargs.pop('tms2', np.zeros(np.array(m1).size))
+        bhspin1 = kwargs.pop('bhspin1', np.zeros(np.array(m1).size))
+        bhspin2 = kwargs.pop('bhspin2', np.zeros(np.array(m1).size))
+        tphys = kwargs.pop('tphys', np.zeros(np.array(m1).size))
+
+        bin_dat = pd.DataFrame(np.vstack([
+                                            kstar1, kstar2,
+                                            m1, m2, porb, ecc,
+                                            metallicity, tphysf,
+                                            mass0_1, mass0_2, rad1, rad2,
+                                            lumin1, lumin2, massc1, massc2,
+                                            radc1, radc2, menv1, menv2, renv1, renv2,
+                                            ospin1, ospin2, b_0_1, b_0_2, bacc1, bacc2,
+                                            tacc1, tacc2, epoch1, epoch2, tms1, tms2,
+                                            bhspin1,bhspin2,tphys,binfrac,
+                                          ]).T,
+                               columns = INITIAL_CONDITIONS_COLUMNS_ALL)
 
         return bin_dat
 

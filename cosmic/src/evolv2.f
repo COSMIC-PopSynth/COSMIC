@@ -1,8 +1,8 @@
 ***
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
-     \ dtptmp,mass0,mass,rad,lumin,massc,radc,
+     \ dtptmp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     \ tphys,zpars,bkick,bhspin,bppout,bcmout)
+     \ bhspin,tphys,zpars,bkick,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -154,11 +154,11 @@
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
       INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
-      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
+      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
       INTEGER kstar1_bpp,kstar2_bpp
 *
       REAL*8 km,km0,tphys,tphys0,dtm0,tphys00,tphysfhold
-      REAL*8 tphysf,dtp,tsave,mass1,mass2
+      REAL*8 tphysf,dtp,tsave
       REAL*8 aj(2),aj0(2),epoch(2),tms(2),tbgb(2),tkh(2),dtmi(2)
       REAL*8 mass0(2),mass(2),massc(2),menv(2),mass00(2),mcxx(2)
       REAL*8 mass1_bpp,mass2_bpp
