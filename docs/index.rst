@@ -8,14 +8,12 @@ COSMIC currently implements binary evolutionary processes using BSE (`Hurley+200
 ************
 Using COSMIC
 ************
-COSMIC's primary purpose is to generate synthetic populations. 
-This is done through two executables that are installed when cosmic is installed:
+COSMIC's primary purpose is to generate synthetic populations with an adaptive size based on how the binary parameter disributions converge.
+This is done through an executable that is installed when COSMIC is installed:
 
 * cosmic-pop (see :ref:`fixedpop`)
 
-For more information on how to use this executable in the command line, see :ref:`fixedpop`. 
-
-For more details on how to use COSMIC to run BSE in python, see :ref:`examples` and :ref:`runpop`.
+COSMIC can also be used to simulate a single binary at a time, a list of multiple binaries, a grid of binaries, or a fixed population size. For more details on how to use COSMIC in these ways see :ref:`examples` and :ref:`runpop`.
 
 *****************
 Table of Contents

@@ -19,6 +19,7 @@ with the InitialBinaryTable class. There are two samplers available:
 1. `independent` : initialize binaries with independent parameter 
 distributions for the primary mass, mass ratio, eccentricity, separation, 
 and binary fraction
+
 2. `multidim` : initialize binaries with multidimensional parameter 
 distributions according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
