@@ -1,6 +1,8 @@
 ***
-      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ dtptmp,bppout,bcmout)
+      SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
+     \ dtptmp,mass0,mass,rad,lumin,massc,radc,
+     \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
+     \ tphys,zpars,bkick,bhspin,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -222,12 +224,6 @@ Cf2py intent(out) bppout,bcmout
 *
 
 *      CE2flag = 0
-      mass(1) = mass1
-      mass(2) = mass2
-
-      kstar(1) = kstar1
-      kstar(2) = kstar2
-
       kstar1_bpp = 0
       kstar2_bpp = 0
 
@@ -299,45 +295,6 @@ component.
       bppout = 0.d0
       bcmout = 0.d0
 
-      B_0(1) = 0.d0
-      B_0(2) = 0.d0
-
-      bacc(1) = 0.d0
-      bacc(2) = 0.d0
-
-      tacc(1) = 0.d0
-      tacc(2) = 0.d0
-
-      tms(1) = 0.0
-      tms(2) = 0.0
-
-      DO jj = 1,20
-         bkick(jj) = 0.0
-      ENDDO
-
-      mass0(1) = mass(1)
-      massc(1) = 0.0
-      ospin(1) = 0.0
-      epoch(1) = 0.0
-      rad(1) = 0.0
-      lumin(1) = 0.0
-      massc(1) = 0.0
-      radc(1) = 0.0
-      menv(1) = 0.0
-      renv(1) = 0.0
-      ospin(1) = 0.0
-
-      mass0(2) = mass(2)
-      massc(2) = 0.0
-      ospin(2) = 0.0
-      epoch(2) = 0.0
-      rad(2) = 0.0
-      lumin(2) = 0.0
-      massc(2) = 0.0
-      radc(2) = 0.0
-      menv(2) = 0.0
-      renv(2) = 0.0
-      ospin(2) = 0.0
 
 * set bcm kick values to 0.0 initially
       vk1_bcm = 0.d0
