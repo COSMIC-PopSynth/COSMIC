@@ -102,7 +102,7 @@ class InitialBinaryTable():
                 System-specific probability of the primary star being in a binary
 
             mass0_1,mass0_2,rad1,rad2,lumin1,lumin2,
-            massc1,massc2,radc1,radc2,menv1,renv2,
+            massc1,massc2,radc1,radc2,menv1,menv2,renv1,renv2,
             ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
             tacc1,tacc2,epoch1,epoch2,tms1,tms2
             bhspin1,bhspin2
@@ -120,8 +120,8 @@ class InitialBinaryTable():
         # if you wish to start a binary at a very specific point in its evolution
         # these kwarg arguments can help you do this.
         # For instance the Globular Cluster code CMC requires this behavior.
-        mass0_1 = kwargs.pop('mass0_1', np.zeros(np.array(m1).size))
-        mass0_2 = kwargs.pop('mass0_2', np.zeros(np.array(m1).size))
+        mass0_1 = kwargs.pop('mass0_1', m1)
+        mass0_2 = kwargs.pop('mass0_2', m2)
         rad1 = kwargs.pop('rad1', np.zeros(np.array(m1).size))
         rad2 = kwargs.pop('rad2', np.zeros(np.array(m1).size))
         lumin1 = kwargs.pop('lumin1', np.zeros(np.array(m1).size))
