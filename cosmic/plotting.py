@@ -539,10 +539,10 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
     initC : `pandas.DataFrame`
         initial conditions for binary to evolve
 
-    t_min : `float`
+    t_min : `float or list`
         starting time for plot in Myr
 
-    t_max : `float`
+    t_max : `float or list`
         ending time for plot in Myr
 
     BSEDict : `Dict
