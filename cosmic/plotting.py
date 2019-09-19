@@ -20,6 +20,7 @@
 '''
 
 import numpy as np
+import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -49,6 +50,9 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     """
     Docstring to be added.
     """
+    # Disable chained warning for now which throws
+    # a warning for setting dtp and tphysf
+    pd.options.mode.chained_assignment = None 
 
     # Get highest BSE temporal resolution
     initC['dtp'] = 0.01
@@ -278,6 +282,8 @@ def plot_binary_evol(bcm, file_out=None, sys_obs={}):
     # idx_2 = np.where(k2_out < 10)[0]
     # plot_HR_diagram(ax[7], L1_out[k1_out<10], L2_out[k2_out<10], Teff1_out[k1_out<10], Teff2_out[k2_out<10])
 
+    # make the labels look nice
+    gs.tight_layout(fig)
 
     return fig
 
