@@ -161,7 +161,7 @@ Instead, if you want to scale by mass, you can choose between supplying your own
 
     In [15]: print(N_13_14_13_14_astro)
 
-If you specified a Milky Way star formation history in the inifile for the ``cosmic-pop`` call (e.g. ThinDisk, Thick Disk, or Bulge), you can easily scale to a representative Milky Way population with the ``MC_samp`` module:
+If you specified a Milky Way star formation history in the inifile for the ``cosmic-pop`` call (e.g. ThinDisk, Thick Disk, or Bulge), you can easily scale to a representative Milky Way population with the ``MC_samp`` module. This will assume masses according to the `McMillan 2011 <https://ui.adsabs.harvard.edu/abs/2011MNRAS.414.2446M/abstract>`_ model:
 
 .. ipython::
 

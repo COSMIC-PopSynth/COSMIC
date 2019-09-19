@@ -77,16 +77,16 @@ sampling
 
                             ``ThinDisk`` : constant star formation over 10 Gyr
 
-                            ``ThickDisk`` : 1 Gyr burst of constant star formation 
+                            ``ThickDisk`` : 1 Gyr burst of constant star formation
                             11 Gyr in the past
 
-                            ``Bulge`` : 1 Gyr burst of constant star formation 
+                            ``Bulge`` : 1 Gyr burst of constant star formation
                             10 Gyr in the past
 
-                            ``DeltaBurst`` : single burst of star formation 13.7 
+                            ``DeltaBurst`` : single burst of star formation 13.7
                             Gyr in the past
 
-``metallicity``          Single value for the metallicity of the population 
+``metallicity``          Single value for the metallicity of the population
                          where solar metallicity is Z = 0.02
 
 =======================  =====================================================
@@ -119,14 +119,14 @@ sampling
 ``convergence_filter``   Selects the stage of the evolution at which you would like
                          to check for convergence. This will filter for systems that
                          satisfy the final_kstar1 and final_kstar2 selections from
-                         the command line call of cosmic-pop 
+                         the command line call of cosmic-pop
 
                            ``formation``: computes convergence on binary properties
                            at formation with user-specified final kstars
 
                            ``1_SN``: computes convergence on binary properties
                            just before the first supernova for the population with
-                           user-specified final kstars 
+                           user-specified final kstars
 
                            ``2_SN``: computes convergence on binary properties
                            just before the second supernova for the population with
@@ -219,18 +219,18 @@ sampling
                          decimal fractions of the time taken in that phase for
                          Main Sequence (MS) stars 
 
-                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_ 
+                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_
                          
 ``pts2``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for 
+                         decimal fractions of the time taken in that phase for
                          Giant Branch (GB, CHeB, AGB, HeGB) stars
 
                          **pts2 = 0.01** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
 ``pts3``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for 
-                         HG, HeMS stars 
+                         decimal fractions of the time taken in that phase for
+                         HG, HeMS stars
 
-                         **pts3 = 0.02** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_             
+                         **pts3 = 0.02** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
 =======================  =====================================================
 
 .. code-block:: ini
@@ -798,14 +798,16 @@ sampling
     MISCELLANEOUS FLAGS
 
 =======================  =====================================================
-``tflag``                Activates tidal circularisation following `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
+``tflag``                Activates tidal circularisation following 
+                         `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                             ``0`` : no tidal circularization
 
                             ``1`` : activates tidal circularization
 
                          **tflag = 1**
-``ifflag``               Activates the initial-final white dwarf mass relation from Han+1995 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
+``ifflag``               Activates the initial-final white dwarf mass relation 
+                         from Han+1995 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
 
                             ``0`` : no modifications to BSE
 
@@ -813,7 +815,8 @@ sampling
 
                          **ifflag = 0**
 ``wdflag``               Activates an alternate cooling law found in the description 
-                         immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_ in Hurley & Shara 2003. 
+                         immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_
+                         in Hurley & Shara 2003. 
                          Equation 1 gives the BSE default Mestel cooling law.
 
                             ``0`` : no modifications to BSE

@@ -51,6 +51,7 @@ InitialBinaryTable class. Each initialized binary requires the following paramet
 
     In [4]: print(single_binary)
 
+
 The flags for the various binary evolution prescriptions used in BSE also need to be set. 
 Each flag is saved in the BSEDict dictionary. Note that the BSEDict
 only needs to be specified the first time a binary is evolved with COSMIC or
@@ -67,7 +68,7 @@ with `Rodriguez+2018 <http://adsabs.harvard.edu/abs/2018PhRvL.120o1101R>`_ and `
 Once the binary is initialized and the BSE model is set, the system is evolved with the 
 the Evolve class, which calls the evolv2.f subroutine in the BSE source code. 
 
-.. ipython:: 
+.. ipython::
 
     In [6]: bpp, bcm, initC = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
 
@@ -80,23 +81,58 @@ For every evolved binary system, BSE generates two arrays, which are stored as p
 
 You can see the different parameters included in each DataFrame using the columns attribute of the DataFrame:
 
-.. ipython:: 
+.. ipython::
 
     In [7]: print(bpp.columns)
 
     In [8]: print(bcm.columns)
 
-The units are broadly consistent with BSE; masses, radii are in Solar units, temperatures are in log-Kelvin, luminosities are in log-Solar luminosity, orbital periods are in log-seconds, semi-major axes are in solar radii, and times are in units of Myr.
 
-The evol_type column in bpp indicates the evolutionary change that occured for each line. The meaning of each number is described here, :ref:`evolve-type-table`.
+The units are broadly consistent with BSE and are described in :ref:`output_info`.
 
-Each of the parameters in bpp or bcm can be accessed in the usual way for DataFrames.
+The evol_type column in bpp indicates the evolutionary change that occured for each line.
+The meaning of each number is described here, :ref:`evolve-type-table`.
 
-.. ipython:: 
+Each of the parameters in bpp or bcm can be accessed in the usual way for DataFrames:
 
-    In [9]: print(bpp.mass_1)
+.. ipython::
 
-    In [10]: print(bpp[['mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'evol_type']])
+    In [9]: bpp.mass_1
+
+    In [10]: bpp[['mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'evol_type']]
+
+
+You can also use the built in plotting function to see how the system evolves:
+
+.. ipython::
+    :okwarning:
+
+    In [11]: from cosmic.plotting import evolve_and_plot
+
+    In [12]: fig = evolve_and_plot(initC, t_min=None, t_max=None, BSEDict={}, sys_obs={})
+
+.. plot::
+
+    from cosmic.sample.initialbinarytable import InitialBinaryTable
+    from cosmic.plotting import evolve_and_plot
+    single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
+    BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'bhspinflag' : 0, 'bhspinmag' : 0.0}
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=BSEDict, sys_obs={})
+
+In this case, all the action happens in the first few Myr, so let's specify a t_max:
+
+.. ipython::
+    :okwarning:
+
+    In [13]: fig = evolve_and_plot(initC, t_min=None, t_max=6.0, BSEDict={}, sys_obs={})
+
+.. plot::
+
+    from cosmic.sample.initialbinarytable import InitialBinaryTable
+    from cosmic.plotting import evolve_and_plot
+    single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
+    BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'bhspinflag' : 0, 'bhspinmag' : 0.0}
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=6.0, BSEDict=BSEDict, sys_obs={})
 
 
 *****************
@@ -108,17 +144,22 @@ that could form GW150914 and GW170817 - like binaries.
 
 .. ipython::
 
-    In [11]: binary_set = InitialBinaryTable.InitialBinaries(m1=[100.0, 11.8], m2=[85.0, 11.1], porb=[10000.0,2211.0], ecc=[0.65,0.55], tphysf=[13700.0,13700.0], kstar1=[1,1], kstar2=[1,1], metallicity=[0.005,0.02])
+    In [11]: binary_set = InitialBinaryTable.InitialBinaries(m1=[85.543645, 11.171469], m2=[84.99784, 6.67305], porb=[446.795757, 170.758343], ecc=[0.448872, 0.370], tphysf=[13700.0, 13700.0], kstar1=[1, 1], kstar2=[1, 1], metallicity=[0.002, 0.02])
 
     In [12]: print(binary_set)
+
+    In [14]: import numpy as np
+
+    In [15]: np.random.seed(5)
 
     In [13]: bpp, bcm, initC  = Evolve.evolve(initialbinarytable=binary_set, BSEDict=BSEDict)
 
 Note that the BSEDict did not be reinitialized since the BSE model did not change.
 
-As before, bpp, bcm, and initC are returned as pandas DataFrames which assign an index to each binary system we evolve. We can access each binary as follows
+As before, bpp, bcm, and initC are returned as pandas DataFrames which assign an 
+index to each binary system we evolve. We can access each binary as follows:
 
-.. ipython:: 
+.. ipython::
 
     In [14]: print(bpp.loc[0])
 
@@ -127,6 +168,26 @@ As before, bpp, bcm, and initC are returned as pandas DataFrames which assign an
     In [16]: print(initC.loc[0])
 
     In [17]: print(bpp.loc[1])
+
+The plotting function can also take in multiple binaries. Let's plot both the GW150914-like
+progenitor evolution and the GW170817-like progenitor evolutions. For the GW170817-like
+progenitor, we expect most of the evolution to take place in the first ~60 Myr.
+
+.. ipython::
+    :okwarning:
+    :okexcept:
+
+    In [18]: fig = evolve_and_plot(binary_set, t_min=None, t_max=None, BSEDict=BSEDict, sys_obs={})
+
+.. plot::
+
+    from cosmic.sample.initialbinarytable import InitialBinaryTable
+    from cosmic.plotting import evolve_and_plot
+    import numpy as np
+    np.random.seed(5)
+    binary_set = InitialBinaryTable.InitialBinaries(m1=[85.543645, 11.171469], m2=[84.99784, 6.67305], porb=[446.795757, 170.758343], ecc=[0.448872, 0.370], tphysf=[13700.0, 13700.0], kstar1=[1, 1], kstar2=[1, 1], metallicity=[0.002, 0.02])
+    BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 1.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'bhspinflag' : 0, 'bhspinmag' : 0.0}
+    fig = evolve_and_plot(binary_set, t_min=None, t_max=[6.0, 60.0], BSEDict=BSEDict, sys_obs={})
 
 
 ****************
@@ -151,4 +212,5 @@ periods spaced evenly in log space.
     In [20]: print(bpp)
 
     In [21]: print(bcm)
+
 
