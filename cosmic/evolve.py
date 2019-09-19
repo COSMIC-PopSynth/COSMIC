@@ -315,7 +315,11 @@ class Evolve(object):
                 _evolvebin.flags.bhspinflag = f[51]
                 _evolvebin.snvars.bhspinmag = f[52]
 
-                [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[49], 0)
+                # placeholder arrays; not needed by COSMIC (or recorded in the 
+                # bcm/bpp arrays), but needed for CMC interface
+                bhspin_tmp = np.zeros(2)
+
+                [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[49], bhspin_tmp)
 
                 try:
                     bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
