@@ -3,7 +3,7 @@
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,formation1,formation2,
-     &                  ST_tide,binstate,mergertype,
+     &                  ST_tide,bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -36,6 +36,7 @@
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 bkick(20),fallback,M1i,M2i
+      REAL*8 bhspin1,bhspin2
       common /fall/fallback
       INTEGER formation1,formation2
       REAL*8 sigmahold
@@ -86,7 +87,7 @@
       CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &            1)
+     &            bhspin1,1)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
       RZAMS = RZAMSF(M01)
@@ -103,7 +104,7 @@
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
-     &            2)
+     &            bhspin2,2)
       OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
@@ -219,7 +220,7 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &                  1)
+     &                  bhspin1,1)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -316,6 +317,7 @@
                   if(KW2.ge.10) M1 = M1-M2
                   MC1 = M1
                   MC2 = 0.D0
+                  bhspin2 = 0.D0
                   M2 = 0.D0
                   KW2 = 15
                   AJ1 = 0.D0
@@ -377,6 +379,8 @@
                M2 = 0.D0
                KW1 = KW2
                KW2 = 15
+               bhspin1 = bhspin2
+               bhspin2 = 0.d0
                AJ1 = 0.D0
 *
 * The envelope mass is not required in this case.
@@ -493,7 +497,7 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &                  1)
+     &                  bhspin1,1)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -632,7 +636,7 @@
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
-     &                  2)
+     &                  bhspin2,2)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 1
                if(KW2.eq.13.and.ecsn.gt.0.d0)then
@@ -731,6 +735,7 @@
                   MC2 = M2
                   MC1 = 0.D0
                   M1 = 0.D0
+                  bhspin1 = 0.D0
                   KW1 = 15
                   AJ2 = 0.D0
                   COEL = .true.
@@ -802,6 +807,7 @@
          M2 = 0.D0
          M1 = MF
          KW2 = 15
+         bhspin2 = 0.d0
 *
 * Combine the core masses.
 *
@@ -840,7 +846,7 @@
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,ST_tide,
-     &               1)
+     &               bhspin1,1)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
