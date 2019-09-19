@@ -48,8 +48,29 @@ secondary_color = 'C1'
 
 def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     """
-    Docstring to be added.
+    Evolves a single binary with all timesteps written
+    to the bcm array for plotting
+
+    Parameters
+    ----------
+    initC : `pandas.DataFrame`
+        initial conditions for binary to evolve
+
+    t_min : `float`
+        starting time for plot in Myr
+
+    t_max : `float`
+        ending time for plot in Myr
+
+    BSEDict : `Dict
+        Dictionary containing all BSE flags needed
+
+    Returns
+    -------
+    bcm : `pandas.DataFrame`
+        binary evolution data form BSE's bcm dict
     """
+
     # Disable chained warning for now which throws
     # a warning for setting dtp and tphysf
     pd.options.mode.chained_assignment = None 
@@ -80,7 +101,32 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
 
 
 def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
+    """Plots the stellar types as a function of time
 
+    Parameters
+    ----------
+    ax_1 : `matplotlib.Axes`
+        Axis instance for kstar 1
+
+    ax_2 : `matplotlib.Axes`
+        Axis instance for kstar 2
+
+    ax_k_type_list : `list`
+        List of ktypes for the legend of the ktype bar plots
+
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    k1_out : `pandas.Series`
+        Series of kstar 1 type at each binary evolution time step in Myr
+
+    k2_out : `pandas.Series`
+        Series of kstar 2 type at each binary evolution time step in Myr
+
+    Returns
+    -------
+    Null
+    """
 
     k_type_colors = ['plum', 'sandybrown', 'lightseagreen', 'moccasin', 'chartreuse',
                      'deepskyblue', 'gold', 'rosybrown', 'm', 'darkgreen', 'grey',
@@ -114,8 +160,42 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
 
 
 def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, sys_obs, legend=True):
+    """Plots the stellar radii as a function of time
 
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
 
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    R1_out : `pandas.Series`
+        Series of primary radius at each binary evolution time step in Rsun
+
+    R2_out : `pandas.Series`
+        Series of secondary radius at each binary evolution time step in Rsun
+
+    M1_out : `pandas.Series`
+        Series of primary mass at each binary evolution time step in Msun
+
+    M2_out : `pandas.Series`
+        Series of secondary mass at each binary evolution time step in Msun
+
+    P_orb_out : `pandas.Series`
+        Series of orbital periods at each binary evolution time step in days
+
+    ecc_out : `pandas.Series`
+        Series of eccentricities at each binary evolution time step
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
     # Radius
     ax.plot(times, R1_out, color=primary_color)
     ax.plot(times, R2_out, color=secondary_color)
@@ -147,6 +227,30 @@ def plot_radius(ax, times, R1_out, R2_out, M1_out, M2_out, P_orb_out, ecc_out, s
 
 
 def plot_mass(ax, times, M1_out, M2_out, sys_obs):
+    """Plots the stellar mass as a function of time
+
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
+
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    M1_out : `pandas.Series`
+        Series of primary mass at each binary evolution time step in Msun
+
+    M2_out : `pandas.Series`
+        Series of secondary mass at each binary evolution time step in Msun
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
 
     # Mass
     ax.plot(times, M1_out, color=primary_color)
@@ -162,8 +266,30 @@ def plot_mass(ax, times, M1_out, M2_out, sys_obs):
 
 
 def plot_Teff(ax, times, Teff1_out, Teff2_out, sys_obs):
+    """Plots the stellar effectvie temperature as a function of time
 
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
 
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    Teff1_out : `pandas.Series`
+        Series of primary effective temperature at each binary evolution time step in K
+
+    Teff2_out : `pandas.Series`
+        Series of secondary effective temperature at each binary evolution time step in K
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
 
     # Effective temperature
     ax.plot(times, Teff1_out, color=primary_color)
@@ -180,6 +306,31 @@ def plot_Teff(ax, times, Teff1_out, Teff2_out, sys_obs):
 
 
 def plot_Mdot(ax, times, Mdot1_out, Mdot2_out, legend=True):
+    """Plots the stellar effectvie temperature as a function of time
+
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
+
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    Mdot1_out : `pandas.Series`
+        Series of primary mass transfer rate at each binary evolution time step in Msun/yr
+
+    Mdot2_out : `pandas.Series`
+        Series of secondary mass transfer rate at each binary evolution time step in Msun/yr
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
+
 
     # Mass accretion rate
     ax.plot(times, np.log10(np.clip(Mdot1_out, 1.0e-16, None)), color=primary_color)
@@ -197,6 +348,30 @@ def plot_Mdot(ax, times, Mdot1_out, Mdot2_out, legend=True):
 
 
 def plot_P_orb(ax, times, P_orb_out, t_max, sys_obs):
+    """Plots the orbital period as a function of time
+
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
+
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    P_orb_out : `pandas.Series`
+        Series of orbital periods at each binary evolution time step in days
+
+    t_max : `float`
+        ending time for plot in Myr
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
 
     ax.plot(times, P_orb_out*day_in_year, color='k')
 
@@ -210,6 +385,30 @@ def plot_P_orb(ax, times, P_orb_out, t_max, sys_obs):
 
 
 def plot_ecc(ax, times, ecc_out, t_max, sys_obs):
+    """Plots the eccentricity as a function of time
+
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
+
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    ecc_out : `pandas.Series`
+        Series of eccentricities at each binary evolution time step
+
+    t_max : `float`
+        ending time for plot in Myr
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
 
     ax.plot(times, ecc_out, color='k')
 
@@ -224,10 +423,39 @@ def plot_ecc(ax, times, ecc_out, t_max, sys_obs):
 
 
 def plot_HR_diagram(ax, L1_out, L2_out, Teff1_out, Teff2_out):
+    """Plots the eccentricity as a function of time
+
+    Parameters
+    ----------
+    ax : `matplotlib.Axes`
+        Axis instance for the plot
+
+    times : `pandas.Series`
+        Series of times at each binary evolution time step in Myr
+
+    L1_out : `pandas.Series`
+        Series of primary luminosities at each binary evolution time step in Lsun
+
+    L2_out : `pandas.Series`
+        Series of secondary luminosities at each binary evolution time step in Lsun
+
+    Teff1_out : `pandas.Series`
+        Series of primary effective temperature at each binary evolution time step in K
+
+    Teff2_out : `pandas.Series`
+        Series of secondary effective temperature at each binary evolution time step in K
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    Null
+    """
 
     ax.plot(Teff1_out, L1_out, color=primary_color)
     ax.plot(Teff2_out, L2_out, color=secondary_color)
-
 
     ax.set_xscale('log')
     ax.set_yscale('log')
@@ -240,11 +468,25 @@ def plot_HR_diagram(ax, L1_out, L2_out, Teff1_out, Teff2_out):
 
 
 
-def plot_binary_evol(bcm, file_out=None, sys_obs={}):
+def plot_binary_evol(bcm, sys_obs={}):
+    """Plots the full set of plots and kstar bar plots
 
+    Parameters
+    ----------
+    bcm : `pandas.DataFrame`
+        binary evolution data form BSE's bcm dict
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    fig : `matplotlib.figure`
+        Figure containing all the plots!
+    """
 
     fig, ax = plt.subplots(5, 1, figsize=(10,10))
-
 
     gs = gridspec.GridSpec(4, 2,
                            width_ratios=[2,2],
@@ -288,11 +530,32 @@ def plot_binary_evol(bcm, file_out=None, sys_obs={}):
     return fig
 
 
-
-
-def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, file_out=None, sys_obs={}):
+def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
     """
-    Evolve and plot binaries. Detailed docstring to be added.
+    Evolve and plot binaries as a function of time
+
+    Parameters
+    ----------
+    initC : `pandas.DataFrame`
+        initial conditions for binary to evolve
+
+    t_min : `float`
+        starting time for plot in Myr
+
+    t_max : `float`
+        ending time for plot in Myr
+
+    BSEDict : `Dict
+        Dictionary containing all BSE flags needed
+
+    sys_obs : `Dict`
+        Dictionary containing keys for binary parameters with values to plot
+        as vertical lines for each stellar component
+
+    Returns
+    -------
+    all_figs : `list`
+        list of all figures created
     """
 
     # Throw an error if user is plotting more than 10 binaries
@@ -317,7 +580,7 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, file_out=None, 
         bcm = evolve_binary(initC.iloc[i:i+1], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict)
 
         # Plot binary
-        fig = plot_binary_evol(bcm, file_out=file_out, sys_obs=sys_obs)
+        fig = plot_binary_evol(bcm, sys_obs=sys_obs)
 
         # Add to list of figs
         all_figs.append(fig)
