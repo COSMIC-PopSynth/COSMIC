@@ -21,6 +21,7 @@
 
 from cosmic import _evolvebin
 from . import utils
+from .sample import initialbinarytable
 
 from configparser import ConfigParser
 from .mp import mp as mp_utils
@@ -54,8 +55,16 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
                'SNkick_1', 'SNkick_2', 'Vsys_final', 'SNtheta_final',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
-INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                             'metallicity', 'tphysf', 'neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+# We use the list of column in the initialbinarytable function to initialize
+# the list of columns that we will send to the fortran evolv2 function.
+# we also send this in a specific order so this he3lp ensures that the list that
+# is created at the end has a consistent order
+if sys.version_info.major == 2 and sys.version_info.minor == 7:
+    INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS[:]
+else:
+    INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
+
+INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                              'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
                              'cekickflag', 'cemergeflag', 'cehestarflag',
                              'mxns', 'pts1', 'pts2', 'pts3',
@@ -63,8 +72,14 @@ INITIAL_CONDITIONS_PASS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_
                              'natal_kick_array', 'qcrit_array',
                              'beta', 'xi', 'acc2', 'epsnov',
                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag',
-                             'fprimc_array', 'dtp', 'randomseed', 
-                             'bhspinflag','bhspinmag', 'bin_num']
+                             'fprimc_array', 'dtp', 'randomseed',
+                             'bhspinflag','bhspinmag']
+
+INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
+
+# Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
@@ -201,7 +216,7 @@ class Evolve(object):
         if 'randomseed' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed',
                                                                                  np.random.randint(np.iinfo(np.int32).min,
-                                                                                 np.iinfo(np.int32).max, 
+                                                                                 np.iinfo(np.int32).max,
                                                                                  size=len(initialbinarytable))
                                                                                  )
                                                            )
@@ -270,56 +285,58 @@ class Evolve(object):
         def _evolve_single_system(f):
             try:
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                _evolvebin.windvars.neta = f[8]
-                _evolvebin.windvars.bwind = f[9]
-                _evolvebin.windvars.hewind = f[10]
-                _evolvebin.cevars.alpha1 = f[11]
-                _evolvebin.cevars.lambdaf = f[12]
-                _evolvebin.ceflags.ceflag = f[13]
-                _evolvebin.flags.tflag = f[14]
-                _evolvebin.flags.ifflag = f[15]
-                _evolvebin.flags.wdflag = f[16]
-                _evolvebin.snvars.pisn = f[17]
-                _evolvebin.flags.bhflag = f[18]
-                _evolvebin.flags.nsflag = f[19]
-                _evolvebin.ceflags.cekickflag = f[20]
-                _evolvebin.ceflags.cemergeflag = f[21]
-                _evolvebin.ceflags.cehestarflag = f[22]
-                _evolvebin.windvars.mxns = f[23]
-                _evolvebin.points.pts1 = f[24]
-                _evolvebin.points.pts2 = f[25]
-                _evolvebin.points.pts3 = f[26]
-                _evolvebin.snvars.ecsn = f[27]
-                _evolvebin.snvars.ecsn_mlow = f[28]
-                _evolvebin.snvars.aic = f[29]
-                _evolvebin.ceflags.ussn = f[30]
-                _evolvebin.snvars.sigma = f[31]
-                _evolvebin.snvars.sigmadiv = f[32]
-                _evolvebin.snvars.bhsigmafrac = f[33]
-                _evolvebin.snvars.polar_kick_angle = f[34]
-                _evolvebin.snvars.natal_kick_array = f[35]
-                _evolvebin.cevars.qcrit_array = f[36]
-                _evolvebin.windvars.beta = f[37]
-                _evolvebin.windvars.xi = f[38]
-                _evolvebin.windvars.acc2 = f[39]
-                _evolvebin.windvars.epsnov = f[40]
-                _evolvebin.windvars.eddfac = f[41]
-                _evolvebin.windvars.gamma = f[42]
-                _evolvebin.magvars.bconst = f[43]
-                _evolvebin.magvars.ck = f[44]
-                _evolvebin.flags.windflag = f[45]
-                _evolvebin.flags.qcflag = f[46]
-                _evolvebin.windvars.eddlimflag = f[47]
-                _evolvebin.tidalvars.fprimc_array = f[48]
-                _evolvebin.rand1.idum1 = f[50]
-                _evolvebin.flags.bhspinflag = f[51]
-                _evolvebin.snvars.bhspinmag = f[52]
+                _evolvebin.windvars.neta = f[37]
+                _evolvebin.windvars.bwind = f[38]
+                _evolvebin.windvars.hewind = f[39]
+                _evolvebin.cevars.alpha1 = f[40]
+                _evolvebin.cevars.lambdaf = f[41]
+                _evolvebin.ceflags.ceflag = f[42]
+                _evolvebin.flags.tflag = f[43]
+                _evolvebin.flags.ifflag = f[44]
+                _evolvebin.flags.wdflag = f[45]
+                _evolvebin.snvars.pisn = f[46]
+                _evolvebin.flags.bhflag = f[47]
+                _evolvebin.flags.nsflag = f[48]
+                _evolvebin.ceflags.cekickflag = f[49]
+                _evolvebin.ceflags.cemergeflag = f[50]
+                _evolvebin.ceflags.cehestarflag = f[51]
+                _evolvebin.windvars.mxns = f[52]
+                _evolvebin.points.pts1 = f[53]
+                _evolvebin.points.pts2 = f[54]
+                _evolvebin.points.pts3 = f[55]
+                _evolvebin.snvars.ecsn = f[56]
+                _evolvebin.snvars.ecsn_mlow = f[57]
+                _evolvebin.snvars.aic = f[58]
+                _evolvebin.ceflags.ussn = f[59]
+                _evolvebin.snvars.sigma = f[60]
+                _evolvebin.snvars.sigmadiv = f[61]
+                _evolvebin.snvars.bhsigmafrac = f[62]
+                _evolvebin.snvars.polar_kick_angle = f[63]
+                _evolvebin.snvars.natal_kick_array = f[64]
+                _evolvebin.cevars.qcrit_array = f[65]
+                _evolvebin.windvars.beta = f[66]
+                _evolvebin.windvars.xi = f[67]
+                _evolvebin.windvars.acc2 = f[68]
+                _evolvebin.windvars.epsnov = f[69]
+                _evolvebin.windvars.eddfac = f[70]
+                _evolvebin.windvars.gamma = f[71]
+                _evolvebin.magvars.bconst = f[72]
+                _evolvebin.magvars.ck = f[73]
+                _evolvebin.flags.windflag = f[74]
+                _evolvebin.flags.qcflag = f[75]
+                _evolvebin.windvars.eddlimflag = f[76]
+                _evolvebin.tidalvars.fprimc_array = f[77]
+                _evolvebin.rand1.idum1 = f[78]
+                _evolvebin.flags.bhspinflag = f[79]
+                _evolvebin.snvars.bhspinmag = f[80]
 
-                # placeholder arrays; not needed by COSMIC (or recorded in the 
-                # bcm/bpp arrays), but needed for CMC interface
-                bhspin_tmp = np.zeros(2)
-
-                [bpp, bcm] = _evolvebin.evolv2(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[49], bhspin_tmp)
+                [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[49],
+                                                [f[8],f[9]], [f[10],f[11]], [f[12],f[13]],
+                                                [f[14],f[15]], [f[16],f[17]], [f[18],f[19]],
+                                                [f[20],f[21]], [f[22],f[23]], [f[24],f[25]],
+                                                [f[26],f[27]], [f[28],f[29]], [f[30],f[31]],
+                                                [f[32],f[33]], [f[34],f[35]], f[36],
+                                                np.zeros(20),np.zeros(20))
 
                 try:
                     bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
@@ -330,8 +347,8 @@ class Evolve(object):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[53]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[53]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[81]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[81]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
