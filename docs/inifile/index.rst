@@ -745,6 +745,42 @@ sampling
     mxns=3.0
 
 .. note::
+    REMNANT SPIN FLAGS
+
+=======================  =====================================================
+``bhspinflag``           Uses different prescriptions for BH spin after formation 
+
+                            ``0`` : sets all BH spins to *bhspinmag*
+
+                            ``1`` : draws a random BH spin between 0 and bhspinmag for every BH
+
+                            ``2`` : core-mass dependent BH spin (based on `Belczynski+2017 v1 <https://arxiv.org/abs/1706.07053v1>`_)
+                         **bhspinflag = 0**
+
+``bhspinmag``            Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins 
+
+                            ``values >= 0.0`` : spin or upper limit value
+                         **bhspinmag = 0.0**
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;; REMNANT SPIN FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ; bhspinflag uses different prescriptions for BH spin after formation 
+    ; bhspinflag=0; sets all BH spins to bhspinmag
+    ; bhspinflag=1; draws a random BH spin between 0 and bhspinmag for every BH
+    ; bhspinflag=2; core-mass dependent BH spin (based on Belczynski+2017; 1706.07053, v1)
+    ; default=0 
+    bhspinflag = 0
+    
+    ; bhspinmag sets either the spin of all BHs or the upper limit of the uniform 
+    ; distribution for BH spins 
+    ; default=0.0
+    bhspinmag=0.0
+
+.. note::
 
     MASS TRANSFER FLAGS
 
@@ -792,10 +828,9 @@ sampling
     ; default=-2
     gamma=-2.0
 
-
 .. note::
 
-    MISCELLANEOUS FLAGS
+    TIDES FLAGS
 
 =======================  =====================================================
 ``tflag``                Activates tidal circularisation following 
@@ -806,6 +841,41 @@ sampling
                             ``1`` : activates tidal circularization
 
                          **tflag = 1**
+
+``fprimc_array``         controls the scaling factor for convective tides
+                         each item is set individually for its associated kstar
+                         The releveant equation is `Equation 21 of Hurley+2002 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_
+
+                            ``positive values`` : sets scaling factor of
+                            Equation 21 referenced above
+
+                         **fprimc_array = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
+                         2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
+                         2.0/21.0,2.0/21.0]**
+=======================  =====================================================
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;
+    ;;; TIDES FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;
+
+    ; tflag=1 activates tidal circularisation
+    ; default=1
+    tflag=1
+
+    ; fprimc_array controls the scaling factor for convective tides
+    ; each item is set individually for its associated kstar
+    ; The releveant equation is Equation 21 from the BSE paper
+    ; The default is to send the same coefficient (2/21) as is in the equation
+    ; for every kstar
+    fprimc_array=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
+
+.. note::
+
+    WHITE DWARF FLAGS
+
+=======================  =====================================================
 ``ifflag``               Activates the initial-final white dwarf mass relation 
                          from Han+1995 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
 
@@ -832,6 +902,32 @@ sampling
                             fraction of accreted matter
 
                          **epsnov = 0.001**
+=======================  =====================================================
+
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;; WHITE DWARF FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ; ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800
+    ; default=0
+    ifflag=0
+
+    ; wdflag > 0 uses modified-Mestel cooling for WDs
+    ; default=0
+    wdflag=0
+
+    ; epsnov is the fraction of accreted matter retained in nova eruptions
+    ; default=0.001
+    epsnov=0.001
+
+.. note::
+
+    PULSAR FLAGS
+
+=======================  =====================================================
 ``bconst``               Sets the magnetic field decay time-scale for pulsars following
                          Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
 
@@ -846,38 +942,13 @@ sampling
                             from Equation 2 to  -1 * *ck* 
 
                          **ck = -1000**
-
-``fprimc_array``         controls the scaling factor for convective tides
-                         each item is set individually for its associated kstar
-                         The releveant equation is `Equation 21 of Hurley+2002 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_
-
-                            ``positive values`` : sets scaling factor of 
-                            Equation 21 referenced above
-
-                         **fprimc_array = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]**
 =======================  =====================================================
 
 .. code-block:: ini
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;;; MISCELLANEOUS FLAGS ;;;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-    ; tflag=1 activates tidal circularisation
-    ; default=1
-    tflag=1
-
-    ; ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800
-    ; default=0
-    ifflag=0
-
-    ; wdflag > 0 uses modified-Mestel cooling for WDs
-    ; default=0
-    wdflag=0
-
-    ; epsnov is the fraction of accreted matter retained in nova eruptions
-    ; default=0.001
-    epsnov=0.001
+    ;;;;;;;;;;;;;;;;;;;
+    ;; PULSAR FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;
 
     ; bconst is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-3000
@@ -886,10 +957,3 @@ sampling
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-1000
     ck=-1000
-
-    ; fprimc_array controls the scaling factor for convective tides
-    ; each item is set individually for its associated kstar
-    ; The releveant equation is Equation 21 from the BSE paper
-    ; The default is to send the same coefficient (2/21) as is in the equation
-    ; for every kstar
-    fprimc_array=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
