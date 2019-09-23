@@ -136,7 +136,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac=binfrac), mass_singles, mass_binaries, n_singles, n_binaries
+    return InitialBinaryTable.InitialBinaries(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac=binfrac), mass_singles, mass_binaries, n_singles, n_binaries
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
                  usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size, binfrac")

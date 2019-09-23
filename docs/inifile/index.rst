@@ -18,7 +18,7 @@ Here is a link to the unstable development version of the default inifile for CO
 filters
 -------
 
-=======================  =====================================================
+=======================  ===============================================================
 ``select_final_state``   The bcm array generally returns the first and last
                          state of the binary system. Since we already
                          save the initial conditions in cosmic-pop, usually
@@ -41,7 +41,7 @@ filters
                             ``2`` : the system was disrupted before the end of 
                             its evolution
 
-=======================  =====================================================
+=======================  ===============================================================
 
 .. code-block:: ini
 
@@ -58,7 +58,7 @@ filters
 sampling
 --------
 
-=======================  =====================================================
+=======================  ===================================================================================
 ``sampling_method``      Select which models to use to generate an initial 
                          sample of binary parameters at Zero Age Main Sequence
 
@@ -77,19 +77,19 @@ sampling
 
                             ``ThinDisk`` : constant star formation over 10 Gyr
 
-                            ``ThickDisk`` : 1 Gyr burst of constant star formation 
+                            ``ThickDisk`` : 1 Gyr burst of constant star formation
                             11 Gyr in the past
 
-                            ``Bulge`` : 1 Gyr burst of constant star formation 
+                            ``Bulge`` : 1 Gyr burst of constant star formation
                             10 Gyr in the past
 
-                            ``DeltaBurst`` : single burst of star formation 13.7 
+                            ``DeltaBurst`` : single burst of star formation 13.7
                             Gyr in the past
 
-``metallicity``          Single value for the metallicity of the population 
+``metallicity``          Single value for the metallicity of the population
                          where solar metallicity is Z = 0.02
 
-=======================  =====================================================
+=======================  ===================================================================================
 
 .. code-block:: ini
 
@@ -109,7 +109,7 @@ sampling
 [convergence]
 -------------
 
-=======================  =====================================================
+=======================  ===================================================================================
 ``convergence_params``  
                          A list of parameters you would like to verify have converged
                          to a single distribution shape.
@@ -119,14 +119,14 @@ sampling
 ``convergence_filter``   Selects the stage of the evolution at which you would like
                          to check for convergence. This will filter for systems that
                          satisfy the final_kstar1 and final_kstar2 selections from
-                         the command line call of cosmic-pop 
+                         the command line call of cosmic-pop
 
                            ``formation``: computes convergence on binary properties
                            at formation with user-specified final kstars
 
                            ``1_SN``: computes convergence on binary properties
                            just before the first supernova for the population with
-                           user-specified final kstars 
+                           user-specified final kstars
 
                            ``2_SN``: computes convergence on binary properties
                            just before the second supernova for the population with
@@ -147,7 +147,7 @@ sampling
 ``match``                match provides the tolerance for the convergence calculation
                          and is calculated as match = Log\ :sub:`10` (1-convergence)
 
-=======================  =====================================================
+=======================  ===================================================================================
 
 .. code-block:: ini
 
@@ -219,18 +219,18 @@ sampling
                          decimal fractions of the time taken in that phase for
                          Main Sequence (MS) stars 
 
-                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_ 
+                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_
                          
 ``pts2``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for 
+                         decimal fractions of the time taken in that phase for
                          Giant Branch (GB, CHeB, AGB, HeGB) stars
 
                          **pts2 = 0.01** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
 ``pts3``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for 
-                         HG, HeMS stars 
+                         decimal fractions of the time taken in that phase for
+                         HG, HeMS stars
 
-                         **pts3 = 0.02** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_             
+                         **pts3 = 0.02** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
 =======================  =====================================================
 
 .. code-block:: ini
@@ -746,6 +746,44 @@ sampling
 
 .. note::
 
+    REMNANT SPIN FLAGS
+
+=======================  ===============================================================
+``bhspinflag``           Uses different prescriptions for BH spin after formation 
+
+                            ``0`` : sets all BH spins to *bhspinmag*
+
+                            ``1`` : draws a random BH spin between 0 and bhspinmag for every BH
+
+                            ``2`` : core-mass dependent BH spin (based on `Belczynski+2017 v1 <https://arxiv.org/abs/1706.07053v1>`_)
+                         **bhspinflag = 0**
+
+``bhspinmag``            Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins 
+
+                            ``values >= 0.0`` : spin or upper limit value
+                         **bhspinmag = 0.0**
+=======================  ===============================================================
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;; REMNANT SPIN FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ; bhspinflag uses different prescriptions for BH spin after formation 
+    ; bhspinflag=0; sets all BH spins to bhspinmag
+    ; bhspinflag=1; draws a random BH spin between 0 and bhspinmag for every BH
+    ; bhspinflag=2; core-mass dependent BH spin (based on Belczynski+2017; 1706.07053, v1)
+    ; default=0 
+    bhspinflag = 0
+    
+    ; bhspinmag sets either the spin of all BHs or the upper limit of the uniform 
+    ; distribution for BH spins 
+    ; default=0.0
+    bhspinmag=0.0
+
+.. note::
+
     MASS TRANSFER FLAGS
 
 =======================  =====================================================
@@ -792,20 +830,56 @@ sampling
     ; default=-2
     gamma=-2.0
 
-
 .. note::
 
-    MISCELLANEOUS FLAGS
+    TIDES FLAGS
 
 =======================  =====================================================
-``tflag``                Activates tidal circularisation following `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
+``tflag``                Activates tidal circularisation following 
+                         `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                             ``0`` : no tidal circularization
 
                             ``1`` : activates tidal circularization
 
                          **tflag = 1**
-``ifflag``               Activates the initial-final white dwarf mass relation from Han+1995 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
+
+``fprimc_array``         controls the scaling factor for convective tides
+                         each item is set individually for its associated kstar
+                         The releveant equation is `Equation 21 of Hurley+2002 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_
+
+                            ``positive values`` : sets scaling factor of
+                            Equation 21 referenced above
+
+                         **fprimc_array = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
+                         2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
+                         2.0/21.0,2.0/21.0]**
+=======================  =====================================================
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;
+    ;;; TIDES FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;
+
+    ; tflag=1 activates tidal circularisation
+    ; default=1
+    tflag=1
+
+    ; fprimc_array controls the scaling factor for convective tides
+    ; each item is set individually for its associated kstar
+    ; The releveant equation is Equation 21 from the BSE paper
+    ; The default is to send the same coefficient (2/21) as is in the equation
+    ; for every kstar
+    fprimc_array=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
+
+.. note::
+
+    WHITE DWARF FLAGS
+
+=======================  =====================================================
+``ifflag``               Activates the initial-final white dwarf mass relation 
+                         from Han+1995 `Equations 3, 4, and 5 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&link_type=ARTICLE&db_key=AST&high=#page=4>`_.
 
                             ``0`` : no modifications to BSE
 
@@ -813,7 +887,8 @@ sampling
 
                          **ifflag = 0**
 ``wdflag``               Activates an alternate cooling law found in the description 
-                         immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_ in Hurley & Shara 2003. 
+                         immediately following `Equation 1 <http://iopscience.iop.org/article/10.1086/374637/pdf#page=3>`_
+                         in Hurley & Shara 2003. 
                          Equation 1 gives the BSE default Mestel cooling law.
 
                             ``0`` : no modifications to BSE
@@ -829,6 +904,31 @@ sampling
                             fraction of accreted matter
 
                          **epsnov = 0.001**
+=======================  =====================================================
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;; WHITE DWARF FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ; ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800
+    ; default=0
+    ifflag=0
+
+    ; wdflag > 0 uses modified-Mestel cooling for WDs
+    ; default=0
+    wdflag=0
+
+    ; epsnov is the fraction of accreted matter retained in nova eruptions
+    ; default=0.001
+    epsnov=0.001
+
+.. note::
+
+    PULSAR FLAGS
+
+=======================  =====================================================
 ``bconst``               Sets the magnetic field decay time-scale for pulsars following
                          Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
 
@@ -843,38 +943,13 @@ sampling
                             from Equation 2 to  -1 * *ck* 
 
                          **ck = -1000**
-
-``fprimc_array``         controls the scaling factor for convective tides
-                         each item is set individually for its associated kstar
-                         The releveant equation is `Equation 21 of Hurley+2002 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_
-
-                            ``positive values`` : sets scaling factor of 
-                            Equation 21 referenced above
-
-                         **fprimc_array = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]**
 =======================  =====================================================
 
 .. code-block:: ini
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;;; MISCELLANEOUS FLAGS ;;;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-    ; tflag=1 activates tidal circularisation
-    ; default=1
-    tflag=1
-
-    ; ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800
-    ; default=0
-    ifflag=0
-
-    ; wdflag > 0 uses modified-Mestel cooling for WDs
-    ; default=0
-    wdflag=0
-
-    ; epsnov is the fraction of accreted matter retained in nova eruptions
-    ; default=0.001
-    epsnov=0.001
+    ;;;;;;;;;;;;;;;;;;;
+    ;; PULSAR FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;
 
     ; bconst is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-3000
@@ -883,10 +958,3 @@ sampling
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-1000
     ck=-1000
-
-    ; fprimc_array controls the scaling factor for convective tides
-    ; each item is set individually for its associated kstar
-    ; The releveant equation is Equation 21 from the BSE paper
-    ; The default is to send the same coefficient (2/21) as is in the equation
-    ; for every kstar
-    fprimc_array=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
