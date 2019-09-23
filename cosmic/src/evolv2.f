@@ -1,6 +1,8 @@
 ***
-      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ dtptmp,bhspin,bppout,bcmout)
+      SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
+     \ dtptmp,mass0,rad,lumin,massc,radc,
+     \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
+     \ bhspin,tphys,zpars,bkick,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -152,11 +154,11 @@
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
       INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
-      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
+      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
       INTEGER kstar1_bpp,kstar2_bpp
 *
       REAL*8 km,km0,tphys,tphys0,dtm0,tphys00,tphysfhold
-      REAL*8 tphysf,dtp,tsave,mass1,mass2
+      REAL*8 tphysf,dtp,tsave
       REAL*8 aj(2),aj0(2),epoch(2),tms(2),tbgb(2),tkh(2),dtmi(2)
       REAL*8 mass0(2),mass(2),massc(2),menv(2),mass00(2),mcxx(2)
       REAL*8 mass1_bpp,mass2_bpp
@@ -223,12 +225,6 @@ Cf2py intent(out) bppout,bcmout
 *
 
 *      CE2flag = 0
-      mass(1) = mass1
-      mass(2) = mass2
-
-      kstar(1) = kstar1
-      kstar(2) = kstar2
-
       kstar1_bpp = 0
       kstar2_bpp = 0
 
@@ -300,45 +296,6 @@ component.
       bppout = 0.d0
       bcmout = 0.d0
 
-      B_0(1) = 0.d0
-      B_0(2) = 0.d0
-
-      bacc(1) = 0.d0
-      bacc(2) = 0.d0
-
-      tacc(1) = 0.d0
-      tacc(2) = 0.d0
-
-      tms(1) = 0.0
-      tms(2) = 0.0
-
-      DO jj = 1,20
-         bkick(jj) = 0.0
-      ENDDO
-
-      mass0(1) = mass(1)
-      massc(1) = 0.0
-      ospin(1) = 0.0
-      epoch(1) = 0.0
-      rad(1) = 0.0
-      lumin(1) = 0.0
-      massc(1) = 0.0
-      radc(1) = 0.0
-      menv(1) = 0.0
-      renv(1) = 0.0
-      ospin(1) = 0.0
-
-      mass0(2) = mass(2)
-      massc(2) = 0.0
-      ospin(2) = 0.0
-      epoch(2) = 0.0
-      rad(2) = 0.0
-      lumin(2) = 0.0
-      massc(2) = 0.0
-      radc(2) = 0.0
-      menv(2) = 0.0
-      renv(2) = 0.0
-      ospin(2) = 0.0
 
 * set bcm kick values to 0.0 initially
       vk1_bcm = 0.d0
