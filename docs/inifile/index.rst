@@ -18,7 +18,7 @@ Here is a link to the unstable development version of the default inifile for CO
 filters
 -------
 
-=======================  =====================================================
+=======================  ===============================================================
 ``select_final_state``   The bcm array generally returns the first and last
                          state of the binary system. Since we already
                          save the initial conditions in cosmic-pop, usually
@@ -41,7 +41,7 @@ filters
                             ``2`` : the system was disrupted before the end of 
                             its evolution
 
-=======================  =====================================================
+=======================  ===============================================================
 
 .. code-block:: ini
 
@@ -58,7 +58,7 @@ filters
 sampling
 --------
 
-=======================  =====================================================
+=======================  ===================================================================================
 ``sampling_method``      Select which models to use to generate an initial 
                          sample of binary parameters at Zero Age Main Sequence
 
@@ -89,7 +89,7 @@ sampling
 ``metallicity``          Single value for the metallicity of the population
                          where solar metallicity is Z = 0.02
 
-=======================  =====================================================
+=======================  ===================================================================================
 
 .. code-block:: ini
 
@@ -109,7 +109,7 @@ sampling
 [convergence]
 -------------
 
-=======================  =====================================================
+=======================  ===================================================================================
 ``convergence_params``  
                          A list of parameters you would like to verify have converged
                          to a single distribution shape.
@@ -147,7 +147,7 @@ sampling
 ``match``                match provides the tolerance for the convergence calculation
                          and is calculated as match = Log\ :sub:`10` (1-convergence)
 
-=======================  =====================================================
+=======================  ===================================================================================
 
 .. code-block:: ini
 
@@ -745,9 +745,10 @@ sampling
     mxns=3.0
 
 .. note::
+
     REMNANT SPIN FLAGS
 
-=======================  =====================================================
+=======================  ===============================================================
 ``bhspinflag``           Uses different prescriptions for BH spin after formation 
 
                             ``0`` : sets all BH spins to *bhspinmag*
@@ -761,6 +762,7 @@ sampling
 
                             ``values >= 0.0`` : spin or upper limit value
                          **bhspinmag = 0.0**
+=======================  ===============================================================
 
 .. code-block:: ini
 
@@ -903,7 +905,6 @@ sampling
 
                          **epsnov = 0.001**
 =======================  =====================================================
-
 
 .. code-block:: ini
 
