@@ -10,23 +10,19 @@ import pandas as pd
 
 from cosmic.evolve import Evolve
 from cosmic.sample.initialbinarytable import InitialBinaryTable
+from cosmic.sample import initialbinarytable
+from cosmic import evolve
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
 
-init_conds_columns = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc', 'metallicity', 'binfrac', 'tphysf']
+init_conds_columns = initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL
 
 INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
 BCM_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bcm')
-BSEFlag_columns = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
-'cekickflag', 'cemergeflag', 'cehestarflag',
-'mxns', 'pts1', 'pts2', 'pts3',
-'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
-'beta', 'xi', 'acc2', 'epsnov',
-'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag','bhspinflag','bhspinmag']
+BSEFlag_columns = list(set(evolve.INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL)) 
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 BSEDict['natal_kick_array'] = [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
