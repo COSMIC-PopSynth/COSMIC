@@ -54,7 +54,7 @@ geo_mass = G/c**2
 
 class InitialBinaryTable():
     @classmethod
-    def SingleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
+    def InitialBinaries(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
         """Create single binary
 
         Parameters
@@ -82,7 +82,7 @@ class InitialBinaryTable():
 
         Returns
         -------
-        SingleBinary : DataFrame
+        InitialBinaries : DataFrame
             Single binary initial conditions
 
         """
@@ -95,50 +95,6 @@ class InitialBinaryTable():
                                           'porb', 'ecc', 'metallicity','binfrac',
                                           'tphysf'])
 
-        return bin_dat
-
-    @classmethod
-    def MultipleBinary(cls, m1, m2, porb, ecc, tphysf, kstar1, kstar2, metallicity, **kwargs):
-        """Create multiple binaries
-
-        Parameters
-        ----------
-        m1 : float
-            Primary mass [Msun]
-        m2 : float
-            Secondary mass [Msun]
-        porb : float
-            Orbital period [days]
-        ecc : float
-            Eccentricity
-        tphysf : float
-            Time to evolve the binary [Myr]
-        kstar1 : array
-            0-14 Initial stellar type of the larger object;
-            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-        kstar2 : array
-            0-14 Initial stellar type of the smaller object;
-            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-        metallicity : float
-            Metallicity of the binaries; Z_sun = 0.02
-        binfrac : float
-            System-specific probability of the primary star being in a binary
-
-        Returns
-        -------
-        bin_dat : DataFrame
-            Contains initial conditions of multiple binaries
-        sampled_mass : int
-            Total mass of population conatining the initial binaries [Msun]
-        """
-        binfrac = kwargs.pop('binfrac', np.ones(np.array(m1).size))
-        bin_dat = pd.DataFrame(np.vstack([kstar1, kstar2,
-                                          m1, m2, porb, ecc,
-                                          metallicity, binfrac, tphysf]).T,
-                               columns = ['kstar_1', 'kstar_2',
-                                          'mass1_binary', 'mass2_binary',
-                                          'porb', 'ecc', 'metallicity', 'binfrac',
-                                          'tphysf'])
         return bin_dat
 
     @classmethod
