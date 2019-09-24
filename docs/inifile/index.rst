@@ -116,6 +116,12 @@ sampling
                          Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
                          ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
 
+``convergence_limits``   Specifies limits for parameters included in the convergence
+                         params list. If specified, the lower and upper limit must 
+                         be specified:  
+
+                            ``convergence_limits = {'mass_1' : [5, 10], 'sep' : [0, 10]}``
+
 ``convergence_filter``   Selects the stage of the evolution at which you would like
                          to check for convergence. This will filter for systems that
                          satisfy the final_kstar1 and final_kstar2 selections from
@@ -157,6 +163,10 @@ sampling
     ; Options include mass_1, mass_2, sep, porb, ecc, massc_1, massc_2
     ; rad_1, rad_2
     convergence_params = [mass_1,mass_2,porb,ecc]
+
+    ; convergence_limits is a dictionary that can contain limits for convergence params
+    ; convergence_limits = {"mass_1" : [0, 20], "sep" : [0,5000]}
+    convergence_limits = {}
 
     ; formation computes convergence on binary properties
     ; at formation with user-specified final kstars 
