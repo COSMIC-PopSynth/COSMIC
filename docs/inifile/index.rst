@@ -968,3 +968,29 @@ sampling
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
     ; default=-1000
     ck=-1000
+
+.. note::
+
+    MIXING VARIABLES
+
+=======================  =====================================================
+``rejuv_fac``            Sets the mixing factor in main sequence star collisions. 
+                         This is hard coded to 0.1 in the original BSE release
+                         and in Equation 80 of `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
+                         but can lead to extended main sequence lifetimes in some cases.
+
+                             ``positive values`` : sets the mixing factor
+
+                         **rejuv_fac = 1.0**
+=======================  =====================================================
+
+.. code-block:: ini
+
+    ;;;;;;;;;;;;;;;;;;;;;;;
+    ;; MIXING VARIABLES ;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;
+
+    ; rejuv_fac allows different mixing factors in Equation 80 from the BSE
+    ; paper. This was originally hard coded to 0.1, which leads massive 
+    ; stars to potentially have extended main sequence lifetimes. 
+    rejuv_fac=1.0
