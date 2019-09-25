@@ -102,6 +102,19 @@ Each of the parameters in bpp or bcm can be accessed in the usual way for DataFr
     In [10]: bpp[['mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'evol_type']]
 
 
+You can use the ``utils.convert_kstar_evol_type`` function to convert the 
+``kstar_1``, ``kstar_2``, and ``evol_type`` columns from integers to strings 
+that describe each int:
+
+.. ipython::
+
+    In [11]: from cosmic.utils import convert_kstar_evol_type
+
+    In [12]: convert_kstar_evol_type(bpp)
+
+Note that ``utils.convert_kstar_evol_type`` is only applicable to the bpp
+array. 
+
 You can also use the built in plotting function to see how the system evolves:
 
 .. ipython::
