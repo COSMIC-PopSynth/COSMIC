@@ -73,7 +73,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'beta', 'xi', 'acc2', 'epsnov',
                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
-                             'bhspinflag','bhspinmag']
+                             'bhspinflag','bhspinmag', 'rejuv_fac']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
@@ -329,6 +329,7 @@ class Evolve(object):
                 _evolvebin.rand1.idum1 = f[79]
                 _evolvebin.flags.bhspinflag = f[80]
                 _evolvebin.snvars.bhspinmag = f[81]
+                _evolvebin.mixvars.rejuv_fac = f[82]
 
                 [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[78],
                                                 [f[8],f[9]], [f[10],f[11]], [f[12],f[13]],
@@ -347,8 +348,8 @@ class Evolve(object):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[82]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[82]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[83]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[83]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))

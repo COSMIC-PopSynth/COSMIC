@@ -34,6 +34,8 @@
       COMMON /SNVARS/ pisn,ecsn,ecsn_mlow,bhspinmag
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
+      REAL*8 rejuv_fac
+      COMMON /MIXVARS/ rejuv_fac
 *
       INTEGER*8 id1_pass,id2_pass
       REAL*8 merger
