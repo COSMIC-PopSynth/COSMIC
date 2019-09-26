@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS)
+      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -11,7 +11,7 @@
 *
 *
       INTEGER KS(2),I1,I2,K1,K2,KW,ICASE
-      REAL*8 M0(2),M(2),AJ(2),ZPARS(20)
+      REAL*8 M0(2),M(2),AJ(2),ZPARS(20),bhspin(2)
       REAL*8 TSCLS(20),LUMS(10),GB(10),TMS1,TMS2,TMS3,TN
       REAL*8 M01,M02,M03,M1,M2,M3,AGE1,AGE2,AGE3,MC3,MCH
       PARAMETER(MCH=1.44D0)
@@ -107,7 +107,9 @@ C      ENDIF
             M03 = M1
             M3 = M1
          ENDIF
-         IF(ICASE.EQ.13.AND.M3.GT.MXNS) KW = 14
+         IF(ICASE.EQ.13.AND.M3.GT.MXNS)then
+            KW = 14
+         ENDIF
       ELSEIF(ICASE.EQ.15)THEN
          M3 = 0.D0
       ELSEIF(ICASE.GT.100)THEN
@@ -124,6 +126,14 @@ C      ENDIF
 *
 * Put the result in *1.
 *
+* CLR - If the secondary is a BH and the primary is not, then copy the
+* spin of the secondary into the primary
+
+* If you ever want to consider spin-up in combined stars, this is the
+* palce
+      IF(KS(2).EQ.14)then
+          bhspin(1) = bhspin(2)
+      ENDIF
       KS(1) = KW
       KS(2) = 15
       M(1) = M3
