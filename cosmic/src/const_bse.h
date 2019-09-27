@@ -37,9 +37,9 @@
       REAL*8 rejuv_fac
       COMMON /MIXVARS/ rejuv_fac
 *
-      INTEGER*8 id1_pass,id2_pass
+      INTEGER*8 id1_pass,id2_pass,using_cmc
       REAL*8 merger
-      COMMON /CMCPASS/ merger, id1_pass,id2_pass
+      COMMON /CMCPASS/ merger,id1_pass,id2_pass,using_cmc
       REAL*8 pts1,pts2,pts3
       COMMON /POINTS/ pts1,pts2,pts3
       REAL*8 dmmax,drmax
