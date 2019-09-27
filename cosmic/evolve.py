@@ -155,6 +155,11 @@ class Evolve(object):
             timestep size in Myr for bcm output where tphysf
             is total evolution time in Myr
 
+        n_per_block : `int`, optional, default: -1
+            number of systems to evolve in a block with 
+            _evolve_multi_system, to allow larger multiprocessing
+            queues and reduced overhead. If less than 1 use _evolve_single_system
+
         Returns
         -------
         output_bpp : DataFrame
@@ -168,6 +173,7 @@ class Evolve(object):
         """
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
+        n_per_block = kwargs.pop('n_per_block',-1)
 
         # There are three ways to tell evolve and thus the fortran
         # what you want all the flags and other BSE specific
@@ -359,9 +365,100 @@ class Evolve(object):
             except Exception as e:
                 raise
 
-        # evolve sysyems
-        output = mp_utils.multiprocess_with_queues(
-            nproc, _evolve_single_system, initial_conditions, raise_exceptions=False)
+        #define multiprocessing method to process the systems in batches 
+        def _evolve_multi_system(f):
+            try:
+                res_bcm = np.zeros(f.shape[0],dtype=object)
+                res_bpp = np.zeros(f.shape[0],dtype=object)
+                for i in range(0,f.shape[0]):
+                    # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
+                    _evolvebin.windvars.neta = f[i,37]
+                    _evolvebin.windvars.bwind = f[i,38]
+                    _evolvebin.windvars.hewind = f[i,39]
+                    _evolvebin.cevars.alpha1 = f[i,40]
+                    _evolvebin.cevars.lambdaf = f[i,41]
+                    _evolvebin.ceflags.ceflag = f[i,42]
+                    _evolvebin.flags.tflag = f[i,43]
+                    _evolvebin.flags.ifflag = f[i,44]
+                    _evolvebin.flags.wdflag = f[i,45]
+                    _evolvebin.snvars.pisn = f[i,46]
+                    _evolvebin.flags.bhflag = f[i,47]
+                    _evolvebin.flags.nsflag = f[i,48]
+                    _evolvebin.ceflags.cekickflag = f[i,49]
+                    _evolvebin.ceflags.cemergeflag = f[i,50]
+                    _evolvebin.ceflags.cehestarflag = f[i,51]
+                    _evolvebin.windvars.mxns = f[i,52]
+                    _evolvebin.points.pts1 = f[i,53]
+                    _evolvebin.points.pts2 = f[i,54]
+                    _evolvebin.points.pts3 = f[i,55]
+                    _evolvebin.snvars.ecsn = f[i,56]
+                    _evolvebin.snvars.ecsn_mlow = f[i,57]
+                    _evolvebin.snvars.aic = f[i,58]
+                    _evolvebin.ceflags.ussn = f[i,59]
+                    _evolvebin.snvars.sigma = f[i,60]
+                    _evolvebin.snvars.sigmadiv = f[i,61]
+                    _evolvebin.snvars.bhsigmafrac = f[i,62]
+                    _evolvebin.snvars.polar_kick_angle = f[i,63]
+                    _evolvebin.snvars.natal_kick_array = f[i,64]
+                    _evolvebin.cevars.qcrit_array = f[i,65]
+                    _evolvebin.windvars.beta = f[i,66]
+                    _evolvebin.windvars.xi = f[i,67]
+                    _evolvebin.windvars.acc2 = f[i,68]
+                    _evolvebin.windvars.epsnov = f[i,69]
+                    _evolvebin.windvars.eddfac = f[i,70]
+                    _evolvebin.windvars.gamma = f[i,71]
+                    _evolvebin.magvars.bconst = f[i,72]
+                    _evolvebin.magvars.ck = f[i,73]
+                    _evolvebin.flags.windflag = f[i,74]
+                    _evolvebin.flags.qcflag = f[i,75]
+                    _evolvebin.windvars.eddlimflag = f[i,76]
+                    _evolvebin.tidalvars.fprimc_array = f[i,77]
+                    _evolvebin.rand1.idum1 = f[i,79]
+                    _evolvebin.flags.bhspinflag = f[i,80]
+                    _evolvebin.snvars.bhspinmag = f[i,81]
+                    _evolvebin.mixvars.rejuv_fac = f[i,82]
+                    [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,78],
+                                                    [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
+                                                    [f[i,14],f[i,15]], [f[i,16],f[i,17]], [f[i,18],f[i,19]],
+                                                    [f[i,20],f[i,21]], [f[i,22],f[i,23]], [f[i,24],f[i,25]],
+                                                    [f[i,26],f[i,27]], [f[i,28],f[i,29]], [f[i,30],f[i,31]],
+                                                    [f[i,32],f[i,33]], [f[i,34],f[i,35]], f[i,36],
+                                                    np.zeros(20),np.zeros(20))
+                    try:
+                        idx1 = np.argmax(bpp[:,0] == -1)
+                        idx2 = np.argmax(bcm[:,0] == -1)
+                        bpp = bpp[:idx1]
+                        bcm = bcm[:idx2]
+                    except IndexError:
+                        bpp = bpp[:np.argwhere(bpp[:,0] > 0)[0][0]]
+                        bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
+                        raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
+                                       .format(f[i,2], f[i,3], f[i,4], f[i,5], f[i,7], f[i,6]))
+                    bpp_bin_numbers = np.atleast_2d(np.array([f[i,83]] * len(bpp))).T
+                    bcm_bin_numbers = np.atleast_2d(np.array([f[i,83]] * len(bcm))).T
+
+                    res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
+                    res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
+
+                return f, np.vstack(res_bpp), np.vstack(res_bcm)
+
+            except Exception as e:
+                raise
+
+        # evolve systems
+        if n_per_block > 0:
+            n_tot = initial_conditions.shape[0]
+            initial_conditions_blocked = []
+            itr_block = 0
+            while itr_block < n_tot:
+                itr_next = np.min([n_tot,itr_block+n_per_block])
+                initial_conditions_blocked.append(initial_conditions[itr_block:itr_next,:])
+                itr_block = itr_next
+            output = mp_utils.multiprocess_with_queues(
+                nproc, _evolve_multi_system, initial_conditions_blocked, raise_exceptions=False)
+        else:
+            output = mp_utils.multiprocess_with_queues(
+                nproc, _evolve_single_system, initial_conditions, raise_exceptions=False)
 
         output = np.array(output)
         bpp_arrays = np.vstack(output[:, 1])
