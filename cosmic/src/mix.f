@@ -78,9 +78,13 @@ C      ENDIF
 *
       IF(ICASE.EQ.1)THEN
 *       Specify new age based on complete mixing.
+*       The above line is ~supsicious~ and probably the 0.1
+*       factor is more likely to be over mixing than complete
+*       mixing. We will now make it a parameter so that it can
+*       be partial mixing.
          IF(K1.EQ.7) KW = 7
          CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS)
-         AGE3 = 0.1d0*TMS3*(AGE1*M1/TMS1 + AGE2*M2/TMS2)/M3
+         AGE3 = REJUV_FAC*TMS3*(AGE1*M1/TMS1 + AGE2*M2/TMS2)/M3
       ELSEIF(ICASE.EQ.3.OR.ICASE.EQ.6.OR.ICASE.EQ.9)THEN
          MC3 = M1
          CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3)
