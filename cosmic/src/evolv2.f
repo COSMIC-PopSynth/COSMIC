@@ -266,7 +266,7 @@ Cf2py intent(out) bppout,bcmout
 * Note, here startrack method does not use a better integration scheme (yet) but simply
 * follows similar set up to startrack (including initial vrot, using roche-lobe check
 * at periastron, and circularisation and synchronisation at start of MT).
-      Kconst = 2.5d-52
+      Kconst = 2.5d-49
       Bbot = 5e+7 !100.d0 or ~d+07.
       b_mdot_lim = -1.0e-11 !limiting accretion induced field decay with mdot as a proxy for
 *                           accretion temperature and number of impurities.
