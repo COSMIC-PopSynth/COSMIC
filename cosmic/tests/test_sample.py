@@ -15,6 +15,7 @@ SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_KROUPA93 = 39.253472063203404
+TOTAL_SAMPLED_MASS_KROUPA01 = 28.708454104214034
 TOTAL_SAMPLED_MASS_SALPETER55 = 22.575833208553195
 TOTAL_SECONDARY_MASS = 16.15470927770034
 N_BINARY_SELECT = 85
@@ -43,6 +44,12 @@ class TestSample(unittest2.TestCase):
         # Check that the sample_primary function samples mass correctly
         a_0, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa93', size=100)
         self.assertEqual(np.sum(a_0), TOTAL_SAMPLED_MASS_KROUPA93)
+
+    def test_sample_primary_kroupa01(self):
+        np.random.seed(2)
+        # Check that the sample_primary function samples mass correctly
+        a_0, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100)
+        self.assertEqual(np.sum(a_0), TOTAL_SAMPLED_MASS_KROUPA01)
 
     def test_sample_primary_salpeter55(self):
         np.random.seed(2)
