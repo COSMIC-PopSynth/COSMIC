@@ -49,7 +49,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
         Int or list of final kstar2
 
     primary_model : `str`
-        Model to sample primary mass; choices include: kroupa93, kroupa01 salpeter55
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
 
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform
