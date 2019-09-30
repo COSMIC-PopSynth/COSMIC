@@ -1851,7 +1851,7 @@ component.
 
          if(kstar(j1).eq.2)then
             qc = 4.d0
-         elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+         elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
             qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
          elseif(kstar(j1).eq.7)then
             qc = 3.0d0
@@ -1872,7 +1872,7 @@ component.
 *
          if(kstar(j1).eq.2)then
             qc = 4.d0
-         elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+         elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
             qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
          elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
             qc = 0.784d0
@@ -1891,7 +1891,7 @@ component.
          if(kstar(j2).lt.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = (1.67d0-zpars(7)+
      &               2.d0*(massc(j1)/mass(j1))**5)/2.13d0
             elseif(kstar(j1).eq.8)then
@@ -1906,7 +1906,7 @@ component.
          elseif(kstar(j2).ge.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.7619d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = 1.1494d0
             elseif(kstar(j1).eq.8)then
                qc = 4.7619d0
@@ -1929,7 +1929,7 @@ component.
          if(kstar(j2).lt.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = 0.362 +
      &              1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
             elseif(kstar(j1).eq.8)then
@@ -1944,7 +1944,7 @@ component.
          elseif(kstar(j2).ge.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.7619d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = 1.1494d0
             elseif(kstar(j1).eq.8)then
                qc = 4.7619d0
