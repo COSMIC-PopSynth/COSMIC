@@ -737,19 +737,19 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
-                        if(mcbagb.ge.27.69d0.and.mcbagb.le.54.48d0)then
-                           polyfit = -4.30343374d5
-     &                            + 9.02795937d4*mcbagb
-     &                            - 8.22480314d3*mcbagb**2d0
-     &                            + 4.25048530d2*mcbagb**3d0
-     &                            - 1.36291200d1*mcbagb**4d0
-     &                            + 2.77684136d-1*mcbagb**5d0
-     &                            - 3.51104067d-3*mcbagb**6d0
-     &                            + 2.51918414d-5*mcbagb**7d0
-     &                            - 7.85424404d-8*mcbagb**8d0
+                        if(mcbagb.ge.31.99d0.and.mcbagb.le.61.10d0)then
+                           polyfit = -6.29429263d5
+     &                            + 1.15957797d5*mcbagb
+     &                            - 9.28332577d3*mcbagb**2d0
+     &                            + 4.21856189d2*mcbagb**3d0
+     &                            - 1.19019565d1*mcbagb**4d0
+     &                            + 2.13499267d-1*mcbagb**5d0
+     &                            - 2.37814255d-3*mcbagb**6d0
+     &                            + 1.50408118d-5*mcbagb**7d0
+     &                            - 4.13587235d-8*mcbagb**8d0
                            mt = polyfit
                            pisn_track(kidx)=6
-                        elseif(mcbagb.gt.54.48d0.and.
+                        elseif(mcbagb.gt.61.10d0.and.
      &                         mcbagb.lt.113.29d0)then
                            mt = 0.d0
                            kw = 15
@@ -1093,19 +1093,20 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * Fit (8th order polynomial) to Table 1 in Marchant+2018.
                      elseif(pisn.eq.-2)then
-                        if(mc.ge.27.69d0.and.mc.le.54.48d0)then
-                           polyfit = -4.30343374d5
-     &                            + 9.02795937d4*mc
-     &                            - 8.22480314d3*mc**2d0
-     &                            + 4.25048530d2*mc**3d0
-     &                            - 1.36291200d1*mc**4d0
-     &                            + 2.77684136d-1*mc**5d0
-     &                            - 3.51104067d-3*mc**6d0
-     &                            + 2.51918414d-5*mc**7d0
-     &                            - 7.85424404d-8*mc**8d0
+                        if(mc.ge.31.99d0.and.mc.le.61.10d0)then
+                           polyfit = -6.29429263d5
+     &                            + 1.15957797d5*mc
+     &                            - 9.28332577d3*mc**2d0
+     &                            + 4.21856189d2*mc**3d0
+     &                            - 1.19019565d1*mc**4d0
+     &                            + 2.13499267d-1*mc**5d0
+     &                            - 2.37814255d-3*mc**6d0
+     &                            + 1.50408118d-5*mc**7d0
+     &                            - 4.13587235d-8*mc**8d0
                            mt = polyfit
                            pisn_track(kidx)=6
-                        elseif(mc.gt.54.48d0.and.mc.lt.113.29d0)then
+                        elseif(mc.gt.61.10d0.and.
+     &                         mc.lt.113.29d0)then
                            mt = 0.d0
                            kw = 15
                            pisn_track(kidx)=7
