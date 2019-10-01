@@ -1345,7 +1345,7 @@ component.
      &                       massc(1),massc(2),rad(1),rad(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(k-3),fallback,bkick,
+     &                   rad(3-k),fallback,bkick,
      &                   disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
