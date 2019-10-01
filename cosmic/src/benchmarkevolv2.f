@@ -32,7 +32,7 @@
         zpars = 0.0; bkick = 0.0
 
         neta = 0.5; bwind = 0.0; hewind = 1.0
-        alpha1 = 1.0; lambdaf = 1.0; ceflag = 0
+        alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
         pisn = 45.0; bhflag = 0; nsflag = 3
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
@@ -69,7 +69,7 @@
         zpars = 0.d0; bkick = 0.d0
 
         neta = 0.5; bwind = 0.0; hewind = 1.0
-        alpha1 = 1.0; lambdaf = 1.0; ceflag = 0
+        alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
         pisn = 45.0; bhflag = 0; nsflag = 3
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
