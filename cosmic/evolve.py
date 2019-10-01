@@ -336,6 +336,7 @@ class Evolve(object):
                 _evolvebin.flags.bhspinflag = f[80]
                 _evolvebin.snvars.bhspinmag = f[81]
                 _evolvebin.mixvars.rejuv_fac = f[82]
+                _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[78],
                                                 [f[8],f[9]], [f[10],f[11]], [f[12],f[13]],
