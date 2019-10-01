@@ -587,7 +587,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      if(mc.le.2.5d0)then
                         fallback = 0.2d0 / (mt - mcx) 
                         mt = mcx + 0.2d0
-                        if(ecsnp.gt.0.d0.and.mcbagb.le.ecsnp)mt=mt-0.2d0
+                        if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)mt=mt-0.2d0
                      elseif(mc.le.6.d0)then
                         fallback = (0.286d0*mc - 0.514d0) / (mt - mcx)
                         mt = mcx + 0.286d0*mc - 0.514d0
