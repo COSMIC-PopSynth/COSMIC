@@ -65,10 +65,12 @@
       massc1_bpp = 0.d0
       massc2_bpp = 0.d0
 
-      tms1_bpp = tms(1)
-      tms2_bpp = tms(2)
-      rad1_bpp = rad(1)
-      rad2_bpp = rad(2)
+      if(using_cmc.eq.0) then
+         tms1_bpp = tms(1)
+         tms2_bpp = tms(2)
+         rad1_bpp = rad(1)
+         rad2_bpp = rad(2)
+      endif
 
 *
 * Common envelope evolution - entered only when KW1 = 2, 3, 4, 5, 6, 8 or 9.
@@ -300,12 +302,14 @@
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
-               CALL writebpp(jp,tphys,evolve_type,
+               if(using_cmc.eq.0)then
+                   CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,bkick,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
+               endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,
      &                   disrupt)
@@ -576,12 +580,14 @@
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
-               CALL writebpp(jp,tphys,evolve_type,
+               if(using_cmc.eq.0)then
+                   CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,bkick,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
+               endif
 * USSN: if ussn flag is set, have reduced kicks for stripped He stars (SN=8)
                if(KW1.eq.13.and.KW2.ge.13.and.ussn.eq.1)then
                   if(KW1i.ge.7.and.KW1i.le.9)then
@@ -717,12 +723,14 @@
                endif
                TB = (SEP_postCE/AURSUN)*
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M1)))
-               CALL writebpp(jp,tphys,evolve_type,
+               if(using_cmc.eq.0)then
+                   CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,bkick,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
+               endif
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,bkick,
      &                   disrupt)
@@ -920,12 +928,14 @@
                 aj2_bpp = AJ2
             endif
             TB = 0.d0
-            CALL writebpp(jp,tphys,evolve_type,
+            if(using_cmc.eq.0)then
+                CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,bkick,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp)
+            endif
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
      &                0.d0,fallback,bkick,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV

@@ -1,6 +1,6 @@
 ***
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
-     \ dtptmp,mass0,rad,lumin,massc,radc,
+     \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,bkick,bppout,bcmout)
       IMPLICIT NONE
@@ -210,15 +210,40 @@
       REAL*8 bppout(1000,23)
       REAL*8 bcmout(50000,42)
 *
-      REAL*8 dtptmp
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
-Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
-Cf2py intent(out) bppout,bcmout
-      dtp = dtptmp
 
-      CALL instar
+Cf2py intent(in) kstar
+Cf2py intent(in) mass
+Cf2py intent(in) tb
+Cf2py intent(in) ecc
+Cf2py intent(in) z
+Cf2py intent(in) tphysf
+Cf2py intent(in) dtp
+Cf2py intent(in) mass0
+Cf2py intent(in) rad
+Cf2py intent(in) lumin
+Cf2py intent(in) massc
+Cf2py intent(in) radc
+Cf2py intent(in) menv
+Cf2py intent(in) renv
+Cf2py intent(in) ospin
+Cf2py intent(in) B_0
+Cf2py intent(in) bacc
+Cf2py intent(in) tacc
+Cf2py intent(in) epoch
+Cf2py intent(in) tms
+Cf2py intent(in) bhspin
+Cf2py intent(in) tphys
+Cf2py intent(in) zpars
+Cf2py intent(in) bkick
+Cf2py intent(out) bppout
+Cf2py intent(out) bcmout
+
+      if(using_cmc.eq.0)then
+              CALL instar
+      endif
 
 *
 * Save the initial state.
@@ -290,11 +315,13 @@ component.
 * Initialize the parameters.
 *
 
-      tphys = 0.d0
-      bpp = 0.d0
-      bcm = 0.d0
-      bppout = 0.d0
-      bcmout = 0.d0
+      if(using_cmc.eq.0)then
+          tphys = 0.d0
+          bpp = 0.d0
+          bcm = 0.d0
+          bppout = 0.d0
+          bcmout = 0.d0
+      endif
 
 
 * set bcm kick values to 0.0 initially
@@ -308,12 +335,14 @@ component.
 * Set the seed for the random number generator.
 *
 *      idum1 = INT(sep*100)
-      if(idum1.gt.0) idum1 = -idum1
+      if(idum1.gt.0.and.using_cmc.eq.0) idum1 = -idum1
 
 *
 * Set the collision matrix.
 *
-      CALL zcnsts(z,zpars)
+      if(using_cmc.eq.0)then
+          CALL zcnsts(z,zpars)
+      endif
 
       kmin = 1
       kmax = 2
@@ -365,8 +394,8 @@ component.
          sep = 1.0d+10
          oorb = 0.d0
          jorb = 0.d0
-         bhspin(1) = 0.d0
-         bhspin(2) = 0.d0
+         if(kstar(1).ne.14.d0.or.using_cmc.eq.0) bhspin(1) = 0.d0
+         if(kstar(2).ne.14.d0.or.using_cmc.eq.0) bhspin(2) = 0.d0
          if(ospin(1).lt.0.0) ospin(1) = 1.0d-10
          if(ospin(2).lt.0.0) ospin(2) = 1.0d-10
          q(1) = 1.0d+10
@@ -443,7 +472,11 @@ component.
 *
 * On the first entry the previous timestep is zero to prevent mass loss.
 *
-      dtm = 1.d0
+      if(using_cmc.eq.1)then
+          dtm = 0.d0
+      else
+          dtm = 1.d0
+      endif
       delet = 0.d0
       djorb = 0.d0
       bss = .false.
@@ -1310,7 +1343,7 @@ component.
      &                       sep,tb,ecc,rrl1,rrl2,bkick,
      &                       aj(1),aj(2),tms(1),tms(2),
      &                       massc(1),massc(2),rad(1),rad(2))
-            
+
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                   rad(k-3),fallback,bkick,
      &                   disrupt)
@@ -1839,7 +1872,7 @@ component.
 
          if(kstar(j1).eq.2)then
             qc = 4.d0
-         elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+         elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
             qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
          elseif(kstar(j1).eq.7)then
             qc = 3.0d0
@@ -1860,7 +1893,7 @@ component.
 *
          if(kstar(j1).eq.2)then
             qc = 4.d0
-         elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+         elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
             qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
          elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
             qc = 0.784d0
@@ -1873,13 +1906,13 @@ component.
          endif
       elseif(qcflag.eq.2)then
 *
-* Use the binary_c prescriptions taken from Claeys+2014 Table 2 
+* Use the binary_c prescriptions taken from Claeys+2014 Table 2
 * If q1 = m_donor/m_acc > qc then common envelope
 *
          if(kstar(j2).lt.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = (1.67d0-zpars(7)+
      &               2.d0*(massc(j1)/mass(j1))**5)/2.13d0
             elseif(kstar(j1).eq.8)then
@@ -1894,7 +1927,7 @@ component.
          elseif(kstar(j2).ge.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.7619d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = 1.1494d0
             elseif(kstar(j1).eq.8)then
                qc = 4.7619d0
@@ -1911,13 +1944,13 @@ component.
       elseif(qcflag.eq.3)then
 *
 * Use the binary_c prescriptions taken from Claeys+2014 Table 2
-* but w/ Hjellming & Webbing for GB/AGB 
+* but w/ Hjellming & Webbing for GB/AGB
 * If q1 = m_donor/m_acc > qc then common envelope
 *
          if(kstar(j2).lt.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = 0.362 +
      &              1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
             elseif(kstar(j1).eq.8)then
@@ -1932,7 +1965,7 @@ component.
          elseif(kstar(j2).ge.10)then
             if(kstar(j1).eq.2)then
                 qc = 4.7619d0
-            elseif(kstar(j1).ge.3.or.kstar(j1).le.6)then
+            elseif(kstar(j1).ge.3.and.kstar(j1).le.6)then
                qc = 1.1494d0
             elseif(kstar(j1).eq.8)then
                qc = 4.7619d0
@@ -1955,7 +1988,7 @@ component.
       if(qc_fixed.ne.0)then
          qc = qc_fixed
       endif
-      
+
       if(kstar(j1).eq.0.and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
@@ -2046,7 +2079,7 @@ component.
      &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
      &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
-         
+
 *
 * Common-envelope evolution.
 *
@@ -3704,8 +3737,10 @@ component.
       endif
       bcm(ip+1,1) = -1.0
       bpp(jp+1,1) = -1.0
-      bppout = bpp
-      bcmout = bcm
+      if(using_cmc.eq.0)then
+          bppout = bpp
+          bcmout = bcm
+      endif
 *
 
       END SUBROUTINE evolv2
