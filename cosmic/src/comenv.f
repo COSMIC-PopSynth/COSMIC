@@ -97,11 +97,7 @@
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      IF(LAMBDAF.EQ.1.0)THEN
-         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
-      ELSEIF(LAMBDAF.LT.0.d0)THEN
-         LAMB1 = -1.0*LAMBDAF
-      ENDIF
+      LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
       KW = KW2
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
@@ -119,11 +115,7 @@
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
          RZAMS = RZAMSF(M02)
-         IF(LAMBDAF.EQ.1.0)THEN
-            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
-         ELSEIF(LAMBDAF.LT.0.d0)THEN
-            LAMB2 = -1.0*LAMBDAF
-         ENDIF
+         LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
          EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
 * Calculate the initial orbital energy
