@@ -49,7 +49,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
         Int or list of final kstar2
 
     primary_model : `str`
-        Model to sample primary mass; choices include: kroupa93, salpeter55
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
 
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform
@@ -165,6 +165,9 @@ class Sample(object):
         salpter55 follows
         `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
         between 0.08 and 150 Msun
+        kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
+        between 0.08 and 100 Msun
+
 
         Parameters
         ----------
@@ -175,8 +178,13 @@ class Sample(object):
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             valid for masses between 0.1 and 100 Msun
 
+
             salpter55 follows
             `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+            valid for masses between 0.1 and 100 Msun
+
+            kroupa01 follows Kroupa (2001), normalization comes from
+            `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
 
             Default kroupa93
@@ -207,6 +215,26 @@ class Sample(object):
             a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
             a_0[midIdx] = rndm(a=0.50, b=1.0, g=-1.2, size=len(midIdx))
             a_0[highIdx] = rndm(a=1.0, b=150.0, g=-1.7, size=len(highIdx))
+
+            total_sampled_mass += np.sum(a_0)
+
+            return a_0, total_sampled_mass
+
+        elif primary_model=='kroupa01':
+            total_sampled_mass = 0
+            multiplier = 1
+            a_0 = np.random.uniform(0.0, 1, size)
+
+            low_cutoff = 0.37148816884988606
+            high_cutoff = 0.8496015751162523
+
+            lowIdx, = np.where(a_0 <= low_cutoff)
+            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
+            highIdx, = np.where(a_0 >= high_cutoff)
+
+            a_0[lowIdx] = rndm(a=0.01, b=0.08, g=0.7, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(midIdx))
+            a_0[highIdx] = rndm(a=0.5, b=100.0, g=-1.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
