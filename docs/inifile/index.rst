@@ -430,7 +430,7 @@ sampling
 
                             ``2`` : uses post-CE mass and sep
 
-                         **cekickflag = 0**
+                         **cekickflag = 2**
 
 ``cemergeflag``          Determines whether stars that begin a CE 
                          without a core-envelope boundary automatically lead to 
