@@ -214,11 +214,32 @@
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
 
-Cf2py intent(in) kstar,mass,tb,ecc,z,tphysf,dtp,
-Cf2py intent(in) mass0,rad,lumin,massc,radc,
-Cf2py intent(in) menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-Cf2py intent(in) bhspin,tphys,zpars,bkick
-Cf2py intent(out) bppout,bcmout
+Cf2py intent(in) kstar
+Cf2py intent(in) mass
+Cf2py intent(in) tb
+Cf2py intent(in) ecc
+Cf2py intent(in) z
+Cf2py intent(in) tphysf
+Cf2py intent(in) dtp
+Cf2py intent(in) mass0
+Cf2py intent(in) rad
+Cf2py intent(in) lumin
+Cf2py intent(in) massc
+Cf2py intent(in) radc
+Cf2py intent(in) menv
+Cf2py intent(in) renv
+Cf2py intent(in) ospin
+Cf2py intent(in) B_0
+Cf2py intent(in) bacc
+Cf2py intent(in) tacc
+Cf2py intent(in) epoch
+Cf2py intent(in) tms
+Cf2py intent(in) bhspin
+Cf2py intent(in) tphys
+Cf2py intent(in) zpars
+Cf2py intent(in) bkick
+Cf2py intent(out) bppout
+Cf2py intent(out) bcmout
 
       if(using_cmc.eq.0)then
               CALL instar
