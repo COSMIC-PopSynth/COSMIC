@@ -773,9 +773,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if BSEDict[flag] <= 0:
             raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='lambdaf'
-    if flag in BSEDict.keys():
-        if (BSEDict[flag]>0) and (BSEDict[flag]!=1):
-            raise ValueError("'{0:s}' needs to either be set to 1 for variable lambda or a negative number for fixed lambda (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    # --- all numbers are valid
     flag='ceflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
