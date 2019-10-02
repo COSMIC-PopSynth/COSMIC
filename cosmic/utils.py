@@ -919,6 +919,14 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
             raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ST_cr':
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ST_tide':
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     return
 
 def check_initial_conditions(initial_binary_table):
