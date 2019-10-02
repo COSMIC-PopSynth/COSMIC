@@ -400,12 +400,12 @@ sampling
                          The initial binding energy of the stellar envelope 
                          goes like 1 / :math:`{\lambda}`. See `Equation 69 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=11>`_.
 
-                            ``1.0`` : uses variable lambda prescription detailed 
+                            ``positive values`` : uses variable lambda prescription detailed 
                             in appendix of `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
 
                             ``negative values`` : fixes :math:`{\lambda}` to a value of -1.0* *lambdaf*
 
-                         **lambdaf = 1.0**
+                         **lambdaf = 0.5**
 
 ``ceflag``               Selects the `de Kool 1990 <https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract>`_ 
                          model to set the initial orbital energy using the 
@@ -494,10 +494,10 @@ sampling
     alpha1 = 1.0
 
     ; lambdaf is the binding energy factor for common envelope evolution
-    ; lambdaf=1.0 uses variable lambda prescription in appendix of Claeys+2014
+    ; lambdaf>0.0 uses variable lambda prescription in appendix of Claeys+2014
     ; lambdaf<0 uses fixes lambda to a value of -1.0*lambdaf
-    ; default=1.0
-    lambdaf = 1.0
+    ; default=0.5
+    lambdaf = 0.5
 
     ; ceflag=1 used the method from de Kool 1990 for setting the initial orbital energy
     ; ceflag=0 does not use this method (uses the core mass to calculate initial orbital energy)
@@ -996,6 +996,17 @@ sampling
                              ``positive values`` : sets the mixing factor
 
                          **rejuv_fac = 1.0**
+``rejuvflag``            Sets whether to use the orginal prescription for mixing 
+                         of main-sequence stars (based on equation 80 of `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_)
+                         or whether to use the main-sequence lifetimes of the two stars 
+                         (instead of the full lifetime, as is the BSE default). 
+                         
+                         
+                            ``0`` : no modifications to BSE
+
+                            ``1`` : modified mixing times 
+
+                         **rejuvflag = 0**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -1008,3 +1019,9 @@ sampling
     ; paper. This was originally hard coded to 0.1, which leads massive 
     ; stars to potentially have extended main sequence lifetimes. 
     rejuv_fac=1.0
+
+    ; rejuvflag toggles between the original BSE prescription for MS mixing and 
+    ; lifetimes of stars (equation 80) and a more correct version that uses only the 
+    ; MS lifetime of stars (flag 1)
+    ; default=1
+    rejuvflag=1
