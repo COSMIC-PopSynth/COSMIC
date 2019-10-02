@@ -996,6 +996,17 @@ sampling
                              ``positive values`` : sets the mixing factor
 
                          **rejuv_fac = 1.0**
+``rejuvflag``            Sets whether to use the orginal prescription for mixing 
+                         of main-sequence stars (based on equation 80 of `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_)
+                         or whether to use the main-sequence lifetimes of the two stars 
+                         (instead of the full lifetime, as is the BSE default). 
+                         
+                         
+                            ``0`` : no modifications to BSE
+
+                            ``1`` : modified mixing times 
+
+                         **rejuvflag = 0**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -1008,3 +1019,9 @@ sampling
     ; paper. This was originally hard coded to 0.1, which leads massive 
     ; stars to potentially have extended main sequence lifetimes. 
     rejuv_fac=1.0
+
+    ; rejuvflag toggles between the original BSE prescription for MS mixing and 
+    ; lifetimes of stars (equation 80) and a more correct version that uses only the 
+    ; MS lifetime of stars (flag 1)
+    ; default=1
+    rejuvflag=1
