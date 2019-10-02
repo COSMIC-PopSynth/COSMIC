@@ -181,7 +181,7 @@
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
-      INTEGER pulsar,bdecayfac,htpmb,ST_cr,ST_tide,eddlim
+      INTEGER pulsar
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
       REAL*8 fallback,sigmahold
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)

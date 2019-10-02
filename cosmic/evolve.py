@@ -74,7 +74,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck', 
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
-                             'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb'
+                             'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
                              'ST_cr', 'ST_tide']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
@@ -328,7 +328,7 @@ class Evolve(object):
                 _evolvebin.windvars.epsnov = f[69]
                 _evolvebin.windvars.eddfac = f[70]
                 _evolvebin.windvars.gamma = f[71]
-                _evolvebin.magvars.bdecayfac = f[72]
+                _evolvebin.flags.bdecayfac = f[72]
                 _evolvebin.magvars.bconst = f[73]
                 _evolvebin.magvars.ck = f[74]
                 _evolvebin.flags.windflag = f[75]
@@ -415,7 +415,7 @@ class Evolve(object):
                     _evolvebin.windvars.epsnov = f[i,69]
                     _evolvebin.windvars.eddfac = f[i,70]
                     _evolvebin.windvars.gamma = f[i,71]
-                    _evolvebin.magvars.bdecayfac = f[72]
+                    _evolvebin.flags.bdecayfac = f[72]
                     _evolvebin.magvars.bconst = f[73]
                     _evolvebin.magvars.ck = f[74]
                     _evolvebin.flags.windflag = f[75]
