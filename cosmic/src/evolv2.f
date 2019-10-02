@@ -274,6 +274,7 @@ Cf2py intent(out) bcmout
 * value for bcm[ii,38] which tracks merger types; only set when binstate is 1
 * the logic is to combine kstar values of merged objects. so 1313 or 0809.
       mergertype = -1
+
 * PDK
       pulsar = 1
       bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
@@ -1144,7 +1145,7 @@ component.
                endif
             endif
 * Update NS magnetic field owing to accretion, as a function of mass accreted. PK.
-            if(kstar(k).eq.13.and.pulsar.eq.1)then
+            if(kstar(k).eq.13.and.pulsar.gt.0)then
                if(dms(k).lt.0.d0)then !negative dms is mass gained.
 * When propeller ev. include .not.prop here...
                   b_mdot = dms(k)/dt
