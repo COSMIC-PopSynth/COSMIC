@@ -73,7 +73,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'beta', 'xi', 'acc2', 'epsnov',
                              'eddfac', 'gamma', 'bconst', 'ck', 'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
-                             'bhspinflag','bhspinmag', 'rejuv_fac']
+                             'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
@@ -336,6 +336,7 @@ class Evolve(object):
                 _evolvebin.flags.bhspinflag = f[80]
                 _evolvebin.snvars.bhspinmag = f[81]
                 _evolvebin.mixvars.rejuv_fac = f[82]
+                _evolvebin.mixvars.rejuvflag = f[83]
                 _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[78],
@@ -418,6 +419,7 @@ class Evolve(object):
                     _evolvebin.flags.bhspinflag = f[i,80]
                     _evolvebin.snvars.bhspinmag = f[i,81]
                     _evolvebin.mixvars.rejuv_fac = f[i,82]
+                    _evolvebin.flags.rejuvflag = f[83]
                     [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,78],
                                                     [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
                                                     [f[i,14],f[i,15]], [f[i,16],f[i,17]], [f[i,18],f[i,19]],
