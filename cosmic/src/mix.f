@@ -92,11 +92,11 @@ C      ENDIF
          IF(K1.EQ.7) KW = 7
          CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS)
          IF(REJUVFLAG.EQ.0)THEN
-                 AGE3 = REJUV_FAC*TMS3*(AGE1*M1/TMS1 + AGE2*M2/TMS2)/M3
+             AGE3 = REJUV_FAC*TMS3*(AGE1*M1/TMS1 + AGE2*M2/TMS2)/M3
          ELSEIF(REJUVFLAG.EQ.1)THEN
-                 M_CORE_BGB_3 = GB(9)
-                 HE_3_current = AGE1*M_CORE_BGB_1/TMS1 + AGE2*M_CORE_BGB_2/TMS2
-                 AGE3 = REJUV_FAC*TMS3*He_3_current/M_CORE_BGB_3
+             M_CORE_BGB_3 = GB(9)
+             HE_3_current =AGE1*M_CORE_BGB_1/TMS1+AGE2*M_CORE_BGB_2/TMS2
+             AGE3 = REJUV_FAC*TMS3*He_3_current/M_CORE_BGB_3
          ENDIF
       ELSEIF(ICASE.EQ.3.OR.ICASE.EQ.6.OR.ICASE.EQ.9)THEN
          MC3 = M1
