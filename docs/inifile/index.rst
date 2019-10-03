@@ -243,7 +243,8 @@ sampling
                          decimal fractions of the time taken in that phase for
                          Main Sequence (MS) stars 
 
-                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_
+                         **pts1 = 0.05** for non-mass M < 20 solar mass
+                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_ for massive stars
                          
 ``pts2``                 determines the timesteps chosen in each evolution phase as
                          decimal fractions of the time taken in that phase for
@@ -269,9 +270,9 @@ sampling
     ;dtp = 1.0
 
     ; pts1,pts2,pts3 determine the timesteps chosen in each
-    ; evolution phase as decimal fractions of the time taken in that phase:
-    ;                 pts1 - MS                  (default=0.001, see Banerjee+ 2019)
-    pts1=0.001
+    ;                 pts1 - MS                  (default=0.05) 
+    ; (For massive stars default=0.001, see Banerjee+ 2019)
+    pts1=0.05
     ;                 pts2 - GB, CHeB, AGB, HeGB (default=0.01)
     pts2=0.01
     ;                 pts3 - HG, HeMS            (default=0.02)
@@ -321,7 +322,7 @@ sampling
                          **bwind = 0, inactive for single**
 ``hewind``               Helium star mass loss parameter: 10\ :sup:`-13` *hewind* L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_.
 
-                         **hewind = 1.0**
+                         **hewind = 0.5**
 ``beta``                 Wind velocity factor: v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
 
                             ``negative value`` : StarTrack (`Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_)
@@ -368,8 +369,8 @@ sampling
 
     ; hewind is a helium star mass loss factor, between 0 and 1
     ; only applies if windflag=0, otherwise it is overwritten
-    ; default=1.0
-    hewind = 1.0
+    ; default=0.5
+    hewind = 0.5
 
     ; beta is wind velocity factor: proportional to vwind^2
     ; beta<0: follows StarTrack 2008; beta=0.125: stock BSE
@@ -742,7 +743,7 @@ sampling
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
-                         **nsflag = 4**
+                         **nsflag = 3**
 ``mxns``                 Sets the boundary between the maximum NS mass
                          and the minimum BH mass
 
@@ -935,7 +936,7 @@ sampling
 
                             ``1`` : activates modified cooling law
 
-                         **wdflag = 0**
+                         **wdflag = 1**
 ``epsnov``               Fraction of accreted matter retained in a nova eruption.
                          This is relevant for accretion onto degenerate objects; 
                          see Section 2.6.6.2 in `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
@@ -957,8 +958,8 @@ sampling
     ifflag=0
 
     ; wdflag > 0 uses modified-Mestel cooling for WDs
-    ; default=0
-    wdflag=0
+    ; default=1
+    wdflag=1
 
     ; epsnov is the fraction of accreted matter retained in nova eruptions
     ; default=0.001
@@ -1052,8 +1053,8 @@ sampling
     ; rejuvflag toggles between the original BSE prescription for MS mixing and 
     ; lifetimes of stars (equation 80) and a more correct version that uses only the 
     ; MS lifetime of stars (flag 1)
-    ; default=1
-    rejuvflag=1
+    ; default=0
+    rejuvflag=0
 
 .. note::
 
