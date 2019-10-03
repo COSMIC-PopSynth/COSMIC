@@ -3,7 +3,7 @@
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
      &                  bkick,formation1,formation2,
-     &                  ST_tide,bhspin1,bhspin2,binstate,mergertype,
+     &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -23,7 +23,6 @@
       INTEGER KW1,KW2,KW,KW1i,KW2i,snp
       INTEGER star1,star2
       INTEGER binstate,mergertype
-      INTEGER ST_tide
 *
       REAL*8 M01,M1,MC1,AJ1,JSPIN1,R1,L1,K21
       REAL*8 M02,M2,MC2,AJ2,JSPIN2,R2,L2,K22,MC22
@@ -88,7 +87,7 @@
       KW = KW1
       CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
-     &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
+     &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &            bhspin1,1)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
@@ -101,7 +100,7 @@
       KW = KW2
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
-     &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
+     &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &            bhspin2,2)
       OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
@@ -213,7 +212,7 @@
 
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
-     &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
+     &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &                  bhspin1,1)
             IF(KW1.GE.13)THEN
                formation1 = 1
@@ -492,7 +491,7 @@
 
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
-     &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,ST_tide,
+     &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &                  bhspin1,1)
             IF(KW1.GE.13)THEN
                formation1 = 1
@@ -633,7 +632,7 @@
 
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
-     &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,ST_tide,
+     &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &                  bhspin2,2)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 1
@@ -845,7 +844,7 @@
          KW2i = KW2
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
-     &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,ST_tide,
+     &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,
      &               bhspin1,1)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
