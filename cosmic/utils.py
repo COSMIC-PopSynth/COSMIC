@@ -906,7 +906,30 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
         if len(BSEDict[flag]) != 16:
             raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
-
+    flag='rejuv_fac'
+    if flag in BSEDict.keys():
+        if ((BSEDict[flag] > 1.0) or (BSEDict[flag] < 0.0)):
+            raise ValueError("'{0:s}' must be between 0 and 1 (you set it to '[{1:d}]')".format(flag, *BSEDict[flag]))
+    flag='rejuv_flag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='htpmb'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bdecayfac'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ST_cr'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ST_tide'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     return
 
 def check_initial_conditions(initial_binary_table):

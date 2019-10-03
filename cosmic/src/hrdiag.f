@@ -1,6 +1,6 @@
 ***
       SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
-     &                  r,lum,kw,mc,rc,menv,renv,k2,ST_tide,
+     &                  r,lum,kw,mc,rc,menv,renv,k2,
      &                  bhspin,kidx)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -24,7 +24,6 @@
 *
 *
       integer kw,kwp,kidx
-      INTEGER ST_tide
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
       real*8 bhspin

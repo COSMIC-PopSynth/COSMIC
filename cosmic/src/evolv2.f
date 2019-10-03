@@ -181,11 +181,11 @@
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
-      INTEGER pulsar,bdecayfac,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
+      INTEGER pulsar
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
       REAL*8 fallback,sigmahold
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
-      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
+      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
@@ -274,26 +274,20 @@ Cf2py intent(out) bcmout
 * value for bcm[ii,38] which tracks merger types; only set when binstate is 1
 * the logic is to combine kstar values of merged objects. so 1313 or 0809.
       mergertype = -1
+*Captures original sigma so after ECSN we can reset it.
+      sigmahold = sigma
+*memory for wind mass loss factor
+      betahold = beta
+
+** SET PULSAR VALUES HERE**
 * PDK
-      pulsar = 1
-      bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
-      wdwdedd = 0 !Have not introduced yet but will. if set to 1 forces WD dynamical MT to be limited by eddington rate.
-      eddlim = 1 !Have not introduced yet but will.if = 0 then BSE version, only H limit, else StarTrack version.
-      sigmahold = sigma !Captures original sigma so after ECSN we can reset it.
-      betahold = beta !memory for wind mass loss factor.
-      htpmb = 1 !zero = htpmb, 1 = Ivanova & Taam 2002 method which kicks in later than the standard
-      ST_cr = 1 !sets which convective/radiative boundary to use, 0=old, 1=startrack.
-      ST_tide = 0 !sets which tidal method to use. 0=old, 1=startrack
-* Note, here startrack method does not use a better integration scheme (yet) but simply
-* follows similar set up to startrack (including initial vrot, using roche-lobe check
-* at periastron, and circularisation and synchronisation at start of MT).
+      pulsar = 1 ! allows for pulsar physics; not a flag since we heart pulsars
       Kconst = 2.5d-49
       Bbot = 5e+7 !100.d0 or ~d+07.
       b_mdot_lim = -1.0e-11 !limiting accretion induced field decay with mdot as a proxy for
 *                           accretion temperature and number of impurities.
       xihold = xi
-      xip = 1 !1 is on, 0 is off; for modified NS wind ang. mom. accretion.
-      diskxip = 0.d0 !sets if diskxi is to be used (>0; 0.01) and is min diskxi value.
+      xip = 1 !Modifies NS wind ang. mom. accretion.
       formation(1) = 0 !helps determine formation channel of interesting systems.
       formation(2) = 0
       pisn_track(1) = 0 !tracks whether a PISN occurred for each
@@ -1144,7 +1138,7 @@ component.
                endif
             endif
 * Update NS magnetic field owing to accretion, as a function of mass accreted. PK.
-            if(kstar(k).eq.13.and.pulsar.eq.1)then
+            if(kstar(k).eq.13.and.pulsar.gt.0)then
                if(dms(k).lt.0.d0)then !negative dms is mass gained.
 * When propeller ev. include .not.prop here...
                   b_mdot = dms(k)/dt
