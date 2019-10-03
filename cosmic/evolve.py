@@ -314,7 +314,7 @@ class Evolve(object):
                 _evolvebin.points.pts3 = f[55]
                 _evolvebin.snvars.ecsn = f[56]
                 _evolvebin.snvars.ecsn_mlow = f[57]
-                _evolvebin.snvars.aic = f[58]
+                _evolvebin.flags.aic = f[58]
                 _evolvebin.ceflags.ussn = f[59]
                 _evolvebin.snvars.sigma = f[60]
                 _evolvebin.snvars.sigmadiv = f[61]
@@ -341,8 +341,8 @@ class Evolve(object):
                 _evolvebin.mixvars.rejuv_fac = f[83]
                 _evolvebin.flags.rejuvflag = f[84]
                 _evolvebin.flags.htpmb = f[85]
-                _evolvebin.flags.ST_cr = f[86]
-                _evolvebin.flags.ST_tide = f[87]
+                _evolvebin.flags.st_cr = f[86]
+                _evolvebin.flags.st_tide = f[87]
                 _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[79],
@@ -401,7 +401,7 @@ class Evolve(object):
                     _evolvebin.points.pts3 = f[i,55]
                     _evolvebin.snvars.ecsn = f[i,56]
                     _evolvebin.snvars.ecsn_mlow = f[i,57]
-                    _evolvebin.snvars.aic = f[i,58]
+                    _evolvebin.flags.aic = f[i,58]
                     _evolvebin.ceflags.ussn = f[i,59]
                     _evolvebin.snvars.sigma = f[i,60]
                     _evolvebin.snvars.sigmadiv = f[i,61]
@@ -428,8 +428,8 @@ class Evolve(object):
                     _evolvebin.mixvars.rejuv_fac = f[i,83]
                     _evolvebin.flags.rejuvflag = f[i,84]
                     _evolvebin.flags.htpmb = f[i,85]
-                    _evolvebin.flags.ST_cr = f[i,86]
-                    _evolvebin.flags.ST_tide = f[i,87]
+                    _evolvebin.flags.st_cr = f[i,86]
+                    _evolvebin.flags.st_tide = f[i,87]
                     _evolvebin.cmcpass.using_cmc = 0 
                     [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,79],
                                                     [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
