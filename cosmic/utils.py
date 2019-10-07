@@ -955,24 +955,27 @@ def check_initial_conditions(initial_binary_table):
     mass1 = np.asarray(initial_binary_table['mass1_binary'])
     mass2 = np.asarray(initial_binary_table['mass2_binary'])
 
-    rzams1 = rzamsf(mass1)
-    rzams2 = rzamsf(mass2)
+    if np.all(mass2 == 0.0):
+        return
+    else:
+        rzams1 = rzamsf(mass1)
+        rzams2 = rzamsf(mass2)
 
-    # assume some time step in order to calculate sep
-    yeardy = 365.24
-    aursun = 214.95
-    tb = np.asarray(initial_binary_table['porb'])/yeardy
-    sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
+        # assume some time step in order to calculate sep
+        yeardy = 365.24
+        aursun = 214.95
+        tb = np.asarray(initial_binary_table['porb'])/yeardy
+        sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
 
-    rol1 = calc_Roche_radius(mass1, mass2, sep)
-    rol2 = calc_Roche_radius(mass2, mass1, sep)
+        rol1 = calc_Roche_radius(mass1, mass2, sep)
+        rol2 = calc_Roche_radius(mass2, mass1, sep)
 
-    # check for a ZAMS that starts in RFOL
-    mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
-    if mask.any():
-        warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
+        # check for a ZAMS that starts in RFOL
+        mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
+        if mask.any():
+            warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
 
-    return
+        return
 
 def convert_kstar_evol_type(bpp):
     """Provides way to convert integer values to their string counterpart
