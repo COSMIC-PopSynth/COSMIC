@@ -269,7 +269,6 @@ sampling
     ;dtp = 1.0
 
     ; pts1,pts2,pts3 determine the timesteps chosen in each
-    ; evolution phase as decimal fractions of the time taken in that phase:
     ;                 pts1 - MS                  (default=0.001, see Banerjee+ 2019)
     pts1=0.001
     ;                 pts2 - GB, CHeB, AGB, HeGB (default=0.01)
@@ -321,14 +320,14 @@ sampling
                          **bwind = 0, inactive for single**
 ``hewind``               Helium star mass loss parameter: 10\ :sup:`-13` *hewind* L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_.
 
-                         **hewind = 1.0**
+                         **hewind = 0.5**
 ``beta``                 Wind velocity factor: v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
 
                             ``negative value`` : StarTrack (`Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_)
 
                             ``positive value`` : supplies :math:`{\beta}`\ :sub:`w` to `Equation 9 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
 
-                         **beta = -1.0**
+                         **beta = 0.125**
 ``xi``                   Wind accretion efficiency factor, which gives the fraction 
                          of angular momentum lost via winds from the primary that 
                          transfers to the spin angular momentum of the companion. 
@@ -336,7 +335,7 @@ sampling
 
                             ``positive value`` : supplies :math:`{\mu}`\ :sub:`w` in `Equation 11 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_ 
 
-                         **xi = 0.5**
+                         **xi = 1.0**
 ``acc2``                 Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to *acc2*. See `Equation 6 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=2>`_.
 
                             ``positive value`` : supplies :math:`{\alpha}`\ :sub:`w` in `Equation 6 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=2>`_
@@ -368,17 +367,17 @@ sampling
 
     ; hewind is a helium star mass loss factor, between 0 and 1
     ; only applies if windflag=0, otherwise it is overwritten
-    ; default=1.0
-    hewind = 1.0
+    ; default=0.5
+    hewind = 0.5
 
     ; beta is wind velocity factor: proportional to vwind^2
     ; beta<0: follows StarTrack 2008; beta=0.125: stock BSE
-    ; default=-1.0
-    beta=-1.0
+    ; default=0.125
+    beta=0.125
 
     ; xi is the wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion
-    ; default=0.5
-    xi=0.5
+    ; default=1.0
+    xi=1.0
 
     ; acc2 sets the Bondi-Hoyle wind accretion factor onto companion
     ; default=1.5
@@ -742,13 +741,13 @@ sampling
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
-                         **nsflag = 4**
+                         **nsflag = 3**
 ``mxns``                 Sets the boundary between the maximum NS mass
                          and the minimum BH mass
 
                             ``positive values`` : sets the NS/BH mass bounary
 
-                         **mxns = 3.0**
+                         **mxns = 2.5**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -765,8 +764,8 @@ sampling
     nsflag=3
 
     ; mxns sets the maximum NS mass
-    ; default=3.0
-    mxns=3.0
+    ; default=2.5
+    mxns=2.5
 
 .. note::
 
@@ -834,7 +833,7 @@ sampling
                             ``>0`` : assumes that the lost material takes away a 
                             fraction *gamma* of the orbital angular momentum
 
-                         **gamma = -2**
+                         **gamma = -1.0**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -851,8 +850,8 @@ sampling
     ; gamma=-2: assumes material is lost from the system as if it is a wind from the secondary (for super-Eddington mass transfer rates)
     ; gamma=-1: assumes the lost material carries with is the specific angular momentum of the primary
     ; gamma>0: assumes that the lost material take away a fraction (gamma) of the orbital angular momentum
-    ; default=-2
-    gamma=-2.0
+    ; default=-1
+    gamma=-1.0
 
 .. note::
 
@@ -935,7 +934,7 @@ sampling
 
                             ``1`` : activates modified cooling law
 
-                         **wdflag = 0**
+                         **wdflag = 1**
 ``epsnov``               Fraction of accreted matter retained in a nova eruption.
                          This is relevant for accretion onto degenerate objects; 
                          see Section 2.6.6.2 in `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
@@ -957,8 +956,8 @@ sampling
     ifflag=0
 
     ; wdflag > 0 uses modified-Mestel cooling for WDs
-    ; default=0
-    wdflag=0
+    ; default=1
+    wdflag=1
 
     ; epsnov is the fraction of accreted matter retained in nova eruptions
     ; default=0.001
@@ -1027,8 +1026,9 @@ sampling
                          **rejuv_fac = 1.0**
 ``rejuvflag``            Sets whether to use the orginal prescription for mixing 
                          of main-sequence stars (based on equation 80 of `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_)
-                         or whether to use the main-sequence lifetimes of the two stars 
-                         (instead of the full lifetime, as is the BSE default). 
+                         or whether to use the ratio of the pre-merger He core
+                         mass at the base of the giant branch to the merger product's
+                         He core mass at the base of the giant branch
                          
                          
                             ``0`` : no modifications to BSE
@@ -1050,10 +1050,12 @@ sampling
     rejuv_fac=1.0
 
     ; rejuvflag toggles between the original BSE prescription for MS mixing and 
-    ; lifetimes of stars (equation 80) and a more correct version that uses only the 
-    ; MS lifetime of stars (flag 1)
-    ; default=1
-    rejuvflag=1
+    ; lifetimes of stars based on the mass of the MS stars (equation 80) or a
+    ; prescription that uses the ratio of helium core mass of the pre-merger stars
+    ; at the base of the first ascent of the giant branch to determine relative to the
+    ; helium core mass of the merger product at the base of the giant branch
+    ; default=0
+    rejuvflag=0
 
 .. note::
 
