@@ -243,8 +243,7 @@ sampling
                          decimal fractions of the time taken in that phase for
                          Main Sequence (MS) stars 
 
-                         **pts1 = 0.05** for non-mass M < 20 solar mass
-                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_ for massive stars
+                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_
                          
 ``pts2``                 determines the timesteps chosen in each evolution phase as
                          decimal fractions of the time taken in that phase for
@@ -270,9 +269,8 @@ sampling
     ;dtp = 1.0
 
     ; pts1,pts2,pts3 determine the timesteps chosen in each
-    ;                 pts1 - MS                  (default=0.05) 
-    ; (For massive stars default=0.001, see Banerjee+ 2019)
-    pts1=0.05
+    ;                 pts1 - MS                  (default=0.001, see Banerjee+ 2019)
+    pts1=0.001
     ;                 pts2 - GB, CHeB, AGB, HeGB (default=0.01)
     pts2=0.01
     ;                 pts3 - HG, HeMS            (default=0.02)
