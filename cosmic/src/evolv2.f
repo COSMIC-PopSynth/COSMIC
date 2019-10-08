@@ -3704,6 +3704,7 @@ component.
 
       elseif((kstar(1).eq.15.and.kstar(2).eq.15))then
          tphys = tphysf
+         evolve_type = 10.0
          goto 135
       endif
       tphysfhold = tphysf
