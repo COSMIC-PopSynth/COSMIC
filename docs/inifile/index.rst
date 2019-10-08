@@ -1028,8 +1028,9 @@ sampling
                          **rejuv_fac = 1.0**
 ``rejuvflag``            Sets whether to use the orginal prescription for mixing 
                          of main-sequence stars (based on equation 80 of `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_)
-                         or whether to use the main-sequence lifetimes of the two stars 
-                         (instead of the full lifetime, as is the BSE default). 
+                         or whether to use the ratio of the pre-merger He core
+                         mass at the base of the giant branch to the merger product's
+                         He core mass at the base of the giant branch
                          
                          
                             ``0`` : no modifications to BSE
@@ -1051,8 +1052,10 @@ sampling
     rejuv_fac=1.0
 
     ; rejuvflag toggles between the original BSE prescription for MS mixing and 
-    ; lifetimes of stars (equation 80) and a more correct version that uses only the 
-    ; MS lifetime of stars (flag 1)
+    ; lifetimes of stars based on the mass of the MS stars (equation 80) or a
+    ; prescription that uses the ratio of helium core mass of the pre-merger stars
+    ; at the base of the first ascent of the giant branch to determine relative to the
+    ; helium core mass of the merger product at the base of the giant branch
     ; default=0
     rejuvflag=0
 
