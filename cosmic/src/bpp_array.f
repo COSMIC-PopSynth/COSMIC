@@ -20,7 +20,7 @@
         REAL*8 yeardy
         PARAMETER(yeardy=365.24d0)
 
-        jp = MIN(80,jp + 1)
+        jp = MIN(900,jp + 1)
         bpp(jp,1) = tphys
         bpp(jp,2) = mass1
         bpp(jp,3) = mass2
