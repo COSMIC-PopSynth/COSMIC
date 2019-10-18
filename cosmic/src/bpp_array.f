@@ -3,7 +3,11 @@
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,bkick,
      &                      aj1,aj2,tms1,tms2,
-     &                      massc1,massc2,rad1,rad2)
+     &                      massc1,massc2,rad1,rad2,
+     &                      mass0_1,mass0_2,lumin1,lumin2,
+     &                      radc1,radc2,menv1,menv2,renv1,renv2,
+     &                      ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
+     &                      tacc1,tacc2,epoch1,epoch2,bhspin1,bhspin2)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
 *
@@ -15,6 +19,10 @@
         REAL*8 bkick(20),mass1,mass2
         REAL*8 evolve_type,sep,tb,ecc,tphys,rrl1,rrl2
         REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
+        REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
+        REAL*8 menv1,menv2,renv1,renv2,ospin1,ospin2
+        REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
+        REAL*8 bhspin1,bhspin2
         INTEGER jp,jj
         INTEGER kstar1,kstar2
         REAL*8 yeardy
@@ -84,6 +92,28 @@
         bpp(jp,21) = massc2
         bpp(jp,22) = rad1
         bpp(jp,23) = rad2
+        bpp(jp,24) = mass0_1
+        bpp(jp,25) = mass0_2
+        bpp(jp,26) = lumin1
+        bpp(jp,27) = lumin2
+        bpp(jp,28) = radc1
+        bpp(jp,29) = radc2
+        bpp(jp,30) = menv1
+        bpp(jp,31) = menv2
+        bpp(jp,32) = renv1
+        bpp(jp,33) = renv2
+        bpp(jp,34) = ospin1
+        bpp(jp,35) = ospin2
+        bpp(jp,36) = b_0_1
+        bpp(jp,37) = b_0_2
+        bpp(jp,38) = bacc1
+        bpp(jp,39) = bacc2
+        bpp(jp,40) = tacc1
+        bpp(jp,41) = tacc2
+        bpp(jp,42) = epoch1
+        bpp(jp,43) = epoch2
+        bpp(jp,44) = bhspin1
+        bpp(jp,45) = bhspin2
         END
 
 ***
