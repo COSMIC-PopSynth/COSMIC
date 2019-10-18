@@ -207,7 +207,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,23)
+      REAL*8 bppout(1000,45)
       REAL*8 bcmout(50000,42)
 *
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
@@ -593,7 +593,12 @@ component.
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2))
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin(1),bhspin(2))
                DO jj = 13,20
                    bkick(jj) = 0.0
                ENDDO
@@ -1310,7 +1315,12 @@ component.
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2))
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,bkick,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -1334,7 +1344,12 @@ component.
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,bkick,
      &                       aj(1),aj(2),tms(1),tms(2),
-     &                       massc(1),massc(2),rad(1),rad(2))
+     &                       massc(1),massc(2),rad(1),rad(2),
+     &                       mass0(1),mass0(2),lumin(1),lumin(2),
+     &                       radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                       renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                       epoch(2),bhspin(1),bhspin(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                   rad(3-k),fallback,bkick,
@@ -1502,7 +1517,12 @@ component.
      &                    mass(1),mass(2),kstar(1),kstar(2),sep,
      &                    tb,ecc,rrl1,rrl2,bkick,
      &                    aj(1),aj(2),tms(1),tms(2),
-     &                    massc(1),massc(2),rad(1),rad(2))
+     &                    massc(1),massc(2),rad(1),rad(2),
+     &                    mass0(1),mass0(2),lumin(1),lumin(2),
+     &                    radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                    renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                    epoch(2),bhspin(1),bhspin(2))
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
@@ -1543,7 +1563,12 @@ component.
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,bkick,
      &                  aj(1),aj(2),tms(1),tms(2),
-     &                  massc(1),massc(2),rad(1),rad(2))
+     &                  massc(1),massc(2),rad(1),rad(2),
+     &                  mass0(1),mass0(2),lumin(1),lumin(2),
+     &                  radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                  renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                  epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1711,7 +1736,12 @@ component.
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,bkick,
      &                 aj(1),aj(2),tms(1),tms(2),
-     &                 massc(1),massc(2),rad(1),rad(2))
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1776,7 +1806,12 @@ component.
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,bkick,
      &              aj(1),aj(2),tms(1),tms(2),
-     &              massc(1),massc(2),rad(1),rad(2))
+     &              massc(1),massc(2),rad(1),rad(2),
+     &              mass0(1),mass0(2),lumin(1),lumin(2),
+     &              radc(1),radc(2),menv(1),menv(2),renv(1),
+     &              renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &              epoch(2),bhspin(1),bhspin(2))
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -2090,7 +2125,12 @@ component.
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,bkick,
      &                 aj(1),aj(2),tms(1),tms(2),
-     &                 massc(1),massc(2),rad(1),rad(2))
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
 
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
@@ -2144,7 +2184,12 @@ component.
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,bkick,
      &                 aj(1),aj(2),tms(1),tms(2),
-     &                 massc(1),massc(2),rad(1),rad(2))
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3091,7 +3136,12 @@ component.
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,bkick,
      &                    aj(1),aj(2),tms(1),tms(2),
-     &                    massc(1),massc(2),rad(1),rad(2))
+     &                    massc(1),massc(2),rad(1),rad(2),
+     &                    mass0(1),mass0(2),lumin(1),lumin(2),
+     &                    radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                    renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &                rad(3-k),fallback,bkick,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -3185,7 +3235,12 @@ component.
      &                    mass(1),mass(2),kstar(1),kstar(2),sep,
      &                    tb,ecc,rrl1,rrl2,bkick,
      &                    aj(1),aj(2),tms(1),tms(2),
-     &                    massc(1),massc(2),rad(1),rad(2))
+     &                    massc(1),massc(2),rad(1),rad(2),
+     &                    mass0(1),mass0(2),lumin(1),lumin(2),
+     &                    radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                    renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                    epoch(2),bhspin(1),bhspin(2))
             DO jj = 13,20
                bkick(jj) = 0.0
             ENDDO
@@ -3285,7 +3340,12 @@ component.
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,bkick,
      &                 aj(1),aj(2),tms(1),tms(2),
-     &                 massc(1),massc(2),rad(1),rad(2))
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3313,7 +3373,12 @@ component.
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,bkick,
      &              aj(1),aj(2),tms(1),tms(2),
-     &              massc(1),massc(2),rad(1),rad(2))
+     &              massc(1),massc(2),rad(1),rad(2),
+     &              mass0(1),mass0(2),lumin(1),lumin(2),
+     &              radc(1),radc(2),menv(1),menv(2),renv(1),
+     &              renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &              epoch(2),bhspin(1),bhspin(2))
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -3336,7 +3401,12 @@ component.
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,bkick,
      &                 aj(1),aj(2),tms(1),tms(2),
-     &                 massc(1),massc(2),rad(1),rad(2))
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
@@ -3393,7 +3463,12 @@ component.
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,bkick,
      &                 aj(1),aj(2),tms(1),tms(2),
-     &                 massc(1),massc(2),rad(1),rad(2))
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
@@ -3469,7 +3544,12 @@ component.
      &                  kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,bkick,
      &                  aj(1),aj(2),tms(1),tms(2),
-     &                  massc(1),massc(2),rad(1),rad(2))
+     &                  massc(1),massc(2),rad(1),rad(2),
+     &                  mass0(1),mass0(2),lumin(1),lumin(2),
+     &                  radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                  renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                  epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3532,7 +3612,12 @@ component.
      &                        kstar(1),kstar(2),0.d0,
      &                        0.d0,-1.d0,0.d0,ngtv,bkick,
      &                        aj(1),aj(2),tms(1),tms(2),
-     &                        massc(1),massc(2),rad(1),rad(2))
+     &                        massc(1),massc(2),rad(1),rad(2),
+     &                        mass0(1),mass0(2),lumin(1),lumin(2),
+     &                        radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                        renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                        epoch(2),bhspin(1),bhspin(2))
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -3548,7 +3633,12 @@ component.
      &                        kstar(1),kstar(2),sep,
      &                        tb,ecc,0.d0,ngtv2,bkick,
      &                        aj(1),aj(2),tms(1),tms(2),
-     &                        massc(1),massc(2),rad(1),rad(2))
+     &                        massc(1),massc(2),rad(1),rad(2),
+     &                        mass0(1),mass0(2),lumin(1),lumin(2),
+     &                        radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                        renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                        epoch(2),bhspin(1),bhspin(2))
             else
                 evolve_type = 9.0
                 CALL writebpp(jp,tphys,evolve_type,
@@ -3556,7 +3646,12 @@ component.
      &                        kstar(1),kstar(2),0.d0,
      &                        0.d0,0.d0,0.d0,ngtv,bkick,
      &                        aj(1),aj(2),tms(1),tms(2),
-     &                        massc(1),massc(2),rad(1),rad(2))
+     &                        massc(1),massc(2),rad(1),rad(2),
+     &                        mass0(1),mass0(2),lumin(1),lumin(2),
+     &                        radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                        renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                        epoch(2),bhspin(1),bhspin(2))
             endif
             DO jj = 13,20
                bkick(jj) = 0.0
@@ -3619,7 +3714,12 @@ component.
      &                      kstar(1),kstar(2),0.d0,
      &                      0.d0,-1.d0,0.d0,ngtv,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2))
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin(1),bhspin(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -3631,7 +3731,12 @@ component.
      &                      kstar(1),kstar(2),0.d0,
      &                      0.d0,0.d0,0.d0,ngtv2,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2))
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin(1),bhspin(2))
           else
               evolve_type = 10.0
               rrl1 = rad(1)/rol(1)
@@ -3641,7 +3746,12 @@ component.
      &                      kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,bkick,
      &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2))
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin(1),bhspin(2))
           endif
           DO jj = 13,20
               bkick(jj) = 0.0
