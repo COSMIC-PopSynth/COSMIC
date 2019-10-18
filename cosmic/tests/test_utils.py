@@ -73,7 +73,7 @@ class TestUtils(unittest2.TestCase):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
         conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], {})
-        self.assertTrue(np.all(conv.evol_type.isin([2,7])))
+        self.assertTrue(np.all(conv.evol_type.isin([2,4])))
         self.assertTrue(np.all(conv.sep >= 0))
 
         conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['convergence_filter'], {})
