@@ -19,7 +19,7 @@
         INTEGER jp,jj
         INTEGER kstar1,kstar2
         REAL*8 yeardy,rsunau
-        PARAMETER(yeardy=365.24d0,rsunau=0.0047d0)
+        PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
 
         jp = MIN(900,jp + 1)
         bpp(jp,1) = tphys
@@ -117,7 +117,7 @@
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
         REAL*8 yeardy,rsunau
-        PARAMETER(yeardy=365.24d0,rsunau=0.0047d0)
+        PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
 
         ip = ip + 1
         bcm(ip,1) = tphys
