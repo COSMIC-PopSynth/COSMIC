@@ -39,12 +39,16 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
 __all__ = ['Evolve']
 
 
-BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
+BPP_COLUMNS = ['tphys', 'mass1_binary', 'mass2_binary', 'kstar_1', 'kstar_2' ,
                'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta',
-               'aj_1', 'aj_2', 'tms_1', 'tms_2',
-               'massc_1', 'massc_2', 'rad_1', 'rad_2',
-               'bin_num']
+               'aj1', 'aj2', 'tms1', 'tms2',
+               'massc1', 'massc2', 'rad1', 'rad2',
+               'mass0_1', 'mass0_2', 'lumin1', 'lumin2',
+               'radc1', 'radc2', 'menv1', 'menv2', 'renv1', 'renv2',
+               'ospin1', 'ospin2', 'b_0_1', 'b_0_2', 'bacc1', 'bacc2',
+               'tacc1', 'tacc2', 'epoch1', 'epoch2',
+               'bhspin1','bhspin2','bin_num']
 
 BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
