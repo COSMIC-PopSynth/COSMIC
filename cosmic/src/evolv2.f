@@ -310,7 +310,6 @@ component.
 *
 
       if(using_cmc.eq.0)then
-          tphys = 0.d0
           bpp = 0.d0
           bcm = 0.d0
           bppout = 0.d0
@@ -596,7 +595,7 @@ component.
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
      &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                DO jj = 13,20
@@ -1318,7 +1317,7 @@ component.
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
      &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
@@ -1347,7 +1346,7 @@ component.
      &                       massc(1),massc(2),rad(1),rad(2),
      &                       mass0(1),mass0(2),lumin(1),lumin(2),
      &                       radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                       renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                       renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin(1),bhspin(2))
 
@@ -1520,7 +1519,7 @@ component.
      &                    massc(1),massc(2),rad(1),rad(2),
      &                    mass0(1),mass0(2),lumin(1),lumin(2),
      &                    radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                    renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                    renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             DO jj = 13,20
@@ -1566,7 +1565,7 @@ component.
      &                  massc(1),massc(2),rad(1),rad(2),
      &                  mass0(1),mass0(2),lumin(1),lumin(2),
      &                  radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                  renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                  renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
@@ -1739,7 +1738,7 @@ component.
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
      &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
@@ -1809,7 +1808,7 @@ component.
      &              massc(1),massc(2),rad(1),rad(2),
      &              mass0(1),mass0(2),lumin(1),lumin(2),
      &              radc(1),radc(2),menv(1),menv(2),renv(1),
-     &              renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &              renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
       DO jj = 13,20
@@ -2128,7 +2127,7 @@ component.
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
      &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
 
@@ -2137,7 +2136,8 @@ component.
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,formation(j1),formation(j2),
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
@@ -2187,7 +2187,7 @@ component.
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
      &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
@@ -3139,7 +3139,7 @@ component.
      &                    massc(1),massc(2),rad(1),rad(2),
      &                    mass0(1),mass0(2),lumin(1),lumin(2),
      &                    radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                    renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                    renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
@@ -3238,7 +3238,7 @@ component.
      &                    massc(1),massc(2),rad(1),rad(2),
      &                    mass0(1),mass0(2),lumin(1),lumin(2),
      &                    radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                    renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                    renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             DO jj = 13,20
@@ -3343,7 +3343,7 @@ component.
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
      &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
@@ -3376,7 +3376,7 @@ component.
      &              massc(1),massc(2),rad(1),rad(2),
      &              mass0(1),mass0(2),lumin(1),lumin(2),
      &              radc(1),radc(2),menv(1),menv(2),renv(1),
-     &              renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &              renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
       DO jj = 13,20
@@ -3404,7 +3404,7 @@ component.
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
      &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
@@ -3412,7 +3412,8 @@ component.
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,formation(j1),formation(j2),
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3466,7 +3467,7 @@ component.
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
      &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
@@ -3474,7 +3475,8 @@ component.
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,bkick,formation(j1),formation(j2),
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3547,7 +3549,7 @@ component.
      &                  massc(1),massc(2),rad(1),rad(2),
      &                  mass0(1),mass0(2),lumin(1),lumin(2),
      &                  radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                  renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                  renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2))
          DO jj = 13,20
@@ -3615,7 +3617,7 @@ component.
      &                        massc(1),massc(2),rad(1),rad(2),
      &                        mass0(1),mass0(2),lumin(1),lumin(2),
      &                        radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                        renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                        renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             elseif(ecc.gt.1.d0)then
@@ -3636,7 +3638,7 @@ component.
      &                        massc(1),massc(2),rad(1),rad(2),
      &                        mass0(1),mass0(2),lumin(1),lumin(2),
      &                        radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                        renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                        renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             else
@@ -3649,7 +3651,7 @@ component.
      &                        massc(1),massc(2),rad(1),rad(2),
      &                        mass0(1),mass0(2),lumin(1),lumin(2),
      &                        radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                        renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                        renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             endif
@@ -3717,7 +3719,7 @@ component.
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
      &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
@@ -3734,7 +3736,7 @@ component.
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
      &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           else
@@ -3749,7 +3751,7 @@ component.
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
      &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),b_0(2),
+     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           endif
