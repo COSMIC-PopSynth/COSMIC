@@ -23,10 +23,11 @@
         REAL*8 menv1,menv2,renv1,renv2,ospin1,ospin2
         REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
         REAL*8 bhspin1,bhspin2
+        REAL*8 tb_write,sep_cubed
         INTEGER jp,jj
         INTEGER kstar1,kstar2
-        REAL*8 yeardy
-        PARAMETER(yeardy=365.24d0)
+        REAL*8 yeardy,rsunau
+        PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
 
         jp = MIN(900,jp + 1)
         bpp(jp,1) = tphys
@@ -39,7 +40,9 @@
 * system was disrupted and tb=-1 and should stay that way
             bpp(jp,7) = tb
         else
-            bpp(jp,7) = tb*yeardy
+            sep_cubed = (sep*rsunau)*(sep*rsunau)*(sep*rsunau)
+            tb_write = sqrt(sep_cubed/(mass1+mass2))
+            bpp(jp,7) = tb_write*yeardy
         endif
         bpp(jp,8) = ecc
         bpp(jp,9) = rrl1
@@ -136,15 +139,15 @@
 *
         REAL*8 tphys,mass0_1,mass_1,lumin_1,rad_1,teff_1
         REAL*8 massc_1,radc_1,menv_1,renv_1,epoch_1
-        REAL*8 ospin_1,deltam_1,RROL_1
+        REAL*8 ospin_1,deltam_1,RROL_1,porb_write,sep_cubed
         REAL*8 mass0_2,mass_2,lumin_2,rad_2,teff_2,massc_2
         REAL*8 radc_2,menv_2,renv_2,epoch_2,ospin_2,deltam_2
         REAL*8 RROL_2,porb,sep,ecc,B_0_1,B_0_2
         REAL*8 SNkick_1,SNkick_2,Vsys_final,SNtheta_final
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
-        REAL*8 yeardy
-        PARAMETER(yeardy=365.24d0)
+        REAL*8 yeardy,rsunau
+        PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
 
         ip = ip + 1
         bcm(ip,1) = tphys
@@ -180,7 +183,9 @@
 * system was disrupted and porb=-1 and should stay that way
             bcm(ip,30) = porb
         else
-            bcm(ip,30) = porb*yeardy
+            sep_cubed = (sep*rsunau)*(sep*rsunau)*(sep*rsunau)
+            porb_write = sqrt(sep_cubed/(mass_1+mass_2))
+            bcm(ip,30) = porb_write*yeardy
         endif
         bcm(ip,31) = sep
         bcm(ip,32) = ecc
