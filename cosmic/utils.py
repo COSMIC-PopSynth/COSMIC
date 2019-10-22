@@ -168,7 +168,8 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         # final kstars
         conv_save = bpp_save.loc[(bpp_save.kstar_1.isin(final_kstar_1)) &\
                                  (bpp_save.kstar_2.isin(final_kstar_2)) &\
-                                 (bpp_save.sep > 0)]
+                                 (bpp_save.sep > 0) &\
+                                 (bpp_save.evol_type.isin([2.0,4.0]))]
 
         # select the formation parameters
         conv_save = conv_save.groupby('bin_num').first().reset_index()
