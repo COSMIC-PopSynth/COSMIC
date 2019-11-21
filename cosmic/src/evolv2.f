@@ -198,7 +198,7 @@
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
       REAL*8 zero,ngtv,ngtv2,mt2,rrl1,rrl2,mcx,teff1,teff2
       REAL*8 mass1i,mass2i,tbi,ecci
-      LOGICAL coel,com,prec,inttry,change,snova,sgl,bsymb,esymb,bss
+      LOGICAL coel,com,prec,inttry,change,snova,sgl
       LOGICAL supedd,novae,disk
       LOGICAL isave,iplot
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
@@ -472,7 +472,6 @@ component.
       endif
       delet = 0.d0
       djorb = 0.d0
-      bss = .false.
 *
 * Setup variables which control the output (if it is required).
 *
@@ -500,8 +499,6 @@ component.
       snova = .false.
       coel = .false.
       com = .false.
-      bsymb = .false.
-      esymb = .false.
       tphys0 = tphys
       ecc1 = ecc
       j1 = 1
@@ -575,29 +572,9 @@ component.
 *
 * Diagnostic for Symbiotic-type stars.
 *
-         if(neta.gt.tiny.and..not.esymb)then
+         if(neta.gt.tiny)then
             lacc = 3.14d+07*mass(j2)*dmt(j2)/rad(j2)
             lacc = lacc/lumin(j1)
-            if((lacc.gt.0.01d0.and..not.bsymb).or.
-     &         (lacc.lt.0.01d0.and.bsymb))then
-               if(bsymb)then
-                  evolve_type = 13.d0
-                  esymb = .true.
-               else
-                  evolve_type = 12.d0
-                  bsymb = .true.
-               endif
-               rrl1 = rad(1)/rol(1)
-               rrl2 = rad(2)/rol(2)
-               CALL writebpp(jp,tphys,evolve_type,
-     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                      tb,ecc,rrl1,rrl2,bkick,
-     &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2))
-               DO jj = 13,20
-                   bkick(jj) = 0.0
-               ENDDO
-            endif
          endif
 *
 * Calculate orbital angular momentum change due to wind mass loss.
@@ -1390,10 +1367,6 @@ component.
             endif
             mass0(k) = m0
             epoch(k) = tphys - age
-            if(kw.gt.6.and.kstar(k).le.6)then
-               bsymb = .false.
-               esymb = .false.
-            endif
          endif
 *
 *
@@ -1490,23 +1463,6 @@ component.
          k2str(k) = k2
          tms(k) = tm
          tbgb(k) = tscls(1)
-*
-* Check for blue straggler formation.
-*
-         if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
-            bss = .true.
-            evolve_type = 14.d0
-            rrl1 = rad(1)/rol(1)
-            rrl2 = rad(2)/rol(2)
-            CALL writebpp(jp,tphys,evolve_type,
-     &                    mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                    tb,ecc,rrl1,rrl2,bkick,
-     &                    aj(1),aj(2),tms(1),tms(2),
-     &                    massc(1),massc(2),rad(1),rad(2))
-            DO jj = 13,20
-               bkick(jj) = 0.0
-            ENDDO
-         endif
 *
  6    continue
 *
@@ -3173,23 +3129,6 @@ component.
          k2str(k) = k2
          tms(k) = tm
          tbgb(k) = tscls(1)
-*
-* Check for blue straggler formation.
-*
-         if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
-            bss = .true.
-            evolve_type = 14.0
-            rrl1 = rad(1)/rol(1)
-            rrl2 = rad(2)/rol(2)
-            CALL writebpp(jp,tphys,evolve_type,
-     &                    mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                    tb,ecc,rrl1,rrl2,bkick,
-     &                    aj(1),aj(2),tms(1),tms(2),
-     &                    massc(1),massc(2),rad(1),rad(2))
-            DO jj = 13,20
-               bkick(jj) = 0.0
-            ENDDO
-         endif
 *
  90   continue
 *
