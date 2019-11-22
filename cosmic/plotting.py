@@ -73,10 +73,18 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
 
     # Disable chained warning for now which throws
     # a warning for setting dtp and tphysf
-    pd.options.mode.chained_assignment = None 
+    pd.options.mode.chained_assignment = None
 
     # Get highest BSE temporal resolution
     initC['dtp'] = 0.01
+
+    # To deal with the limited size of the bcm array, we need to reduce
+    # the time resolution if we are evolving a binary for more than 100 Myr
+    if not t_max is None:
+        if not t_min is None:
+            if t_max-t_min > 100: initC['dtp'] = (t_max-t_min) / 10000
+        else:
+            if t_max > 100: initC['dtp'] = t_max / 10000
 
     # Set maximum time for evolution
     if not t_max is None: initC['tphysf'] = t_max
