@@ -1986,7 +1986,7 @@ component.
                 qc = 0.625d0
              endif
          endif
-      elseif((qcflag.eq.4)then
+      elseif(qcflag.eq.4)then
 *
 * Use the StarTrack prescriptions taken from Belczynski+2008
 * section 5.1
@@ -2018,7 +2018,6 @@ component.
          elseif(kstar(j1).ge.10)then
             qc = 0.628
          endif
-
       endif
 *
 * Allow for manually overriding qcrit values with fixed
