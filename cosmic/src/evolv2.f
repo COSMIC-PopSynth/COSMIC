@@ -1986,6 +1986,39 @@ component.
                 qc = 0.625d0
              endif
          endif
+      elseif((qcflag.eq.4)then
+*
+* Use the StarTrack prescriptions taken from Belczynski+2008
+* section 5.1
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+* Note: this does not do the WD mass ratios exactly the same.
+* We do the standard 0.628 mass ratio from BSE since we don't
+* compute the mass transfer rates the same
+         if(kstar(j1).eq.0)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.1)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.2)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.3)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.4)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.5)then
+            qc = 3.d0 
+         elseif(kstar(j1).eq.6)then
+            qc = 3.d0 
+         elseif(kstar(j1).eq.7)then
+            qc = 1.7d0
+         elseif(kstar(j1).eq.8)then
+            qc = 3.5
+         elseif(kstar(j1).eq.9)then
+            qc = 3.5
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+
       endif
 *
 * Allow for manually overriding qcrit values with fixed
