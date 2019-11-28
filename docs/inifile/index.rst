@@ -471,7 +471,8 @@ sampling
                             ``3`` : same as 2 but with `Hjellming & Webbink 1987 <https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract>`_
                             for GB/AGB stars
 
-                         **qcflag = 2**
+                            ``4`` : follows `Section 5.1 of Belcyznski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_ except for WD donors which follow BSE
+                         **qcflag = 1**
 
 ``qcrit_array``          Array with length: 16 for user-input values for the 
                          critical mass ratios that govern the onset of unstable

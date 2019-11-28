@@ -802,8 +802,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
         if len(BSEDict[flag]) != 16:
             raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
-        if (any( x != 0.0 for x in BSEDict[flag])) and (BSEDict['qcflag'] != 4):
-            raise ValueError("If '{0:s}' is used, qcflag must be set to 4".format(flag))
 
     flag='sigma'
     if flag in BSEDict.keys():
