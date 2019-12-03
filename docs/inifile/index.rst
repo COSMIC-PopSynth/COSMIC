@@ -621,7 +621,7 @@ sampling
 
                             ``-3`` : uses a polynomial fit to `Table 5 in Woosley 2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract>`_
 
-                            ``positive values`` : turns on no pulsational pair 
+                            ``positive values`` : turns on pulsational pair 
                             instability SN and sets the maximum mass of the allowed
                             remnant
 
