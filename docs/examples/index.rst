@@ -1,8 +1,8 @@
 .. _examples:
 
-#######################
-Using COSMIC to run BSE
-#######################
+###############################
+Using COSMIC to evolve binaries
+###############################
 
 
 COSMIC can evolve binaries for several different use cases. Below 
