@@ -738,7 +738,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("sampling_method must be one of {0} you supplied {1}.".format(acceptable_sampling, sampling[flag]))
 
         flag='galaxy_component'
-        acceptable_galaxy_components = ['Bulge', 'ThinDisk', 'ThickDisk', 'DeltaBurst']
+        acceptable_galaxy_components = ['Bulge', 'ThinDisk', 'ThickDisk', 'DeltaBurst', 'FIRE']
         if sampling[flag] not in acceptable_galaxy_components:
             raise ValueError("galaxy_component must be one of {0} you supplied {1}.".format(acceptable_galaxy_components, sampling[flag]))
 
