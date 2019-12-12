@@ -1,15 +1,8 @@
 ***
-      SUBROUTINE evolv2(kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,
-     \ netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp,
-     \ ceflagtmp,tflagtmp,ifflagtmp,wdflagtmp,pisntmp,
-     \ bhflagtmp,nsflagtmp,
-     \ cekickflagtmp,cemergeflagtmp,cehestarflagtmp,
-     \ mxnstmp,pts1tmp,pts2tmp,pts3tmp,ecsntmp,ecsn_mlowtmp,aictmp,
-     \ ussntmp,sigmatmp,sigmadivtmp,bhsigmafractmp,polar_kick_angletmp,
-     \ natal_kick_array,qcrit_array,betatmp,xitmp,
-     \ acc2tmp,epsnovtmp,eddfactmp,gammatmp,
-     \ bconsttmp,CKtmp,windflagtmp,dtptmp,idumtmp,
-     \ bppout,bcmout)
+      SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
+     \ dtp,mass0,rad,lumin,massc,radc,
+     \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
+     \ bhspin,tphys,zpars,bkick,bppout,bcmout)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -161,11 +154,11 @@
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2,jj
       INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
-      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax,kstar1,kstar2
+      INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
       INTEGER kstar1_bpp,kstar2_bpp
 *
       REAL*8 km,km0,tphys,tphys0,dtm0,tphys00,tphysfhold
-      REAL*8 tphysf,dtp,tsave,mass1,mass2
+      REAL*8 tphysf,dtp,tsave
       REAL*8 aj(2),aj0(2),epoch(2),tms(2),tbgb(2),tkh(2),dtmi(2)
       REAL*8 mass0(2),mass(2),massc(2),menv(2),mass00(2),mcxx(2)
       REAL*8 mass1_bpp,mass2_bpp
@@ -184,14 +177,15 @@
       REAL*8 k3,mr23yr,twopi
       PARAMETER(k3=0.21d0,mr23yr=0.4311d0)
       REAL*8 jspin(2),ospin(2),jorb,oorb,jspbru,ospbru
+      REAL*8 bhspin(2)
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
 *
-      INTEGER pulsar,bdecayfac,aic,htpmb,ST_cr,ST_tide,wdwdedd,eddlim
+      INTEGER pulsar
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
-      REAL*8 fallback,sigmahold,ecsn,ecsn_mlow
+      REAL*8 fallback,sigmahold
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
-      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold,diskxip
+      REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
@@ -204,84 +198,58 @@
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
       REAL*8 zero,ngtv,ngtv2,mt2,rrl1,rrl2,mcx,teff1,teff2
       REAL*8 mass1i,mass2i,tbi,ecci
-      LOGICAL coel,com,prec,inttry,change,snova,sgl,bsymb,esymb,bss
+      LOGICAL coel,com,prec,inttry,change,snova,sgl
       LOGICAL supedd,novae,disk
       LOGICAL isave,iplot
-      REAL*8 rl,mlwind,vrotf,corerd
+      REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
 *
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,15)
+      REAL*8 bppout(1000,23)
       REAL*8 bcmout(50000,42)
+*
+      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
+      REAL*8 qc_fixed
+      LOGICAL switchedCE,disrupt
 
-      REAL*8 netatmp,bwindtmp,hewindtmp,alpha1tmp,lambdatmp
-      REAL*8 mxnstmp,pts1tmp,pts2tmp,pts3tmp,dtptmp
-      REAL*8 sigmatmp,bhsigmafractmp,polar_kick_angletmp,betatmp,xitmp
-      REAL*8 ecsntmp,ecsn_mlowtmp,sigmadivtmp
-      REAL*8 acc2tmp,epsnovtmp,eddfactmp,gammatmp
-      REAL*8 bconsttmp,CKtmp,qc_fixed,qcrit_array(16)
-      REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm,natal_kick_array(6)
-      INTEGER cekickflagtmp,cemergeflagtmp,cehestarflagtmp,ussntmp
-      INTEGER ceflagtmp,tflagtmp,ifflagtmp,nsflagtmp,aictmp
-      INTEGER wdflagtmp,pisntmp,bhflagtmp,windflagtmp,idumtmp
+Cf2py intent(in) kstar
+Cf2py intent(in) mass
+Cf2py intent(in) tb
+Cf2py intent(in) ecc
+Cf2py intent(in) z
+Cf2py intent(in) tphysf
+Cf2py intent(in) dtp
+Cf2py intent(in) mass0
+Cf2py intent(in) rad
+Cf2py intent(in) lumin
+Cf2py intent(in) massc
+Cf2py intent(in) radc
+Cf2py intent(in) menv
+Cf2py intent(in) renv
+Cf2py intent(in) ospin
+Cf2py intent(in) B_0
+Cf2py intent(in) bacc
+Cf2py intent(in) tacc
+Cf2py intent(in) epoch
+Cf2py intent(in) tms
+Cf2py intent(in) bhspin
+Cf2py intent(in) tphys
+Cf2py intent(in) zpars
+Cf2py intent(in) bkick
+Cf2py intent(out) bppout
+Cf2py intent(out) bcmout
 
-Cf2py intent(in) kstar1,kstar2,mass1,mass2,tb,ecc,z,tphysf,bkick
-Cf2py intent(out) bppout,bcmout
-      ceflag = ceflagtmp
-      tflag = tflagtmp
-      ifflag = ifflagtmp
-      nsflag = nsflagtmp
-      wdflag = wdflagtmp
-      pisn = pisntmp
-      bhflag = bhflagtmp
-      nsflag = nsflagtmp
-      mxns = mxnstmp
-      alpha1 = alpha1tmp
-      pts1 = pts1tmp
-      pts2 = pts2tmp
-      pts3 = pts3tmp
-      ecsn = ecsntmp
-      ecsn_mlow = ecsn_mlowtmp
-      aic = aictmp
-      ussn = ussntmp
-      sigma = sigmatmp
-      sigmadiv = sigmadivtmp
-      bhsigmafrac = bhsigmafractmp
-      polar_kick_angle = polar_kick_angletmp
-      beta = betatmp
-      neta = netatmp
-      lambda = lambdatmp
-      cekickflag = cekickflagtmp
-      cemergeflag = cemergeflagtmp
-      cehestarflag = cehestarflagtmp
-      hewind = hewindtmp
-      bwind = bwindtmp
-      xi = xitmp
-      acc2 = acc2tmp
-      epsnov = epsnovtmp
-      eddfac = eddfactmp
-      gamma = gammatmp
-      bconst = bconsttmp
-      CK = CKtmp
-      windflag = windflagtmp
-      dtp = dtptmp
-      idum1 = idumtmp
-
-      CALL instar
+      if(using_cmc.eq.0)then
+              CALL instar
+      endif
 
 *
 * Save the initial state.
 *
 
 *      CE2flag = 0
-      mass(1) = mass1
-      mass(2) = mass2
-
-      kstar(1) = kstar1
-      kstar(2) = kstar2
-
       kstar1_bpp = 0
       kstar2_bpp = 0
 
@@ -298,33 +266,33 @@ Cf2py intent(out) bppout,bcmout
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
 
+* disrupt tracks if system get disrupted by a SN during the common
+* envelope
+      disrupt = .false.
 * value for bcm[ii,37] which tracks binary state; 0 for binary, 1 for merger, 2 for disrupted
       binstate = 0
 * value for bcm[ii,38] which tracks merger types; only set when binstate is 1
 * the logic is to combine kstar values of merged objects. so 1313 or 0809.
       mergertype = -1
+*Captures original sigma so after ECSN we can reset it.
+      sigmahold = sigma
+*memory for wind mass loss factor
+      betahold = beta
+
+** SET PULSAR VALUES HERE**
 * PDK
-      pulsar = 1
-      bdecayfac = 1 !determines which accretion induced field decay method to use: 0=exp, 1=inverse
-      wdwdedd = 0 !Have not introduced yet but will. if set to 1 forces WD dynamical MT to be limited by eddington rate.
-      eddlim = 1 !Have not introduced yet but will.if = 0 then BSE version, only H limit, else StarTrack version.
-      sigmahold = sigma !Captures original sigma so after ECSN we can reset it.
-      betahold = beta !memory for wind mass loss factor.
-      htpmb = 1 !zero = htpmb, 1 = Ivanova & Taam 2002 method which kicks in later than the standard
-      ST_cr = 1 !sets which convective/radiative boundary to use, 0=old, 1=startrack.
-      ST_tide = 0 !sets which tidal method to use. 0=old, 1=startrack
-* Note, here startrack method does not use a better integration scheme (yet) but simply
-* follows similar set up to startrack (including initial vrot, using roche-lobe check
-* at periastron, and circularisation and synchronisation at start of MT).
-      Kconst = 2.5d-52
+      pulsar = 1 ! allows for pulsar physics; not a flag since we heart pulsars
+      Kconst = 2.5d-49
       Bbot = 5e+7 !100.d0 or ~d+07.
       b_mdot_lim = -1.0e-11 !limiting accretion induced field decay with mdot as a proxy for
 *                           accretion temperature and number of impurities.
       xihold = xi
-      xip = 1 !1 is on, 0 is off; for modified NS wind ang. mom. accretion.
-      diskxip = 0.d0 !sets if diskxi is to be used (>0; 0.01) and is min diskxi value.
+      xip = 1 !Modifies NS wind ang. mom. accretion.
       formation(1) = 0 !helps determine formation channel of interesting systems.
       formation(2) = 0
+      pisn_track(1) = 0 !tracks whether a PISN occurred for each
+component.
+      pisn_track(2) = 0
       merger = -1 !used in CMC to track systems that dynamically merge
       notamerger = 0 !if 0 you reset the merger NS product to new factory settings else you don't.
       mergemsp = 1 !if set to 1 any NS that merges with another star where the NS is an MSP stays an MSP...
@@ -341,51 +309,14 @@ Cf2py intent(out) bppout,bcmout
 * Initialize the parameters.
 *
 
-      tphys = 0.d0
-      bpp = 0.d0
-      bcm = 0.d0
-      bppout = 0.d0
-      bcmout = 0.d0
+      if(using_cmc.eq.0)then
+          tphys = 0.d0
+          bpp = 0.d0
+          bcm = 0.d0
+          bppout = 0.d0
+          bcmout = 0.d0
+      endif
 
-      B_0(1) = 0.d0
-      B_0(2) = 0.d0
-
-      bacc(1) = 0.d0
-      bacc(2) = 0.d0
-
-      tacc(1) = 0.d0
-      tacc(2) = 0.d0
-
-      tms(1) = 0.0
-      tms(2) = 0.0
-
-      DO jj = 1,20
-         bkick(jj) = 0.0
-      ENDDO
-
-      mass0(1) = mass(1)
-      massc(1) = 0.0
-      ospin(1) = 0.0
-      epoch(1) = 0.0
-      rad(1) = 0.0
-      lumin(1) = 0.0
-      massc(1) = 0.0
-      radc(1) = 0.0
-      menv(1) = 0.0
-      renv(1) = 0.0
-      ospin(1) = 0.0
-
-      mass0(2) = mass(2)
-      massc(2) = 0.0
-      ospin(2) = 0.0
-      epoch(2) = 0.0
-      rad(2) = 0.0
-      lumin(2) = 0.0
-      massc(2) = 0.0
-      radc(2) = 0.0
-      menv(2) = 0.0
-      renv(2) = 0.0
-      ospin(2) = 0.0
 
 * set bcm kick values to 0.0 initially
       vk1_bcm = 0.d0
@@ -398,12 +329,14 @@ Cf2py intent(out) bppout,bcmout
 * Set the seed for the random number generator.
 *
 *      idum1 = INT(sep*100)
-      if(idum1.gt.0) idum1 = -idum1
+      if(idum1.gt.0.and.using_cmc.eq.0) idum1 = -idum1
 
 *
 * Set the collision matrix.
 *
-      CALL zcnsts(z,zpars)
+      if(using_cmc.eq.0)then
+          CALL zcnsts(z,zpars)
+      endif
 
       kmin = 1
       kmax = 2
@@ -455,6 +388,8 @@ Cf2py intent(out) bppout,bcmout
          sep = 1.0d+10
          oorb = 0.d0
          jorb = 0.d0
+         if(kstar(1).ne.14.d0.or.using_cmc.eq.0) bhspin(1) = 0.d0
+         if(kstar(2).ne.14.d0.or.using_cmc.eq.0) bhspin(2) = 0.d0
          if(ospin(1).lt.0.0) ospin(1) = 1.0d-10
          if(ospin(2).lt.0.0) ospin(2) = 1.0d-10
          q(1) = 1.0d+10
@@ -477,8 +412,7 @@ Cf2py intent(out) bppout,bcmout
          rc = radc(k)
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kstar(k),mc,rc,me,re,k2,ST_tide,
-     &               ecsn,ecsn_mlow)
+     &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -531,10 +465,13 @@ Cf2py intent(out) bppout,bcmout
 *
 * On the first entry the previous timestep is zero to prevent mass loss.
 *
-      dtm = 1.d0
+      if(using_cmc.eq.1)then
+          dtm = 0.d0
+      else
+          dtm = 1.d0
+      endif
       delet = 0.d0
       djorb = 0.d0
-      bss = .false.
 *
 * Setup variables which control the output (if it is required).
 *
@@ -562,8 +499,6 @@ Cf2py intent(out) bppout,bcmout
       snova = .false.
       coel = .false.
       com = .false.
-      bsymb = .false.
-      esymb = .false.
       tphys0 = tphys
       ecc1 = ecc
       j1 = 1
@@ -596,7 +531,7 @@ Cf2py intent(out) bppout,bcmout
                rlperi = rol(k)*(1.d0-ecc)
                if(ST_tide.gt.1) rlperi = rol(k)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z)
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -637,27 +572,9 @@ Cf2py intent(out) bppout,bcmout
 *
 * Diagnostic for Symbiotic-type stars.
 *
-         if(neta.gt.tiny.and..not.esymb)then
+         if(neta.gt.tiny)then
             lacc = 3.14d+07*mass(j2)*dmt(j2)/rad(j2)
             lacc = lacc/lumin(j1)
-            if((lacc.gt.0.01d0.and..not.bsymb).or.
-     &         (lacc.lt.0.01d0.and.bsymb))then
-               if(bsymb)then
-                  evolve_type = 13.d0
-                  esymb = .true.
-               else
-                  evolve_type = 12.d0
-                  bsymb = .true.
-               endif
-               rrl1 = rad(1)/rol(1)
-               rrl2 = rad(2)/rol(2)
-               CALL writebpp(jp,tphys,evolve_type,
-     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                      tb,ecc,rrl1,rrl2,bkick)
-               DO jj = 13,20
-                   bkick(jj) = 0.0
-               ENDDO
-            endif
          endif
 *
 * Calculate orbital angular momentum change due to wind mass loss.
@@ -902,11 +819,18 @@ Cf2py intent(out) bppout,bcmout
 *
 * Convective damping (Hut, 1981, A&A, 99, 126).
 *
+* In BSE paper Equation 30, the default scaling coefficient is 2./21
+* the fprimc_array kstar dependent array that is fed in
+* keeps this same coefficient by default but allows user to
+* specify their own
+*
                   tc = mr23yr*(menv(k)*renv(k)*(rad(k)-0.5d0*renv(k))/
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
                   f = MIN(1.d0,(ttid/(2.d0*tc))**2)
-                  tcqr = 2.d0*f*q(3-k)*raa6*menv(k)/(21.d0*tc*mass(k))
+                  tcqr = fprimc_array(kstar(k))*
+     &                 f*q(3-k)*raa6*menv(k)/
+     &                 (tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
 *
@@ -961,7 +885,7 @@ Cf2py intent(out) bppout,bcmout
             if(neta.gt.tiny)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z,tphys)
+     &                         massc(k),rlperi,z)
             else
                dmr(k) = 0.d0
             endif
@@ -1190,7 +1114,7 @@ Cf2py intent(out) bppout,bcmout
                endif
             endif
 * Update NS magnetic field owing to accretion, as a function of mass accreted. PK.
-            if(kstar(k).eq.13.and.pulsar.eq.1)then
+            if(kstar(k).eq.13.and.pulsar.gt.0)then
                if(dms(k).lt.0.d0)then !negative dms is mass gained.
 * When propeller ev. include .not.prop here...
                   b_mdot = dms(k)/dt
@@ -1258,8 +1182,7 @@ Cf2py intent(out) bppout,bcmout
 *
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,
-     &               ecsn,ecsn_mlow)
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -1269,7 +1192,7 @@ Cf2py intent(out) bppout,bcmout
 *
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
-            if(formation(k).ne.11) formation(k) = 4
+            if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
@@ -1279,7 +1202,7 @@ Cf2py intent(out) bppout,bcmout
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
@@ -1290,7 +1213,7 @@ Cf2py intent(out) bppout,bcmout
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
 * MIC
@@ -1300,7 +1223,7 @@ Cf2py intent(out) bppout,bcmout
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1309,14 +1232,14 @@ Cf2py intent(out) bppout,bcmout
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                elseif(merger.ge.20.d0)then
                   sigma = merger
                   fallback = 0.d0
                   if(merger.ge.200.d0)then!estimate CC SN
-                     formation(k) = 4
+                     formation(k) = 1
                   else
-                     formation(k) = 7
+                     formation(k) = 5
                   endif
                elseif(merger.le.-20.d0)then
                   sigma = ABS(merger)
@@ -1324,9 +1247,9 @@ Cf2py intent(out) bppout,bcmout
                   if(merger.ge.200.d0)then!estimate CC SN
 *Sourav:Possible bug in the line above. merger should really be sigms!!
 *                  if(sigma.ge.200.d0)then!estimate CC SN
-                     formation(k) = 4
+                     formation(k) = 1
                   else
-                     formation(k) = 7
+                     formation(k) = 5
                   endif
                endif
             elseif(kw.eq.13.and.aic.gt.0)then
@@ -1338,7 +1261,7 @@ Cf2py intent(out) bppout,bcmout
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1347,20 +1270,26 @@ Cf2py intent(out) bppout,bcmout
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                endif
             elseif(ABS(merger).ge.20.d0)then
                sigma = ABS(merger)
                fallback = 0.d0
                if(merger.ge.200.d0)then!estimate CC SN
-                  formation(k) = 4
+                  formation(k) = 1
                else
-                  formation(k) = 7
+                  formation(k) = 5
                endif
             endif
             if(sgl)then
+               evolve_type = 14.d0 + FLOAT(k)
+               CALL writebpp(jp,tphys,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),
+     &                      sep,tb,ecc,rrl1,rrl2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,natal_kick_array)
+     &                   0.d0,fallback,bkick,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1369,16 +1298,24 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(17).gt.0.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(20).gt.0.d0)then
                   theta_bcm=bkick(20)
                endif
 
             else
+               evolve_type = 14.d0 + FLOAT(k)
+               CALL writebpp(jp,tphys,evolve_type,
+     &                       mass(1),mass(2),kstar(1),kstar(2),
+     &                       sep,tb,ecc,rrl1,rrl2,bkick,
+     &                       aj(1),aj(2),tms(1),tms(2),
+     &                       massc(1),massc(2),rad(1),rad(2))
+
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(k-3),fallback,bkick,natal_kick_array)
+     &                   rad(3-k),fallback,bkick,
+     &                   disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(bkick(13).gt.0.d0)then
@@ -1387,10 +1324,10 @@ Cf2py intent(out) bppout,bcmout
                if(bkick(14).gt.0.d0)then
                   vk2_bcm=bkick(14)
                endif
-               if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(17).gt.0.d0)then
                   vsys_bcm=bkick(17)
                endif
-               if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+               if(bkick(20).gt.0.d0)then
                   theta_bcm=bkick(20)
                endif
                if(mass(3-k).lt.0.d0)then
@@ -1430,10 +1367,6 @@ Cf2py intent(out) bppout,bcmout
             endif
             mass0(k) = m0
             epoch(k) = tphys - age
-            if(kw.gt.6.and.kstar(k).le.6)then
-               bsymb = .false.
-               esymb = .false.
-            endif
          endif
 *
 *
@@ -1531,21 +1464,6 @@ Cf2py intent(out) bppout,bcmout
          tms(k) = tm
          tbgb(k) = tscls(1)
 *
-* Check for blue straggler formation.
-*
-         if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
-            bss = .true.
-            evolve_type = 14.d0
-            rrl1 = rad(1)/rol(1)
-            rrl2 = rad(2)/rol(2)
-            CALL writebpp(jp,tphys,evolve_type,
-     &                    mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                    tb,ecc,rrl1,rrl2,bkick)
-            DO jj = 13,20
-               bkick(jj) = 0.0
-            ENDDO
-         endif
-*
  6    continue
 *
       if(.not.sgl)then
@@ -1579,7 +1497,9 @@ Cf2py intent(out) bppout,bcmout
           rrl2 = rad(2)/rol(2)
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                  tb,ecc,rrl1,rrl2,bkick)
+     &                  tb,ecc,rrl1,rrl2,bkick,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1615,6 +1535,9 @@ Cf2py intent(out) bppout,bcmout
             rrl2 = rad(2)/rol(2)
             deltam1_bcm = dmt(1) - dmr(1)
             deltam2_bcm = dmt(2) - dmr(2)
+* Check if PISN occurred, and if so overwrite formation
+            if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+            if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
             CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                    lumin(1),rad(1),teff1,massc(1),
      &                    radc(1),menv(1),renv(1),epoch(1),
@@ -1742,7 +1665,9 @@ Cf2py intent(out) bppout,bcmout
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -1805,7 +1730,9 @@ Cf2py intent(out) bppout,bcmout
       rrl2 = rad(2)/rol(2)
       CALL writebpp(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
-     &              tb,ecc,rrl1,rrl2,bkick)
+     &              tb,ecc,rrl1,rrl2,bkick,
+     &              aj(1),aj(2),tms(1),tms(2),
+     &              massc(1),massc(2),rad(1),rad(2))
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -1833,6 +1760,9 @@ Cf2py intent(out) bppout,bcmout
           rrl2 = rad(2)/rol(2)
           deltam1_bcm = 0.0
           deltam2_bcm = 0.0
+* Check if PISN occurred, and if so overwrite formation
+          if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+          if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -1881,18 +1811,213 @@ Cf2py intent(out) bppout,bcmout
 *
 * Set default qcrit values and identify special cases.
 *
-      if(kstar(j1).eq.2)then
-         qc = 4.d0
-      elseif(kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6)then
-*        qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
-* Alternatively use condition of Hjellming & Webbink, 1987, ApJ, 318, 794.
-         qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
-* Or allow all cases to avoid common-envelope.
-*        qc = 100.d0
-      elseif(kstar(j1).eq.8.or.kstar(j1).eq.9)then
-         qc = 0.784d0
-      else
-         qc = 3.d0
+
+      if(qcflag.eq.0)then
+*
+* Use the BSE equations and defaults:
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+
+         if(kstar(j1).eq.0)then
+            qc = 0.695
+         elseif(kstar(j1).eq.1)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.2)then
+            qc = 4.d0
+         elseif(kstar(j1).eq.3)then
+            qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+         elseif(kstar(j1).eq.4)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.5)then
+            qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+         elseif(kstar(j1).eq.6)then
+            qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+         elseif(kstar(j1).eq.7)then
+            qc = 3.0d0
+         elseif(kstar(j1).eq.8)then
+            qc = 0.784d0
+         elseif(kstar(j1).eq.9)then
+            qc = 0.784d0
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+      elseif(qcflag.eq.1)then
+*
+* Use the BSE equations and Hjellming & Webbink, 1987, ApJ, 318, 794.
+* for the GB/AGB:
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j1).eq.0)then
+            qc = 0.695
+         elseif(kstar(j1).eq.1)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.2)then
+            qc = 4.d0
+         elseif(kstar(j1).eq.3)then
+            qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.4)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.5)then
+            qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.6)then
+            qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.7)then
+            qc = 3.0d0
+         elseif(kstar(j1).eq.8)then
+            qc = 0.784d0
+         elseif(kstar(j1).eq.9)then
+            qc = 0.784d0
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+
+      elseif(qcflag.eq.2)then
+*
+* Use the binary_c prescriptions taken from Claeys+2014 Table 2
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j2).lt.10)then
+             if(kstar(j1).eq.0)then
+                qc = 0.695
+             elseif(kstar(j1).eq.1)then
+                qc = 1.6d0
+             elseif(kstar(j1).eq.2)then
+                qc = 4.d0
+             elseif(kstar(j1).eq.3)then
+               qc = (1.67d0-zpars(7)+
+     &               2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+             elseif(kstar(j1).eq.4)then
+                qc = 3.d0
+             elseif(kstar(j1).eq.5)then
+               qc = (1.67d0-zpars(7)+
+     &               2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+             elseif(kstar(j1).eq.6)then
+               qc = (1.67d0-zpars(7)+
+     &               2.d0*(massc(j1)/mass(j1))**5)/2.13d0
+             elseif(kstar(j1).eq.7)then
+                qc = 3.0d0
+             elseif(kstar(j1).eq.8)then
+                qc = 4.0d0
+             elseif(kstar(j1).eq.9)then
+                qc = 0.784d0
+             elseif(kstar(j1).ge.10)then
+                qc = 3.0d0
+             endif
+         elseif(kstar(j2).ge.10)then
+             if(kstar(j1).eq.0)then
+                qc = 1.0d0
+             elseif(kstar(j1).eq.1)then
+                qc = 1.0d0
+             elseif(kstar(j1).eq.2)then
+                qc = 4.7619d0
+             elseif(kstar(j1).eq.3)then
+                qc = 1.15d0
+             elseif(kstar(j1).eq.4)then
+                qc = 3.d0
+             elseif(kstar(j1).eq.5)then
+                qc = 1.15d0
+             elseif(kstar(j1).eq.6)then
+                qc = 1.15d0
+             elseif(kstar(j1).eq.7)then
+                qc = 3.0d0
+             elseif(kstar(j1).eq.8)then
+               qc = 4.7619d0
+             elseif(kstar(j1).eq.9)then
+                qc = 1.15d0
+             elseif(kstar(j1).ge.10)then
+                qc = 0.625d0
+             endif
+         endif
+      elseif(qcflag.eq.3)then
+*
+* Use the binary_c prescriptions taken from Claeys+2014 Table 2
+* but w/ Hjellming & Webbing for GB/AGB
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j2).lt.10)then
+             if(kstar(j1).eq.0)then
+                qc = 0.695
+             elseif(kstar(j1).eq.1)then
+                qc = 1.6d0
+             elseif(kstar(j1).eq.2)then
+                qc = 4.d0
+             elseif(kstar(j1).eq.3)then
+               qc = 0.362 +
+     &              1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+             elseif(kstar(j1).eq.4)then
+                qc = 3.d0
+             elseif(kstar(j1).eq.5)then
+               qc = 0.362 +
+     &              1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+             elseif(kstar(j1).eq.6)then
+               qc = 0.362 +
+     &              1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+             elseif(kstar(j1).eq.7)then
+                qc = 3.0d0
+             elseif(kstar(j1).eq.8)then
+                qc = 4.0d0
+             elseif(kstar(j1).eq.9)then
+                qc = 0.784d0
+             elseif(kstar(j1).ge.10)then
+                qc = 3.0d0
+             endif
+         elseif(kstar(j2).ge.10)then
+             if(kstar(j1).eq.0)then
+                qc = 1.0d0
+             elseif(kstar(j1).eq.1)then
+                qc = 1.0d0
+             elseif(kstar(j1).eq.2)then
+                qc = 4.7619d0
+             elseif(kstar(j1).eq.3)then
+                qc = 1.15d0
+             elseif(kstar(j1).eq.4)then
+                qc = 3.d0
+             elseif(kstar(j1).eq.5)then
+                qc = 1.15d0
+             elseif(kstar(j1).eq.6)then
+                qc = 1.15d0
+             elseif(kstar(j1).eq.7)then
+                qc = 3.0d0
+             elseif(kstar(j1).eq.8)then
+               qc = 4.7619d0
+             elseif(kstar(j1).eq.9)then
+                qc = 1.15d0
+             elseif(kstar(j1).ge.10)then
+                qc = 0.625d0
+             endif
+         endif
+      elseif(qcflag.eq.4)then
+*
+* Use the StarTrack prescriptions taken from Belczynski+2008
+* section 5.1
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+* Note: this does not do the WD mass ratios exactly the same.
+* We do the standard 0.628 mass ratio from BSE since we don't
+* compute the mass transfer rates the same
+         if(kstar(j1).eq.0)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.1)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.2)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.3)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.4)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.5)then
+            qc = 3.d0 
+         elseif(kstar(j1).eq.6)then
+            qc = 3.d0 
+         elseif(kstar(j1).eq.7)then
+            qc = 1.7d0
+         elseif(kstar(j1).eq.8)then
+            qc = 3.5
+         elseif(kstar(j1).eq.9)then
+            qc = 3.5
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
       endif
 *
 * Allow for manually overriding qcrit values with fixed
@@ -1903,7 +2028,7 @@ Cf2py intent(out) bppout,bcmout
          qc = qc_fixed
       endif
 
-      if(kstar(j1).eq.0.and.q(j1).gt.0.695d0)then
+      if(kstar(j1).eq.0.and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
 * common-envelope evolution.  The result is always a single
@@ -1989,10 +2114,11 @@ Cf2py intent(out) bppout,bcmout
             kstar(j2) = 15
          endif
          goto 135
-      elseif(((ABS(ABS(2*kstar(j1)-11)-3).eq.2.or.kstar(j1).eq.9).
-     &        and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
+      elseif(((ABS(ABS(2*kstar(j1)-11)-3).eq.2.or.kstar(j1).eq.9)
+     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
      &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
+
 *
 * Common-envelope evolution.
 *
@@ -2000,12 +2126,32 @@ Cf2py intent(out) bppout,bcmout
          m2ce = mass(j2)
          kcomp1 = kstar(j1) !PDK
          kcomp2 = kstar(j2)
+         if(j1.eq.2)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
+
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsn,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               vk,bkick,formation(j1),formation(j2),
+     &               bhspin(j1),bhspin(j2),binstate,mergertype,
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
+         endif
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -2026,14 +2172,14 @@ Cf2py intent(out) bppout,bcmout
          if(bkick(14).gt.0.d0)then
              vk2_bcm=bkick(14)
          endif
-         if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+         if(bkick(17).gt.0.d0)then
              vsys_bcm=bkick(17)
          endif
-         if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+         if(bkick(20).gt.0.d0)then
              theta_bcm=bkick(20)
          endif
 *
-         evolve_type = 7.0
+         evolve_type = 8.0
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
          if(kstar(1).eq.15) mass1_bpp = mass0(1)
@@ -2043,7 +2189,9 @@ Cf2py intent(out) bppout,bcmout
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass1_bpp,mass2_bpp,
      &                 kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -2078,7 +2226,7 @@ Cf2py intent(out) bppout,bcmout
          tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
          oorb = twopi/tb
       elseif(kstar(j1).ge.10.and.kstar(j1).le.12.and.
-     &       q(j1).gt.0.628d0)then
+     &       q(j1).gt.qc)then
 *
 * Dynamic transfer from a white dwarf.  Secondary will have KW > 9.
 *
@@ -2100,7 +2248,7 @@ Cf2py intent(out) bppout,bcmout
 *
             kstar(j2) = 15
             mass(j2) = 0.d0
-         elseif(kstar(j1).eq.10.or.kstar(j2).eq.10)then
+         elseif(kstar(j1).eq.10.or.kstar(j2).gt.10)then
 *
 * Should be helium overflowing onto a CO or ONe core in which case the
 * helium swells up to form a giant envelope so a HeGB star is formed.
@@ -2172,8 +2320,26 @@ Cf2py intent(out) bppout,bcmout
 *
 * Mass transfer in one Kepler orbit.
 *
-         dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &         MIN(mass(j1),5.d0)**2
+*
+* KB: adding in stable mass transfer factor from
+*     eqs 10-11 of Claeys+2014
+*
+         if(qcflag.gt.1.and.qcflag.le.3)then
+            if(q(j1).gt.1)then
+               f_fac=1000.d0
+            else
+               f_fac=1000*q(j1)*
+     &               EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+               if(f_fac.lt.1)then
+                  f_fac=1
+               endif
+            endif
+            dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &            MIN(mass(j1),5.d0)**2
+         else
+            dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &            MIN(mass(j1),5.d0)**2
+         endif
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
@@ -2215,7 +2381,7 @@ Cf2py intent(out) bppout,bcmout
                formation(1) = 11
                formation(2) = 11
             endif
-            CALL mix(mass0,mass,aj,kstar,zpars)
+            CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
             dm1 = m1ce - mass(j1)
             dm2 = mass(j2) - m2ce
 *
@@ -2260,7 +2426,7 @@ Cf2py intent(out) bppout,bcmout
                endif
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z,tphys)
+     &                         mass(k),massc(k),rlperi,z)
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
@@ -2326,25 +2492,6 @@ Cf2py intent(out) bppout,bcmout
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
                   CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
-*
-                  evolve_type = 8.0
-                  if(j1.eq.2)then
-                      kstar1_bpp = kst
-                      kstar2_bpp = kstar(j1)
-                      mass1_bpp = mt2
-                      mass2_bpp = mass(j1)
-                  else
-                      kstar1_bpp = kstar(j1)
-                      kstar2_bpp = kst
-                      mass1_bpp = mass(j1)
-                      mass2_bpp = mt2
-                  endif
-                  rrl1 = rad(1)/rol(1)
-                  rrl2 = rad(2)/rol(2)
-                  CALL writebpp(jp,tphys,evolve_type,
-     &                          mass1_bpp,mass2_bpp,
-     &                          kstar1_bpp,kstar2_bpp,sep,
-     &                          tb,ecc,rrl1,rrl2,bkick)
                endif
             endif
          elseif(kstar(j1).le.6.and.
@@ -2384,24 +2531,6 @@ Cf2py intent(out) bppout,bcmout
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  evolve_type = 8.0
-                  if(j1.eq.2)then
-                      kstar1_bpp = kst
-                      kstar2_bpp = kstar(j1)
-                      mass1_bpp = mt2
-                      mass2_bpp = mass(j1)
-                  else
-                      kstar1_bpp = kstar(j1)
-                      kstar2_bpp = kst
-                      mass1_bpp = mass(j1)
-                      mass2_bpp = mt2
-                  endif
-                  rrl1 = rad(1)/rol(1)
-                  rrl2 = rad(2)/rol(2)
-                  CALL writebpp(jp,tphys,evolve_type,
-     &                          mass1_bpp,mass2_bpp,
-     &                          kstar1_bpp,kstar2_bpp,sep,
-     &                          tb,ecc,rrl1,rrl2,bkick)
                   DO jj = 13,20
                      bkick(jj) = 0.0
                   ENDDO
@@ -2781,13 +2910,21 @@ Cf2py intent(out) bppout,bcmout
                   rg2 = k2str(k)
                elseif(kstar(k).le.9)then
 * Convective damping
+
+* In BSE paper Equation 30, the default scaling coefficient is 2./21
+* the fprimc_array kstar dependent array that is fed in
+* keeps this same coefficient by default but allows user to
+* specify their own
+*
                   renv(k) = MIN(renv(k),radx(k)-radc(k))
                   renv(k) = MAX(renv(k),1.0d-10)
                   tc = mr23yr*(menv(k)*renv(k)*(radx(k)-0.5d0*renv(k))/
      &                 (3.d0*lumin(k)))**(1.d0/3.d0)
                   ttid = twopi/(1.0d-10 + ABS(oorb - ospin(k)))
-                  f = MIN(1.d0,(ttid/(2.d0*tc)**2))
-                  tcqr = 2.d0*f*q(3-k)*raa6*menv(k)/(21.d0*tc*mass(k))
+                  f = MIN(1.d0,(ttid/(2.d0*tc))**2)
+                  tcqr = fprimc_array(kstar(k))*
+     &                 f*q(3-k)*raa6*menv(k)/
+     &                 (tc*mass(k))
                   rg2 = (k2str(k)*(mass(k)-massc(k)))/mass(k)
                elseif(ST_tide.le.0)then
 *Degenerate damping
@@ -2946,14 +3083,14 @@ Cf2py intent(out) bppout,bcmout
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,ST_tide,ecsn,ecsn_mlow)
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
          if(kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14))then
             dms(k) = mass(k) - mt
-            if(formation(k).ne.11) formation(k) = 4
+            if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
@@ -2963,7 +3100,7 @@ Cf2py intent(out) bppout,bcmout
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
@@ -2974,7 +3111,7 @@ Cf2py intent(out) bppout,bcmout
                      else
                         sigma = -1.d0*sigmadiv
                      endif
-                     formation(k) = 5
+                     formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -2983,7 +3120,7 @@ Cf2py intent(out) bppout,bcmout
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 7
+                  formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -2992,11 +3129,18 @@ Cf2py intent(out) bppout,bcmout
                   else
                      sigma = -1.d0*sigmadiv
                   endif
-                  formation(k) = 6
+                  formation(k) = 4
                endif
             endif
+
+            evolve_type = 14.d0 + FLOAT(k)
+            CALL writebpp(jp,tphys,evolve_type,
+     &                    mass(1),mass(2),kstar(1),kstar(2),
+     &                    sep,tb,ecc,rrl1,rrl2,bkick,
+     &                    aj(1),aj(2),tms(1),tms(2),
+     &                    massc(1),massc(2),rad(1),rad(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick,natal_kick_array)
+     &                rad(3-k),fallback,bkick,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
 * set kick values for the bcm array
@@ -3006,10 +3150,10 @@ Cf2py intent(out) bppout,bcmout
             if(bkick(14).gt.0.d0)then
                vk2_bcm=bkick(14)
             endif
-            if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+            if(bkick(17).gt.0.d0)then
                vsys_bcm=bkick(17)
             endif
-            if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+            if(bkick(20).gt.0.d0)then
                theta_bcm=bkick(20)
             endif
 
@@ -3077,21 +3221,6 @@ Cf2py intent(out) bppout,bcmout
          tms(k) = tm
          tbgb(k) = tscls(1)
 *
-* Check for blue straggler formation.
-*
-         if(kw.le.1.and.tm.lt.tphys.and..not.bss)then
-            bss = .true.
-            evolve_type = 14.0
-            rrl1 = rad(1)/rol(1)
-            rrl2 = rad(2)/rol(2)
-            CALL writebpp(jp,tphys,evolve_type,
-     &                    mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                    tb,ecc,rrl1,rrl2,bkick)
-            DO jj = 13,20
-               bkick(jj) = 0.0
-            ENDDO
-         endif
-*
  90   continue
 *
       do 100 , k = 1,2
@@ -3134,6 +3263,9 @@ Cf2py intent(out) bppout,bcmout
               deltam1_bcm = (dm2 - dms(1))/dt
               deltam2_bcm = (-1.0*dm1 - dms(2))/dt
           endif
+* Check if PISN occurred, and if so overwrite formation
+          if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+          if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -3158,7 +3290,9 @@ Cf2py intent(out) bppout,bcmout
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3179,7 +3313,9 @@ Cf2py intent(out) bppout,bcmout
          rrl2 = rad(2)/rol(2)
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                 tb,ecc,rrl1,rrl2,bkick)
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3205,7 +3341,9 @@ Cf2py intent(out) bppout,bcmout
       evolve_type = 5.0
       CALL writebpp(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
-     &              tb,ecc,rrl1,rrl2,bkick)
+     &              tb,ecc,rrl1,rrl2,bkick,
+     &              aj(1),aj(2),tms(1),tms(2),
+     &              massc(1),massc(2),rad(1),rad(2))
       DO jj = 13,20
          bkick(jj) = 0.0
       ENDDO
@@ -3217,12 +3355,24 @@ Cf2py intent(out) bppout,bcmout
      & m1ce,m2ce
 *
       if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+         if(j1.eq.2)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsn,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               vk,bkick,formation(j1),formation(j2),
+     &               bhspin(j1),bhspin(j2),binstate,mergertype,
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3238,17 +3388,48 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         if(com.and..not.coel)then
+         if(com.and..not.coel.and..not.disrupt)then
+* if it went through common envelope
+* did not disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system is still in binary
             binstate = 0
             mergertype = -1
+         elseif(com.and..not.coel.and.disrupt)then
+* if it went through common envelope
+* and did disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system should be marked as disrupted
+            binstate = 2
+            mergertype = -1
+         endif
+* else it merged in the common envelope
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
          endif
       elseif(kstar(j2).ge.2.and.kstar(j2).le.9.and.kstar(j2).ne.7)then
+         if(j1.eq.1)then
+             switchedCE = .true.
+         else
+             switchedCE = .false.
+         endif
+         evolve_type = 7.d0
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),
+     &                 kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2))
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,ecsn,ecsn_mlow,
-     &               formation(j1),formation(j2),ST_tide,
-     &               binstate,mergertype,natal_kick_array)
+     &               vk,bkick,formation(j1),formation(j2),
+     &               bhspin(j2),bhspin(j1),binstate,mergertype,
+     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3264,12 +3445,31 @@ Cf2py intent(out) bppout,bcmout
             bkick(1) = 3-bkick(1)
          endif
          com = .true.
-         if(com.and..not.coel)then
+         if(com.and..not.coel.and..not.disrupt)then
+* if it went through common envelope
+* did not disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system is still in binary
             binstate = 0
             mergertype = -1
+         elseif(com.and..not.coel.and.disrupt)then
+* if it went through common envelope
+* and did disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system should be marked as disrupted
+            binstate = 2
+            mergertype = -1
+         endif
+* else it merged in the common envelope
+         if(binstate.eq.1.d0)then
+             sep = 0.d0
+             tb = 0.d0
+         elseif(binstate.eq.2.d0)then
+             sep = -1.d0
+             tb = -1.d0
          endif
       else
-         CALL mix(mass0,mass,aj,kstar,zpars)
+         CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
       endif
 
 * set kick values for the bcm array
@@ -3279,15 +3479,15 @@ Cf2py intent(out) bppout,bcmout
       if(bkick(14).gt.0.d0)then
          vk2_bcm=bkick(14)
       endif
-      if(bkick(17).gt.0.d0.and.binstate.ne.2.d0)then
+      if(bkick(17).gt.0.d0)then
          vsys_bcm=bkick(17)
       endif
-      if(bkick(20).gt.0.d0.and.binstate.ne.2.d0)then
+      if(bkick(20).gt.0.d0)then
          theta_bcm=bkick(20)
       endif
 
       if(com)then
-          evolve_type = 7.0
+          evolve_type = 8.0
           mass1_bpp = mass(1)
           mass2_bpp = mass(2)
           if(kstar(1).eq.15) mass1_bpp = mass0(1)
@@ -3297,7 +3497,9 @@ Cf2py intent(out) bppout,bcmout
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass1_bpp,mass2_bpp,
      &                  kstar(1),kstar(2),sep,
-     &                  tb,ecc,rrl1,rrl2,bkick)
+     &                  tb,ecc,rrl1,rrl2,bkick,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2))
          DO jj = 13,20
             bkick(jj) = 0.0
          ENDDO
@@ -3358,7 +3560,9 @@ Cf2py intent(out) bppout,bcmout
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
-     &                        0.d0,0.d0,0.d0,ngtv,bkick)
+     &                        0.d0,-1.d0,0.d0,ngtv,bkick,
+     &                        aj(1),aj(2),tms(1),tms(2),
+     &                        massc(1),massc(2),rad(1),rad(2))
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -3366,16 +3570,23 @@ Cf2py intent(out) bppout,bcmout
                 evolve_type = 11.0
                 binstate = 2
                 mergertype = -1
+                tb = -1.d0
+                sep = -1.d0
+                ecc = -1.d0
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
-     &                        tb,ecc,0.d0,ngtv2,bkick)
+     &                        tb,ecc,0.d0,ngtv2,bkick,
+     &                        aj(1),aj(2),tms(1),tms(2),
+     &                        massc(1),massc(2),rad(1),rad(2))
             else
                 evolve_type = 9.0
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
-     &                        0.d0,0.d0,0.d0,ngtv,bkick)
+     &                        0.d0,0.d0,0.d0,ngtv,bkick,
+     &                        aj(1),aj(2),tms(1),tms(2),
+     &                        massc(1),massc(2),rad(1),rad(2))
             endif
             DO jj = 13,20
                bkick(jj) = 0.0
@@ -3402,7 +3613,14 @@ Cf2py intent(out) bppout,bcmout
             epoch(2) = tphys
          endif
          ecc = -1.d0
-         sep = 0.d0
+         if(binstate.eq.2)then
+*            Check if disrupted then we want sep=ecc=porb=-1
+             sep = -1.d0
+         elseif(binstate.eq.1)then
+*            check if merge then sep=0
+             tb = 0.d0
+             sep = 0.d0
+         endif
          dtm = 0.d0
          coel = .false.
          goto 4
@@ -3429,7 +3647,9 @@ Cf2py intent(out) bppout,bcmout
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
-     &                      0.d0,0.d0,0.d0,ngtv,bkick)
+     &                      0.d0,-1.d0,0.d0,ngtv,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -3439,7 +3659,9 @@ Cf2py intent(out) bppout,bcmout
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
-     &                      0.d0,0.d0,0.d0,ngtv2,bkick)
+     &                      0.d0,0.d0,0.d0,ngtv2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
           else
               evolve_type = 10.0
               rrl1 = rad(1)/rol(1)
@@ -3447,7 +3669,9 @@ Cf2py intent(out) bppout,bcmout
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),sep,
-     &                      tb,ecc,rrl1,rrl2,bkick)
+     &                      tb,ecc,rrl1,rrl2,bkick,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2))
           endif
           DO jj = 13,20
               bkick(jj) = 0.0
@@ -3483,6 +3707,9 @@ Cf2py intent(out) bppout,bcmout
               deltam1_bcm = (dm2 - dms(1))/dt
               deltam2_bcm = (-1.0*dm1 - dms(2))/dt
           endif
+* Check if PISN occurred, and if so overwrite formation
+          if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+          if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -3507,6 +3734,7 @@ Cf2py intent(out) bppout,bcmout
 
       elseif((kstar(1).eq.15.and.kstar(2).eq.15))then
          tphys = tphysf
+         evolve_type = 10.0
          goto 135
       endif
       tphysfhold = tphysf
@@ -3532,8 +3760,10 @@ Cf2py intent(out) bppout,bcmout
       endif
       bcm(ip+1,1) = -1.0
       bpp(jp+1,1) = -1.0
-      bppout = bpp
-      bcmout = bcm
+      if(using_cmc.eq.0)then
+          bppout = bpp
+          bcmout = bcm
+      endif
 *
 
       END SUBROUTINE evolv2

@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,natal_kick)
+     &                r2,fallback,bkick,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -62,10 +62,9 @@
 * Output
       real*8 v1xout,v1yout,v1zout,vkout1,vkout2
       real*8 v2xout,v2yout,v2zout
-      logical output
+      logical output,disrupt
 *
       real*8 bkick(20)
-      real*8 natal_kick(6)
       real ran3,xx
       external ran3
 *
@@ -88,7 +87,7 @@
          sigma = -1.d0*sigma
       endif
       sigmah = sigma
-*Test: Checking if we can make customized sigma for blackholes only
+* scale down BH kicks if bhsigmafrac is specified
       if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
            sigma = sigmah*bhsigmafrac
       endif
@@ -160,8 +159,8 @@
 * Before we draw the kick from the maxwellian and then scale it
 * if desired, let us see if a pre-supplied set of natal kicks
 * and phi theta values associated with the kicks was passed.
-      if(natal_kick(snstar).ge.0.d0)then
-          vk = natal_kick(snstar)
+      if(natal_kick_array(snstar).ge.0.d0)then
+          vk = natal_kick_array(snstar)
           vk2 = vk*vk
       else
 *
@@ -201,22 +200,15 @@
           endif
       endif
 
-* Set natal kick magnitude in the bkick array
-      if(bkick(1).le.0.d0)then
-        bkick(13) = vk
-      elseif(bkick(5).le.0.d0)then
-        bkick(14) = vk
-      endif
-
       sigma = sigmah
 
 
 * Before we randomly draw a phi and theta,
 * let us see if a pre-supplied set of natal kicks
 * and phi/theta values associated with the kicks was passed.
-      if((natal_kick(snstar+2).ge.(-pi/2.d0)).and.
-     &       (natal_kick(snstar+2).le.(pi/2.d0)))then
-          phi = natal_kick(snstar+2)
+      if((natal_kick_array(snstar+2).ge.(-pi/2.d0)).and.
+     &       (natal_kick_array(snstar+2).le.(pi/2.d0)))then
+          phi = natal_kick_array(snstar+2)
           sphi = SIN(phi)
       else
 * CLR - Allow for a restricted opening angle for SN kicks
@@ -235,9 +227,9 @@
       cphi = COS(phi)
 
 
-      if((natal_kick(snstar+4).ge.(0.d0)).and.
-     &       (natal_kick(snstar+4).le.(2.d0*pi)))then
-          theta = natal_kick(snstar+4)
+      if((natal_kick_array(snstar+4).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar+4).le.(2.d0*pi)))then
+          theta = natal_kick_array(snstar+4)
       else
           theta = twopi*ran3(idum1)
       endif
@@ -573,6 +565,36 @@
 * Set systemic velocities in the bkick array
       bkick(15) = vkout1
       bkick(16) = vkout2
+* Set natal kick magnitude in the bkick array
+*       SURVIVES FIRST SN
+        if(bkick(1).eq.1.d0.and.bkick(5).eq.0.d0.and.
+     &         bkick(9).eq.0.d0)then
+            bkick(13) = vk
+*       DISRUPTS FIRST SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
+     &         bkick(9).eq.0.d0)then
+            bkick(13) = vk
+            disrupt = .true.
+*       SURVIVES SECOND SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
+     &         bkick(9).eq.0.d0)then
+            bkick(14) = vk
+*       DISRUPTS SECOND SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
+     &         bkick(9).eq.2.d0)then
+            bkick(14) = vk
+            disrupt = .true.
+*       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
+        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
+     &         bkick(9).eq.2.d0)then
+            bkick(14) = vk
+        endif
+
+      if(bkick(1).le.0.d0)then
+        bkick(13) = vk
+      elseif(bkick(5).le.0.d0)then
+        bkick(14) = vk
+      endif
 * Set the total final systemic velocities in the bkick array
       if(ecc.lt.1.d0.and.bkick(1).eq.1.d0.and.bkick(5).eq.2.d0)then
          bkick(17) = SQRT((bkick(2)+bkick(6))*(bkick(2)+bkick(6))+

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Katelyn Breivik (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -37,47 +37,106 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-G = 6.67384*math.pow(10, -11.0)
-c = 2.99792458*math.pow(10, 8.0)
-parsec = 3.08567758*math.pow(10, 16)
-Rsun = 6.955*math.pow(10, 8)
-Msun = 1.9891*math.pow(10,30)
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569*10**7.0
-Tobs = 3.15569*10**7.0
-geo_mass = G/c**2
-
-
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, met, size, **kwargs):
-    """Something
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, binfrac_model, component_age, met, size, **kwargs):
+    """Generates an initial binary sample according to user specified models
 
     Parameters
     ----------
-    final_kstar1 : `int`
-        name of the format to be registered
+    final_kstar1 : `int or list`
+        Int or list of final kstar1
 
-    final_kstar2 : `int`
-        the class that the sampler returns
+    final_kstar2 : `int or list`
+        Int or list of final kstar2
+
+    primary_model : `str`
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
+
+    ecc_model : `str`
+        Model to sample eccentricity; choices include: thermal, uniform
+
+    SFH_model : `str`
+        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+
+    binfrac_model : `str or float`
+        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+
+    component_age : `float`
+        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
+
+    met : `float`
+        Sets the metallicity of the binary population where solar metallicity is 0.02
+
+    size : `int`
+        Size of the population to sample
+
+    Returns
+    -------
+    InitialBinaryTable : `pandas.DataFrame`
+        DataFrame in the format of the InitialBinaryTable
+
+    mass_singles : `float`
+        Total mass in single stars needed to generate population
+
+    mass_binaries : `float`
+        Total mass in binaries needed to generate population
+
+    n_singles : `int`
+        Number of single stars needed to generate a population
+
+    n_binaries : `int`
+        Number of binaries needed to generate a population
     """
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
-    sampled_mass = 0.0
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = Sample()
-    mass1, total_mass1 = initconditions.sample_primary(primary_min, primary_max, primary_model, size=size)
-    # add in the total sampled primary mass
-    sampled_mass += total_mass1
-    mass1_binary, mass_singles = initconditions.binary_select(mass1)
-    mass2_binary = initconditions.sample_secondary(mass1_binary)
-    # add in the sampled secondary mass
-    sampled_mass += np.sum(mass2_binary)
+
+    #set up multiplier if the mass sampling is inefficient
+    multiplier = 1
+    mass1_binary = []
+    mass2_binary = []
+    binfrac = []
+
+    # track the mass in singles and the mass in binaries
+    mass_singles = 0.0
+    mass_binaries = 0.0
+
+    # track the total number of stars sampled
+    n_singles = 0
+    n_binaries = 0
+    while len(mass1_binary) < size:
+        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
+        mass1_binaries, mass_single, binfrac_binaries = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+
+        # track the mass sampled
+        mass_singles += np.sum(mass_single)
+        mass_binaries += np.sum(mass1_binaries)
+        mass_binaries += np.sum(mass2_binaries)
+
+        # track the total number sampled
+        n_singles += len(mass_single)
+        n_binaries += len(mass1_binaries)
+
+        # select out the primaries and secondaries that will produce the final kstars
+        ind_select_primary, = np.where((mass1_binaries > primary_min) & (mass1_binaries < primary_max))
+        ind_select_secondary, = np.where((mass2_binaries > secondary_min) & (mass2_binaries < secondary_max))
+        ind_select = list(set(ind_select_primary).intersection(ind_select_secondary))
+        mass1_binary.extend(mass1_binaries[ind_select])
+        mass2_binary.extend(mass2_binaries[ind_select])
+        binfrac.extend(binfrac_binaries[ind_select])
+        # check to see if we should increase the multiplier factor to sample the population more quickly
+
+        if len(mass1_binary) < size/100:
+            # well this size clearly is not working time to increase
+            # the multiplier by an order of magnitude
+            multiplier *= 10
+
+    mass1_binary = np.array(mass1_binary)
+    mass2_binary = np.array(mass2_binary)
+    binfrac = np.asarray(binfrac)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
@@ -86,35 +145,32 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), sampled_mass, size
+    return InitialBinaryTable.InitialBinaries(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac=binfrac), mass_singles, mass_binaries, n_singles, n_binaries
 
 
 
 register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
+                 usage="final_kstar1, final_kstar2, binfrac_model, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
 
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_min, primary_max, primary_model='kroupa93', size=None):
+    def sample_primary(self, primary_model='kroupa93', size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
         `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-        between 0.1 and 100 Msun
+        between 0.08 and 150 Msun
         salpter55 follows
         `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-        between 0.1 and 100 Msun
+        between 0.08 and 150 Msun
+        kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
+        between 0.08 and 100 Msun
+
 
         Parameters
         ----------
-        primary_min : float
-            minimum initial primary mass [Msun]
-
-        primary_max : float
-            maximum initial primary mass [Msun]
-
         primary_model : str, optional
             model for mass distribution; choose from:
 
@@ -122,66 +178,74 @@ class Sample(object):
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             valid for masses between 0.1 and 100 Msun
 
+
             salpter55 follows
             `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+            valid for masses between 0.1 and 100 Msun
+
+            kroupa01 follows Kroupa (2001), normalization comes from
+            `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
 
             Default kroupa93
         size : int, optional
             number of initial primary masses to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
         a_0 : array
             Sampled primary masses
-        total_sampled_mass : float
+        sampled_mass : float
             Total amount of mass sampled
         """
 
         if primary_model=='kroupa93':
-            # If the final binary contains a compact object (BH or NS),
-            # we want to evolve 'size' binaries that could form a compact
-            # object so we over sample the initial population
-            if primary_max >= 150.0:
-                a_0 = np.random.uniform(0.0, 0.9999797, size*500)
-            elif primary_max >= 30.0:
-                a_0 = np.random.uniform(0.0, 0.9999797, size*50)
-            else:
-                a_0 = np.random.uniform(0.0, 0.9999797, size)
+            total_sampled_mass = 0
+            multiplier = 1
+            a_0 = np.random.uniform(0.0, 1, size)
 
             low_cutoff = 0.740074
-            high_cutoff=0.908422
+            high_cutoff = 0.908422
 
             lowIdx, = np.where(a_0 <= low_cutoff)
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = ((0.1) ** (-3.0/10.0) - (a_0[lowIdx] / 0.968533)) ** (-10.0/3.0)
-            a_0[midIdx] = ((0.5) ** (-6.0/5.0) - ((a_0[midIdx] - low_cutoff) / 0.129758)) ** (-5.0/6.0)
-            a_0[highIdx] = (1 - ((a_0[highIdx] - high_cutoff) / 0.0915941)) ** (-10.0/17.0)
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-1.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-1.7, size=len(highIdx))
 
-            total_sampled_mass = np.sum(a_0)
+            total_sampled_mass += np.sum(a_0)
 
-            a_0 = a_0[a_0 >= primary_min]
-            a_0 = a_0[a_0 <= primary_max]
+            return a_0, total_sampled_mass
+
+        elif primary_model=='kroupa01':
+            total_sampled_mass = 0
+            multiplier = 1
+            a_0 = np.random.uniform(0.0, 1, size)
+
+            low_cutoff = 0.37148816884988606
+            high_cutoff = 0.8496015751162523
+
+            lowIdx, = np.where(a_0 <= low_cutoff)
+            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
+            highIdx, = np.where(a_0 >= high_cutoff)
+
+            a_0[lowIdx] = rndm(a=0.01, b=0.08, g=0.7, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(midIdx))
+            a_0[highIdx] = rndm(a=0.5, b=100.0, g=-1.3, size=len(highIdx))
+
+            total_sampled_mass += np.sum(a_0)
+
             return a_0, total_sampled_mass
 
         elif primary_model=='salpeter55':
-            # If the final binary contains a compact object (BH or NS),
-            # we want to evolve 'size' binaries that could form a compact
-            # object so we over sample the initial population
-            if primary_max == 150.0:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*500)
-            elif primary_max == 50.0:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size*50)
-            else:
-                a_0 = rndm(a=0.1, b=100, g=-1.35, size=size)
+            total_sampled_mass = 0
+            multiplier = 1
+            a_0 = rndm(a=0.08, b=150, g=-1.35, size=size*multiplier)
 
-            total_sampled_mass = np.sum(a_0)
-
-            a_0 = a_0[a_0 >= primary_min]
-            a_0 = a_0[a_0 <= primary_max]
+            total_sampled_mass += np.sum(a_0)
 
             return a_0, total_sampled_mass
 
@@ -209,8 +273,9 @@ class Sample(object):
         return secondary_mass
 
 
-    def binary_select(self, primary_mass):
-        """Select the which primary masses will have a compution using a
+    def binary_select(self, primary_mass, binfrac_model=0.5):
+        """Select which primary masses will have a companion using
+        either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
 
@@ -218,6 +283,10 @@ class Sample(object):
         ----------
         primary_mass : array
             Mass that determines the binary fraction
+        binfrac_model : str or float
+            vanHaaften - primary mass dependent and ONLY VALID
+                         up to 100 Msun
+            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1 means every star is in a binary pair
 
         Returns
         -------
@@ -225,15 +294,32 @@ class Sample(object):
             primary masses that will have a binary companion
         primary_mass[singleIdx] : array
             primary masses that will be single stars
+        binary_fraction[binaryIdx] : array
+            system-specific probability of being in a binary
         """
 
-        binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-        binary_choose =  np.random.uniform(0, 1.0, binary_fraction.size)
+        if type(binfrac_model) == str:
+            if binfrac_model == 'vanHaaften':
+                binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
+                binary_choose =  np.random.uniform(0, 1.0, primary_mass.size)
 
-        binaryIdx, = np.where(binary_fraction > binary_choose)
-        singleIdx, = np.where(binary_fraction < binary_choose)
+                singleIdx, = np.where(binary_fraction < binary_choose)
+                binaryIdx, = np.where(binary_fraction >= binary_choose)
+            else:
+                raise ValueError('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
+        elif type(binfrac_model) == float:
+            if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
+                binary_fraction = binfrac_model * np.ones(primary_mass.size)
+                binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
 
-        return primary_mass[binaryIdx], primary_mass[singleIdx]
+                singleIdx, = np.where(binary_choose > binary_fraction)
+                binaryIdx, = np.where(binary_choose <= binary_fraction)
+            else:
+                raise ValueError('You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1.')
+        else:
+            raise ValueError('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
+
+        return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
     def sample_porb(self, mass1, mass2, ecc, size=None):
@@ -299,12 +385,14 @@ class Sample(object):
 
         # convert out of log space
         a_0 = np.exp(a_0)
-        # convert to meters
-        a_0 = a_0*Rsun
+        # convert to au
+        rsun_au = 0.00465047
+        a_0 = a_0*rsun_au
 
-        # convert to orbital period in seconds
-        porb_sec = (4*np.pi**2.0/(G*(mass1+mass2)*Msun)*(a_0**3.0))**0.5
-        return porb_sec/sec_in_day
+        # convert to orbital period in years
+        yr_day = 365.24
+        porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
+        return porb_yr*yr_day
 
 
     def sample_ecc(self, ecc_model='thermal', size=None):
@@ -320,7 +408,7 @@ class Sample(object):
 
         size : int, optional
             number of eccentricities to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -331,14 +419,14 @@ class Sample(object):
         if ecc_model=='thermal':
             a_0 = np.random.uniform(0.0, 1.0, size)
             ecc = a_0**0.5
-
             return ecc
 
-        if ecc_model=='uniform':
+        elif ecc_model=='uniform':
             ecc = np.random.uniform(0.0, 1.0, size)
-
             return ecc
 
+        else:
+            raise Error('You have specified an unsupported model. Please choose from thermal or uniform')
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -365,7 +453,7 @@ class Sample(object):
             Deprecated if SFH_model='FIRE'
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -397,7 +485,7 @@ class Sample(object):
             return tphys, metallicity
 
         else:
-            raise Error('You must choose between const, burst, delta_burst, or FIRE')
+            raise Error('You have specified an unsupported model. Please choose between const, burst, delta_burst, or FIRE')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

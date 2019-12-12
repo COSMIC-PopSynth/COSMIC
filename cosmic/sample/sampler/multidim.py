@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Katelyn Breivik (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -37,22 +37,6 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_multidim_sampler','MultiDim']
 
 
-G = 6.67384*math.pow(10, -11.0)
-c = 2.99792458*math.pow(10, 8.0)
-parsec = 3.08567758*math.pow(10, 16)
-Rsun = 6.955*math.pow(10, 8)
-Msun = 1.9891*math.pow(10,30)
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569*10**7.0
-Tobs = 3.15569*10**7.0
-geo_mass = G/c**2
-
-
 def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, met, size, **kwargs):
     """adapted version of Maxwell Moe's IDL code that generates a population of single and binary stars
 
@@ -87,24 +71,75 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     ;          analytic fits to corrected binary star populations.
     ; Step 2 - Implement Monte Carlo method to generate stellar
     ;          population from those density functions.
+
+    Parameters
+    ----------
+    final_kstar1 : `list` or `int`
+        Int or list of final kstar1
+
+    final_kstar2 : `list` or `int`
+        Int or list of final kstar2
+
+    rand_seed : `int`
+        Int to seed random number generator
+
+    nproc : `int`
+        Number of processors to use to generate population
+
+    SFH_model : `str`
+        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+
+    component_age : `float`
+        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
+
+    met : `float`
+        Sets the metallicity of the binary population where solar metallicity is 0.02
+
+    size : `int`
+        Size of the population to sample
+
+    **porb_lo : `float`
+        Lower limit in days for the orbital period distribution
+
+    **porb_hi: `float`
+        Upper limit in days for the orbital period distribution
+
+    Returns
+    -------
+    InitialBinaryTable : `pandas.DataFrame`
+        DataFrame in the format of the InitialBinaryTable
+
+    mass_singles : `float`
+        Total mass in single stars needed to generate population
+
+    mass_binaries : `float`
+        Total mass in binaries needed to generate population
+
+    n_singles : `int`
+        Number of single stars needed to generate a population
+
+    n_binaries : `int`
+        Number of binaries needed to generate a population
     """
 
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
+    porb_lo = kwargs.pop('porb_lo', 0.15)
+    porb_hi = kwargs.pop('porb_hi', 8.0)
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, sampled_mass, n_sampled = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, rand_seed, size=size, nproc = nproc)
-    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = size)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc)
+    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
-    return InitialBinaryTable.MultipleBinary(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity), sampled_mass, n_sampled
+    return InitialBinaryTable.InitialBinaries(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac=binfrac), mass_singles, mass_binaries, n_singles, n_binaries
 
 register_sampler('multidim', InitialBinaryTable, get_multidim_sampler,
-                 usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size")
+                 usage="final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, metallicity, size, binfrac")
 
 
 
@@ -149,30 +184,34 @@ class MultiDim:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, rand_seed=0, size=None, nproc=1):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, porb_lo=0.15, porb_hi=8.0, rand_seed=0, size=None, nproc=1):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
         Parameters
         ----------
-        M1min : float
+        M1min : `float`
             minimum primary mass to sample [Msun]
             DEFAULT: 0.08
-        M2min : float
+        M2min : `float`
             minimum secondary mass to sample [Msun]
             DEFAULT: 0.08
-        M1max : float
+        M1max : `float`
             maximum primary mass to sample [Msun]
             DEFAULT: 150.0
-        M2max : float
+        M2max : `float`
             maximum primary mass to sample [Msun]
             DEFAULT: 150.0
+        porb_lo : `float`
+            minimum orbital period to sample [log10(days)]
+        porb_hi : `float`
+            maximum orbital period to sample [log10(days)]
         rand_seed : int
             random seed generator
             DEFAULT: 0
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -184,16 +223,25 @@ class MultiDim:
             array of orbital periods in days with size=size
         ecc_list : array
             array of eccentricities with size=size
-        total_mass : float
-            total mass including single and binary stars
-            required to generate the initial population
+        mass_singles : `float`
+            Total mass in single stars needed to generate population
+        mass_binaries : `float`
+            Total mass in binaries needed to generate population
+        n_singles : `int`
+            Number of single stars needed to generate a population
+        n_binaries : `int`
+            Number of binaries needed to generate a population
+        binfrac_list : array
+            array of binary probabilities based on primary mass and period with size=size
         """
         #Tabulate probably density functions of periods,
         #mass ratios, and eccentricities based on
         #analytic fits to corrected binary star populations.
 
         numM1 = 101
-        numlogP = 158
+        #use binwidths to maintain structure of original array
+        # default size is: numlogP=158
+        bwlogP = 0.05
         numq = 91
         nume = 100
 
@@ -205,11 +253,12 @@ class MultiDim:
         M1_hi = 40
 
         M1v = np.logspace(np.log10(M1_lo), np.log10(M1_hi), numM1)
-
         #; 0.15 < log P < 8.0
-        log10_porb_lo = 0.15
-        log10_porb_hi = 8.0
-        logPv = np.linspace(log10_porb_lo, log10_porb_hi, numlogP)
+        #; or use user specified values
+        log10_porb_lo = porb_lo
+        log10_porb_hi = porb_hi
+        logPv = np.arange(log10_porb_lo, log10_porb_hi + bwlogP, bwlogP)
+        numlogP = len(logPv)
 
         #; 0.10 < q < 1.00
         q_lo = 0.1
@@ -481,16 +530,21 @@ class MultiDim:
         ecc_list = []
 
 
-        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, seed, output):
-            if seed > 0:
-                np.random.seed(seed)
-            else:
-                np.random.seed()
-            total_mass = 0.0
+        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, nproc, seed, output):
+            # get unique and replicatable seed for each process
+            process = mp.Process()
+            mp_seed = (process._identity[0]-1)+(nproc*(process._identity[1]-1))
+            np.random.seed(seed + mp_seed)
+
+            mass_singles = 0.0
+            mass_binaries = 0.0
+            n_singles = 0
+            n_binaries = 0
             primary_mass_list = []
             secondary_mass_list = []
             porb_list = []
             ecc_list = []
+            binfrac_list = []
 
             #; Full primary mass vector across 0.08 < M1 < 150
             M1 = np.linspace(0,150,150000) + 0.08
@@ -508,7 +562,6 @@ class MultiDim:
             #; Value of primary mass CDF where M1 = M1min
             #; Minimum primary mass to generate (must be >0.080 Msun)
             cumf_M1min = np.interp(0.08, M1, cumfM1)
-            n_sampled = 0
             while len(primary_mass_list) < size:
 
                 #; Select primary M1 > M1min from primary mass function
@@ -567,23 +620,24 @@ class MultiDim:
                     #; Given M1 & P, select q from cumulative mass ratio distribution
                     myq = np.interp(np.random.rand(), mycumqdist, qv)
 
-                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max:
+                    if myM1 > M1min and myq * myM1 > M2min and myM1 < M1max and myq * myM1 < M2max and mylogP < porb_hi and mylogP > porb_lo:
                         primary_mass_list.append(myM1)
                         secondary_mass_list.append(myq * myM1)
                         porb_list.append(10**mylogP)
                         ecc_list.append(mye)
-                    total_mass += myM1
-                    total_mass += myq * myM1
-                    n_sampled += 1
+                        binfrac_list.append(mybinfrac)
+                    mass_binaries += myM1
+                    mass_binaries += myq * myM1
+                    n_binaries += 1
                 else:
-                    total_mass += myM1
-                    n_sampled += 1
-            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass, n_sampled])
+                    mass_singles += myM1
+                    n_singles += 1
+            output.put([primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries, binfrac_list])
             return
 
         output = mp.Queue()
         processes = [mp.Process(target = _sample_initial_pop,\
-                                args = (M1min, M2min, M1max, M2max, size/nproc, rand_seed, output))\
+                                args = (M1min, M2min, M1max, M2max, size/nproc, nproc, rand_seed, output))\
                                 for x in range(nproc)]
         for p in processes:
             p.daemon = True
@@ -596,9 +650,12 @@ class MultiDim:
         secondary_mass_list = []
         porb_list = []
         ecc_list = []
-        total_mass = []
-        n_sampled = []
-        dat_lists = [[],[],[],[],[],[]]
+        mass_singles = []
+        mass_binaries = []
+        n_singles = []
+        n_binaries = []
+        binfrac_list = []
+        dat_lists = [[],[],[],[],[],[],[],[],[]]
 
         for output_list in results:
             ii = 0
@@ -610,10 +667,13 @@ class MultiDim:
         secondary_mass_list = np.hstack(dat_lists[1])
         porb_list = np.hstack(dat_lists[2])
         ecc_list = np.hstack(dat_lists[3])
-        total_mass = np.sum(dat_lists[4])
-        n_sampled = np.sum(dat_lists[5])
+        mass_singles = np.sum(dat_lists[4])
+        mass_binaries = np.sum(dat_lists[5])
+        n_singles = np.sum(dat_lists[6])
+        n_binaries = np.sum(dat_lists[7])
+        binfrac_list = np.hstack(dat_lists[8])
 
-        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, total_mass, n_sampled
+        return primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries, binfrac_list
 
     def sample_SFH(self, SFH_model='const', component_age=10000.0, met = 0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -640,7 +700,7 @@ class MultiDim:
             Deprecated if SFH_model='FIRE'
         size : int, optional
             number of evolution times to sample
-            NOTE: this is set in runFixedPop call as Nstep
+            NOTE: this is set in cosmic-pop call as Nstep
 
         Returns
         -------

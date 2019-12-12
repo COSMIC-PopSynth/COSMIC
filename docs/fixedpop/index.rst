@@ -1,190 +1,222 @@
 .. _fixedpop:
 
 ######################################
-Generate a population the `cosmic` way
+Generate a population the `COSMIC` way
 ######################################
-There are two executables that are installed when you pip install cosmic:
+Beyond providing a simple interface and several updates to BSE (`Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_), COSMIC is designed to adapt the number of systems simulated to each binary evolution model a user selects. This is done by iteratively simulating binaries initialized with ZAMS binary parameters and a star formation history until the distributions of binary parameters specified by the user converge. This process is carried out by ``cosmic-pop``. Once this population is simulated, an astrophysical population can be sampled from the output of ``cosmic-pop``.
 
-* runFixedPop
 
-* gxRealization
-
-These two executables generate the two components of a cosmic Milky Way population. 
-
-***********
-runFixedPop
-***********
-The `fixed population` is simulated first and is designed to fully describe the population of binaries that results from a user specified star formation history (SFH) and binary evolution model (BSEDict, specified in an inifile). The fixed population is only simulated once and only contains information about the intrinsic properties of the binary (e.g. masses, semimajor axes, metallicities, etc.) Information about the location in the Galaxy of each binary is `not` contained in the fixed population. The arguments necessary to run the runFixedPop executable can be found using the help command:
+********************
+cosmic-pop
+********************
+The `fixed population` is the output of ``cosmic-pop`` and is designed to fully describe the distribution of binary parameters that results from a user specified star formation history (SFH) and binary evolution model (BSEDict, specified in an inifile). The fixed population is only simulated once and only contains information about the intrinsic properties of the binary (e.g. masses, semimajor axes, metallicities, etc.) Information about the location and orientation of each binary is `not` contained in the fixed population. The arguments necessary to run the ``cosmic-pop`` executable can be found using the help command:
 
 .. code-block:: bash
 
-   runFixedPop -h 
+   cosmic-pop -h
 
-.. program-output:: runFixedPop -h 
+.. program-output:: cosmic-pop -h
 
 ======
 Inputs
 ======
-
-------------------------
-Star Formation Histories
-------------------------
-
-There are currently three SFHs implemented in cosmic, one each for the Milky Way thin disk, thick disk and bulge. Their assumptions are as follows:
-
-* ThinDisk : constant star formation over 10 Gyr; the metallicity for the thin disk is traditionally set to solar
-
-* ThickDisk : a 1 Gyr burst of constant star formation 11 Gyr in the past; the metallicity for the thick disk is traditionally set to be subsolar, we reccommend 15% solar
-
-* Bulge : a 1 Gyr burst of constant 10 Gyr in the past; the metallicity for the bulge is traditionally set to solar 
-
-New implementations of SFHs will be added to the sample_SFH modules in the independent and multidim samplers.  
 
 ----------
 Params.ini
 ----------
 
-The inifile contains four subsections: filters, convergence, rand_seed, and bse. 
-The `filters` subsection allows you to specify how you would like to filter the binary population. See the inifile for a description of each flag.
+PLEASE SEE :ref:`inifile` for detailed information about the inifile and how it is constructed
 
-The `convergence` subsection allows you to specify a particular region of parameter space where you would like the convergence of each binary parameter distribution to be tested. The only implemented convergence filter is for LISA binaries, where the convergence is computed only for binaries with orbital period less than 5000 s. This allows for low probability, but high signal to noise binaries with very short orbital periods to be fully accounted for. 
+The inifile contains five subsections: ``filters``, ``convergence``, ``rand_seed``, and ``bse``.
 
-The `rand_seed` subsections allows you to initialize the population with a random seed for reproduceability. Note that for each simulated binary, cosmic also returns the initial conditions, including a random seed that will reproduce that exact binary. The random seed produced in the rand_seed subsection allows full populations to be reproduced. This is particularly useful when comparing two popuations, e.g. binary black holes and binary neutron stars, which should be simulated separately, but using the same rand_seed value.
+The ``filters`` subsection allows you to specify how you would like to filter the binary population. See the inifile for a description of each flag.
 
-The `bse` subsection is where all the bse flags are specified.
+The ``convergence`` subsection allows you to specify a particular region of parameter space where you would like the convergence of each binary parameter distribution to be tested. The only implemented convergence filter is for LISA binaries, where the convergence is computed only for binaries with orbital period less than 5000 s. This allows for low probability, but high signal to noise binaries with very short orbital periods to be fully accounted for.
+
+The ``rand_seed`` subsections allows you to initialize the population with a random seed for reproduceability. Note that for each simulated binary, COSMIC also returns the initial conditions, including a random seed that will reproduce that exact binary. The random seed produced in the rand_seed subsection allows full populations to be reproduced. This is particularly useful when comparing two popuations, e.g. binary black holes and binary neutron stars, which should be simulated separately, but using the same rand_seed value.
+
+The ``sampling`` subsection allows you to control how you sample and achieve the initial binaries that you evolve.
+
+The ``bse`` subsection is where all the BSE flags are specified.
 
 -------------------
 Sample command line
-------------------- 
+-------------------
 
-Below is an example command line call for runFixedPop:
+Below is an example command line call for ``cosmic-pop``:
 
 .. code-block:: bash
-   
-   runFixedPop --final_kstar1 11 --final_kstar2 10 11 --inifile Params.ini --galaxy_component ThinDisk --metallicity 0.02 --convergence-params mass_1 mass_2 sep ecc --initial_samp multidim --Nstep 15000 --Niter 1000000000 -n 2 
+
+   cosmic-pop --final-kstar1 13 14 --final-kstar2 13 14 --inifile Params.ini --Nstep 1000 --Niter 1000000000 -n 2
 
 A breakdown of each argument follows:
 
-* ---final_ktar1 11 ---final_kstar2 10 11 : this tells cosmic to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD. 
+* ``--final-kstar1 13 14 --final-kstar2 13 14`` : this tells COSMIC to keep all systems where the primary star is a BH or NS and the secondary star is also a BH or NS.
 
-* --inifile Params.ini : this tells cosmic where to look for the BSE flags that set the binary evolution model; in this case, the inifile is assumed to be in the same directory that the command line call is made
+* ``--inifile Params.ini`` : this tells COSMIC where to look for the BSE flags that set the binary evolution model; in this case, the inifile is assumed to be in the same directory that the command line call is made
 
-* --galaxy_component ThinDisk : this tells cosmic to run a Milky Way thin disk, which will implement constant star formation history over 10 Gyr
-
-* --metallicity 0.02 : this tells cosmic to use solar metallicity for every binary evolved 
-
-* --convergence-params mass_1 mass_2 sep ecc : this tells cosmic to track how the distributions of the masses, semimajor axis, and eccentricity of the binaries change with each iterated population
-
-* --initial_samp multidim : this tells cosmic to initialize the binaries with multidimensional parameter distributions according to `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-
-* --Nstep 5000 --Niter 10000000 -n 1 : this tells cosmic to use 1 processor to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
+* ``--Nstep 5000 --Niter 10000000 -n 1`` : this tells COSMIC to use 1 processor to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
 
 ===================
 Stopping conditions
 ===================
 
-There are two stopping conditions for runFixedPop:
+There are two stopping conditions for ``cosmic-pop``:
 
-1. the shape of the parameter distributions for the parameters specified in --convergence-params converge to a shape, regardelss of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2018 in prep
+1. The shape of the parameter distributions for the parameters specified in convergence_params section of the inifile file converge to a shape, regardless of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2019 in prep
 
-2. the number of binaries evolved exceeds Niter. 
+2. The number of binaries sampled exceeds ``--Niter``.
 
-=====================
-Output of runFixedPop
-=====================
-The output of runFixed pop is the `fixed population`, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the runFixedPop call above is: dat_ThinDisk_11_10_11.h5. 
+==============================
+Output of cosmic-pop
+==============================
 
-The fixed population contains three pandas DataFrames accessed by the following keys:
+PLEASE SEE :ref:`output_info` for more information about the output data frames including
+what each column means and the units.
 
-* bcm : The final state of the converged population at the present epoch
+The output of ``cosmic-pop`` is the `fixed population`, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the ``cosmic-pop`` call above is: dat_DeltaBurst_13_14_13_14.h5.
 
-* bpp : The evolutionary history of the systems in the bcm data set
+The fixed population contains several pandas DataFrames accessed by the following keys:
 
-* initCond : The initial conditions for each binary in the bcm data set
+* ``conv`` : The converged population whose parameters are sepcified by the ``convergence`` subsection of the inifile
 
-Each of these DataFrames shares a common 'binary_number' column which is used to index the population.
+* ``bpp`` : The evolutionary history of binaries which satisfy the user-specified final kstars and filter in the ``convergence`` subsection
 
+* ``bcm`` : The final state of binaries in the bcm array which satisfy the user-specified final kstars and filter in the ``convergence`` subsection
 
-*************
-gxRealization
-*************
-The gxRealization exectuable uses the fixed population and a model for the spatial distribution of systems in a given Galactic component to Monte Carlo sample synthetic Milky Way population realizations. The necessary arguments for the gxRealization executable can be accessed using the help:
+* ``initCond`` : The initial conditions for each binary which satisfies the user-specified final kstars and filter in the ``convergence`` subsection
 
-.. code-block:: bash
+* ``idx`` : An integer that keeps track of the total number of simulated binaries to maintain proper indexing across several runs of ``cosmic-pop``
 
-   gxRealization -h 
-.. program-output:: gxRealization -h 
+* ``match`` : Tracks the convergence where match = Log :sub:`10` (1-convergence)
 
-======
-Inputs
-======
-cosmic has several different models to spatially distribute binary sources in the Galaxy, depending on the --galaxy_component selection. These choices are detailed below, however, in `all cases` the orbital inclination, longitude of the ascending node, and the argument of periapse are randomized.
+* ``mass_binaries`` : Tracks the total mass of binaries needed to create the fixed population
 
---------
-ThinDisk
---------
-There are three models to choose from with a ThinDisk population, where the differences between each model lie in the distbrituion of binaries above and below the disk and the scaling factor of each distribution. The radial distribution of binaries is always an exponential decay, though the scaling can vary from model to model. The azimuthal distribution is always uniform. 
+* ``mass_singles`` : Tracks the total mass of single stars needed to create the fixed population; if the binary fraction is 100%, the mass in singles will be zero
 
-* 'sech_squared' : Radial exponential decay distribution with scale factor of 2.5 kpc and sech_squared distribution with scale factor of 0.3 kpc; consistent with `Nelemans+2001 <http://adsabs.harvard.edu/abs/2001A%26A...375..890N>`_
+* ``mass_stars`` : Tracks the total mass of all stars, including binaries and singles, needed to create the fixed population
 
-* 'double_exp' : Radial and vertical exponential decay distributions, with a scale factor of 2.5 kpc radially and 0.3 kpc vertically
+* ``n_binaries`` : Tracks the total number of binaries needed to create the fixed population
 
-* 'McMillan' : Radial and vertical exponential decay distributions, with a scale factor of 2.9 kpc radially and 0.3 kpc vertically; consistent with `McMillan 2011 <http://adsabs.harvard.edu/abs/2011MNRAS.414.2446M>`_
+* ``n_singles`` : Tracks the total number of single stars needed to create the fixed population
 
------
-Bulge
------
-There are two models to choose from with a Bulge population.
+* ``n_stars`` : Tracks the total number of stars, where n_stars = n_singles + 2*n_binaries, needed to create the fixed population
 
-* 'exp_squared' : Radial exponential squared decay distribution with a scale factor of 0.5 kpc, uniform azimuthal distribution and uniform in cos polar distribution; consistent with `Nelemans+2001 <http://adsabs.harvard.edu/abs/2001A%26A...375..890N>`_
-
-* 'McMillan' : Three dimensional distribution consistent with `McMillan 2011 <http://adsabs.harvard.edu/abs/2011MNRAS.414.2446M>`_
+The ``conv``, ``bpp``, ``bcm``, and ``initCond`` DataFrames share a common column called ``bin_num`` which is used to index the population across the DataFrames.
 
 
----------
-ThickDisk
----------
-There are two models to choose from with a ThickDisk population. Both use exponentional decay distributions for the radial and vertical directions and uniform azimuthal distribution, but differ in the choice of scale factor.
+**************************************
+scaling to an astrophysical population
+**************************************
+Once the fixed population is simulated, you can scale the simulation to an astrophysical population by resampling the ``conv`` DataFrame. 
 
-* 'double_exp' : Radial and vertical exponential decay distributions with radial scale factor of 2.5 kpc and vertical scale factor of 1 kpc
+First, we need to load the data which is saved in the same directory where` ``cosmic-pop`` is called:
 
-* 'McMillan' : Radial and vertical exponential decay distributions with radial scale factor of 3.1 kpc and vertical scale factor of 0.9 kpc, consistent with `McMillan 2011 <http://adsabs.harvard.edu/abs/2011MNRAS.414.2446M>`_
+.. ipython::
+
+    In [1]: import pandas
+
+    In [2]: import numpy
+
+    In [3]: conv = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='conv')
+
+    In [4]: total_mass = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='mass_stars')
+
+    In [5]: N_stars = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='n_stars')
+
+.. note::
+
+    The masses and numbers of stars/binaries is saved at each iteration, so you'll need to take the maximum mass/number:
+
+.. ipython::
+
+    In [6]: print(N_stars)
+
+    In [7]: total_mass = max(numpy.array(total_mass))[0]
+
+    In [8]: N_stars = max(numpy.array(N_stars))[0]
+
+    In [9]: print(total_mass, N_stars)
+
+Since COSMIC tracks both the total number and total mass of stars formed, you can either scale by number or mass. 
+
+To scale by number, multiply the number of systems in the conv array by the ratio of the total number of stars in the astrophysical population to the total number of stars used to generate the population:
+
+.. ipython::
+
+    In [10]: N_astro = 1e10
+
+    In [11]: N_13_14_13_14_astro = int(len(conv)*N_astro/N_stars)
+
+    In [12]: print(N_13_14_13_14_astro)
 
 
-===================
-Sample command line
-===================
-Below is a sample command line input to run 100 Galactic realizations for a thin disk population of white dwarf binaries with a CO WD primary and CO or He WD secondary.
+Instead, if you want to scale by mass, you can choose between supplying your own mass or using the built in COSMIC models. The process for a user-supplied mass is nearly identical to scaling by number:
 
-.. code-block:: bash
-   
-   gxRealization --final_kstar1 11 --final_kstar2 10 11 --galaxy_component ThinDisk --dist_model McMillan --N_realizations 100 --gx_save True --HG_save False --LISA_calc True -n 1
+.. ipython::
 
-Let's break down each argument:
+    In [13]: M_astro = 1e11
 
-* --final_ktar1 11 --final_kstar2 10 11 : this tells cosmic that we want to keep all systems where the primary star is a CO WD and the secondary star is either a CO or He WD.
+    In [14]: N_13_14_13_14_astro = int(len(conv)*M_astro/total_mass)
 
-* --galaxy_component ThinDisk --dist_model McMillan : this tells cosmic to distribute the thin disk sources according to McMillan 2011
+    In [15]: print(N_13_14_13_14_astro)
 
-* --N_realizations 100 : this tells cosmic to generate 100 thin disk realizations
+If you specified a Milky Way star formation history in the inifile for the ``cosmic-pop`` call (e.g. ThinDisk, Thick Disk, or Bulge), you can easily scale to a representative Milky Way population with the ``MC_samp`` module. This will assume masses according to the `McMillan 2011 <https://ui.adsabs.harvard.edu/abs/2011MNRAS.414.2446M/abstract>`_ model:
 
-* --gx_save True : this tells cosmic to save the galactic realizations - NOTE: this can generate large amounts of data (~3.5G per realization) for large populations (e.g. white dwarf binaries) and large numbers of galactic realizations
+.. ipython::
 
-* --HG_save False : this tells cosmic to ignore any systems that undergo a common envelope while the secondary is on the Hertzsprung Gap; these systems are expected to merge - see Belczynski et al. 2008 for more details
+    In [16]: from cosmic import MC_samp
 
-* --LISA_calc True : this tells cosmic to compute the gravitational wave power which can be used to generate the population's power spectral density observable by LISA
+    In [17]: N_13_14_13_14_ThinDisk = MC_samp.mass_weighted_number(dat=conv, total_sampled_mass=total_mass, component_mass=MC_samp.select_component_mass('ThinDisk'))
 
-* -n : this tells cosmic to use 1 processor - NOTE: multiprocessing is available!
+    In [18]: N_13_14_13_14_Bulge = MC_samp.mass_weighted_number(dat=conv, total_sampled_mass=total_mass, component_mass=MC_samp.select_component_mass('Bulge'))
 
-=======================
-Output of gxRealization
-=======================
-The output of gxRealization is file for every Galactic realization created where each realization file is an hdf5 file with a naming scheme that tells you the Galctic realization number, the Galactic component, and final kstars of the population; the 0th realization data file created by the gxRealization call above is: gxReal_0_ThinDisk_11_10_11.h5.
+    In [19]: N_13_14_13_14_ThickDisk = MC_samp.mass_weighted_number(dat=conv, total_sampled_mass=total_mass, component_mass=MC_samp.select_component_mass('ThickDisk'))
 
-Each realization contains up to four pandas DataFrames accessed by the following keys:
+It is also possible to convolve a star formation history with a DeltaBurst population. As an example, let's create a population of NSs and BHs in the Milky Way thin disk. First, use the number of NS/BHs for the thin disk calculated above, and resample the ``conv`` array:
 
-* gx_dat : The full realization, including binary parameters, spatial distribution, and binary orientation
 
-* PSD : The LISA signal to power spectral density data including the gravitational wave frequency and PSD
+.. ipython::
 
-WARNING - if you set gx_save to False and LISA_calc to False you will get no output!
+    In [20]: print('The number of NS/BH systems in the simulated Milky Way thin disk is: {}'.format(N_13_14_13_14_ThinDisk))
+
+    In [21]: thin_disk_sample = conv.sample(n=N_13_14_13_14_ThinDisk, replace=True)
+
+    In [22]: print(thin_disk_sample)
+
+Now, we can assign a uniform birth time, assuming that the age of the thin disk is 10 Gyr:
+
+.. ipython::
+
+    In [23]: thin_disk_sample['tbirth'] = np.random.uniform(0, 10000, N_13_14_13_14_ThinDisk)
+
+Since we are interested in NSs/BHs that form before the present, we can filter out anything that has a formation time after 10 Gyr: 
+
+.. ipython::
+
+    In [24]: thin_disk_sample = thin_disk_sample.loc[thin_disk_sample.tbirth + thin_disk_sample.tphys < 10000]
+
+This leaves us with a population of NSs/BHs at formation where the formation time is the sum of the birth time and tphys in the ``conv`` array. 
+
+*********************************************
+Assigning positions for Milky Way populations
+*********************************************
+The ``MC_samp`` module also contains methods which assign positions in the Milky Way according to the `McMillan 2011 <https://ui.adsabs.harvard.edu/abs/2011MNRAS.414.2446M/abstract>`_ model. As an example, let's assign positions and orientations for the thin disk population:
+
+.. ipython::
+
+    In [25]: xGx, yGx, zGx, inc, omega, OMEGA = MC_samp.galactic_positions(gx_component='ThinDisk', model='McMillan', size=len(thin_disk_sample))
+
+    In [26]: thin_disk_sample['xGx'] = xGx
+             thin_disk_sample['yGx'] = yGx
+             thin_disk_sample['zGx'] = zGx
+             thin_disk_sample['inc'] = inc
+             thin_disk_sample['omega'] = omega
+             thin_disk_sample['OMEGA'] = OMEGA
+
+    In [27]: print(thin_disk_sample)
+
+Now we have a representative Milky Way population of NS/BH binaries in the thin disk! TADA!! 
+
+
+
