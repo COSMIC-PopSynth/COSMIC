@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Scott Coughlin (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -28,8 +28,26 @@ __all__ = ['epanechnikov', 'filter_bpp_bcm', 'bcm_conv_select',
 
 import scipy.integrate
 import numpy as np
+import pandas as pd
 import scipy.special as ss
 import astropy.stats as astrostats
+import warnings
+import ast
+import operator
+import json
+import itertools
+
+from configparser import ConfigParser
+from .bse_utils.zcnsts import zcnsts
+
+__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
+__credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
+               'Michael Zevin <zevin@northwestern.edu>']
+__all__ = ['filter_bpp_bcm', 'conv_select', 'mass_min_max_select',
+           'idl_tabulate', 'rndm', 'param_transform', 'dat_transform',
+           'dat_un_transform', 'knuth_bw_selector', 'error_check',
+           'check_initial_conditions', 'convert_kstar_evol_type',
+           'pop_write', 'a_from_p', 'p_from_a']
 
 def epanechnikov(kern_len, pos):
     kernel = np.array(kern_len)
@@ -64,8 +82,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     method : `dict`,
         one or more methods by which to filter the
-        bpp or bcm table, e.g. ``{'disrupted_binaries' : False}``;
-        This means you do *not* want disrupted_binaries in your table
+        bpp or bcm table, e.g. ``{'select_final_state' : False}``;
+        This means you do *not* want to select the final state of the binaries in the bcm array
 
     kstar1_range : `list`
         list containing all kstar1 values to retain
@@ -78,10 +96,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     bcm : `pandas.DataFrame`
         filtered bcm dataframe
     """
-    _known_methods = ['mass_transfer_white_dwarf_to_co',
-                      'select_final_state',
-                      'binary_state',
-                      'lisa_sources']
+    _known_methods = ['select_final_state',
+                      'binary_state']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -90,103 +106,323 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
-        if meth == 'mass_transfer_white_dwarf_to_co' and not use:
-            idx_save_1 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                  (bpp.kstar_2.isin([10,11,12])) &
-                                  (bpp.RROL_1 > 1)].bin_num.tolist()
-            idx_save_2 = bpp.loc[~(bpp.kstar_1.isin([10,11,12,13,14])) &
-                                  (bpp.kstar_2.isin([10,11,12])) &
-                                  (bpp.RROL_1 > 2)].bin_num.tolist()
-            idx_save = np.intersect1d(idx_save_1, idx_save_2)
-            bcm = bcm.loc[~bcm.bin_num.isin(idx_save)]
-        elif (meth == 'select_final_state') and use:
+        if (meth == 'select_final_state') and use:
             bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
         elif (meth == 'binary_state'):
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
-
-            # CREATE A LIST OF BIN_NUM INDICES TO APPEND TO
             bin_num_save = []
-            if 0 in use:
-                bcm_0 = bcm.loc[(bcm.bin_state == 0)]
-                bin_num_save.extend(bcm_0.loc[(bcm_0.kstar_1.isin(kstar1_range)) &
-                                              (bcm_0.kstar_2.isin(kstar2_range))].bin_num.tolist())
-            if 1 in use:
-                bcm_1 = bcm.loc[bcm.bin_state == 1]
-                bpp_1 = bpp.loc[bpp.bin_num.isin(bcm_1.bin_num)]
-                bin_num_save.extend(bpp_1.loc[(bpp_1.kstar_1.isin(kstar1_range)) &
-                                              (bpp_1.kstar_2.isin(kstar2_range)) &
-                                              (bpp_1.evol_type == 3)].bin_num.tolist())
 
-            if 2 in use:
-                # SHOULD BE DISRUPTED AND kstar_1.isin(kstar1_range) and kstar_2.isin(kstar2_range)
-                bcm_2 = bcm.loc[bcm.bin_state == 2]
-                bin_num_save.extend(bcm_2.loc[(bcm_2.kstar_1.isin(kstar1_range)) &
-                                              (bcm_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of disrupted or systems
+            # that are alive today we can simply check the last entry in the bcm
+            # array for the system and see what its properities are today
+            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
+                                          (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            # in order to find the properities of merged systems
+            # we actually need to search in the BPP array for the properities
+            # of the objects right at merge because the bcm will report
+            # the post merge object only
+            bcm_1 = bcm.loc[bcm.bin_state == 1]
+
+            # We now find the product of the kstar range lists so we can match the
+            # merger_type column from the bcm array which tells us what objects
+            # merged
+            merger_objects_to_track = []
+            merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar1_range, kstar2_range)))))
+            merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar2_range, kstar1_range)))))
+            bin_num_save.extend(bcm_1.loc[bcm_1.merger_type.isin(merger_objects_to_track)].bin_num.tolist())
+
             bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
 
-        elif (meth == 'lisa_sources') and use:
-            if 0 in method['binary_state']:
-                bcm_0 = bcm.loc[bcm.bin_state==0]
-                bcm_0_LISAflag = bcm_0.loc[bcm_0.porb > 5].bin_num
-                bcm = bcm.loc[~bcm.bin_num.isin(bcm_0_LISAflag)]
-            else:
-                raise ValueError("You must have bin state = 0 for lisa"
-                                 "sources filter")
-    return bcm
+            # this will tell use the binary state fraction of the systems with a certain final kstar type
+            # before we throw out certain binary states if a user requested that.
+            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+            bin_states = []
+            for ii in range(3):
+                try:
+                    bin_states.append(bin_state_fraction.loc[ii])
+                except:
+                    bin_states.append(0)
+            bin_state_fraction = pd.DataFrame([bin_states], columns=[0,1,2])
 
-def bcm_conv_select(bcm_save_tot, bcm_save_last, method):
+            bcm = bcm.loc[bcm.bin_state.isin(use)]
+
+    return bcm, bin_state_fraction
+
+def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_lims):
     """Select bcm data for special convergence cases
 
     Parameters
     ----------
-    bcm_save_tot : `pandas.DataFrame`
+    bcm_save : `pandas.DataFrame`
         bcm dataframe containing all saved bcm data
 
-    bcm_save_last : `pandas.DataFrame`
-        bcm dataframe containing bcm data from last
-        iteration
+    bpp_save : `pandas.DataFrame`
+        bpp dataframe containing all saved bpp data
 
-    method : `dict`,
-        one or more methods by which to filter the
-        bcm table, e.g. ``{'lisa_convergence' : True}``;
-        This means you want to only compute the convergence
-        over the region specified for the lisa_convergence
-        method below
+    final_kstar_1 : `list`
+        contains list of final primary kstars specified by user
+
+    final_kstar_2 : `list`
+        contains list of final primary kstars specified by user
+
+    method : `str`
+        stage in binary evolution to check convergence for
+        only one method may be supplied and they are specified
+        in the inifile
+
+    conv_lims : `dict`
+        dictionary where keys are convergence params and the
+        values are lists containing a [lo, hi] value to filter the
+        convergence param between
+        any non-specified convergence params will not be filtered
 
     Returns
     -------
-    bcm_conv_tot : `pandas.DataFrame`
-        filtered bcm dataframe containing all saved bcm
-        data
-
-    bcm_conv_last : `pandas.DataFrame`
-        filtered bcm dataframe containing saved bcm
-        data from last iteration
+    conv_save : `pandas.DataFrame`
+        filtered dataframe containing binaries that fulfill
+        user-specified convergence criteria
 
     """
-    _known_methods = ['lisa_convergence']
+    _known_methods = ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']
 
-    if not set(method.keys()).issubset(set(_known_methods)):
+    if not method in _known_methods:
         raise ValueError("You have supplied an "
                          "unknown method to filter the "
                          "bcm array for convergence. Known methods are "
                          "{0}".format(_known_methods))
-    bcm_conv_tot = bcm_save_tot
-    if len(bcm_save_tot) == len(bcm_save_last):
-        bcm_conv_last = bcm_save_last
-    else:
-        bcm_conv_last = bcm_save_tot.iloc[:len(bcm_save_tot)-len(bcm_save_last)]
-    for meth, use in method.items():
-        if meth == 'lisa_convergence' and use:
-            bcm_conv_tot = bcm_conv_tot.loc[bcm_conv_tot.porb < np.log10(5000)]
-            bcm_conv_last = bcm_conv_last.loc[bcm_conv_last.porb < np.log10(5000)]
 
-    # If it is the first iteration, divide the bcm array in two
-    # for convergence computation
-    if len(bcm_conv_tot) == len(bcm_conv_last):
-        bcm_conv_last = bcm_conv_tot.iloc[:int(len(bcm_conv_tot)/2)]
+    if method == 'formation':
+        # filter the bpp array to find the systems that match the user-specified
+        # final kstars
+        conv_save = bpp_save.loc[(bpp_save.kstar_1.isin(final_kstar_1)) &\
+                                 (bpp_save.kstar_2.isin(final_kstar_2)) &\
+                                 (bpp_save.sep > 0) &\
+                                 (bpp_save.evol_type.isin([2.0,4.0]))]
 
-    return bcm_conv_tot, bcm_conv_last
+        # select the formation parameters
+        conv_save = conv_save.groupby('bin_num').first().reset_index()
+
+    elif method == '1_SN':
+        # select out the systems which will undergo a supernova
+        conv_sn_ind = bpp_save.loc[bpp_save.evol_type.isin([15.0, 16.0])].bin_num
+
+        # select out the systems which will produce the user specified final kstars
+        # and undergo a supernova
+        conv_sn_ind = bpp_save.loc[(bpp_save.bin_num.isin(conv_sn_ind)) &\
+                                   (bpp_save.kstar_1.isin(final_kstar_1)) &\
+                                   (bpp_save.kstar_2.isin(final_kstar_2)) &\
+                                   (bpp_save.sep > 0)].bin_num
+
+        # select out the values just before the supernova(e)
+        conv_sn = bpp_save.loc[(bpp_save.bin_num.isin(conv_sn_ind)) &\
+                               (bpp_save.evol_type.isin([15.0, 16.0]))]
+
+        # make sure to select out only the first supernova
+        conv_save = conv_sn.groupby('bin_num').first().reset_index()
+
+    elif method == '2_SN':
+        # select out the systems which will undergo a supernova
+        conv_sn_ind = bpp_save.loc[bpp_save.evol_type.isin([15.0, 16.0])].bin_num
+
+        # select out the systems which will produce the user specified final kstars
+        # and undergo a supernova
+        conv_sn_ind = bpp_save.loc[(bpp_save.bin_num.isin(conv_sn_ind)) &\
+                                   (bpp_save.kstar_1.isin(final_kstar_1)) &\
+                                   (bpp_save.kstar_2.isin(final_kstar_2)) &\
+                                   (bpp_save.sep > 0)].bin_num
+        # select out the values just before the supernova(e)
+        conv_sn = bpp_save.loc[(bpp_save.bin_num.isin(conv_sn_ind)) &\
+                               (bpp_save.evol_type.isin([15.0, 16.0]))]
+
+        # select out only the systems that go through 2 supernovae
+        conv_sn_2 = conv_sn.loc[conv_sn.groupby('bin_num').size() == 2]
+
+        # make sure to select out only the second supernova
+        conv_save = conv_sn_2.groupby('bin_num').nth(1).reset_index()
+
+    elif method == 'disruption':
+        # filter the bpp array to find the systems that match the user-specified
+        # final kstars
+        conv_ind = bpp_save.loc[(bpp_save.kstar_1.isin(final_kstar_1)) &\
+                                (bpp_save.kstar_2.isin(final_kstar_2))].bin_num.unique()
+
+        conv_save = bpp_save.loc[(bpp_save.bin_num.isin(conv_ind))]
+
+        # select out the parameters just before disruption
+        # first reset the index:
+        conv_save_reset = conv_save.reset_index()
+
+        # next select out the index for the disrupted systems using evol_type == 11
+        conv_save_reset_ind = conv_save_reset.loc[conv_save_reset.evol_type == 11.0].index
+
+        conv_save = conv_save_reset.iloc[conv_save_reset_ind]
+
+    elif method == 'final_state':
+        # the bcm array is all that we need!
+        conv_save = bcm_save
+
+    elif method == 'XRB_form':
+        # select out the systems which undergo a SN
+        conv_ind = bpp_save.loc[bpp_save.evol_type.isin([15.0, 16.0])].bin_num.unique()
+        conv_sn = bpp_save.loc[bpp_save.bin_num.isin(conv_ind)]
+
+        # select out systems when they first enter RLO after the 1st SN
+        conv_xrb = conv_sn.loc[(conv_sn.kstar_1.isin(final_kstar_1)) &\
+                               (conv_sn.kstar_2.isin(final_kstar_2)) &\
+                               (conv_sn.RROL_2 >= 1.0) &\
+                               (conv_sn.sep > 0)]
+        conv_save = conv_xrb.groupby('bin_num').first().reset_index()
+
+    if conv_lims:
+        for key in conv_lims.keys():
+            filter_lo = conv_lims[key][0]
+            filter_hi = conv_lims[key][1]
+            conv_save = conv_save.loc[conv_save[key] < filter_hi]
+            conv_save = conv_save.loc[conv_save[key] > filter_lo]
+    return conv_save
+
+def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_nums, match, idx):
+    """Writes all the good stuff that you want to save from runFixedPop in a
+       single function
+
+    Parameters
+    ----------
+    dat_store : `pandas HDFStore`
+        H5 file to write to
+
+    log_file : `file write`
+        log file to write to
+    mass_list : `list`
+        list containing the mass of the singles, mass of the binaries,
+        and mass of the stars
+
+    n_list : `list`
+        list containing the number of singles, number of binaries,
+        and number of stars
+
+    bcm : `pandas.DataFrame`
+        bcm array to write
+
+    bpp : `pandas.DataFrame`
+        bpp array to write
+
+    initCond : `pandas.DataFrame`
+        initCond array to write
+
+    conv : `pandas.DataFrame`
+        conv array to write
+
+    bin_state_nums : `list`
+        contains the count of binstates 0,1,2
+
+    match : pandas.DataFrame
+        contains the match values for each conv_param
+
+    idx : `int`
+        contains the index of the bcm so we can pick up where we left off
+        if runFixedPop hits a wall time
+
+    Returns
+    -------
+    Nothing!
+    """
+
+    m_keys = ['mass_singles', 'mass_binaries', 'mass_stars']
+    n_keys = ['n_singles', 'n_binaries', 'n_stars']
+    for m_write, m_key, n_write, n_key in zip(mass_list, m_keys, number_list, n_keys):
+        # save the total_sampled_mass so far
+        dat_store.append(m_key, pd.DataFrame([m_write]))
+        dat_store.append(n_key, pd.DataFrame([n_write]))
+    log_file.write('The total mass sampled so far is: {0}\n'.format(mass_list[2]))
+
+    # Save the bcm dataframe
+    dat_store.append('bcm', bcm)
+
+    # Save the bpp dataframe
+    dat_store.append('bpp', bpp)
+
+    # Save the initial binaries
+    dat_store.append('initCond', initC)
+
+    # Save the converging dataframe
+    dat_store.append('conv', conv)
+
+    # Save number of systems in each bin state
+    dat_store.append('bin_state_nums', bin_state_nums)
+
+    # Save the matches
+    dat_store.append('match', match)
+
+    # Save the index
+    dat_store.append('idx', pd.DataFrame([idx]))
+    return
+
+def a_from_p(p, m1, m2):
+    """Computes the separation from orbital period with KEPLER III
+
+    Parameters
+    ----------
+    p : float/array
+        orbital period [day]
+    m1 : float/array
+        primary mass [msun]
+    m2 : float/array
+        secondary mass [msun]
+
+    Returns
+    -------
+    sep : float/array
+        separation [rsun]
+    """
+
+    p_yr = p/365.25
+    sep_3 = p_yr**2 * (m1 + m2)
+    sep = sep_3**(1 / 3.)
+    sep_rsun = sep * 215.032
+    return sep_rsun
+
+def p_from_a(sep, m1, m2):
+    """ Computes separation from orbital period with kepler III
+
+    Parameters
+    ----------
+    sep : float/array
+        separation [rsun]
+    m1 : float/array
+        primary mass [msun]
+    m2 : float/array
+        secondary mass [msun]
+
+    Returns
+    -------
+    p : float/array
+        orbital period [day]
+    """
+
+    sep_au = sep / 215.032
+    p_2 = sep_au**3 / (m1 + m2)
+    p_day = (p_2**0.5) * 365.25
+    return p_day
+
+def calc_Roche_radius(M1, M2, A):
+    """ Get Roche lobe radius (Eggleton 1983)
+
+    Parameters
+    ----------
+    M1 : float
+        Primary mass [any unit]
+    M2 : float
+        Secondary mass [any unit]
+    A : float
+        Orbital separation [any unit]
+
+    Returns
+    -------
+    Roche radius : float
+        in units of input 'A'
+    """
+    q = M1 / M2
+    return A * 0.49*q**(2.0/3.0) / (0.6*q**(2.0/3.0) + np.log(1.0 + q**(1.0/3.0)))
 
 def mass_min_max_select(kstar_1, kstar_2):
     """Select a minimum and maximum mass to filter out binaries in the initial
@@ -249,9 +485,9 @@ def mass_min_max_select(kstar_1, kstar_2):
         elif k == 13.0:
             min_mass[ii] = 6.0
         elif k == 12.0:
-            min_mass[ii] = 5.0
+            min_mass[ii] = 1.0
         elif k == 11.0:
-            min_mass[ii] = 2.0
+            min_mass[ii] = 0.8
         elif k == 10.0:
             min_mass[ii] = 0.5
         ii += 1
@@ -433,3 +669,504 @@ def knuth_bw_selector(dat_list):
         bw_list.append(bw)
     return np.mean(bw_list)
 
+
+def error_check(BSEDict, filters=None, convergence=None, sampling=None):
+    """Checks that values in BSEDict, filters, and convergence are viable
+    """
+    if not isinstance(BSEDict, dict):
+        raise ValueError('BSE flags must be supplied via a dictionary')
+
+    if filters is not None:
+        if not isinstance(filters, dict):
+            raise ValueError('Filters criteria must be supplied via a dictionary')
+        for option in ['select_final_state', 'binary_state']:
+            if option not in filters.keys():
+                raise ValueError("Inifile section filters must have option {0} supplied".format(option))
+
+    if convergence is not None:
+        if not isinstance(convergence, dict):
+            raise ValueError('Convergence criteria must be supplied via a dictionary')
+        for option in ['convergence_params', 'convergence_filter', 'match', 'convergence_limits']:
+            if option not in convergence.keys():
+                raise ValueError("Inifile section convergence must have option {0} supplied".format(option))
+
+    if sampling is not None:
+        if not isinstance(sampling, dict):
+            raise ValueError('Sampling criteria must be supplied via a dictionary')
+        for option in ['sampling_method', 'galaxy_component', 'metallicity']:
+            if option not in sampling.keys():
+                raise ValueError("Inifile section sampling must have option {0} supplied".format(option))
+
+    # filters
+    if filters is not None:
+        flag='select_final_state'
+        if filters[flag] not in [True,False]:
+            raise ValueError("{0} needs to be either True or False (you set it to {1})".format(flag, filters[flag]))
+
+        flag='binary_state'
+        if any(x not in [0,1,2] for x in filters[flag]):
+            raise ValueError("{0} needs to be a subset of [0,1,2] (you set it to {1})".format(flag, filters[flag]))
+
+    # convergence
+    if convergence is not None:
+        flag='convergence_limits'
+        if convergence[flag]:
+            for item, key in zip(convergence.items(), convergence.keys()):
+                if len(item) != 2:
+                    raise ValueError("The value for key '{0:s}' needs to be a list of length 2, it is length: {1:i}".format(key, len(item)))
+        flag='convergence_filter'
+        if not convergence[flag] in ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form']:
+            raise ValueError("{0} needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] (you set it to {1})".format(flag, convergence[flag]))
+
+        flag='match'
+        if not isinstance(convergence[flag], float):
+            raise ValueError("{0} must be a float (you set it to {1})".format(flag, convergence[flag]))
+
+        flag='convergence_params'
+        acceptable_convergence_params = ['mass_1', 'mass_2', 'sep', 'porb',
+                                         'ecc', 'massc_1','massc_2', 'rad_1', 'rad_2']
+        for param in convergence[flag]:
+            if param not in acceptable_convergence_params:
+                raise ValueError("Supplied convergence parameter {0} is not in list of "
+                                 "acceptable convergence parameters {1}".format(param, acceptable_convergence_params))
+
+    # sampling
+    if sampling is not None:
+        flag='sampling_method'
+        acceptable_sampling = ['multidim', 'independent']
+        if sampling[flag] not in acceptable_sampling:
+            raise ValueError("sampling_method must be one of {0} you supplied {1}.".format(acceptable_sampling, sampling[flag]))
+
+        flag='galaxy_component'
+        acceptable_galaxy_components = ['Bulge', 'ThinDisk', 'ThickDisk', 'DeltaBurst']
+        if sampling[flag] not in acceptable_galaxy_components:
+            raise ValueError("galaxy_component must be one of {0} you supplied {1}.".format(acceptable_galaxy_components, sampling[flag]))
+
+        flag = 'metallicity'
+        if not isinstance(sampling[flag], float):
+            raise ValueError("{0} must be a float (you set it to {1})".format(flag, sampling[flag]))
+        if sampling[flag] <= 0:
+            raise ValueError("{0} needs to be greater than or equal to 0 (you set it to {1})".format(flag, sampling[flag]))
+
+    # BSEDict
+    flag='dtp'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater than or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts1'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts2'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='pts3'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='windflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='eddlimflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='neta'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bwind'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='hewind'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='beta'
+    # --- all numbers are valid
+    flag='xi'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='acc2'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='alpha1'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='lambdaf'
+    # --- all numbers are valid
+    flag='ceflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='cekickflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='cemergeflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='cehestarflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='qcflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3,4]:
+            raise ValueError("'{0:s}' needs to be set to 0, 1, 2, 3 or 4(you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='qcrit_array'
+    if flag in BSEDict.keys():
+        if any(x < 0.0 for x in BSEDict[flag]):
+            raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
+        if len(BSEDict[flag]) != 16:
+            raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+
+    flag='sigma'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='ecsn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ecsn_mlow'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>BSEDict['ecsn']) or (BSEDict[flag]<0.0):
+            raise ValueError("'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 (you set it to '{0:0.2f}')".format(flag, BSEDict[flag]))
+    flag='sigmadiv'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] == 0:
+            raise ValueError("'{0:s}' must be positive or negative (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='aic'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='ussn'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='pisn'
+    if flag in BSEDict.keys():
+        if not ((BSEDict[flag] >= 0) or (BSEDict[flag] == -1) or (BSEDict[flag] == -2) or (BSEDict[flag] == -3)):
+            raise ValueError("'{0:s}' needs to be set to either 0, greater than 0 or equal to -1, -2, or -3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhsigmafrac'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be greater than 0 and less than or equal to 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='polar_kick_angle'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 90):
+            raise ValueError("'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='natal_kick_array'
+    if flag in BSEDict.keys():
+        if len(BSEDict[flag]) != 6:
+            raise ValueError("'{0:s}' must be supplied 6 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+
+    flag='nsflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2,3,4]:
+            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='mxns'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='eddfac'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='gamma'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]<=0) and (BSEDict[flag]!=-1) and (BSEDict[flag]!=-2):
+            raise ValueError("'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
+    flag='tflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+    flag='ifflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='wdflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='epsnov'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhspinflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1,2]:
+            raise ValueError("'{0:s}' needs to be set to 0, 1, or 2 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bhspinmag'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bconst'
+    # --- all numbers are valid
+    flag='ck'
+    # --- all numbers are valid
+
+    flag='fprimc_array'
+    if flag in BSEDict.keys():
+        if any(x < 0.0 for x in BSEDict[flag]):
+            raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
+        if len(BSEDict[flag]) != 16:
+            raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+    flag='rejuv_fac'
+    if flag in BSEDict.keys():
+        if ((BSEDict[flag] > 1.0) or (BSEDict[flag] < 0.0)):
+            raise ValueError("'{0:s}' must be between 0 and 1 (you set it to '[{1:d}]')".format(flag, *BSEDict[flag]))
+    flag='rejuv_flag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='htpmb'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='bdecayfac'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ST_cr'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='ST_tide'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    return
+
+def check_initial_conditions(initial_binary_table):
+    """Checks initial conditions and reports warnings
+
+        Only warning provided right now is if star begins in Roche lobe
+        overflow
+    """
+    def rzamsf(m):
+        """A function to evaluate Rzams
+        ( from Tout et al., 1996, MNRAS, 281, 257 ).
+        """
+        mx = np.sqrt(m)
+        rzams = (((a[7]*m**2 + a[8]*m**6)*mx + a[9]*m**11 +
+                  (a[10] + a[11]*mx)*m**19)/
+                  (a[12] + a[13]*m**2 + (a[14]*m**8 + m**18 + a[15]*m**19)*mx))
+
+        return rzams
+
+    z = np.asarray(initial_binary_table['metallicity'])
+    zpars, a = zcnsts(z)
+
+    mass1 = np.asarray(initial_binary_table['mass1_binary'])
+    mass2 = np.asarray(initial_binary_table['mass2_binary'])
+
+    if np.all(mass2 == 0.0):
+        return
+    else:
+        rzams1 = rzamsf(mass1)
+        rzams2 = rzamsf(mass2)
+
+        # assume some time step in order to calculate sep
+        yeardy = 365.24
+        aursun = 214.95
+        tb = np.asarray(initial_binary_table['porb'])/yeardy
+        sep = aursun*(tb*tb*(mass1 + mass2))**(1.0/3.0)
+
+        rol1 = calc_Roche_radius(mass1, mass2, sep)
+        rol2 = calc_Roche_radius(mass2, mass1, sep)
+
+        # check for a ZAMS that starts in RFOL
+        mask = ((np.array(initial_binary_table['kstar_1'])==1) & (rzams1 >= rol1)) | ((initial_binary_table['kstar_2']==1) & (rzams2 >= rol2))
+        if mask.any():
+            warnings.warn("At least one of your initial binaries is starting in Roche Lobe Overflow:\n{0}".format(initial_binary_table[mask]))
+
+        return
+
+def convert_kstar_evol_type(bpp):
+    """Provides way to convert integer values to their string counterpart
+
+        The underlying fortran code relies on integers to indicate
+        things like the evoltuionary stage of the star as well as
+        key moments in its evolutionary track. If you pass the
+        data frame returned from running
+
+            ```Evolve.evolve```
+
+        you can convert the columns with these integer proxies
+        to their true astrophysical meaning.
+    """
+    kstar_int_to_string_dict = {
+        0 : 'Main Sequence (MS), < 0.7 M⊙',
+        1 : 'MS, > 0.7 M⊙',
+        2 : 'Hertzsprung Gap',
+        3 : 'First Giant Branch',
+        4 : 'Core Helium Burning',
+        5 : 'Early Asymptotic Giant Branch (AGB)',
+        6 : 'Thermally Pulsing AGB',
+        7 : 'Naked Helium Star MS',
+        8 : 'Naked Helium Star Hertzsprung Gap',
+        9 : 'Naked Helium Star Giant Branch',
+        10 : 'Helium White Dwarf',
+        11 : 'Carbon/Oxygen White Dwarf',
+        12 : 'Oxygen/Neon White Dwarf',
+        13 : 'Neutron Star',
+        14 : 'Black Hole',
+        15 : 'Massless Remnant',
+    }
+
+    kstar_string_to_int_dict = {v:k for k,v in kstar_int_to_string_dict.items()}
+
+    evolve_type_int_to_string_dict = {
+        1 : 'initial state',
+        2 : 'kstar change',
+        3 : 'begin Roche lobe overflow',
+        4 : 'end Roche lobe overlow',
+        5 : 'contact',
+        6 : 'coalescence',
+        7 : 'begin common envelope',
+        8 : 'end common envelope',
+        9 : 'no remnant leftover',
+        10 : 'max evolution time',
+        11 : 'binary disruption',
+        12 : 'begin symbiotic phase',
+        13 : 'end symbiotic phase',
+        14 : 'blue straggler',
+        15 : 'supernova of primary',
+        16 : 'supernova of secondary',
+    }
+
+    evolve_type_string_to_int_dict = {v:k for k,v in evolve_type_int_to_string_dict.items()}
+
+    if bpp.kstar_1.dtype in [int,float]:
+        # convert from integer to string
+        bpp['kstar_1'] = bpp['kstar_1'].astype(int)
+        bpp['kstar_1'] = bpp['kstar_1'].apply(lambda x: kstar_int_to_string_dict[x])
+    else:
+        # convert from string to integer
+        bpp['kstar_1'] = bpp['kstar_1'].apply(lambda x: kstar_string_to_int_dict[x])
+
+    if bpp.kstar_2.dtype in [int,float]:
+        # convert from integer to string
+        bpp['kstar_2'] = bpp['kstar_2'].astype(int)
+        bpp['kstar_2'] = bpp['kstar_2'].apply(lambda x: kstar_int_to_string_dict[x])
+    else:
+        # convert from string to integer
+        bpp['kstar_2'] = bpp['kstar_2'].apply(lambda x: kstar_string_to_int_dict[x])
+
+    if bpp.evol_type.dtype in [int,float]:
+        # convert from integer to string
+        bpp['evol_type'] = bpp['evol_type'].astype(int)
+        bpp['evol_type'] = bpp['evol_type'].apply(lambda x: evolve_type_int_to_string_dict[x])
+    else:
+        # convert from string to integer
+        bpp['evol_type'] = bpp['evol_type'].apply(lambda x: evolve_type_string_to_int_dict[x])
+
+    return bpp
+
+def parse_inifile(inifile):
+    """Provides a method for parsing the inifile and returning dicts of each section
+    """
+    binOps = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.Mod: operator.mod
+    }
+
+    def arithmetic_eval(s):
+        """Allows us to control how the strings from the inifile get parses"""
+        node = ast.parse(s, mode='eval')
+
+        def _eval(node):
+            """Different strings receive different evaluation"""
+            if isinstance(node, ast.Expression):
+                return _eval(node.body)
+            elif isinstance(node, ast.Str):
+                return node.s
+            elif isinstance(node, ast.Num):
+                return node.n
+            elif isinstance(node, ast.BinOp):
+                return binOps[type(node.op)](_eval(node.left), _eval(node.right))
+            elif isinstance(node, ast.List):
+                return [_eval(x) for x in node.elts]
+            elif isinstance(node, ast.Name):
+                result = VariableKey(item=node)
+                constants_lookup = {
+                    'True': True,
+                    'False': False,
+                    'None': None,
+                }
+                value = constants_lookup.get(result.name,result,)
+                if type(value) == VariableKey:
+                    # return regular string
+                    return value.name
+                else:
+                    # return special string like True or False
+                    return value
+            elif isinstance(node, ast.NameConstant):
+                # None, True, False are nameconstants in python3, but names in 2
+                return node.value
+            else:
+                raise Exception('Unsupported type {}'.format(node))
+
+        return _eval(node.body)
+
+    # ---- Create configuration-file-parser object and read parameters file.
+    cp = ConfigParser()
+    cp.optionxform = str
+    cp.read(inifile)
+
+    # ---- Read needed variables from the inifile
+    dictionary = {}
+    for section in cp.sections():
+        dictionary[section] = {}
+        for option in cp.options(section):
+            opt = cp.get(section, option)
+            try:
+                dictionary[section][option] = arithmetic_eval(opt)
+            except:
+                dictionary[section][option] = json.loads(opt)
+
+    BSEDict = dictionary['bse']
+    seed_int = int(dictionary['rand_seed']['seed'])
+    filters = dictionary['filters']
+    convergence = dictionary['convergence']
+    sampling = dictionary['sampling']
+
+    return BSEDict, seed_int, filters, convergence, sampling
+
+class VariableKey(object):
+    """
+    A dictionary key which is a variable.
+    @ivar item: The variable AST object.
+    """
+    def __init__(self, item):
+        self.name = item.id
+
+    def __eq__(self, compare):
+        return (
+            compare.__class__ == self.__class__
+            and compare.name == self.name
+        )
+
+    def __hash__(self):
+        return hash(self.name)

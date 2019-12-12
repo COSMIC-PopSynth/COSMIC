@@ -9,7 +9,7 @@ cosmic currently implements binary evolutionary processes using BSE (Hurley+2002
 
 # Release Status
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2642803.svg)](https://doi.org/10.5281/zenodo.2642803)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3482915.svg)](https://doi.org/10.5281/zenodo.3482915)
 [![PyPI version](https://badge.fury.io/py/cosmic-popsynth.svg)](https://badge.fury.io/py/cosmic-popsynth)
 
 
@@ -24,4 +24,6 @@ pip install cosmic-popsynth
 [![Build Status](https://travis-ci.org/COSMIC-PopSynth/COSMIC.svg?branch=develop)](https://travis-ci.org/COSMIC-PopSynth/COSMIC)
 
 [![Coverage Status](https://coveralls.io/repos/github/COSMIC-PopSynth/COSMIC/badge.svg?branch=develop)](https://coveralls.io/github/COSMIC-PopSynth/COSMIC?branch=develop)
+
+[![codecov](https://codecov.io/gh/COSMIC-PopSynth/COSMIC/branch/develop/graph/badge.svg)](https://codecov.io/gh/COSMIC-PopSynth/COSMIC)
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017)
+# Copyright (C) Katelyn Breivik (2017 - 2019)
 #
 # This file is part of cosmic.
 #
@@ -63,7 +63,7 @@ def mass_weighted_number(dat, total_sampled_mass, component_mass):
     Parameters
     ----------
     dat : DataFrame
-        DataFrame containing the fixed population created from runFixedPop
+        DataFrame containing the fixed population created from cosmic-pop
     total_sampled_mass : float
         total amount of mass sampled to generate the fixed population
         including single stars

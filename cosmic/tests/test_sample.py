@@ -14,21 +14,22 @@ from cosmic.sample.sampler.multidim import MultiDim
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
-TOTAL_SAMPLED_MASS_150_KROUPA93 = 11915.701293310956
-TOTAL_SAMPLED_MASS_50_KROUPA93 = 1173.0069832899464
-TOTAL_SAMPLED_MASS_KROUPA93 = 21.72892745293822
-TOTAL_SAMPLED_MASS_150_SALPETER55 = 6972.075371413223
-TOTAL_SAMPLED_MASS_50_SALPETER55 = 681.6652622459994
-TOTAL_SAMPLED_MASS_SALPETER55 = 12.798883571264902
+TOTAL_SAMPLED_MASS_KROUPA93 = 39.253472063203404
+TOTAL_SAMPLED_MASS_KROUPA01 = 28.708454104214034
+TOTAL_SAMPLED_MASS_SALPETER55 = 22.575833208553195
 TOTAL_SECONDARY_MASS = 16.15470927770034
-N_BINARY_SELECT = 43
-PORB = 670.53502604
+N_BINARY_SELECT = 85
+VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
+VANHAAFTEN_BINFRAC_MIN = 0.6192803136799157
+MULTIDIM_BINFRAC_MAX = 0.6146916774140262
+MULTIDIM_BINFRAC_MIN = 0.13786300908773025
+PORB = 670.88711347
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 953997.1754647805
 KSTAR_SOLAR = 1.0
-MOE_TOTAL_MASS = 31.134712126322306
+MOE_TOTAL_MASS = 20.27926225850954
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
@@ -41,34 +42,20 @@ class TestSample(unittest2.TestCase):
     def test_sample_primary_kroupa93(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, primary_model='kroupa93', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_KROUPA93)
+        a_0, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa93', size=100)
+        self.assertEqual(np.sum(a_0), TOTAL_SAMPLED_MASS_KROUPA93)
 
+    def test_sample_primary_kroupa01(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, primary_model='kroupa93', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_KROUPA93)
-
-        np.random.seed(2)
-        # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, primary_model='kroupa93', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_KROUPA93)
+        a_0, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100)
+        self.assertEqual(np.sum(a_0), TOTAL_SAMPLED_MASS_KROUPA01)
 
     def test_sample_primary_salpeter55(self):
         np.random.seed(2)
         # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=50.0, primary_max=150.0, primary_model='salpeter55', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_150_SALPETER55)
-
-        np.random.seed(2)
-        # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=10.0, primary_max=50.0, primary_model='salpeter55', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_50_SALPETER55)
-
-        np.random.seed(2)
-        # Check that the sample_primary function samples mass correctly
-        a_0, total_sampled_mass = SAMPLECLASS.sample_primary(primary_min=0.08, primary_max=5.0, primary_model='salpeter55', size=100)
-        self.assertEqual(total_sampled_mass, TOTAL_SAMPLED_MASS_SALPETER55)
+        a_0, total_mass = SAMPLECLASS.sample_primary(primary_model='salpeter55', size=100)
+        self.assertEqual(np.sum(a_0), TOTAL_SAMPLED_MASS_SALPETER55)
 
     def test_sample_secondary(self):
         np.random.seed(2)
@@ -79,8 +66,21 @@ class TestSample(unittest2.TestCase):
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
-        m1_b, m1_s = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100))
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
+        self.assertEqual(len(m1_b), 0)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
+        self.assertEqual(len(m1_b), 99)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
+
+    def test_binary_fraction(self):
+        np.random.seed(2)
+        # Check that the binary fraction tracking is correct
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.5)
+        self.assertEqual(binfrac.max(), 0.5)
+        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
+        self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
+        self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
 
     def test_sample_ecc(self):
         np.random.seed(2)
@@ -127,8 +127,11 @@ class TestSample(unittest2.TestCase):
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
     def test_Moe_sample(self):
-        m1, m2, porb, ecc, total_mass, n_samp = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
-        self.assertEqual(total_mass, MOE_TOTAL_MASS)
+        # Test the multidim sampler and system-by-system binary fraction
+        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1)
+        self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
+        self.assertAlmostEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
+        self.assertAlmostEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)
 
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)

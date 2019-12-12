@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,ecsn)
+      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -11,10 +11,10 @@
 *
 *
       INTEGER KS(2),I1,I2,K1,K2,KW,ICASE
-      REAL*8 M0(2),M(2),AJ(2),ZPARS(20)
+      REAL*8 M0(2),M(2),AJ(2),ZPARS(20),bhspin(2)
       REAL*8 TSCLS(20),LUMS(10),GB(10),TMS1,TMS2,TMS3,TN
       REAL*8 M01,M02,M03,M1,M2,M3,AGE1,AGE2,AGE3,MC3,MCH
-      REAL*8 ecsn
+      REAL*8 M_CORE_BGB_1,M_CORE_BGB_2,M_CORE_BGB_3,HE_3_current
       PARAMETER(MCH=1.44D0)
 *
 *
@@ -38,12 +38,18 @@
       M1 = M(I1)
       AGE1 = AJ(I1)
       CALL star(K1,M01,M1,TMS1,TN,TSCLS,LUMS,GB,ZPARS)
+      IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
+          M_CORE_BGB_1 = GB(9)
+      ENDIF
 *
 *       Obtain time scales for second star.
       M02 = M0(I2)
       M2 = M(I2)
       AGE2 = AJ(I2)
       CALL star(K2,M02,M2,TMS2,TN,TSCLS,LUMS,GB,ZPARS)
+      IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
+          M_CORE_BGB_2 = GB(9)
+      ENDIF
 *
 *       Check for planetary systems - defined as HeWDs and low-mass WDs!
       IF(K1.EQ.10.AND.M1.LT.0.05)THEN
@@ -79,9 +85,19 @@ C      ENDIF
 *
       IF(ICASE.EQ.1)THEN
 *       Specify new age based on complete mixing.
+*       The above line is ~supsicious~ and probably the 0.1
+*       factor is more likely to be over mixing than complete
+*       mixing. We will now make it a parameter so that it can
+*       be partial mixing.
          IF(K1.EQ.7) KW = 7
          CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS)
-         AGE3 = 0.1d0*TMS3*(AGE1*M1/TMS1 + AGE2*M2/TMS2)/M3
+         IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
+             M_CORE_BGB_3 = GB(9)
+             HE_3_current =AGE1*M_CORE_BGB_1/TMS1+AGE2*M_CORE_BGB_2/TMS2
+             AGE3 = TMS3*He_3_current/M_CORE_BGB_3
+         ELSE
+             AGE3 = REJUV_FAC*TMS3*(AGE1*M1/TMS1 + AGE2*M2/TMS2)/M3
+         ENDIF
       ELSEIF(ICASE.EQ.3.OR.ICASE.EQ.6.OR.ICASE.EQ.9)THEN
          MC3 = M1
          CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3)
@@ -108,7 +124,9 @@ C      ENDIF
             M03 = M1
             M3 = M1
          ENDIF
-         IF(ICASE.EQ.13.AND.M3.GT.MXNS) KW = 14
+         IF(ICASE.EQ.13.AND.M3.GT.MXNS)then
+            KW = 14
+         ENDIF
       ELSEIF(ICASE.EQ.15)THEN
          M3 = 0.D0
       ELSEIF(ICASE.GT.100)THEN
@@ -125,6 +143,14 @@ C      ENDIF
 *
 * Put the result in *1.
 *
+* CLR - If the secondary is a BH and the primary is not, then copy the
+* spin of the secondary into the primary
+
+* If you ever want to consider spin-up in combined stars, this is the
+* palce
+      IF(KS(2).EQ.14)then
+          bhspin(1) = bhspin(2)
+      ENDIF
       KS(1) = KW
       KS(2) = 15
       M(1) = M3

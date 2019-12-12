@@ -3,12 +3,15 @@
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
+from cosmic.sample import InitialBinaryTable
+
 import os
 import unittest2
 import numpy as np
 import scipy.integrate
 import pandas as pd
 import scipy.special as special
+import pytest
 
 import cosmic.utils as utils
 
@@ -24,37 +27,34 @@ k2_range_false = np.arange(0,12)
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 wrong_dict = {'test_wrong_dict' : False}
-alive_dict = {'mass_transfer_white_dwarf_to_co' : True,
-             'select_final_state' : True,
-             'binary_state' : [0],
-             'lisa_sources' : True}
-noLISA_dict = {'mass_transfer_white_dwarf_to_co' : True,
-               'select_final_state' : True,
-               'binary_state' : [0],
-               'lisa_sources' : False}
-false_dict = {'mass_transfer_white_dwarf_to_co' : False,
-             'select_final_state' : False,
-             'binary_state' : [0,1,2],
-             'lisa_sources' : False}
-conv_dict_true = {'lisa_convergence' : True}
-conv_dict_false = {'lisa_convergence' : False}
-
+alive_dict = {'select_final_state' : True,
+             'binary_state' : [0]}
+noLISA_dict = {'select_final_state' : True,
+               'binary_state' : [0]}
+false_dict = {'select_final_state' : False,
+             'binary_state' : [0,1,2]}
+conv_dict_formation = {'convergence_filter' : 'formation'}
+conv_dict_1_SN = {'convergence_filter' : '1_SN'}
+conv_dict_2_SN = {'convergence_filter' : '2_SN'}
+conv_dict_disruption = {'convergence_filter' : 'disruption'}
+conv_dict_final_state = {'convergence_filter' : 'final_state'}
+conv_dict_XRB_form = {'convergence_filter' : 'XRB_form'}
+conv_dict_false = {'convergence_filter' : 'wrong'}
+conv_lim_dict = {"sep" : [10, 5000]}
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 BPP_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bpp')
 BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
 
+IBT = InitialBinaryTable.InitialBinaries(m1=[100.0, 11.8,10**1.5], m2=[85.0, 11.1,21], porb=[10000.0,2211.0,0.1], ecc=[0.65,0.55,0.0], tphysf=[13700.0,13700.0,13700.0], kstar1=[1,1,1], kstar2=[1,1,14], metallicity=[0.005,0.02,0.002], binfrac=[0.5,0.5,0.5])
 
 IDL_TABULATE_ANSWER = 0.5
-MASS_SUM_SINGLE = [41.0, 44.0, 50.0, 132.0, 320.0]
+MASS_SUM_SINGLE = [41.0, 41.6, 42.0, 132.0, 320.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07
 BW_KNUTH = 0.333
-_KNOWN_METHODS = ['mass_transfer_white_dwarf_to_co',
-                  'select_final_state',
-                  'binary_state',
-                  'lisa_sources']
-
+_KNOWN_METHODS = ['select_final_state',
+                  'binary_state']
 
 class TestUtils(unittest2.TestCase):
     """`TestCase` for the utilities method
@@ -62,36 +62,41 @@ class TestUtils(unittest2.TestCase):
     def test_filter_bpp_bcm(self):
         self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
 
-        bcm_true = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
+        bcm_true, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
 
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
-        self.assertTrue(len(bcm_true.loc[bcm_true.sep > 0.0]) >= 1)
-        self.assertTrue(len(bcm_true.loc[(bcm_true.RROL_2 > 1)]) >= 1)
-        self.assertTrue(bcm_true.porb.all() < 5.0)
 
-        bcm_false = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
+        bcm_false, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
 
-        self.assertTrue(len(bcm_false.loc[bcm_false.tphys <= 1.0]) > 1)
-        self.assertTrue(len(bcm_false.loc[bcm_false.sep == 0.0]) > 1)
-        self.assertTrue(bcm_false.loc[(bcm_false.RROL_2 > 1)].kstar_2.all()<10)
 
-        bcm_no_LISA = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, noLISA_dict, k1_range, k2_range)
-        self.assertTrue(len(bcm_no_LISA.loc[bcm_no_LISA.porb < 4.0]) > 1)
+    def test_conv_select(self):
+        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
-    def test_bcm_conv_select(self):
-        self.assertRaises(ValueError, utils.bcm_conv_select, BCM_TEST, BPP_TEST, wrong_dict)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], {})
+        self.assertTrue(np.all(conv.evol_type.isin([2,4])))
+        self.assertTrue(np.all(conv.sep >= 0))
 
-        bcm_1, bcm_2 = utils.bcm_conv_select(BCM_TEST, BCM_TEST, conv_dict_true)
-        self.assertEqual(len(bcm_2), int(len(bcm_1)/2))
-        self.assertTrue(bcm_1.porb.all() < np.log10(5000))
-        self.assertTrue(bcm_2.porb.all() < np.log10(5000))
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['convergence_filter'], {})
+        self.assertEqual(len(conv), 0)
 
-        bcm_1_F, bcm_2_F = utils.bcm_conv_select(BCM_TEST[:len(BCM_TEST)-10],\
-                                                 BCM_TEST,\
-                                                 conv_dict_false)
-        self.assertEqual(len(BCM_TEST[len(BCM_TEST)-10:]), len(bcm_1_F)-len(bcm_2_F))
-        self.assertTrue(len(bcm_1_F.porb.loc[bcm_1_F.porb > np.log10(5000)]) > 1)
-        self.assertTrue(len(bcm_2_F.porb.loc[bcm_2_F.porb > 3.0]) > 1)
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['convergence_filter'], {})
+        self.assertEqual(len(conv), 0)
+
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['convergence_filter'], {})
+        self.assertEqual(len(conv), 4)
+
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['convergence_filter'], {})
+        self.assertEqual(len(conv), int(len(BCM_TEST)))
+
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['convergence_filter'], {})
+        self.assertEqual(len(conv), 0)
+
+        self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict, {})
+
+    def test_conv_lims(self):
+        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], conv_lim_dict)
+        self.assertTrue(conv.sep.max() < conv_lim_dict["sep"][1])
+        self.assertTrue(conv.sep.min() > conv_lim_dict["sep"][0])
 
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
@@ -139,3 +144,24 @@ class TestUtils(unittest2.TestCase):
         bw = utils.knuth_bw_selector(np.array([x]))
         self.assertTrue(bw.round(3) == BW_KNUTH)
 
+    def test_error_check(self):
+        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': -1000, 'bwind': 0.0, 'lambdaf': 0.5, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': -3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]}
+        filters = {'select_final_state': True, 'binary_state': [0]}
+        convergence = {'convergence_params': ['mass_1', 'mass_2', 'porb', 'ecc'], 'convergence_filter': 'formation',\
+                       'match': -5.0, 'convergence_limits' : {"sep" : [0,1000]}, 'match' : -3.0,\
+                       'bcm_bpp_initCond_filter' : True}
+        sampling = {'sampling_method': 'multidim', 'galaxy_component': 'DeltaBurst', 'metallicity': 0.02}
+        utils.error_check(BSEDict,filters,convergence,sampling)
+        utils.error_check(BSEDict)
+        assert 1==1
+
+    def test_warning_check(self):
+        with pytest.warns(UserWarning, match='At least one of your initial binaries is starting in Roche Lobe Overflow'):
+            utils.check_initial_conditions(IBT)
+
+    def test_convert_kstar_evol_type(self):
+        # convert to string
+        bpp = utils.convert_kstar_evol_type(BPP_TEST)
+        # convert back and then make sure that it is the same
+        bpp = utils.convert_kstar_evol_type(BPP_TEST)
+        pd.testing.assert_frame_equal(bpp, BPP_TEST)
