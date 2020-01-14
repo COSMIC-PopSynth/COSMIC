@@ -471,7 +471,8 @@ sampling
                             ``3`` : same as 2 but with `Hjellming & Webbink 1987 <https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract>`_
                             for GB/AGB stars
 
-                         **qcflag = 2**
+                            ``4`` : follows `Section 5.1 of Belcyznski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_ except for WD donors which follow BSE
+                         **qcflag = 1**
 
 ``qcrit_array``          Array with length: 16 for user-input values for the 
                          critical mass ratios that govern the onset of unstable
@@ -620,7 +621,7 @@ sampling
 
                             ``-3`` : uses a polynomial fit to `Table 5 in Woosley 2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract>`_
 
-                            ``positive values`` : turns on no pulsational pair 
+                            ``positive values`` : turns on pulsational pair 
                             instability SN and sets the maximum mass of the allowed
                             remnant
 
