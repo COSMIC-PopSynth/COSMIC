@@ -464,11 +464,7 @@ component.
 *
 * On the first entry the previous timestep is zero to prevent mass loss.
 *
-      if(using_cmc.eq.1)then
-          dtm = 0.d0
-      else
-          dtm = 1.d0
-      endif
+      dtm = 0.d0
       delet = 0.d0
       djorb = 0.d0
 *
