@@ -266,6 +266,7 @@ Cf2py intent(out) bcmout
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
 
+
 * disrupt tracks if system get disrupted by a SN during the common
 * envelope
       disrupt = .false.
@@ -473,7 +474,11 @@ component.
       ip = 0
       jp = 0
 
-      tsave = tphys
+      if(using_cmc.eq.0)then
+          tsave = 0.d0
+      else
+          tsave = tphys
+      endif
       isave = .true.
       iplot = .false.
       if(dtp.le.0.d0)then
@@ -485,7 +490,7 @@ component.
          tsave = tphysf
       endif
       if(tphys.ge.tphysf) goto 140
-*
+
  4    iter = 0
       intpol = 0
       inttry = .false.
