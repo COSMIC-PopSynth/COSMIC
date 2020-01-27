@@ -39,7 +39,7 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
 __all__ = ['Evolve']
 
 
-BPP_COLUMNS = ['tphys', 'mass1_binary', 'mass2_binary', 'kstar_1', 'kstar_2' ,
+BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
                'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta',
                'aj1', 'aj2', 'tms1', 'tms2',

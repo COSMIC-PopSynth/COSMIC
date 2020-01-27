@@ -52,7 +52,7 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
-INITIAL_CONDITIONS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
+INITIAL_CONDITIONS_COLUMNS = ['kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'porb', 'ecc',
                              'metallicity', 'tphysf', 'mass0_1', 'mass0_2',
                              'rad1', 'rad2', 'lumin1', 'lumin2', 'massc1', 'massc2',
                              'radc1', 'radc2', 'menv1', 'menv2', 'renv1', 'renv2',

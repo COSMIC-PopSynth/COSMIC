@@ -947,8 +947,8 @@ def check_initial_conditions(initial_binary_table):
     z = np.asarray(initial_binary_table['metallicity'])
     zpars, a = zcnsts(z)
 
-    mass1 = np.asarray(initial_binary_table['mass1_binary'])
-    mass2 = np.asarray(initial_binary_table['mass2_binary'])
+    mass1 = np.asarray(initial_binary_table['mass_1'])
+    mass2 = np.asarray(initial_binary_table['mass_2'])
 
     if np.all(mass2 == 0.0):
         return
