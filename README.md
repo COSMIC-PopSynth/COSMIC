@@ -3,7 +3,7 @@ COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code)
 
 COSMIC is a rapid binary population synthesis suite with a special purpose of generating realistic compact binary populations. COSMIC can also be used to evolve binaries with BSE in a python environment.
 
-COSMIC currently implements binary evolutionary processes using BSE (Hurley+2002). Several modifications have been applied to BSE to account for recent updates to binary evolution especially important to compact binary formation (e.g. metallicity-dependent stellar winds or black hole natal kick strengths). For a detailed discussion of these modifications, see [Breivik 2019](https://arxiv.org/abs/1911.00903)
+COSMIC currently implements binary evolutionary processes using BSE (Hurley+2002). Several modifications have been applied to BSE to account for recent updates to binary evolution especially important to compact binary formation (e.g. metallicity-dependent stellar winds or black hole natal kick strengths). For a detailed discussion of these modifications, see [Breivik et al 2019](https://arxiv.org/abs/1911.00903)
 
 <https://cosmic-popsynth.github.io/>
 
