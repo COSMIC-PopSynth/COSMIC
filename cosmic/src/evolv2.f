@@ -474,11 +474,7 @@ component.
       ip = 0
       jp = 0
 
-      if(using_cmc.eq.0)then
-          tsave = 0.d0
-      else
-          tsave = tphys
-      endif
+      tsave = tphys
       isave = .true.
       iplot = .false.
       if(dtp.le.0.d0)then
