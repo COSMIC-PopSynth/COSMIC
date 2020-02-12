@@ -70,21 +70,19 @@ sampling
                             ``multidim`` : initialize binaries with 
                             multidimensional parameter distributions according to 
                             `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-``galaxy_component``     There are four star formation histories implemented in 
-                         COSMIC, one each for the Milky Way thin disk, thick 
-                         disk, and bulge; and one that assumes a delta-function
-                         burst of star formation. Their assumptions are as follows:
+``SF_start``            Sets the time in the past when star formation initiates in Myr.
+                        For a start time at the beginning of a Hubble time, specify:
 
-                            ``ThinDisk`` : constant star formation over 10 Gyr
+                            ``SF_start = 13700.0``
 
-                            ``ThickDisk`` : 1 Gyr burst of constant star formation
-                            11 Gyr in the past
+``SF_duration``         Sets the duration of constant star formation from ``SF_start``
+                        in Myr. For a single burst specify:
 
-                            ``Bulge`` : 1 Gyr burst of constant star formation
-                            10 Gyr in the past
+                            ``SF_duration = 0.0``
 
-                            ``DeltaBurst`` : single burst of star formation 13.7
-                            Gyr in the past
+                        For a constant star formation over a Hubble time, specify:
+
+                            ``SF_duration = 13700.0`` 
 
 ``metallicity``          Single value for the metallicity of the population
                          where solar metallicity is Z = 0.02
