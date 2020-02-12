@@ -97,9 +97,11 @@ sampling
     ; initial conditions follow Moe & Di Stefano (2017) (multidim)
     sampling_method=multidim
 
-    ; Galaxy Components. Options include Bulge, ThinDisk, ThickDisk, and DeltaBurst
-    ; Think Star Formation History with which to use as your basis for sampling
-    galaxy_component = DeltaBurst
+    ; Sets the time in the past when star formation initiates in Myr
+    SF_start = 13700.0
+
+    ; Sets the duration of constant star formation in Myr
+    SF_duration = 0.0
 
     ; Metallicity of the population of initial binaries
     metallicity = 0.02

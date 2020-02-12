@@ -150,7 +150,7 @@ class TestUtils(unittest2.TestCase):
         convergence = {'convergence_params': ['mass_1', 'mass_2', 'porb', 'ecc'], 'convergence_filter': 'formation',\
                        'match': -5.0, 'convergence_limits' : {"sep" : [0,1000]}, 'match' : -3.0,\
                        'bcm_bpp_initCond_filter' : True}
-        sampling = {'sampling_method': 'multidim', 'galaxy_component': 'DeltaBurst', 'metallicity': 0.02}
+        sampling = {'sampling_method': 'multidim', 'SF_start': '13700.0', 'SF_duration' : 0.0, 'metallicity': 0.02}
         utils.error_check(BSEDict,filters,convergence,sampling)
         utils.error_check(BSEDict)
         assert 1==1
