@@ -70,19 +70,19 @@ sampling
                             ``multidim`` : initialize binaries with 
                             multidimensional parameter distributions according to 
                             `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-``SF_start``            Sets the time in the past when star formation initiates in Myr.
-                        For a start time at the beginning of a Hubble time, specify:
+``SF_start``             Sets the time in the past when star formation initiates in Myr.
+                         For a start time at the beginning of a Hubble time, specify:
 
-                            ``SF_start = 13700.0``
+                            ``SF_start`` : 13700.0
 
-``SF_duration``         Sets the duration of constant star formation from ``SF_start``
-                        in Myr. For a single burst specify:
+``SF_duration``          Sets the duration of constant star formation from ``SF_start``
+                         in Myr. For a single burst specify:
 
-                            ``SF_duration = 0.0``
+                            ``SF_duration`` : 0.0
 
-                        For a constant star formation over a Hubble time, specify:
+                         For a constant star formation over a Hubble time, specify:
 
-                            ``SF_duration = 13700.0`` 
+                            ``SF_duration`` : 13700.0
 
 ``metallicity``          Single value for the metallicity of the population
                          where solar metallicity is Z = 0.02
