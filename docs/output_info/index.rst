@@ -103,9 +103,9 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
 ``radc_1``        Primary core radius  [:math:`{\mathrm{R}_\odot}`]
 ``menv_1``        Mass of the envelope of the primary [:math:`{\mathrm{M}_\odot}`]
 ``renv_1``        Radius of the envelope of the primary [:math:`{\mathrm{R}_\odot}`]
-``omega_spin_1``  Angular velocity of the primary 
+``omega_spin_1``  Angular velocity of the primary [:math:`{\rm{yr}}^{-1}`]
 ``B0_1``          Initial neutron star magnetic field [:math:`{\rm{G}}`]
-``bacc_1``        :math:`\delta{\mathrm{M}_\odot}` during accretion see Equation 7 in COSMIC paper
+``bacc_1``        (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion see Equation 7 in COSMIC paper
 ``tacc_1``        Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
 ``epoch_1``
 ``bhspin_1``      Black hole spin magnitude [unitless]
