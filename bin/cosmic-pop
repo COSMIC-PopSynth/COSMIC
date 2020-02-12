@@ -22,6 +22,7 @@ import time
 from time import sleep
 import string
 import os.path
+import json
 
 import numpy as np
 import scipy.special as ss
@@ -32,16 +33,57 @@ from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
 
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 ###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
 ###############################################################################
 def parse_commandline():
     """Parse the arguments given on the command-line.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--inifile",
-                        help="Name of ini file of params",
-                        required=True)
+    # Parse any inifile specification
+    # We make this parser with add_help=False so that
+    # it doesn't parse -h and print help.
+    conf_parser = argparse.ArgumentParser(
+        description=__doc__, # printed with -h/--help
+        # Don't mess with format of description
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        # Turn off help, so we print all options in response to -h
+        add_help=False
+        )
+    conf_parser.add_argument("--inifile",
+                            help="Name of ini file of params",
+                            metavar="FILE",)
+    args, remaining_argv = conf_parser.parse_known_args()
+
+    if args.inifile is None:
+        raise conf_parser.error("--inifile argument required")
+    elif not os.path.isfile(args.inifile):
+        raise conf_parser.error("inifile supplied by --inifile does not exist")
+
+    defaults = {}
+    BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+    defaults.update(sampling)
+    defaults.update(filters)
+    defaults.update(convergence)
+    defaults.update({'seed' : seed_int})
+    defaults.update({'inifile' : args.inifile})
+
+    # Parse rest of arguments
+    # Don't suppress add_help here so it will handle -h
+    parser = argparse.ArgumentParser(
+        # Inherit options from config_parser
+        parents=[conf_parser]
+        )
+    parser.set_defaults(**defaults)
     parser.add_argument("--final-kstar1",
                         help="Specify the final condition of kstar1 "
                         ", you want systems to end at for your samples",
@@ -60,10 +102,24 @@ def parse_commandline():
                         "it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc",
                         help="number of processors", type=int, default=1)
+    parser.add_argument("--select_final_state", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Activate nice mode.")
+    parser.add_argument("--binary_state", nargs='+', type=int)
+    parser.add_argument("--sampling_method")
+    parser.add_argument("--galaxy_component")
+    parser.add_argument("--metallicity", type=float)
+    parser.add_argument("--convergence_params", nargs='+',)
+    parser.add_argument("--convergence_limits", type=json.loads)
+    parser.add_argument("--convergence_filter")
+    parser.add_argument("--match", type=float)
+    parser.add_argument("--bcm_bpp_initcond_filter", type=str2bool, nargs='?',
+                        const=True, default=False,)
+    parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
                         help="Run in Verbose Mode")
 
-    args = parser.parse_args()
+    args = parser.parse_args(remaining_argv)
 
     if len(args.final_kstar1) > 2 or len(args.final_kstar2) > 2:
         raise parser.error('final kstar1 and final kstar2 '
@@ -101,6 +157,34 @@ if __name__ == '__main__':
     # READ AND PARSE INIFILE
     ###########################################################################
     BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+
+    # we now overwrite the inifile values with what was specified from the command line
+    # (which could mean not overwriting anything at all because they are populated
+    # by default from the inifile).
+    for argument in vars(args):
+        if argument in filters.keys():
+            if filters[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, filters[argument], getattr(args, argument)))
+                filters[argument] = getattr(args, argument)
+
+        if argument in convergence.keys():
+            if convergence[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, convergence[argument], getattr(args, argument)))
+                convergence[argument] = getattr(args, argument)
+
+        if argument in sampling.keys():
+            if sampling[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, sampling[argument], getattr(args, argument)))
+                sampling[argument] = getattr(args, argument)
+
+        if argument == 'seed':
+            if getattr(args, argument) != seed_int:
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
+                seed_int = getattr(args, argument)
 
     # Check that the values in BSEDict, filters, and convergence are valid
     utils.error_check(BSEDict, filters, convergence, sampling)
@@ -150,6 +234,15 @@ if __name__ == '__main__':
         total_n_stars = 0
         idx = 0
         log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
+
+    # save configuration settings to output file
+    configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
+                              'convergence' : convergence, 'sampling' : sampling}
+
+    for k, v in configuration_settings.items():
+        for k1, v1 in v.items():
+            dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
+    dat_store.put('config/rand_seed/', pd.Series(seed_int))
 
     # Initialize the step counter and convergence array/list
     Nstep = 0
