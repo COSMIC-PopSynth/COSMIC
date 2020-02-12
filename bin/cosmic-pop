@@ -107,7 +107,8 @@ def parse_commandline():
                         help="Activate nice mode.")
     parser.add_argument("--binary_state", nargs='+', type=int)
     parser.add_argument("--sampling_method")
-    parser.add_argument("--galaxy_component")
+    parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
+    parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
     parser.add_argument("--metallicity", type=float)
     parser.add_argument("--convergence_params", nargs='+',)
     parser.add_argument("--convergence_limits", type=json.loads)
@@ -211,9 +212,9 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_{0}_{1}_{2}_{3}_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
         conv_save = pd.read_hdf(dat_store, 'conv')
-        log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
+        log_file = open('log_{0}_{1}_{2}_{3}_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
@@ -225,7 +226,7 @@ if __name__ == '__main__':
         idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         conv_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_{0}_{1}_{2}_{3}_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
         total_mass_singles = 0  
         total_mass_binaries = 0
         total_mass_stars = 0
@@ -233,7 +234,7 @@ if __name__ == '__main__':
         total_n_binaries = 0
         total_n_stars = 0
         idx = 0
-        log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
+        log_file = open('log_{0}_{1}_{2}_{3}_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
 
     # save configuration settings to output file
     configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
@@ -247,20 +248,6 @@ if __name__ == '__main__':
     # Initialize the step counter and convergence array/list
     Nstep = 0
     match = np.zeros(len(convergence['convergence_params']))
-
-    # Select the Galactic component from user input
-    if sampling['galaxy_component'] == 'ThinDisk':
-        SFH_model='const'
-        component_age=10000.0
-    elif sampling['galaxy_component'] == 'Bulge':
-        SFH_model='burst'
-        component_age=10000.0
-    elif sampling['galaxy_component'] == 'ThickDisk':
-        SFH_model='burst'
-        component_age=11000.0
-    elif sampling['galaxy_component'] == 'DeltaBurst':
-        SFH_model='delta_burst'
-        component_age=13700.0
 
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
@@ -282,8 +269,8 @@ if __name__ == '__main__':
                                                         binfrac_model = 0.5,
                                                         primary_model = 'kroupa93',
                                                         ecc_model = 'thermal',
-                                                        SFH_model = SFH_model,
-                                                        component_age = component_age,
+                                                        SF_start = sampling['SF_start'],
+                                                        SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
@@ -294,8 +281,8 @@ if __name__ == '__main__':
                                                         final_kstar2 = kstar2_range,
                                                         rand_seed = rand_seed,
                                                         nproc = args.nproc,
-                                                        SFH_model = SFH_model,
-                                                        component_age = component_age,
+                                                        SF_start = sampling['SF_start'],
+                                                        SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
