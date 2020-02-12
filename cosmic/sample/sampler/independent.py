@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, binfrac_model, component_age, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SF_start, SF_duration, binfrac_model, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
@@ -54,14 +54,14 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform
 
-    SFH_model : `str`
-        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+    SF_start : `float`
+            Time in the past when star formation initiates in Myr
+
+    SF_duration : `float`
+            Duration of constant star formation beginning from SF_Start in Myr
 
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
-
-    component_age : `float`
-        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
 
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is 0.02
@@ -139,7 +139,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     binfrac = np.asarray(binfrac)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
-    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
+    tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
     kstar1 = initconditions.set_kstar(mass1_binary)
@@ -428,22 +428,18 @@ class Sample(object):
         else:
             raise Error('You have specified an unsupported model. Please choose from thermal or uniform')
 
-    def sample_SFH(self, SFH_model='const', component_age=10000.0, met=0.02, size=None):
+
+    def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
-        star formation history (SFH) and Galactic component age.
-        The default is a MW thin disk constant evolution over 10000 Myr
+        time at the start of star formation and the duration of star formation.
+        The default is a burst of star formation 13,700 Myr in the past.
 
         Parameters
         ----------
-        SFH_model : str
-            'const' assigns an evolution time assuming a constant star
-            formation rate over the age of the MW disk: component_age [Myr]
-            'burst' assigns an evolution time assuming a burst of constant
-            star formation for 1Gyr starting at component_age [Myr] in the past
-            'delta_burst' assignes a t=0 evolution time until component age
-            DEFAULT: 'const'
-        component_age: float
-            age of the Galactic component [Myr]; DEFAULT: 10000.0
+        SF_start : float
+            Time in the past when star formation initiates in Myr
+        SF_duration : float
+            Duration of constant star formation beginning from SF_Start in Myr
         met : float
             metallicity of the population [Z_sun = 0.02]
             Default: 0.02
@@ -459,24 +455,12 @@ class Sample(object):
             array of metallicities
         """
 
-        if SFH_model=='const':
-
-            tphys = np.random.uniform(0, component_age, size)
+        if (SF_start > 0.0) & (SF_duration >= 0.0):
+            tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
-
-        elif SFH_model=='burst':
-            tphys = component_age - np.random.uniform(0, 1000, size)
-            metallicity = np.ones(size)*met
-            return tphys, metallicity
-
-        elif SFH_model=='delta_burst':
-            tphys = component_age*np.ones(size)
-            metallicity = np.ones(size)*met
-            return tphys, metallicity
-
         else:
-            raise Error('You have specified an unsupported model. Please choose from const, burst, or delta_burst')
+            raise Error('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
