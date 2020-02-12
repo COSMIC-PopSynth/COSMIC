@@ -42,20 +42,21 @@ __all__ = ['Evolve']
 BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
                'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta',
-               'aj1', 'aj2', 'tms1', 'tms2',
-               'massc1', 'massc2', 'rad1', 'rad2',
-               'mass0_1', 'mass0_2', 'lumin1', 'lumin2',
-               'radc1', 'radc2', 'menv1', 'menv2', 'renv1', 'renv2',
-               'ospin1', 'ospin2', 'b_0_1', 'b_0_2', 'bacc1', 'bacc2',
-               'tacc1', 'tacc2', 'epoch1', 'epoch2',
-               'bhspin1','bhspin2','bin_num']
+               'aj_1', 'aj_2', 'tms_1', 'tms_2',
+               'massc_1', 'massc_2', 'rad_1', 'rad_2',
+               'mass0_1', 'mass0_2', 'lum_1', 'lum_2',
+               'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
+               'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
+               'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
+               'bhspin_1','bhspin_2', 'bin_num']
 
-BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lumin_1', 'rad_1',
+
+BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
-               'ospin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
-               'lumin_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
-               'renv_2', 'epoch_2', 'ospin_2', 'deltam_2', 'RROL_2',
-               'porb', 'sep', 'ecc', 'B_0_1', 'B_0_2',
+               'omega_spin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
+               'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
+               'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RROL_2',
+               'porb', 'sep', 'ecc', 'B0_1', 'B0_2',
                'SNkick_1', 'SNkick_2', 'Vsys_final', 'SNtheta_final',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
