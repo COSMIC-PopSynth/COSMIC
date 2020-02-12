@@ -665,7 +665,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if sampling is not None:
         if not isinstance(sampling, dict):
             raise ValueError('Sampling criteria must be supplied via a dictionary')
-        for option in ['sampling_method', 'galaxy_component', 'metallicity']:
+        for option in ['sampling_method', 'SF_start', 'SF_duration', 'metallicity']:
             if option not in sampling.keys():
                 raise ValueError("Inifile section sampling must have option {0} supplied".format(option))
 
