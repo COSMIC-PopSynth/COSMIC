@@ -207,7 +207,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,45)
+      REAL*8 bppout(1000,61)
       REAL*8 bcmout(50000,42)
 *
       REAL*8 vk1_bcm,vk2_bcm,vsys_bcm,theta_bcm
