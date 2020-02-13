@@ -64,18 +64,14 @@ def parse_commandline():
                             metavar="FILE",)
     args, remaining_argv = conf_parser.parse_known_args()
 
-    if args.inifile is None:
-        raise conf_parser.error("--inifile argument required")
-    elif not os.path.isfile(args.inifile):
-        raise conf_parser.error("inifile supplied by --inifile does not exist")
-
     defaults = {}
-    BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
-    defaults.update(sampling)
-    defaults.update(filters)
-    defaults.update(convergence)
-    defaults.update({'seed' : seed_int})
-    defaults.update({'inifile' : args.inifile})
+    if not (args.inifile is None and (('-h' in remaining_argv) or ('--help' in remaining_argv))):
+        BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+        defaults.update(sampling)
+        defaults.update(filters)
+        defaults.update(convergence)
+        defaults.update({'seed' : seed_int})
+        defaults.update({'inifile' : args.inifile})
 
     # Parse rest of arguments
     # Don't suppress add_help here so it will handle -h
@@ -212,9 +208,9 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_{0}_{1}_{2}_{3}_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
+        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
         conv_save = pd.read_hdf(dat_store, 'conv')
-        log_file = open('log_{0}_{1}_{2}_{3}_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
+        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
@@ -226,7 +222,7 @@ if __name__ == '__main__':
         idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         conv_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_{0}_{1}_{2}_{3}_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
+        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
         total_mass_singles = 0  
         total_mass_binaries = 0
         total_mass_stars = 0
@@ -234,7 +230,7 @@ if __name__ == '__main__':
         total_n_binaries = 0
         total_n_stars = 0
         idx = 0
-        log_file = open('log_{0}_{1}_{2}_{3}_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
+        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
 
     # save configuration settings to output file
     configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
