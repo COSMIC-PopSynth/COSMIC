@@ -28,6 +28,7 @@ import ast
 import operator
 import json
 import itertools
+import os.path
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -1051,6 +1052,11 @@ def convert_kstar_evol_type(bpp):
 def parse_inifile(inifile):
     """Provides a method for parsing the inifile and returning dicts of each section
     """
+    if inifile is None:
+        raise ValueError("Please supply an inifile")
+    elif not os.path.isfile(inifile):
+        raise ValueError("inifile supplied does not exist")
+
     binOps = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
