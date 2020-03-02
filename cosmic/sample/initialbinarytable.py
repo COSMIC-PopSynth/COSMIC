@@ -52,17 +52,26 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
-INITIAL_CONDITIONS_COLUMNS = ['kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'porb', 'ecc',
-                             'metallicity', 'tphysf', 'mass0_1', 'mass0_2',
-                             'rad_1', 'rad_2', 'lum_1', 'lum_2', 'massc_1', 'massc_2',
-                             'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-                             'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
-                             'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2', 'tms_1', 'tms_2',
-                             'bhspin_1','bhspin_2', 'tphys', 'explosion_1', 'vx_1', 'vy_1', 'vz_1',
+INITIAL_CONDITIONS_COLUMNS = []
+
+INITIAL_CONDITIONS_COLUMNS_CORE = ['kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'porb', 'ecc', 'metallicity', 'tphysf',]
+
+INITIAL_CONDITIONS_COLUMNS_EXTRAS = ['mass0_1', 'mass0_2',
+                                     'rad_1', 'rad_2', 'lum_1', 'lum_2', 'massc_1', 'massc_2',
+                                     'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
+                                     'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
+                                     'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2', 'tms_1', 'tms_2',
+                                     'bhspin_1','bhspin_2', 'tphys']
+
+INITIAL_CONDITIONS_KICK_COLUMNS = ['explosion_1', 'vx_1', 'vy_1', 'vz_1',
                              'explosion_2', 'vx_2', 'vy_2', 'vz_2',
                              'explosion_2_1', 'vx_2_1', 'vy_2_1', 'vz_2_1', 'natal_kick_1',
                              'natal_kick_2', 'vsys_1', 'vsys_2', 'vsys_total', 'delta_theta_1', 'delta_theta_2',
                              'delta_theta_total']
+
+INITIAL_CONDITIONS_COLUMNS.extend(INITIAL_CONDITIONS_COLUMNS_CORE)
+INITIAL_CONDITIONS_COLUMNS.extend(INITIAL_CONDITIONS_COLUMNS_EXTRAS)
+INITIAL_CONDITIONS_COLUMNS.extend(INITIAL_CONDITIONS_KICK_COLUMNS)
 
 INITIAL_CONDITIONS_MISC_COLUMNS = ['binfrac']
 
