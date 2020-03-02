@@ -34,6 +34,7 @@ class TestEvolve(unittest2.TestCase):
     """`TestCase` for the cosmic
     """
     def test_single_evolve_with_table(self):
+
         # Check that the sample_primary function samples mass correctly
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond = Evolve.evolve(
             initialbinarytable=INIT_CONDITIONS, randomseed=523574)
