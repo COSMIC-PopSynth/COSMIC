@@ -28,6 +28,7 @@ import ast
 import operator
 import json
 import itertools
+import os.path
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -665,7 +666,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if sampling is not None:
         if not isinstance(sampling, dict):
             raise ValueError('Sampling criteria must be supplied via a dictionary')
-        for option in ['sampling_method', 'galaxy_component', 'metallicity']:
+        for option in ['sampling_method', 'SF_start', 'SF_duration', 'metallicity']:
             if option not in sampling.keys():
                 raise ValueError("Inifile section sampling must have option {0} supplied".format(option))
 
@@ -708,11 +709,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         acceptable_sampling = ['multidim', 'independent']
         if sampling[flag] not in acceptable_sampling:
             raise ValueError("sampling_method must be one of {0} you supplied {1}.".format(acceptable_sampling, sampling[flag]))
-
-        flag='galaxy_component'
-        acceptable_galaxy_components = ['Bulge', 'ThinDisk', 'ThickDisk', 'DeltaBurst']
-        if sampling[flag] not in acceptable_galaxy_components:
-            raise ValueError("galaxy_component must be one of {0} you supplied {1}.".format(acceptable_galaxy_components, sampling[flag]))
 
         flag = 'metallicity'
         if not isinstance(sampling[flag], float):
@@ -1056,6 +1052,11 @@ def convert_kstar_evol_type(bpp):
 def parse_inifile(inifile):
     """Provides a method for parsing the inifile and returning dicts of each section
     """
+    if inifile is None:
+        raise ValueError("Please supply an inifile")
+    elif not os.path.isfile(inifile):
+        raise ValueError("inifile supplied does not exist")
+
     binOps = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
