@@ -18,22 +18,22 @@
       INTEGER pisn_track(2)
       COMMON /TRACKERS/ pisn_track
 *
-      REAL*8 neta,bwind,hewind,mxns,beta,xi,acc2,epsnov
+      REAL*8 neta,bwind,hewind,beta,xi,acc2,epsnov
       REAL*8 eddfac,gamma
-      COMMON /WINDVARS/ neta,bwind,hewind,mxns,beta,xi,acc2,epsnov,
+      COMMON /WINDVARS/ neta,bwind,hewind,beta,xi,acc2,epsnov,
      &                  eddfac,gamma
       REAL*8 alpha1,lambdaf
       REAL*8 qcrit_array(16)
       COMMON /CEVARS/ qcrit_array,alpha1,lambdaf
       REAL*8 bconst,CK
       COMMON /MAGVARS/ bconst,CK
-      REAL*8 sigma,sigmadiv,bhsigmafrac,pisn
+      REAL*8 sigma,sigmadiv,bhsigmafrac,pisn,mxns
       REAL*8 polar_kick_angle,mu_SN1,omega_SN1
       REAL*8 ecsn,ecsn_mlow,bhspinmag
       REAL*8 natal_kick_array(6)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
      &                polar_kick_angle,mu_SN1,omega_SN1,
-     &                pisn,ecsn,ecsn_mlow,bhspinmag
+     &                pisn,ecsn,ecsn_mlow,bhspinmag,mxns
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac
