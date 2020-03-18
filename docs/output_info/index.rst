@@ -69,33 +69,48 @@ BPP DataFrame
 
 This `pandas.DataFrame` tracks a selection of binary parameters at key evolutionary changes. 
 Entries are added with changes in the :ref:`evolve-type-table`. 
+All values with a `_1` label refer to the primary; the BPP DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
 
-=============  =====================================================
-``tphys``      Evolution time [:math:`{\rm{Myr}}`]
-``mass_1``     Primary mass [:math:`{\mathrm{M}_\odot}`]
-``mass_2``     Secondary mass [:math:`{\mathrm{M}_\odot}`]
-``kstar_1``    Evolutionary state of primary (see :ref:`kstar-table`)
-``kstar_2``    Evolutionary state of secondary (see :ref:`kstar-table`)
-``sep``        Semimajor axis [:math:`{\mathrm{R}_\odot}`]
-``porb``       Orbital period [:matH:`{\rm{days}}`]
-``ecc``        Eccentricity
-``RROL_1``     Primary radius divided by Roche lobe radius
-``RROL_2``     Secondary radius divided by Roche lobe radius
-``evol_type``  Key moment in evolution (see :ref:`evolve-type-table`)
-``Vsys_1``     Change in systemic velocity due to first SN [:math:`{\rm{km/s}}`]
-``Vsys_2``     Change in systemic velocity due to second SN [:math:`{\rm{km/s}}`]
-``SNkick``     Magnitude of supernova natal kick [:math:`{\rm{km/s}}`]
-``SNtheta``    Angular change in orbital plane due to supernova [:math:`{\rm{degrees}}`]
-``aj_1``       Effective age of the primary [:math:`{\rm{Myr}}`]
-``aj_2``       Effective age of the secondary [:math:`{\rm{Myr}}`]
-``tms_1``      Primary main sequence lifetime [:math:`{\rm{Myr}}`]
-``tms_2``      Secondary main sequence lifetime [:math:`{\rm{Myr}}`]
-``massc_1``    Primary core mass [:math:`{\mathrm{M}_\odot}`]
-``massc_2``    Secondary core mass [:math:`{\mathrm{M}_\odot}`]
-``rad_1``      Primary radius [:math:`{\mathrm{R}_\odot}`]
-``rad_2``      Secondary radius [:math:`{\mathrm{R}_\odot}`]
-``bin_num``    Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames
-=============  =====================================================
+BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
+               'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
+               'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta',
+               'aj_1', 'aj_2', 'tms_1', 'tms_2',
+               'massc_1', 'massc_2', 'rad_1', 'rad_2',
+               'mass0_1', 'mass0_2', 'lum_1', 'lum_2',
+               'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
+               'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
+               'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
+               'bhspin_1','bhspin_2', 'bin_num']
+
+================  =====================================================
+``tphys``         Evolution time [:math:`{\rm{Myr}}`]
+``mass_1``        Primary mass [:math:`{\mathrm{M}_\odot}`]
+``kstar_1``       Evolutionary state of primary (see :ref:`kstar-table`)
+``sep``           Semimajor axis [:math:`{\mathrm{R}_\odot}`]
+``porb``          Orbital period [:matH:`{\rm{days}}`]
+``ecc``           Eccentricity
+``RROL_1``        Primary radius divided by Roche lobe radius
+``evol_type``     Key moment in evolution (see :ref:`evolve-type-table`)
+``Vsys_1``        Change in systemic velocity due to first SN [:math:`{\rm{km/s}}`]
+``SNkick``        Magnitude of supernova natal kick [:math:`{\rm{km/s}}`]
+``SNtheta``       Angular change in orbital plane due to supernova [:math:`{\rm{degrees}}`]
+``aj_1``          Effective age of the primary [:math:`{\rm{Myr}}`]
+``tms_1``         Primary main sequence lifetime [:math:`{\rm{Myr}}`]
+``massc_1``       Primary core mass [:math:`{\mathrm{M}_\odot}`]
+``rad_1``         Primary radius [:math:`{\mathrm{R}_\odot}`]
+``mass0_1``       Previous epoch mass [:math:`{\mathrm{M}_\odot}`]
+``lum_1``         Luminosity of the primary [:math:`{\mathrm{L}_\odot}`]
+``radc_1``        Primary core radius  [:math:`{\mathrm{R}_\odot}`]
+``menv_1``        Mass of the envelope of the primary [:math:`{\mathrm{M}_\odot}`]
+``renv_1``        Radius of the envelope of the primary [:math:`{\mathrm{R}_\odot}`]
+``omega_spin_1``  Angular velocity of the primary [:math:`{\rm{yr}}^{-1}`]
+``B0_1``          Initial neutron star magnetic field [:math:`{\rm{G}}`]
+``bacc_1``        (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion see Equation 7 in COSMIC paper
+``tacc_1``        Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
+``epoch_1``
+``bhspin_1``      Black hole spin magnitude [unitless]
+``bin_num``       Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames
+================  =====================================================
 
 
 
@@ -124,7 +139,7 @@ All values with a `_1` label refer to the primary; the BCM DataFrame also includ
 ``porb``           Orbital period [:math:`\rm{days}`]
 ``sep``            Semimajor axis [:math:`\mathrm{R}_{\odot}`]
 ``ecc``            Eccentricity
-``B_0_1``          Initial neutron star magnetic field [:math:`{\rm{G}}`]
+``B0_1``           Initial neutron star magnetic field [:math:`{\rm{G}}`]
 ``SNkick_1``       Magnitude of first natal kick [:math:`{\rm{km/s}}`]
 ``Vsys_final``     Final systemic velocity magnitude [:math:`{\rm{km/s}}`]
 ``SNtheta_final``  Final systemic velocity angle [:math:`{\rm{degrees}}`]
