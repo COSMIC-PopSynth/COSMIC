@@ -49,7 +49,7 @@ BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
 IBT = InitialBinaryTable.InitialBinaries(m1=[100.0, 11.8,10**1.5], m2=[85.0, 11.1,21], porb=[10000.0,2211.0,0.1], ecc=[0.65,0.55,0.0], tphysf=[13700.0,13700.0,13700.0], kstar1=[1,1,1], kstar2=[1,1,14], metallicity=[0.005,0.02,0.002], binfrac=[0.5,0.5,0.5])
 
 IDL_TABULATE_ANSWER = 0.5
-MASS_SUM_SINGLE = [41.0, 41.6, 42.0, 132.0, 320.0]
+MASS_SUM_SINGLE = [41.0, 41.6, 42.0, 126.0, 316.0]
 MASS_SUM_MULTIPLE = 301.0
 X_TRANS_SUM = -2.7199038e-07
 BW_KNUTH = 0.333
