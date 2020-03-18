@@ -27,7 +27,7 @@ PORB = 670.88711347
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
 CONST_SFR_SUM = 460028.2453521937
-BURST_SFR_SUM = 953997.1754647805
+BURST_SFR_SUM = 946002.8245352195
 KSTAR_SOLAR = 1.0
 MOE_TOTAL_MASS = 20.27926225850954
 METALLICITY_1000 = 0.02
@@ -102,21 +102,23 @@ class TestSample(unittest2.TestCase):
     def test_sample_SFH(self):
         np.random.seed(2)
         # Check that the sample SFH function samples SFH='const' correctly
-        times, met = SAMPLECLASS.sample_SFH(SFH_model='const', component_age=10000.0,\
+        times, met = SAMPLECLASS.sample_SFH(SF_start=10000.0,\
+                                            SF_duration=10000.0,\
                                             met = 0.02, size=100)
         self.assertEqual(times.sum(), CONST_SFR_SUM)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
         np.random.seed(2)
         # Check that the sample SFH function samples SFH='burst' correctly
-        times, met = SAMPLECLASS.sample_SFH(SFH_model='burst', component_age=10000.0,\
+        times, met = SAMPLECLASS.sample_SFH(SF_start=10000.0,\
+                                            SF_duration=1000.0,\
                                             met = 0.02, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
         # Check that the sample SFH function samples SFH='delta_burst' correctly
-        times, met = SAMPLECLASS.sample_SFH(SFH_model='delta_burst',\
-                                            component_age=10000.0,\
+        times, met = SAMPLECLASS.sample_SFH(SF_start=10000.0,\
+                                            SF_duration=0.0,\
                                             met = 0.02, size=100)
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)
@@ -136,23 +138,23 @@ class TestSample(unittest2.TestCase):
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
         # Check that the sample SFH function samples SFH='const' correctly
-        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='const',\
-                                                    component_age=10000.0,\
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SF_start=10000.0,\
+                                                    SF_duration=10000.0,\
                                                     met = 0.02, size=100)
         self.assertEqual(times.sum(), CONST_SFR_SUM)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
         np.random.seed(2)
         # Check that the sample SFH function samples SFH='burst' correctly
-        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='burst',\
-                                                    component_age=10000.0,\
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SF_start=10000.0,\
+                                                    SF_duration=1000.0,\
                                                     met = 0.02, size=100)
         self.assertEqual(times.sum(), BURST_SFR_SUM)
         self.assertAlmostEqual(np.mean(met), 0.02)
 
         # Check that the sample SFH function samples SFH='delta_burst' correctly
-        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SFH_model='delta_burst',\
-                                                    component_age=10000.0,\
+        times, met = MULTIDIMSAMPLECLASS.sample_SFH(SF_start=10000.0,\
+                                                    SF_duration=0.0,\
                                                     met = 0.02, size=100)
         self.assertEqual(times.sum(), 100*10000.0)
         self.assertAlmostEqual(np.mean(met), 0.02)

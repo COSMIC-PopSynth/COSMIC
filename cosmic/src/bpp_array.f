@@ -3,7 +3,11 @@
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,bkick,
      &                      aj1,aj2,tms1,tms2,
-     &                      massc1,massc2,rad1,rad2)
+     &                      massc1,massc2,rad1,rad2,
+     &                      mass0_1,mass0_2,lumin1,lumin2,
+     &                      radc1,radc2,menv1,menv2,renv1,renv2,
+     &                      ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
+     &                      tacc1,tacc2,epoch1,epoch2,bhspin1,bhspin2)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
 *
@@ -15,6 +19,10 @@
         REAL*8 bkick(20),mass1,mass2
         REAL*8 evolve_type,sep,tb,ecc,tphys,rrl1,rrl2
         REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
+        REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
+        REAL*8 menv1,menv2,renv1,renv2,ospin1,ospin2
+        REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
+        REAL*8 bhspin1,bhspin2
         REAL*8 tb_write,sep_cubed
         INTEGER jp,jj
         INTEGER kstar1,kstar2
@@ -40,53 +48,42 @@
         bpp(jp,9) = rrl1
         bpp(jp,10) = rrl2
         bpp(jp,11) = evolve_type
-        bpp(jp,12) = bkick(15)
-        bpp(jp,13) = bkick(16)
-* when writing the natal kick for one of the objects
-* we have four sitations
-
-*       SURVIVES FIRST SN
-        if(bkick(1).eq.1.d0.and.bkick(5).eq.0.d0.and.
-     &         bkick(9).eq.0.d0)then
-*           write the natal kick for primary object
-            bpp(jp,14) = bkick(13)
-*           record angular change to the orbital angular momentum
-            bpp(jp,15) = bkick(18)
-*       DISRUPTS FIRST SN
-        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
-     &         bkick(9).eq.0.d0)then
-*           write the natal kick for primary object
-            bpp(jp,14) = bkick(13)
-*       SURVIVES SECOND SN
-        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
-     &         bkick(9).eq.0.d0)then
-*           write the natal kick for secondary object
-            bpp(jp,14) = bkick(14)
-*           record angular change to the orbital angular momentum
-            bpp(jp,15) = bkick(19)
-*       DISRUPTS SECOND SN
-        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
-     &         bkick(9).eq.2.d0)then
-*           write the natal kick for secondary object
-            bpp(jp,14) = bkick(14)
-*       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
-        elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
-     &         bkick(9).eq.2.d0)then
-*           write the natal kick for secondary object
-            bpp(jp,14) = bkick(14)
-
-        endif
+        bpp(jp,12) = aj1
+        bpp(jp,13) = aj2
+        bpp(jp,14) = tms1
+        bpp(jp,15) = tms2
+        bpp(jp,16) = massc1
+        bpp(jp,17) = massc2
+        bpp(jp,18) = rad1
+        bpp(jp,19) = rad2
+        bpp(jp,20) = mass0_1
+        bpp(jp,21) = mass0_2
+        bpp(jp,22) = lumin1
+        bpp(jp,23) = lumin2
+        bpp(jp,24) = radc1
+        bpp(jp,25) = radc2
+        bpp(jp,26) = menv1
+        bpp(jp,27) = menv2
+        bpp(jp,28) = renv1
+        bpp(jp,29) = renv2
+        bpp(jp,30) = ospin1
+        bpp(jp,31) = ospin2
+        bpp(jp,32) = b_0_1
+        bpp(jp,33) = b_0_2
+        bpp(jp,34) = bacc1
+        bpp(jp,35) = bacc2
+        bpp(jp,36) = tacc1
+        bpp(jp,37) = tacc2
+        bpp(jp,38) = epoch1
+        bpp(jp,39) = epoch2
+        bpp(jp,40) = bhspin1
+        bpp(jp,41) = bhspin2
+        DO jj = 1,20
+            bpp(jp,41+jj) = bkick(jj)
+        ENDDO
         DO jj = 13,20
             bkick(jj) = 0.0
         ENDDO
-        bpp(jp,16) = aj1
-        bpp(jp,17) = aj2
-        bpp(jp,18) = tms1
-        bpp(jp,19) = tms2
-        bpp(jp,20) = massc1
-        bpp(jp,21) = massc2
-        bpp(jp,22) = rad1
-        bpp(jp,23) = rad2
         END
 
 ***
