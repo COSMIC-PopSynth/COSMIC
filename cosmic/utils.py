@@ -32,7 +32,7 @@ import os.path
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
-
+ 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
                'Michael Zevin <zevin@northwestern.edu>']
