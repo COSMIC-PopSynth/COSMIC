@@ -20,19 +20,9 @@
       REAL*8 tacc_1_state(15,2),tacc_2_state(15,2)
       REAL*8 epoch_1_state(15,2),epoch_2_state(15,2)
       REAL*8 bhspin_1_state(15,2),bhspin_2_state(15,2)
-      REAL*8 explosion_1_state(15,2),vx_1_state(15,2)
-      REAL*8 vy_1_state(15,2),vz_1_state(15,2)
-      REAL*8 explosion_2_state(15,2),vx_2_state(15,2)
-      REAL*8 vy_2_state(15,2),vz_2_state(15,2)
-      REAL*8 explosion_2_1_state(15,2)
-      REAL*8 vx_2_1_state(15,2),vy_2_1_state(15,2)
-      REAL*8 vz_2_1_state(15,2),natal_kick_1_state(15,2)
-      REAL*8 natal_kick_2_state(15,2),vsys_1_state(15,2)
-      REAL*8 vsys_2_state(15,2),vsys_total,delta_theta_1_state(15,2)
-      REAL*8 delta_theta_2_state(15,2),delta_theta_total_state(15,2)
       REAL*8 dtp_state(15)
       INTEGER binstate_state(15,2)
-      COMMON /checkstates/ mass_1_state,mass_2_state,
+      COMMON /checkstate_params/ mass_1_state,mass_2_state,
      &           kstar_1_state,kstar_2_state,
      &           sep_state,porb_state,ecc_state,
      &           RROL_1_state,RROL_2_state,evol_type_state,
@@ -45,12 +35,6 @@
      &           B0_1_state,B0_2_state,bacc_1_state,bacc_2_state,
      &           tacc_1_state,tacc_2_state,epoch_1_state,epoch_2_state,
      &           bhspin_1_state,bhspin_2_state,
-     &           explosion_1_state,vx_1_state,vy_1_state,
-     &           vz_1_state,explosion_2_state,vx_2_state,vy_2_state,
-     &           vz_2_state,
-     &           explosion_2_1_state,vx_2_1_state,
-     &           vy_2_1_state,vz_2_1_state,natal_kick_1_state,
-     &           natal_kick_2_state,vsys_1_state,
-     &           vsys_2_state,vsys_total,delta_theta_1_state,
-     &           delta_theta_2_state,delta_theta_total_state,
      &           dtp_state,binstate_state
+      REAL*8 checkstate_array(15,123)
+      COMMON /checkstate_array/ checkstate_array
