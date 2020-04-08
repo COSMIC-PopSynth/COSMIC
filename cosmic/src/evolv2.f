@@ -1549,6 +1549,20 @@ component.
 * Check if PISN occurred, and if so overwrite formation
             if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
             if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
+
+            CALL checkstate(tsave,binstate,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
+     &                      tb,ecc,rrl1,rrl2,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),
+     &                      renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                      bacc(1),bacc(2),
+     &                      tacc(1),tacc(2),epoch(1),epoch(2),
+     &                      bhspin(1),bhspin(2))
+
             CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                    lumin(1),rad(1),teff1,massc(1),
      &                    radc(1),menv(1),renv(1),epoch(1),
@@ -1784,6 +1798,18 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
+          CALL checkstate(dtp,binstate,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
+     &                      tb,ecc,rrl1,rrl2,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),
+     &                      renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                      bacc(1),bacc(2),
+     &                      tacc(1),tacc(2),epoch(1),epoch(2),
+     &                      bhspin(1),bhspin(2))
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -3303,6 +3329,18 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
+          CALL checkstate(dtp,binstate,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
+     &                      tb,ecc,rrl1,rrl2,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),
+     &                      renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                      bacc(1),bacc(2),
+     &                      tacc(1),tacc(2),epoch(1),epoch(2),
+     &                      bhspin(1),bhspin(2))
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),
@@ -3809,6 +3847,18 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
+          CALL checkstate(dtp,binstate,evolve_type,
+     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
+     &                      tb,ecc,rrl1,rrl2,
+     &                      aj(1),aj(2),tms(1),tms(2),
+     &                      massc(1),massc(2),rad(1),rad(2),
+     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+     &                      radc(1),radc(2),menv(1),menv(2),
+     &                      renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                      bacc(1),bacc(2),
+     &                      tacc(1),tacc(2),epoch(1),epoch(2),
+     &                      bhspin(1),bhspin(2))
           CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
      &                  lumin(1),rad(1),teff1,massc(1),
      &                  radc(1),menv(1),renv(1),epoch(1),

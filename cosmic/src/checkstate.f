@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE checkstate(dtp,binstate,evolve_type,
+      SUBROUTINE checkstate(tsave,binstate,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj1,aj2,tms1,tms2,
@@ -21,7 +21,7 @@
       INTEGER kstar1,kstar2
       LOGICAL pass_condition
       REAL*8 current_state_array(41)
-      REAL*8 dtp,mass1,mass2
+      REAL*8 tsave,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
       REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
       REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
@@ -140,7 +140,7 @@
           ENDDO
 * finally we see if we satisfied the conditional and set dtp
           IF(pass_condition)THEN
-              dtp = dtp_state(jj)
+              tsave = dtp_state(jj)
           ENDIF
           
  5000      continue
