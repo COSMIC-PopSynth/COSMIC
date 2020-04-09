@@ -1550,7 +1550,7 @@ component.
             if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
             if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
-            CALL checkstate(tsave,binstate,evolve_type,
+            CALL checkstate(dtp,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),

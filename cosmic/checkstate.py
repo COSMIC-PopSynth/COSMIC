@@ -13,7 +13,7 @@ CHECKSTATE_COLUMNS = numpy.array(['binstate', 'evol_type', 'mass_1', 'mass_2', '
                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
                'bhspin_1','bhspin_2'])
 
-DEFAULT_CONDITIONS = [-10e+30, 0, 10e+30] * CHECKSTATE_COLUMNS.size
+DEFAULT_CONDITIONS = [-10e+30, -1, 10e+30] * CHECKSTATE_COLUMNS.size
 DEFAULT_CONDITIONS = numpy.array([DEFAULT_CONDITIONS]* 15)
 
 

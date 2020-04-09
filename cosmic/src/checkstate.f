@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE checkstate(tsave,binstate,evolve_type,
+      SUBROUTINE checkstate(dtp,binstate,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj1,aj2,tms1,tms2,
@@ -21,7 +21,7 @@
       INTEGER kstar1,kstar2
       LOGICAL pass_condition
       REAL*8 current_state_array(41)
-      REAL*8 tsave,mass1,mass2
+      REAL*8 dtp,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
       REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
       REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
@@ -76,18 +76,18 @@
 * First check if there is even a dtp requested, if not
 * this implies that a conditional has not been set so we should continue
           IF(dtp_state(jj).eq.0)THEN
-              goto 5000
+              goto 74
           ENDIF
 * if we do have the conditional then we need to know the sign of the conditional
 * i.e. EQUAL (0), GT (1), GE (2), LT (3), LE (4) and then piece wise together the whole statement
 * Moreover we need to keep track of which parameter in the current_state_array we are checking
           param_index = 0
-          DO ii = 2, 183, 3
+          DO ii = 2, 123, 3
               param_index = param_index + 1
 * This part of the checkstate array had no conditional set (we know because the default has not changed)
               IF(checkstate_array(jj,ii-1).eq.-10E30.and.
      &               checkstate_array(jj,ii+1).eq.10E30)THEN
-                  goto 5000
+                  goto 69
               ENDIF
 
 * Now we check for what the conditional was and apply it
@@ -137,12 +137,13 @@
                       pass_condition = .false.
                   ENDIF
               ENDIF
+ 69       CONTINUE
           ENDDO
 * finally we see if we satisfied the conditional and set dtp
           IF(pass_condition)THEN
-              tsave = dtp_state(jj)
+              dtp = dtp_state(jj)
           ENDIF
           
- 5000      continue
+ 74   CONTINUE
       ENDDO
       END
