@@ -84,17 +84,20 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
         elif (meth == 'binary_state'):
             bin_num_save = []
 
+            # in order to filter on binary state we need the last entry of the bcm array for each binary
+            bcm_last_entry = bcm.groupby('bin_num').last().reset_index()
+
             # in order to find the properities of disrupted or systems
             # that are alive today we can simply check the last entry in the bcm
             # array for the system and see what its properities are today
-            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
             bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
                                           (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
             # of the objects right at merge because the bcm will report
             # the post merge object only
-            bcm_1 = bcm.loc[bcm.bin_state == 1]
+            bcm_1 = bcm_last_entry.loc[bcm_last_entry.bin_state == 1]
 
             # We now find the product of the kstar range lists so we can match the
             # merger_type column from the bcm array which tells us what objects
@@ -104,11 +107,11 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar2_range, kstar1_range)))))
             bin_num_save.extend(bcm_1.loc[bcm_1.merger_type.isin(merger_objects_to_track)].bin_num.tolist())
 
-            bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
+            bcm_last_entry = bcm_last_entry.loc[bcm_last_entry.bin_num.isin(bin_num_save)]
 
             # this will tell use the binary state fraction of the systems with a certain final kstar type
             # before we throw out certain binary states if a user requested that.
-            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+            bin_state_fraction = bcm_last_entry.groupby('bin_state').tphys.count()
             bin_states = []
             for ii in range(3):
                 try:
@@ -117,7 +120,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                     bin_states.append(0)
             bin_state_fraction = pd.DataFrame([bin_states], columns=[0,1,2])
 
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
+            bcm = bcm.loc[bcm.bin_num.isin(bcm_last_entry.loc[bcm_last_entry.bin_state.isin(use)].bin_num)]
 
     return bcm, bin_state_fraction
 
