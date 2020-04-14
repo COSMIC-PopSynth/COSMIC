@@ -17,15 +17,15 @@ DEFAULT_CONDITIONS = [-10e+30, -1, 10e+30] * CHECKSTATE_COLUMNS.size
 DEFAULT_CONDITIONS = numpy.array([DEFAULT_CONDITIONS]* 15)
 DEFAULT_DTP_STATE = -1*numpy.ones(15)
 
-def set_checkstates(list_of_conditions=[]):
+def set_checkstates(timestep_conditions=[]):
     """A function which will detemine different time resolution for different states
 
     Parameters:
-        list_of_conditions : (list) default empty (no dynamic dtp setting) 
+        timestep_conditions : (list) default empty (no dynamic dtp setting) 
             a nest list of the many different time resolutions and conditions
             for which you would like to apply those time resolution, e.g.,
             ```
-            list_of_conditions =[['20.0<mass_1<25.5', '15.5>mass_2>10.0', 'dtp=1.0'],
+            timestep_conditions =[['20.0<mass_1<25.5', '15.5>mass_2>10.0', 'dtp=1.0'],
                                  ['kstar_1=14', 'lum_1>10.0', 'dtp=0.01'],
                                  ['2>=binstate>=1', 'dtp=None']]
             ```
@@ -37,7 +37,7 @@ def set_checkstates(list_of_conditions=[]):
     checkstate_array[:,:] = DEFAULT_CONDITIONS
     dtp_state = getattr(_evolvebin.checkstate_params, 'dtp_state')
     dtp_state[:] = DEFAULT_DTP_STATE
-    for index, condition in enumerate(list_of_conditions):
+    for index, condition in enumerate(timestep_conditions):
         conditions = parse_column_filters(condition)
         for param in conditions:
             # find where in the checkstate_array this param is
