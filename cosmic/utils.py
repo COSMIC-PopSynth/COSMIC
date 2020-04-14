@@ -55,7 +55,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     method : `dict`,
         one or more methods by which to filter the
-        bpp or bcm table, e.g. ``{'select_final_state' : False}``;
+        bpp or bcm table, e.g. ``{'binary_state' : [0,1]}``;
         This means you do *not* want to select the final state of the binaries in the bcm array
 
     kstar1_range : `list`
@@ -69,8 +69,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     bcm : `pandas.DataFrame`
         filtered bcm dataframe
     """
-    _known_methods = ['select_final_state',
-                      'binary_state']
+    _known_methods = ['binary_state']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -79,22 +78,23 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
-        if (meth == 'select_final_state') and use:
-            bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
-        elif (meth == 'binary_state'):
+        if (meth == 'binary_state'):
             bin_num_save = []
+
+            # in order to filter on binary state we need the last entry of the bcm array for each binary
+            bcm_last_entry = bcm.groupby('bin_num').last().reset_index()
 
             # in order to find the properities of disrupted or systems
             # that are alive today we can simply check the last entry in the bcm
             # array for the system and see what its properities are today
-            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
             bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
                                           (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
             # of the objects right at merge because the bcm will report
             # the post merge object only
-            bcm_1 = bcm.loc[bcm.bin_state == 1]
+            bcm_1 = bcm_last_entry.loc[bcm_last_entry.bin_state == 1]
 
             # We now find the product of the kstar range lists so we can match the
             # merger_type column from the bcm array which tells us what objects
@@ -104,11 +104,11 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar2_range, kstar1_range)))))
             bin_num_save.extend(bcm_1.loc[bcm_1.merger_type.isin(merger_objects_to_track)].bin_num.tolist())
 
-            bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
+            bcm_last_entry = bcm_last_entry.loc[bcm_last_entry.bin_num.isin(bin_num_save)]
 
             # this will tell use the binary state fraction of the systems with a certain final kstar type
             # before we throw out certain binary states if a user requested that.
-            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+            bin_state_fraction = bcm_last_entry.groupby('bin_state').tphys.count()
             bin_states = []
             for ii in range(3):
                 try:
@@ -117,7 +117,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                     bin_states.append(0)
             bin_state_fraction = pd.DataFrame([bin_states], columns=[0,1,2])
 
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
+            bcm = bcm.loc[bcm.bin_num.isin(bcm_last_entry.loc[bcm_last_entry.bin_state.isin(use)].bin_num)]
 
     return bcm, bin_state_fraction
 
@@ -652,7 +652,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError('Filters criteria must be supplied via a dictionary')
-        for option in ['select_final_state', 'binary_state']:
+        for option in ['binary_state']:
             if option not in filters.keys():
                 raise ValueError("Inifile section filters must have option {0} supplied".format(option))
 
@@ -672,10 +672,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     # filters
     if filters is not None:
-        flag='select_final_state'
-        if filters[flag] not in [True,False]:
-            raise ValueError("{0} needs to be either True or False (you set it to {1})".format(flag, filters[flag]))
-
         flag='binary_state'
         if any(x not in [0,1,2] for x in filters[flag]):
             raise ValueError("{0} needs to be a subset of [0,1,2] (you set it to {1})".format(flag, filters[flag]))

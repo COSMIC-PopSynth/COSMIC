@@ -387,6 +387,16 @@ sampling
 
     COMMON ENVELOPE FLAGS
 
+**Note:** there are cases where a common envelope is forced regardless of the 
+critical mass ratio for unstable mass transfer. In the following cases, a 
+common envelope occurs regardless of the choices below:
+
+**contact** : the stellar radii go into contact (common for similar ZAMS systems)
+
+**periapse contact** : the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)
+
+**core Roche overflow** : either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)
+
 =======================  =====================================================
 ``alpha1``               Common-envelope efficiency parameter which scales the 
                          efficiency of transferring orbital energy to the 
@@ -479,7 +489,11 @@ sampling
                          mass transfer and a common envelope. Each item is set 
                          individually for its associated kstar, and a value of 
                          0.0 will apply prescription of the qcflag for that kstar.
-                         
+                         **Note:** there are cases where a common envelope is forced 
+                         regardless of the critical mass ratio for unstable mass
+                         transfer; in the following cases, a common envelope occurs
+                         regardless of the qcrit or qcflag                          
+
                          **qcrit_array = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]**
 =======================  =====================================================
 
