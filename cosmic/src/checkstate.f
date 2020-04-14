@@ -20,7 +20,7 @@
       INCLUDE 'const_bse.h'
       INTEGER jj,ii,param_index,binstate
       INTEGER kstar1,kstar2
-      LOGICAL pass_condition
+      LOGICAL pass_condition,pass_condition_any
       REAL*8 current_state_array(41)
       REAL*8 dtp,dtp_original,tsave,tphys,tphysf,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
@@ -72,9 +72,13 @@
       current_state_array(41) = bhspin2
 
 * tsave should never be bigger than tphysf
-      IF(tsave.ge.tphysf)THEN
+      IF(tsave.gt.tphysf)THEN
           tsave = tphysf
       ENDIF
+
+* We track to see if any conditional pass, otherwise dtp will be set to
+* dtp_original
+      pass_condition_any = .false.
 
       DO jj = 1,15
 * start by assuming we do not pass the current conditional setting of dtp
@@ -158,10 +162,12 @@
                   tsave = tphys
               ENDIF
               dtp = dtp_state(jj)
-          ELSE
-* if condition is not met then return to orginal dtp
-              dtp = dtp_original
+              pass_condition_any = .true.
           ENDIF
  74   CONTINUE
       ENDDO
+      IF(pass_condition_any.neqv..true.)THEN
+* if no conditions are met then return to orginal dtp
+          dtp = dtp_original
+      ENDIF
       END
