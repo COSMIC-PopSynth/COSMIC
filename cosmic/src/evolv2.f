@@ -202,7 +202,7 @@
       REAL*8 mass1i,mass2i,tbi,ecci
       LOGICAL coel,com,prec,inttry,change,snova,sgl
       LOGICAL supedd,novae,disk
-      LOGICAL isave,iplot
+      LOGICAL iplot,isave
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
 *
@@ -1528,7 +1528,7 @@ component.
          endif
       endif
       CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
-     &                      binstate,evolve_type,
+     &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),
@@ -1780,7 +1780,7 @@ component.
       ENDDO
 *
       CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
-     &                      binstate,evolve_type,
+     &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),
@@ -3307,7 +3307,7 @@ component.
  110  continue
 
       CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
-     &                      binstate,evolve_type,
+     &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),
@@ -3827,7 +3827,7 @@ component.
       endif
 *
       CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
-     &                      binstate,evolve_type,
+     &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),

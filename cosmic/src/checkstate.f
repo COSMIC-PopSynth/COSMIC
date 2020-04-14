@@ -1,6 +1,6 @@
 ***
       SUBROUTINE checkstate(dtp,dtp_original,tsave,tphys,tphysf,
-     &                      binstate,evolve_type,
+     &                      iplot,isave,binstate,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj1,aj2,tms1,tms2,
@@ -21,6 +21,7 @@
       INTEGER jj,ii,param_index,binstate
       INTEGER kstar1,kstar2
       LOGICAL pass_condition,pass_condition_any
+      LOGICAL isave,iplot
       REAL*8 current_state_array(41)
       REAL*8 dtp,dtp_original,tsave,tphys,tphysf,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
@@ -72,7 +73,7 @@
       current_state_array(41) = bhspin2
 
 * tsave should never be bigger than tphysf
-      IF(tsave.gt.tphysf)THEN
+      IF(tsave.ge.tphysf)THEN
           tsave = tphysf
       ENDIF
 
@@ -158,7 +159,7 @@
  79       CONTINUE
 * finally we see if we satisfied the conditional and set dtp
           IF(pass_condition)THEN
-              IF(dtp_state(jj).ne.tphysf.and.tsave.ge.tphys)THEN
+              IF(dtp_state(jj).ne.tphysf.and.tsave.gt.tphys)THEN
                   tsave = tphys
               ENDIF
               dtp = dtp_state(jj)
@@ -169,5 +170,11 @@
       IF(pass_condition_any.neqv..true.)THEN
 * if no conditions are met then return to orginal dtp
           dtp = dtp_original
+      ENDIF
+      isave = .true.
+      iplot = .false.
+      IF(dtp.le.0.d0)THEN
+         iplot = .true.
+         isave = .false.
       ENDIF
       END
