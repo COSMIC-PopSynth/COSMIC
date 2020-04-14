@@ -1,5 +1,6 @@
 ***
-      SUBROUTINE checkstate(dtp,binstate,evolve_type,
+      SUBROUTINE checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+     &                      binstate,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj1,aj2,tms1,tms2,
@@ -21,7 +22,7 @@
       INTEGER kstar1,kstar2
       LOGICAL pass_condition
       REAL*8 current_state_array(41)
-      REAL*8 dtp,mass1,mass2
+      REAL*8 dtp,dtp_original,tsave,tphys,tphysf,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
       REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
       REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
@@ -70,19 +71,24 @@
       current_state_array(40) = bhspin1
       current_state_array(41) = bhspin2
 
+* tsave should never be bigger than tphysf
+      IF(tsave.ge.tphysf)THEN
+          tsave = tphysf
+      ENDIF
+
       DO jj = 1,15
 * start by assuming we do not pass the current conditional setting of dtp
           pass_condition = .false.
 * First check if there is even a dtp requested, if not
 * this implies that a conditional has not been set so we should continue
-          IF(dtp_state(jj).eq.0)THEN
+          IF(dtp_state(jj).eq.-1.d0)THEN
               goto 74
           ENDIF
 * if we do have the conditional then we need to know the sign of the conditional
 * i.e. EQUAL (0), GT (1), GE (2), LT (3), LE (4) and then piece wise together the whole statement
 * Moreover we need to keep track of which parameter in the current_state_array we are checking
           param_index = 0
-          DO ii = 2, 123, 3
+          DO ii = 2, 120, 3
               param_index = param_index + 1
 * This part of the checkstate array had no conditional set (we know because the default has not changed)
               IF(checkstate_array(jj,ii-1).eq.-10E30.and.
@@ -90,7 +96,8 @@
                   goto 69
               ENDIF
 
-* Now we check for what the conditional was and apply it
+* Now we check for what the conditional was and apply it. As soon as the
+* conditional is false we do not check anymore
               IF(checkstate_array(jj,ii).eq.0)THEN
 
                   IF(checkstate_array(jj,ii-1).eq.
@@ -101,6 +108,7 @@
                       pass_condition = .true.
                   ELSE
                       pass_condition = .false.
+                      goto 79
                   ENDIF
 
               ELSEIF(checkstate_array(jj,ii).eq.1)THEN
@@ -110,6 +118,7 @@
                       pass_condition = .true.
                   ELSE
                       pass_condition = .false.
+                      goto 79
                   ENDIF
               
               ELSEIF(checkstate_array(jj,ii).eq.2)THEN
@@ -118,6 +127,7 @@
                       pass_condition = .true.
                   ELSE
                       pass_condition = .false.
+                      goto 79
                   ENDIF
 
               ELSEIF(checkstate_array(jj,ii).eq.3)THEN
@@ -127,6 +137,7 @@
                       pass_condition = .true.
                   ELSE
                       pass_condition = .false.
+                      goto 79
                   ENDIF
 
               ELSEIF(checkstate_array(jj,ii).eq.4)THEN
@@ -135,15 +146,22 @@
                       pass_condition = .true.
                   ELSE
                       pass_condition = .false.
+                      goto 79
                   ENDIF
               ENDIF
  69       CONTINUE
           ENDDO
+ 79       CONTINUE
 * finally we see if we satisfied the conditional and set dtp
           IF(pass_condition)THEN
+              IF(dtp_state(jj).ne.tphysf.and.tsave.ge.tphys)THEN
+                  tsave = tphys
+              ENDIF
               dtp = dtp_state(jj)
+          ELSE
+* if condition is not met then return to orginal dtp
+              dtp = dtp_original
           ENDIF
-          
  74   CONTINUE
       ENDDO
       END
