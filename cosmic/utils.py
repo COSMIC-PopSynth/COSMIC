@@ -55,7 +55,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     method : `dict`,
         one or more methods by which to filter the
-        bpp or bcm table, e.g. ``{'select_final_state' : False}``;
+        bpp or bcm table, e.g. ``{'binary_state' : [0,1]}``;
         This means you do *not* want to select the final state of the binaries in the bcm array
 
     kstar1_range : `list`
@@ -69,8 +69,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     bcm : `pandas.DataFrame`
         filtered bcm dataframe
     """
-    _known_methods = ['select_final_state',
-                      'binary_state']
+    _known_methods = ['binary_state']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -79,9 +78,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
-        if (meth == 'select_final_state') and use:
-            bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
-        elif (meth == 'binary_state'):
+        if (meth == 'binary_state'):
             bin_num_save = []
 
             # in order to find the properities of disrupted or systems
@@ -652,7 +649,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError('Filters criteria must be supplied via a dictionary')
-        for option in ['select_final_state', 'binary_state']:
+        for option in ['binary_state']:
             if option not in filters.keys():
                 raise ValueError("Inifile section filters must have option {0} supplied".format(option))
 
@@ -672,10 +669,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     # filters
     if filters is not None:
-        flag='select_final_state'
-        if filters[flag] not in [True,False]:
-            raise ValueError("{0} needs to be either True or False (you set it to {1})".format(flag, filters[flag]))
-
         flag='binary_state'
         if any(x not in [0,1,2] for x in filters[flag]):
             raise ValueError("{0} needs to be a subset of [0,1,2] (you set it to {1})".format(flag, filters[flag]))
