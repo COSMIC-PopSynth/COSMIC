@@ -27,12 +27,9 @@ k2_range_false = np.arange(0,12)
 x_dat = pd.DataFrame(np.vstack([10*x, 10*f]).T, columns=['x_dat', 'f_dat'])
 x_sample = np.vstack([np.random.uniform(0, 1, 10), np.random.uniform(0, 1, 10)]).T
 wrong_dict = {'test_wrong_dict' : False}
-alive_dict = {'select_final_state' : True,
-             'binary_state' : [0]}
-noLISA_dict = {'select_final_state' : True,
-               'binary_state' : [0]}
-false_dict = {'select_final_state' : False,
-             'binary_state' : [0,1,2]}
+alive_dict = {'binary_state' : [0]}
+noLISA_dict = {'binary_state' : [0]}
+false_dict = {'binary_state' : [0,1,2]}
 conv_dict_formation = {'convergence_filter' : 'formation'}
 conv_dict_1_SN = {'convergence_filter' : '1_SN'}
 conv_dict_2_SN = {'convergence_filter' : '2_SN'}
