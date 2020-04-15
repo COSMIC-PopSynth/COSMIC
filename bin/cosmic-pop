@@ -307,10 +307,6 @@ if __name__ == '__main__':
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
 
-        # If dtp is not set, filter out first timestep in bcm
-        if np.all(dtp == IBT['tphysf'].values):
-            bcm = bcm.loc[bcm['tphys'] == dtp[0]]
-
         bcm_filter, bin_state_nums = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
             warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
