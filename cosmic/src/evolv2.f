@@ -481,6 +481,7 @@ component.
       jp = 0
 
       dtp_original = dtp
+
       tsave = tphys
       isave = .true.
       iplot = .false.
@@ -3827,19 +3828,19 @@ component.
           ENDDO
       endif
 *
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
-     &                      iplot,isave,binstate,evolve_type,
-     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
-     &                      tb,ecc,rrl1,rrl2,
-     &                      aj(1),aj(2),tms(1),tms(2),
-     &                      massc(1),massc(2),rad(1),rad(2),
-     &                      mass0(1),mass0(2),lumin(1),lumin(2),
-     &                      radc(1),radc(2),menv(1),menv(2),
-     &                      renv(1),renv(2),
-     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
-     &                      bacc(1),bacc(2),
-     &                      tacc(1),tacc(2),epoch(1),epoch(2),
-     &                      bhspin(1),bhspin(2))
+*      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+*     &                      iplot,isave,binstate,evolve_type,
+*     &                      mass(1),mass(2),kstar(1),kstar(2),sep,
+*     &                      tb,ecc,rrl1,rrl2,
+*     &                      aj(1),aj(2),tms(1),tms(2),
+*     &                      massc(1),massc(2),rad(1),rad(2),
+*     &                      mass0(1),mass0(2),lumin(1),lumin(2),
+*     &                      radc(1),radc(2),menv(1),menv(2),
+*     &                      renv(1),renv(2),
+*     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
+*     &                      bacc(1),bacc(2),
+*     &                      tacc(1),tacc(2),epoch(1),epoch(2),
+*     &                      bhspin(1),bhspin(2))
       if((isave.and.tphys.ge.tsave).or.iplot)then
           if(B_0(1).eq.0.d0)then !PK.
               b01_bcm = 0.d0
