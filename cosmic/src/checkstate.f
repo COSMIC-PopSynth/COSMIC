@@ -173,8 +173,9 @@
       ENDIF
       isave = .true.
       iplot = .false.
-      IF(dtp.le.0.d0)THEN
+      IF(dtp.eq.0.d0)THEN
          iplot = .true.
          isave = .false.
+         tsave = tphysf
       ENDIF
       END
