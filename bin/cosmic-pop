@@ -298,7 +298,12 @@ if __name__ == '__main__':
         except:
             dtp = IBT['tphysf'].values
 
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
+        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT,
+                                           BSEDict=BSEDict,
+                                           nproc=args.nproc, idx=idx,
+                                           dtp=dtp,
+                                           timestep_conditions=filters['timestep_conditions'],)
+
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
 

@@ -300,7 +300,8 @@ class Evolve(object):
 
 
         # Allow a user to specify a custom time step sampling for certain parts of the evolution
-        set_checkstates(**kwargs)
+        timestep_conditions = kwargs.pop('timestep_conditions', [])
+        set_checkstates(timestep_conditions=timestep_conditions)
 
         # define multiprocessing method
         def _evolve_single_system(f):
@@ -435,23 +436,16 @@ class Evolve(object):
                     _evolvebin.flags.st_cr = f[i,106]
                     _evolvebin.flags.st_tide = f[i,107]
                     _evolvebin.cmcpass.using_cmc = 0 
-                    [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
+                    [bpp, bcm, bpp_index, bcm_index] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
                                                     [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
                                                     [f[i,14],f[i,15]], [f[i,16],f[i,17]], [f[i,18],f[i,19]],
                                                     [f[i,20],f[i,21]], [f[i,22],f[i,23]], [f[i,24],f[i,25]],
                                                     [f[i,26],f[i,27]], [f[i,28],f[i,29]], [f[i,30],f[i,31]],
                                                     [f[i,32],f[i,33]], [f[i,34],f[i,35]], f[i,36],
                                                     np.zeros(20), [f[i,37], f[i,38], f[i,39], f[i,40], f[i,41], f[i,42], f[i,43], f[i,44], f[i,45], f[i,46], f[i,47], f[i,48], f[i,49], f[i,50], f[i,51], f[i,52], f[i,53], f[i,54], f[i,55], f[i,56]])
-                    try:
-                        idx1 = np.argmax(bpp[:,0] == -1)
-                        idx2 = np.argmax(bcm[:,0] == -1)
-                        bpp = bpp[:idx1]
-                        bcm = bcm[:idx2]
-                    except IndexError:
-                        bpp = bpp[:np.argwhere(bpp[:,0] > 0)[0][0]]
-                        bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
-                        raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
-                                       .format(f[i,2], f[i,3], f[i,4], f[i,5], f[i,7], f[i,6]))
+                    bpp = bpp[:bpp_index]
+                    bcm = bcm[:bcm_index]
+
                     bpp_bin_numbers = np.atleast_2d(np.array([f[i,108]] * len(bpp))).T
                     bcm_bin_numbers = np.atleast_2d(np.array([f[i,108]] * len(bcm))).T
 
