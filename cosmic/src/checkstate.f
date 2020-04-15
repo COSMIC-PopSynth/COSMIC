@@ -159,7 +159,7 @@
  79       CONTINUE
 * finally we see if we satisfied the conditional and set dtp
           IF(pass_condition)THEN
-              IF(dtp_state(jj).ne.tphysf.and.tsave.gt.tphys)THEN
+              IF(dtp_state(jj).ne.tphysf.and.tsave.ge.tphysf)THEN
                   tsave = tphys
               ENDIF
               dtp = dtp_state(jj)
