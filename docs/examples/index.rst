@@ -248,7 +248,7 @@ Second, pick a certain resolution for the bcm array until the system mergers or 
 
 .. ipython::
 
-    In [16]: bpp, bcm, initC = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict, dtp=1.0, list_of_conditions =[['2>=binstate>=1', 'dtp=None']])
+    In [16]: bpp, bcm, initC = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict, list_of_conditions =[['binstate=0', 'dtp=1.0']])
 
     In [16]: print(bcm[['tphys', 'kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'bin_state']])
 
