@@ -141,7 +141,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
-    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, porb_model, size=mass1_binary.size)
+    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
@@ -270,7 +270,7 @@ class Sample(object):
             primary_mass
         """
 
-        a_0 = np.random.uniform(0.001, 1, primary_mass.size)
+        a_0 = np.random.uniform(0.01, 1, primary_mass.size)
         secondary_mass = primary_mass*a_0
 
         return secondary_mass
@@ -325,7 +325,7 @@ class Sample(object):
         return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
-    def sample_porb(self, mass1, mass2, model='sana12', size=None):
+    def sample_porb(self, mass1, mass2, ecc, model='sana12', size=None):
         """Sample the orbital period according to the user-specified model
         
         Parameters
@@ -334,6 +334,8 @@ class Sample(object):
             primary masses
         mass2 : array
             secondary masses
+        ecc : array
+            eccentricity
         model : string
             selects which model to sample orbital periods, choices include:
             log_uniform : semi-major axis flat in log space from RROL < 0.5 up
@@ -407,7 +409,7 @@ class Sample(object):
             from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
             ind_massive, = np.where(mass1 > 15)
-            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive)])
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
         else:
             raise ValueError('You have supplied a non-supported model; Please choose either log_flat or Sana')
         return porb
@@ -446,7 +448,8 @@ class Sample(object):
 
         elif ecc_model=='sana12':
             from cosmic.utils import rndm
-            ecc = rndm(a=0.0, b=0.9, g=-0.42, size=size) 
+            ecc = rndm(a=0.001, b=0.9, g=-0.42, size=size) 
+            return ecc
         else:
             raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or Sana')
 
