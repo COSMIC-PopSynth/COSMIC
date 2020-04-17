@@ -132,7 +132,7 @@
          if((natal_kick_array(snstar+6).ge.(0.d0)).and.
      &       (natal_kick_array(snstar+6).le.(360.d0)))then
 
-             em = natal_kick_array(snstar+6)
+             em = natal_kick_array(snstar+6)*pi/180.d0
              goto 3
 
          endif
