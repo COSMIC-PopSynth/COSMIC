@@ -848,6 +848,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if BSEDict[flag] <= 0:
             raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='rembar_massloss'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < -1:
+            raise ValueError("'{0:s}' needs to be between [-1,0] or greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
 
     flag='eddfac'
     if flag in BSEDict.keys():
