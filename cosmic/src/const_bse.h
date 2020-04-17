@@ -32,8 +32,8 @@
       REAL*8 ecsn,ecsn_mlow,bhspinmag
       REAL*8 natal_kick_array(6)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
-     &                polar_kick_angle,mu_SN1,omega_SN1,
-     &                pisn,ecsn,ecsn_mlow,bhspinmag,mxns
+     &            polar_kick_angle,mu_SN1,omega_SN1,
+     &            pisn,ecsn,ecsn_mlow,bhspinmag,mxns,rembar_massloss
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac

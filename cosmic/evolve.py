@@ -83,7 +83,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
-                             'ST_cr', 'ST_tide']
+                             'ST_cr', 'ST_tide', 'rembar_massloss']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
@@ -351,6 +351,7 @@ class Evolve(object):
                 _evolvebin.flags.htpmb = f[105]
                 _evolvebin.flags.st_cr = f[106]
                 _evolvebin.flags.st_tide = f[107]
+                _evolvebin.snvars.rembar_massloss = f[108]
                 _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[99],
@@ -438,6 +439,7 @@ class Evolve(object):
                     _evolvebin.flags.htpmb = f[i,105]
                     _evolvebin.flags.st_cr = f[i,106]
                     _evolvebin.flags.st_tide = f[i,107]
+                    _evolvebin.snvars.rembar_massloss = f[i,108]
                     _evolvebin.cmcpass.using_cmc = 0 
                     [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
                                                     [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
