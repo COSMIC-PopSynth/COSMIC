@@ -54,6 +54,7 @@
       real*8 rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
       real*8 rgbf,rminf,ragbf,rzahbf,rzhef,rhehgf,rhegbf,rpertf
       real*8 mctmsf,mcgbtf,mcgbf,mcheif,mcagbf,lzahbf
+      real*8 mrem
       external thookf,tblf
       external lalphf,lbetaf,lnetaf,lhookf,lgbtf,lmcgbf,lzhef,lpertf
       external rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
@@ -659,18 +660,26 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mc = mt
                   endif
 
-                  if(mt.le.mxns)then
-*
-* Zero-age Neutron star
-*
-                     kw = 13
-* Convert baryonic mass to gravitational mass (Lattimer & Yahil 1989)
-                     if(nsflag.ge.2) mt = 2.108167d0*SQRT(10.d0+3.d0*mt)
-     &                                    - 6.6666667d0
+* Specify the baryonic to gravitational remnant mass prescription
+* MJZ 04/2020
+
+* Determine gravitational mass using Lattimer & Yahil 1989 for nsflag>1
+                  if(nsflag.le.1)then
+                     mrem = mt
                   else
-*
-* Zero-age Black hole
-*
+                     mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
+                  endif
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                  if(rembar_massloss.ge.0d0)then
+                     if((mt-mrem).ge.rembar_massloss) 
+     &                               mrem = mt-rembar_massloss
+                  endif
+
+* Determine whether a zero-age NS or BH is formed
+                  if(mrem.le.mxns)then
+                     mt = mrem
+                     kw = 13
+                  else
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -779,8 +788,20 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
                      endif
 
-* Convert baryonic mass to gravitational mass (approx for BHs)
-                     if(nsflag.ge.2) mt = 0.9d0*mt
+* Convert baryonic mass to gravitational mass 
+* MJZ 04/2020
+                     if(nsflag.lt.1)then
+                        mrem = mt
+                     else
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                        if(rembar_massloss.ge.0d0)then
+                           mrem = mt-rembar_massloss
+* If -1 < rembar_massloss < 0, assume this fractional mass loss
+                        else
+                           mrem = (1.d0+rembar_massloss)*mt
+                        endif
+                     endif
+                     mt = mrem
                   endif
                endif
             endif
@@ -1013,18 +1034,26 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mc = mt
                   endif
 
-                  if(mt.le.mxns)then
-*
-* Zero-age Neutron star
-*
-                     kw = 13
-* Convert baryonic mass to gravitational mass (Lattimer & Yahil 1989)
-                     if(nsflag.ge.2) mt = 2.108167d0*SQRT(10.d0+3.d0*mt)
-     &                                    - 6.6666667d0
+* Specify the baryonic to gravitational remnant mass prescription
+* MJZ 04/2020
+
+* Determine gravitational mass using Lattimer & Yahil 1989 for nsflag>1
+                  if(nsflag.le.1)then
+                     mrem = mt
                   else
-*
-* Zero-age Black hole
-*
+                     mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
+                  endif
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                  if(rembar_massloss.ge.0d0)then
+                     if((mt-mrem).ge.rembar_massloss) 
+     &                               mrem = mt-rembar_massloss
+                  endif
+
+* Determine whether a zero-age NS or BH is formed
+                  if(mrem.le.mxns)then
+                     mt = mrem
+                     kw = 13
+                  else
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -1134,9 +1163,21 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
                      endif
 
+* MJZ 04/2020
+* Convert baryonic mass to gravitational mass 
+                     if(nsflag.lt.1)then
+                        mrem = mt
+                     else
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                        if(rembar_massloss.ge.0d0)then
+                           mrem = mt-rembar_massloss
+* If -1 < rembar_massloss < 0, assume this fractional mass loss
+                        else
+                           mrem = (1.d0+rembar_massloss)*mt
+                        endif
+                     endif
+                     mt = mrem
 
-* Convert baryonic mass to gravitational mass (approx for BHs)
-                     if(nsflag.ge.2) mt = 0.9d0*mt
                      endif
                   endif
                endif
