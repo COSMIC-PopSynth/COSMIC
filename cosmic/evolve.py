@@ -99,7 +99,10 @@ else:
 for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
-NATAL_KICK_COLUMNS = ['SNkick_1', 'SNkick_2', 'phi_1', 'phi_2', 'theta_1', 'theta_2']
+NATAL_KICK_COLUMNS = ['SNkick_1', 'SNkick_2',
+                      'phi_1', 'phi_2',
+                      'theta_1', 'theta_2',
+                      'eccentric_anomaly_1', 'eccentric_anomaly_2']
 QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
 FPRIMC_COLUMNS = ['fprimc_{0}'.format(kstar) for kstar in range(0,16)]
 

@@ -837,8 +837,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='natal_kick_array'
     if flag in BSEDict.keys():
-        if len(BSEDict[flag]) != 6:
-            raise ValueError("'{0:s}' must be supplied 6 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+        if len(BSEDict[flag]) != 8:
+            raise ValueError("'{0:s}' must be supplied 8 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
 
     flag='nsflag'
     if flag in BSEDict.keys():
