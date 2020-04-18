@@ -371,8 +371,8 @@ class Evolve(object):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[108]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[108]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[109]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[109]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
@@ -458,8 +458,8 @@ class Evolve(object):
                         bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
                         raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                        .format(f[i,2], f[i,3], f[i,4], f[i,5], f[i,7], f[i,6]))
-                    bpp_bin_numbers = np.atleast_2d(np.array([f[i,108]] * len(bpp))).T
-                    bcm_bin_numbers = np.atleast_2d(np.array([f[i,108]] * len(bcm))).T
+                    bpp_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bpp))).T
+                    bcm_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bcm))).T
 
                     res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
                     res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
