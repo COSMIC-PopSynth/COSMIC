@@ -668,11 +668,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mrem = mt
                   else
                      mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
-                  endif
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss
-                  if(rembar_massloss.ge.0d0)then
-                     if((mt-mrem).ge.rembar_massloss) 
+                     if(rembar_massloss.ge.0d0)then
+                        if((mt-mrem).ge.rembar_massloss) 
      &                               mrem = mt-rembar_massloss
+                     endif
                   endif
 
 * Determine whether a zero-age NS or BH is formed
@@ -1042,11 +1042,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mrem = mt
                   else
                      mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
-                  endif
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss
-                  if(rembar_massloss.ge.0d0)then
-                     if((mt-mrem).ge.rembar_massloss) 
+                     if(rembar_massloss.ge.0d0)then
+                        if((mt-mrem).ge.rembar_massloss) 
      &                               mrem = mt-rembar_massloss
+                     endif
                   endif
 
 * Determine whether a zero-age NS or BH is formed
