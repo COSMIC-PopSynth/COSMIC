@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SF_start, SF_duration, binfrac_model, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model,  SF_start, SF_duration, binfrac_model, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
