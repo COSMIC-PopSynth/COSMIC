@@ -100,6 +100,10 @@ def parse_commandline():
                         help="number of processors", type=int, default=1)
     parser.add_argument("--binary_state", nargs='+', type=int)
     parser.add_argument("--sampling_method")
+    parser.add_argument("--primary_model", help="Chooses the initial primary mass function from: salpeter55, kroupa93, kroupa01", type=str)
+    parser.add_argument("--binfrac_model", help="Chooses the binary fraction model from: a float between [0,1] and vanHaaften", type=float)
+    parser.add_argument("--ecc_model", help="Chooses the initial eccentricity distribution model from: thermal, uniform, and sana12", type=str)
+    parser.add_argument("--porb_model", help="Chooses the initial orbital period distribution model from: log_uniform and sana12", type=str)
     parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
     parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
     parser.add_argument("--metallicity", type=float)
@@ -169,6 +173,12 @@ if __name__ == '__main__':
                 convergence[argument] = getattr(args, argument)
 
         if argument in sampling.keys():
+            if (sampling[argument] == "independent"):
+               for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
+                    if (model not in sampling.keys()) and not (getattr(args, model)):
+                        raise ValueError("You have selected the {0} sampler "
+                                         "but not specified a model for {1} "
+                                         "in the inifile or command line".format(sampling[argument], model)) 
             if sampling[argument] != getattr(args, argument):
                 warnings.warn("You are overriding the inifile value of {0}={1} "
                               "with {0}={2} from the commandline".format(argument, sampling[argument], getattr(args, argument)))
@@ -256,12 +266,13 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
-            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],
+            init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
-                                                        binfrac_model = 0.5,
-                                                        primary_model = 'kroupa93',
-                                                        ecc_model = 'thermal',
+                                                        binfrac_model = args.binfrac_model,
+                                                        primary_model = args.primary_model,
+                                                        ecc_model = args.ecc_model,
+                                                        porb_model = args.porb_model,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
@@ -269,7 +280,7 @@ if __name__ == '__main__':
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
-            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],
+            init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
                                                         rand_seed = rand_seed,
