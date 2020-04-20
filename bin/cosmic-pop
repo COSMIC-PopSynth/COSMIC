@@ -173,7 +173,7 @@ if __name__ == '__main__':
                 convergence[argument] = getattr(args, argument)
 
         if argument in sampling.keys():
-            if (sampling[argument] == "independent"):
+            if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
                for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
                     if (model not in sampling.keys()) and not (getattr(args, model)):
                         raise ValueError("You have selected the {0} sampler "
