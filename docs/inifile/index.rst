@@ -742,7 +742,7 @@ common envelope occurs regardless of the choices below:
     REMNANT MASS FLAGS
 
 =======================  =====================================================
-``nsflag``               Determines the remnant mass prescription used for
+``remnantflag``               Determines the remnant mass prescription used for
                          NSs and BHs.
 
                             ``0`` : follows `Section 6 of Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
@@ -756,7 +756,7 @@ common envelope occurs regardless of the choices below:
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
-                         **nsflag = 3**
+                         **remnantflag = 3**
 ``mxns``                 Sets the boundary between the maximum NS mass
                          and the minimum BH mass
 
@@ -779,12 +779,12 @@ common envelope occurs regardless of the choices below:
     ;;; REMNANT MASS FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    ; nsflag determines the remnant mass prescription used
-    ; nsflag=0: default BSE; nsflag=1: Belczynski et al. 2002, ApJ, 572, 407
-    ; nsflag=2: Belczynski et al. 2008; nsflag=3: rapid prescription (Fryer+ 2012)
-    ; nsflag=4: delayed prescription (Fryer+ 2012)
+    ; remnantflag determines the remnant mass prescription used
+    ; remnantflag=0: default BSE; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
+    ; remnantflag=2: Belczynski et al. 2008; remnantflag=3: rapid prescription (Fryer+ 2012)
+    ; remnantflag=4: delayed prescription (Fryer+ 2012)
     ; default=3
-    nsflag=3
+    remnantflag=3
 
     ; mxns sets the maximum NS mass
     ; default=2.5

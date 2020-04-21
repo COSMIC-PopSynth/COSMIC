@@ -508,9 +508,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   lum = 1.0d-10
                   r = 1.0d-10
                else
-                  if(nsflag.eq.0)then
+                  if(remnantflag.eq.0)then
                      mt = 1.17d0 + 0.09d0*mc
-                  elseif(nsflag.eq.1)then
+                  elseif(remnantflag.eq.1)then
 *
 * Use NS/BH mass given by Belczynski et al. 2002, ApJ, 572, 407.
 *
@@ -528,7 +528,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(mc.gt.7.60)then
                         fallback = 1.d0
                      endif
-                  elseif(nsflag.eq.2)then
+                  elseif(remnantflag.eq.2)then
 *
 * Use NS/BH masses given by Belczynski+08. PK.
 *
@@ -573,7 +573,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.3)then
+                  elseif(remnantflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
@@ -615,7 +615,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.4)then
+                  elseif(remnantflag.eq.4)then
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
@@ -663,8 +663,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Specify the baryonic to gravitational remnant mass prescription
 * MJZ 04/2020
 
-* Determine gravitational mass using Lattimer & Yahil 1989 for nsflag>1
-                  if(nsflag.le.1)then
+* Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
+                  if(remnantflag.le.1)then
                      mrem = mt
                   else
                      mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
@@ -790,7 +790,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * Convert baryonic mass to gravitational mass 
 * MJZ 04/2020
-                     if(nsflag.le.1)then
+                     if(remnantflag.le.1)then
                         mrem = mt
                      else
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss
@@ -891,9 +891,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      lum = 1.0d-10
                      r = 1.0d-10
                   else
-                     if(nsflag.eq.0)then
+                     if(remnantflag.eq.0)then
                         mt = 1.17d0 + 0.09d0*mc
-                     elseif(nsflag.eq.1)then
+                     elseif(remnantflag.eq.1)then
                         if(mc.lt.2.5d0)then
                            mcx = 0.161767d0*mc + 1.067055d0
                         else
@@ -907,7 +907,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            fallback = (mc - 5.d0)/2.6d0
                         endif
                         if(mc.gt.7.60) fallback = 1.d0
-                     elseif(nsflag.eq.2)then
+                     elseif(remnantflag.eq.2)then
 *
 * Use NS/BH masses given by Belczynski+08. PK.
 *
@@ -949,7 +949,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.3)then
+                  elseif(remnantflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
@@ -990,7 +990,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.4)then
+                  elseif(remnantflag.eq.4)then
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
@@ -1037,8 +1037,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Specify the baryonic to gravitational remnant mass prescription
 * MJZ 04/2020
 
-* Determine gravitational mass using Lattimer & Yahil 1989 for nsflag>1
-                  if(nsflag.le.1)then
+* Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
+                  if(remnantflag.le.1)then
                      mrem = mt
                   else
                      mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
@@ -1165,7 +1165,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * MJZ 04/2020
 * Convert baryonic mass to gravitational mass 
-                     if(nsflag.le.1)then
+                     if(remnantflag.le.1)then
                         mrem = mt
                      else
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss

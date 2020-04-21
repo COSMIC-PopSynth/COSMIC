@@ -73,7 +73,7 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
+                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'remnantflag',
                              'cekickflag', 'cemergeflag', 'cehestarflag',
                              'mxns', 'pts1', 'pts2', 'pts3',
                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
@@ -312,7 +312,7 @@ class Evolve(object):
                 _evolvebin.flags.wdflag = f[65]
                 _evolvebin.snvars.pisn = f[66]
                 _evolvebin.flags.bhflag = f[67]
-                _evolvebin.flags.nsflag = f[68]
+                _evolvebin.flags.remnantflag = f[68]
                 _evolvebin.ceflags.cekickflag = f[69]
                 _evolvebin.ceflags.cemergeflag = f[70]
                 _evolvebin.ceflags.cehestarflag = f[71]
@@ -400,7 +400,7 @@ class Evolve(object):
                     _evolvebin.flags.wdflag = f[i,65]
                     _evolvebin.snvars.pisn = f[i,66]
                     _evolvebin.flags.bhflag = f[i,67]
-                    _evolvebin.flags.nsflag = f[i,68]
+                    _evolvebin.flags.remnantflag = f[i,68]
                     _evolvebin.ceflags.cekickflag = f[i,69]
                     _evolvebin.ceflags.cemergeflag = f[i,70]
                     _evolvebin.ceflags.cehestarflag = f[i,71]
