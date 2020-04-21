@@ -127,6 +127,16 @@
 *
 * Find the initial separation by randomly choosing a mean anomaly.
       if(sep.gt.0.d0.and.ecc.ge.0.d0)then
+
+* check is user supplied mean anomaly
+         if((natal_kick_array(snstar+6).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar+6).le.(360.d0)))then
+
+             em = natal_kick_array(snstar+6)*pi/180.d0
+             goto 3
+
+         endif
+
          xx = RAN3(idum1)
 *         write(15,*)'kick 1:',xx,idum1
          mm = xx*twopi
@@ -206,9 +216,9 @@
 * Before we randomly draw a phi and theta,
 * let us see if a pre-supplied set of natal kicks
 * and phi/theta values associated with the kicks was passed.
-      if((natal_kick_array(snstar+2).ge.(-pi/2.d0)).and.
-     &       (natal_kick_array(snstar+2).le.(pi/2.d0)))then
-          phi = natal_kick_array(snstar+2)
+      if((natal_kick_array(snstar+2).ge.(-90.d0)).and.
+     &       (natal_kick_array(snstar+2).le.(90.d0)))then
+          phi = natal_kick_array(snstar+2)*pi/180.d0
           sphi = SIN(phi)
       else
 * CLR - Allow for a restricted opening angle for SN kicks
@@ -228,8 +238,8 @@
 
 
       if((natal_kick_array(snstar+4).ge.(0.d0)).and.
-     &       (natal_kick_array(snstar+4).le.(2.d0*pi)))then
-          theta = natal_kick_array(snstar+4)
+     &       (natal_kick_array(snstar+4).le.(360.d0)))then
+          theta = natal_kick_array(snstar+4)*pi/180.d0
       else
           theta = twopi*ran3(idum1)
       endif
