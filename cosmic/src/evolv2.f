@@ -131,7 +131,7 @@
 *             at formation
 *             [0= no kick; >0 kick].
 *
-*    nsflag - for the mass of neutron stars and black holes you can use either
+*    remnantflag - for the mass of neutron stars and black holes you can use either
 *             the SSE prescription or the prescription presented by
 *             Belczynski et al. 2002, ApJ, 572, 407 who found that SSE was
 *             underestimating the masses of these stars. In either case you also
