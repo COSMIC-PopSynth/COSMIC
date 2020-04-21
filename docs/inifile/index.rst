@@ -19,16 +19,6 @@ filters
 -------
 
 =======================  ===============================================================
-``select_final_state``   The bcm array generally returns the first and last
-                         state of the binary system. Since we already
-                         save the initial conditions in cosmic-pop, usually
-                         we opt to throw out the initial state of the binary
-                         from this array and only keep the final state in the
-                         bcm array. The allowed values are:
-
-                            ``True`` : bcm array only contains final state of binary
-
-                            ``False`` : bcm array contains multiple binary states 
 ``binary_state``         Each binary system will end its evolution in one of
                          three states
 
@@ -41,19 +31,41 @@ filters
                             ``2`` : the system was disrupted before the end of 
                             its evolution
 
+``timestep_conditions``  timestep_conditions allow a user to pick specific time resolutions
+                         to print at targetted stages of the binary evolution
+                         This is used in conjuction with the [bse] section value dtp to determine the resolution
+                         at which thing are printed into the so called bcm array
+                         For example, if you only want dtp set to a value while the system is
+                         intact i.e. has not merged or been disrupted you could do so with the following
+
+                            ``timestep_conditions =[['binstate==0', 'dtp=1.0']]``
+
+                         Special examples include
+
+                            ``timestep_conditions = 'dtp=None'``, only the final time step is printed to the bcm array
+                            ``timestep_conditions = 'dtp=1.0'``, a single timestep applied to all evolutionary stages of the binary
+
 =======================  ===============================================================
 
 .. code-block:: ini
 
     [filters]
-    ; select_final_state will retain only the final entry of the bcm arry if set to True
-    ; default=True
-    select_final_state = True
-
     ; binary_state determines which types of binaries endstates to retain
     ; 0 alive today, 1 merged, 2 disrupted
     ; default=[0,1]
     binary_state = [0,1]
+
+    ; timestep_conditions allow a user to pick specific time resolutions
+    ; to print at targetted stages of the binary evolution
+    ; This is used in conjuction with the [bse] section value dtp to determine the resolution
+    ; at which thing are printed into the so called bcm array
+    ; For example, if you only want dtp set to a value while the system is
+    ; intact i.e. has not merged or been disrupted you could do so with the following
+    ; timestep_conditions =[['binstate==0', 'dtp=1.0']]
+    ; Special examples include
+    ; timestep_conditions = 'dtp=None', only the final time step is printed to the bcm array
+    ; timestep_conditions = 'dtp=1.0', a single timestep applied to all evolutionary stages of the binary
+    timestep_conditions = 'dtp=None'
 
 sampling
 --------
@@ -262,11 +274,6 @@ sampling
     ;;;;;;;;;;;;;;;;;;;;;;
     ;;; SAMPLING FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;;;;;
-
-    ; dtp is the timestep (in Myr) for outputting to the bcm array
-    ; if dtp=0, will print every timestep (not recommended)
-    ; if not set, it will automatically set to dtp=tphsyf (default)
-    ;dtp = 1.0
 
     ; pts1,pts2,pts3 determine the timesteps chosen in each
     ;                 pts1 - MS                  (default=0.001, see Banerjee+ 2019)
