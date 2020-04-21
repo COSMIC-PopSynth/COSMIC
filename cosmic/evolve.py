@@ -22,6 +22,7 @@
 from cosmic import _evolvebin
 from . import utils
 from .sample import initialbinarytable
+from .checkstate import set_checkstates
 
 from configparser import ConfigParser
 from .mp import mp as mp_utils
@@ -300,6 +301,11 @@ class Evolve(object):
         # individual values because it makes saving to HDF5 easier/more efficient.
         initialbinarytable = initialbinarytable[INITIAL_BINARY_TABLE_SAVE_COLUMNS]
 
+
+        # Allow a user to specify a custom time step sampling for certain parts of the evolution
+        timestep_conditions = kwargs.pop('timestep_conditions', [])
+        set_checkstates(timestep_conditions=timestep_conditions)
+
         # define multiprocessing method
         def _evolve_single_system(f):
             try:
@@ -357,7 +363,7 @@ class Evolve(object):
                 _evolvebin.snvars.rembar_massloss = f[108]
                 _evolvebin.cmcpass.using_cmc = 0
 
-                [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[99],
+                [bpp, bcm, bpp_index, bcm_index] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[99],
                                                 [f[8],f[9]], [f[10],f[11]], [f[12],f[13]],
                                                 [f[14],f[15]], [f[16],f[17]], [f[18],f[19]],
                                                 [f[20],f[21]], [f[22],f[23]], [f[24],f[25]],
@@ -365,20 +371,11 @@ class Evolve(object):
                                                 [f[32],f[33]], [f[34],f[35]], f[36],
                                                 np.zeros(20), [f[37], f[38], f[39], f[40], f[41], f[42], f[43], f[44], f[45], f[46], f[47], f[48], f[49], f[50], f[51], f[52], f[53], f[54], f[55], f[56]])
 
-                try:
-                    bpp = bpp[:np.argwhere(bpp[:,0] == -1)[0][0]]
-                    bcm = bcm[:np.argwhere(bcm[:,0] == -1)[0][0]]
-                except IndexError:
-                    bpp = bpp[:np.argwhere(bpp[:,0] > 0)[0][0]]
-                    bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
-                    raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
-                                   .format(f[2], f[3], f[4], f[5], f[7], f[6]))
+                bcm = bcm[:bcm_index]
+                bpp = bpp[:bpp_index]
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[109]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[109]] * len(bcm))).T
-
-                bpp = np.hstack((bpp, bpp_bin_numbers))
-                bcm = np.hstack((bcm, bcm_bin_numbers))
+                bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f[109]))
+                bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f[109]))
 
                 return f, bpp, bcm
 
@@ -444,23 +441,17 @@ class Evolve(object):
                     _evolvebin.flags.st_tide = f[i,107]
                     _evolvebin.snvars.rembar_massloss = f[i,108]
                     _evolvebin.cmcpass.using_cmc = 0 
-                    [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
+                    [bpp, bcm, bpp_index, bcm_index] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
                                                     [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
                                                     [f[i,14],f[i,15]], [f[i,16],f[i,17]], [f[i,18],f[i,19]],
                                                     [f[i,20],f[i,21]], [f[i,22],f[i,23]], [f[i,24],f[i,25]],
                                                     [f[i,26],f[i,27]], [f[i,28],f[i,29]], [f[i,30],f[i,31]],
                                                     [f[i,32],f[i,33]], [f[i,34],f[i,35]], f[i,36],
                                                     np.zeros(20), [f[i,37], f[i,38], f[i,39], f[i,40], f[i,41], f[i,42], f[i,43], f[i,44], f[i,45], f[i,46], f[i,47], f[i,48], f[i,49], f[i,50], f[i,51], f[i,52], f[i,53], f[i,54], f[i,55], f[i,56]])
-                    try:
-                        idx1 = np.argmax(bpp[:,0] == -1)
-                        idx2 = np.argmax(bcm[:,0] == -1)
-                        bpp = bpp[:idx1]
-                        bcm = bcm[:idx2]
-                    except IndexError:
-                        bpp = bpp[:np.argwhere(bpp[:,0] > 0)[0][0]]
-                        bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
-                        raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
-                                       .format(f[i,2], f[i,3], f[i,4], f[i,5], f[i,7], f[i,6]))
+
+                    bpp = bpp[:bpp_index]
+                    bcm = bcm[:bcm_index]
+
                     bpp_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bpp))).T
                     bcm_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bcm))).T
 
