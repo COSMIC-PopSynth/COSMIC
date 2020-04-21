@@ -291,12 +291,20 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions
         # let's create an Evolve class and evolve these systems
-        # see if users specified a smaple rate for the bcm array if not set it
-        # tphysf
-        try:
-            dtp = dictionary['bse']['dtp']
-        except:
-            dtp = IBT['tphysf'].values
+
+        # check what kind of time resolution for the bcm array the user specified
+
+        # assume none
+        dtp = IBT['tphysf'].values
+
+        # check
+        if isinstance(filters['timestep_conditions'], str):
+            dtp_inifile = filters['timestep_conditions'].split('=')[-1]
+            try:
+                dtp = float(dtp_inifile)
+            except:
+                pass
+            filters['timestep_conditions'] = []
 
         bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT,
                                            BSEDict=BSEDict,
@@ -306,6 +314,10 @@ if __name__ == '__main__':
 
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
+
+        # If dtp is not set, filter out first timestep in bcm
+        if np.all(dtp == IBT['tphysf'].values):
+            bcm = bcm.loc[bcm['tphys'] == dtp[0]]
 
         bcm_filter, bin_state_nums = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
