@@ -818,11 +818,11 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     flag='aic'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
-            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='ussn'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
-            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='pisn'
     if flag in BSEDict.keys():
         if not ((BSEDict[flag] >= 0) or (BSEDict[flag] == -1) or (BSEDict[flag] == -2) or (BSEDict[flag] == -3)):
