@@ -790,7 +790,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * Convert baryonic mass to gravitational mass 
 * MJZ 04/2020
-                     if(nsflag.lt.1)then
+                     if(nsflag.le.1)then
                         mrem = mt
                      else
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss
@@ -1165,7 +1165,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 
 * MJZ 04/2020
 * Convert baryonic mass to gravitational mass 
-                     if(nsflag.lt.1)then
+                     if(nsflag.le.1)then
                         mrem = mt
                      else
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss

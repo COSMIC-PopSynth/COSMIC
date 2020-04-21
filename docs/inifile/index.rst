@@ -763,7 +763,15 @@ common envelope occurs regardless of the choices below:
                             ``positive values`` : sets the NS/BH mass bounary
 
                          **mxns = 2.5**
-=======================  =====================================================
+
+``rembar_massloss``      Determines the prescriptions for mass conversion from
+                         baryonic to gravitational mass during the collapse of 
+                         the proto-compact object
+
+                            ``positive values`` : sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (:math:`{\sim 5 \mathrm{M}_\odot}` Fryer, private communication)
+
+                            ``-1 < *rembar_massloss* < 0`` : assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., *rembar_massloss* = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)
+
 
 .. code-block:: ini
 
@@ -781,6 +789,14 @@ common envelope occurs regardless of the choices below:
     ; mxns sets the maximum NS mass
     ; default=2.5
     mxns=2.5
+
+    ; rembar_massloss determines the mass conversion from baryonic to
+    ; gravitational mass
+    ; rembar_massloss >= 0: sets the maximum amount of mass loss
+    ; -1 < rembar_massloss < 0: uses the prescription from Fryer et al. 2012,
+    ; assuming for BHs Mrem = (1+rembar_massloss)*Mrem,bar for negative rembar_massloss
+    ; default=0.5
+    rembar_massloss=0.5
 
 .. note::
 
