@@ -840,7 +840,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if len(BSEDict[flag]) != 6:
             raise ValueError("'{0:s}' must be supplied 6 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
 
-    flag='nsflag'
+    flag='remnantflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1,2,3,4]:
             raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(flag,BSEDict[flag]))

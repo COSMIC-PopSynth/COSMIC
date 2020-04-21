@@ -34,7 +34,7 @@
         neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; nsflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.05; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.6; aic = 1; ussn = 0
@@ -71,7 +71,7 @@
         neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; nsflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.001; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.4; aic = 1; ussn = 0
