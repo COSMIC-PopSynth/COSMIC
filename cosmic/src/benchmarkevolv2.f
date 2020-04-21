@@ -34,7 +34,7 @@
         neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; nsflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.05; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.6; aic = 1; ussn = 0
@@ -46,7 +46,7 @@
         eddfac = 1.0; gamma = -2.0
         bconst = -3000; CK = -1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 113271
-        bhspinflag = 0; bhspinmag=0.d0
+        bhspinflag = 0; bhspinmag=0.d0; rembar_massloss=0.5;
         bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
@@ -71,7 +71,7 @@
         neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; nsflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.001; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.4; aic = 1; ussn = 0

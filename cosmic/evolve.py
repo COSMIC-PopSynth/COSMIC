@@ -73,7 +73,7 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'nsflag',
+                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'remnantflag',
                              'cekickflag', 'cemergeflag', 'cehestarflag',
                              'mxns', 'pts1', 'pts2', 'pts3',
                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
@@ -83,7 +83,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
-                             'ST_cr', 'ST_tide']
+                             'ST_cr', 'ST_tide', 'rembar_massloss']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
@@ -312,7 +312,7 @@ class Evolve(object):
                 _evolvebin.flags.wdflag = f[65]
                 _evolvebin.snvars.pisn = f[66]
                 _evolvebin.flags.bhflag = f[67]
-                _evolvebin.flags.nsflag = f[68]
+                _evolvebin.flags.remnantflag = f[68]
                 _evolvebin.ceflags.cekickflag = f[69]
                 _evolvebin.ceflags.cemergeflag = f[70]
                 _evolvebin.ceflags.cehestarflag = f[71]
@@ -351,6 +351,7 @@ class Evolve(object):
                 _evolvebin.flags.htpmb = f[105]
                 _evolvebin.flags.st_cr = f[106]
                 _evolvebin.flags.st_tide = f[107]
+                _evolvebin.snvars.rembar_massloss = f[108]
                 _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm] = _evolvebin.evolv2([f[0],f[1]], [f[2],f[3]], f[4], f[5], f[6], f[7], f[99],
@@ -370,8 +371,8 @@ class Evolve(object):
                     raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                    .format(f[2], f[3], f[4], f[5], f[7], f[6]))
 
-                bpp_bin_numbers = np.atleast_2d(np.array([f[108]] * len(bpp))).T
-                bcm_bin_numbers = np.atleast_2d(np.array([f[108]] * len(bcm))).T
+                bpp_bin_numbers = np.atleast_2d(np.array([f[109]] * len(bpp))).T
+                bcm_bin_numbers = np.atleast_2d(np.array([f[109]] * len(bcm))).T
 
                 bpp = np.hstack((bpp, bpp_bin_numbers))
                 bcm = np.hstack((bcm, bcm_bin_numbers))
@@ -399,7 +400,7 @@ class Evolve(object):
                     _evolvebin.flags.wdflag = f[i,65]
                     _evolvebin.snvars.pisn = f[i,66]
                     _evolvebin.flags.bhflag = f[i,67]
-                    _evolvebin.flags.nsflag = f[i,68]
+                    _evolvebin.flags.remnantflag = f[i,68]
                     _evolvebin.ceflags.cekickflag = f[i,69]
                     _evolvebin.ceflags.cemergeflag = f[i,70]
                     _evolvebin.ceflags.cehestarflag = f[i,71]
@@ -438,6 +439,7 @@ class Evolve(object):
                     _evolvebin.flags.htpmb = f[i,105]
                     _evolvebin.flags.st_cr = f[i,106]
                     _evolvebin.flags.st_tide = f[i,107]
+                    _evolvebin.snvars.rembar_massloss = f[i,108]
                     _evolvebin.cmcpass.using_cmc = 0 
                     [bpp, bcm] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
                                                     [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
@@ -456,8 +458,8 @@ class Evolve(object):
                         bcm = bcm[:np.argwhere(bcm[:,0] > 0)[0][0]]
                         raise Warning('bpp overload: mass1 = {0}, mass2 = {1}, porb = {2}, ecc = {3}, tphysf = {4}, metallicity = {5}'\
                                        .format(f[i,2], f[i,3], f[i,4], f[i,5], f[i,7], f[i,6]))
-                    bpp_bin_numbers = np.atleast_2d(np.array([f[i,108]] * len(bpp))).T
-                    bcm_bin_numbers = np.atleast_2d(np.array([f[i,108]] * len(bcm))).T
+                    bpp_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bpp))).T
+                    bcm_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bcm))).T
 
                     res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
                     res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
