@@ -664,12 +664,17 @@ common envelope occurs regardless of the choices below:
                             ``vk1, vk2`` : valid on the range [0, inf] 
 
                             ``phi1, phi2`` : co-lateral polar angles valid from 
-                            [-pi/2, pi/2]
+                            [-90, 90]
 
                             ``theta1, theta2`` : azimuthal angles valid from 
-                            [0, 2pi]
+                            [0, 360]
 
-                         **natal_kick_array = [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]**
+                            ``eccentric_anomaly_1, eccentric_anomaly_2`` : eccentric_anomaly angles
+                            valid from [0, 360]
+
+
+
+                         **natal_kick_array = [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -730,12 +735,13 @@ common envelope occurs regardless of the choices below:
     ; default=90.0
     polar_kick_angle = 90.0
 
-    ; natal_kick_array is a 6-length array for user-input values for the SN natal kick
-    ; formatted as: (vk1, vk2, phi1, phi2, theta1, theta2)
-    ; vk is valid on the range [0, inf], phi are the co-lateral polar angles valid from [-pi/2, pi/2], and theta are azimuthal angles [0, 2*pi]
+    ; natal_kick_array is a 8-length array for user-input values for the SN natal kick
+    ; formatted as: (vk1, vk2, phi1, phi2, theta1, theta2, eccentric_anomaly_1, eccentric_anomaly_2)
+    ; vk is valid on the range [0, inf], phi are the co-lateral polar angles valid from [-90.0, 90.0], theta are azimuthal angles [0, 360],
+    ; and eccentric_anomaly are angles [0, 360]
     ; any number outside of these ranges will be sampled in the standard way in kick.f
-    ; default=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
-    natal_kick_array=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
+    ; default=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
+    natal_kick_array=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
 
 .. note::
 
