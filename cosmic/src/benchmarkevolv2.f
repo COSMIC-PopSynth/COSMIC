@@ -15,6 +15,7 @@
         REAL*8 zpars(20),bkick(20)
         REAL*8 tacc(2),bacc(2),tms(2),B_0(2),ospin(2)
         REAL*8 tphys
+        INTEGER bpp_index_out,bcm_index_out
 
         kstar(1) = 1; kstar(2) = 1
         mass(1) = 33.41813720577207
@@ -52,7 +53,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,bppout,bcmout)
+     & bhspin,tphys,zpars,bkick,bppout,bcmout,
+     & bpp_index_out,bcm_index_out)
 
         kstar(1) = 1; kstar(2) = 1; mass(1) = 53.4;
         mass(2) = 45.687; tb = 645.353
@@ -87,5 +89,6 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,bppout,bcmout)
+     & bhspin,tphys,zpars,bkick,bppout,bcmout,
+     & bpp_index_out,bcm_index_out)
         END PROGRAM benchmarkevolv2
