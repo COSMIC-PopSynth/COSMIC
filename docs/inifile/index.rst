@@ -749,7 +749,7 @@ common envelope occurs regardless of the choices below:
     REMNANT MASS FLAGS
 
 =======================  =====================================================
-``nsflag``               Determines the remnant mass prescription used for
+``remnantflag``               Determines the remnant mass prescription used for
                          NSs and BHs.
 
                             ``0`` : follows `Section 6 of Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
@@ -763,14 +763,22 @@ common envelope occurs regardless of the choices below:
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
-                         **nsflag = 3**
+                         **remnantflag = 3**
 ``mxns``                 Sets the boundary between the maximum NS mass
                          and the minimum BH mass
 
                             ``positive values`` : sets the NS/BH mass bounary
 
                          **mxns = 2.5**
-=======================  =====================================================
+
+``rembar_massloss``      Determines the prescriptions for mass conversion from
+                         baryonic to gravitational mass during the collapse of 
+                         the proto-compact object
+
+                            ``positive values`` : sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (:math:`{\sim 5 \mathrm{M}_\odot}` Fryer, private communication)
+
+                            ``-1 < *rembar_massloss* < 0`` : assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., *rembar_massloss* = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)
+
 
 .. code-block:: ini
 
@@ -778,16 +786,24 @@ common envelope occurs regardless of the choices below:
     ;;; REMNANT MASS FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    ; nsflag determines the remnant mass prescription used
-    ; nsflag=0: default BSE; nsflag=1: Belczynski et al. 2002, ApJ, 572, 407
-    ; nsflag=2: Belczynski et al. 2008; nsflag=3: rapid prescription (Fryer+ 2012)
-    ; nsflag=4: delayed prescription (Fryer+ 2012)
+    ; remnantflag determines the remnant mass prescription used
+    ; remnantflag=0: default BSE; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
+    ; remnantflag=2: Belczynski et al. 2008; remnantflag=3: rapid prescription (Fryer+ 2012)
+    ; remnantflag=4: delayed prescription (Fryer+ 2012)
     ; default=3
-    nsflag=3
+    remnantflag=3
 
     ; mxns sets the maximum NS mass
     ; default=2.5
     mxns=2.5
+
+    ; rembar_massloss determines the mass conversion from baryonic to
+    ; gravitational mass
+    ; rembar_massloss >= 0: sets the maximum amount of mass loss
+    ; -1 < rembar_massloss < 0: uses the prescription from Fryer et al. 2012,
+    ; assuming for BHs Mrem = (1+rembar_massloss)*Mrem,bar for negative rembar_massloss
+    ; default=0.5
+    rembar_massloss=0.5
 
 .. note::
 
