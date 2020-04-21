@@ -17,15 +17,17 @@ TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 TOTAL_SAMPLED_MASS_KROUPA93 = 39.253472063203404
 TOTAL_SAMPLED_MASS_KROUPA01 = 28.708454104214034
 TOTAL_SAMPLED_MASS_SALPETER55 = 22.575833208553195
-TOTAL_SECONDARY_MASS = 16.15470927770034
+TOTAL_SECONDARY_MASS = 16.41457676168502
 N_BINARY_SELECT = 85
 VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
 VANHAAFTEN_BINFRAC_MIN = 0.6192803136799157
 MULTIDIM_BINFRAC_MAX = 0.6146916774140262
 MULTIDIM_BINFRAC_MIN = 0.13786300908773025
 PORB = 670.88711347
+PORB_SANA12 = 303.789477175485
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
+SANA12_ECC_SUM = 0.03346470981696298
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 946002.8245352195
 KSTAR_SOLAR = 1.0
@@ -93,11 +95,21 @@ class TestSample(unittest2.TestCase):
         ecc = SAMPLECLASS.sample_ecc(ecc_model='uniform', size=10)
         self.assertEqual(ecc.sum(), UNIFORM_ECC_SUM)
 
+        np.random.seed(2)
+        # Check that the sample_ecc function samples ecc properly
+        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=10)
+        self.assertEqual(ecc.sum(), SANA12_ECC_SUM)
+
     def test_sample_porb_abt(self):
         np.random.seed(2)
         # Check that the sample_porb function samples porb properly
-        porb = SAMPLECLASS.sample_porb(1.0, 1.0, 0.5, size=1)
+        porb = SAMPLECLASS.sample_porb(1.0, 1.0, 0.5, 'log_uniform', size=1)
         self.assertAlmostEqual(porb[0], PORB)
+
+    def test_sample_porb_sana12(self):
+        np.random.seed(2)
+        porb = SAMPLECLASS.sample_porb(1.0, 1.0, 0.5, 'sana12', size=1)
+        self.assertAlmostEqual(porb[0], PORB_SANA12)
 
     def test_sample_SFH(self):
         np.random.seed(2)

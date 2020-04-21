@@ -132,7 +132,7 @@
 *             at formation
 *             [0= no kick; >0 kick].
 *
-*    nsflag - for the mass of neutron stars and black holes you can use either
+*    remnantflag - for the mass of neutron stars and black holes you can use either
 *             the SSE prescription or the prescription presented by
 *             Belczynski et al. 2002, ApJ, 572, 407 who found that SSE was
 *             underestimating the masses of these stars. In either case you also
@@ -3641,12 +3641,33 @@ component.
             endif
             goto 135
          endif
+*
+* Need to confirm that RLO is over
+*
+
+         evolve_type = 4.0
+         rrl1 = rad(1)/rol(1)
+         rrl2 = rad(2)/rol(2)
+         CALL writebpp(jp,tphys,evolve_type,
+     &                 mass(1),mass(2),kstar(1),kstar(2),sep,
+     &                 tb,ecc,rrl1,rrl2,bkick,
+     &                 aj(1),aj(2),tms(1),tms(2),
+     &                 massc(1),massc(2),rad(1),rad(2),
+     &                 mass0(1),mass0(2),lumin(1),lumin(2),
+     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
+     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                 epoch(2),bhspin(1),bhspin(2))
+         DO jj = 13,20
+            bkick(jj) = 0.0
+         ENDDO
          dtm = 0.d0
 *
 * Reset orbital parameters as separation may have changed.
 *
          tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
          oorb = twopi/tb
+
          goto 4
       endif
 *
