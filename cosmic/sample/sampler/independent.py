@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SF_start, SF_duration, binfrac_model, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model,  SF_start, SF_duration, binfrac_model, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
@@ -52,7 +52,10 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
 
     ecc_model : `str`
-        Model to sample eccentricity; choices include: thermal, uniform
+        Model to sample eccentricity; choices include: thermal, uniform, sana12
+
+    porb_model : `str`
+        Model to sample orbital period; choices include: log_uniform, sana12
 
     SF_start : `float`
             Time in the past when star formation initiates in Myr
@@ -138,7 +141,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
-    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
+    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
@@ -156,7 +159,7 @@ register_sampler('independent', InitialBinaryTable, get_independent_sampler,
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa93', size=None):
+    def sample_primary(self, primary_model='kroupa01', size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
@@ -187,7 +190,7 @@ class Sample(object):
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
 
-            Default kroupa93
+            Default kroupa01
         size : int, optional
             number of initial primary masses to sample
             NOTE: this is set in cosmic-pop call as Nstep
@@ -267,7 +270,7 @@ class Sample(object):
             primary_mass
         """
 
-        a_0 = np.random.uniform(0.001, 1, primary_mass.size)
+        a_0 = np.random.uniform(0.01, 1, primary_mass.size)
         secondary_mass = primary_mass*a_0
 
         return secondary_mass
@@ -322,13 +325,9 @@ class Sample(object):
         return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
-    def sample_porb(self, mass1, mass2, ecc, size=None):
-        """Sample the semi-major axis flat in log space from RROL < 0.5 up
-        to 1e5 Rsun according to
-        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
-        and consistent with Dominik+2012,2013
-        and then converted to orbital period in days using Kepler III
-
+    def sample_porb(self, mass1, mass2, ecc, model='sana12', size=None):
+        """Sample the orbital period according to the user-specified model
+        
         Parameters
         ----------
         mass1 : array
@@ -336,63 +335,84 @@ class Sample(object):
         mass2 : array
             secondary masses
         ecc : array
-            eccentricities
+            eccentricity
+        model : string
+            selects which model to sample orbital periods, choices include:
+            log_uniform : semi-major axis flat in log space from RROL < 0.5 up
+                       to 1e5 Rsun according to
+                       `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+                        and consistent with Dominik+2012,2013
+                        and then converted to orbital period in days using Kepler III
+            sana12 : power law orbital period for m1 > 15Msun binaries from 
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
+                        following the implementation of 
+                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
+
 
         Returns
         -------
-        porb_sec/sec_in_day : array
+        porb : array
             orbital period with array size equalling array size
-            of mass1 and mass2
+            of mass1 and mass2 in units of days
         """
-        q = mass2/mass1
-        RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
+        if model == 'log_uniform':     
+            q = mass2/mass1
+            RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
 
-        q2 = mass1/mass2
-        RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
-        try:
-            ind_lo, = np.where(mass1 < 1.66)
-            ind_hi, = np.where(mass1 >= 1.66)
+            q2 = mass1/mass2
+            RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
+            try:
+                ind_lo, = np.where(mass1 < 1.66)
+                ind_hi, = np.where(mass1 >= 1.66)
 
-            rad1 = np.zeros(len(mass1))
-            rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
-            rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
-        except:
-            if mass1 < 1.66:
-                rad1 = 1.06*mass1**0.945
-            else:
-                rad1 = 1.33*mass1**0.555
+                rad1 = np.zeros(len(mass1))
+                rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
+                rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
+            except:
+                if mass1 < 1.66:
+                    rad1 = 1.06*mass1**0.945
+                else:
+                    rad1 = 1.33*mass1**0.555
 
-        try:
-            ind_lo, = np.where(mass2 < 1.66)
-            ind_hi, = np.where(mass2 >= 1.66)
+            try:
+                ind_lo, = np.where(mass2 < 1.66)
+                ind_hi, = np.where(mass2 >= 1.66)
 
-            rad2 = np.zeros(len(mass2))
-            rad2[ind_lo] = 1.06*mass2[ind_lo]**0.945
-            rad2[ind_hi] = 1.33*mass2[ind_hi]**0.555
-        except:
-            if mass2 < 1.66:
-                rad2 = 1.06*mass1**0.945
-            else:
-                rad2 = 1.33*mass1**0.555
+                rad2 = np.zeros(len(mass2))
+                rad2[ind_lo] = 1.06*mass2[ind_lo]**0.945
+                rad2[ind_hi] = 1.33*mass2[ind_hi]**0.555
+            except:
+                if mass2 < 1.66:
+                    rad2 = 1.06*mass1**0.945
+                else:
+                    rad2 = 1.33*mass1**0.555
 
-        # include the factor for the eccentricity
-        RL_max = 2*rad1/RL_fac
-        ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
-        if len(ind_switch) >= 1:
-            RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
-        a_min = RL_max*(1+ecc)
-        a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
+            # include the factor for the eccentricity
+            RL_max = 2*rad1/RL_fac
+            ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
+            if len(ind_switch) >= 1:
+                RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
+            a_min = RL_max*(1+ecc)
+            a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
-        # convert out of log space
-        a_0 = np.exp(a_0)
-        # convert to au
-        rsun_au = 0.00465047
-        a_0 = a_0*rsun_au
+            # convert out of log space
+            a_0 = np.exp(a_0)
+            # convert to au
+            rsun_au = 0.00465047
+            a_0 = a_0*rsun_au
 
-        # convert to orbital period in years
-        yr_day = 365.24
-        porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
-        return porb_yr*yr_day
+            # convert to orbital period in years
+            yr_day = 365.24
+            porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
+            porb = porb_yr*yr_day
+        elif model == 'sana12':
+            from cosmic.utils import rndm
+            porb = 10**(np.random.uniform(0.15, 5.5, size))
+            ind_massive, = np.where(mass1 > 15)
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
+        else:
+            raise ValueError('You have supplied a non-supported model; Please choose either log_flat or Sana')
+        return porb
 
 
     def sample_ecc(self, ecc_model='thermal', size=None):
@@ -404,7 +424,8 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            DEFAULT = 'thermal'
+            'Sana' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            DEFAULT = 'Sana'
 
         size : int, optional
             number of eccentricities to sample
@@ -425,8 +446,12 @@ class Sample(object):
             ecc = np.random.uniform(0.0, 1.0, size)
             return ecc
 
+        elif ecc_model=='sana12':
+            from cosmic.utils import rndm
+            ecc = rndm(a=0.001, b=0.9, g=-0.42, size=size) 
+            return ecc
         else:
-            raise Error('You have specified an unsupported model. Please choose from thermal or uniform')
+            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or Sana')
 
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
