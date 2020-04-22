@@ -343,11 +343,12 @@ class Sample(object):
                        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
                         and consistent with Dominik+2012,2013
                         and then converted to orbital period in days using Kepler III
-            sana12 : power law orbital period for m1 > 15Msun binaries from 
+            sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following 
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
+            renzo19 : power law orbital period for m1 > 15Msun binaries from 
                         `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
                         following the implementation of 
                         `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
-
 
         Returns
         -------
@@ -407,11 +408,14 @@ class Sample(object):
             porb = porb_yr*yr_day
         elif model == 'sana12':
             from cosmic.utils import rndm
+            porb = 10**rndm(a=0.15, b=5.5, g=0.55, size=size)
+        elif model == 'renzo19':
+            from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
             ind_massive, = np.where(mass1 > 15)
-            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=0.55, size=len(ind_massive))
         else:
-            raise ValueError('You have supplied a non-supported model; Please choose either log_flat or Sana')
+            raise ValueError('You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19')
         return porb
 
 
