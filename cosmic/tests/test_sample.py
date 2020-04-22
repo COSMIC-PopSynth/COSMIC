@@ -24,7 +24,8 @@ VANHAAFTEN_BINFRAC_MIN = 0.6192803136799157
 MULTIDIM_BINFRAC_MAX = 0.6146916774140262
 MULTIDIM_BINFRAC_MIN = 0.13786300908773025
 PORB = 670.88711347
-PORB_SANA12 = 303.789477175485
+PORB_RENZO19 = 303.789477175485
+PORB_SANA12 = 43.52635793101753
 THERMAL_ECC_SUM = 5.7488819291685695
 UNIFORM_ECC_SUM = 3.58801017672414
 SANA12_ECC_SUM = 0.03346470981696298
@@ -110,6 +111,11 @@ class TestSample(unittest2.TestCase):
         np.random.seed(2)
         porb = SAMPLECLASS.sample_porb(1.0, 1.0, 0.5, 'sana12', size=1)
         self.assertAlmostEqual(porb[0], PORB_SANA12)
+
+    def test_sample_porb_renzo19(self):
+        np.random.seed(2)
+        porb = SAMPLECLASS.sample_porb(1.0, 1.0, 0.5, 'renzo19', size=1)
+        self.assertAlmostEqual(porb[0], PORB_RENZO19)
 
     def test_sample_SFH(self):
         np.random.seed(2)
