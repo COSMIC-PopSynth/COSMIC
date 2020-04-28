@@ -237,7 +237,7 @@ class Sample(object):
 
             a_0[lowIdx] = rndm(a=0.01, b=0.08, g=0.7, size=len(lowIdx))
             a_0[midIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(midIdx))
-            a_0[highIdx] = rndm(a=0.5, b=100.0, g=-1.3, size=len(highIdx))
+            a_0[highIdx] = rndm(a=0.5, b=150.0, g=-1.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
