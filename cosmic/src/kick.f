@@ -13,31 +13,32 @@
 * Evolution was added for binaries in which the kick creates
 * an eccentricity of greater than unity (i.e. hyperbolic orbit).
 *
-* In particular, bkick is an array with 12 elements containing information
-* of velocities from possibly multiple kicks. For example, if star 2 explodes
-* and the binary disruptes (and star 1 has already exploded but the binary
-* survived) then the array will be full and will look like:
-* bkick[1] = 1, bkick[2-4] = vx, vy, vz, bkick[5] = 2, bkick[6-8] = vx, vy, vz
-* of star 2, bkick[9] = 2, bkick[10-12] = vx, vy, vz of star 1.
-* Therefore, to update the Galactic or cluster stellar velocities we will need
-* to add bkick[2-4] to both stars and then bkick[6-8] to star 2 and
-* bkick[10-12] to star 1. Here, star 1 is the star that was passed first to
-* evolv1.f or evolv2.f.
+* MZ/SC: Changes in April 2020
+* bkick tracks information about the supernova kicks, so that we can
+* track the total change to the systemic velocity and the total change 
+* in the orbital plane tilt after both supernovae
+* This 8-length array has the following information:
+* bkick[1]: Nexplosions (0, 1, or 2)
+* bkick[2]: disrupted (0=no, 1=yes)
+* bkick[3-5]: (vx_1, vy_1, vz_1) first SN natal kick decomposition
+* bkick[6-8]: (vx_2, vy_2, vz_2) second SN natal kick decomposition
+* Note that after the second SN, (vx_1, vy_1, vz_1) change be in the 
+* frame of reference of the secondary
 *
-* MJZ/SC/KK: bkick[13-20] specify information about the SN and how
-* it affected the orbit. bkick[13,14] give the magnitude of the
-* natal kicks from the first and second SN. bkick[15-17] give
-* the change in the systemic velocity from the first SN (15),
-* the second SN (16), and the total change before and after
-* *both* SN (17). bkick[18-20] give the angular change of the
-* orbital angular momentum vector from the first SN (18),
-* second SN (19), and the total change before and after *both*
-* SN (20). Note that the total change in the orbital plane
-* doesn't use a self-consistent value of omega
+* bkick_out is a (2,18) array that contains information that is 
+* passed back to evolv2.f, so that this information can be written
+* as output and so that systems can be reproduced
+* bkick_out[1]: kw of exploding star
+* bkick_out[2-9] are the same as the bkick array (but track for both SN)
+* bick_out[10-12]: theta, phi, and eccentric anamoly (in the frame of the
+* exploding star)
+* bkick_out[13]: systemic velocity of the binary (if still alive after SN),
+* or velocity of the first star to go supernova if disrupted
+* bkick_out[14]: velocity of the second star to go supernova (only set if
+* system is disrupted)
+* bkick_out[15]: (total) tilt of the orbital plane from the supernovae
+* bkick_out[16]: bin_num
 *
-* Add tphys to input params, both above and within evolv2.f
-* bkick(5) was made negative in the bse_interface routine
-* (originaly it was kick(6)).
 * For cmc bkick array is zero, not negative.
       integer kw,k,l,snstar
 
@@ -64,7 +65,7 @@
       real*8 v2xout,v2yout,v2zout
       logical output,disrupt
 *
-      real*8 bkick(13),bkick_out(2,20)
+      real*8 bkick(8),bkick_out(2,16)
       real ran3,xx
       external ran3
 *
@@ -117,7 +118,6 @@
       u2 = 0.d0
 *
       vk = 0.d0
-*      bkick(1) = -1.d0
 *
       pi = ACOS(-1.d0)
       twopi = 2.d0*pi
@@ -246,6 +246,9 @@
       stheta = SIN(theta)
       ctheta = COS(theta)
 
+* Set the kw in the bkick_out array
+      bkick_out(1) = kw
+
 * CLR - if the orbit has already been kicked, then any polar kick
 *       needs to be tilted as well (since L_hat and S_hat are no longer
 *       aligned).
@@ -253,7 +256,9 @@
 *       we use both the value of \mu and \omega from the first SN.
 *       We first rotate by \mu about the x-axis, then by \omega
 *       about the z-axis.
-      if(bkick(1).gt.0.d0.and.bkick(5).le.0.d0)then
+*       We do this when the system has already had one SN 
+*       (bkick(1).eq.1) and is still bound (bkick(2).eq.0)
+      if(bkick(1).eq.1.d0.and.bkick(2).eq.0.d0)then
         cmu = COS(mu_SN1)
         smu = SIN(mu_SN1)
         comega = COS(omega_SN1)
@@ -305,13 +310,11 @@
       somega = SIN(omega)
 
 * Set angles between orbital angular momentum vectors in the bkick array
-      if(bkick(1).le.0.d0)then
-        bkick_out(snstar,16) = mu*180/pi
+      if(bkick(1).eq.0.d0)then
+        bkick_out(snstar,14) = mu*180/pi
         mu_SN1 = mu
         omega_SN1 = omega
-      elseif(bkick(5).le.0.d0)then
-        bkick_out(snstar,16) = mu*180/pi
-
+      elseif(bkick(1).eq.1.d0)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
 *       typical spherical coordinates rather than colateral coordinates,
@@ -328,7 +331,7 @@
         z_tilt = cmu*cmu1 + smu*smu1*somega*somega1
      &               - comega*comega1*smu*smu1
 
-        bkick_out(snstar,17) = ACOS(z_tilt)*180/pi
+        bkick_out(snstar,14) = ACOS(z_tilt)*180/pi
 
       endif
 
