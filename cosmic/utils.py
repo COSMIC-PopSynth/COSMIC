@@ -315,7 +315,8 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
     dat_store.append('bpp', bpp)
 
     # Save the initial binaries
-    dat_store.append('initCond', initC)
+    # ensure that the index corresponds to bin_num
+    dat_store.append('initCond', initC.set_index('bin_num', drop=False))
 
     # Save the converging dataframe
     dat_store.append('conv', conv)
