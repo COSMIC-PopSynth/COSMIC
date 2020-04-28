@@ -1,7 +1,7 @@
 ***
         SUBROUTINE WRITEBPP(jp,tphys,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
-     &                      tb,ecc,rrl1,rrl2,bkick,
+     &                      tb,ecc,rrl1,rrl2,
      &                      aj1,aj2,tms1,tms2,
      &                      massc1,massc2,rad1,rad2,
      &                      mass0_1,mass0_2,lumin1,lumin2,
@@ -16,7 +16,7 @@
 *     Author : Scott Coughlin
 *     Date :   12th March 2019
 *
-        REAL*8 bkick(20),mass1,mass2
+        REAL*8 mass1,mass2
         REAL*8 evolve_type,sep,tb,ecc,tphys,rrl1,rrl2
         REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
         REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
@@ -78,12 +78,6 @@
         bpp(jp,39) = epoch2
         bpp(jp,40) = bhspin1
         bpp(jp,41) = bhspin2
-        DO jj = 1,20
-            bpp(jp,41+jj) = bkick(jj)
-        ENDDO
-        DO jj = 13,20
-            bkick(jj) = 0.0
-        ENDDO
         END
 
 ***
@@ -93,8 +87,7 @@
      &                      ospin_1,deltam_1,RROL_1,kstar_2,mass0_2,
      &                      mass_2,lumin_2,rad_2,teff_2,massc_2,radc_2,
      &                      menv_2,renv_2,epoch_2,ospin_2,deltam_2,
-     &                      RROL_2,porb,sep,ecc,B_0_1,B_0_2,SNkick_1,
-     &                      SNkick_2, Vsys_final,SNtheta_final,
+     &                      RROL_2,porb,sep,ecc,B_0_1,B_0_2,
      &                      SN_1,SN_2,bin_state,merger_type)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
@@ -110,7 +103,6 @@
         REAL*8 mass0_2,mass_2,lumin_2,rad_2,teff_2,massc_2
         REAL*8 radc_2,menv_2,renv_2,epoch_2,ospin_2,deltam_2
         REAL*8 RROL_2,porb,sep,ecc,B_0_1,B_0_2
-        REAL*8 SNkick_1,SNkick_2,Vsys_final,SNtheta_final
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
         REAL*8 yeardy,rsunau
@@ -158,15 +150,9 @@
         bcm(ip,32) = ecc
         bcm(ip,33) = B_0_1
         bcm(ip,34) = B_0_2
-        bcm(ip,35) = SNkick_1
-        bcm(ip,36) = SNkick_2
-        if(bin_state.ne.2.d0)then
-            bcm(ip,37) = Vsys_final
-            bcm(ip,38) = SNtheta_final
-        endif
-        bcm(ip,39) = float(SN_1)
-        bcm(ip,40) = float(SN_2)
-        bcm(ip,41) = bin_state
-        bcm(ip,42) = merger_type
+        bcm(ip,35) = float(SN_1)
+        bcm(ip,36) = float(SN_2)
+        bcm(ip,37) = bin_state
+        bcm(ip,38) = merger_type
 
         END
