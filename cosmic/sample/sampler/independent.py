@@ -208,8 +208,8 @@ class Sample(object):
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.740074
-            high_cutoff = 0.908422
+            low_cutoff = 0.771
+            high_cutoff = 0.919
 
             lowIdx, = np.where(a_0 <= low_cutoff)
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
@@ -224,19 +224,19 @@ class Sample(object):
             return a_0, total_sampled_mass
 
         elif primary_model=='kroupa01':
+            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
+            # at 0.08 Msun instead of 0.01
+
             total_sampled_mass = 0
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.37148816884988606
-            high_cutoff = 0.8496015751162523
+            cutoff = 0.748
 
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            highIdx, = np.where(a_0 >= high_cutoff)
+            lowIdx, = np.where(a_0 <= cutoff)
+            highIdx, = np.where(a_0 >= cutoff)
 
-            a_0[lowIdx] = rndm(a=0.01, b=0.08, g=0.7, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(midIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
             a_0[highIdx] = rndm(a=0.5, b=150.0, g=-1.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
@@ -258,6 +258,8 @@ class Sample(object):
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
 
+        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
+
         Parameters
         ----------
         primary_mass : array
@@ -270,8 +272,7 @@ class Sample(object):
             primary_mass
         """
 
-        a_0 = np.random.uniform(0.01, 1, primary_mass.size)
-        secondary_mass = primary_mass*a_0
+        secondary_mass = np.random.uniform(0.08*np.ones_like(primary_mass), primary_mass)
 
         return secondary_mass
 
