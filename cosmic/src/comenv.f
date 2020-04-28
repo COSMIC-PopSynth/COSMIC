@@ -35,7 +35,7 @@
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
-      REAL*8 bkick(13),bkick_out(2,20),fallback,M1i,M2i
+      REAL*8 bkick(12),bkick_out(2,20),fallback,M1i,M2i
       REAL*8 bhspin1,bhspin2
       common /fall/fallback
       INTEGER formation1,formation2

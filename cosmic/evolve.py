@@ -100,7 +100,7 @@ else:
 for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
-NATAL_KICK_COLUMNS = ['natal_kick_1', 'natal_kick_2',
+NATAL_KICK_COLUMNS = ['SNkick_1', 'SNkick_2',
                       'phi_1', 'phi_2',
                       'theta_1', 'theta_2',
                       'eccentric_anomaly_1', 'eccentric_anomaly_2']
@@ -309,7 +309,7 @@ class Evolve(object):
         def _evolve_single_system(f):
             try:
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                f['bkick'] = np.zeros(13)
+                f['bkick'] = np.zeros(12)
                 _evolvebin.windvars.neta = f['neta']
                 _evolvebin.windvars.bwind = f['bwind']
                 _evolvebin.windvars.hewind = f['hewind']
@@ -401,90 +401,108 @@ class Evolve(object):
             try:
                 res_bcm = np.zeros(f.shape[0],dtype=object)
                 res_bpp = np.zeros(f.shape[0],dtype=object)
+                res_kick_info = np.zeros(f.shape[0],dtype=object)
                 for i in range(0,f.shape[0]):
-                    # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                    _evolvebin.windvars.neta = f[i,57]
-                    _evolvebin.windvars.bwind = f[i,58]
-                    _evolvebin.windvars.hewind = f[i,59]
-                    _evolvebin.cevars.alpha1 = f[i,60]
-                    _evolvebin.cevars.lambdaf = f[i,61]
-                    _evolvebin.ceflags.ceflag = f[i,62]
-                    _evolvebin.flags.tflag = f[i,63]
-                    _evolvebin.flags.ifflag = f[i,64]
-                    _evolvebin.flags.wdflag = f[i,65]
-                    _evolvebin.snvars.pisn = f[i,66]
-                    _evolvebin.flags.bhflag = f[i,67]
-                    _evolvebin.flags.remnantflag = f[i,68]
-                    _evolvebin.ceflags.cekickflag = f[i,69]
-                    _evolvebin.ceflags.cemergeflag = f[i,70]
-                    _evolvebin.ceflags.cehestarflag = f[i,71]
-                    _evolvebin.snvars.mxns = f[i,72]
-                    _evolvebin.points.pts1 = f[i,73]
-                    _evolvebin.points.pts2 = f[i,74]
-                    _evolvebin.points.pts3 = f[i,75]
-                    _evolvebin.snvars.ecsn = f[i,76]
-                    _evolvebin.snvars.ecsn_mlow = f[i,77]
-                    _evolvebin.flags.aic = f[i,78]
-                    _evolvebin.ceflags.ussn = f[i,79]
-                    _evolvebin.snvars.sigma = f[i,80]
-                    _evolvebin.snvars.sigmadiv = f[i,81]
-                    _evolvebin.snvars.bhsigmafrac = f[i,82]
-                    _evolvebin.snvars.polar_kick_angle = f[i,83]
-                    _evolvebin.snvars.natal_kick_array = f[i,84]
-                    _evolvebin.cevars.qcrit_array = f[i,85]
-                    _evolvebin.windvars.beta = f[i,86]
-                    _evolvebin.windvars.xi = f[i,87]
-                    _evolvebin.windvars.acc2 = f[i,88]
-                    _evolvebin.windvars.epsnov = f[i,89]
-                    _evolvebin.windvars.eddfac = f[i,90]
-                    _evolvebin.windvars.gamma = f[i,91]
-                    _evolvebin.flags.bdecayfac = f[i,92]
-                    _evolvebin.magvars.bconst = f[i,93]
-                    _evolvebin.magvars.ck = f[i,94]
-                    _evolvebin.flags.windflag = f[i,95]
-                    _evolvebin.flags.qcflag = f[i,96]
-                    _evolvebin.flags.eddlimflag = f[i,97]
-                    _evolvebin.tidalvars.fprimc_array = f[i,98]
-                    _evolvebin.rand1.idum1 = f[i,100]
-                    _evolvebin.flags.bhspinflag = f[i,101]
-                    _evolvebin.snvars.bhspinmag = f[i,102]
-                    _evolvebin.mixvars.rejuv_fac = f[i,103]
-                    _evolvebin.flags.rejuvflag = f[i,104]
-                    _evolvebin.flags.htpmb = f[i,105]
-                    _evolvebin.flags.st_cr = f[i,106]
-                    _evolvebin.flags.st_tide = f[i,107]
-                    _evolvebin.snvars.rembar_massloss = f[i,108]
-                    _evolvebin.cmcpass.using_cmc = 0 
-                    [bpp, bcm, bpp_index, bcm_index, bkick_out] = _evolvebin.evolv2([f[i,0],f[i,1]], [f[i,2],f[i,3]], f[i,4], f[i,5], f[i,6], f[i,7], f[i,99],
-                                                    [f[i,8],f[i,9]], [f[i,10],f[i,11]], [f[i,12],f[i,13]],
-                                                    [f[i,14],f[i,15]], [f[i,16],f[i,17]], [f[i,18],f[i,19]],
-                                                    [f[i,20],f[i,21]], [f[i,22],f[i,23]], [f[i,24],f[i,25]],
-                                                    [f[i,26],f[i,27]], [f[i,28],f[i,29]], [f[i,30],f[i,31]],
-                                                    [f[i,32],f[i,33]], [f[i,34],f[i,35]], f[i,36],
-                                                    np.zeros(20), [f[i,37], f[i,38], f[i,39], f[i,40], f[i,41], f[i,42], f[i,43], f[i,44], f[i,45], f[i,46], f[i,47], f[i,48], f[i,49], f[i,50], f[i,51], f[i,52], f[i,53], f[i,54], f[i,55], f[i,56]])
+                    f[i]['bkick'] = np.zeros(12)
+                    _evolvebin.windvars.neta = f[i]['neta']
+                    _evolvebin.windvars.bwind = f[i]['bwind']
+                    _evolvebin.windvars.hewind = f[i]['hewind']
+                    _evolvebin.cevars.alpha1 = f[i]['alpha1']
+                    _evolvebin.cevars.lambdaf = f[i]['lambdaf']
+                    _evolvebin.ceflags.ceflag = f[i]['ceflag']
+                    _evolvebin.flags.tflag = f[i]['tflag']
+                    _evolvebin.flags.ifflag = f[i]['ifflag']
+                    _evolvebin.flags.wdflag = f[i]['wdflag']
+                    _evolvebin.snvars.pisn = f[i]['pisn']
+                    _evolvebin.flags.bhflag = f[i]['bhflag']
+                    _evolvebin.flags.remnantflag = f[i]['remnantflag']
+                    _evolvebin.ceflags.cekickflag = f[i]['cekickflag']
+                    _evolvebin.ceflags.cemergeflag = f[i]['cemergeflag']
+                    _evolvebin.ceflags.cehestarflag = f[i]['cehestarflag']
+                    _evolvebin.snvars.mxns = f[i]['mxns']
+                    _evolvebin.points.pts1 = f[i]['pts1']
+                    _evolvebin.points.pts2 = f[i]['pts2']
+                    _evolvebin.points.pts3 = f[i]['pts3']
+                    _evolvebin.snvars.ecsn = f[i]['ecsn']
+                    _evolvebin.snvars.ecsn_mlow = f[i]['ecsn_mlow']
+                    _evolvebin.flags.aic = f[i]['aic']
+                    _evolvebin.ceflags.ussn = f[i]['ussn']
+                    _evolvebin.snvars.sigma = f[i]['sigma']
+                    _evolvebin.snvars.sigmadiv = f[i]['sigmadiv']
+                    _evolvebin.snvars.bhsigmafrac = f[i]['bhsigmafrac']
+                    _evolvebin.snvars.polar_kick_angle = f[i]['polar_kick_angle']
+                    _evolvebin.snvars.natal_kick_array = f[i]['natal_kick_array']
+                    _evolvebin.cevars.qcrit_array = f[i]['qcrit_array']
+                    _evolvebin.windvars.beta = f[i]['beta']
+                    _evolvebin.windvars.xi = f[i]['xi']
+                    _evolvebin.windvars.acc2 = f[i]['acc2']
+                    _evolvebin.windvars.epsnov = f[i]['epsnov']
+                    _evolvebin.windvars.eddfac = f[i]['eddfac']
+                    _evolvebin.windvars.gamma = f[i]['gamma']
+                    _evolvebin.flags.bdecayfac = f[i]['bdecayfac']
+                    _evolvebin.magvars.bconst = f[i]['bconst']
+                    _evolvebin.magvars.ck = f[i]['ck']
+                    _evolvebin.flags.windflag = f[i]['windflag']
+                    _evolvebin.flags.qcflag = f[i]['qcflag']
+                    _evolvebin.flags.eddlimflag = f[i]['eddlimflag']
+                    _evolvebin.tidalvars.fprimc_array = f[i]['fprimc_array']
+                    _evolvebin.rand1.idum1 = f[i]['randomseed']
+                    _evolvebin.flags.bhspinflag = f[i]['bhspinflag']
+                    _evolvebin.snvars.bhspinmag = f[i]['bhspinmag']
+                    _evolvebin.mixvars.rejuv_fac = f[i]['rejuv_fac']
+                    _evolvebin.flags.rejuvflag = f[i]['rejuvflag']
+                    _evolvebin.flags.htpmb = f[i]['htpmb']
+                    _evolvebin.flags.st_cr = f[i]['ST_cr']
+                    _evolvebin.flags.st_tide = f[i]['ST_tide']
+                    _evolvebin.snvars.rembar_massloss = f[i]['rembar_massloss']
+                    _evolvebin.cmcpass.using_cmc = 0
+
+                    [bpp, bcm, bpp_index, bcm_index, bkick_out] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],
+                                                                                    [f[i]['mass_1'], f[i]['mass_2']],
+                                                                                    f[i]['porb'], f[i]['ecc'], f[i]['metallicity'], f[i]['tphysf'], f[i]['dtp'],
+                                                                                    [f[i]['mass0_1'], f[i]['mass0_2']],
+                                                                                    [f[i]['rad_1'], f[i]['rad_2']],
+                                                                                    [f[i]['lum_1'], f[i]['lum_2']],
+                                                                                    [f[i]['massc_1'], f[i]['massc_2']],
+                                                                                    [f[i]['radc_1'], f[i]['radc_2']],
+                                                                                    [f[i]['menv_1'], f[i]['menv_2']],
+                                                                                    [f[i]['renv_1'], f[i]['renv_2']],
+                                                                                    [f[i]['omega_spin_1'], f[i]['omega_spin_2']],
+                                                                                    [f[i]['B0_1'], f[i]['B0_2']],
+                                                                                    [f[i]['bacc_1'], f[i]['bacc_2']],
+                                                                                    [f[i]['tacc_1'], f[i]['tacc_2']],
+                                                                                    [f[i]['epoch_1'], f[i]['epoch_2']],
+                                                                                    [f[i]['tms_1'], f[i]['tms_2']],
+                                                                                    [f[i]['bhspin_1'], f[i]['bhspin_2']],
+                                                                                    f[i]['tphys'],
+                                                                                    np.zeros(20),
+                                                                                    f[i]['bkick'])
 
                     bpp = bpp[:bpp_index]
                     bcm = bcm[:bcm_index]
 
-                    bpp_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bpp))).T
-                    bcm_bin_numbers = np.atleast_2d(np.array([f[i,109]] * len(bcm))).T
+                    bpp_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bpp))).T
+                    bcm_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bcm))).T
+                    bkick_out_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bkick_out))).T
 
                     res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
                     res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
+                    res_kick_info[i] = np.hstack((bkick_out, bkick_out_bin_numbers))
 
-                return f, np.vstack(res_bpp), np.vstack(res_bcm), bkick_out
+                return f, np.vstack(res_bpp), np.vstack(res_bcm), np.vstack(res_kick_info)
 
             except Exception as e:
                 raise
 
         # evolve systems
         if n_per_block > 0:
+            initial_conditions = np.asarray(initial_conditions)
             n_tot = initial_conditions.shape[0]
             initial_conditions_blocked = []
             itr_block = 0
             while itr_block < n_tot:
                 itr_next = np.min([n_tot,itr_block+n_per_block])
-                initial_conditions_blocked.append(initial_conditions[itr_block:itr_next,:])
+                initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                 itr_block = itr_next
             output = mp_utils.multiprocess_with_queues(
                 nproc, _evolve_multi_system, initial_conditions_blocked, raise_exceptions=False)

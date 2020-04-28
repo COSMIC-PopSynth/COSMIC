@@ -64,7 +64,7 @@
       real*8 v2xout,v2yout,v2zout
       logical output,disrupt
 *
-      real*8 bkick(13),bkick_out(2,20)
+      real*8 bkick(12),bkick_out(2,20)
       real ran3,xx
       external ran3
 *
@@ -613,7 +613,7 @@
      &            (bkick(4)+bkick(8))*(bkick(4)+bkick(8)))
       endif
 
-      bkick_out(snstar,1:13) = bkick
+      bkick_out(snstar,1:12) = bkick
       bkick_out(snstar,18) = phi 
       bkick_out(snstar,19) = theta
       bkick_out(snstar,20) = em
