@@ -616,7 +616,7 @@
      &            (bkick(4)+bkick(8))*(bkick(4)+bkick(8)))
       endif
 
-      bkick_out(snstar,1:13) = bkick
+      bkick_out(snstar,1:12) = bkick
       bkick_out(snstar,18) = phi 
       bkick_out(snstar,19) = theta
       bkick_out(snstar,20) = em

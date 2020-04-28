@@ -24,7 +24,7 @@
         REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
         REAL*8 bhspin1,bhspin2
         REAL*8 tb_write,sep_cubed
-        INTEGER jp,jj
+        INTEGER jp
         INTEGER kstar1,kstar2
         REAL*8 yeardy,rsunau
         PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
