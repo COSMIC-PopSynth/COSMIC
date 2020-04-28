@@ -428,8 +428,8 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            'Sana' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-            DEFAULT = 'Sana'
+            'sana12' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            DEFAULT = 'sana12'
 
         size : int, optional
             number of eccentricities to sample
@@ -452,10 +452,11 @@ class Sample(object):
 
         elif ecc_model=='sana12':
             from cosmic.utils import rndm
-            ecc = rndm(a=0.001, b=0.9, g=-0.42, size=size) 
+            # note: g=eta+1 so for eta=-0.42, g=0.58
+            ecc = rndm(a=0.001, b=0.9, g=0.58, size=size) 
             return ecc
         else:
-            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or Sana')
+            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or sana12')
 
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
