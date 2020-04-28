@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,disrupt)
+     &                r2,fallback,bkick,disrupt,bkick_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -64,7 +64,7 @@
       real*8 v2xout,v2yout,v2zout
       logical output,disrupt
 *
-      real*8 bkick(20)
+      real*8 bkick(13),bkick_out(2,20)
       real ran3,xx
       external ran3
 *
@@ -306,11 +306,11 @@
 
 * Set angles between orbital angular momentum vectors in the bkick array
       if(bkick(1).le.0.d0)then
-        bkick(18) = mu*180/pi
+        bkick_out(snstar,16) = mu*180/pi
         mu_SN1 = mu
         omega_SN1 = omega
       elseif(bkick(5).le.0.d0)then
-        bkick(19) = mu*180/pi
+        bkick_out(snstar,16) = mu*180/pi
 
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
@@ -328,7 +328,7 @@
         z_tilt = cmu*cmu1 + smu*smu1*somega*somega1
      &               - comega*comega1*smu*smu1
 
-        bkick(20) = ACOS(z_tilt)*180/pi
+        bkick_out(snstar,17) = ACOS(z_tilt)*180/pi
 
       endif
 
@@ -573,45 +573,50 @@
       if(ecc.gt.99.9d0) ecc = 99.9d0
 
 * Set systemic velocities in the bkick array
-      bkick(15) = vkout1
-      bkick(16) = vkout2
+      bkick_out(snstar,14) = vkout1
+      bkick_out(snstar,14) = vkout2
 * Set natal kick magnitude in the bkick array
 *       SURVIVES FIRST SN
         if(bkick(1).eq.1.d0.and.bkick(5).eq.0.d0.and.
      &         bkick(9).eq.0.d0)then
-            bkick(13) = vk
+            bkick_out(snstar,13) = vk
 *       DISRUPTS FIRST SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
      &         bkick(9).eq.0.d0)then
-            bkick(13) = vk
+            bkick_out(snstar,13) = vk
             disrupt = .true.
 *       SURVIVES SECOND SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
      &         bkick(9).eq.0.d0)then
-            bkick(14) = vk
+            bkick_out(snstar,13) = vk
 *       DISRUPTS SECOND SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.2.d0.and.
      &         bkick(9).eq.2.d0)then
-            bkick(14) = vk
+            bkick_out(snstar,13) = vk
             disrupt = .true.
 *       SECOND SN AFTER SYSTEM DISRUPTION FROM FIRST SN
         elseif(bkick(1).eq.1.d0.and.bkick(5).eq.1.d0.and.
      &         bkick(9).eq.2.d0)then
-            bkick(14) = vk
+            bkick_out(snstar,13) = vk
         endif
 
       if(bkick(1).le.0.d0)then
-        bkick(13) = vk
+        bkick_out(snstar,13) = vk
       elseif(bkick(5).le.0.d0)then
-        bkick(14) = vk
+        bkick_out(snstar,13) = vk
       endif
 * Set the total final systemic velocities in the bkick array
       if(ecc.lt.1.d0.and.bkick(1).eq.1.d0.and.bkick(5).eq.2.d0)then
-         bkick(17) = SQRT((bkick(2)+bkick(6))*(bkick(2)+bkick(6))+
+         bkick_out(snstar,15) = SQRT((bkick(2)+bkick(6))*
+     &                               (bkick(2)+bkick(6))+
      &            (bkick(3)+bkick(7))*(bkick(3)+bkick(7))+
      &            (bkick(4)+bkick(8))*(bkick(4)+bkick(8)))
       endif
 
+      bkick_out(snstar,1:13) = bkick
+      bkick_out(snstar,18) = phi 
+      bkick_out(snstar,19) = theta
+      bkick_out(snstar,20) = em
       if(output)then
          if(sep.le.0.d0.or.ecc.ge.1.d0)then
             vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
