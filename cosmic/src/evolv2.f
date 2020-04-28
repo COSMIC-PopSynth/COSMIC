@@ -239,7 +239,7 @@ Cf2py intent(in) tms
 Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
 Cf2py intent(in) zpars
-Cf2py intent(in) bkick
+Cf2py intent(in,out) bkick
 Cf2py intent(out) bppout
 Cf2py intent(out) bcmout
 Cf2py intent(out) bpp_index_out
@@ -1519,9 +1519,6 @@ component.
      &                  renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
          if(snova)then
             bpp(jp,11) = 2.0
             dtm = 0.d0
@@ -1706,9 +1703,6 @@ component.
      &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
       endif
 *
       iter = iter + 1
@@ -1776,9 +1770,6 @@ component.
      &              renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
-      DO jj = 13,20
-         bkick(jj) = 0.0
-      ENDDO
 *
       CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
@@ -2261,9 +2252,6 @@ component.
      &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
 *
          epoch(j1) = tphys - aj(j1)
          if(coel)then
@@ -2600,9 +2588,6 @@ component.
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
                   epoch(j2) = tphys + dtm - aj(j2)
 *
-                  DO jj = 13,20
-                     bkick(jj) = 0.0
-                  ENDDO
                endif
 *
             endif
@@ -3386,9 +3371,6 @@ component.
      &                    renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
       endif
 *
 * Test whether the primary still fills its Roche lobe.
@@ -3414,9 +3396,6 @@ component.
      &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
          dtm = 0.d0
          goto 4
       endif
@@ -3447,9 +3426,6 @@ component.
      &              renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
-      DO jj = 13,20
-         bkick(jj) = 0.0
-      ENDDO
 *
       kcomp1 = kstar(j1)
       kcomp2 = kstar(j2)
@@ -3620,9 +3596,6 @@ component.
      &                  renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
       endif
       epoch(1) = tphys - aj(1)
       epoch(2) = tphys - aj(2)
@@ -3658,9 +3631,6 @@ component.
      &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
-         DO jj = 13,20
-            bkick(jj) = 0.0
-         ENDDO
          dtm = 0.d0
 *
 * Reset orbital parameters as separation may have changed.
@@ -3744,9 +3714,6 @@ component.
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             endif
-            DO jj = 13,20
-               bkick(jj) = 0.0
-            ENDDO
          endif
          if(kstar(2).eq.15)then
             kmax = 1
@@ -3844,9 +3811,6 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           endif
-          DO jj = 13,20
-              bkick(jj) = 0.0
-          ENDDO
       endif
 *
 *      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
