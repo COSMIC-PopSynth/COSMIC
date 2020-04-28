@@ -408,7 +408,7 @@ class Sample(object):
             porb = porb_yr*yr_day
         elif model == 'sana12':
             from cosmic.utils import rndm
-            porb = 10**rndm(a=0.15, b=5.5, g=0.55, size=size)
+            porb = 10**rndm(a=0.15, b=5.5, g=0.45, size=size)
         elif model == 'renzo19':
             from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
