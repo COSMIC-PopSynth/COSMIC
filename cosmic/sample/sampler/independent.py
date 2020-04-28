@@ -413,7 +413,7 @@ class Sample(object):
             from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
             ind_massive, = np.where(mass1 > 15)
-            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=0.55, size=len(ind_massive))
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=0.45, size=len(ind_massive))
         else:
             raise ValueError('You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19')
         return porb
