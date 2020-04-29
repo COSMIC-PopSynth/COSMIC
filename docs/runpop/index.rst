@@ -72,7 +72,7 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
 .. ipython::
 
-    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa93', ecc_model='thermal', SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
 
     In [7]: print(InitialBinaries)
 
