@@ -215,9 +215,9 @@ class Sample(object):
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-1.2, size=len(midIdx))
-            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-1.7, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -236,8 +236,8 @@ class Sample(object):
             lowIdx, = np.where(a_0 <= cutoff)
             highIdx, = np.where(a_0 >= cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
-            a_0[highIdx] = rndm(a=0.5, b=150.0, g=-1.3, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -246,7 +246,7 @@ class Sample(object):
         elif primary_model=='salpeter55':
             total_sampled_mass = 0
             multiplier = 1
-            a_0 = rndm(a=0.08, b=150, g=-1.35, size=size*multiplier)
+            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
 
             total_sampled_mass += np.sum(a_0)
 
@@ -409,12 +409,12 @@ class Sample(object):
             porb = porb_yr*yr_day
         elif model == 'sana12':
             from cosmic.utils import rndm
-            porb = 10**rndm(a=0.15, b=5.5, g=0.45, size=size)
+            porb = 10**rndm(a=0.15, b=5.5, g=-0.55, size=size)
         elif model == 'renzo19':
             from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
             ind_massive, = np.where(mass1 > 15)
-            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=0.45, size=len(ind_massive))
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
         else:
             raise ValueError('You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19')
         return porb
@@ -453,8 +453,7 @@ class Sample(object):
 
         elif ecc_model=='sana12':
             from cosmic.utils import rndm
-            # note: g=eta+1 so for eta=-0.42, g=0.58
-            ecc = rndm(a=0.001, b=0.9, g=0.58, size=size) 
+            ecc = rndm(a=0.001, b=0.9, g=-0.42, size=size) 
             return ecc
         else:
             raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or sana12')

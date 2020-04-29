@@ -514,7 +514,7 @@ def idl_tabulate(x, f, p=5) :
 
 
 def rndm(a, b, g, size):
-    """Power-law generator for pdf(x)\propto x^{g-1} for a<=x<=b
+    """Power-law generator for pdf(x)\propto x^{g} for a<=x<=b
 
     Parameters
     ----------
@@ -535,8 +535,8 @@ def rndm(a, b, g, size):
     """
 
     r = np.random.random(size=size)
-    ag, bg = a**g, b**g
-    return (ag + (bg - ag)*r)**(1./g)
+    ag, bg = a**(g+1), b**(g+1)
+    return (ag + (bg - ag)*r)**(1./(g+1))
 
 def param_transform(dat):
     """Transforms a data set to limits between zero and one
