@@ -754,9 +754,8 @@ common envelope occurs regardless of the choices below:
 
     REMNANT MASS FLAGS
 
-=======================  =====================================================
-``remnantflag``               Determines the remnant mass prescription used for
-                         NSs and BHs.
+===================  =====================================================
+``remnantflag``      Determines the remnant mass prescription used for NSs and BHs.
 
                             ``0`` : follows `Section 6 of Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
                             (default BSE)
@@ -770,21 +769,22 @@ common envelope occurs regardless of the choices below:
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
                          **remnantflag = 3**
-``mxns``                 Sets the boundary between the maximum NS mass
-                         and the minimum BH mass
+
+``mxns``             Sets the boundary between the maximum NS mass
+                     and the minimum BH mass
 
                             ``positive values`` : sets the NS/BH mass bounary
 
                          **mxns = 2.5**
 
-``rembar_massloss``      Determines the prescriptions for mass conversion from
-                         baryonic to gravitational mass during the collapse of 
-                         the proto-compact object
+``rembar_massloss``  Determines the prescriptions for mass conversion from
+                     baryonic to gravitational mass during the collapse of 
+                     the proto-compact object
 
                             ``positive values`` : sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (:math:`{\sim 5 \mathrm{M}_\odot}` Fryer, private communication)
 
                             ``-1 < *rembar_massloss* < 0`` : assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., *rembar_massloss* = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)
-
+===================  =====================================================
 
 .. code-block:: ini
 
