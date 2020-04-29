@@ -453,7 +453,7 @@ class Sample(object):
 
         elif ecc_model=='sana12':
             from cosmic.utils import rndm
-            ecc = rndm(a=0.001, b=0.9, g=-0.42, size=size) 
+            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size) 
             return ecc
         else:
             raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or sana12')
