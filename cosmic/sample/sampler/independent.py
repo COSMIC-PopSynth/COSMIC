@@ -326,7 +326,7 @@ class Sample(object):
         return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
-    def sample_porb(self, mass1, mass2, ecc, model='sana12', size=None):
+    def sample_porb(self, mass1, mass2, ecc, porb_model='sana12', size=None):
         """Sample the orbital period according to the user-specified model
         
         Parameters
@@ -357,7 +357,7 @@ class Sample(object):
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
         """
-        if model == 'log_uniform':     
+        if porb_model == 'log_uniform':     
             q = mass2/mass1
             RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
 
@@ -407,10 +407,10 @@ class Sample(object):
             yr_day = 365.24
             porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
             porb = porb_yr*yr_day
-        elif model == 'sana12':
+        elif porb_model == 'sana12':
             from cosmic.utils import rndm
             porb = 10**rndm(a=0.15, b=5.5, g=-0.55, size=size)
-        elif model == 'renzo19':
+        elif porb_model == 'renzo19':
             from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
             ind_massive, = np.where(mass1 > 15)
