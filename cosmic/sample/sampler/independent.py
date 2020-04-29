@@ -208,36 +208,36 @@ class Sample(object):
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.740074
-            high_cutoff = 0.908422
+            low_cutoff = 0.771
+            high_cutoff = 0.919
 
             lowIdx, = np.where(a_0 <= low_cutoff)
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-1.2, size=len(midIdx))
-            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-1.7, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
             return a_0, total_sampled_mass
 
         elif primary_model=='kroupa01':
+            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
+            # at 0.08 Msun instead of 0.01
+
             total_sampled_mass = 0
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.37148816884988606
-            high_cutoff = 0.8496015751162523
+            cutoff = 0.748
 
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            highIdx, = np.where(a_0 >= high_cutoff)
+            lowIdx, = np.where(a_0 <= cutoff)
+            highIdx, = np.where(a_0 >= cutoff)
 
-            a_0[lowIdx] = rndm(a=0.01, b=0.08, g=0.7, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(midIdx))
-            a_0[highIdx] = rndm(a=0.5, b=100.0, g=-1.3, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -246,7 +246,7 @@ class Sample(object):
         elif primary_model=='salpeter55':
             total_sampled_mass = 0
             multiplier = 1
-            a_0 = rndm(a=0.08, b=150, g=-1.35, size=size*multiplier)
+            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
 
             total_sampled_mass += np.sum(a_0)
 
@@ -257,6 +257,8 @@ class Sample(object):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
+
+        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
 
         Parameters
         ----------
@@ -270,8 +272,7 @@ class Sample(object):
             primary_mass
         """
 
-        a_0 = np.random.uniform(0.01, 1, primary_mass.size)
-        secondary_mass = primary_mass*a_0
+        secondary_mass = np.random.uniform(0.08*np.ones_like(primary_mass), primary_mass)
 
         return secondary_mass
 
@@ -325,7 +326,7 @@ class Sample(object):
         return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
-    def sample_porb(self, mass1, mass2, ecc, model='sana12', size=None):
+    def sample_porb(self, mass1, mass2, ecc, porb_model='sana12', size=None):
         """Sample the orbital period according to the user-specified model
         
         Parameters
@@ -356,7 +357,7 @@ class Sample(object):
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
         """
-        if model == 'log_uniform':     
+        if porb_model == 'log_uniform':     
             q = mass2/mass1
             RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
 
@@ -406,14 +407,14 @@ class Sample(object):
             yr_day = 365.24
             porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
             porb = porb_yr*yr_day
-        elif model == 'sana12':
+        elif porb_model == 'sana12':
             from cosmic.utils import rndm
-            porb = 10**rndm(a=0.15, b=5.5, g=0.55, size=size)
-        elif model == 'renzo19':
+            porb = 10**rndm(a=0.15, b=5.5, g=-0.55, size=size)
+        elif porb_model == 'renzo19':
             from cosmic.utils import rndm
             porb = 10**(np.random.uniform(0.15, 5.5, size))
             ind_massive, = np.where(mass1 > 15)
-            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=0.55, size=len(ind_massive))
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
         else:
             raise ValueError('You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19')
         return porb
@@ -428,8 +429,8 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            'Sana' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-            DEFAULT = 'Sana'
+            'sana12' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            DEFAULT = 'sana12'
 
         size : int, optional
             number of eccentricities to sample
@@ -452,10 +453,10 @@ class Sample(object):
 
         elif ecc_model=='sana12':
             from cosmic.utils import rndm
-            ecc = rndm(a=0.001, b=0.9, g=-0.42, size=size) 
+            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size) 
             return ecc
         else:
-            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or Sana')
+            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, or sana12')
 
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
