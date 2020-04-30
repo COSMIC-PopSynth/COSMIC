@@ -324,7 +324,7 @@
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,
-     &                   disrupt,bkick_out)
+     &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -633,7 +633,7 @@
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,bkick,
-     &                   disrupt,bkick_out)
+     &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -783,7 +783,7 @@
                endif
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,bkick,
-     &                   disrupt,bkick_out)
+     &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -1006,7 +1006,7 @@
                    endif
             endif
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,bkick,disrupt,bkick_out)
+     &                0.d0,fallback,bkick,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)

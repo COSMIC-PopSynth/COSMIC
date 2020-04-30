@@ -166,7 +166,8 @@
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
-      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,bkick(12),bkick_out(2,20)
+      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,bkick(2,16)
+      REAL*8 bkick_out(2,16)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
@@ -1291,7 +1292,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,disrupt,bkick_out)
+     &                   0.d0,fallback,bkick,disrupt)
                
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1310,8 +1311,7 @@ component.
      &                       epoch(2),bhspin(1),bhspin(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(3-k),fallback,bkick,
-     &                   disrupt,bkick_out)
+     &                   rad(3-k),fallback,bkick,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -2179,13 +2179,11 @@ component.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
-            bkick(1) = 3-bkick(1)
          endif
          if(j1.eq.1.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
-            bkick(1) = 3-bkick(1)
          endif
 
 *
@@ -3404,13 +3402,11 @@ component.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
-            bkick(1) = 3-bkick(1)
          endif
          if(j1.eq.1.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j1) = formation(j2)
-            bkick(1) = 3-bkick(1)
          endif
          com = .true.
          if(com.and..not.coel.and..not.disrupt)then
@@ -3467,13 +3463,11 @@ component.
      &      kstar(j2).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j2) = formation(j1)
-            bkick(1) = 3-bkick(1)
          endif
          if(j2.eq.1.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
      &      kstar(j2).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
             formation(j2) = formation(j1)
-            bkick(1) = 3-bkick(1)
          endif
          com = .true.
          if(com.and..not.coel.and..not.disrupt)then
