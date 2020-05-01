@@ -59,9 +59,9 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'eccentric_anomaly',
-                'vsys_x_1', 'vsys_y_1', 'vsys_z_1', 'vsys_1',
-                'vsys_x_2', 'vsys_y_2', 'vsys_z_2', 'vsys_2',
-                'delta_theta_total', 'omega_total', 'bin_num']
+                'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
+                'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
+                'delta_theta_total', 'omega', 'bin_num']
 
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
@@ -403,7 +403,8 @@ class Evolve(object):
                 res_bpp = np.zeros(f.shape[0],dtype=object)
                 res_kick_info = np.zeros(f.shape[0],dtype=object)
                 for i in range(0,f.shape[0]):
-                    f[i]['bkick'] = np.zeros(12)
+                    if 'kick_info' not in f[i].keys():
+                        f[i]['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
                     _evolvebin.windvars.neta = f[i]['neta']
                     _evolvebin.windvars.bwind = f[i]['bwind']
                     _evolvebin.windvars.hewind = f[i]['hewind']
@@ -457,7 +458,7 @@ class Evolve(object):
                     _evolvebin.snvars.rembar_massloss = f[i]['rembar_massloss']
                     _evolvebin.cmcpass.using_cmc = 0
 
-                    [bpp, bcm, bpp_index, bcm_index, bkick_out] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],
+                    [bpp, bcm, bpp_index, bcm_index, kick_info_out] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],
                                                                                     [f[i]['mass_1'], f[i]['mass_2']],
                                                                                     f[i]['porb'], f[i]['ecc'], f[i]['metallicity'], f[i]['tphysf'], f[i]['dtp'],
                                                                                     [f[i]['mass0_1'], f[i]['mass0_2']],
@@ -476,18 +477,18 @@ class Evolve(object):
                                                                                     [f[i]['bhspin_1'], f[i]['bhspin_2']],
                                                                                     f[i]['tphys'],
                                                                                     np.zeros(20),
-                                                                                    f[i]['bkick'])
+                                                                                    f[i]['kick_info'])
 
                     bpp = bpp[:bpp_index]
                     bcm = bcm[:bcm_index]
 
                     bpp_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bpp))).T
                     bcm_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bcm))).T
-                    bkick_out_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bkick_out))).T
+                    kick_info_out_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(kick_info_out))).T
 
                     res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
                     res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
-                    res_kick_info[i] = np.hstack((bkick_out, bkick_out_bin_numbers))
+                    res_kick_info[i] = np.hstack((kick_info_out, kick_info_out_bin_numbers))
 
                 return f, np.vstack(res_bpp), np.vstack(res_bcm), np.vstack(res_kick_info)
 
@@ -513,11 +514,11 @@ class Evolve(object):
         output = np.array(output)
         bpp_arrays = np.vstack(output[:, 1])
         bcm_arrays = np.vstack(output[:, 2])
-        bkick_arrays = np.vstack(output[:, 3])
+        kick_info_arrays = np.vstack(output[:, 3])
 
-        bkick = pd.DataFrame(bkick_arrays,
+        kick_info = pd.DataFrame(kick_info_arrays,
                            columns=KICK_COLUMNS,
-                           index=bkick_arrays[:, -1].astype(int))
+                           index=kick_info_arrays[:, -1].astype(int))
 
         bpp = pd.DataFrame(bpp_arrays,
                            columns=BPP_COLUMNS,
@@ -532,4 +533,4 @@ class Evolve(object):
         bpp.bin_num = bpp.bin_num.astype(int)
         bcm.bin_num = bcm.bin_num.astype(int)
 
-        return bpp, bcm, initialbinarytable, bkick
+        return bpp, bcm, initialbinarytable, kick_info

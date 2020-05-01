@@ -182,10 +182,8 @@
       endif
       sigma = sigmah
 
-* save natal kick velocity in the bkick array and eccentric anamoly
+* save natal kick velocity in the bkick array
       bkick(sn,3) = vk
-      bkick(sn,6) = em
-
 
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
@@ -219,8 +217,8 @@
       ctheta = COS(theta)
 
 *     save theta and phi (exploding star frame) in the bkick array
-      bkick(sn,4) = phi
-      bkick(sn,5) = theta
+      bkick(sn,4) = phi*180/pi
+      bkick(sn,5) = theta*180/pi
 
 * If the system is already disrupted, apply this kick only to the
 * exploding star, and skip ahead.
@@ -236,8 +234,7 @@
          endif
          GOTO 73
       endif
-        
-        
+
 
 * CLR - if the orbit has already been kicked, then any polar kick
 *       needs to be tilted as well (since L_hat and S_hat are no longer
@@ -301,9 +298,11 @@
       somega = SIN(omega)
 
 * Write angle between initial and current orbital angular momentum vectors
-      if(sn.eq.1)then
+* and eccentric anomaly if system is still bound
+      if(sn.eq.1.and.ecc.le.1)then
         bkick(sn,15) = mu*180/pi
         bkick(sn,16) = omega*180/pi
+        bkick(sn,6) = em*180/pi
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
@@ -323,6 +322,7 @@
 
         bkick(sn,15) = ACOS(z_tilt)*180/pi
         bkick(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
+        bkick(sn,6) = em*180/pi
 
       endif
 
