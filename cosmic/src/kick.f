@@ -51,6 +51,8 @@
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mm,em,dif,der,del,r
       real*8 u1,u2,vk,v(4),s,theta,phi
+      real*8 vx1_dummy,vy1_dummy,vz1_dummy
+      real*8 vx2_dummy,vy2_dummy,vz2_dummy
       real*8 sphi,cphi,stheta,ctheta,salpha,calpha
       real*8 x_tilt,y_tilt,z_tilt
       real*8 mu,cmu,smu,omega,comega,somega
@@ -71,6 +73,13 @@
       external ran3
 *
       output = .false. !useful for debugging...
+      vx1_dummy = 0.d0
+      vy1_dummy = 0.d0
+      vz1_dummy = 0.d0
+      vx2_dummy = 0.d0
+      vy2_dummy = 0.d0
+      vz2_dummy = 0.d0
+
 
 * Set up empty arrays and constants
       do k = 1,3
@@ -223,6 +232,9 @@
 * If the system is already disrupted, apply this kick only to the
 * exploding star, and skip ahead.
       if(sn.eq.2.and.bkick(1,2).eq.1)then
+         CALL randomness3(idum1,vx1_dummy,vy1_dummy,vz1_dummy,
+     &                    vx2_dummy,vy2_dummy,vz2_dummy)
+
          if(snstar.eq.1)then
             bkick(sn,7) = vk*COS(theta)*SIN(phi)
             bkick(sn,8) = vk*SIN(theta)*SIN(phi)
