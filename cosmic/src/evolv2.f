@@ -284,8 +284,6 @@ Cf2py intent(out) bkick_out
       sigmahold = sigma
 *memory for wind mass loss factor
       betahold = beta
-* this is a little tracker for whether primary and secondary got switched
-      switchedCE = .false.
 
 ** SET PULSAR VALUES HERE**
 * PDK
@@ -1295,7 +1293,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,disrupt,switchedCE)
+     &                   0.d0,fallback,bkick,disrupt)
                
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1314,7 +1312,7 @@ component.
      &                       epoch(2),bhspin(1),bhspin(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(3-k),fallback,bkick,disrupt,switchedCE)
+     &                   rad(3-k),fallback,bkick,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -3155,7 +3153,7 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick,disrupt,switchedCE)
+     &                rad(3-k),fallback,bkick,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
             if(mass(3-k).lt.0.d0)then

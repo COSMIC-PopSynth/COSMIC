@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,disrupt,switchedCE)
+     &                r2,fallback,bkick,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -64,7 +64,7 @@
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,bound
 * Output
-      logical output,disrupt,switchedCE
+      logical output,disrupt
 *
       real*8 bkick(2,16)
       real ran3,xx
@@ -84,9 +84,6 @@
 * Conversion factor to ensure velocities are in km/s using mass and
 * radius in solar units.
       gmrkm = 1.906125d+05
-
-* If objects got switched around the CE, change the snstar
-      if(switchedCE) snstar = 3-snstar
 
 * find whether this is the first or second supernova
       if(bkick(1,1).eq.0) sn=1
