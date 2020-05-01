@@ -485,8 +485,8 @@
       endif
 
 * Uncomment to randomly rotate system velocities
-*      CALL randomness3(idum1,bkick(sn,4),bkick(sn,5),bkick(sn,6),
-*     &            bkick(sn,7),bkick(sn,8),bkick(sn,9))
+      CALL randomness3(idum1,bkick(sn,7),bkick(sn,8),bkick(sn,9),
+     &            bkick(sn,11),bkick(sn,12),bkick(sn,13))
 *
 * Put a cap on the eccentricity
       if(ecc.gt.99.9d0) ecc = 99.9d0
