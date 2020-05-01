@@ -58,11 +58,10 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'porb', 'sep', 'ecc', 'B0_1', 'B0_2',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
-KICK_COLUMNS = ['explosion_1', 'vx_1', 'vy_1', 'vz_1',
-                'explosion_2', 'vx_2', 'vy_2', 'vz_2',
-                'explosion_2_1', 'vx_2_1', 'vy_2_1', 'vz_2_1',
-                'natal_kick', 'vsys', 'vsys_total', 'delta_theta',
-                'delta_theta_total', 'phi', 'theta', 'eccentric_anomaly', 'bin_num']
+KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'eccentric_anomaly',
+                'vsys_x_1', 'vsys_y_1', 'vsys_z_1', 'vsys_1',
+                'vsys_x_2', 'vsys_y_2', 'vsys_z_2', 'vsys_2',
+                'delta_theta_total', 'omega_total', 'bin_num']
 
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
@@ -308,8 +307,9 @@ class Evolve(object):
         # define multiprocessing method
         def _evolve_single_system(f):
             try:
+                if 'kick_info' not in f.keys():
+                    f['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-                f['bkick'] = np.zeros(12)
                 _evolvebin.windvars.neta = f['neta']
                 _evolvebin.windvars.bwind = f['bwind']
                 _evolvebin.windvars.hewind = f['hewind']
@@ -363,7 +363,7 @@ class Evolve(object):
                 _evolvebin.snvars.rembar_massloss = f['rembar_massloss']
                 _evolvebin.cmcpass.using_cmc = 0
 
-                [bpp, bcm, bpp_index, bcm_index, bkick_out] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
+                [bpp, bcm, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
                                                                                 [f['mass_1'], f['mass_2']],
                                                                                 f['porb'], f['ecc'], f['metallicity'], f['tphysf'], f['dtp'],
                                                                                 [f['mass0_1'], f['mass0_2']],
@@ -382,16 +382,16 @@ class Evolve(object):
                                                                                 [f['bhspin_1'], f['bhspin_2']],
                                                                                 f['tphys'],
                                                                                 np.zeros(20),
-                                                                                f['bkick'])
+                                                                                f['kick_info'])
 
                 bcm = bcm[:bcm_index]
                 bpp = bpp[:bpp_index]
 
                 bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f['bin_num']))
                 bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f['bin_num']))
-                bkick_out = np.hstack((bkick_out, np.ones((bkick_out.shape[0], 1))*f['bin_num']))
+                kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f['bin_num']))
 
-                return f, bpp, bcm, bkick_out
+                return f, bpp, bcm, kick_info
 
             except Exception as e:
                 raise

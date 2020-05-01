@@ -298,48 +298,6 @@ The multidimensional sample is generated as follows:
     >>>                                                                                         met=0.02, 
     >>>                                                                                         size=100000)
     >>> initC_mult['sep'] = a_from_p(p=initC_mult.porb, m1=initC_mult.mass_1, m2=initC_mult.mass_2)
-    >>> fig = plt.figure(figsize = (15,6))
-    >>> ax1 = plt.subplot(231)
-    >>> ax2 = plt.subplot(232)
-    >>> ax3 = plt.subplot(233)
-    >>> ax4 = plt.subplot(234)
-    >>> ax5 = plt.subplot(235)
-    >>> ax6 = plt.subplot(236)
-    >>> ax1.hist(np.log10(m1), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='multidim class')
-    >>> ax1.hist(np.log10(initC_mult.mass_1), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='multidim sampler', ls='--')
-    >>> ax1.set_xlabel(r'Log$_{10}$(M$_1$/M$_{\odot}$)', size=18)
-    >>> ax1.set_ylabel('normalized counts', size=18)
-    >>> ax1.legend(prop={'size' : 18})
-    >>> ax2.hist(np.log10(porb), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='multidim class')
-    >>> ax2.hist(np.log10(initC_mult.porb), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='multidim sampler', ls='--')
-    >>> ax2.set_xlabel(r'Log$_{10}$(P$_{\rm{orb}}$/day)', size=18)
-    >>> ax3.hist(ecc, bins = 10, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='multidim class')
-    >>> ax3.hist(initC_mult.ecc, bins = 10, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='multidim sampler', ls='--')
-    >>> ax3.set_xlabel('Eccentricity', size=18)
-    >>> ax4.hist(m2/m1, bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='multidim class')
-    >>> ax4.hist(initC_mult.mass_2/initC_mult.mass_1, bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='multidim sampler', ls='--')
-    >>> ax4.set_xlabel(r'q=M$_1$/M$_2$', size=18)
-    >>> ax4.set_ylabel('normalized counts', size=18)
-    >>> ax5.hist(np.log10(sep), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax5.hist(np.log10(initC_mult.sep), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='multidim sampler', ls='--')
-    >>> ax5.set_xlabel(r'Log$_{10}$(a/R$_{\odot}$)', size=18)
-    >>> ax6.hist(np.log10(sep*(1-ecc)), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='multidim class')
-    >>> ax6.hist(np.log10(initC_mult.sep*(1-initC_mult.ecc)), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='multidim sampler', ls='--')
-    >>> ax6.set_xlabel(r'Log$_{10}$(a(1-e)/R$_{\odot}$)', size=18)
-    >>> fig.tight_layout()
-    >>> fig.show()
 
 *************************************
 Evolving an initial binary population

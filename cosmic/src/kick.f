@@ -43,7 +43,7 @@
 * bkick[i,16]: azimuthal angle of the orbital plane w.r.t. spins
 *
 * For cmc bkick array is zero, not negative.
-      integer kw,k,l,snstar,sn
+      integer kw,k,snstar,sn
 
       real*8 m1,m2,m1n,mbi,mbf,mdif
       real*8 ecc,sep,sepn,jorb,ecc2
@@ -106,11 +106,6 @@
 * scale down BH kicks if bhsigmafrac is specified
       if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
            sigma = sigmah*bhsigmafrac
-      endif
-      if(output)then
-
-        if(kw.eq.14) write(48,49)kw,m1,m1n,m2,ecc,sep,snstar,fallback,
-     &               bhflag,sigma,mxns,id1_pass,id2_pass
       endif
 
 *
@@ -515,29 +510,16 @@
      &              bkick(sn,13)*bkick(sn,13))
       elseif(sn.eq.2)then
          bkick(sn,10) = SQRT(
-     &      (bkick(1,7)+bkick(2,7))*(bkick(1,7)+bkick(2,7))
-     &      (bkick(1,8)+bkick(2,8))*(bkick(1,8)+bkick(2,8))
+     &      (bkick(1,7)+bkick(2,7))*(bkick(1,7)+bkick(2,7)) +
+     &      (bkick(1,8)+bkick(2,8))*(bkick(1,8)+bkick(2,8)) +
      &      (bkick(1,9)+bkick(2,9))*(bkick(1,9)+bkick(2,9)))
          bkick(sn,14) = SQRT(
-     &      (bkick(1,11)+bkick(2,11))*(bkick(1,11)+bkick(2,11))
-     &      (bkick(1,12)+bkick(2,12))*(bkick(1,12)+bkick(2,12))
+     &      (bkick(1,11)+bkick(2,11))*(bkick(1,11)+bkick(2,11)) +
+     &      (bkick(1,12)+bkick(2,12))*(bkick(1,12)+bkick(2,12)) +
      &      (bkick(1,13)+bkick(2,13))*(bkick(1,13)+bkick(2,13)))
+      endif
 
 * Write some output information
-      if(output)then
-         if(sep.le.0.d0.or.ecc.ge.1.d0)then
-            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
-            write(44,43)kw,m1,m1n,sigma,vk,v1xout,v1yout,v1zout,vkout1,
-     &                  (bkick(l),l=1,20),id1_pass,id2_pass
-         else
-            vkout1 = sqrt(v1xout*v1xout+v1yout*v1yout+v1zout*v1zout)
-            write(45,47)kw,m1,m1n,sigma,vk,v1xout,v1yout,v1zout,
-     &                  vkout1,id1_pass,id2_pass
-         endif
-      endif
- 43   FORMAT(i3,1p,8e12.4,1x,12e12.4,1x,i10,i10)
- 47   FORMAT(i3,1p,8e12.4,1x,i10,i10)
- 49   FORMAT(i3,1p,5e12.4,1x,0p,i3,f12.4,1x,i3,f12.4,f12.4,1x,i10,i10)
 *
       RETURN
       END
