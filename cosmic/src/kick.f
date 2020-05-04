@@ -483,7 +483,8 @@
       endif
 
 * Uncomment to randomly rotate system velocities
-      CALL randomness3(idum1,kick_info(sn,7),kick_info(sn,8),kick_info(sn,9),
+      CALL randomness3(idum1,
+     &            kick_info(sn,7),kick_info(sn,8),kick_info(sn,9),
      &            kick_info(sn,11),kick_info(sn,12),kick_info(sn,13))
 *
 * Put a cap on the eccentricity
@@ -505,13 +506,19 @@
      &              kick_info(sn,13)*kick_info(sn,13))
       elseif(sn.eq.2)then
          kick_info(sn,10) = SQRT(
-     &      (kick_info(1,7)+kick_info(2,7))*(kick_info(1,7)+kick_info(2,7)) +
-     &      (kick_info(1,8)+kick_info(2,8))*(kick_info(1,8)+kick_info(2,8)) +
-     &      (kick_info(1,9)+kick_info(2,9))*(kick_info(1,9)+kick_info(2,9)))
+     &      (kick_info(1,7)+kick_info(2,7))*
+     &      (kick_info(1,7)+kick_info(2,7)) +
+     &      (kick_info(1,8)+kick_info(2,8))*
+     &      (kick_info(1,8)+kick_info(2,8)) +
+     &      (kick_info(1,9)+kick_info(2,9))*
+     &      (kick_info(1,9)+kick_info(2,9)))
          kick_info(sn,14) = SQRT(
-     &      (kick_info(1,11)+kick_info(2,11))*(kick_info(1,11)+kick_info(2,11)) +
-     &      (kick_info(1,12)+kick_info(2,12))*(kick_info(1,12)+kick_info(2,12)) +
-     &      (kick_info(1,13)+kick_info(2,13))*(kick_info(1,13)+kick_info(2,13)))
+     &      (kick_info(1,11)+kick_info(2,11))*
+     &      (kick_info(1,11)+kick_info(2,11)) +
+     &      (kick_info(1,12)+kick_info(2,12))*
+     &      (kick_info(1,12)+kick_info(2,12)) +
+     &      (kick_info(1,13)+kick_info(2,13))*
+     &      (kick_info(1,13)+kick_info(2,13)))
       endif
 
 * Write some output information
