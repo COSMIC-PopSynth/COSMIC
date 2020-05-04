@@ -107,7 +107,10 @@
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
         REAL*8 yeardy,rsunau
-        PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
+        REAL*8 yeardy,aursun,rsunau
+        PARAMETER(yeardy=365.24d0,aursun=214.95d0)
+
+        rsunau = 1/aursun
 
         ip = ip + 1
         bcm(ip,1) = tphys
