@@ -26,9 +26,10 @@
         REAL*8 tb_write,sep_cubed
         INTEGER jp
         INTEGER kstar1,kstar2
-        REAL*8 yeardy,rsunau
-        PARAMETER(yeardy=365.24d0,rsunau=0.00465d0)
+        REAL*8 yeardy,aursun,rsunau
+        PARAMETER(yeardy=365.24d0,aursun=214.95d0)
 
+        rsunau = 1/aursun
         jp = MIN(900,jp + 1)
         bpp(jp,1) = tphys
         bpp(jp,2) = mass1

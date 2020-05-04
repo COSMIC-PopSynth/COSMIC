@@ -14,7 +14,7 @@
 * an eccentricity of greater than unity (i.e. hyperbolic orbit).
 *
 * MJZ/SBC (April 2020)
-* kick_info is a (2,16) array that tracks information about the supernova
+* kick_info is a (2,17) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
@@ -41,6 +41,7 @@
 * kick_info[i,15]: (total) tilt of the orbital plane after each SN
 *       w.r.t. the original angular momentum axis after each SN
 * kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
+* kick_info[i,17]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
       integer kw,k,snstar,sn
@@ -66,7 +67,7 @@
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,16)
+      real*8 kick_info(2,17)
       real ran3,xx
       external ran3
 *
@@ -88,6 +89,20 @@
 * find whether this is the first or second supernova
       if(kick_info(1,1).eq.0) sn=1
       if(kick_info(1,1).gt.0) sn=2
+
+* check if we have supplied a randomseed for this SN from kick_info
+* already
+      if(kick_info(sn,17).gt.0.d0)then
+* if we have we need to run ran3 enough times until
+* we are at the same state of the random number generator
+* as we were before
+          do while (kick_info(sn,17).ne.idum1) 
+              xx = RAN3(idum1)
+          end do
+      else
+* save the current idum1
+          kick_info(sn,17) = idum1
+      endif
 
 * set the SNstar of the exploding object in the kick_info array
       kick_info(sn,1) = snstar
@@ -324,7 +339,6 @@
 
       endif
 
- 90   continue
 * Calculate systemic velocity
       mx1 = vk*m1n/(m1n+m2)
       mx2 = vr*(m1-m1n)*m2/((m1n+m2)*(m1+m2))

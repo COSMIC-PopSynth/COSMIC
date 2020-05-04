@@ -166,8 +166,8 @@
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
-      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,16)
-      REAL*8 kick_info_out(2,16)
+      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,17)
+      REAL*8 kick_info_out(2,17)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
