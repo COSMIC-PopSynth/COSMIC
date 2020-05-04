@@ -12,7 +12,7 @@
         REAL*8 mass0(2),massc(2),menv(2)
         REAL*8 rad(2),epoch(2)
         REAL*8 lumin(2),renv(2),radc(2)
-        REAL*8 zpars(20),bkick(20)
+        REAL*8 zpars(20),kick_info(20)
         REAL*8 tacc(2),bacc(2),tms(2),B_0(2),ospin(2)
         REAL*8 tphys
         INTEGER bpp_index_out,bcm_index_out
@@ -30,7 +30,7 @@
         ospin = 0.0; B_0 = 0.0; bacc = 0.0
         tacc = 0.0 ; epoch = 0.0; tms = 0.0
         bhspin = 0.0; tphys = 0.0
-        zpars = 0.0; bkick = 0.0
+        zpars = 0.0; kick_info = 0.0
 
         neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
@@ -53,7 +53,7 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,bppout,bcmout,
+     & bhspin,tphys,zpars,kick_info,bppout,bcmout,
      & bpp_index_out,bcm_index_out)
 
         kstar(1) = 1; kstar(2) = 1; mass(1) = 53.4;
@@ -68,7 +68,7 @@
         ospin = 0.d0; B_0 = 0.d0; bacc = 0.d0
         tacc = 0.d0 ; epoch = 0.d0; tms = 0.d0
         bhspin = 0.d0; tphys = 0.d0
-        zpars = 0.d0; bkick = 0.d0
+        zpars = 0.d0; kick_info = 0.d0
 
         neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
@@ -89,6 +89,6 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,bppout,bcmout,
+     & bhspin,tphys,zpars,kick_info,bppout,bcmout,
      & bpp_index_out,bcm_index_out)
         END PROGRAM benchmarkevolv2

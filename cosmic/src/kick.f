@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,bkick,disrupt)
+     &                r2,fallback,kick_info,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -14,35 +14,35 @@
 * an eccentricity of greater than unity (i.e. hyperbolic orbit).
 *
 * MJZ/SBC (April 2020)
-* bkick is a (2,16) array that tracks information about the supernova
+* kick_info is a (2,16) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
 * The first row contains information about the first supernova that
 * occurs, the second row the second supernova. 
 * Note that some values the second row will take into account the
-* effect of the first SN (e.g., bkick[2,10] is the total systemic
+* effect of the first SN (e.g., kick_info[2,10] is the total systemic
 * velocity after both supernovae).
 *
-* bkick[i,1]: snstar of exploding star
-* bkick[i,2]: disrupted (0=no, 1=yes)
-* bkick[i,3]: magnitude of the natal kick
-* bkick[i,4-5]: phi and theta (in the frame of the exploding star)
-* bkick[i,6]: eccentric anamoly
-* bkick[i,7-9]: change in 3D systemic velocity of the binary, or the
+* kick_info[i,1]: snstar of exploding star
+* kick_info[i,2]: disrupted (0=no, 1=yes)
+* kick_info[i,3]: magnitude of the natal kick
+* kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
+* kick_info[i,6]: eccentric anamoly
+* kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of snstar=1 if the system is disrupted
-* bkick[i,10]: magnitude of systemic velocity of the binary if bound
+* kick_info[i,10]: magnitude of systemic velocity of the binary if bound
 *       or magnitude of total velocity of snstar=1 if disrupted, 
 *       accounting for both SNe
-* bkick[i,11-13]: change in 3D velocity of the snstar=2 if system
+* kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system
 *       is disrupted
-* bkick[i,14]: magnitude of velocity of snstar=2 if disrupted, 
+* kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted, 
 *       accounting for both SNe
-* bkick[i,15]: (total) tilt of the orbital plane after each SN
+* kick_info[i,15]: (total) tilt of the orbital plane after each SN
 *       w.r.t. the original angular momentum axis after each SN
-* bkick[i,16]: azimuthal angle of the orbital plane w.r.t. spins
+* kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
 *
-* For cmc bkick array is zero, not negative.
+* For cmc kick_info array is zero, not negative.
       integer kw,k,snstar,sn
 
       real*8 m1,m2,m1n,mbi,mbf,mdif
@@ -66,7 +66,7 @@
 * Output
       logical output,disrupt
 *
-      real*8 bkick(2,16)
+      real*8 kick_info(2,16)
       real ran3,xx
       external ran3
 *
@@ -86,14 +86,14 @@
       gmrkm = 1.906125d+05
 
 * find whether this is the first or second supernova
-      if(bkick(1,1).eq.0) sn=1
-      if(bkick(1,1).gt.0) sn=2
+      if(kick_info(1,1).eq.0) sn=1
+      if(kick_info(1,1).gt.0) sn=2
 
-* set the SNstar of the exploding object in the bkick array
-      bkick(sn,1) = snstar
+* set the SNstar of the exploding object in the kick_info array
+      kick_info(sn,1) = snstar
 
 * if the system was disrupted from the first supernova, marked as disrupted
-      if(bkick(1,2).eq.1) bkick(2,2)=1
+      if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
       if(sigma.lt.0.d0)then
@@ -182,8 +182,8 @@
       endif
       sigma = sigmah
 
-* save natal kick velocity in the bkick array
-      bkick(sn,3) = vk
+* save natal kick velocity in the kick_info array
+      kick_info(sn,3) = vk
 
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
@@ -216,21 +216,21 @@
       stheta = SIN(theta)
       ctheta = COS(theta)
 
-*     save theta and phi (exploding star frame) in the bkick array
-      bkick(sn,4) = phi*180/pi
-      bkick(sn,5) = theta*180/pi
+*     save theta and phi (exploding star frame) in the kick_info array
+      kick_info(sn,4) = phi*180/pi
+      kick_info(sn,5) = theta*180/pi
 
 * If the system is already disrupted, apply this kick only to the
 * exploding star, and skip ahead.
-      if(sn.eq.2.and.bkick(1,2).eq.1)then
+      if(sn.eq.2.and.kick_info(1,2).eq.1)then
          if(snstar.eq.1)then
-            bkick(sn,7) = vk*COS(theta)*SIN(phi)
-            bkick(sn,8) = vk*SIN(theta)*SIN(phi)
-            bkick(sn,9) = vk*COS(phi)
+            kick_info(sn,7) = vk*COS(theta)*SIN(phi)
+            kick_info(sn,8) = vk*SIN(theta)*SIN(phi)
+            kick_info(sn,9) = vk*COS(phi)
          elseif(snstar.eq.2)then
-            bkick(sn,11) = vk*COS(theta)*SIN(phi)
-            bkick(sn,12) = vk*SIN(theta)*SIN(phi)
-            bkick(sn,13) = vk*COS(phi)
+            kick_info(sn,11) = vk*COS(theta)*SIN(phi)
+            kick_info(sn,12) = vk*SIN(theta)*SIN(phi)
+            kick_info(sn,13) = vk*COS(phi)
          endif
          GOTO 73
       endif
@@ -246,10 +246,10 @@
 *       We do this when the system has already had one SN (sn=2)
 *  NOTE: This prescription does not account for realignment between SNe!
       if(sn.eq.2)then
-        cmu = COS(bkick(1,15))
-        smu = SIN(bkick(1,15))
-        comega = COS(bkick(1,16))
-        somega = SIN(bkick(1,16))
+        cmu = COS(kick_info(1,15))
+        smu = SIN(kick_info(1,15))
+        comega = COS(kick_info(1,16))
+        somega = SIN(kick_info(1,16))
 
         x_tilt = ctheta*cphi*comega + smu*sphi*somega -
      &                   cmu*cphi*stheta*somega
@@ -266,8 +266,6 @@
       endif
 
 
-* If orbit becomes hyperbolic, jump ahead of orbital parameter calcs.
-      if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
 *
 * Determine the magnitude of the new relative velocity.
 * CLR - fixed a spurious minus sign in the parenthesis here; only
@@ -300,19 +298,19 @@
 * Write angle between initial and current orbital angular momentum vectors
 * and eccentric anomaly if system is still bound
       if(sn.eq.1.and.ecc.le.1)then
-        bkick(sn,15) = mu*180/pi
-        bkick(sn,16) = omega*180/pi
-        bkick(sn,6) = em*180/pi
+        kick_info(sn,15) = mu*180/pi
+        kick_info(sn,16) = omega*180/pi
+        kick_info(sn,6) = em*180/pi
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
 *       typical spherical coordinates rather than colateral coordinates,
 *       so the rotations are slightly different than above.
 *       We rotate about z-axis by omega1 then y-axis by mu1
-        cmu1 = COS(bkick(1,15))
-        smu1 = SIN(bkick(1,15))
-        comega1 = COS(bkick(1,16))
-        somega1 = SIN(bkick(1,16))
+        cmu1 = COS(kick_info(1,15))
+        smu1 = SIN(kick_info(1,15))
+        comega1 = COS(kick_info(1,16))
+        somega1 = SIN(kick_info(1,16))
 
         x_tilt = cmu1*comega*comega1*smu + cmu*smu1
      &                - cmu1*smu*somega*somega1
@@ -320,9 +318,9 @@
         z_tilt = cmu*cmu1 + smu*smu1*somega*somega1
      &               - comega*comega1*smu*smu1
 
-        bkick(sn,15) = ACOS(z_tilt)*180/pi
-        bkick(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
-        bkick(sn,6) = em*180/pi
+        kick_info(sn,15) = ACOS(z_tilt)*180/pi
+        kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
+        kick_info(sn,6) = em*180/pi
 
       endif
 
@@ -337,8 +335,8 @@
 * See if system was disrupted
       if(ecc.gt.1.d0)then
          disrupt = .true.
-* Set that it is disrupted in the bkick array
-         bkick(sn,2) = 1
+* Set that it is disrupted in the kick_info array
+         kick_info(sn,2) = 1
 *
 *************************
 * Kiel & Hurley method: * Similar to Belczynski et al. (2008) method.
@@ -383,72 +381,72 @@
 * Energy calculation, for interest - should be positive for unbound system.
          energy = vn2/2.d0 - gmrkm*(m1n+m2)/r
 *
-* Set values in the bkick array for this disrupted system
+* Set values in the kick_info array for this disrupted system
 * First specify that the system was disrupted from this SN
-         bkick(sn,2) = 1
-* Now save the velocity of each star. Note that bkick[4-6] is for snstar=1.
+         kick_info(sn,2) = 1
+* Now save the velocity of each star. Note that kick_info[4-6] is for snstar=1.
          if(snstar.eq.1)then
-            bkick(sn,7) = ((m1n/mbf)*vk*ctheta*cphi +
+            kick_info(sn,7) = ((m1n/mbf)*vk*ctheta*cphi +
      &           (mdif*m2)/(mbi*mbf)*vr*salpha) -
      &           v1*(spsins)*RotInvX*(m2/mbf)
 *
-            bkick(sn,8) = (m1n/mbf)*vk*stheta*cphi +
+            kick_info(sn,8) = (m1n/mbf)*vk*stheta*cphi +
      &           (mdif*m2)/(mbi*mbf)*vr*calpha -
      &           v1*(cpsins)*(m2/mbf)
 *
-            bkick(sn,9) = (m1n/mbf)*vk*sphi
+            kick_info(sn,9) = (m1n/mbf)*vk*sphi
 *
-            bkick(sn,11) = ((mdif*m2)/(mbi*mbf)*vr*salpha +
+            kick_info(sn,11) = ((mdif*m2)/(mbi*mbf)*vr*salpha +
      &           (m1n/mbf)*vk*ctheta*cphi) +
      &           v1*(spsic)*(m1n/mbf)*RotInvX
 *
-            bkick(sn,12) = (mdif*m2)/(mbi*mbf)*vr*calpha +
+            kick_info(sn,12) = (mdif*m2)/(mbi*mbf)*vr*calpha +
      &           (m1n/mbf)*vk*stheta*cphi +
      &           v1*(cpsic)*(m1n/mbf)
 *
-            bkick(sn,13) = (m1n/mbf)*vk*sphi
+            kick_info(sn,13) = (m1n/mbf)*vk*sphi
 *
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
-                  bkick(sn,7) = vs(1)
-                  bkick(sn,8) = vs(2)
-                  bkick(sn,9) = vs(3)
-                  bkick(sn,11) = 0.d0
-                  bkick(sn,12) = 0.d0
-                  bkick(sn,13) = 0.d0
+                  kick_info(sn,7) = vs(1)
+                  kick_info(sn,8) = vs(2)
+                  kick_info(sn,9) = vs(3)
+                  kick_info(sn,11) = 0.d0
+                  kick_info(sn,12) = 0.d0
+                  kick_info(sn,13) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
 *
          elseif(snstar.eq.2)then
-            bkick(sn,11) = ((m1n/mbf)*vk*ctheta*cphi +
+            kick_info(sn,11) = ((m1n/mbf)*vk*ctheta*cphi +
      &           (mdif*m2)/(mbi*mbf)*vr*salpha) -
      &           v1*(spsins)*RotInvX*(m2/mbf)
 *
-            bkick(sn,12) = (m1n/mbf)*vk*stheta*cphi +
+            kick_info(sn,12) = (m1n/mbf)*vk*stheta*cphi +
      &           (mdif*m2)/(mbi*mbf)*vr*calpha -
      &           v1*(cpsins)*(m2/mbf)
 *
-            bkick(sn,13) = (m1n/mbf)*vk*sphi
+            kick_info(sn,13) = (m1n/mbf)*vk*sphi
 *
-            bkick(sn,7) = ((mdif*m2)/(mbi*mbf)*vr*salpha +
+            kick_info(sn,7) = ((mdif*m2)/(mbi*mbf)*vr*salpha +
      &           (m1n/mbf)*vk*ctheta*cphi) +
      &           v1*(spsic)*(m1n/mbf)*RotInvX
 *
-            bkick(sn,8) = (mdif*m2)/(mbi*mbf)*vr*calpha +
+            kick_info(sn,8) = (mdif*m2)/(mbi*mbf)*vr*calpha +
      &           (m1n/mbf)*vk*stheta*cphi +
      &           v1*(cpsic)*(m1n/mbf)
 *
-            bkick(sn,9) = (m1n/mbf)*vk*sphi
+            kick_info(sn,9) = (m1n/mbf)*vk*sphi
 *
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
-                  bkick(sn,7) = vs(1)
-                  bkick(sn,8) = vs(2)
-                  bkick(sn,9) = vs(3)
-                  bkick(sn,11) = 0.d0
-                  bkick(sn,12) = 0.d0
-                  bkick(sn,13) = 0.d0
+                  kick_info(sn,7) = vs(1)
+                  kick_info(sn,8) = vs(2)
+                  kick_info(sn,9) = vs(3)
+                  kick_info(sn,11) = 0.d0
+                  kick_info(sn,12) = 0.d0
+                  kick_info(sn,13) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -460,33 +458,33 @@
 * If system survives the SN, save the components of the change in
 * centre-of-mass velocity
       if(ecc.lt.1.d0)then
-         bkick(sn,7) = vs(1)
-         bkick(sn,8) = vs(2)
-         bkick(sn,9) = vs(3)
-         bkick(sn,11) = 0
-         bkick(sn,12) = 0
-         bkick(sn,13) = 0
+         kick_info(sn,7) = vs(1)
+         kick_info(sn,8) = vs(2)
+         kick_info(sn,9) = vs(3)
+         kick_info(sn,11) = 0
+         kick_info(sn,12) = 0
+         kick_info(sn,13) = 0
       endif
 * In the impossible chance that the system is exactly parabolic...
       if(ecc.eq.1.d0.and.snstar.eq.1)then
-         bkick(sn,7) = vs(1)
-         bkick(sn,8) = vs(2)
-         bkick(sn,9) = vs(3)
-         bkick(sn,11) = -vs(1)
-         bkick(sn,12) = -vs(2)
-         bkick(sn,13) = -vs(3)
+         kick_info(sn,7) = vs(1)
+         kick_info(sn,8) = vs(2)
+         kick_info(sn,9) = vs(3)
+         kick_info(sn,11) = -vs(1)
+         kick_info(sn,12) = -vs(2)
+         kick_info(sn,13) = -vs(3)
       elseif(ecc.eq.1.d0.and.snstar.eq.2)then
-         bkick(sn,7) = -vs(1)
-         bkick(sn,8) = -vs(2)
-         bkick(sn,9) = -vs(3)
-         bkick(sn,11) = vs(1)
-         bkick(sn,12) = vs(2)
-         bkick(sn,13) = vs(3)
+         kick_info(sn,7) = -vs(1)
+         kick_info(sn,8) = -vs(2)
+         kick_info(sn,9) = -vs(3)
+         kick_info(sn,11) = vs(1)
+         kick_info(sn,12) = vs(2)
+         kick_info(sn,13) = vs(3)
       endif
 
 * Uncomment to randomly rotate system velocities
-      CALL randomness3(idum1,bkick(sn,7),bkick(sn,8),bkick(sn,9),
-     &            bkick(sn,11),bkick(sn,12),bkick(sn,13))
+      CALL randomness3(idum1,kick_info(sn,7),kick_info(sn,8),kick_info(sn,9),
+     &            kick_info(sn,11),kick_info(sn,12),kick_info(sn,13))
 *
 * Put a cap on the eccentricity
       if(ecc.gt.99.9d0) ecc = 99.9d0
@@ -494,26 +492,26 @@
 * For systems that were distrupted in the first SN, skip to here
  73   continue  
 *
-* Set systemic velocity magnitudes in the bkick array
+* Set systemic velocity magnitudes in the kick_info array
 * For first SN, this should be identical to the magnitude 
 * of the three component vectors. For the second SN, this
 * will be the systemic velocity relative to the initial frame.
       if(sn.eq.1)then
-         bkick(sn,10) = SQRT(bkick(sn,7)*bkick(sn,7) + 
-     &              bkick(sn,8)*bkick(sn,8) +
-     &              bkick(sn,9)*bkick(sn,9))
-         bkick(sn,14) = SQRT(bkick(sn,11)*bkick(sn,11) + 
-     &              bkick(sn,12)*bkick(sn,12) +
-     &              bkick(sn,13)*bkick(sn,13))
+         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) + 
+     &              kick_info(sn,8)*kick_info(sn,8) +
+     &              kick_info(sn,9)*kick_info(sn,9))
+         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) + 
+     &              kick_info(sn,12)*kick_info(sn,12) +
+     &              kick_info(sn,13)*kick_info(sn,13))
       elseif(sn.eq.2)then
-         bkick(sn,10) = SQRT(
-     &      (bkick(1,7)+bkick(2,7))*(bkick(1,7)+bkick(2,7)) +
-     &      (bkick(1,8)+bkick(2,8))*(bkick(1,8)+bkick(2,8)) +
-     &      (bkick(1,9)+bkick(2,9))*(bkick(1,9)+bkick(2,9)))
-         bkick(sn,14) = SQRT(
-     &      (bkick(1,11)+bkick(2,11))*(bkick(1,11)+bkick(2,11)) +
-     &      (bkick(1,12)+bkick(2,12))*(bkick(1,12)+bkick(2,12)) +
-     &      (bkick(1,13)+bkick(2,13))*(bkick(1,13)+bkick(2,13)))
+         kick_info(sn,10) = SQRT(
+     &      (kick_info(1,7)+kick_info(2,7))*(kick_info(1,7)+kick_info(2,7)) +
+     &      (kick_info(1,8)+kick_info(2,8))*(kick_info(1,8)+kick_info(2,8)) +
+     &      (kick_info(1,9)+kick_info(2,9))*(kick_info(1,9)+kick_info(2,9)))
+         kick_info(sn,14) = SQRT(
+     &      (kick_info(1,11)+kick_info(2,11))*(kick_info(1,11)+kick_info(2,11)) +
+     &      (kick_info(1,12)+kick_info(2,12))*(kick_info(1,12)+kick_info(2,12)) +
+     &      (kick_info(1,13)+kick_info(2,13))*(kick_info(1,13)+kick_info(2,13)))
       endif
 
 * Write some output information

@@ -2,8 +2,8 @@
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     \ bhspin,tphys,zpars,bkick,bppout,bcmout,
-     \ bpp_index_out,bcm_index_out,bkick_out)
+     \ bhspin,tphys,zpars,kick_info,bppout,bcmout,
+     \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -166,8 +166,8 @@
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
-      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,bkick(2,16)
-      REAL*8 bkick_out(2,16)
+      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,16)
+      REAL*8 kick_info_out(2,16)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
@@ -239,12 +239,12 @@ Cf2py intent(in) tms
 Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
 Cf2py intent(in) zpars
-Cf2py intent(in) bkick
+Cf2py intent(in) kick_info
 Cf2py intent(out) bppout
 Cf2py intent(out) bcmout
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
-Cf2py intent(out) bkick_out
+Cf2py intent(out) kick_info_out
 
       if(using_cmc.eq.0)then
               CALL instar
@@ -322,7 +322,7 @@ component.
           bcmout = 0.d0
           bcm_index_out = 0
           bpp_index_out = 0
-          bkick_out = 0.d0
+          kick_info_out = 0.d0
       endif
 
 
@@ -1293,7 +1293,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,bkick,disrupt)
+     &                   0.d0,fallback,kick_info,disrupt)
                
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1312,7 +1312,7 @@ component.
      &                       epoch(2),bhspin(1),bhspin(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(3-k),fallback,bkick,disrupt)
+     &                   rad(3-k),fallback,kick_info,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -2165,7 +2165,7 @@ component.
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,formation(j1),formation(j2),
+     &               vk,kick_info,formation(j1),formation(j2),
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv)
@@ -3153,7 +3153,7 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,bkick,disrupt)
+     &                rad(3-k),fallback,kick_info,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
             if(mass(3-k).lt.0.d0)then
@@ -3393,7 +3393,7 @@ component.
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,formation(j1),formation(j2),
+     &               vk,kick_info,formation(j1),formation(j2),
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv)
@@ -3454,7 +3454,7 @@ component.
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,bkick,formation(j1),formation(j2),
+     &               vk,kick_info,formation(j1),formation(j2),
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv)
@@ -3834,7 +3834,7 @@ component.
           bpp_index_out = jp
           bppout = bpp 
           bcmout = bcm
-          bkick_out = bkick
+          kick_info_out = kick_info
       endif
 *
 
