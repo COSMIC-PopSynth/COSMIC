@@ -457,7 +457,7 @@ class Sample(object):
             ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size) 
             return ecc
 
-        elif ecc_mode=='circular':
+        elif ecc_model=='circular':
             ecc = np.zeros(size)
             return ecc
 
