@@ -176,6 +176,11 @@ class TestSample(unittest2.TestCase):
         power_slope = power_law_fit(ecc)
         self.assertEqual(np.round(power_slope, 2), SANA12_ECC_POWER_LAW)
 
+        np.random.seed(4)
+        # Check that the sample_ecc function samples ecc properly
+        ecc = SAMPLECLASS.sample_ecc(ecc_model='circular', size=1000000)
+        self.assertEqual(np.mean(ecc), 0.0)
+
     def test_sample_porb(self):
         # next do Sana12
         np.random.seed(4)
