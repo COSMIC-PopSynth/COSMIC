@@ -106,7 +106,6 @@
         REAL*8 RROL_2,porb,sep,ecc,B_0_1,B_0_2
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
-        REAL*8 yeardy,rsunau
         REAL*8 yeardy,aursun,rsunau
         PARAMETER(yeardy=365.24d0,aursun=214.95d0)
 

@@ -30,7 +30,7 @@
       REAL*8 sigma,sigmadiv,bhsigmafrac,pisn,mxns
       REAL*8 polar_kick_angle
       REAL*8 ecsn,ecsn_mlow,bhspinmag,rembar_massloss
-      REAL*8 natal_kick_array(8)
+      REAL*8 natal_kick_array(2,7)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
      &            polar_kick_angle,pisn,ecsn,ecsn_mlow,
      &            bhspinmag,mxns,rembar_massloss

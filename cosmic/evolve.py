@@ -61,7 +61,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'eccentric_anomaly',
                 'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
                 'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
-                'delta_theta_total', 'omega', 'bin_num']
+                'delta_theta_total', 'omega', 'randomseed', 'bin_num']
 
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
@@ -99,14 +99,23 @@ else:
 for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
-NATAL_KICK_COLUMNS = ['SNkick_1', 'SNkick_2',
-                      'phi_1', 'phi_2',
-                      'theta_1', 'theta_2',
-                      'eccentric_anomaly_1', 'eccentric_anomaly_2']
+NATAL_KICK_COLUMNS = ['natal_kick',
+                      'phi',
+                      'theta',
+                      'eccentric_anomaly',
+                      'delta_theta_total',
+                      'omega',
+                      'randomseed']
+
+FLATTENED_NATAL_KICK_COLUMNS = []
+for sn_idx in range(2):
+    for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
+        FLATTENED_NATAL_KICK_COLUMNS.append(column_name + '_{0}'.format(sn_idx + 1))
+
 QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0,16)]
 FPRIMC_COLUMNS = ['fprimc_{0}'.format(kstar) for kstar in range(0,16)]
 
-INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(NATAL_KICK_COLUMNS)
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FPRIMC_COLUMNS)
 
@@ -251,8 +260,10 @@ class Evolve(object):
             if k == 'natal_kick_array':
                 initialbinarytable = initialbinarytable.assign(natal_kick_array=[BSEDict['natal_kick_array']] * len(initialbinarytable))
                 for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
-                    kwargs1 = {column_name : pd.Series([BSEDict['natal_kick_array'][idx]] * len(initialbinarytable), index=initialbinarytable.index, name=column_name)}
-                    initialbinarytable = initialbinarytable.assign(**kwargs1)
+                    for sn_idx in range(2):
+                        column_name_sn = column_name + '_{0}'.format(sn_idx + 1)
+                        kwargs1 = {column_name_sn : pd.Series([BSEDict['natal_kick_array'][sn_idx][idx]] * len(initialbinarytable), index=initialbinarytable.index, name=column_name_sn)}
+                        initialbinarytable = initialbinarytable.assign(**kwargs1)
             elif k == 'qcrit_array':
                 initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
                 for kstar in range(0,16):
@@ -282,8 +293,8 @@ class Evolve(object):
 
         # If you did not supply the natal kick or qcrit_array or fprimc_array in the BSEdict then we construct
         # it from the initial conditions table
-        if (pd.Series(NATAL_KICK_COLUMNS).isin(initialbinarytable.keys()).all()) and ('natal_kick_array' not in BSEDict):
-            initialbinarytable = initialbinarytable.assign(natal_kick_array=initialbinarytable[NATAL_KICK_COLUMNS].values.tolist())
+        if (pd.Series(FLATTENED_NATAL_KICK_COLUMNS).isin(initialbinarytable.keys()).all()) and ('natal_kick_array' not in BSEDict):
+            initialbinarytable = initialbinarytable.assign(natal_kick_array=initialbinarytable[FLATTENED_NATAL_KICK_COLUMNS].values.reshape(-1,2,len(NATAL_KICK_COLUMNS)).tolist())
 
         if (pd.Series(QCRIT_COLUMNS).isin(initialbinarytable.keys()).all()) and ('qcrit_array' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(qcrit_array=initialbinarytable[QCRIT_COLUMNS].values.tolist())
@@ -307,8 +318,10 @@ class Evolve(object):
         # define multiprocessing method
         def _evolve_single_system(f):
             try:
-                if 'kick_info' not in f.keys():
-                    f['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
+                f['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
+                # determine if we already have a compact object, if yes than one SN has already occured
+                if (f['kstar_1'] in range(10,15)) or (f['kstar_2'] in range(10,15)):
+                    f['kick_info'][0,0] = 1
                 # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
                 _evolvebin.windvars.neta = f['neta']
                 _evolvebin.windvars.bwind = f['bwind']
@@ -391,7 +404,7 @@ class Evolve(object):
                 bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f['bin_num']))
                 kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f['bin_num']))
 
-                return f, bpp, bcm, kick_info
+                return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array
 
             except Exception as e:
                 raise
@@ -402,9 +415,12 @@ class Evolve(object):
                 res_bcm = np.zeros(f.shape[0],dtype=object)
                 res_bpp = np.zeros(f.shape[0],dtype=object)
                 res_kick_info = np.zeros(f.shape[0],dtype=object)
+                res_natal_kick_array = np.zeros(f.shape[0],dtype=object)
                 for i in range(0,f.shape[0]):
-                    if 'kick_info' not in f[i].keys():
-                        f[i]['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
+                    f[i]['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
+                    # determine if we already have a compact object, if yes than one SN has already occured
+                    if (f[i]['kstar_1'] in range(10,15)) or (f[i]['kstar_2'] in range(10,15)):
+                        f[i]['kick_info'][0,0] = 1
                     _evolvebin.windvars.neta = f[i]['neta']
                     _evolvebin.windvars.bwind = f[i]['bwind']
                     _evolvebin.windvars.hewind = f[i]['hewind']
@@ -489,8 +505,9 @@ class Evolve(object):
                     res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
                     res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
                     res_kick_info[i] = np.hstack((kick_info_out, kick_info_out_bin_numbers))
+                    res_natal_kick_array[i] = _evolvebin.snvars.natal_kick_array
 
-                return f, np.vstack(res_bpp), np.vstack(res_bcm), np.vstack(res_kick_info)
+                return f, np.vstack(res_bpp), np.vstack(res_bcm), np.vstack(res_kick_info), np.vstack(res_natal_kick_array)
 
             except Exception as e:
                 raise
@@ -515,6 +532,13 @@ class Evolve(object):
         bpp_arrays = np.vstack(output[:, 1])
         bcm_arrays = np.vstack(output[:, 2])
         kick_info_arrays = np.vstack(output[:, 3])
+
+        natal_kick_arrays = np.vstack(output[:, 4])
+        natal_kick_arrays = natal_kick_arrays.reshape(-1,1,len(FLATTENED_NATAL_KICK_COLUMNS))
+        for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
+                # assigning values this way work for most of the parameters.
+                kwargs1 = {column : natal_kick_arrays[:,:,idx]}
+                initialbinarytable = initialbinarytable.assign(**kwargs1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                            columns=KICK_COLUMNS,
