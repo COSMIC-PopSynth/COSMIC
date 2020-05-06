@@ -15,6 +15,7 @@
         REAL*8 zpars(20),kick_info(2,17)
         REAL*8 tacc(2),bacc(2),tms(2),B_0(2),ospin(2)
         REAL*8 tphys
+        REAL*8 kick_info_out(2,17)
         INTEGER bpp_index_out,bcm_index_out
 
         kstar(1) = 1; kstar(2) = 1
@@ -54,7 +55,7 @@
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,bppout,bcmout,
-     & bpp_index_out,bcm_index_out)
+     & bpp_index_out,bcm_index_out,kick_info_out)
 
         kstar(1) = 1; kstar(2) = 1; mass(1) = 53.4;
         mass(2) = 45.687; tb = 645.353
@@ -90,5 +91,5 @@
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,bppout,bcmout,
-     & bpp_index_out,bcm_index_out)
+     & bpp_index_out,bcm_index_out,kick_info_out)
         END PROGRAM benchmarkevolv2
