@@ -838,8 +838,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='natal_kick_array'
     if flag in BSEDict.keys():
-        if np.array(BSEDict[flag]).shape != (2,7):
-            raise ValueError("'{0:s}' must have shape (2,7) (you supplied list, or array with shape '{1:d}')".format(flag, np.array(BSEDict[flag]).shape))
+        if np.array(BSEDict[flag]).shape != (2,5):
+            raise ValueError("'{0:s}' must have shape (2,5) (you supplied list, or array with shape '{1:d}')".format(flag, np.array(BSEDict[flag]).shape))
 
     flag='remnantflag'
     if flag in BSEDict.keys():

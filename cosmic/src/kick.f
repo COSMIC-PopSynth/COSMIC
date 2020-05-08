@@ -44,7 +44,7 @@
 * kick_info[i,17]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
-      integer kw,k,snstar,sn
+      integer kw,k,snstar,sn,safety
 
       real*8 m1,m2,m1n,mbi,mbf,mdif
       real*8 ecc,sep,sepn,jorb,ecc2
@@ -72,6 +72,7 @@
       external ran3
 *
       output = .false. !useful for debugging...
+      safety = 0
 
 * Set up empty arrays and constants
       do k = 1,3
@@ -92,12 +93,13 @@
 
 * check if we have supplied a randomseed for this SN from kick_info
 * already
-      if(natal_kick_array(sn,7).gt.0.d0)then
+      if(natal_kick_array(sn,5).gt.0.d0)then
 * if we have we need to run ran3 enough times until
 * we are at the same state of the random number generator
 * as we were before
-          do while (natal_kick_array(sn,7).ne.idum1) 
+          do while (natal_kick_array(sn,5).ne.idum1.and.safety.le.20) 
               xx = RAN3(idum1)
+              safety = safety + 1
           end do
       endif
 * save the current idum1
@@ -266,21 +268,6 @@
          GOTO 73
       endif
 
-      if(sn.eq.2)then
-* we also are on the second sn, let's see if we already fed this
-* value in through the natal_kick_array. If yes let's set the kick_info
-* correctly, i.e. the tilt and omega that was caused by the first sn
-          if((natal_kick_array(1,6).ge.(0.d0)).and.
-     &           (natal_kick_array(1,6).le.(360.d0)))then
-                  kick_info(1,16) = natal_kick_array(1,6)
-          endif
-          if((natal_kick_array(1,5).ge.(0.d0)).and.
-     &           (natal_kick_array(1,5).le.(360.d0)))then
-                  kick_info(1,15) = natal_kick_array(1,5)
-          endif
-      endif
-
-
 * CLR - if the orbit has already been kicked, then any polar kick
 *       needs to be tilted as well (since L_hat and S_hat are no longer
 *       aligned).
@@ -348,8 +335,6 @@
         kick_info(sn,16) = omega*180/pi
         kick_info(sn,6) = em*180/pi
         natal_kick_array(sn,4) = em*180/pi
-        natal_kick_array(sn,5) = mu*180/pi
-        natal_kick_array(sn,6) = omega*180/pi
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
@@ -371,8 +356,6 @@
         kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
         kick_info(sn,6) = em*180/pi
         natal_kick_array(sn,4) = em*180/pi
-        natal_kick_array(sn,5) = ACOS(z_tilt)*180/pi
-        natal_kick_array(sn,6) = ATAN(y_tilt/x_tilt)*180/pi
 
       endif
 
