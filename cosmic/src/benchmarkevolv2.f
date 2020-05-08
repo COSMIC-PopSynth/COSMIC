@@ -46,7 +46,7 @@
         fprimc_array = 2.d0/21.d0;
         beta = -1.0; xi = 0.5; acc2 = 1.5; epsnov = 0.001
         eddfac = 1.0; gamma = -2.0
-        bconst = -3000; CK = -1000; windflag = 3; qcflag = 1
+        bconst = 3000; CK = 1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 113271
         bhspinflag = 0; bhspinmag=0.d0; rembar_massloss=0.5;
         bppout = 0.d0; bcmout = 0.d0
@@ -83,7 +83,7 @@
         natal_kick_array = -100.d0; qcrit_array = 0.d0;
         beta = -1.0; xi = 0.5; acc2 = 1.5; epsnov = 0.001
         eddfac = 1.0; gamma = -2.0
-        bconst = -3000; CK = -1000; windflag = 3; qcflag = 1
+        bconst = 3000; CK = 1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 121025
         bppout = 0.d0; bcmout = 0.d0
 
