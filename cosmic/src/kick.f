@@ -103,7 +103,7 @@
           end do
       endif
 * save the current idum1
-      natal_kick_array(sn,7) = idum1
+      natal_kick_array(sn,5) = idum1
       kick_info(sn,17) = idum1
 
 * set the SNstar of the exploding object in the kick_info array

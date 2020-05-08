@@ -254,7 +254,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
             conv_save = conv_save.loc[conv_save[key] > filter_lo]
     return conv_save
 
-def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_nums, match, idx):
+def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, kick_info, bin_state_nums, match, idx):
     """Writes all the good stuff that you want to save from runFixedPop in a
        single function
 
@@ -284,6 +284,9 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
 
     conv : `pandas.DataFrame`
         conv array to write
+
+    kick_info : `pandas.DataFrame`
+        kick_info array to write
 
     bin_state_nums : `list`
         contains the count of binstates 0,1,2
@@ -320,6 +323,9 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
 
     # Save the converging dataframe
     dat_store.append('conv', conv)
+
+    # Save the converging dataframe
+    dat_store.append('kick_info', kick_info)
 
     # Save number of systems in each bin state
     dat_store.append('bin_state_nums', bin_state_nums)
