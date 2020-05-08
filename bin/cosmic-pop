@@ -317,11 +317,11 @@ if __name__ == '__main__':
                 pass
             filters['timestep_conditions'] = []
 
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT,
-                                           BSEDict=BSEDict,
-                                           nproc=args.nproc, idx=idx,
-                                           dtp=dtp,
-                                           timestep_conditions=filters['timestep_conditions'],)
+        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                      BSEDict=BSEDict,
+                                                      nproc=args.nproc, idx=idx,
+                                                      dtp=dtp,
+                                                      timestep_conditions=filters['timestep_conditions'],)
 
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
@@ -337,6 +337,7 @@ if __name__ == '__main__':
             continue
 
         initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
+        kick_info_filter = kick_info.loc[kick_info.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
         # Now get the converging population
         conv_filter = utils.conv_select(bcm_filter, bpp_filter,
@@ -352,6 +353,7 @@ if __name__ == '__main__':
             bcm_filter = bcm_filter.loc[bcm_filter.bin_num.isin(conv_filter.bin_num)]
             bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_filter.bin_num)]
             initC_filter = initC_filter.loc[initC_filter.bin_num.isin(conv_filter.bin_num)]
+            kick_info_filter = kick_info_filter.loc[kick_info_filter.bin_num.isin(conv_filter.bin_num)]
 
 
         # Filter the bcm and bpp arrays according to user specified filters
@@ -360,10 +362,12 @@ if __name__ == '__main__':
             bpp_filter_match = bpp_filter.copy()
             initC_filter_match = initC_filter.copy()
             conv_filter_match = conv_filter.copy()
+            kick_info_filter_match = kick_info_filter.copy()
         else:
             bcm_filter_match = bcm_filter_match.append(bcm_filter)
             bpp_filter_match = bpp_filter_match.append(bpp_filter)
             initC_filter_match = initC_filter_match.append(initC_filter)
+            kick_info_filter_match = kick_info_filter_match.append(kick_info_filter)
             conv_filter_match = conv_filter_match.append(conv_filter)
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
@@ -387,7 +391,7 @@ if __name__ == '__main__':
             mass_list = [total_mass_singles, total_mass_binaries, total_mass_stars]
             n_list = [total_n_singles, total_n_binaries, total_n_stars]
             utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
-                            bpp_filter_match, initC_filter_match, conv_filter_match,
+                            bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
                             bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
@@ -395,6 +399,7 @@ if __name__ == '__main__':
             bpp_filter_match = [] 
             initC_filter_match = []
             conv_filter_match = []
+            kick_info_filter_match = []
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()

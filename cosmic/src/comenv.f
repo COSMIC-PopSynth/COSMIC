@@ -2,7 +2,7 @@
       SUBROUTINE COMENV(M01,M1,MC1,AJ1,JSPIN1,KW1,
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
-     &                  bkick,formation1,formation2,
+     &                  kick_info,formation1,formation2,
      &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &                  lumin,B_0,bacc,tacc,epoch,menv_bpp,renv_bpp)
@@ -35,7 +35,7 @@
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
-      REAL*8 bkick(20),fallback,M1i,M2i
+      REAL*8 kick_info(2,17),fallback,M1i,M2i
       REAL*8 bhspin1,bhspin2
       common /fall/fallback
       INTEGER formation1,formation2
@@ -300,7 +300,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M02,M01,lumin(2),lumin(1),
@@ -312,7 +312,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M01,M02,lumin(1),lumin(2),
@@ -323,7 +323,7 @@
                    endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,bkick,
+     &                   JORB,vk,star1,R2,fallback,kick_info,
      &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
@@ -597,7 +597,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M02,M01,lumin(2),lumin(1),
@@ -609,7 +609,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M01,M02,lumin(1),lumin(2),
@@ -632,7 +632,7 @@
                   endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,bkick,
+     &                   JORB,vk,star1,R2,fallback,kick_info,
      &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
@@ -759,7 +759,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M02,M01,lumin(2),lumin(1),
@@ -771,7 +771,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M01,M02,lumin(1),lumin(2),
@@ -782,7 +782,7 @@
                    endif
                endif
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
-     &                   JORB,vk,star2,R1,fallback,bkick,
+     &                   JORB,vk,star2,R1,fallback,kick_info,
      &                   disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
@@ -983,7 +983,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M02,M01,lumin(2),lumin(1),
@@ -995,7 +995,7 @@
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
-     &                       rrl1_bpp,rrl2_bpp,bkick,
+     &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
      &                      M01,M02,lumin(1),lumin(2),
@@ -1006,7 +1006,7 @@
                    endif
             endif
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,bkick,disrupt)
+     &                0.d0,fallback,kick_info,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)

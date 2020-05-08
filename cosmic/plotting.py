@@ -90,7 +90,7 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     if not t_max is None: initC['tphysf'] = t_max
 
     # Call evolution scripts
-    bpp, bcm, initC = Evolve.evolve(initialbinarytable=initC, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=initC, BSEDict=BSEDict)
 
     # In case minimum and maximum times are not supplied by user
     if t_min is None:
