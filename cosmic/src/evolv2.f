@@ -740,10 +740,11 @@ component.
                   if(B_0(k).eq.0.d0)then
                      B(k) = 0.d0
                   elseif((tphys-epoch(k)-tacc(k)).lt.tiny)then
-                     B(k) = B_0(k)*exp(CK*bacc(k)) + Bbot
+                     B(k) = B_0(k)*exp(-CK*bacc(k)) + Bbot
                   else
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)*
-     &                       exp(CK*bacc(k)) + Bbot
+                     B(k) = B_0(k)*
+     &                       EXP(-(tphys-epoch(k)-tacc(k))/bconst)*
+     &                       exp(-CK*bacc(k)) + Bbot
                   endif
                else
                   if(B_0(k).eq.0.d0)then
@@ -754,10 +755,11 @@ component.
                   elseif((tphys-epoch(k)-tacc(k)).lt.tiny)then
                      B(k) = B_0(k)/(1.d0 + (bacc(k)/1.0d-6)) + Bbot
                   elseif(bacc(k).eq.0.d0)then
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)
+                     B(k) = B_0(k)*EXP(-(tphys-epoch(k)-tacc(k))/bconst)
      &                       + Bbot
                   else
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)/
+                     B(k) = B_0(k)*
+     &                       EXP(-(tphys-epoch(k)-tacc(k))/bconst)/
      &                       (1.d0 + (bacc(k)/1.0d-6)) + Bbot
                   endif
                endif
@@ -986,10 +988,11 @@ component.
                   if(B_0(k).eq.0.d0)then
                      B(k) = 0.d0
                   elseif((tphys-epoch(k)-tacc(k)).lt.tiny)then
-                     B(k) = B_0(k)*exp(CK*bacc(k)) + Bbot
+                     B(k) = B_0(k)*exp(-CK*bacc(k)) + Bbot
                   else
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)*
-     &                       exp(CK*bacc(k)) + Bbot
+                     B(k) = B_0(k)*
+     &                       EXP(-(tphys-epoch(k)-tacc(k))/bconst)*
+     &                       exp(-CK*bacc(k)) + Bbot
                   endif
                else
                   if(B_0(k).eq.0.d0)then
@@ -1000,10 +1003,11 @@ component.
                   elseif((tphys-epoch(k)-tacc(k)).lt.tiny)then
                      B(k) = B_0(k)/(1.d0 + (bacc(k)/1.0d-6)) + Bbot
                   elseif(bacc(k).eq.0.d0)then
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)
+                     B(k) = B_0(k)*EXP(-(tphys-epoch(k)-tacc(k))/bconst)
      &                       + Bbot
                   else
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)/
+                     B(k) = B_0(k)*
+     &                       EXP(-(tphys-epoch(k)-tacc(k))/bconst)/
      &                       (1.d0 + (bacc(k)/1.0d-6)) + Bbot
                   endif
                endif
@@ -2773,10 +2777,11 @@ component.
                   if(B_0(k).eq.0.d0)then
                      B(k) = 0.d0
                   elseif((tphys-epoch(k)-tacc(k)).le.tiny)then
-                     B(k) = B_0(k)*exp(CK*bacc(k)) + Bbot
+                     B(k) = B_0(k)*exp(-CK*bacc(k)) + Bbot
                   else
-                     B(k) = B_0(k)*exp((tphys-epoch(k)-tacc(k))/bconst)*
-     &                      exp(CK*bacc(k)) + Bbot
+                     B(k) = B_0(k)*
+     &                      exp(-(tphys-epoch(k)-tacc(k))/bconst)*
+     &                      exp(-CK*bacc(k)) + Bbot
                   endif
                else
                   if(B_0(k).eq.0.d0)then
@@ -2787,10 +2792,11 @@ component.
                   elseif((tphys-epoch(k)-tacc(k)).lt.tiny)then
                      B(k) = B_0(k)/(1.d0 + (bacc(k)/1.0d-6)) + Bbot
                   elseif(bacc(k).eq.0.d0)then
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)
+                     B(k) = B_0(k)*EXP(-(tphys-epoch(k)-tacc(k))/bconst)
      &                       + Bbot
                   else
-                     B(k) = B_0(k)*EXP((tphys-epoch(k)-tacc(k))/bconst)/
+                     B(k) = B_0(k)*
+     &                       EXP(-(tphys-epoch(k)-tacc(k))/bconst)/
      &                       (1.d0 + (bacc(k)/1.0d-6)) + Bbot
                   endif
                endif
