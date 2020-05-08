@@ -310,6 +310,7 @@
         ctheta = COS(theta)
       endif
 
+      if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
 
 *
 * Determine the magnitude of the new relative velocity.
@@ -374,6 +375,9 @@
         natal_kick_array(sn,6) = ATAN(y_tilt/x_tilt)*180/pi
 
       endif
+
+* Determine if orbit becomes hyperbolic.
+ 90   continue
 
 * Calculate systemic velocity
       mx1 = vk*m1n/(m1n+m2)
