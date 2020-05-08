@@ -28,12 +28,12 @@
       REAL*8 bconst,CK
       COMMON /MAGVARS/ bconst,CK
       REAL*8 sigma,sigmadiv,bhsigmafrac,pisn,mxns
-      REAL*8 polar_kick_angle,mu_SN1,omega_SN1
+      REAL*8 polar_kick_angle
       REAL*8 ecsn,ecsn_mlow,bhspinmag,rembar_massloss
-      REAL*8 natal_kick_array(8)
+      REAL*8 natal_kick_array(2,5)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
-     &            polar_kick_angle,mu_SN1,omega_SN1,
-     &            pisn,ecsn,ecsn_mlow,bhspinmag,mxns,rembar_massloss
+     &            polar_kick_angle,pisn,ecsn,ecsn_mlow,
+     &            bhspinmag,mxns,rembar_massloss
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac
@@ -48,6 +48,6 @@
       COMMON /TSTEPC/ dmmax,drmax
       REAL*8 scm(50000,14),spp(20,3)
       COMMON /SINGLE/ scm,spp
-      REAL*8 bcm(50000,42),bpp(1000,61)
+      REAL*8 bcm(50000,38),bpp(1000,41)
       COMMON /BINARY/ bcm,bpp
 *
