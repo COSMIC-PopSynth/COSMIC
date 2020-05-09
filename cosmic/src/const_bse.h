@@ -18,6 +18,8 @@
       INTEGER pisn_track(2)
       COMMON /TRACKERS/ pisn_track
 *
+      REAL*8 zsun
+      COMMON /METVARS/ zsun
       REAL*8 neta,bwind,hewind,beta,xi,acc2,epsnov
       REAL*8 eddfac,gamma
       COMMON /WINDVARS/ neta,bwind,hewind,beta,xi,acc2,epsnov,
