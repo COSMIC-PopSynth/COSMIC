@@ -20,7 +20,7 @@ jobs:
 
     - name: Install GFortran macOS
       if: contains(matrix.os, 'macos')
-      run: brew install gfortran
+      run: brew install gcc
 
     - name: Install GFortran Linux
       if: contains(matrix.os, 'ubuntu')
