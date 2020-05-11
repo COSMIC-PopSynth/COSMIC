@@ -19,16 +19,6 @@ filters
 -------
 
 =======================  ===============================================================
-``select_final_state``   The bcm array generally returns the first and last
-                         state of the binary system. Since we already
-                         save the initial conditions in cosmic-pop, usually
-                         we opt to throw out the initial state of the binary
-                         from this array and only keep the final state in the
-                         bcm array. The allowed values are:
-
-                            ``True`` : bcm array only contains final state of binary
-
-                            ``False`` : bcm array contains multiple binary states 
 ``binary_state``         Each binary system will end its evolution in one of
                          three states
 
@@ -41,19 +31,41 @@ filters
                             ``2`` : the system was disrupted before the end of 
                             its evolution
 
+``timestep_conditions``  timestep_conditions allow a user to pick specific time resolutions
+                         to print at targetted stages of the binary evolution
+                         This is used in conjuction with the [bse] section value dtp to determine the resolution
+                         at which thing are printed into the so called bcm array
+                         For example, if you only want dtp set to a value while the system is
+                         intact i.e. has not merged or been disrupted you could do so with the following
+
+                            ``timestep_conditions =[['binstate==0', 'dtp=1.0']]``
+
+                         Special examples include
+
+                            ``timestep_conditions = 'dtp=None'``, only the final time step is printed to the bcm array
+                            ``timestep_conditions = 'dtp=1.0'``, a single timestep applied to all evolutionary stages of the binary
+
 =======================  ===============================================================
 
 .. code-block:: ini
 
     [filters]
-    ; select_final_state will retain only the final entry of the bcm arry if set to True
-    ; default=True
-    select_final_state = True
-
     ; binary_state determines which types of binaries endstates to retain
     ; 0 alive today, 1 merged, 2 disrupted
     ; default=[0,1]
     binary_state = [0,1]
+
+    ; timestep_conditions allow a user to pick specific time resolutions
+    ; to print at targetted stages of the binary evolution
+    ; This is used in conjuction with the [bse] section value dtp to determine the resolution
+    ; at which thing are printed into the so called bcm array
+    ; For example, if you only want dtp set to a value while the system is
+    ; intact i.e. has not merged or been disrupted you could do so with the following
+    ; timestep_conditions =[['binstate==0', 'dtp=1.0']]
+    ; Special examples include
+    ; timestep_conditions = 'dtp=None', only the final time step is printed to the bcm array
+    ; timestep_conditions = 'dtp=1.0', a single timestep applied to all evolutionary stages of the binary
+    timestep_conditions = 'dtp=None'
 
 sampling
 --------
@@ -70,21 +82,19 @@ sampling
                             ``multidim`` : initialize binaries with 
                             multidimensional parameter distributions according to 
                             `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-``galaxy_component``     There are four star formation histories implemented in 
-                         COSMIC, one each for the Milky Way thin disk, thick 
-                         disk, and bulge; and one that assumes a delta-function
-                         burst of star formation. Their assumptions are as follows:
+``SF_start``             Sets the time in the past when star formation initiates in Myr.
+                         For a start time at the beginning of a Hubble time, specify:
 
-                            ``ThinDisk`` : constant star formation over 10 Gyr
+                            ``SF_start`` : 13700.0
 
-                            ``ThickDisk`` : 1 Gyr burst of constant star formation
-                            11 Gyr in the past
+``SF_duration``          Sets the duration of constant star formation from ``SF_start``
+                         in Myr. For a single burst specify:
 
-                            ``Bulge`` : 1 Gyr burst of constant star formation
-                            10 Gyr in the past
+                            ``SF_duration`` : 0.0
 
-                            ``DeltaBurst`` : single burst of star formation 13.7
-                            Gyr in the past
+                         For a constant star formation over a Hubble time, specify:
+
+                            ``SF_duration`` : 13700.0
 
 ``metallicity``          Single value for the metallicity of the population
                          where solar metallicity is Z = 0.02
@@ -99,9 +109,11 @@ sampling
     ; initial conditions follow Moe & Di Stefano (2017) (multidim)
     sampling_method=multidim
 
-    ; Galaxy Components. Options include Bulge, ThinDisk, ThickDisk, and DeltaBurst
-    ; Think Star Formation History with which to use as your basis for sampling
-    galaxy_component = DeltaBurst
+    ; Sets the time in the past when star formation initiates in Myr
+    SF_start = 13700.0
+
+    ; Sets the duration of constant star formation in Myr
+    SF_duration = 0.0
 
     ; Metallicity of the population of initial binaries
     metallicity = 0.02
@@ -263,11 +275,6 @@ sampling
     ;;; SAMPLING FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;;;;;
 
-    ; dtp is the timestep (in Myr) for outputting to the bcm array
-    ; if dtp=0, will print every timestep (not recommended)
-    ; if not set, it will automatically set to dtp=tphsyf (default)
-    ;dtp = 1.0
-
     ; pts1,pts2,pts3 determine the timesteps chosen in each
     ;                 pts1 - MS                  (default=0.001, see Banerjee+ 2019)
     pts1=0.001
@@ -387,6 +394,16 @@ sampling
 
     COMMON ENVELOPE FLAGS
 
+**Note:** there are cases where a common envelope is forced regardless of the 
+critical mass ratio for unstable mass transfer. In the following cases, a 
+common envelope occurs regardless of the choices below:
+
+**contact** : the stellar radii go into contact (common for similar ZAMS systems)
+
+**periapse contact** : the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)
+
+**core Roche overflow** : either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)
+
 =======================  =====================================================
 ``alpha1``               Common-envelope efficiency parameter which scales the 
                          efficiency of transferring orbital energy to the 
@@ -479,7 +496,11 @@ sampling
                          mass transfer and a common envelope. Each item is set 
                          individually for its associated kstar, and a value of 
                          0.0 will apply prescription of the qcflag for that kstar.
-                         
+                         **Note:** there are cases where a common envelope is forced 
+                         regardless of the critical mass ratio for unstable mass
+                         transfer; in the following cases, a common envelope occurs
+                         regardless of the qcrit or qcflag                          
+
                          **qcrit_array = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]**
 =======================  =====================================================
 
@@ -650,12 +671,17 @@ sampling
                             ``vk1, vk2`` : valid on the range [0, inf] 
 
                             ``phi1, phi2`` : co-lateral polar angles valid from 
-                            [-pi/2, pi/2]
+                            [-90, 90]
 
                             ``theta1, theta2`` : azimuthal angles valid from 
-                            [0, 2pi]
+                            [0, 360]
 
-                         **natal_kick_array = [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]**
+                            ``eccentric_anomaly_1, eccentric_anomaly_2`` : eccentric_anomaly angles
+                            valid from [0, 360]
+
+
+
+                         **natal_kick_array = [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -716,20 +742,20 @@ sampling
     ; default=90.0
     polar_kick_angle = 90.0
 
-    ; natal_kick_array is a 6-length array for user-input values for the SN natal kick
-    ; formatted as: (vk1, vk2, phi1, phi2, theta1, theta2)
-    ; vk is valid on the range [0, inf], phi are the co-lateral polar angles valid from [-pi/2, pi/2], and theta are azimuthal angles [0, 2*pi]
+    ; natal_kick_array is a 8-length array for user-input values for the SN natal kick
+    ; formatted as: (vk1, vk2, phi1, phi2, theta1, theta2, eccentric_anomaly_1, eccentric_anomaly_2)
+    ; vk is valid on the range [0, inf], phi are the co-lateral polar angles valid from [-90.0, 90.0], theta are azimuthal angles [0, 360],
+    ; and eccentric_anomaly are angles [0, 360]
     ; any number outside of these ranges will be sampled in the standard way in kick.f
-    ; default=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
-    natal_kick_array=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
+    ; default=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
+    natal_kick_array=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
 
 .. note::
 
     REMNANT MASS FLAGS
 
-=======================  =====================================================
-``nsflag``               Determines the remnant mass prescription used for
-                         NSs and BHs.
+===================  =====================================================
+``remnantflag``      Determines the remnant mass prescription used for NSs and BHs.
 
                             ``0`` : follows `Section 6 of Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
                             (default BSE)
@@ -742,14 +768,23 @@ sampling
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
-                         **nsflag = 3**
-``mxns``                 Sets the boundary between the maximum NS mass
-                         and the minimum BH mass
+                         **remnantflag = 3**
+
+``mxns``             Sets the boundary between the maximum NS mass
+                     and the minimum BH mass
 
                             ``positive values`` : sets the NS/BH mass bounary
 
                          **mxns = 2.5**
-=======================  =====================================================
+
+``rembar_massloss``  Determines the prescriptions for mass conversion from
+                     baryonic to gravitational mass during the collapse of 
+                     the proto-compact object
+
+                            ``positive values`` : sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (:math:`{\sim 5 \mathrm{M}_\odot}` Fryer, private communication)
+
+                            ``-1 < *rembar_massloss* < 0`` : assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., *rembar_massloss* = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)
+===================  =====================================================
 
 .. code-block:: ini
 
@@ -757,16 +792,24 @@ sampling
     ;;; REMNANT MASS FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    ; nsflag determines the remnant mass prescription used
-    ; nsflag=0: default BSE; nsflag=1: Belczynski et al. 2002, ApJ, 572, 407
-    ; nsflag=2: Belczynski et al. 2008; nsflag=3: rapid prescription (Fryer+ 2012)
-    ; nsflag=4: delayed prescription (Fryer+ 2012)
+    ; remnantflag determines the remnant mass prescription used
+    ; remnantflag=0: default BSE; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
+    ; remnantflag=2: Belczynski et al. 2008; remnantflag=3: rapid prescription (Fryer+ 2012)
+    ; remnantflag=4: delayed prescription (Fryer+ 2012)
     ; default=3
-    nsflag=3
+    remnantflag=3
 
     ; mxns sets the maximum NS mass
     ; default=2.5
     mxns=2.5
+
+    ; rembar_massloss determines the mass conversion from baryonic to
+    ; gravitational mass
+    ; rembar_massloss >= 0: sets the maximum amount of mass loss
+    ; -1 < rembar_massloss < 0: uses the prescription from Fryer et al. 2012,
+    ; assuming for BHs Mrem = (1+rembar_massloss)*Mrem,bar for negative rembar_massloss
+    ; default=0.5
+    rembar_massloss=0.5
 
 .. note::
 
