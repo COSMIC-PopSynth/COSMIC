@@ -28,10 +28,11 @@ import ast
 import operator
 import json
 import itertools
+import os.path
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
-
+ 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
                'Michael Zevin <zevin@northwestern.edu>']
@@ -54,7 +55,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
 
     method : `dict`,
         one or more methods by which to filter the
-        bpp or bcm table, e.g. ``{'select_final_state' : False}``;
+        bpp or bcm table, e.g. ``{'binary_state' : [0,1]}``;
         This means you do *not* want to select the final state of the binaries in the bcm array
 
     kstar1_range : `list`
@@ -68,8 +69,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
     bcm : `pandas.DataFrame`
         filtered bcm dataframe
     """
-    _known_methods = ['select_final_state',
-                      'binary_state']
+    _known_methods = ['binary_state', 'timestep_conditions']
 
     if not set(method.keys()).issubset(set(_known_methods)):
         raise ValueError("You have supplied an "
@@ -78,22 +78,23 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                          "{0}".format(_known_methods))
 
     for meth, use in method.items():
-        if (meth == 'select_final_state') and use:
-            bcm = bcm.iloc[bcm.reset_index().groupby('bin_num').tphys.idxmax()]
-        elif (meth == 'binary_state'):
+        if (meth == 'binary_state'):
             bin_num_save = []
+
+            # in order to filter on binary state we need the last entry of the bcm array for each binary
+            bcm_last_entry = bcm.groupby('bin_num').last().reset_index()
 
             # in order to find the properities of disrupted or systems
             # that are alive today we can simply check the last entry in the bcm
             # array for the system and see what its properities are today
-            bcm_0_2 = bcm.loc[(bcm.bin_state != 1)]
+            bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
             bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
                                           (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
             # of the objects right at merge because the bcm will report
             # the post merge object only
-            bcm_1 = bcm.loc[bcm.bin_state == 1]
+            bcm_1 = bcm_last_entry.loc[bcm_last_entry.bin_state == 1]
 
             # We now find the product of the kstar range lists so we can match the
             # merger_type column from the bcm array which tells us what objects
@@ -103,11 +104,11 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             merger_objects_to_track.extend(list(map(lambda x: "{0}{1}".format(str(x[0]).zfill(2),str(x[1]).zfill(2)),list(itertools.product(kstar2_range, kstar1_range)))))
             bin_num_save.extend(bcm_1.loc[bcm_1.merger_type.isin(merger_objects_to_track)].bin_num.tolist())
 
-            bcm = bcm.loc[bcm.bin_num.isin(bin_num_save)]
+            bcm_last_entry = bcm_last_entry.loc[bcm_last_entry.bin_num.isin(bin_num_save)]
 
             # this will tell use the binary state fraction of the systems with a certain final kstar type
             # before we throw out certain binary states if a user requested that.
-            bin_state_fraction = bcm.groupby('bin_state').tphys.count()
+            bin_state_fraction = bcm_last_entry.groupby('bin_state').tphys.count()
             bin_states = []
             for ii in range(3):
                 try:
@@ -116,7 +117,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
                     bin_states.append(0)
             bin_state_fraction = pd.DataFrame([bin_states], columns=[0,1,2])
 
-            bcm = bcm.loc[bcm.bin_state.isin(use)]
+            bcm = bcm.loc[bcm.bin_num.isin(bcm_last_entry.loc[bcm_last_entry.bin_state.isin(use)].bin_num)]
 
     return bcm, bin_state_fraction
 
@@ -253,7 +254,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
             conv_save = conv_save.loc[conv_save[key] > filter_lo]
     return conv_save
 
-def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, bin_state_nums, match, idx):
+def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv, kick_info, bin_state_nums, match, idx):
     """Writes all the good stuff that you want to save from runFixedPop in a
        single function
 
@@ -283,6 +284,9 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
 
     conv : `pandas.DataFrame`
         conv array to write
+
+    kick_info : `pandas.DataFrame`
+        kick_info array to write
 
     bin_state_nums : `list`
         contains the count of binstates 0,1,2
@@ -314,10 +318,14 @@ def pop_write(dat_store, log_file, mass_list, number_list, bcm, bpp, initC, conv
     dat_store.append('bpp', bpp)
 
     # Save the initial binaries
-    dat_store.append('initCond', initC)
+    # ensure that the index corresponds to bin_num
+    dat_store.append('initCond', initC.set_index('bin_num', drop=False))
 
     # Save the converging dataframe
     dat_store.append('conv', conv)
+
+    # Save the converging dataframe
+    dat_store.append('kick_info', kick_info)
 
     # Save number of systems in each bin state
     dat_store.append('bin_state_nums', bin_state_nums)
@@ -453,9 +461,9 @@ def mass_min_max_select(kstar_1, kstar_2):
     ii = 0
     for k in kstar_lo:
         if k == 14.0:
-            min_mass[ii] = 10.0
+            min_mass[ii] = 8.0
         elif k == 13.0:
-            min_mass[ii] = 6.0
+            min_mass[ii] = 3.0
         elif k == 12.0:
             min_mass[ii] = 1.0
         elif k == 11.0:
@@ -533,8 +541,8 @@ def rndm(a, b, g, size):
     """
 
     r = np.random.random(size=size)
-    ag, bg = a**g, b**g
-    return (ag + (bg - ag)*r)**(1./g)
+    ag, bg = a**(g+1), b**(g+1)
+    return (ag + (bg - ag)*r)**(1./(g+1))
 
 def param_transform(dat):
     """Transforms a data set to limits between zero and one
@@ -651,7 +659,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError('Filters criteria must be supplied via a dictionary')
-        for option in ['select_final_state', 'binary_state']:
+        for option in ['binary_state']:
             if option not in filters.keys():
                 raise ValueError("Inifile section filters must have option {0} supplied".format(option))
 
@@ -665,16 +673,12 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if sampling is not None:
         if not isinstance(sampling, dict):
             raise ValueError('Sampling criteria must be supplied via a dictionary')
-        for option in ['sampling_method', 'galaxy_component', 'metallicity']:
+        for option in ['sampling_method', 'SF_start', 'SF_duration', 'metallicity']:
             if option not in sampling.keys():
                 raise ValueError("Inifile section sampling must have option {0} supplied".format(option))
 
     # filters
     if filters is not None:
-        flag='select_final_state'
-        if filters[flag] not in [True,False]:
-            raise ValueError("{0} needs to be either True or False (you set it to {1})".format(flag, filters[flag]))
-
         flag='binary_state'
         if any(x not in [0,1,2] for x in filters[flag]):
             raise ValueError("{0} needs to be a subset of [0,1,2] (you set it to {1})".format(flag, filters[flag]))
@@ -708,11 +712,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         acceptable_sampling = ['multidim', 'independent']
         if sampling[flag] not in acceptable_sampling:
             raise ValueError("sampling_method must be one of {0} you supplied {1}.".format(acceptable_sampling, sampling[flag]))
-
-        flag='galaxy_component'
-        acceptable_galaxy_components = ['Bulge', 'ThinDisk', 'ThickDisk', 'DeltaBurst']
-        if sampling[flag] not in acceptable_galaxy_components:
-            raise ValueError("galaxy_component must be one of {0} you supplied {1}.".format(acceptable_galaxy_components, sampling[flag]))
 
         flag = 'metallicity'
         if not isinstance(sampling[flag], float):
@@ -794,7 +793,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     flag='qcflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1,2,3,4]:
-            raise ValueError("'{0:s}' needs to be set to 0, 1, 2, or 3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+            raise ValueError("'{0:s}' needs to be set to 0, 1, 2, 3 or 4(you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
 
     flag='qcrit_array'
     if flag in BSEDict.keys():
@@ -802,8 +801,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(flag, *BSEDict[flag]))
         if len(BSEDict[flag]) != 16:
             raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
-        if (any( x != 0.0 for x in BSEDict[flag])) and (BSEDict['qcflag'] != 4):
-            raise ValueError("If '{0:s}' is used, qcflag must be set to 4".format(flag))
 
     flag='sigma'
     if flag in BSEDict.keys():
@@ -828,15 +825,15 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     flag='aic'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
-            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='ussn'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
-            raise valueerror("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
     flag='pisn'
     if flag in BSEDict.keys():
-        if not ((BSEDict[flag] > 0) or (BSEDict[flag] == -1) or (BSEDict[flag] == -2) or (BSEDict[flag] == -3)):
-            raise ValueError("'{0:s}' needs to be set to either greater than 0 or equal to -1, -2, or -3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+        if not ((BSEDict[flag] >= 0) or (BSEDict[flag] == -1) or (BSEDict[flag] == -2) or (BSEDict[flag] == -3)):
+            raise ValueError("'{0:s}' needs to be set to either 0, greater than 0 or equal to -1, -2, or -3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='bhsigmafrac'
     if flag in BSEDict.keys():
         if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
@@ -847,10 +844,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='natal_kick_array'
     if flag in BSEDict.keys():
-        if len(BSEDict[flag]) != 6:
-            raise ValueError("'{0:s}' must be supplied 6 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
+        if np.array(BSEDict[flag]).shape != (2,5):
+            raise ValueError("'{0:s}' must have shape (2,5) (you supplied list, or array with shape '{1:d}')".format(flag, np.array(BSEDict[flag]).shape))
 
-    flag='nsflag'
+    flag='remnantflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1,2,3,4]:
             raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
@@ -858,6 +855,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if BSEDict[flag] <= 0:
             raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='rembar_massloss'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < -1:
+            raise ValueError("'{0:s}' needs to be between [-1,0] or greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
 
     flag='eddfac'
     if flag in BSEDict.keys():
@@ -880,10 +881,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if BSEDict[flag] < 0:
             raise ValueError("'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
-    flag='qcflag'
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0,1,2,3]:
-            raise ValueError("'{0:s}' needs to be set to 0, 1, 2, or 3 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='epsnov'
     if flag in BSEDict.keys():
         if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
@@ -897,9 +894,13 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
             raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='bconst'
-    # --- all numbers are valid
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] <= 0):
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
     flag='ck'
-    # --- all numbers are valid
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] <= 0):
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
 
     flag='fprimc_array'
     if flag in BSEDict.keys():
@@ -953,8 +954,8 @@ def check_initial_conditions(initial_binary_table):
     z = np.asarray(initial_binary_table['metallicity'])
     zpars, a = zcnsts(z)
 
-    mass1 = np.asarray(initial_binary_table['mass1_binary'])
-    mass2 = np.asarray(initial_binary_table['mass2_binary'])
+    mass1 = np.asarray(initial_binary_table['mass_1'])
+    mass2 = np.asarray(initial_binary_table['mass_2'])
 
     if np.all(mass2 == 0.0):
         return
@@ -1062,6 +1063,11 @@ def convert_kstar_evol_type(bpp):
 def parse_inifile(inifile):
     """Provides a method for parsing the inifile and returning dicts of each section
     """
+    if inifile is None:
+        raise ValueError("Please supply an inifile")
+    elif not os.path.isfile(inifile):
+        raise ValueError("inifile supplied does not exist")
+
     binOps = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,

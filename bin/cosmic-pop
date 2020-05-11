@@ -22,6 +22,7 @@ import time
 from time import sleep
 import string
 import os.path
+import json
 
 import numpy as np
 import scipy.special as ss
@@ -32,16 +33,53 @@ from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
 
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 ###############################################################################
 # DEFINE COMMANDLINE ARGUMENTS
 ###############################################################################
 def parse_commandline():
     """Parse the arguments given on the command-line.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--inifile",
-                        help="Name of ini file of params",
-                        required=True)
+    # Parse any inifile specification
+    # We make this parser with add_help=False so that
+    # it doesn't parse -h and print help.
+    conf_parser = argparse.ArgumentParser(
+        description=__doc__, # printed with -h/--help
+        # Don't mess with format of description
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        # Turn off help, so we print all options in response to -h
+        add_help=False
+        )
+    conf_parser.add_argument("--inifile",
+                            help="Name of ini file of params",
+                            metavar="FILE",)
+    args, remaining_argv = conf_parser.parse_known_args()
+
+    defaults = {}
+    if not (args.inifile is None and (('-h' in remaining_argv) or ('--help' in remaining_argv))):
+        BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+        defaults.update(sampling)
+        defaults.update(filters)
+        defaults.update(convergence)
+        defaults.update({'seed' : seed_int})
+        defaults.update({'inifile' : args.inifile})
+
+    # Parse rest of arguments
+    # Don't suppress add_help here so it will handle -h
+    parser = argparse.ArgumentParser(
+        # Inherit options from config_parser
+        parents=[conf_parser]
+        )
+    parser.set_defaults(**defaults)
     parser.add_argument("--final-kstar1",
                         help="Specify the final condition of kstar1 "
                         ", you want systems to end at for your samples",
@@ -60,10 +98,26 @@ def parse_commandline():
                         "it reach Niter binaries", type=int, default=10000)
     parser.add_argument("-n", "--nproc",
                         help="number of processors", type=int, default=1)
+    parser.add_argument("--binary_state", nargs='+', type=int)
+    parser.add_argument("--sampling_method")
+    parser.add_argument("--primary_model", help="Chooses the initial primary mass function from: salpeter55, kroupa93, kroupa01", type=str)
+    parser.add_argument("--binfrac_model", help="Chooses the binary fraction model from: a float between [0,1] and vanHaaften", type=float)
+    parser.add_argument("--ecc_model", help="Chooses the initial eccentricity distribution model from: thermal, uniform, and sana12", type=str)
+    parser.add_argument("--porb_model", help="Chooses the initial orbital period distribution model from: log_uniform and sana12", type=str)
+    parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
+    parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
+    parser.add_argument("--metallicity", type=float)
+    parser.add_argument("--convergence_params", nargs='+',)
+    parser.add_argument("--convergence_limits", type=json.loads)
+    parser.add_argument("--convergence_filter")
+    parser.add_argument("--match", type=float)
+    parser.add_argument("--bcm_bpp_initcond_filter", type=str2bool, nargs='?',
+                        const=True, default=False,)
+    parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
                         help="Run in Verbose Mode")
 
-    args = parser.parse_args()
+    args = parser.parse_args(remaining_argv)
 
     if len(args.final_kstar1) > 2 or len(args.final_kstar2) > 2:
         raise parser.error('final kstar1 and final kstar2 '
@@ -102,6 +156,40 @@ if __name__ == '__main__':
     ###########################################################################
     BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
 
+    # we now overwrite the inifile values with what was specified from the command line
+    # (which could mean not overwriting anything at all because they are populated
+    # by default from the inifile).
+    for argument in vars(args):
+        if argument in filters.keys():
+            if filters[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, filters[argument], getattr(args, argument)))
+                filters[argument] = getattr(args, argument)
+
+        if argument in convergence.keys():
+            if convergence[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, convergence[argument], getattr(args, argument)))
+                convergence[argument] = getattr(args, argument)
+
+        if argument in sampling.keys():
+            if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
+               for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
+                    if (model not in sampling.keys()) and not (getattr(args, model)):
+                        raise ValueError("You have selected the {0} sampler "
+                                         "but not specified a model for {1} "
+                                         "in the inifile or command line".format(sampling[argument], model)) 
+            if sampling[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, sampling[argument], getattr(args, argument)))
+                sampling[argument] = getattr(args, argument)
+
+        if argument == 'seed':
+            if getattr(args, argument) != seed_int:
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                              "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
+                seed_int = getattr(args, argument)
+
     # Check that the values in BSEDict, filters, and convergence are valid
     utils.error_check(BSEDict, filters, convergence, sampling)
 
@@ -127,9 +215,9 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
         conv_save = pd.read_hdf(dat_store, 'conv')
-        log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'a')
+        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
@@ -141,7 +229,7 @@ if __name__ == '__main__':
         idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         conv_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.h5')
+        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
         total_mass_singles = 0  
         total_mass_binaries = 0
         total_mass_stars = 0
@@ -149,25 +237,20 @@ if __name__ == '__main__':
         total_n_binaries = 0
         total_n_stars = 0
         idx = 0
-        log_file = open('log_'+sampling['galaxy_component']+'_'+kstar1_range_string+'_'+kstar2_range_string+'.txt', 'w')
+        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
+
+    # save configuration settings to output file
+    configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
+                              'convergence' : convergence, 'sampling' : sampling}
+
+    for k, v in configuration_settings.items():
+        for k1, v1 in v.items():
+            dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
+    dat_store.put('config/rand_seed/', pd.Series(seed_int))
 
     # Initialize the step counter and convergence array/list
     Nstep = 0
     match = np.zeros(len(convergence['convergence_params']))
-
-    # Select the Galactic component from user input
-    if sampling['galaxy_component'] == 'ThinDisk':
-        SFH_model='const'
-        component_age=10000.0
-    elif sampling['galaxy_component'] == 'Bulge':
-        SFH_model='burst'
-        component_age=10000.0
-    elif sampling['galaxy_component'] == 'ThickDisk':
-        SFH_model='burst'
-        component_age=11000.0
-    elif sampling['galaxy_component'] == 'DeltaBurst':
-        SFH_model='delta_burst'
-        component_age=13700.0
 
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
@@ -183,26 +266,27 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
-            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],
+            init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
-                                                        binfrac_model = 0.5,
-                                                        primary_model = 'kroupa93',
-                                                        ecc_model = 'thermal',
-                                                        SFH_model = SFH_model,
-                                                        component_age = component_age,
+                                                        binfrac_model = args.binfrac_model,
+                                                        primary_model = args.primary_model,
+                                                        ecc_model = args.ecc_model,
+                                                        porb_model = args.porb_model,
+                                                        SF_start = sampling['SF_start'],
+                                                        SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
-            init_samp_list = InitialBinaryTable.sampler(sampling['sampling_method'],
+            init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
                                                         rand_seed = rand_seed,
                                                         nproc = args.nproc,
-                                                        SFH_model = SFH_model,
-                                                        component_age = component_age,
+                                                        SF_start = sampling['SF_start'],
+                                                        SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
@@ -218,24 +302,42 @@ if __name__ == '__main__':
 
         # Now that we have all these initial conditions
         # let's create an Evolve class and evolve these systems
-        # see if users specified a smaple rate for the bcm array if not set it
-        # tphysf
-        try:
-            dtp = dictionary['bse']['dtp']
-        except:
-            dtp = IBT['tphysf'].values
 
-        bpp, bcm, initCond = Evolve.evolve(initialbinarytable=IBT, BSEDict=BSEDict, nproc=args.nproc, idx=idx, dtp=dtp)
+        # check what kind of time resolution for the bcm array the user specified
+
+        # assume none
+        dtp = IBT['tphysf'].values
+
+        # check
+        if isinstance(filters['timestep_conditions'], str):
+            dtp_inifile = filters['timestep_conditions'].split('=')[-1]
+            try:
+                dtp = float(dtp_inifile)
+            except:
+                pass
+            filters['timestep_conditions'] = []
+
+        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                      BSEDict=BSEDict,
+                                                      nproc=args.nproc, idx=idx,
+                                                      dtp=dtp,
+                                                      timestep_conditions=filters['timestep_conditions'],)
+
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
+
+        # If dtp is not set, filter out first timestep in bcm
+        if np.all(dtp == IBT['tphysf'].values):
+            bcm = bcm.loc[bcm['tphys'] == dtp[0]]
 
         bcm_filter, bin_state_nums = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
             warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
-            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
+            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep\n")
             continue
 
         initC_filter = initCond.loc[initCond.bin_num.isin(bcm_filter.bin_num)]
+        kick_info_filter = kick_info.loc[kick_info.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(bcm_filter.bin_num)]
         # Now get the converging population
         conv_filter = utils.conv_select(bcm_filter, bpp_filter,
@@ -251,6 +353,7 @@ if __name__ == '__main__':
             bcm_filter = bcm_filter.loc[bcm_filter.bin_num.isin(conv_filter.bin_num)]
             bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_filter.bin_num)]
             initC_filter = initC_filter.loc[initC_filter.bin_num.isin(conv_filter.bin_num)]
+            kick_info_filter = kick_info_filter.loc[kick_info_filter.bin_num.isin(conv_filter.bin_num)]
 
 
         # Filter the bcm and bpp arrays according to user specified filters
@@ -259,10 +362,12 @@ if __name__ == '__main__':
             bpp_filter_match = bpp_filter.copy()
             initC_filter_match = initC_filter.copy()
             conv_filter_match = conv_filter.copy()
+            kick_info_filter_match = kick_info_filter.copy()
         else:
             bcm_filter_match = bcm_filter_match.append(bcm_filter)
             bpp_filter_match = bpp_filter_match.append(bpp_filter)
             initC_filter_match = initC_filter_match.append(initC_filter)
+            kick_info_filter_match = kick_info_filter_match.append(kick_info_filter)
             conv_filter_match = conv_filter_match.append(conv_filter)
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
@@ -286,7 +391,7 @@ if __name__ == '__main__':
             mass_list = [total_mass_singles, total_mass_binaries, total_mass_stars]
             n_list = [total_n_singles, total_n_binaries, total_n_stars]
             utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
-                            bpp_filter_match, initC_filter_match, conv_filter_match,
+                            bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
                             bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
@@ -294,6 +399,7 @@ if __name__ == '__main__':
             bpp_filter_match = [] 
             initC_filter_match = []
             conv_filter_match = []
+            kick_info_filter_match = []
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
