@@ -71,7 +71,7 @@
         bhspin = 0.d0; tphys = 0.d0
         zpars = 0.d0; kick_info = 0.d0
 
-        zsun=0.02, neta = 0.5; bwind = 0.0; hewind = 1.0
+        zsun=0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
         pisn = 45.0; bhflag = 0; remnantflag = 3
