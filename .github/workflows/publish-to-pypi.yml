@@ -1,0 +1,44 @@
+name: Publish Python 🐍 distributions 📦 to PyPI
+
+on: push
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    -name: Install gfortran
+      run: brew install gfortran
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade setuptools wheel
+        python3 -m pip install --upgrade twine
+        python3 -m pip install numpy
+
+    - name: Build a binary wheel and a source tarball
+      run: >-
+        NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
+
+    - name: Publish distribution 📦 to Test PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.test_pypi_password }}
+        repository_url: https://test.pypi.org/legacy/
+    - name: Publish distribution 📦 to PyPI
+      if: startsWith(github.event.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.pypi_password }}
