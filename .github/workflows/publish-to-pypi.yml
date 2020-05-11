@@ -3,7 +3,7 @@ name: Publish Python 🐍 distributions 📦 to PyPI
 on: push
 
 jobs:
-  build-n-publish:
+  build-code:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ${{ matrix.os }}
     strategy:
@@ -24,10 +24,7 @@ jobs:
 
     - name: Install GFortran Linux
       if: contains(matrix.os, 'ubuntu')
-      run: |
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
-        sudo apt-get install -y gfortran
+          run: apt-get install -y gfortran
 
     - name: Install dependencies
       run: |
@@ -39,6 +36,28 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: >-
         NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
+
+  publish:
+    needs: [build-code]
+    name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade setuptools wheel
+        python3 -m pip install --upgrade twine
 
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
