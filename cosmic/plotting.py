@@ -381,7 +381,7 @@ def plot_P_orb(ax, times, P_orb_out, t_max, sys_obs):
     Null
     """
 
-    ax.plot(times, P_orb_out*day_in_year, color='k')
+    ax.plot(times, P_orb_out, color='k')
 
     for key, value in sys_obs.items():
         if key == 'P_orb': ax.axhline(value, color='k', linestyle='dashed')
