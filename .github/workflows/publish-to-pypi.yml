@@ -18,8 +18,16 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    -name: Install gfortran
+    - name: Install GFortran macOS
+      if: contains(matrix.os, 'macos')
       run: brew install gfortran
+
+    - name: Install GFortran Linux
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install -y gfortran
 
     - name: Install dependencies
       run: |
