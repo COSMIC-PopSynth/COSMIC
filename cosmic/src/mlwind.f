@@ -36,7 +36,7 @@
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
-            dms = dms*(z/0.02d0)**(alpha)
+            dms = dms*(z/zsun)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
@@ -95,7 +95,7 @@
             endif !or is it simply x = Min(1, lum/500)?
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
-            dms = dms*(z/0.02d0)**(alpha)
+            dms = dms*(z/zsun)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
@@ -154,7 +154,7 @@
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
-            dms = dms*(z/0.02d0)**(alpha)
+            dms = dms*(z/zsun)**(alpha)
             testflag = 1
          endif
          if(kw.ge.2.and.kw.le.6)then
@@ -182,7 +182,7 @@
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
      &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
-     &            alpha*LOG10(z/0.02d0) + 1.07d0*LOG10(teff/2.0d+04)
+     &            alpha*LOG10(z/zsun) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
             testflag = 2
          elseif(teff.gt.25000.and.teff.le.50000)then
@@ -190,7 +190,7 @@
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
      &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
-     &            alpha*LOG10(z/0.02d0) +0.933d0*LOG10(teff/4.0d+04) -
+     &            alpha*LOG10(z/zsun) +0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
             dms = 10.d0**dms
             testflag = 2
@@ -204,7 +204,7 @@
             if(lum.gt.6.0d+05.and.x.gt.1.d0)then
                if(eddlimflag.eq.0) alpha = 0.d0
                if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-               dms = 1.5d0*1.0d-04*((z/0.02d0)**alpha)
+               dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
                testflag = 3
             endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
@@ -212,7 +212,7 @@
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
             if(eddlimflag.eq.0) alpha = 0.86d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-            dms = 1.0d-13*(lum**1.5d0)*((z/0.02d0)**alpha)
+            dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
             testflag = 4
          endif
 *
