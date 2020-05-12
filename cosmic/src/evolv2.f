@@ -2136,9 +2136,9 @@ component.
          endif
          goto 135
 
-      elseif((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
+      elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
      &        kstar(j1).eq.8.or.kstar(j1).eq.9)
-     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1)).or.
+     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
      &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
 *
