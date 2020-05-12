@@ -210,7 +210,7 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,41)
+      REAL*8 bppout(1000,43)
       REAL*8 bcmout(50000,38)
 *
       REAL*8 qc_fixed
@@ -1286,14 +1286,33 @@ component.
             endif
             if(sgl)then
                evolve_type = 14.d0 + FLOAT(k)
+               teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+               teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+               if(B_0(1).eq.0.d0)then !PK.
+                  b01_bcm = 0.d0
+               elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                  b01_bcm = B_0(1)
+               else
+                  b01_bcm = B(1)
+               endif
+               if(B_0(2).eq.0.d0)then
+                  b02_bcm = 0.d0
+               elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                  b02_bcm = B_0(2)
+               else
+                  b02_bcm = B(2)
+               endif 
                CALL writebpp(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
-     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                      teff1,teff2,radc(1),radc(2),
+     &                      menv(1),menv(2),renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
@@ -1304,14 +1323,34 @@ component.
 
             else
                evolve_type = 14.d0 + FLOAT(k)
+               teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+               teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+               if(B_0(1).eq.0.d0)then !PK.
+                  b01_bcm = 0.d0
+               elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                  b01_bcm = B_0(1)
+               else
+                  b01_bcm = B(1)
+               endif
+               if(B_0(2).eq.0.d0)then
+                  b02_bcm = 0.d0
+               elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                  b02_bcm = B_0(2)
+               else
+                  b02_bcm = B(2)
+               endif
+
                CALL writebpp(jp,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
      &                       aj(1),aj(2),tms(1),tms(2),
      &                       massc(1),massc(2),rad(1),rad(2),
      &                       mass0(1),mass0(2),lumin(1),lumin(2),
-     &                       radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                       renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                       teff1,teff2,radc(1),radc(2),
+     &                       menv(1),menv(2),renv(1),renv(2),
+     &                       ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin(1),bhspin(2))
 
@@ -1484,14 +1523,34 @@ component.
           evolve_type = 1.d0
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
+          teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+          teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+          if(B_0(1).eq.0.d0)then !PK.
+             b01_bcm = 0.d0
+          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+             b01_bcm = B_0(1)
+          else
+             b01_bcm = B(1)
+          endif
+          if(B_0(2).eq.0.d0)then
+             b02_bcm = 0.d0
+          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+             b02_bcm = B_0(2)
+          else
+             b02_bcm = B(2)
+          endif
+ 
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
      &                  massc(1),massc(2),rad(1),rad(2),
      &                  mass0(1),mass0(2),lumin(1),lumin(2),
-     &                  radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                  renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                  teff1,teff2,radc(1),radc(2),
+     &                  menv(1),menv(2),renv(1),renv(2),
+     &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2))
          if(snova)then
@@ -1554,7 +1613,7 @@ component.
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
-*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
+*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
          endif
       endif
 *
@@ -1667,14 +1726,34 @@ component.
          evolve_type = 2.d0
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
       endif
@@ -1734,14 +1813,34 @@ component.
       evolve_type = 3.0
       rrl1 = rad(1)/rol(1)
       rrl2 = rad(2)/rol(2)
+      teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+      teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+      if(B_0(1).eq.0.d0)then !PK.
+         b01_bcm = 0.d0
+      elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+         b01_bcm = B_0(1)
+      else
+         b01_bcm = B(1)
+      endif
+      if(B_0(2).eq.0.d0)then
+         b02_bcm = 0.d0
+      elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+         b02_bcm = B_0(2)
+      else
+         b02_bcm = B(2)
+      endif
+
       CALL writebpp(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
      &              aj(1),aj(2),tms(1),tms(2),
      &              massc(1),massc(2),rad(1),rad(2),
      &              mass0(1),mass0(2),lumin(1),lumin(2),
-     &              radc(1),radc(2),menv(1),menv(2),renv(1),
-     &              renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &              teff1,teff2,radc(1),radc(2),
+     &              menv(1),menv(2),renv(1),renv(2),
+     &              ospin(1),ospin(2),b01_bcm,b02_bcm,
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
 *
@@ -1795,7 +1894,7 @@ component.
      &                  formation(1),formation(2),binstate,mergertype)
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
-*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
+*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
       endif
 *
 * Eddington limit for accretion on to the secondary in one orbit.
@@ -2154,6 +2253,25 @@ component.
              switchedCE = .false.
          endif
          evolve_type = 7.d0
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
@@ -2161,8 +2279,9 @@ component.
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
 
@@ -2199,6 +2318,25 @@ component.
          if(kstar(2).eq.15) mass2_bpp = mass0(2)
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass1_bpp,mass2_bpp,
      &                 kstar(1),kstar(2),sep,
@@ -2206,8 +2344,9 @@ component.
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
 *
@@ -3148,14 +3287,33 @@ component.
             endif
 
             evolve_type = 14.d0 + FLOAT(k)
+            teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+            teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+            if(B_0(1).eq.0.d0)then !PK.
+               b01_bcm = 0.d0
+            elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+               b01_bcm = B_0(1)
+            else
+               b01_bcm = B(1)
+            endif
+            if(B_0(2).eq.0.d0)then
+               b02_bcm = 0.d0
+            elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+               b02_bcm = B_0(2)
+            else
+               b02_bcm = B(2)
+            endif
             CALL writebpp(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
      &                    massc(1),massc(2),rad(1),rad(2),
      &                    mass0(1),mass0(2),lumin(1),lumin(2),
-     &                    radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                    renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                    teff1,teff2,radc(1),radc(2),
+     &                    menv(1),menv(2),renv(1),renv(2),
+     &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
@@ -3296,7 +3454,7 @@ component.
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
-*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1)
+*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
       endif
 *
       if(tphys.ge.tphysf) goto 140
@@ -3306,14 +3464,34 @@ component.
          evolve_type = 2.0
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
-            CALL writebpp(jp,tphys,evolve_type,
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
+         CALL writebpp(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
      &                    massc(1),massc(2),rad(1),rad(2),
      &                    mass0(1),mass0(2),lumin(1),lumin(2),
-     &                    radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                    renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                    teff1,teff2,radc(1),radc(2),
+     &                    menv(1),menv(2),renv(1),renv(2),
+     &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
       endif
@@ -3331,14 +3509,34 @@ component.
          evolve_type = 4.0
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          dtm = 0.d0
@@ -3361,14 +3559,33 @@ component.
       rrl2 = MIN(999.999d0,rad(2)/rol(2))
 *
       evolve_type = 5.0
+      teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+      teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+      if(B_0(1).eq.0.d0)then !PK.
+         b01_bcm = 0.d0
+      elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+         b01_bcm = B_0(1)
+      else
+         b01_bcm = B(1)
+      endif
+      if(B_0(2).eq.0.d0)then
+         b02_bcm = 0.d0
+      elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+         b02_bcm = B_0(2)
+      else
+         b02_bcm = B(2)
+      endif
       CALL writebpp(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
      &              aj(1),aj(2),tms(1),tms(2),
      &              massc(1),massc(2),rad(1),rad(2),
      &              mass0(1),mass0(2),lumin(1),lumin(2),
-     &              radc(1),radc(2),menv(1),menv(2),renv(1),
-     &              renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &              teff1,teff2,radc(1),radc(2),
+     &              menv(1),menv(2),renv(1),renv(2),
+     &              ospin(1),ospin(2),b01_bcm,b02_bcm,
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
 *
@@ -3385,6 +3602,25 @@ component.
              switchedCE = .false.
          endif
          evolve_type = 7.d0
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
@@ -3392,8 +3628,9 @@ component.
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
@@ -3446,6 +3683,25 @@ component.
              switchedCE = .false.
          endif
          evolve_type = 7.d0
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
@@ -3453,8 +3709,9 @@ component.
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
@@ -3512,6 +3769,25 @@ component.
           if(kstar(2).eq.15) mass2_bpp = mass0(2)
           rrl1 = MIN(rrl1,0.99d0)
           rrl2 = MIN(rrl2,0.99d0)
+          teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+          teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+          if(B_0(1).eq.0.d0)then !PK.
+             b01_bcm = 0.d0
+          elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+             b01_bcm = B_0(1)
+          else
+             b01_bcm = B(1)
+          endif
+          if(B_0(2).eq.0.d0)then
+             b02_bcm = 0.d0
+          elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+             b02_bcm = B_0(2)
+          else
+             b02_bcm = B(2)
+          endif
+
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass1_bpp,mass2_bpp,
      &                  kstar(1),kstar(2),sep,
@@ -3519,8 +3795,9 @@ component.
      &                  aj(1),aj(2),tms(1),tms(2),
      &                  massc(1),massc(2),rad(1),rad(2),
      &                  mass0(1),mass0(2),lumin(1),lumin(2),
-     &                  radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                  renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                  teff1,teff2,radc(1),radc(2),
+     &                  menv(1),menv(2),renv(1),renv(2),
+     &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2))
       endif
@@ -3548,14 +3825,34 @@ component.
          evolve_type = 4.0
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
+         teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+         if(B_0(1).eq.0.d0)then !PK.
+            b01_bcm = 0.d0
+         elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+            b01_bcm = B_0(1)
+         else
+            b01_bcm = B(1)
+         endif
+         if(B_0(2).eq.0.d0)then
+            b02_bcm = 0.d0
+         elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+            b02_bcm = B_0(2)
+         else
+            b02_bcm = B(2)
+         endif
+
          CALL writebpp(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
      &                 massc(1),massc(2),rad(1),rad(2),
      &                 mass0(1),mass0(2),lumin(1),lumin(2),
-     &                 radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                 renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                 teff1,teff2,radc(1),radc(2),
+     &                 menv(1),menv(2),renv(1),renv(2),
+     &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          dtm = 0.d0
@@ -3595,6 +3892,24 @@ component.
             if(kstar(2).eq.15) mass2_bpp = mass0(2)
             if(coel)then
                 evolve_type = 6.0
+                teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+                teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+                if(B_0(1).eq.0.d0)then !PK.
+                   b01_bcm = 0.d0
+                elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                   b01_bcm = B_0(1)
+                else
+                   b01_bcm = B(1)
+                endif
+                if(B_0(2).eq.0.d0)then
+                   b02_bcm = 0.d0
+                elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                   b02_bcm = B_0(2)
+                else
+                   b02_bcm = B(2)
+                endif
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
@@ -3602,8 +3917,9 @@ component.
      &                        aj(1),aj(2),tms(1),tms(2),
      &                        massc(1),massc(2),rad(1),rad(2),
      &                        mass0(1),mass0(2),lumin(1),lumin(2),
-     &                        radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                        renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                        teff1,teff2,radc(1),radc(2),
+     &                        menv(1),menv(2),renv(1),renv(2),
+     &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             elseif(ecc.gt.1.d0)then
@@ -3616,6 +3932,24 @@ component.
                 tb = -1.d0
                 sep = -1.d0
                 ecc = -1.d0
+                teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+                teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+                if(B_0(1).eq.0.d0)then !PK.
+                   b01_bcm = 0.d0
+                elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                   b01_bcm = B_0(1)
+                else
+                   b01_bcm = B(1)
+                endif
+                if(B_0(2).eq.0.d0)then
+                   b02_bcm = 0.d0
+                elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                   b02_bcm = B_0(2)
+                else
+                   b02_bcm = B(2)
+                endif
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
@@ -3623,12 +3957,31 @@ component.
      &                        aj(1),aj(2),tms(1),tms(2),
      &                        massc(1),massc(2),rad(1),rad(2),
      &                        mass0(1),mass0(2),lumin(1),lumin(2),
-     &                        radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                        renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                        teff1,teff2,radc(1),radc(2),
+     &                        menv(1),menv(2),renv(1),renv(2),
+     &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             else
                 evolve_type = 9.0
+                teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+                teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+                if(B_0(1).eq.0.d0)then !PK.
+                   b01_bcm = 0.d0
+                elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                   b01_bcm = B_0(1)
+                else
+                   b01_bcm = B(1)
+                endif
+                if(B_0(2).eq.0.d0)then
+                   b02_bcm = 0.d0
+                elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                   b02_bcm = B_0(2)
+                else
+                   b02_bcm = B(2)
+                endif
                 CALL writebpp(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
@@ -3636,8 +3989,9 @@ component.
      &                        aj(1),aj(2),tms(1),tms(2),
      &                        massc(1),massc(2),rad(1),rad(2),
      &                        mass0(1),mass0(2),lumin(1),lumin(2),
-     &                        radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                        renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                        teff1,teff2,radc(1),radc(2),
+     &                        menv(1),menv(2),renv(1),renv(2),
+     &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2))
             endif
@@ -3694,6 +4048,24 @@ component.
 
           if(coel)then
               evolve_type = 6.0
+              teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+              teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+              if(B_0(1).eq.0.d0)then !PK.
+                 b01_bcm = 0.d0
+              elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                 b01_bcm = B_0(1)
+              else
+                 b01_bcm = B(1)
+              endif
+              if(B_0(2).eq.0.d0)then
+                 b02_bcm = 0.d0
+              elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                 b02_bcm = B_0(2)
+              else
+                 b02_bcm = B(2)
+              endif
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
@@ -3701,8 +4073,9 @@ component.
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
-     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                      teff1,teff2,radc(1),radc(2),
+     &                      menv(1),menv(2),renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
@@ -3711,6 +4084,24 @@ component.
 * No remnant is left in either case.
 *
               evolve_type = 9.0
+              teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+              teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+              if(B_0(1).eq.0.d0)then !PK.
+                 b01_bcm = 0.d0
+              elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                 b01_bcm = B_0(1)
+              else
+                 b01_bcm = B(1)
+              endif
+              if(B_0(2).eq.0.d0)then
+                 b02_bcm = 0.d0
+              elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                 b02_bcm = B_0(2)
+              else
+                 b02_bcm = B(2)
+              endif
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
@@ -3718,14 +4109,33 @@ component.
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
-     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                      teff1,teff2,radc(1),radc(2),
+     &                      menv(1),menv(2),renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           else
               evolve_type = 10.0
               rrl1 = rad(1)/rol(1)
               rrl2 = rad(2)/rol(2)
+              teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+              teff2 = 1000.d0*((1130.d0*lumin(2)/  
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+              if(B_0(1).eq.0.d0)then !PK.
+                 b01_bcm = 0.d0
+              elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+                 b01_bcm = B_0(1)
+              else
+                 b01_bcm = B(1)
+              endif
+              if(B_0(2).eq.0.d0)then
+                 b02_bcm = 0.d0
+              elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+                 b02_bcm = B_0(2)
+              else
+                 b02_bcm = B(2)
+              endif
               CALL writebpp(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),sep,
@@ -3733,8 +4143,9 @@ component.
      &                      aj(1),aj(2),tms(1),tms(2),
      &                      massc(1),massc(2),rad(1),rad(2),
      &                      mass0(1),mass0(2),lumin(1),lumin(2),
-     &                      radc(1),radc(2),menv(1),menv(2),renv(1),
-     &                      renv(2),ospin(1),ospin(2),B_0(1),B_0(2),
+     &                      teff1,teff2,radc(1),radc(2),
+     &                      menv(1),menv(2),renv(1),renv(2),
+     &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
           endif
@@ -3796,7 +4207,7 @@ component.
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
-*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),B(1),B(2),jspin(1),
+*     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1),
          if(isave) tsave = tsave + dtp
          if(tphysf.le.0.d0)then
             ip = ip + 1

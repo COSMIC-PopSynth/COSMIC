@@ -76,9 +76,9 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
                'Vsys_1', 'Vsys_2', 'SNkick', 'SNtheta',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
                'massc_1', 'massc_2', 'rad_1', 'rad_2',
-               'mass0_1', 'mass0_2', 'lum_1', 'lum_2',
+               'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-               'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
+               'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
                'bhspin_1','bhspin_2', 'bin_num']
 
@@ -100,11 +100,12 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
 ``rad_1``         Primary radius [:math:`{\mathrm{R}_\odot}`]
 ``mass0_1``       Previous epoch mass [:math:`{\mathrm{M}_\odot}`]
 ``lum_1``         Luminosity of the primary [:math:`{\mathrm{L}_\odot}`]
+``teff_1``        Effective temperature of the primary [:math:`{\mathrm{K}}`]
 ``radc_1``        Primary core radius  [:math:`{\mathrm{R}_\odot}`]
 ``menv_1``        Mass of the envelope of the primary [:math:`{\mathrm{M}_\odot}`]
 ``renv_1``        Radius of the envelope of the primary [:math:`{\mathrm{R}_\odot}`]
 ``omega_spin_1``  Angular velocity of the primary [:math:`{\rm{yr}}^{-1}`]
-``B0_1``          Initial neutron star magnetic field [:math:`{\rm{G}}`]
+``B_1``           Neutron star magnetic field [:math:`{\rm{G}}`]
 ``bacc_1``        (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion see Equation 7 in COSMIC paper
 ``tacc_1``        Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
 ``epoch_1``
@@ -139,7 +140,7 @@ All values with a `_1` label refer to the primary; the BCM DataFrame also includ
 ``porb``           Orbital period [:math:`\rm{days}`]
 ``sep``            Semimajor axis [:math:`\mathrm{R}_{\odot}`]
 ``ecc``            Eccentricity
-``B0_1``           Initial neutron star magnetic field [:math:`{\rm{G}}`]
+``B_1``            Neutron star magnetic field [:math:`{\rm{G}}`]
 ``SNkick_1``       Magnitude of first natal kick [:math:`{\rm{km/s}}`]
 ``Vsys_final``     Final systemic velocity magnitude [:math:`{\rm{km/s}}`]
 ``SNtheta_final``  Final systemic velocity angle [:math:`{\rm{degrees}}`]
