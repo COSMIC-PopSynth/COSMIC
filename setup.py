@@ -22,10 +22,6 @@
 
 from __future__ import print_function
 
-import sys
-if sys.version < '2.6':
-    raise ImportError("Python versions older than 2.6 are not supported.")
-
 import glob
 import os.path
 
@@ -90,8 +86,6 @@ install_requires = [
 tests_require = [
     'pytest'
 ]
-if sys.version_info < (2, 7):
-    tests_require.append('unittest2')
 extras_require = {
     'doc': [
         'sphinx >= 1.6.1',
@@ -111,7 +105,7 @@ wrapper = Extension('cosmic._evolvebin',
 # -- run setup ----------------------------------------------------------------
 
 packagenames = find_packages()
-scripts = glob.glob(os.path.join('bin', '*')) + glob.glob('data/*')
+scripts = glob.glob(os.path.join('bin', '*'))
 
 setup(name=DISTNAME,
       provides=[PACKAGENAME],

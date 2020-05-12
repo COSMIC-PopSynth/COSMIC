@@ -3800,7 +3800,7 @@ component.
          if(isave) tsave = tsave + dtp
          if(tphysf.le.0.d0)then
             ip = ip + 1
-            do 145 , k = 1,42
+            do 145 , k = 1,38
                bcm(ip,k) = bcm(ip-1,k)
  145        continue
          endif
