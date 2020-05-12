@@ -66,7 +66,7 @@ jobs:
         twine upload wheelhouse/*-manylinux*.whl
 
   publish-mac:
-    needs: [build-code]
+    needs: [build-code-mac]
     name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ${{ matrix.os }}
     strategy:
