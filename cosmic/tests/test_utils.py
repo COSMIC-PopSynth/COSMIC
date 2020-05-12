@@ -6,7 +6,7 @@ __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 from cosmic.sample import InitialBinaryTable
 
 import os
-import unittest2
+import unittest
 import numpy as np
 import scipy.integrate
 import pandas as pd
@@ -53,7 +53,7 @@ BW_KNUTH = 0.333
 _KNOWN_METHODS = ['select_final_state',
                   'binary_state']
 
-class TestUtils(unittest2.TestCase):
+class TestUtils(unittest.TestCase):
     """`TestCase` for the utilities method
     """
     def test_filter_bpp_bcm(self):
