@@ -30,7 +30,7 @@ jobs:
 
     - name: Build a binary wheel and a source tarball
       run: |
-        git tag v3.0.1d
+        git tag v3.0.2a
         NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran /usr/local/opt/gcc/lib/gcc/9/libquadmath.a' python3 setup.py sdist bdist_wheel
 
     - name: Upload builds
