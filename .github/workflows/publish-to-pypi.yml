@@ -62,8 +62,8 @@ jobs:
         python3 -m pip install --upgrade twine
 
     - name: Download builds
-        uses: actions/download-artifact@v1
-        with:
+      uses: actions/download-artifact@v1
+      with:
           name: distributions
 
     - name: Publish distribution 📦 to Test PyPI
