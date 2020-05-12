@@ -34,12 +34,6 @@ jobs:
       run: >-
         NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
 
-      - name: Upload build result for publish job
-        uses: actions/upload-artifact@v1
-        with:
-          name: homework
-          path: math-homework.txt
-
   publish:
     needs: [build-code]
     name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
