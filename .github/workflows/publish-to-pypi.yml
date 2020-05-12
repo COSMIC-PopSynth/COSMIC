@@ -30,15 +30,14 @@ jobs:
         python3 -m pip install numpy
 
     - name: Build a binary wheel and a source tarball
-    - uses: upload-artifacts
       run: >-
         NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
 
     - name: Upload builds
-        uses: actions/upload-artifact@v1
-        with:
-          name: distributions
-          path: dist
+      uses: actions/upload-artifact@v1
+      with:
+        name: distributions
+        path: dist
 
   publish:
     needs: [build-code]
