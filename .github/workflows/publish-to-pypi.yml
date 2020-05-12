@@ -30,7 +30,7 @@ jobs:
         python3 -m pip install numpy
 
     - name: Build a binary wheel and a source tarball
-      run: >-
+      run: |
         git tag v3.0.1a
         NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
 
