@@ -2235,9 +2235,9 @@ component.
          endif
          goto 135
 
-      elseif((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
+      elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
      &        kstar(j1).eq.8.or.kstar(j1).eq.9)
-     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1)).or.
+     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
      &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
 *
@@ -4211,7 +4211,7 @@ component.
          if(isave) tsave = tsave + dtp
          if(tphysf.le.0.d0)then
             ip = ip + 1
-            do 145 , k = 1,42
+            do 145 , k = 1,38
                bcm(ip,k) = bcm(ip-1,k)
  145        continue
          endif
