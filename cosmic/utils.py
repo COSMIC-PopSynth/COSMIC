@@ -737,6 +737,11 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if BSEDict[flag] <= 0:
             raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
 
+    flag='zsun'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] <= 0:
+            raise ValueError("'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
     flag='windflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1,2,3]:

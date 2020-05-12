@@ -622,7 +622,7 @@ component.
                if(kstar(k).le.1)then
 *                 Main sequence mass limit varying with metallicity
                   convradcomp(k) = 1.25d0
-                  if(z.gt.0.001d0.and.z.lt.0.02d0)then
+                  if(z.gt.0.001d0.and.z.lt.zsun)then
                      convradcomp(k) = 0.747d0 + 55.73d0*z - 1532*z*z
                   elseif(z.le.0.001d0)then
                      convradcomp(k) = 0.8d0
@@ -912,7 +912,7 @@ component.
                if(kstar(k).le.1)then
 *                 Main sequence mass limit varying with metallicity
                   convradcomp(k) = 1.25d0
-                  if(z.gt.0.001d0.and.z.lt.0.02d0)then
+                  if(z.gt.0.001d0.and.z.lt.zsun)then
                      convradcomp(k) = 0.747d0 + 55.73d0*z - 1532*z*z
                   elseif(z.le.0.001d0)then
                      convradcomp(k) = 0.8d0
@@ -2847,7 +2847,7 @@ component.
                if(kstar(k).le.1)then
 *                 Main sequence mass limit varying with metallicity
                   convradcomp(k) = 1.25d0
-                  if(z.gt.0.001d0.and.z.lt.0.02d0)then
+                  if(z.gt.0.001d0.and.z.lt.zsun)then
                      convradcomp(k) = 0.747d0 + 55.73d0*z - 1532*z*z
                   elseif(z.le.0.001d0)then
                      convradcomp(k) = 0.8d0
@@ -3004,7 +3004,7 @@ component.
                if(kstar(k).le.1)then
 *                 Main sequence mass limit varying with metallicity
                   convradcomp(k) = 1.25d0
-                  if(z.gt.0.001d0.and.z.lt.0.02d0)then
+                  if(z.gt.0.001d0.and.z.lt.zsun)then
                      convradcomp(k) = 0.747d0 + 55.73d0*z - 1532*z*z
                   elseif(z.le.0.001d0)then
                      convradcomp(k) = 0.8d0
