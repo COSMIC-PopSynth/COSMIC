@@ -1,6 +1,8 @@
 name: Publish Python 🐍 distributions 📦 to PyPI
 
-on: release
+on:
+  release:
+    types: [published]
 
 jobs:
   build-code-mac:
@@ -58,9 +60,6 @@ jobs:
         package-path: ''
         pip-wheel-args: '--no-deps'
 
-    - name: Remove linux_x86_64 build before upload
-      run: rm wheelhouse/*linux_x86_64*
-
     - name: Upload builds
       uses: actions/upload-artifact@v1
       with:
@@ -93,6 +92,10 @@ jobs:
       uses: actions/download-artifact@v1
       with:
           name: dist
+
+    - name: Remove bad wheel names
+      run: rm -rf cosmic_popsynth*linux_x86_64.whl
+      working_directory: /home/runner/work/COSMIC/COSMIC/dist
 
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
