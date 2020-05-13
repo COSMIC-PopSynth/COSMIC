@@ -62,7 +62,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: dist
-        path: wheelhouse
+        path: wheelhouse/*-manylinux*.whl
 
   publish:
     needs: [build-code-mac, build-code-linux]
