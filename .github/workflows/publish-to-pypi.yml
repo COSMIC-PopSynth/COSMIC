@@ -95,7 +95,7 @@ jobs:
 
     - name: Remove bad wheel names
       run: rm -rf cosmic_popsynth*linux_x86_64.whl
-      working_directory: /home/runner/work/COSMIC/COSMIC/dist
+      working-directory: /home/runner/work/COSMIC/COSMIC/dist
 
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
