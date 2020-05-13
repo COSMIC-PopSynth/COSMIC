@@ -4,7 +4,7 @@
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
 import os
-import unittest2
+import unittest
 import numpy as np
 import pandas as pd
 
@@ -30,7 +30,7 @@ BSEDict['fprimc_array'] = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
 
-class TestEvolve(unittest2.TestCase):
+class TestEvolve(unittest.TestCase):
     """`TestCase` for the cosmic
     """
     def test_single_evolve_with_table(self):
