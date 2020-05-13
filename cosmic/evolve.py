@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2019)
+# Copyright (C) Scott Coughlin (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -36,7 +36,8 @@ import sys
 
 __author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
-               'Michael Zevin <zevin@northwestern.edu>']
+               'Michael Zevin <zevin@northwestern.edu>',
+               'digman.12@osu.edu']
 __all__ = ['Evolve']
 
 

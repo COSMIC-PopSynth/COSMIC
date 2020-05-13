@@ -4,7 +4,7 @@
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
 import os
-import unittest2
+import unittest
 import numpy as np
 import pandas as pd
 from cosmic.sample.sampler.independent import Sample
@@ -78,7 +78,7 @@ def linear_fit(data):
 
     return slope
 
-class TestSample(unittest2.TestCase):
+class TestSample(unittest.TestCase):
     """`TestCase` for the cosmic Sample class, which generates several
         independent initial parameters drawn from specified distributions
     """

@@ -4,7 +4,7 @@
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
 import os
-import unittest2
+import unittest
 import numpy as np
 import pandas as pd
 
@@ -50,7 +50,7 @@ MCMILLAN_THICKDISK_MEAN_TEST_Z = 0.0
 DOUBLEEXP_THICKDISK_MEAN_TEST_XY = 2.5
 DOUBLEEXP_THICKDISK_MEAN_TEST_Z = 0.0
 
-class TestMC_samp(unittest2.TestCase):
+class TestMC_samp(unittest.TestCase):
     """`TestCase` for the MC samp method
     """
 
