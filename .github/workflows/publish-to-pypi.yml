@@ -13,25 +13,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install GFortran macOS
-      run: brew install gcc
+    - name: Set up Anaconda Python ${{ matrix.python-version }}
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          python-version: ${{ matrix.python-version }}
+          conda-channels: anaconda
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        conda install gfortran_osx-64 numpy h5py
+        python3 -m pip install --upgrade pip
         python3 -m pip install --upgrade setuptools wheel
         python3 -m pip install --upgrade twine
-        python3 -m pip install numpy
 
     - name: Build a binary wheel and a source tarball
       run: |
-        git tag v3.0.2a
-        NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran /usr/local/opt/gcc/lib/gcc/9/libquadmath.a' python3 setup.py sdist bdist_wheel
+        git tag v3.0.2b
+        NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
 
     - name: Upload builds
       uses: actions/upload-artifact@v1
