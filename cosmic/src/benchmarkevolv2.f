@@ -5,7 +5,7 @@
         INTEGER kstar(2)
         REAL*8 z,ecc,tb,tphysf
         REAL*8 mass(2)
-        REAL*8 bppout(1000,61)
+        REAL*8 bppout(1000,43)
         REAL*8 bcmout(50000,42)
         REAL*8 dtptmp
         REAL*8 bhspin(2)
