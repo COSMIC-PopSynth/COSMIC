@@ -58,11 +58,14 @@ jobs:
         package-path: ''
         pip-wheel-args: '--no-deps'
 
+    - name: Remove linux_x86_64 build before upload
+      run: rm wheelhouse/*linux_x86_64*
+
     - name: Upload builds
       uses: actions/upload-artifact@v1
       with:
         name: dist
-        path: wheelhouse/*-manylinux*.whl
+        path: wheelhouse
 
   publish:
     needs: [build-code-mac, build-code-linux]
