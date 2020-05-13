@@ -97,14 +97,7 @@ jobs:
       run: rm -rf cosmic_popsynth*linux_x86_64.whl
       working-directory: /home/runner/work/COSMIC/COSMIC/dist
 
-    - name: Publish distribution 📦 to Test PyPI
+    - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
-        password: ${{ secrets.test_pypi_password }}
-        repository_url: https://test.pypi.org/legacy/
-
-#    - name: Publish distribution 📦 to PyPI
-#      if: startsWith(github.event.ref, 'refs/tags')
-#      uses: pypa/gh-action-pypi-publish@master
-#      with:
-#        password: ${{ secrets.pypi_password }}
+        password: ${{ secrets.pypi_password }}
