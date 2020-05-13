@@ -14,11 +14,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Anaconda Python ${{ matrix.python-version }}
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          python-version: ${{ matrix.python-version }}
-          conda-channels: anaconda
+      uses: s-weigand/setup-conda@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        conda-channels: anaconda
 
     - name: Install dependencies
       run: |
