@@ -2619,14 +2619,14 @@ component.
 *
 * Limit according to the thermal timescale of the secondary.
 *
-            dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            dm2 = MIN(1.d0,taum/tkh(j2))*dm1
          elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
 *
 * Naked helium star secondary swells up to a core helium burning star
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               dm2 = MIN(1.d0,taum/tkh(j2))*dm1
             else
                dm2 = dm1
                dmchk = dm2 - 1.05d0*dms(j2)
