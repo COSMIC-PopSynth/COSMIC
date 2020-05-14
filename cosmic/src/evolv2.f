@@ -1778,29 +1778,27 @@ component.
 *    &                k3*radc(j1)*radc(j1)*massc(j1))*ospin(j1)
 *     endif
 *
-      if(ST_tide.gt.0)then
-         sep = sep*(1-ecc)
-         ecc = 0.d0
-         tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
-         oorb = twopi/tb
-         jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
-     &          sqrt(1.d0-ecc*ecc)*sep*sep*oorb
+      sep = sep*(1-ecc)
+      ecc = 0.d0
+      tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
+      oorb = twopi/tb
+      jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
+     &        sqrt(1.d0-ecc*ecc)*sep*sep*oorb
 * Note: this will modify pulsar spin period
-         if(kstar(1).lt.13)then
-            ospin(1) = oorb
-            jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
-     &                   k3*radc(1)*radc(1)*massc(1))*ospin(1)
-         endif
-         if(kstar(2).lt.13)then
-            ospin(2) = oorb
-            jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
-     &                   k3*radc(2)*radc(2)*massc(2))*ospin(2)
-         endif
-         km0 = dtm0*1.0d+03/tb
-         if(km0.lt.tiny) km0 = 0.5d0
-         rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
-         rol(2) = rl(q(2))*sep
+      if(kstar(1).lt.13)then
+         ospin(1) = oorb
+         jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
+     &               k3*radc(1)*radc(1)*massc(1))*ospin(1)
       endif
+      if(kstar(2).lt.13)then
+         ospin(2) = oorb
+         jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
+     &               k3*radc(2)*radc(2)*massc(2))*ospin(2)
+      endif
+      km0 = dtm0*1.0d+03/tb
+      if(km0.lt.tiny) km0 = 0.5d0
+      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
+      rol(2) = rl(q(2))*sep
       iter = 0
       coel = .false.
       change = .false.
