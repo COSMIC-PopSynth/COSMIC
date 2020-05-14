@@ -64,6 +64,7 @@
       real*8 csigns
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,bound
+      real*8 mean_mns,mean_mej,alphakick, betakick
 * Output
       logical output,disrupt
 *
@@ -86,6 +87,13 @@
 * Conversion factor to ensure velocities are in km/s using mass and
 * radius in solar units.
       gmrkm = 1.906125d+05
+
+* Set values for mean NS mass and mean ejecta as in Giacobbo & Mapelli 2020
+      mean_mns = 1.2d0
+      mean_mej = 9.0d0
+* Set values for alpha and beta as in Bray & Eldridge 2016
+      alphakick = 70.0d0
+      betakick = 120.0d0
 
 * find whether this is the first or second supernova
       if(kick_info(1,1).eq.0) sn=1
@@ -113,13 +121,15 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if(sigma.lt.0.d0)then
+      if((sigma.lt.0.d0).and.(kickflag.eq.0))then
          sigma = -1.d0*sigma
       endif
       sigmah = sigma
 * scale down BH kicks if bhsigmafrac is specified
-      if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
-           sigma = sigmah*bhsigmafrac
+      if(kickflag.eq.0)then
+         if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
+            sigma = sigmah*bhsigmafrac
+         endif
       endif
 
 *
@@ -191,18 +201,30 @@
           vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
           vk = SQRT(vk2)
 
+          if(kickflag.eq.0)then
 * Limit BH kick with fallback mass fraction.
-          if(kw.eq.14.and.bhflag.eq.0)then
-             vk2 = 0.d0
-             vk = 0.d0
-          elseif(kw.eq.14.and.bhflag.eq.1)then
-              fallback = MIN(fallback,1.d0)
-              vk = MAX((1.d0-fallback)*vk,0.d0)
-              vk2 = vk*vk
-          elseif(kw.eq.14.and.bhflag.eq.2)then
-             vk = vk * mxns / m1n
-             vk2 = vk*vk
+             if(kw.eq.14.and.bhflag.eq.0)then
+                vk2 = 0.d0
+                vk = 0.d0
+             elseif(kw.eq.14.and.bhflag.eq.1)then
+                 fallback = MIN(fallback,1.d0)
+                 vk = MAX((1.d0-fallback)*vk,0.d0)
+                 vk2 = vk*vk
+             elseif(kw.eq.14.and.bhflag.eq.2)then
+                vk = vk * mxns / m1n
+                vk2 = vk*vk
+             endif
+          elseif(kickflag.eq.-1)then
+* Use kick scaling from Giacobbo & Mapelli 2020, Eq. 1
+             vk = vk * ((m1-m1n)/mean_mej) * (mean_mns/m1n)
+          elseif(kickflag.eq.-2)then
+* Use kick scaling from Giacobbo & Mapelli 2020, Eq. 2
+             vk = vk * ((m1-m1n)/mean_mej)
+          elseif(kickflag.eq.-3)then
+* Use kick scaling from Eldridge & Stanway 2016, Eq. 1
+             vk = alphakick * (m1/m1n) + betakick
           endif
+             
       endif
       sigma = sigmah
 
