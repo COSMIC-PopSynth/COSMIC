@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2019)
+# Copyright (C) Scott Coughlin (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -59,7 +59,7 @@ INITIAL_CONDITIONS_COLUMNS_CORE = ['kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'po
 INITIAL_CONDITIONS_COLUMNS_EXTRAS = ['mass0_1', 'mass0_2',
                                      'rad_1', 'rad_2', 'lum_1', 'lum_2', 'massc_1', 'massc_2',
                                      'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-                                     'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
+                                     'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
                                      'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2', 'tms_1', 'tms_2',
                                      'bhspin_1','bhspin_2', 'tphys']
 
@@ -142,8 +142,8 @@ class InitialBinaryTable():
         renv2 = kwargs.pop('renv_2', np.zeros(np.array(m1).size))
         ospin1 = kwargs.pop('ospin_1', np.zeros(np.array(m1).size))
         ospin2 = kwargs.pop('ospin_2', np.zeros(np.array(m1).size))
-        b_0_1 = kwargs.pop('B0_1', np.zeros(np.array(m1).size))
-        b_0_2 = kwargs.pop('B0_2', np.zeros(np.array(m1).size))
+        b_0_1 = kwargs.pop('B_1', np.zeros(np.array(m1).size))
+        b_0_2 = kwargs.pop('B_2', np.zeros(np.array(m1).size))
         bacc1 = kwargs.pop('bacc_1', np.zeros(np.array(m1).size))
         bacc2 = kwargs.pop('bacc_2', np.zeros(np.array(m1).size))
         tacc1 = kwargs.pop('tacc_1', np.zeros(np.array(m1).size))

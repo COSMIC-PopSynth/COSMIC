@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2019)
+# Copyright (C) Scott Coughlin (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -36,7 +36,8 @@ import sys
 
 __author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
-               'Michael Zevin <zevin@northwestern.edu>']
+               'Michael Zevin <zevin@northwestern.edu>',
+               'digman.12@osu.edu']
 __all__ = ['Evolve']
 
 
@@ -44,9 +45,9 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
                'sep', 'porb', 'ecc', 'RROL_1', 'RROL_2', 'evol_type',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
                'massc_1', 'massc_2', 'rad_1', 'rad_2',
-               'mass0_1', 'mass0_2', 'lum_1', 'lum_2',
+               'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-               'omega_spin_1', 'omega_spin_2', 'B0_1', 'B0_2', 'bacc_1', 'bacc_2',
+               'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
                'bhspin_1','bhspin_2', 'bin_num']
 
@@ -55,7 +56,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'omega_spin_1', 'deltam_1', 'RROL_1', 'kstar_2', 'mass0_2', 'mass_2',
                'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RROL_2',
-               'porb', 'sep', 'ecc', 'B0_1', 'B0_2',
+               'porb', 'sep', 'ecc', 'B_1', 'B_2',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'eccentric_anomaly',
@@ -83,7 +84,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
-                             'ST_cr', 'ST_tide', 'rembar_massloss']
+                             'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
@@ -372,6 +373,7 @@ class Evolve(object):
                 _evolvebin.flags.st_cr = f['ST_cr']
                 _evolvebin.flags.st_tide = f['ST_tide']
                 _evolvebin.snvars.rembar_massloss = f['rembar_massloss']
+                _evolvebin.metvars.zsun = f['zsun']
                 _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
@@ -385,7 +387,7 @@ class Evolve(object):
                                                                                 [f['menv_1'], f['menv_2']],
                                                                                 [f['renv_1'], f['renv_2']],
                                                                                 [f['omega_spin_1'], f['omega_spin_2']],
-                                                                                [f['B0_1'], f['B0_2']],
+                                                                                [f['B_1'], f['B_2']],
                                                                                 [f['bacc_1'], f['bacc_2']],
                                                                                 [f['tacc_1'], f['tacc_2']],
                                                                                 [f['epoch_1'], f['epoch_2']],
@@ -470,6 +472,7 @@ class Evolve(object):
                     _evolvebin.flags.st_cr = f[i]['ST_cr']
                     _evolvebin.flags.st_tide = f[i]['ST_tide']
                     _evolvebin.snvars.rembar_massloss = f[i]['rembar_massloss']
+                    _evolvebin.metvars.zsun = f[i]['zsun']
                     _evolvebin.cmcpass.using_cmc = 0
 
                     [bpp, bcm, bpp_index, bcm_index, kick_info_out] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],
@@ -483,7 +486,7 @@ class Evolve(object):
                                                                                     [f[i]['menv_1'], f[i]['menv_2']],
                                                                                     [f[i]['renv_1'], f[i]['renv_2']],
                                                                                     [f[i]['omega_spin_1'], f[i]['omega_spin_2']],
-                                                                                    [f[i]['B0_1'], f[i]['B0_2']],
+                                                                                    [f[i]['B_1'], f[i]['B_2']],
                                                                                     [f[i]['bacc_1'], f[i]['bacc_2']],
                                                                                     [f[i]['tacc_1'], f[i]['tacc_2']],
                                                                                     [f[i]['epoch_1'], f[i]['epoch_2']],

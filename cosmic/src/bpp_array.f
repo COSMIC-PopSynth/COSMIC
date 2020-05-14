@@ -5,9 +5,10 @@
      &                      aj1,aj2,tms1,tms2,
      &                      massc1,massc2,rad1,rad2,
      &                      mass0_1,mass0_2,lumin1,lumin2,
-     &                      radc1,radc2,menv1,menv2,renv1,renv2,
-     &                      ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
-     &                      tacc1,tacc2,epoch1,epoch2,bhspin1,bhspin2)
+     &                      teff1,teff2,radc1,radc2,menv1,
+     &                      menv2,renv1,renv2,ospin1,ospin2,
+     &                      b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,
+     &                      epoch1,epoch2,bhspin1,bhspin2)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
 *
@@ -22,7 +23,7 @@
         REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
         REAL*8 menv1,menv2,renv1,renv2,ospin1,ospin2
         REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
-        REAL*8 bhspin1,bhspin2
+        REAL*8 bhspin1,bhspin2,teff1,teff2
         REAL*8 tb_write,sep_cubed
         INTEGER jp
         INTEGER kstar1,kstar2
@@ -61,24 +62,26 @@
         bpp(jp,21) = mass0_2
         bpp(jp,22) = lumin1
         bpp(jp,23) = lumin2
-        bpp(jp,24) = radc1
-        bpp(jp,25) = radc2
-        bpp(jp,26) = menv1
-        bpp(jp,27) = menv2
-        bpp(jp,28) = renv1
-        bpp(jp,29) = renv2
-        bpp(jp,30) = ospin1
-        bpp(jp,31) = ospin2
-        bpp(jp,32) = b_0_1
-        bpp(jp,33) = b_0_2
-        bpp(jp,34) = bacc1
-        bpp(jp,35) = bacc2
-        bpp(jp,36) = tacc1
-        bpp(jp,37) = tacc2
-        bpp(jp,38) = epoch1
-        bpp(jp,39) = epoch2
-        bpp(jp,40) = bhspin1
-        bpp(jp,41) = bhspin2
+        bpp(jp,24) = teff1
+        bpp(jp,25) = teff2
+        bpp(jp,26) = radc1
+        bpp(jp,27) = radc2
+        bpp(jp,28) = menv1
+        bpp(jp,29) = menv2
+        bpp(jp,30) = renv1
+        bpp(jp,31) = renv2
+        bpp(jp,32) = ospin1
+        bpp(jp,33) = ospin2
+        bpp(jp,34) = b_0_1
+        bpp(jp,35) = b_0_2
+        bpp(jp,36) = bacc1
+        bpp(jp,37) = bacc2
+        bpp(jp,38) = tacc1
+        bpp(jp,39) = tacc2
+        bpp(jp,40) = epoch1
+        bpp(jp,41) = epoch2
+        bpp(jp,42) = bhspin1
+        bpp(jp,43) = bhspin2
         END
 
 ***

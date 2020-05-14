@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) Katie Breivik (2017)
+# Copyright (C) Katie Breivik (2017-2020)
 #
 # This file is part of the cosmic python package.
 #
@@ -21,10 +21,6 @@
 """
 
 from __future__ import print_function
-
-import sys
-if sys.version < '2.6':
-    raise ImportError("Python versions older than 2.6 are not supported.")
 
 import glob
 import os.path
@@ -90,8 +86,6 @@ install_requires = [
 tests_require = [
     'pytest'
 ]
-if sys.version_info < (2, 7):
-    tests_require.append('unittest2')
 extras_require = {
     'doc': [
         'sphinx >= 1.6.1',
@@ -111,7 +105,7 @@ wrapper = Extension('cosmic._evolvebin',
 # -- run setup ----------------------------------------------------------------
 
 packagenames = find_packages()
-scripts = glob.glob(os.path.join('bin', '*')) + glob.glob('data/*')
+scripts = glob.glob(os.path.join('bin', '*'))
 
 setup(name=DISTNAME,
       provides=[PACKAGENAME],
@@ -132,15 +126,14 @@ setup(name=DISTNAME,
       install_requires=install_requires,
       tests_require=tests_require,
       extras_require=extras_require,
-      python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
+      python_requires='>3.5, <4',
       use_2to3=True,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2.7',
-          'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
           'Intended Audience :: Science/Research',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Science/Research',
