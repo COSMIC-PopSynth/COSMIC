@@ -76,15 +76,15 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     pd.options.mode.chained_assignment = None
 
     # Get highest BSE temporal resolution
-    initC['dtp'] = 0.01
+    BSEDict['dtp'] = 0.01
 
     # To deal with the limited size of the bcm array, we need to reduce
     # the time resolution if we are evolving a binary for more than 100 Myr
     if not t_max is None:
         if not t_min is None:
-            if t_max-t_min > 100: initC['dtp'] = (t_max-t_min) / 10000
+            if t_max-t_min > 100: BSEDict['dtp'] = (t_max-t_min) / 10000
         else:
-            if t_max > 100: initC['dtp'] = t_max / 10000
+            if t_max > 100: BSEDict['dtp'] = t_max / 10000
 
     # Set maximum time for evolution
     if not t_max is None: initC['tphysf'] = t_max
@@ -381,7 +381,7 @@ def plot_P_orb(ax, times, P_orb_out, t_max, sys_obs):
     Null
     """
 
-    ax.plot(times, P_orb_out*day_in_year, color='k')
+    ax.plot(times, P_orb_out, color='k')
 
     for key, value in sys_obs.items():
         if key == 'P_orb': ax.axhline(value, color='k', linestyle='dashed')

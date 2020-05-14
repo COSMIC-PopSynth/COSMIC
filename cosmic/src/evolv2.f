@@ -434,8 +434,7 @@ component.
          jspin(k) = ospin(k)*(k2*rm*rm*(mass(k)-mc)+k3*rc*rc*mc)
          if(.not.sgl)then
             q(k) = mass(k)/mass(3-k)
-            rol(k) = rl(q(k))*sep
-            if(ST_tide.gt.0) rol(k) = rl(q(k))*sep*(1.d0-ecc)
+            rol(k) = rl(q(k))*sep*(1.d0-ecc)
          endif
          rol0(k) = rol(k)
          dmr(k) = 0.d0
@@ -528,7 +527,6 @@ component.
 *
             if(neta.gt.tiny)then
                rlperi = rol(k)*(1.d0-ecc)
-               if(ST_tide.gt.1) rlperi = rol(k)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z)
 *
@@ -1303,7 +1301,7 @@ component.
                   b02_bcm = B_0(2)
                else
                   b02_bcm = B(2)
-               endif 
+               endif
                CALL writebpp(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -1317,7 +1315,7 @@ component.
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,kick_info,disrupt)
-               
+
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
 
@@ -1325,7 +1323,7 @@ component.
                evolve_type = 14.d0 + FLOAT(k)
                teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-               teff2 = 1000.d0*((1130.d0*lumin(2)/  
+               teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
                if(B_0(1).eq.0.d0)then !PK.
                   b01_bcm = 0.d0
@@ -1505,8 +1503,7 @@ component.
 * Determine the Roche lobe radii and adjust the radius derivative.
 *
          do 507 , k = 1,2
-            rol(k) = rl(q(k))*sep
-            if(ST_tide.gt.0) rol(k) = rl(q(k))*sep*(1.d0-ecc)
+            rol(k) = rl(q(k))*sep*(1.d0-ecc)
             if(ABS(dtm).gt.tiny)then
                rdot(k) = rdot(k) + (rol(k) - rol0(k))/dtm
                rol0(k) = rol(k)
@@ -1525,7 +1522,7 @@ component.
           rrl2 = rad(2)/rol(2)
           teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-          teff2 = 1000.d0*((1130.d0*lumin(2)/  
+          teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
           if(B_0(1).eq.0.d0)then !PK.
              b01_bcm = 0.d0
@@ -1541,7 +1538,7 @@ component.
           else
              b02_bcm = B(2)
           endif
- 
+
           CALL writebpp(jp,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
@@ -1728,7 +1725,7 @@ component.
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -1781,29 +1778,27 @@ component.
 *    &                k3*radc(j1)*radc(j1)*massc(j1))*ospin(j1)
 *     endif
 *
-      if(ST_tide.gt.0)then
-         sep = sep*(1-ecc)
-         ecc = 0.d0
-         tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
-         oorb = twopi/tb
-         jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
-     &          sqrt(1.d0-ecc*ecc)*sep*sep*oorb
+      sep = sep*(1-ecc)
+      ecc = 0.d0
+      tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
+      oorb = twopi/tb
+      jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
+     &        sqrt(1.d0-ecc*ecc)*sep*sep*oorb
 * Note: this will modify pulsar spin period
-         if(kstar(1).lt.13)then
-            ospin(1) = oorb
-            jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
-     &                   k3*radc(1)*radc(1)*massc(1))*ospin(1)
-         endif
-         if(kstar(2).lt.13)then
-            ospin(2) = oorb
-            jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
-     &                   k3*radc(2)*radc(2)*massc(2))*ospin(2)
-         endif
-         km0 = dtm0*1.0d+03/tb
-         if(km0.lt.tiny) km0 = 0.5d0
-         rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
-         rol(2) = rl(q(2))*sep
+      if(kstar(1).lt.13)then
+         ospin(1) = oorb
+         jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
+     &               k3*radc(1)*radc(1)*massc(1))*ospin(1)
       endif
+      if(kstar(2).lt.13)then
+         ospin(2) = oorb
+         jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
+     &               k3*radc(2)*radc(2)*massc(2))*ospin(2)
+      endif
+      km0 = dtm0*1.0d+03/tb
+      if(km0.lt.tiny) km0 = 0.5d0
+      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
+      rol(2) = rl(q(2))*sep
       iter = 0
       coel = .false.
       change = .false.
@@ -1815,7 +1810,7 @@ component.
       rrl2 = rad(2)/rol(2)
       teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-      teff2 = 1000.d0*((1130.d0*lumin(2)/  
+      teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
       if(B_0(1).eq.0.d0)then !PK.
          b01_bcm = 0.d0
@@ -2126,9 +2121,9 @@ component.
          elseif(kstar(j1).eq.4)then
             qc = 3.d0
          elseif(kstar(j1).eq.5)then
-            qc = 3.d0 
+            qc = 3.d0
          elseif(kstar(j1).eq.6)then
-            qc = 3.d0 
+            qc = 3.d0
          elseif(kstar(j1).eq.7)then
             qc = 1.7d0
          elseif(kstar(j1).eq.8)then
@@ -2255,7 +2250,7 @@ component.
          evolve_type = 7.d0
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -2320,7 +2315,7 @@ component.
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -3289,7 +3284,7 @@ component.
             evolve_type = 14.d0 + FLOAT(k)
             teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-            teff2 = 1000.d0*((1130.d0*lumin(2)/  
+            teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
             if(B_0(1).eq.0.d0)then !PK.
                b01_bcm = 0.d0
@@ -3388,8 +3383,7 @@ component.
 *
       do 100 , k = 1,2
          q(k) = mass(k)/mass(3-k)
-         rol(k) = rl(q(k))*sep
-         if(ST_tide.gt.0) rol(k) = rl(q(k))*sep*(1.d0-ecc)
+         rol(k) = rl(q(k))*sep*(1.d0-ecc)
  100  continue
       if(rad(j1).gt.rol(j1)) radx(j1) = MAX(radc(j1),rol(j1))
       do 110 , k = 1,2
@@ -3466,7 +3460,7 @@ component.
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -3511,7 +3505,7 @@ component.
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -3561,7 +3555,7 @@ component.
       evolve_type = 5.0
       teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-      teff2 = 1000.d0*((1130.d0*lumin(2)/  
+      teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
       if(B_0(1).eq.0.d0)then !PK.
          b01_bcm = 0.d0
@@ -3604,7 +3598,7 @@ component.
          evolve_type = 7.d0
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -3685,7 +3679,7 @@ component.
          evolve_type = 7.d0
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -3771,7 +3765,7 @@ component.
           rrl2 = MIN(rrl2,0.99d0)
           teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-          teff2 = 1000.d0*((1130.d0*lumin(2)/  
+          teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
           if(B_0(1).eq.0.d0)then !PK.
              b01_bcm = 0.d0
@@ -3827,7 +3821,7 @@ component.
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-         teff2 = 1000.d0*((1130.d0*lumin(2)/  
+         teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
          if(B_0(1).eq.0.d0)then !PK.
             b01_bcm = 0.d0
@@ -3894,7 +3888,7 @@ component.
                 evolve_type = 6.0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-                teff2 = 1000.d0*((1130.d0*lumin(2)/  
+                teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
                 if(B_0(1).eq.0.d0)then !PK.
                    b01_bcm = 0.d0
@@ -3934,7 +3928,7 @@ component.
                 ecc = -1.d0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-                teff2 = 1000.d0*((1130.d0*lumin(2)/  
+                teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
                 if(B_0(1).eq.0.d0)then !PK.
                    b01_bcm = 0.d0
@@ -3966,7 +3960,7 @@ component.
                 evolve_type = 9.0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-                teff2 = 1000.d0*((1130.d0*lumin(2)/  
+                teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
                 if(B_0(1).eq.0.d0)then !PK.
                    b01_bcm = 0.d0
@@ -4050,7 +4044,7 @@ component.
               evolve_type = 6.0
               teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-              teff2 = 1000.d0*((1130.d0*lumin(2)/  
+              teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
               if(B_0(1).eq.0.d0)then !PK.
                  b01_bcm = 0.d0
@@ -4086,7 +4080,7 @@ component.
               evolve_type = 9.0
               teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-              teff2 = 1000.d0*((1130.d0*lumin(2)/  
+              teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
               if(B_0(1).eq.0.d0)then !PK.
                  b01_bcm = 0.d0
@@ -4120,7 +4114,7 @@ component.
               rrl2 = rad(2)/rol(2)
               teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
-              teff2 = 1000.d0*((1130.d0*lumin(2)/  
+              teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad(2)**2.d0))**(1.d0/4.d0))
               if(B_0(1).eq.0.d0)then !PK.
                  b01_bcm = 0.d0
@@ -4249,7 +4243,7 @@ component.
       if(using_cmc.eq.0)then
           bcm_index_out = ip
           bpp_index_out = jp
-          bppout = bpp 
+          bppout = bpp
           bcmout = bcm
           kick_info_out = kick_info
       endif
