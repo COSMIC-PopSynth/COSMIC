@@ -2046,7 +2046,7 @@ component.
       elseif(qcflag.eq.3)then
 *
 * Use the binary_c prescriptions taken from Claeys+2014 Table 2
-* but w/ Hjellming & Webbing for GB/AGB
+* but w/ Hjellming & Webbink for GB/AGB
 * If q1 = m_donor/m_acc > qc then common envelope
 *
          if(kstar(j2).lt.10)then
@@ -2130,6 +2130,39 @@ component.
             qc = 3.5
          elseif(kstar(j1).eq.9)then
             qc = 3.5
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+      elseif(qcflag.eq.5)then
+*
+* Use the COMPAS prescriptions taken from Neijssel+2020,
+* section 2.3
+* We convert from radial response to qcrit for MS and HG,
+* which assumes conservative mass transfer
+* Stable MT is always assumed for stripped stars
+* Assume standard qcrit from BSE for kstar>=10
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j1).eq.0)then
+            qc = 1.717d0
+         elseif(kstar(j1).eq.1)then
+            qc = 1.717d0
+         elseif(kstar(j1).eq.2)then
+            qc = 3.825d0
+         elseif(kstar(j1).eq.3)then
+           qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.4)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.5)then
+           qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.6)then
+           qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.7)then
+            qc = 1000.d0
+         elseif(kstar(j1).eq.8)then
+            qc = 1000.d0
+         elseif(kstar(j1).eq.9)then
+            qc = 1000.d0
          elseif(kstar(j1).ge.10)then
             qc = 0.628
          endif
