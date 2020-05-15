@@ -801,7 +801,7 @@ common envelope occurs regardless of the choices below:
 
                             ``2`` : follows `Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_
 
-                            ``3`` : follows the rapid prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
+                            ``3`` : follows the rapid prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_, with updated proto-core mass from `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
@@ -830,8 +830,10 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; remnantflag determines the remnant mass prescription used
-    ; remnantflag=0: default BSE; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
-    ; remnantflag=2: Belczynski et al. 2008; remnantflag=3: rapid prescription (Fryer+ 2012)
+    ; remnantflag=0: default BSE
+    ; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
+    ; remnantflag=2: Belczynski et al. 2008
+    ; remnantflag=3: rapid prescription (Fryer+ 2012), updated as in Giacobbo & Mapelli 2020 
     ; remnantflag=4: delayed prescription (Fryer+ 2012)
     ; default=3
     remnantflag=3
