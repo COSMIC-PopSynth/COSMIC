@@ -850,7 +850,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     flag='natal_kick_array'
     if flag in BSEDict.keys():
         if np.array(BSEDict[flag]).shape != (2,5):
-            raise ValueError("'{0:s}' must have shape (2,5) (you supplied list, or array with shape '{1:d}')".format(flag, np.array(BSEDict[flag]).shape))
+            raise ValueError("'{0:s}' must have shape (2,5) (you supplied list, or array with shape '{1}')".format(flag, np.array(BSEDict[flag]).shape))
 
     flag='remnantflag'
     if flag in BSEDict.keys():
