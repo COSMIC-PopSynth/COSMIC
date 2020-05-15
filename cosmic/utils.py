@@ -807,6 +807,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if len(BSEDict[flag]) != 16:
             raise ValueError("'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(flag, len(BSEDict[flag])))
 
+    flag='kickflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,-1,-2,-3]:
+            raise ValueError("'{0:s}' needs to be set to either 0, -1, -2, or -3 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
     flag='sigma'
     if flag in BSEDict.keys():
         if BSEDict[flag] < 0:

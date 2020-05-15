@@ -561,8 +561,32 @@ common envelope occurs regardless of the choices below:
 .. note::
 
     KICK FLAGS
-
 =======================  =====================================================
+``kickflag``             Sets the particular natal kick prescription to use
+                         Note that ``sigmadiv``, ``bhflag``, ``bhsigmafrac``, 
+                         ``aic``, and ``ussn``, which are described below, are
+                         only used when ``kickflag=0``            
+
+                            ``0`` : The standard COSMIC kick prescription, where
+                            kicks are drawn from a bimodal distribution with 
+                            standard FeCCSN getting a kick drawn from a Maxwellian
+                            distribution with dispersion parameter ``sigma`` and ECSN 
+                            are drawn according to ``sigmadiv``. This setting has 
+                            additional possible options for ``bhflag``, ``bhsigmafrac``, 
+                            ``aic`` and ``ussn``.
+
+                            ``-1`` : Natal kicks are drawn according to ``sigma`` and 
+                            scaled by the ejecta mass and remnant mass following Eq. 1 of 
+                            `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
+
+                            ``-2`` : Natal kicks are drawn according to ``sigma`` and 
+                            scaled by just the ejecta mass following Eq. 2 of 
+                            `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
+
+                            ``-3`` : Natal kicks are drawn according to Eq. 1 of 
+                            `Bray & Eldridge 2016 <https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract>`_
+
+                         **default=0**
 ``sigma``                Sets the dispersion in the Maxwellian for the 
                          SN kick velocity in km/s
 
@@ -689,6 +713,19 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;
     ;;; KICK FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;
+
+    ; kickflag sets the particular kick prescription to use
+    ; kickflag=0 uses the standard kick prescription, where kicks are drawn from a bimodal
+    ; distribution based on whether they go through FeCCSN or ECSN/USSN
+    ; kickflag=-1 uses the prescription from Giacobbo & Mapelli 2020 (Eq. 1)
+    ; with their default parameters (<m_ns>=1.2 Msun, <m_ej>=9 Msun)
+    ; kickflag=-2 uses the prescription from Giacobbo & Mapelli 2020 (Eq. 2),
+    ; which does not scale the kick by <m_ns>
+    ; kickflag=-3 uses the prescription from Bray & Eldridge 2016 (Eq. 1)
+    ; with their default parameters (alpha=70 km/s, beta=120 km/s)
+    ; Note: sigmadiv, bhflag, bhsigmafrac, aic, and ussn are only used when kickflag=0
+    ; default = 0
+    kickflag = 0
 
     ; sigma sets is the dispersion in the Maxwellian for the SN kick velocity in km/s
     ; default=265.0
