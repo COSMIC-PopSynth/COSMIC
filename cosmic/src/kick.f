@@ -13,6 +13,10 @@
 * Evolution was added for binaries in which the kick creates
 * an eccentricity of greater than unity (i.e. hyperbolic orbit).
 *
+* Specific kick magnitudes, angles, eccentric anomaly, and random seeds
+* can be supplied in the initialization file with natal_kick_array, a
+* (2,5) array with the first row being for snstar=1 and second for snstar=2
+*
 * MJZ/SBC (April 2020)
 * kick_info is a (2,17) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
@@ -101,17 +105,18 @@
 
 * check if we have supplied a randomseed for this SN from kick_info
 * already
-      if(natal_kick_array(sn,5).gt.0.d0)then
+      if(natal_kick_array(snstar,5).gt.0.d0)then
 * if we have we need to run ran3 enough times until
 * we are at the same state of the random number generator
 * as we were before
-          do while (natal_kick_array(sn,5).ne.idum1.and.safety.le.20) 
+          do while (natal_kick_array(snstar,5).ne.idum1
+     &                          .and.safety.le.20)
               xx = RAN3(idum1)
               safety = safety + 1
           end do
       endif
 * save the current idum1
-      natal_kick_array(sn,5) = idum1
+      natal_kick_array(snstar,5) = idum1
       kick_info(sn,17) = idum1
 
 * set the SNstar of the exploding object in the kick_info array
@@ -137,10 +142,10 @@
       if(sep.gt.0.d0.and.ecc.ge.0.d0)then
 
 * check is user supplied mean anomaly
-         if((natal_kick_array(sn,4).ge.(0.d0)).and.
-     &       (natal_kick_array(sn,4).le.(360.d0)))then
+         if((natal_kick_array(snstar,4).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar,4).le.(360.d0)))then
 
-             em = natal_kick_array(sn,4)*pi/180.d0
+             em = natal_kick_array(snstar,4)*pi/180.d0
 * per supplied kick value we mimic a call to random number generator
              xx = RAN3(idum1)
              goto 3
@@ -174,8 +179,8 @@
 * Before we draw the kick from the maxwellian and then scale it
 * as desired, let us see if a pre-supplied natal kick maganitude
 * was passed.
-      if(natal_kick_array(sn,1).ge.0.d0)then
-          vk = natal_kick_array(sn,1)
+      if(natal_kick_array(snstar,1).ge.0.d0)then
+          vk = natal_kick_array(snstar,1)
           vk2 = vk*vk
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
@@ -230,13 +235,13 @@
 
 * save natal kick velocity in the kick_info array and natal_kick_array
       kick_info(sn,3) = vk
-      natal_kick_array(sn,1) = vk
+      natal_kick_array(snstar,1) = vk
 
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
-      if((natal_kick_array(sn,2).ge.(-90.d0)).and.
-     &       (natal_kick_array(sn,2).le.(90.d0)))then
-          phi = natal_kick_array(sn,2)*pi/180.d0
+      if((natal_kick_array(snstar,2).ge.(-90.d0)).and.
+     &       (natal_kick_array(snstar,2).le.(90.d0)))then
+          phi = natal_kick_array(snstar,2)*pi/180.d0
           sphi = SIN(phi)
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
@@ -257,9 +262,9 @@
       endif
       cphi = COS(phi)
 
-      if((natal_kick_array(sn,3).ge.(0.d0)).and.
-     &       (natal_kick_array(sn,3).le.(360.d0)))then
-          theta = natal_kick_array(sn,3)*pi/180.d0
+      if((natal_kick_array(snstar,3).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar,3).le.(360.d0)))then
+          theta = natal_kick_array(snstar,3)*pi/180.d0
 * per supplied kick value we mimic a call to random number generator
            xx = RAN3(idum1)
       else
@@ -272,8 +277,8 @@
 *     natal_kick_array
       kick_info(sn,4) = phi*180/pi
       kick_info(sn,5) = theta*180/pi
-      natal_kick_array(sn,2) = phi*180/pi
-      natal_kick_array(sn,3) = theta*180/pi
+      natal_kick_array(snstar,2) = phi*180/pi
+      natal_kick_array(snstar,3) = theta*180/pi
 
 * If the system is already disrupted, apply this kick only to the
 * exploding star, and skip ahead.
@@ -356,7 +361,7 @@
         kick_info(sn,15) = mu*180/pi
         kick_info(sn,16) = omega*180/pi
         kick_info(sn,6) = em*180/pi
-        natal_kick_array(sn,4) = em*180/pi
+        natal_kick_array(snstar,4) = em*180/pi
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
@@ -377,7 +382,7 @@
         kick_info(sn,15) = ACOS(z_tilt)*180/pi
         kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
         kick_info(sn,6) = em*180/pi
-        natal_kick_array(sn,4) = em*180/pi
+        natal_kick_array(snstar,4) = em*180/pi
 
       endif
 
