@@ -686,26 +686,30 @@ common envelope occurs regardless of the choices below:
                             ``values between [0, 90]`` : sets opening angle for SN kick
 
                          **polar_kick_angle = 90.0**
-``natal_kick_array``     Array of lenght: 6 which takes user input values to fix
-                         the SN natal kick, where the array is 
-                         formatted as: [vk1, vk2, phi1, phi2, theta1, theta2].
+``natal_kick_array``     Array of dimensions: (2,5) which takes user input values
+                         for the SN natal kick, where the first row corresponds to the 
+                         first star and the second row corresponds to the second star and
+                         columns are: [vk, phi, theta, eccentric_anomaly, rand_seed].
                          NOTE: any numbers outside these ranges will be sampled
                          in the standard ways detailed above.
 
-                            ``vk1, vk2`` : valid on the range [0, inf] 
+                            ``vk`` : valid on the range [0, inf] 
 
-                            ``phi1, phi2`` : co-lateral polar angles valid from 
+                            ``phi`` : co-lateral polar angle in degrees, valid from 
                             [-90, 90]
 
-                            ``theta1, theta2`` : azimuthal angles valid from 
+                            ``theta`` : azimuthal angle in degrees, valid from 
                             [0, 360]
 
-                            ``eccentric_anomaly_1, eccentric_anomaly_2`` : eccentric_anomaly angles
+                            ``eccentric_anomaly`` : eccentric anomaly in degreed, 
                             valid from [0, 360]
 
+                            ``rand_seed`` : supplied if restarting evolution after
+                            a supernova has already occurred
 
 
-                         **natal_kick_array = [-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]**
+
+                         **natal_kick_array = [[-100.0,-100.0,-100.0,-100.0,0.0][-100.0,-100.0,-100.0,-100.0,0.0]]**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -779,13 +783,13 @@ common envelope occurs regardless of the choices below:
     ; default=90.0
     polar_kick_angle = 90.0
 
-    ; natal_kick_array is a 8-length array for user-input values for the SN natal kick
-    ; formatted as: (vk1, vk2, phi1, phi2, theta1, theta2, eccentric_anomaly_1, eccentric_anomaly_2)
-    ; vk is valid on the range [0, inf], phi are the co-lateral polar angles valid from [-90.0, 90.0], theta are azimuthal angles [0, 360],
-    ; and eccentric_anomaly are angles [0, 360]
+    ; natal_kick_array is a (2,5) array for user-input values for the SN natal kick
+    ; The first and second row specify the natal kick information for the first and second star, and columns are formatted as: (vk, phi, theta, eccentric anomaly, rand_seed)
+    ; vk is valid on the range [0, inf], phi are the co-lateral polar angles (in degrees) valid from [-90.0, 90.0], theta are azimuthal angles (in degrees) valid from [0, 360], and eccentric anomaly are the eccentric anomaly of the orbit at the time of SN (in degrees) valid from [0, 360]
     ; any number outside of these ranges will be sampled in the standard way in kick.f
-    ; default=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
-    natal_kick_array=[-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0,-100.0]
+    ; rand_seed is for reproducing a supernova if the the system is started mid-evolution, set to 0 if starting binary from the beginning
+    ; default=[[-100.0,-100.0,-100.0,-100.0,0],[-100.0,-100.0,-100.0,-100.0,0.0]]
+    natal_kick_array=[[-100.0,-100.0,-100.0,-100.0,0],[-100.0,-100.0,-100.0,-100.0,0.0]]
 
 .. note::
 
@@ -801,7 +805,7 @@ common envelope occurs regardless of the choices below:
 
                             ``2`` : follows `Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_
 
-                            ``3`` : follows the rapid prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
+                            ``3`` : follows the rapid prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_, with updated proto-core mass from `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
@@ -830,8 +834,10 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; remnantflag determines the remnant mass prescription used
-    ; remnantflag=0: default BSE; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
-    ; remnantflag=2: Belczynski et al. 2008; remnantflag=3: rapid prescription (Fryer+ 2012)
+    ; remnantflag=0: default BSE
+    ; remnantflag=1: Belczynski et al. 2002, ApJ, 572, 407
+    ; remnantflag=2: Belczynski et al. 2008
+    ; remnantflag=3: rapid prescription (Fryer+ 2012), updated as in Giacobbo & Mapelli 2020 
     ; remnantflag=4: delayed prescription (Fryer+ 2012)
     ; default=3
     remnantflag=3
