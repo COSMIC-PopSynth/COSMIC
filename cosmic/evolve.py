@@ -84,7 +84,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
-                             'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun']
+                             'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun','kickflag']
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
@@ -374,6 +374,7 @@ class Evolve(object):
                 _evolvebin.flags.st_tide = f['ST_tide']
                 _evolvebin.snvars.rembar_massloss = f['rembar_massloss']
                 _evolvebin.metvars.zsun = f['zsun']
+                _evolvebin.snvars.kickflag = f['kickflag']
                 _evolvebin.cmcpass.using_cmc = 0
 
                 [bpp, bcm, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
@@ -473,6 +474,7 @@ class Evolve(object):
                     _evolvebin.flags.st_tide = f[i]['ST_tide']
                     _evolvebin.snvars.rembar_massloss = f[i]['rembar_massloss']
                     _evolvebin.metvars.zsun = f[i]['zsun']
+                    _evolvebin.snvars.kickflag = f[i]['kickflag']
                     _evolvebin.cmcpass.using_cmc = 0
 
                     [bpp, bcm, bpp_index, bcm_index, kick_info_out] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],

@@ -577,7 +577,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    For this, we just set the proto-core mass to one
                      mcx = 1.d0
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
                         mcx = 1.38d0
@@ -953,7 +952,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    For this, we just set the proto-core mass to one
                      mcx = 1.d0
                      if(ecsn.gt.0.d0.and.mc.le.ecsn)then
                         mcx = 1.38d0

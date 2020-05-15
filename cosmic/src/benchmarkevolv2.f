@@ -40,7 +40,7 @@
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.05; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.6; aic = 1; ussn = 0
-        sigma = 265.0; sigmadiv = -20.0
+        kickflag=0; sigma = 265.0; sigmadiv = -20.0
         bhsigmafrac = 1.0; polar_kick_angle = 90.0
         natal_kick_array = -100.d0; qcrit_array = 0.d0;
         fprimc_array = 2.d0/21.d0;
