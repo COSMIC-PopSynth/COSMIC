@@ -78,7 +78,7 @@ All values with a `_1` label refer to the primary; the BPP DataFrame also includ
 ``sep``           Semimajor axis [:math:`{\mathrm{R}_\odot}`]
 ``porb``          Orbital period [:math:`{\rm{days}}`]
 ``ecc``           Eccentricity
-``RRLO_1``        Primary radius divided by Roche lobe radius
+``RRLO_1``        Primary radius in units of Roche lobe radii
 ``evol_type``     Key moment in evolution (see :ref:`evolve-type-table`)
 ``aj_1``          Effective age of the primary [:math:`{\rm{Myr}}`]
 ``tms_1``         Primary main sequence lifetime [:math:`{\rm{Myr}}`]
@@ -120,9 +120,9 @@ All values with a `_1` label refer to the primary; the BCM DataFrame also includ
 ``menv_1``         Primary envelope mass [:math:`{\mathrm{M}_\odot}`]
 ``renv_1``         Primary envelope radius [:math:`{\mathrm{R}_\odot}`]
 ``epoch_1``        Primary epoch [:math:`\rm{Myr}`]
-``omega_spin_1``        Primary spin [:math:`\rm{rad/yr}`]
+``omega_spin_1``   Primary spin [:math:`\rm{rad/yr}`]
 ``deltam_1``       Primary mass transfer rate [:math:`{\mathrm{M}_\odot/\rm{yr}}`]
-``RRLO_1``         Primary radius divided by Roche lobe radius
+``RRLO_1``         Primary radius in units of Roche lobe radii
 ``porb``           Orbital period [:math:`\rm{days}`]
 ``sep``            Semimajor axis [:math:`\mathrm{R}_{\odot}`]
 ``ecc``            Eccentricity
@@ -163,7 +163,7 @@ velocity after both supernovae).
   * kick_info[i,2]: disrupted (0=no, 1=yes)
   * kick_info[i,3]: magnitude of the natal kick
   * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-  * kick_info[i,6]: eccentric anamoly
+  * kick_info[i,6]: eccentric anomaly
   * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted
   * kick_info[i,10]: magnitude of systemic velocity of the binary if bound or magnitude of total velocity of snstar=1 if disrupted, accounting for both SNe
   * kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system is disrupted
@@ -178,7 +178,7 @@ velocity after both supernovae).
 ``natal_kick``         magnitude of the natal kick [:math:`{\rm{km/s}}`]
 ``phi``                of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
 ``theta``              of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
-``eccentric anamoly``  eccentric anamoly [:math:`{\rm{degrees}}`]
+``eccentric anomaly``  eccentric anomaly [:math:`{\rm{degrees}}`]
 ``delta_vsysx_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (x)
 ``delta_vsysy_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (y)
 ``delta_vsysz_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (z)

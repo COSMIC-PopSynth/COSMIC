@@ -230,8 +230,6 @@ started from the beginning and three different points in the evolution, once som
     >>>     bpp_mid, bcm_mid, initC_mid, kick_info = Evolve.evolve(initialbinarytable=initC)
     >>>     if i == 3:
     >>>         print("From beginning")
-    >>>         print(bpp[initialbinarytable.INITIAL_CONDITIONS_KICK_COLUMNS])
-    >>>         print(bcm[['SNkick_1', 'SNkick_2', 'Vsys_final', 'SNtheta_final']])
+    >>>         print(bpp)
     >>>     print("Started in middle at Index {0}".format(i))
-    >>>     print(bpp_mid[initialbinarytable.INITIAL_CONDITIONS_KICK_COLUMNS])
-    >>>     print(bcm_mid[['SNkick_1', 'SNkick_2', 'Vsys_final', 'SNtheta_final']])
+    >>>     print(bpp_mid)
