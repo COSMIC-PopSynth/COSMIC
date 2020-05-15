@@ -242,7 +242,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         # select out systems when they first enter RLO after the 1st SN
         conv_xrb = conv_sn.loc[(conv_sn.kstar_1.isin(final_kstar_1)) &\
                                (conv_sn.kstar_2.isin(final_kstar_2)) &\
-                               (conv_sn.RROL_2 >= 1.0) &\
+                               (conv_sn.RRLO_2 >= 1.0) &\
                                (conv_sn.sep > 0)]
         conv_save = conv_xrb.groupby('bin_num').first().reset_index()
 

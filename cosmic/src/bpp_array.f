@@ -88,10 +88,10 @@
         SUBROUTINE WRITEBCM(ip,tphys,kstar_1,mass0_1,mass_1,
      &                      lumin_1,rad_1,teff_1,massc_1,
      &                      radc_1,menv_1,renv_1,epoch_1,
-     &                      ospin_1,deltam_1,RROL_1,kstar_2,mass0_2,
+     &                      ospin_1,deltam_1,RRLO_1,kstar_2,mass0_2,
      &                      mass_2,lumin_2,rad_2,teff_2,massc_2,radc_2,
      &                      menv_2,renv_2,epoch_2,ospin_2,deltam_2,
-     &                      RROL_2,porb,sep,ecc,B_0_1,B_0_2,
+     &                      RRLO_2,porb,sep,ecc,B_0_1,B_0_2,
      &                      SN_1,SN_2,bin_state,merger_type)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
@@ -103,10 +103,10 @@
 *
         REAL*8 tphys,mass0_1,mass_1,lumin_1,rad_1,teff_1
         REAL*8 massc_1,radc_1,menv_1,renv_1,epoch_1
-        REAL*8 ospin_1,deltam_1,RROL_1,porb_write,sep_cubed
+        REAL*8 ospin_1,deltam_1,RRLO_1,porb_write,sep_cubed
         REAL*8 mass0_2,mass_2,lumin_2,rad_2,teff_2,massc_2
         REAL*8 radc_2,menv_2,renv_2,epoch_2,ospin_2,deltam_2
-        REAL*8 RROL_2,porb,sep,ecc,B_0_1,B_0_2
+        REAL*8 RRLO_2,porb,sep,ecc,B_0_1,B_0_2
         INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
         INTEGER ip
         REAL*8 yeardy,aursun,rsunau
@@ -129,7 +129,7 @@
         bcm(ip,12) = epoch_1
         bcm(ip,13) = ospin_1
         bcm(ip,14) = deltam_1
-        bcm(ip,15) = RROL_1
+        bcm(ip,15) = RRLO_1
         bcm(ip,16) = float(kstar_2)
         bcm(ip,17) = mass0_2
         bcm(ip,18) = mass_2
@@ -143,7 +143,7 @@
         bcm(ip,26) = epoch_2
         bcm(ip,27) = ospin_2
         bcm(ip,28) = deltam_2
-        bcm(ip,29) = RROL_2
+        bcm(ip,29) = RRLO_2
         if(porb.le.0.d0)then
 * system was disrupted and porb=-1 and should stay that way
             bcm(ip,30) = porb

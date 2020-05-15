@@ -339,7 +339,7 @@ class Sample(object):
             eccentricity
         model : string
             selects which model to sample orbital periods, choices include:
-            log_uniform : semi-major axis flat in log space from RROL < 0.5 up
+            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up
                        to 1e5 Rsun according to
                        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
                         and consistent with Dominik+2012,2013
