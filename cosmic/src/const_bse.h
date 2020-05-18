@@ -21,9 +21,9 @@
       REAL*8 zsun
       COMMON /METVARS/ zsun
       REAL*8 neta,bwind,hewind,beta,xi,acc2,epsnov
-      REAL*8 eddfac,gamma
+      REAL*8 eddfac,gamma,don_lim,acc_lim
       COMMON /WINDVARS/ neta,bwind,hewind,beta,xi,acc2,epsnov,
-     &                  eddfac,gamma
+     &                  eddfac,gamma,don_lim,acc_lim
       REAL*8 alpha1,lambdaf
       REAL*8 qcrit_array(16)
       COMMON /CEVARS/ qcrit_array,alpha1,lambdaf
