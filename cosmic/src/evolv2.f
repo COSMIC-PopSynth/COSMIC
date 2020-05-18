@@ -1911,7 +1911,7 @@ component.
 * Kelvin-Helmholtz time from the modified classical expression.
 *
       do 13 , k = 1,2
-         tkh(k) = 1.0d+07*mass(k)/(rad(k)*lumin(k))
+         tkh(k) = 3.13d+07*mass(k)/(rad(k)*lumin(k))
          if(kstar(k).le.1.or.kstar(k).eq.7.or.kstar(k).ge.10)then
             tkh(k) = tkh(k)*mass(k)
          else
