@@ -16,6 +16,9 @@ from cosmic import evolve
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
+INIT_CONDITIONS['f_acc'] = 1.0
+INIT_CONDITIONS['don_lim'] = 0
+INIT_CONDITIONS['acc_lim'] = 0
 
 init_conds_columns = initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL
 

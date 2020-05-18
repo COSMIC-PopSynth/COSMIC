@@ -2725,6 +2725,12 @@ component.
 *
             dm2 = MIN(1.d0,t_acc_lim)*dm1
          endif
+
+*
+* Now impose an overall fraction of mass from donor that is accreted
+*
+         dm2 = f_acc * dm2
+
          if(.not.novae) dm22 = dm2
 *
          if(kst.ge.10.and.kst.le.12)then

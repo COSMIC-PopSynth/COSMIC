@@ -878,6 +878,19 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if (BSEDict[flag]<=0) and (BSEDict[flag]!=-1) and (BSEDict[flag]!=-2):
             raise ValueError("'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
 
+    flag='f_acc'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]<=0) and (BSEDict[flag]>=1):
+            raise ValueError("'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='don_lim'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>0) and (BSEDict[flag]!=-1) and (BSEDict[flag]!=0):
+            raise ValueError("'{0:s}' needs to either be set to -1 or 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+    flag='acc_lim'
+    if flag in BSEDict.keys():
+        if (BSEDict[flag]>0) and (BSEDict[flag]!=-1) and (BSEDict[flag]!=-2) and (BSEDict[flag]!=0):
+            raise ValueError("'{0:s}' needs to either be set to -2, -1, or 0 (you set it to '{1:0.2f}')".format(flag, BSEDict[flag]))
+
     flag='tflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
