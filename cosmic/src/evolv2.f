@@ -213,7 +213,7 @@
       REAL*8 bppout(1000,43)
       REAL*8 bcmout(50000,38)
 *
-      REAL*8 qc_fixed
+      REAL*8 qc_fixed,t_acc_lim,t_don_lim
       LOGICAL switchedCE,disrupt
 
 Cf2py intent(in) kstar
@@ -2497,27 +2497,12 @@ component.
             dm1 = dm1*1.0d+03*mass(j1)/MAX(rad(j1),1.0d-04)
          endif
          kst = kstar(j2)
+
 *
-* Possibly mass transfer needs to be reduced if primary is rotating
-* faster than the orbit (not currently implemented).
+* Check if rad1 >= 10R1_Roche or if MS donor and qc > qcrit
+* Induce merger if true
 *
-*        spnfac = MIN(3.d0,MAX(ospin(j1)/oorb,1.d0))
-*        dm1 = dm1/spnfac**2
-*
-* Limit mass transfer to the thermal rate for remaining giant-like stars
-* and to the dynamical rate for all others.
-*
-         if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
-***
-* JH_temp ... this may be good for HG RLOF??
-*           if(kstar(j1).eq.2)then
-*              mew = rad(j1)/rol(j1) - 1.d0
-*              mew = 2.d0*mew
-*              dm1 = dm1*10.d0**mew
-*           endif
-***
-            dm1 = MIN(dm1,mass(j1)*tb/tkh(j1))
-         elseif(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
+         if(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
      &          kstar(j2).le.1.and.q(j1).gt.qc))then
 *
 * Allow the stars to merge with the product in *1.
@@ -2541,9 +2526,27 @@ component.
             coel = .true.
             binstate = 1
             goto 135
-         else
-            dm1 = MIN(dm1,mass(j1)*tb/tdyn)
          endif
+
+*
+* Now treat stable mass transfer through RLO
+*
+
+*
+* KB: choose the timescale to limit donor mass loss rate
+*
+
+         if(don_lim.eq.0)then
+            if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+               t_don_lim = tkh(j1)
+            else
+               t_don_lim = tdyn
+            endif
+         else
+            t_don_lim = tkh(j1)
+         endif
+         dm1 = MIN(dm1,mass(j1)*tb/t_don_lim)
+
 *
 * Calculate wind mass loss from the stars during one orbit.
 *
@@ -2615,20 +2618,40 @@ component.
 * Decide between accreted mass by secondary and/or system mass loss.
 *
          taum = mass(j2)/dm1*tb
+
+         if(acc_lim.eq.0)then
+            if(kstar(j2).le.2.or.kstar(j2).eq.4)then
+               t_acc_lim = 10.d0*taum/tkh(j2)
+            elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
+               if(kstar(j1).eq.7)then
+                  t_acc_lim = 10.d0*taum/tkh(j2)       
+               else
+                  t_acc_lim = 1.d0
+               endif
+            elseif(kstar(j2).eq.3.or.kstar(j2).eq.5.or.
+     &             kstar(j2).eq.6)then  
+               t_acc_lim = 1.d0
+            endif
+         elseif(acc_lim.eq.-1)then
+            t_acc_lim = 10*tkh(j1)/tkh(j2)
+         elseif(acc_lim.eq.-2)then
+            t_acc_lim = tkh(j1)/tkh(j2)
+         endif
+
          if(kstar(j2).le.2.or.kstar(j2).eq.4)then
 *
-* Limit according to the thermal timescale of the secondary.
+* Limit according to the chosen timescale for the accretor.
 *
-            dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            dm2 = MIN(1.d0,t_acc_lim)*dm1
          elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
 *
 * Naked helium star secondary swells up to a core helium burning star
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               dm2 = MIN(1.d0,t_acc_lim)*dm1
             else
-               dm2 = dm1
+               dm2 = MIN(1.d0,t_acc_lim)*dm1
                dmchk = dm2 - 1.05d0*dms(j2)
                if(dmchk.gt.0.d0.and.dm2/mass(j2).gt.1.0d-04)then
                   kst = MIN(6,2*kstar(j2)-10)
@@ -2647,6 +2670,8 @@ component.
      &           (kstar(j2).ge.10.and.kstar(j2).le.12))then
 *
 * White dwarf secondary.
+*
+* KB 05/18/2020: no changes to WD with don_lim/acc_lim
 *
             if(dm1/tb.lt.2.71d-07)then
                if(dm1/tb.lt.1.03d-07)then
@@ -2687,6 +2712,8 @@ component.
 *
 * Impose the Eddington limit.
 *
+* KB 05/18/2020: no change with addition of don_lim/acc_lim
+*
             dm2 = MIN(dm1,dme)
             if(dm2.lt.dm1) supedd = .true.
 * Can add pulsar propeller evolution here if need be. PK.
@@ -2696,7 +2723,7 @@ component.
 *
 * We have a giant whose envelope can absorb any transferred material.
 *
-            dm2 = dm1
+            dm2 = MIN(1.d0,t_acc_lim)*dm1
          endif
          if(.not.novae) dm22 = dm2
 *
