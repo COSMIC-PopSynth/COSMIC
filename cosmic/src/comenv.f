@@ -2,7 +2,7 @@
       SUBROUTINE COMENV(M01,M1,MC1,AJ1,JSPIN1,KW1,
      &                  M02,M2,MC2,AJ2,JSPIN2,KW2,
      &                  ZPARS,ECC,SEP,JORB,COEL,star1,star2,vk,
-     &                  kick_info,formation1,formation2,
+     &                  kick_info,formation1,formation2,sigmahold,
      &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &                  lumin,B_0,bacc,tacc,epoch,menv_bpp,renv_bpp)
@@ -80,7 +80,6 @@
 *
       TWOPI = 2.D0*ACOS(-1.D0)
       COEL = .FALSE.
-      sigmahold = sigma
       snp = 0
       output = .false.
 *
@@ -222,10 +221,9 @@
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                           sigma = sigmahold/sigmadiv
-                           sigma = -sigma
-                        else
-                           sigma = -1.d0*sigmadiv
+                           sigma = -sigmahold/sigmadiv
+                        elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                           sigma = sigmadiv
                         endif
                         formation1 = 2
                      endif
@@ -233,28 +231,25 @@
                      if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                           sigma = sigmahold/sigmadiv
-                           sigma = -sigma
-                        else
-                           sigma = -1.d0*sigmadiv
+                           sigma = -sigmahold/sigmadiv
+                        elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                           sigma = sigmadiv
                         endif
                         formation1 = 2
                      endif
                   elseif(formation1.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation1 = 5
                   elseif(KW1i.ge.10.or.KW1i.eq.12)then
 * AIC formation, will never happen here but...
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation1 = 4
                   endif
@@ -323,8 +318,8 @@
                    endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,kick_info,
-     &                   disrupt)
+     &                   JORB,vk,star1,R2,fallback,sigmahold,
+     &                   kick_info,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -520,10 +515,9 @@
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                           sigma = sigmahold/sigmadiv
-                           sigma = -sigma
-                        else
-                           sigma = -1.d0*sigmadiv
+                           sigma = -sigmahold/sigmadiv
+                        elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                           sigma = sigmadiv
                         endif
                         formation1 = 2
                      endif
@@ -531,28 +525,25 @@
                      if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                           sigma = sigmahold/sigmadiv
-                           sigma = -sigma
-                        else
-                           sigma = -1.d0*sigmadiv
+                           sigma = -sigmahold/sigmadiv
+                        elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                           sigma = sigmadiv
                         endif
                         formation1 = 2
                      endif
                   elseif(formation1.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation1 = 5
                   elseif(KW1i.ge.10.or.KW1i.eq.12)then
 * AIC formation, will never happen here but...
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation1 = 4
                   endif
@@ -623,17 +614,16 @@
                if(KW1.eq.13.and.KW2.ge.13.and.ussn.eq.1)then
                   if(KW1i.ge.7.and.KW1i.le.9)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                   formation1 = 3
                   endif
                endif
                CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
-     &                   JORB,vk,star1,R2,fallback,kick_info,
-     &                   disrupt)
+     &                   JORB,vk,star1,R2,fallback,sigmahold,
+     &                   kick_info,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -680,10 +670,9 @@
                   if(KW2i.le.6)then
                      if(M2i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                           sigma = sigmahold/sigmadiv
-                           sigma = -sigma
-                        else
-                           sigma = -1.d0*sigmadiv
+                           sigma = -sigmahold/sigmadiv
+                        elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                           sigma = sigmadiv
                         endif
                         formation2 = 2
                      endif
@@ -691,28 +680,25 @@
                      if(M2i.gt.ecsn_mlow.and.M2i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                           sigma = sigmahold/sigmadiv
-                           sigma = -sigma
-                        else
-                           sigma = -1.d0*sigmadiv
+                           sigma = -sigmahold/sigmadiv
+                        elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                           sigma = sigmadiv
                         endif
                         formation2 = 2
                      endif
                   elseif(formation2.eq.11)then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation2 = 5
                   elseif(KW2i.ge.10.or.KW2i.eq.12)then
 * AIC formation, will never happen here but...
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation2 = 4
                   endif
@@ -782,8 +768,8 @@
                    endif
                endif
                CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
-     &                   JORB,vk,star2,R1,fallback,kick_info,
-     &                   disrupt)
+     &                   JORB,vk,star2,R1,fallback,sigmahold,
+     &                   kick_info,disrupt)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -912,10 +898,9 @@
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation1 = 2
                   endif
@@ -923,28 +908,25 @@
                   if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation1 = 2
                   endif
                elseif(formation1.eq.11)then
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation1 = 5
                elseif(KW1i.ge.10.or.KW1i.eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation1 = 4
                endif
@@ -1006,7 +988,7 @@
                    endif
             endif
             CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,kick_info,disrupt)
+     &                0.d0,fallback,sigmahold,kick_info,disrupt)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)

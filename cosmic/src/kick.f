@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,kick_info,disrupt)
+     &                r2,fallback,sigmahold,kick_info,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -67,8 +67,8 @@
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
       real*8 csigns
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
-      real*8 fallback,bound
-      real*8 mean_mns,mean_mej,alphakick, betakick
+      real*8 fallback,sigmahold,bound
+      real*8 mean_mns,mean_mej,alphakick,betakick
 * Output
       logical output,disrupt
 *
@@ -128,8 +128,12 @@
 * sigma is negative for ECSN
       if((sigma.lt.0.d0).and.(kickflag.eq.0))then
          sigma = -1.d0*sigma
+* for kick prescriptions other than default, revert to original sigma
+      elseif((sigma.lt.0.d0).and.(kickflag.lt.0))then
+         sigma = sigmahold
       endif
       sigmah = sigma
+
 * scale down BH kicks if bhsigmafrac is specified
       if(kickflag.eq.0)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
