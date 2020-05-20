@@ -2233,6 +2233,7 @@ component.
       elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
      &        kstar(j1).eq.8.or.kstar(j1).eq.9)
      &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
+     &        (kstar(j1).eq.1.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
 *
@@ -2466,6 +2467,32 @@ component.
          binstate = 1
          goto 135
       else
+
+         if(kstar(j1).le.1.and.
+     &          kstar(j2).le.1.and.q(j1).gt.qc)then
+*
+* Allow the stars to merge with the product in *1.
+*
+            CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
+            m1ce = mass(j1)
+            m2ce = mass(j2)
+            if((kstar(1).ge.10.and.kstar(1).le.12).and.
+     &         (kstar(2).ge.10.and.kstar(2).le.12))then
+               formation(1) = 11
+               formation(2) = 11
+            endif
+            CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+            dm1 = m1ce - mass(j1)
+            dm2 = mass(j2) - m2ce
+*
+* Next step should be made without changing the time.
+*
+            dtm = 0.d0
+            epoch(1) = tphys - aj(1)
+            coel = .true.
+            binstate = 1
+            goto 135 
+         endif
 *
 * Mass transfer in one Kepler orbit.
 *
@@ -2499,11 +2526,11 @@ component.
          kst = kstar(j2)
 
 *
-* Check if rad1 >= 10R1_Roche or if MS donor and qc > qcrit
+* Check if rad1 >= 10R1_Roche for MS donors
 * Induce merger if true
 *
-         if(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
-     &          kstar(j2).le.1.and.q(j1).gt.qc))then
+         if(rad(j1).gt.10.d0*rol(j1).and.
+     &      (kstar(j1).le.1.or.kstar(j1).eq.7))then
 *
 * Allow the stars to merge with the product in *1.
 *
@@ -2546,6 +2573,7 @@ component.
             t_don_lim = tkh(j1)
          endif
          dm1 = MIN(dm1,mass(j1)*tb/t_don_lim)
+         dm1 = MIN(dm1,mass(j1)*dt/t_don_lim)
 
 *
 * Calculate wind mass loss from the stars during one orbit.
@@ -2592,7 +2620,7 @@ component.
  14      continue
 *
          do 15 , k = 1,2
-            dms(k) = (dmr(k)-dmt(k))*tb
+            dms(k) = (dmr(k)-dmt(k))*MIN(dt,tb)
  15      continue
 *
 * Increase time-scale to relative mass loss of 0.5% but not more than twice.
@@ -2617,7 +2645,7 @@ component.
 *
 * Decide between accreted mass by secondary and/or system mass loss.
 *
-         taum = mass(j2)/dm1*tb
+         taum = mass(j2)/dm1*MIN(dt,tb)
 
          if(acc_lim.eq.0)then
             if(kstar(j2).le.2.or.kstar(j2).eq.4)then

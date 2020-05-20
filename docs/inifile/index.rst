@@ -921,6 +921,37 @@ common envelope occurs regardless of the choices below:
                             fraction *gamma* of the orbital angular momentum
 
                          **gamma = -1.0**
+
+``don_lim``              Model for how mass lost from the donor is limited
+                         by thermal or dynamical timescales
+
+                            ``0`` : t_lim = t_dyn for kstar=0,1,7,10,11,12
+                            t_lim = t_therm for kstar=2,3,4,5,6,8,9
+                            **matches BSE**
+
+                            ``-1`` : t_lim = t_therm for all kstars
+                            **matches COMPAS, binary_c**
+                            **matches StarTrack** if the timescales of
+                            magnetic braking and GW emission are 
+                            sorter than the donor's thermal timescale
+                            and inconsistent otherwise
+
+                         **don_lim = 0**
+
+``acc_lim``              Model for how mass lost from the donor is accreted
+                            ``0`` : dm_acc as min(1, 10*(m_don*porb/dm_don) / t_therm_acc))
+
+                            ``-1`` : dm_acc as min(1, 10*(t_therm_don / t_therm_acc))
+
+                            ``-2`` : dm_acc as min(1, (t_therm_don / t_therm_acc))
+
+                         **acc_lim = 0**
+
+``f_acc``                Fraction of mass lost from donor that is accepted by
+                         the accretor **after** the don_lim and ``don_lim`` and
+                         ``acc_lim`` models are applied
+
+                         **f_acc**
 =======================  =====================================================
 
 .. code-block:: ini
