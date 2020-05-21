@@ -53,7 +53,7 @@
       REAL*8 rrl1_bpp,rrl2_bpp,evolve_type
       REAL*8 aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp
       REAL*8 massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp
-      REAL*8 q1_bpp,q2_bpp
+      REAL*8 q1_bpp,q2_bpp,teff1,teff2
       REAL*8 KW1_TEMP, KW2_TEMP
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
@@ -292,25 +292,33 @@
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
                if(using_cmc.eq.0)then
                    if(switchedCE)then
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0)) 
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),
+     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
      &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
      &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
      &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
      &                      epoch(1),bhspin2,bhspin1)
                    else
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M01,M02,lumin(1),lumin(2),
+     &                      M01,M02,lumin(1),lumin(2),teff1,teff2,
      &                      RC1,RC2,menv_bpp(1),menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
@@ -585,25 +593,33 @@
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M2)))
                if(using_cmc.eq.0)then
                    if(switchedCE)then
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),
+     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
      &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
      &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
      &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
      &                      epoch(1),bhspin2,bhspin1)
                    else
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M01,M02,lumin(1),lumin(2),
+     &                      M01,M02,lumin(1),lumin(2),teff1,teff2,
      &                      RC1,RC2,menv_bpp(1),menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
@@ -742,25 +758,33 @@
      &               SQRT(SEP_postCE/(AURSUN*(M_postCE+M1)))
                if(using_cmc.eq.0)then
                    if(switchedCE)then
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),
+     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
      &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
      &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
      &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
      &                      epoch(1),bhspin2,bhspin1)
                    else
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M01,M02,lumin(1),lumin(2),
+     &                      M01,M02,lumin(1),lumin(2),teff1,teff2,
      &                      RC1,RC2,menv_bpp(1),menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
@@ -962,25 +986,33 @@
             TB = 0.d0
             if(using_cmc.eq.0)then
                    if(switchedCE)then
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),
+     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
      &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
      &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
      &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
      &                      epoch(1),bhspin2,bhspin1)
                    else
+                       teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+                       teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writebpp(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M01,M02,lumin(1),lumin(2),
+     &                      M01,M02,lumin(1),lumin(2),teff1,teff2,
      &                      RC1,RC2,menv_bpp(1),menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
