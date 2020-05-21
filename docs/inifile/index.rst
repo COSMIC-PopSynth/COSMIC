@@ -489,6 +489,9 @@ common envelope occurs regardless of the choices below:
                             for GB/AGB stars
 
                             ``4`` : follows `Section 5.1 of Belcyznski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_ except for WD donors which follow BSE
+
+                            ``5`` : follows `Section 2.3 of Neijssel+2020 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract>`_
+                        Mass transfer from stripped stars is always assumed to be dynamically stable
                          **qcflag = 1**
 
 ``qcrit_array``          Array with length: 16 for user-input values for the 
@@ -550,6 +553,8 @@ common envelope occurs regardless of the choices below:
     ; 1: BSE but with Hjellming & Webbink, 1987, ApJ, 318, 794 GB/AGB stars
     ; 2: following binary_c from Claeys+2014 Table 2
     ; 3: following binary_c from Claeys+2014 Table 2 but with Hjellming & Webbink, 1987, ApJ, 318, 794 GB/AGB stars
+    ; 4: following StarTrack from Belczynski+2008 Section 5.1. WD donors follow standard BSE
+    ; 5: following COMPAS from Neijssel+2020 Section 2.3. Stripped stars are always dynamically stable
     ; default=3
     qcflag=3
 
