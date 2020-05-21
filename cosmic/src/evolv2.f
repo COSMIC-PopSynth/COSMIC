@@ -2596,11 +2596,24 @@ component.
             else
                t_don_lim = tdyn
             endif
-         else
+         elseif(don_lim.eq.-1)then
             t_don_lim = tkh(j1)
+         elseif(don_lim.eq.-2)then
+             if(kstar(j1).le.1.or.kstar(j1).eq.7.or.
+     &          kstar(j1).eq.2.or.kstar(j1).eq.8)then
+                if(mass(j1).lt.2.d0)then
+                   t_don_lim = tdyn
+                else
+                   t_don_lim = tkh(j1)
+                endif
+             elseif(kstar(j1).eq.3)then
+                t_don_lim = tdyn
+             else
+                t_don_lim = tkh(j1)
+             endif
          endif
+ 
          dm1 = MIN(dm1,mass(j1)*tb/t_don_lim)
-         dm1 = MIN(dm1,mass(j1)*dt/t_don_lim)
 
 *
 * Calculate wind mass loss from the stars during one orbit.
@@ -2672,7 +2685,7 @@ component.
 *
 * Decide between accreted mass by secondary and/or system mass loss.
 *
-         taum = mass(j2)/dm1*MIN(dt,tb)
+         taum = mass(j2)/dm1*tb
 
          if(acc_lim.eq.0)then
             if(kstar(j2).le.2.or.kstar(j2).eq.4)then
