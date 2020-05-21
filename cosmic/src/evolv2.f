@@ -1198,10 +1198,9 @@ component.
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation(k) = 2
                   endif
@@ -1209,29 +1208,26 @@ component.
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
 * MIC
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation(k) = 4
                elseif(merger.ge.20.d0)then
@@ -1257,19 +1253,17 @@ component.
                if(formation(k).eq.11)then
 * MIC
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation(k) = 4
                endif
@@ -1314,7 +1308,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,kick_info,disrupt)
+     &                   0.d0,fallback,sigmahold,kick_info,disrupt)
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1353,7 +1347,7 @@ component.
      &                       epoch(2),bhspin(1),bhspin(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(3-k),fallback,kick_info,disrupt)
+     &                   rad(3-k),fallback,sigmahold,kick_info,disrupt)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -2046,7 +2040,7 @@ component.
       elseif(qcflag.eq.3)then
 *
 * Use the binary_c prescriptions taken from Claeys+2014 Table 2
-* but w/ Hjellming & Webbing for GB/AGB
+* but w/ Hjellming & Webbink for GB/AGB
 * If q1 = m_donor/m_acc > qc then common envelope
 *
          if(kstar(j2).lt.10)then
@@ -2130,6 +2124,39 @@ component.
             qc = 3.5
          elseif(kstar(j1).eq.9)then
             qc = 3.5
+         elseif(kstar(j1).ge.10)then
+            qc = 0.628
+         endif
+      elseif(qcflag.eq.5)then
+*
+* Use the COMPAS prescriptions taken from Neijssel+2020,
+* section 2.3
+* We convert from radial response to qcrit for MS and HG,
+* which assumes conservative mass transfer
+* Stable MT is always assumed for stripped stars
+* Assume standard qcrit from BSE for kstar>=10
+* If q1 = m_donor/m_acc > qc then common envelope
+*
+         if(kstar(j1).eq.0)then
+            qc = 1.717d0
+         elseif(kstar(j1).eq.1)then
+            qc = 1.717d0
+         elseif(kstar(j1).eq.2)then
+            qc = 3.825d0
+         elseif(kstar(j1).eq.3)then
+           qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.4)then
+            qc = 3.d0
+         elseif(kstar(j1).eq.5)then
+           qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.6)then
+           qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))
+         elseif(kstar(j1).eq.7)then
+            qc = 1000.d0
+         elseif(kstar(j1).eq.8)then
+            qc = 1000.d0
+         elseif(kstar(j1).eq.9)then
+            qc = 1000.d0
          elseif(kstar(j1).ge.10)then
             qc = 0.628
          endif
@@ -2283,7 +2310,7 @@ component.
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,kick_info,formation(j1),formation(j2),
+     &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv)
@@ -3243,10 +3270,9 @@ component.
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation(k) = 2
                   endif
@@ -3254,28 +3280,25 @@ component.
                   if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                        sigma = sigmahold/sigmadiv
-                        sigma = -sigma
-                     else
-                        sigma = -1.d0*sigmadiv
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
                      endif
                      formation(k) = 2
                   endif
                elseif(formation(k).eq.11)then
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation(k) = 5
                elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
 * AIC formation, will never happen here but...
                   if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
-                     sigma = sigmahold/sigmadiv
-                     sigma = -sigma
-                  else
-                     sigma = -1.d0*sigmadiv
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
                   endif
                   formation(k) = 4
                endif
@@ -3312,7 +3335,7 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,kick_info,disrupt)
+     &                rad(3-k),fallback,sigmahold,kick_info,disrupt)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
             if(mass(3-k).lt.0.d0)then
@@ -3630,7 +3653,7 @@ component.
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,kick_info,formation(j1),formation(j2),
+     &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv)
@@ -3711,7 +3734,7 @@ component.
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,kick_info,formation(j1),formation(j2),
+     &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv)
