@@ -2527,21 +2527,47 @@ component.
 * KB: adding in stable mass transfer factor from
 *     eqs 10-11 of Claeys+2014
 *
-         if(qcflag.gt.1.and.qcflag.le.3)then
-            if(q(j1).gt.1)then
-               f_fac=1000.d0
-            else
-               f_fac=1000*q(j1)*
-     &               EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
-               if(f_fac.lt.1)then
-                  f_fac=1
+
+*
+* KB 05/22/2020: adding in donor limits
+*
+
+         if(don_lim.eq.0)then
+            if(qcflag.gt.1.and.qcflag.le.3)then
+               if(q(j1).gt.1)then
+                  f_fac=1000.d0
+               else
+                  f_fac=1000*q(j1)*
+     &                  EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+                  if(f_fac.lt.1)then
+                     f_fac=1
+                  endif
                endif
+               dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &               MIN(mass(j1),5.d0)**2
+            else
+               dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &               MIN(mass(j1),5.d0)**2
             endif
-            dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &            MIN(mass(j1),5.d0)**2
-         else
-            dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &            MIN(mass(j1),5.d0)**2
+         elseif(don_lim.eq.-1)then
+            if(qcflag.gt.1.and.qcflag.le.3)then
+               if(q(j1).gt.1)then
+                  f_fac=1000.d0
+               else
+                  f_fac=1000*q(j1)*
+     &                  EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+                  if(f_fac.lt.1)then
+                     f_fac=1
+                  endif
+               endif
+               dm1 = MAX(MIN(dt,tb)*mass(j1)/tkh(j1),
+     &                   f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &                   MIN(mass(j1),5.d0)**2)
+            else
+               dm1 = MAX(MIN(dt,tb)*mass(j1)/tkh(j1),
+     &                   3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &                   MIN(mass(j1),5.d0)**2)
+            endif
          endif
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
