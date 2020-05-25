@@ -169,7 +169,7 @@
       REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,17)
       REAL*8 kick_info_out(2,17)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
-      REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
+      REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew,tnuc
       PARAMETER(mch=1.44d0)
       REAL*8 yeardy,yearsc,aursun
       PARAMETER(yeardy=365.24d0,aursun=214.95d0,yearsc=3.1557d+07)
@@ -195,7 +195,8 @@
       REAL ran3
       EXTERNAL ran3
 *
-
+      REAL*8 test_tol, RLO_tol, dm1_test, m_donor_hold, RRLO_hold
+      REAL*8 m_donor
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -2532,43 +2533,71 @@ component.
 * KB 05/22/2020: adding in donor limits
 *
 
+
          if(don_lim.eq.0)then
-            if(qcflag.gt.1.and.qcflag.le.3)then
-               if(q(j1).gt.1)then
-                  f_fac=1000.d0
-               else
-                  f_fac=1000*q(j1)*
-     &                  EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
-                  if(f_fac.lt.1)then
-                     f_fac=1
-                  endif
-               endif
-               dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+            dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &               MIN(mass(j1),5.d0)**2
-            else
-               dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &               MIN(mass(j1),5.d0)**2
-            endif
          elseif(don_lim.eq.-1)then
-            if(qcflag.gt.1.and.qcflag.le.3)then
-               if(q(j1).gt.1)then
-                  f_fac=1000.d0
+            dm1_test = mass(j1)/tkh(j1)
+            RLO_tol = 0.0001
+            test_tol = 1.0
+            m_donor_hold = mass(j1)
+            DO WHILE (test_tol.gt.RLO_tol)
+               m_donor = m_donor_hold - dm1_test
+               CALL star(kstar(j1),mass(j1),m_donor_hold,tm,tn,tscls,
+     &                   lums,GB,zpars)
+               CALL hrdiag(mass(j1),age,m_donor_hold,tm,tn,tscls,
+     &                     lums,GB,zpars,rm,lum,kstar(j1),
+     &                     massc(j1),rc,me,re,k2,bhspin(j1),j1)
+               RRLO_hold = rl(q(j1))*sep*(1.d0-ecc)
+               test_tol = 2.d0*(rad(j1) - RRLO_hold)/RRLO_hold
+               WRITE(*,*)dm1_test,test_tol,m_donor_hold,mass(j1),rad(j1)
+               if(test_tol.gt.1.d0)then
+                   dm1_test = dm1_test + dm1_test / test_tol
                else
-                  f_fac=1000*q(j1)*
-     &                  EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
-                  if(f_fac.lt.1)then
-                     f_fac=1
-                  endif
+                   dm1_test = dm1_test - dm1_test * test_tol
                endif
-               dm1 = MAX(MIN(dt,tb)*mass(j1)/tkh(j1),
-     &                   f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &                   MIN(mass(j1),5.d0)**2)
-            else
-               dm1 = MAX(MIN(dt,tb)*mass(j1)/tkh(j1),
-     &                   3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
-     &                   MIN(mass(j1),5.d0)**2)
-            endif
-         endif
+            END DO
+            dm1 = dm1_test
+            mass(j1) = m_donor_hold
+         end if
+
+*         tnuc = 1.0d10*mass(j1)*(lumin(j1))**(-1.d0)
+*         if(don_lim.eq.0)then
+*            if(qcflag.gt.1.and.qcflag.le.3)then
+*               if(q(j1).gt.1)then
+*                  f_fac=tnuc/tkh(j1)
+*               else
+*                  f_fac=tnuc/tkh(j1)*q(j1)*
+*     &                  EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+*                  if(f_fac.lt.1)then
+*                     f_fac=1
+*                  endif
+*               endif
+*               dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+*     &               MIN(mass(j1),5.d0)**2
+*            else
+*               dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+*     &               MIN(mass(j1),5.d0)**2
+*            endif
+*         elseif(don_lim.eq.-1)then
+*            if(qcflag.gt.1.and.qcflag.le.3)then
+*               if(q(j1).gt.1)then
+*                  f_fac=tnuc/tkh(j1)
+*               else
+*                  f_fac=tnuc/tkh(j1)*q(j1)*
+*     &                  EXP(-0.5d0*(-LOG(q(j1))/0.15d0)**2)
+*                  if(f_fac.lt.1)then
+*                     f_fac=1
+*                  endif
+*               endif
+*               dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+*     &               MIN(mass(j1),5.d0)**2
+*            else
+*               dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+*     &               MIN(mass(j1),5.d0)**2
+*            endif
+*         endif
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
