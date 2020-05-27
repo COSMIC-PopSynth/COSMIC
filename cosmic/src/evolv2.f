@@ -196,7 +196,7 @@
       EXTERNAL ran3
 *
       REAL*8 test_tol, RLO_tol, dm1_test, m_donor_hold, RRLO_hold
-      REAL*8 m_donor
+      REAL*8 m_donor,dm1_test_old,dm1_test_new,aj_hold,m_acc,dm1_nuc
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -2538,28 +2538,62 @@ component.
             dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &               MIN(mass(j1),5.d0)**2
          elseif(don_lim.eq.-1)then
-            dm1_test = mass(j1)/tkh(j1)
-            RLO_tol = 0.0001
+            dm1_nuc = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
+     &                        MIN(mass(j1),5.d0)**2
+            dm1_test_old = dm1_nuc
+            dm1_test_new = mass(j1)/tkh(j1)*tb
+            RLO_tol = 0.01
             test_tol = 1.0
             m_donor_hold = mass(j1)
-            DO WHILE (test_tol.gt.RLO_tol)
-               m_donor = m_donor_hold - dm1_test
-               CALL star(kstar(j1),mass(j1),m_donor_hold,tm,tn,tscls,
-     &                   lums,GB,zpars)
-               CALL hrdiag(mass(j1),age,m_donor_hold,tm,tn,tscls,
-     &                     lums,GB,zpars,rm,lum,kstar(j1),
-     &                     massc(j1),rc,me,re,k2,bhspin(j1),j1)
-               RRLO_hold = rl(q(j1))*sep*(1.d0-ecc)
-               test_tol = 2.d0*(rad(j1) - RRLO_hold)/RRLO_hold
-               WRITE(*,*)dm1_test,test_tol,m_donor_hold,mass(j1),rad(j1)
-               if(test_tol.gt.1.d0)then
-                   dm1_test = dm1_test + dm1_test / test_tol
-               else
-                   dm1_test = dm1_test - dm1_test * test_tol
-               endif
-            END DO
-            dm1 = dm1_test
-            mass(j1) = m_donor_hold
+* First, try thermal timescale and if that peels off too much
+* mass then iterate to find the proper mass
+            m_donor = m_donor_hold - dm1_test_new
+            m_acc = mass(j2) + dm1_test_old
+            CALL star(kstar(j1),mass0(j1),mass(j1),tm,tn,tscls,
+     &                lums,GB,zpars)
+            if(kstar(j1).eq.2)then
+               aj_hold = tm + (tscls(1) - tm)*(aj(j1)-tms(j1))/
+     &                               (tbgb(j1) - tms(j1))
+            else
+               aj_hold = aj(j1)
+            endif
+            CALL hrdiag(mass0(j1),aj(j1),m_donor,tm,tn,tscls,
+     &                  lums,GB,zpars,rm,lum,kstar(j1),
+     &                  massc(j1),radc(j1),menv(j1),renv(j1),
+     &                  k2,bhspin(j1),j1)
+            RRLO_hold = rl(m_donor/m_acc)*sep*(1.d0-ecc)
+            test_tol = (rm - RRLO_hold)/RRLO_hold
+            if((test_tol.gt.0).and.(test_tol.gt.RLO_tol))then
+*
+* In this case, we can just take off mass at the thermal
+* rate without any problems
+*
+               dm1 = dm1_test_new
+               mass(j1) = m_donor_hold
+            else
+               DO WHILE((ABS(test_tol).lt.RLO_tol).and.
+     *                 (dm1_test_new.gt.dm1_nuc))
+                  dm1_test_new = (dm1_test_new - dm1_test_old)/2.d0
+                  dm1_test_old = dm1_test_new
+                  m_donor = m_donor_hold - dm1_test_new
+                  m_acc = mass(j2) + dm1_test_old
+                  CALL star(kstar(j1),mass(j1),m_donor,tm,tn,tscls,
+     &                      lums,GB,zpars)
+                  if(kstar(j1).eq.2)then
+                      aj_hold = tm + (tscls(1) - tm)*(aj(j1)-tms(j1))/
+     &                               (tbgb(j1) - tms(j1))
+                  else
+                      aj_hold = aj(j1)
+                  endif
+                  CALL hrdiag(mass(j1),aj_hold,m_donor,tm,tn,tscls,
+     &                        lums,GB,zpars,rm,lum,kstar(j1),
+     &                        massc(j1),radc(j1),menv(j1),renv(j1),
+     &                        k2,bhspin(j1),j1)
+                  RRLO_hold = rl(m_donor/m_acc)*sep*(1.d0-ecc)
+                  test_tol = (rm - RRLO_hold)/RRLO_hold
+               END DO
+               dm1 = dm1_test_new
+            end if 
          end if
 
 *         tnuc = 1.0d10*mass(j1)*(lumin(j1))**(-1.d0)
