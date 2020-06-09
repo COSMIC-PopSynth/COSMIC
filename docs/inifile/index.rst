@@ -930,18 +930,11 @@ common envelope occurs regardless of the choices below:
 ``don_lim``              Model for how mass lost from the donor is limited
                          by thermal or dynamical timescales
 
-                            ``0`` : t_lim = t_dyn for kstar=0,1,7,10,11,12
-                            t_lim = t_therm for kstar=2,3,4,5,6,8,9
-                            **matches BSE**
+                            ``0`` : consistent with `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
-                            ``-1`` : t_lim = t_therm for all kstars
-                            **matches COMPAS, binary_c**
-                            **matches StarTrack** if the timescales of
-                            magnetic braking and GW emission are 
-                            sorter than the donor's thermal timescale
-                            and inconsistent otherwise
-
-                         **don_lim = 0**
+                            ``-1`` : increases mass loss rate by factor 
+                            given in Eq. 11 of `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
+                         **don_lim = -1**
 
 ``acc_lim``              Model for how mass lost from the donor is accreted
                             ``0`` : dm_acc as min(1, 10*(m_don*porb/dm_don) / t_therm_acc))
@@ -950,7 +943,7 @@ common envelope occurs regardless of the choices below:
 
                             ``-2`` : dm_acc as min(1, (t_therm_don / t_therm_acc))
 
-                         **acc_lim = 0**
+                         **acc_lim = -1**
 
 ``f_acc``                Fraction of mass lost from donor that is accepted by
                          the accretor **after** the don_lim and ``don_lim`` and
