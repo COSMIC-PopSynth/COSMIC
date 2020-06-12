@@ -8,16 +8,16 @@ addons:
   - swig
   - libhdf5-serial-dev
 python:
-- '3.5'
 - '3.6'
 - '3.7'
+- '3.8'
 before_install:
 - pip install pip setuptools --upgrade
 install:
 - python -m pip install .
 before_script:
 - python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner "sphinx>=1.6.1"
-  "numpydoc>=0.8.0" sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme unittest2
+  "numpydoc>=0.8.0" sphinx-bootstrap-theme sphinxcontrib-programoutput sphinx_rtd_theme
   ipython sphinx-automodapi
 script:
 - bash .travis/compile_benchmark.sh

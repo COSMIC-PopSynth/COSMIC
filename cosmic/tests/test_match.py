@@ -4,7 +4,7 @@
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
 import os
-import unittest2
+import unittest
 import numpy as np
 import scipy.integrate
 import pandas as pd
@@ -16,7 +16,7 @@ sample = np.random.uniform(0,1,500)
 
 MATCH_TEST = np.log10(1-0.99636185870762237007)
 
-class TestMatch(unittest2.TestCase):
+class TestMatch(unittest.TestCase):
     """`TestCase` for the match method
     """
     def test_Match(self):

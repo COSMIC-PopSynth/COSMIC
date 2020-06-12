@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2019)
+# Copyright (C) Scott Coughlin (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -52,13 +52,19 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
-INITIAL_CONDITIONS_COLUMNS = ['kstar_1', 'kstar_2', 'mass1_binary', 'mass2_binary', 'porb', 'ecc',
-                             'metallicity', 'tphysf', 'mass0_1', 'mass0_2',
-                             'rad1', 'rad2', 'lumin1', 'lumin2', 'massc1', 'massc2',
-                             'radc1', 'radc2', 'menv1', 'menv2', 'renv1', 'renv2',
-                             'ospin1', 'ospin2', 'b_0_1', 'b_0_2', 'bacc1', 'bacc2',
-                             'tacc1', 'tacc2', 'epoch1', 'epoch2', 'tms1', 'tms2',
-                             'bhspin1','bhspin2', 'tphys']
+INITIAL_CONDITIONS_COLUMNS = []
+
+INITIAL_CONDITIONS_COLUMNS_CORE = ['kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'porb', 'ecc', 'metallicity', 'tphysf',]
+
+INITIAL_CONDITIONS_COLUMNS_EXTRAS = ['mass0_1', 'mass0_2',
+                                     'rad_1', 'rad_2', 'lum_1', 'lum_2', 'massc_1', 'massc_2',
+                                     'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
+                                     'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
+                                     'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2', 'tms_1', 'tms_2',
+                                     'bhspin_1','bhspin_2', 'tphys']
+
+INITIAL_CONDITIONS_COLUMNS.extend(INITIAL_CONDITIONS_COLUMNS_CORE)
+INITIAL_CONDITIONS_COLUMNS.extend(INITIAL_CONDITIONS_COLUMNS_EXTRAS)
 
 INITIAL_CONDITIONS_MISC_COLUMNS = ['binfrac']
 
@@ -122,32 +128,32 @@ class InitialBinaryTable():
         # For instance the Globular Cluster code CMC requires this behavior.
         mass0_1 = kwargs.pop('mass0_1', m1)
         mass0_2 = kwargs.pop('mass0_2', m2)
-        rad1 = kwargs.pop('rad1', np.zeros(np.array(m1).size))
-        rad2 = kwargs.pop('rad2', np.zeros(np.array(m1).size))
-        lumin1 = kwargs.pop('lumin1', np.zeros(np.array(m1).size))
-        lumin2 = kwargs.pop('lumin2', np.zeros(np.array(m1).size))
-        massc1 = kwargs.pop('massc1', np.zeros(np.array(m1).size))
-        massc2 = kwargs.pop('massc2', np.zeros(np.array(m1).size))
-        radc1 = kwargs.pop('radc1', np.zeros(np.array(m1).size))
-        radc2 = kwargs.pop('radc2', np.zeros(np.array(m1).size))
-        menv1 = kwargs.pop('menv1', np.zeros(np.array(m1).size))
-        menv2 = kwargs.pop('menv2', np.zeros(np.array(m1).size))
-        renv1 = kwargs.pop('renv1', np.zeros(np.array(m1).size))
-        renv2 = kwargs.pop('renv2', np.zeros(np.array(m1).size))
-        ospin1 = kwargs.pop('ospin1', np.zeros(np.array(m1).size))
-        ospin2 = kwargs.pop('ospin2', np.zeros(np.array(m1).size))
-        b_0_1 = kwargs.pop('b_0_1', np.zeros(np.array(m1).size))
-        b_0_2 = kwargs.pop('b_0_2', np.zeros(np.array(m1).size))
-        bacc1 = kwargs.pop('bacc1', np.zeros(np.array(m1).size))
-        bacc2 = kwargs.pop('bacc2', np.zeros(np.array(m1).size))
-        tacc1 = kwargs.pop('tacc1', np.zeros(np.array(m1).size))
-        tacc2 = kwargs.pop('tacc2', np.zeros(np.array(m1).size))
-        epoch1 = kwargs.pop('epoch1', np.zeros(np.array(m1).size))
-        epoch2 = kwargs.pop('epoch2', np.zeros(np.array(m1).size))
-        tms1 = kwargs.pop('tms1', np.zeros(np.array(m1).size))
-        tms2 = kwargs.pop('tms2', np.zeros(np.array(m1).size))
-        bhspin1 = kwargs.pop('bhspin1', np.zeros(np.array(m1).size))
-        bhspin2 = kwargs.pop('bhspin2', np.zeros(np.array(m1).size))
+        rad1 = kwargs.pop('rad_1', np.zeros(np.array(m1).size))
+        rad2 = kwargs.pop('rad_2', np.zeros(np.array(m1).size))
+        lumin1 = kwargs.pop('lumin_1', np.zeros(np.array(m1).size))
+        lumin2 = kwargs.pop('lumin_2', np.zeros(np.array(m1).size))
+        massc1 = kwargs.pop('massc_1', np.zeros(np.array(m1).size))
+        massc2 = kwargs.pop('massc_2', np.zeros(np.array(m1).size))
+        radc1 = kwargs.pop('radc_1', np.zeros(np.array(m1).size))
+        radc2 = kwargs.pop('radc_2', np.zeros(np.array(m1).size))
+        menv1 = kwargs.pop('menv_1', np.zeros(np.array(m1).size))
+        menv2 = kwargs.pop('menv_2', np.zeros(np.array(m1).size))
+        renv1 = kwargs.pop('renv_1', np.zeros(np.array(m1).size))
+        renv2 = kwargs.pop('renv_2', np.zeros(np.array(m1).size))
+        ospin1 = kwargs.pop('ospin_1', np.zeros(np.array(m1).size))
+        ospin2 = kwargs.pop('ospin_2', np.zeros(np.array(m1).size))
+        b_0_1 = kwargs.pop('B_1', np.zeros(np.array(m1).size))
+        b_0_2 = kwargs.pop('B_2', np.zeros(np.array(m1).size))
+        bacc1 = kwargs.pop('bacc_1', np.zeros(np.array(m1).size))
+        bacc2 = kwargs.pop('bacc_2', np.zeros(np.array(m1).size))
+        tacc1 = kwargs.pop('tacc_1', np.zeros(np.array(m1).size))
+        tacc2 = kwargs.pop('tacc_2', np.zeros(np.array(m1).size))
+        epoch1 = kwargs.pop('epoch_1', np.zeros(np.array(m1).size))
+        epoch2 = kwargs.pop('epoch_2', np.zeros(np.array(m1).size))
+        tms1 = kwargs.pop('tms_1', np.zeros(np.array(m1).size))
+        tms2 = kwargs.pop('tms_2', np.zeros(np.array(m1).size))
+        bhspin1 = kwargs.pop('bhspin_1', np.zeros(np.array(m1).size))
+        bhspin2 = kwargs.pop('bhspin_2', np.zeros(np.array(m1).size))
         tphys = kwargs.pop('tphys', np.zeros(np.array(m1).size))
 
         bin_dat = pd.DataFrame(np.vstack([
@@ -159,7 +165,8 @@ class InitialBinaryTable():
                                             radc1, radc2, menv1, menv2, renv1, renv2,
                                             ospin1, ospin2, b_0_1, b_0_2, bacc1, bacc2,
                                             tacc1, tacc2, epoch1, epoch2, tms1, tms2,
-                                            bhspin1,bhspin2,tphys,binfrac,
+                                            bhspin1, bhspin2, tphys,
+                                            binfrac
                                           ]).T,
                                columns = INITIAL_CONDITIONS_COLUMNS_ALL)
 

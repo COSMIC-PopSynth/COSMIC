@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) Katelyn Breivik (2017 - 2019)
+#  -*- coding: utf-8 -*-
+# Copyright (C) Katelyn Breivik (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -121,8 +121,8 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
     """
     match_all = []
     for conv_param in conv_params:
-        if (conv_param == 'ecc') and (np.all(conv_1[conv_param] < 1e-7)) and (np.all(conv_1[conv_param] >=0.0)) and (bin_state == 0):
-            log_file.write('{0} is circular for all conv binaries\n'.format(conv_param))
+        if (conv_param == 'ecc') and (np.all(conv_1[conv_param] < 1e-7)):
+            log_file.write('{0} is circular or disrupted for all conv binaries\n'.format(conv_param))
             match_all.append(-9)
         elif (conv_param == 'ecc') and (np.all(conv_1[conv_param] == -1.0)):
             log_file.write('{0} is the same for all disrupted binaries\n'.format(conv_param))

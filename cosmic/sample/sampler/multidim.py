@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Katelyn Breivik (2017 - 2019)
+# Copyright (C) Katelyn Breivik (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_multidim_sampler','MultiDim']
 
 
-def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model, component_age, met, size, **kwargs):
+def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SF_start, SF_duration, met, size, **kwargs):
     """adapted version of Maxwell Moe's IDL code that generates a population of single and binary stars
 
     Below is the adapted version of Maxwell Moe's IDL code
@@ -86,11 +86,11 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     nproc : `int`
         Number of processors to use to generate population
 
-    SFH_model : `str`
-        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+    SF_start : `float`
+            Time in the past when star formation initiates in Myr
 
-    component_age : `float`
-        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
+    SF_duration : `float`
+            Duration of constant star formation beginning from SF_Start in Myr
 
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is 0.02
@@ -131,7 +131,7 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SFH_model
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
     mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc)
-    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age, met, size = mass1_binary.size)
+    tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size) 
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
@@ -675,25 +675,17 @@ class MultiDim:
 
         return primary_mass_list, secondary_mass_list, porb_list, ecc_list, mass_singles, mass_binaries, n_singles, n_binaries, binfrac_list
 
-    def sample_SFH(self, SFH_model='const', component_age=10000.0, met = 0.02, size=None):
+    def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
-        star formation history (SFH) and Galactic component age.
-        The default is a MW thin disk constant evolution over 10000 Myr
+        time at the start of star formation and the duration of star formation.
+        The default is a burst of star formation 13,700 Myr in the past.
 
         Parameters
         ----------
-        SFH_model : string
-            'const' assigns an evolution time assuming a constant star
-            formation rate over the age of the MW disk: component_age [Myr]
-            'burst' assigns an evolution time assuming a burst of constant
-            star formation for 1Gyr starting at component_age [Myr] in the past
-            'delta_burst' assignes a t=0 evolution time until component age
-            'FIRE' assigns evolution time and metallicity according to m12i 
-            Default: 'const'
-        component_age : float
-            age of the Galactic component [Myr]
-            Default: 10000.0
-            Deprecated if SFH_model='FIRE'
+        SF_start : float
+            Time in the past when star formation initiates in Myr
+        SF_duration : float
+            Duration of constant star formation beginning from SF_Start in Myr
         met : float
             metallicity of the population [Z_sun = 0.02]
             Default: 0.02
@@ -706,28 +698,20 @@ class MultiDim:
         -------
         tphys : array
             array of evolution times of size=size
+        metallicity : array
+            array of metallicities
         """
 
-        if SFH_model=='const':
-
-            tphys = np.random.uniform(0, component_age, size)
+        if (SF_start > 0.0) & (SF_duration >= 0.0):
+            tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
-
-        elif SFH_model=='burst':
-            tphys = component_age - np.random.uniform(0, 1000, size)
-            metallicity = np.ones(size)*met
-            return tphys, metallicity
-        elif SFH_model=='delta_burst':
-            tphys = component_age*np.ones(size)
-            metallicity = np.ones(size)*met
-            return tphys, metallicity
-        elif SFH_model=='FIRE':
+        elif (SF_start <0.0):
             import cosmic.FIRE as FIRE
             tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
         else:
-            raise Error('You must supply const, burst, delta_burst, or FIRE')
+            raise Error('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

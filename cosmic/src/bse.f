@@ -37,7 +37,7 @@
 *
       integer i,kw,kw2,kstar(2),j,k,time
 *
-      real*8 mass0(2),mass(2),z,zpars(20),vs(3),bkick(12)
+      real*8 mass0(2),mass(2),z,zpars(20),vs(3),kick_info(12)
       real*8 epoch(2),tms(2),tphys,tphysf,dtp,aj
       real*8 rad(2),lum(2),ospin(2)
       real*8 massc(2),radc(2),menv(2),renv(2)
@@ -67,8 +67,8 @@
 * ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800 (0). 
 * wdflag > 0 uses modified-Mestel cooling for WDs (0). 
 * bhflag > 0 allows velocity kick at BH formation (0). 
-* nsflag > 0 takes NS/BH mass from Belczynski et al. 2002, ApJ, 572, 407 (1). 
-* mxns is the maximum NS mass (1.8, nsflag=0; 3.0, nsflag=1). 
+* remnantflag > 0 takes NS/BH mass from Belczynski et al. 2002, ApJ, 572, 407 (1). 
+* mxns is the maximum NS mass (1.8, remnantflag=0; 3.0, remnantflag=1). 
 * idum is the random number seed used by the kick routine. 
 *
 * Next come the parameters that determine the timesteps chosen in each
@@ -94,7 +94,7 @@
       OPEN(22,file='binary.in', status='old')
       READ(22,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
       READ(22,*)neta,bwind,hewind,alpha1,lambda,windflag
-      READ(22,*)ceflag,tflag,ifflag,wdflag,bhflag,nsflag,mxns,idum
+      READ(22,*)ceflag,tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
       READ(22,*)pts1,pts2,pts3
       READ(22,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
       if(kstar(1).lt.0.or.kstar(2).lt.0)then
@@ -124,7 +124,7 @@
          ospin(2) = 0.d0
       endif
       do i=1,12
-         bkick(i) = 0.d0
+         kick_info(i) = 0.d0
       enddo 
 * If you would like to enter the seperation as input in place of the binary
 * orbital period uncomment these lines (depending upon which units you wish
@@ -177,7 +177,7 @@
 * 
       CALL evolv2(kstar,mass0,mass,rad,lum,massc,radc,
      &            menv,renv,ospin,epoch,tms,
-     &            tphys,tphysf,dtp,z,zpars,tb,ecc,bkick)
+     &            tphys,tphysf,dtp,z,zpars,tb,ecc,kick_info)
 *
 ************************************************************************
 * Output:
