@@ -54,6 +54,7 @@
       real*8 rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
       real*8 rgbf,rminf,ragbf,rzahbf,rzhef,rhehgf,rhegbf,rpertf
       real*8 mctmsf,mcgbtf,mcgbf,mcheif,mcagbf,lzahbf
+      real*8 mrem
       external thookf,tblf
       external lalphf,lbetaf,lnetaf,lhookf,lgbtf,lmcgbf,lzhef,lpertf
       external rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
@@ -507,9 +508,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   lum = 1.0d-10
                   r = 1.0d-10
                else
-                  if(nsflag.eq.0)then
+                  if(remnantflag.eq.0)then
                      mt = 1.17d0 + 0.09d0*mc
-                  elseif(nsflag.eq.1)then
+                  elseif(remnantflag.eq.1)then
 *
 * Use NS/BH mass given by Belczynski et al. 2002, ApJ, 572, 407.
 *
@@ -527,7 +528,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      elseif(mc.gt.7.60)then
                         fallback = 1.d0
                      endif
-                  elseif(nsflag.eq.2)then
+                  elseif(remnantflag.eq.2)then
 *
 * Use NS/BH masses given by Belczynski+08. PK.
 *
@@ -572,12 +573,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.3)then
+                  elseif(remnantflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    For this, we just set the proto-core mass to one
-                     mcx = 1.d0
+*                    We use the updated proto-core mass from Giacobbo & Mapelli 2020
+                     mcx = 1.1d0
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn)then
                         mcx = 1.38d0
                      elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
@@ -614,7 +615,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.4)then
+                  elseif(remnantflag.eq.4)then
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
@@ -659,18 +660,26 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mc = mt
                   endif
 
-                  if(mt.le.mxns)then
-*
-* Zero-age Neutron star
-*
-                     kw = 13
-* Convert baryonic mass to gravitational mass (Lattimer & Yahil 1989)
-                     if(nsflag.ge.2) mt = 2.108167d0*SQRT(10.d0+3.d0*mt)
-     &                                    - 6.6666667d0
+* Specify the baryonic to gravitational remnant mass prescription
+* MJZ 04/2020
+
+* Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
+                  if(remnantflag.le.1)then
+                     mrem = mt
                   else
-*
-* Zero-age Black hole
-*
+                     mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                     if(rembar_massloss.ge.0d0)then
+                        if((mt-mrem).ge.rembar_massloss) 
+     &                               mrem = mt-rembar_massloss
+                     endif
+                  endif
+
+* Determine whether a zero-age NS or BH is formed
+                  if(mrem.le.mxns)then
+                     mt = mrem
+                     kw = 13
+                  else
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -779,8 +788,20 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
                      endif
 
-* Convert baryonic mass to gravitational mass (approx for BHs)
-                     if(nsflag.ge.2) mt = 0.9d0*mt
+* Convert baryonic mass to gravitational mass 
+* MJZ 04/2020
+                     if(remnantflag.le.1)then
+                        mrem = mt
+                     else
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                        if(rembar_massloss.ge.0d0)then
+                           mrem = mt-rembar_massloss
+* If -1 < rembar_massloss < 0, assume this fractional mass loss
+                        else
+                           mrem = (1.d0+rembar_massloss)*mt
+                        endif
+                     endif
+                     mt = mrem
                   endif
                endif
             endif
@@ -870,9 +891,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      lum = 1.0d-10
                      r = 1.0d-10
                   else
-                     if(nsflag.eq.0)then
+                     if(remnantflag.eq.0)then
                         mt = 1.17d0 + 0.09d0*mc
-                     elseif(nsflag.eq.1)then
+                     elseif(remnantflag.eq.1)then
                         if(mc.lt.2.5d0)then
                            mcx = 0.161767d0*mc + 1.067055d0
                         else
@@ -886,7 +907,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            fallback = (mc - 5.d0)/2.6d0
                         endif
                         if(mc.gt.7.60) fallback = 1.d0
-                     elseif(nsflag.eq.2)then
+                     elseif(remnantflag.eq.2)then
 *
 * Use NS/BH masses given by Belczynski+08. PK.
 *
@@ -928,12 +949,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.3)then
+                  elseif(remnantflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    For this, we just set the proto-core mass to one
-                     mcx = 1.d0
+*                    We use the updated proto-core mass from Giacobbo & Mapelli 2020
+                     mcx = 1.1d0
                      if(ecsn.gt.0.d0.and.mc.le.ecsn)then
                         mcx = 1.38d0
                      elseif(ecsn.eq.0.d0.and.mc.le.2.25d0)then !this should be ecsn, unless ecsn=0
@@ -969,7 +990,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                          endif
                      endif
                      mc = mt
-                  elseif(nsflag.eq.4)then
+                  elseif(remnantflag.eq.4)then
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
@@ -1013,18 +1034,26 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      mc = mt
                   endif
 
-                  if(mt.le.mxns)then
-*
-* Zero-age Neutron star
-*
-                     kw = 13
-* Convert baryonic mass to gravitational mass (Lattimer & Yahil 1989)
-                     if(nsflag.ge.2) mt = 2.108167d0*SQRT(10.d0+3.d0*mt)
-     &                                    - 6.6666667d0
+* Specify the baryonic to gravitational remnant mass prescription
+* MJZ 04/2020
+
+* Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
+                  if(remnantflag.le.1)then
+                     mrem = mt
                   else
-*
-* Zero-age Black hole
-*
+                     mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                     if(rembar_massloss.ge.0d0)then
+                        if((mt-mrem).ge.rembar_massloss) 
+     &                               mrem = mt-rembar_massloss
+                     endif
+                  endif
+
+* Determine whether a zero-age NS or BH is formed
+                  if(mrem.le.mxns)then
+                     mt = mrem
+                     kw = 13
+                  else
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -1134,9 +1163,21 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
                      endif
 
+* MJZ 04/2020
+* Convert baryonic mass to gravitational mass 
+                     if(remnantflag.le.1)then
+                        mrem = mt
+                     else
+* If rembar_massloss >= 0, limit the massloss by rembar_massloss
+                        if(rembar_massloss.ge.0d0)then
+                           mrem = mt-rembar_massloss
+* If -1 < rembar_massloss < 0, assume this fractional mass loss
+                        else
+                           mrem = (1.d0+rembar_massloss)*mt
+                        endif
+                     endif
+                     mt = mrem
 
-* Convert baryonic mass to gravitational mass (approx for BHs)
-                     if(nsflag.ge.2) mt = 0.9d0*mt
                      endif
                   endif
                endif

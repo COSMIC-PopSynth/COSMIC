@@ -1,6 +1,6 @@
 ***
       SUBROUTINE evolv1(kw,mass,mt,r,lum,mc,rc,menv,renv,ospin,
-     &                  epoch,tm,tphys,tphysf,dtp,z,zpars,bkick)
+     &                  epoch,tm,tphys,tphysf,dtp,z,zpars,kick_info)
 c-------------------------------------------------------------c
 c
 c     Evolves a single star.
@@ -43,7 +43,7 @@ c-------------------------------------------------------------c
       real*8 epoch,tphys,tphys2,tmold,tbgold
       real*8 mt,tm,tn,tphysf,dtp,tsave
       real*8 tscls(20),lums(10),GB(10),zpars(20)
-      real*8 r,lum,mc,teff,rc,menv,renv,bkick(12)
+      real*8 r,lum,mc,teff,rc,menv,renv,kick_info(12)
       real*8 ospin,jspin,djt,djmb,k2,k3
       parameter(k3=0.21d0)
       real*8 m0,r1,lum1,mc1,rc1,menv1,renv1,k21
@@ -249,7 +249,7 @@ c-------------------------------------------------------------c
                ospin = 2.0d+08
                jspin = k3*rc*rc*mc*ospin
                CALL kick(kw,mass,mt,0.d0,0.d0,-1.d0,0.d0,vk,1,
-     &                   0.d0,fallback,bkick)
+     &                   0.d0,fallback,kick_info)
             endif
             jp = jp + 1
             spp(jp,1) = tphys

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Katelyn Breivik (2017 - 2019)
+# Copyright (C) Katelyn Breivik (2017 - 2020)
 #
 # This file is part of cosmic.
 #
@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, SFH_model, binfrac_model, component_age, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model,  SF_start, SF_duration, binfrac_model, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
@@ -52,16 +52,19 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
 
     ecc_model : `str`
-        Model to sample eccentricity; choices include: thermal, uniform
+        Model to sample eccentricity; choices include: thermal, uniform, sana12
 
-    SFH_model : `str`
-        Model to sample star formation history (or birth time); choices include: const, burst, delta_burst
+    porb_model : `str`
+        Model to sample orbital period; choices include: log_uniform, sana12
+
+    SF_start : `float`
+            Time in the past when star formation initiates in Myr
+
+    SF_duration : `float`
+            Duration of constant star formation beginning from SF_Start in Myr
 
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
-
-    component_age : `float`
-        Sets the maximum age of the component; in the case of a delta burst, every binary is evolved for the component age
 
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is 0.02
@@ -138,8 +141,8 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
-    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, size=mass1_binary.size)
-    tphysf, metallicity = initconditions.sample_SFH(SFH_model, component_age=component_age, met=met, size = mass1_binary.size)
+    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
+    tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
     kstar1 = initconditions.set_kstar(mass1_binary)
@@ -156,7 +159,7 @@ register_sampler('independent', InitialBinaryTable, get_independent_sampler,
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa93', size=None):
+    def sample_primary(self, primary_model='kroupa01', size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
@@ -187,7 +190,7 @@ class Sample(object):
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
 
-            Default kroupa93
+            Default kroupa01
         size : int, optional
             number of initial primary masses to sample
             NOTE: this is set in cosmic-pop call as Nstep
@@ -205,36 +208,36 @@ class Sample(object):
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.740074
-            high_cutoff = 0.908422
+            low_cutoff = 0.771
+            high_cutoff = 0.919
 
             lowIdx, = np.where(a_0 <= low_cutoff)
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-1.2, size=len(midIdx))
-            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-1.7, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
             return a_0, total_sampled_mass
 
         elif primary_model=='kroupa01':
+            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
+            # at 0.08 Msun instead of 0.01
+
             total_sampled_mass = 0
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
 
-            low_cutoff = 0.37148816884988606
-            high_cutoff = 0.8496015751162523
+            cutoff = 0.748
 
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            highIdx, = np.where(a_0 >= high_cutoff)
+            lowIdx, = np.where(a_0 <= cutoff)
+            highIdx, = np.where(a_0 >= cutoff)
 
-            a_0[lowIdx] = rndm(a=0.01, b=0.08, g=0.7, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.08, b=0.5, g=-0.3, size=len(midIdx))
-            a_0[highIdx] = rndm(a=0.5, b=100.0, g=-1.3, size=len(highIdx))
+            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -243,7 +246,7 @@ class Sample(object):
         elif primary_model=='salpeter55':
             total_sampled_mass = 0
             multiplier = 1
-            a_0 = rndm(a=0.08, b=150, g=-1.35, size=size*multiplier)
+            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
 
             total_sampled_mass += np.sum(a_0)
 
@@ -254,6 +257,8 @@ class Sample(object):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
+
+        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
 
         Parameters
         ----------
@@ -267,8 +272,7 @@ class Sample(object):
             primary_mass
         """
 
-        a_0 = np.random.uniform(0.001, 1, primary_mass.size)
-        secondary_mass = primary_mass*a_0
+        secondary_mass = np.random.uniform(0.08*np.ones_like(primary_mass), primary_mass)
 
         return secondary_mass
 
@@ -322,13 +326,9 @@ class Sample(object):
         return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
 
 
-    def sample_porb(self, mass1, mass2, ecc, size=None):
-        """Sample the semi-major axis flat in log space from RROL < 0.5 up
-        to 1e5 Rsun according to
-        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
-        and consistent with Dominik+2012,2013
-        and then converted to orbital period in days using Kepler III
-
+    def sample_porb(self, mass1, mass2, ecc, porb_model='sana12', size=None):
+        """Sample the orbital period according to the user-specified model
+        
         Parameters
         ----------
         mass1 : array
@@ -336,66 +336,91 @@ class Sample(object):
         mass2 : array
             secondary masses
         ecc : array
-            eccentricities
+            eccentricity
+        model : string
+            selects which model to sample orbital periods, choices include:
+            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up
+                       to 1e5 Rsun according to
+                       `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+                        and consistent with Dominik+2012,2013
+                        and then converted to orbital period in days using Kepler III
+            sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following 
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
+            renzo19 : power law orbital period for m1 > 15Msun binaries from 
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
+                        following the implementation of 
+                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
 
         Returns
         -------
-        porb_sec/sec_in_day : array
+        porb : array
             orbital period with array size equalling array size
-            of mass1 and mass2
+            of mass1 and mass2 in units of days
         """
-        q = mass2/mass1
-        RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
+        if porb_model == 'log_uniform':     
+            q = mass2/mass1
+            RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
 
-        q2 = mass1/mass2
-        RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
-        try:
-            ind_lo, = np.where(mass1 < 1.66)
-            ind_hi, = np.where(mass1 >= 1.66)
+            q2 = mass1/mass2
+            RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
+            try:
+                ind_lo, = np.where(mass1 < 1.66)
+                ind_hi, = np.where(mass1 >= 1.66)
 
-            rad1 = np.zeros(len(mass1))
-            rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
-            rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
-        except:
-            if mass1 < 1.66:
-                rad1 = 1.06*mass1**0.945
-            else:
-                rad1 = 1.33*mass1**0.555
+                rad1 = np.zeros(len(mass1))
+                rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
+                rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
+            except:
+                if mass1 < 1.66:
+                    rad1 = 1.06*mass1**0.945
+                else:
+                    rad1 = 1.33*mass1**0.555
 
-        try:
-            ind_lo, = np.where(mass2 < 1.66)
-            ind_hi, = np.where(mass2 >= 1.66)
+            try:
+                ind_lo, = np.where(mass2 < 1.66)
+                ind_hi, = np.where(mass2 >= 1.66)
 
-            rad2 = np.zeros(len(mass2))
-            rad2[ind_lo] = 1.06*mass2[ind_lo]**0.945
-            rad2[ind_hi] = 1.33*mass2[ind_hi]**0.555
-        except:
-            if mass2 < 1.66:
-                rad2 = 1.06*mass1**0.945
-            else:
-                rad2 = 1.33*mass1**0.555
+                rad2 = np.zeros(len(mass2))
+                rad2[ind_lo] = 1.06*mass2[ind_lo]**0.945
+                rad2[ind_hi] = 1.33*mass2[ind_hi]**0.555
+            except:
+                if mass2 < 1.66:
+                    rad2 = 1.06*mass1**0.945
+                else:
+                    rad2 = 1.33*mass1**0.555
 
-        # include the factor for the eccentricity
-        RL_max = 2*rad1/RL_fac
-        ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
-        if len(ind_switch) >= 1:
-            RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
-        a_min = RL_max*(1+ecc)
-        a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
+            # include the factor for the eccentricity
+            RL_max = 2*rad1/RL_fac
+            ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
+            if len(ind_switch) >= 1:
+                RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
+            a_min = RL_max*(1+ecc)
+            a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
-        # convert out of log space
-        a_0 = np.exp(a_0)
-        # convert to au
-        rsun_au = 0.00465047
-        a_0 = a_0*rsun_au
+            # convert out of log space
+            a_0 = np.exp(a_0)
+            # convert to au
+            rsun_au = 0.00465047
+            a_0 = a_0*rsun_au
 
-        # convert to orbital period in years
-        yr_day = 365.24
-        porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
-        return porb_yr*yr_day
+            # convert to orbital period in years
+            yr_day = 365.24
+            porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
+            porb = porb_yr*yr_day
+        elif porb_model == 'sana12':
+            from cosmic.utils import rndm
+            porb = 10**rndm(a=0.15, b=5.5, g=-0.55, size=size)
+        elif porb_model == 'renzo19':
+            from cosmic.utils import rndm
+            porb = 10**(np.random.uniform(0.15, 5.5, size))
+            ind_massive, = np.where(mass1 > 15)
+            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
+        else:
+            raise ValueError('You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19')
+        return porb
 
 
-    def sample_ecc(self, ecc_model='thermal', size=None):
+    def sample_ecc(self, ecc_model='sana12', size=None):
         """Sample the eccentricity according to a user specified model
 
         Parameters
@@ -404,7 +429,9 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            DEFAULT = 'thermal'
+            'sana12' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            'circular' assumes zero eccentricity for all systems
+            DEFAULT = 'sana12'
 
         size : int, optional
             number of eccentricities to sample
@@ -425,28 +452,30 @@ class Sample(object):
             ecc = np.random.uniform(0.0, 1.0, size)
             return ecc
 
-        else:
-            raise Error('You have specified an unsupported model. Please choose from thermal or uniform')
+        elif ecc_model=='sana12':
+            from cosmic.utils import rndm
+            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size) 
+            return ecc
 
-    def sample_SFH(self, SFH_model='const', component_age=10000.0, met=0.02, size=None):
+        elif ecc_model=='circular':
+            ecc = np.zeros(size)
+            return ecc
+
+        else:
+            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular')
+
+
+    def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
-        star formation history (SFH) and Galactic component age.
-        The default is a MW thin disk constant evolution over 10000 Myr
+        time at the start of star formation and the duration of star formation.
+        The default is a burst of star formation 13,700 Myr in the past.
 
         Parameters
         ----------
-        SFH_model : str
-            'const' assigns an evolution time assuming a constant star
-            formation rate over the age of the MW disk: component_age [Myr]
-            'burst' assigns an evolution time assuming a burst of constant
-            star formation for 1Gyr starting at component_age [Myr] in the past
-            'delta_burst' assignes a t=0 evolution time until component age
-            'FIRE' assigns times and matallicities according to m12i
-            Default: 'const'
-        component_age: float
-            age of the Galactic component [Myr]; 
-            Default: 10000.0
-            Deprecated if SFH_model='FIRE'
+        SF_start : float
+            Time in the past when star formation initiates in Myr
+        SF_duration : float
+            Duration of constant star formation beginning from SF_Start in Myr
         met : float
             metallicity of the population [Z_sun = 0.02]
             Default: 0.02
@@ -463,29 +492,16 @@ class Sample(object):
             array of metallicities
         """
 
-        if SFH_model=='const':
-
-            tphys = np.random.uniform(0, component_age, size)
+        if (SF_start > 0.0) & (SF_duration >= 0.0):
+            tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
-
-        elif SFH_model=='burst':
-            tphys = component_age - np.random.uniform(0, 1000, size)
-            metallicity = np.ones(size)*met
-            return tphys, metallicity
-
-        elif SFH_model=='delta_burst':
-            tphys = component_age*np.ones(size)
-            metallicity = np.ones(size)*met
-            return tphys, metallicity
-
-        elif SFH_model=='FIRE':
+        elif (SF_start < 0.0):
             import cosmic.FIRE as FIRE
             tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
-
         else:
-            raise Error('You have specified an unsupported model. Please choose between const, burst, delta_burst, or FIRE')
+            raise Error('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

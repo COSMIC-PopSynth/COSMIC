@@ -37,7 +37,7 @@ c-------------------------------------------------------------c
 *
       integer i,kw,j,k
 *
-      real*8 mass,mt,z,zpars(20),vs(3),bkick(12)
+      real*8 mass,mt,z,zpars(20),vs(3),kick_info(12)
       real*8 epoch,tms,tphys,tphysf,dtp
       real*8 r,lum,ospin
       real*8 mc,rc,menv,renv
@@ -68,8 +68,8 @@ c-------------------------------------------------------------c
 * ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800 (0). 
 * wdflag > 0 uses modified-Mestel cooling for WDs (0). 
 * bhflag > 0 allows velocity kick at BH formation (0). 
-* nsflag > 0 takes NS/BH mass from Belczynski et al. 2002, ApJ, 572, 407 (1). 
-* mxns is the maximum NS mass (1.8, nsflag=0; 3.0, nsflag=1). 
+* remnantflag > 0 takes NS/BH mass from Belczynski et al. 2002, ApJ, 572, 407 (1). 
+* mxns is the maximum NS mass (1.8, remnantflag=0; 3.0, remnantflag=1). 
 * idum is the random number seed used in the kick routine. 
 *
 * Next come the parameters that determine the timesteps chosen in each
@@ -87,7 +87,7 @@ c-------------------------------------------------------------c
       OPEN(22,file='evolve.in',status='old')
       READ(22,*)mass,z,tphysf
       READ(22,*)neta,bwind,hewind,sigma,windflag
-      READ(22,*)ifflag,wdflag,bhflag,nsflag,mxns,idum
+      READ(22,*)ifflag,wdflag,bhflag,remnantflag,mxns,idum
       READ(22,*)pts1,pts2,pts3
 *
 ************************************************************************
@@ -97,7 +97,7 @@ c-------------------------------------------------------------c
       CALL zcnsts(z,zpars)
       if(idum.gt.0) idum = -idum
       do i=1,12
-         bkick(i) = 0.d0
+         kick_info(i) = 0.d0
       enddo
 *
       if(mass.gt.0.0)then
@@ -134,7 +134,7 @@ c-------------------------------------------------------------c
       dtp = 0.d0
 * 
       CALL evolv1(kw,mass,mt,r,lum,mc,rc,menv,renv,ospin,
-     &            epoch,tms,tphys,tphysf,dtp,z,zpars,bkick)
+     &            epoch,tms,tphys,tphysf,dtp,z,zpars,kick_info)
 *
 ************************************************************************
 * Output:

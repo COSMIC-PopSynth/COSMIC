@@ -1,0 +1,103 @@
+name: Publish Python 🐍 distributions 📦 to PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-code-mac:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Anaconda Python ${{ matrix.python-version }}
+      uses: s-weigand/setup-conda@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        conda-channels: anaconda
+
+    - name: Install dependencies
+      run: |
+        conda install gfortran_osx-64 numpy h5py
+        python3 -m pip install --upgrade pip
+        python3 -m pip install --upgrade setuptools wheel
+        python3 -m pip install --upgrade twine
+
+    - name: Build a binary wheel and a source tarball
+      run: |
+        NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
+
+    - name: Upload builds
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist
+        path: dist
+
+  build-code-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine flake8
+
+    - name: Build manylinux Python wheels
+      uses: RalfG/python-wheels-manylinux-build@v0.2.2-manylinux2010_x86_64
+      with:
+        build-requirements: 'numpy'
+        system-packages: 'hdf5 gcc-gfortran'
+        package-path: ''
+        pip-wheel-args: '--no-deps'
+
+    - name: Upload builds
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist
+        path: wheelhouse
+
+  publish:
+    needs: [build-code-mac, build-code-linux]
+    name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade setuptools wheel
+        python3 -m pip install --upgrade twine
+
+    - name: Download builds
+      uses: actions/download-artifact@v1
+      with:
+          name: dist
+
+    - name: Remove bad wheel names
+      run: rm -rf cosmic_popsynth*linux_x86_64.whl
+      working-directory: /home/runner/work/COSMIC/COSMIC/dist
+
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.pypi_password }}
