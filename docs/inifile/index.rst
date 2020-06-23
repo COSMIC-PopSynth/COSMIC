@@ -491,20 +491,33 @@ common envelope occurs regardless of the choices below:
                             ``4`` : follows `Section 5.1 of Belcyznski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_ except for WD donors which follow BSE
 
                             ``5`` : follows `Section 2.3 of Neijssel+2020 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract>`_
-                        Mass transfer from stripped stars is always assumed to be dynamically stable
+
+                         Mass transfer from stripped stars is always assumed to be dynamically stable
+
                          **qcflag = 1**
+
+                         .. csv-table:: Comparison of Q Crit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options
+                            :file: qcrit_table.csv
+                            :header-rows: 1
+
+
+                         Eq.1: ``qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))``, which is from Hjellming & Webbink 1983
+
+                         Eq.2: ``qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0``, which is from Claeys+ 2014
 
 ``qcrit_array``          Array with length: 16 for user-input values for the 
                          critical mass ratios that govern the onset of unstable
                          mass transfer and a common envelope. Each item is set 
                          individually for its associated kstar, and a value of 
                          0.0 will apply prescription of the qcflag for that kstar.
+
                          **Note:** there are cases where a common envelope is forced 
                          regardless of the critical mass ratio for unstable mass
                          transfer; in the following cases, a common envelope occurs
                          regardless of the qcrit or qcflag                          
 
                          **qcrit_array = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]**
+
 =======================  =====================================================
 
 .. code-block:: ini
