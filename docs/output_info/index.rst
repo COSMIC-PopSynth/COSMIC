@@ -64,12 +64,12 @@ The evolutionary changes of the binary are logged in the evol_type column, which
     =========   =====================
 
 
-BPP DataFrame
--------------
+bpp
+---
 
 This `pandas.DataFrame` tracks a selection of binary parameters at key evolutionary changes.
 Entries are added with changes in the :ref:`evolve-type-table`.
-All values with a `_1` label refer to the primary; the BPP DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
+All values with a `_1` label refer to the primary; the bpp DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
 
 ================  =====================================================
 ``tphys``         Evolution time [:math:`{\rm{Myr}}`]
@@ -96,16 +96,16 @@ All values with a `_1` label refer to the primary; the BPP DataFrame also includ
 ``tacc_1``        Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
 ``epoch_1``
 ``bhspin_1``      Black hole spin magnitude [unitless]
-``bin_num``       Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames
+``bin_num``       Unique binary index that is consistent across initial conditions, bcm and bpp DataFrames
 ================  =====================================================
 
 
 
-BCM DataFrame
--------------
+bcm
+---
 This `pandas.DataFrame` provides several binary parameters at user-specified timesteps in the evolution.
-By default, COSMIC saves only the first and last timestep in the BCM DataFrame.
-All values with a `_1` label refer to the primary; the BCM DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
+By default, COSMIC saves only the first and last timestep in the bcm DataFrame.
+All values with a `_1` label refer to the primary; the bcm DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
 
 =================  =====================================================
 ``tphys``          Evolution time [:math:`\rm{Myr}`]
@@ -144,7 +144,7 @@ All values with a `_1` label refer to the primary; the BCM DataFrame also includ
                     7: Pair instability SN
 ``bin_state``      State of the binary: 0 [binary], 1 [merged], 2 [disrupted]
 ``merger_type``    String of the kstar's in the merger, '-001' if not merged
-``bin_num``        Unique binary index that is consistent across initial conditions, BCM and BPP DataFrames
+``bin_num``        Unique binary index that is consistent across initial conditions, bcm and bpp DataFrames
 =================  =====================================================
 
 kick_info
