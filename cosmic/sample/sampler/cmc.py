@@ -99,16 +99,9 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     n_binaries += len(mass1_binaries)
 
     # select out the primaries and secondaries that will produce the final kstars
-    ind_select_primary, = np.where((mass1_binaries > primary_min) & (mass1_binaries < primary_max))
-    ind_select_secondary, = np.where((mass2_binaries > secondary_min) & (mass2_binaries < secondary_max))
-    ind_select = list(set(ind_select_primary).intersection(ind_select_secondary))
-    mass1_binary.extend(mass1_binaries[ind_select])
-    mass2_binary.extend(mass2_binaries[ind_select])
-    binfrac.extend(binfrac_binaries[ind_select])
-
-    mass1_binary = np.array(mass1_binary)
-    mass2_binary = np.array(mass2_binary)
-    binfrac = np.asarray(binfrac)
+    mass1_binary = np.array(mass1_binaries)
+    mass2_binary = np.array(mass2_binaries)
+    binfrac = np.asarray(binfrac_binaries)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
     tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size)
@@ -117,7 +110,12 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.InitialCMCObjects(id_idx, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
+    # sample velocity
+    
+    # sample radius /obtain radius
+    breakpoint()
+
+    return InitialBinaryTable.InitialCMCObjects(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
 
 
 register_sampler('cmc', InitialBinaryTable, get_cmc_sampler,
