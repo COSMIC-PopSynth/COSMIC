@@ -24,6 +24,7 @@ import numpy as np
 from .sampler import register_sampler
 from .independent import Sample
 from .. import InitialBinaryTable
+from ..cmc import cmc_sample
 
 __author__ = 'Newlin Weatherford <newlinweatherford2017@u.northwestern.edu>'
 __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>', 'Carl Rodriguez <carllouisrodriguez@gmail.com>']
@@ -110,10 +111,11 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    # sample velocity
-    
+    # set radial velocity, set transverse velocity, set location in cluster
+    vr = initconditions.set_vr_vt_r(**kwargs)
+
     # sample radius /obtain radius
-    breakpoint()
+    initconditions.set_reff(mass1)
 
     return InitialBinaryTable.InitialCMCObjects(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
 
@@ -123,5 +125,10 @@ register_sampler('cmc', InitialBinaryTable, get_cmc_sampler,
 
 
 class CMCSample(Sample):
-    def sample_vr(self):
-        return
+    def set_vr_vt_r(self, **kwargs):
+        vr, vt, r = cmc_sample.carls_functions(**kwargs)
+        return vr, vt, r
+
+    def set_reff(self, mass):
+        breakpoint()
+        InitialBinaryTable.InitialBinaries(mass, 0, 1000000, 0, 0.1, self.set_kstar(mass), 0, 0.17)
