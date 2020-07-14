@@ -4,7 +4,7 @@ import operator
 import numpy
 
 CHECKSTATE_COLUMNS = numpy.array(['binstate', 'evol_type', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
-               'sep', 'porb', 'ecc', 'rrol_1', 'rrol_2',
+               'sep', 'porb', 'ecc', 'rrlo_1', 'rrlo_2',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
                'massc_1', 'massc_2', 'rad_1', 'rad_2',
                'mass0_1', 'mass0_2', 'lum_1', 'lum_2',
