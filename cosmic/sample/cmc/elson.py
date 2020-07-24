@@ -152,7 +152,7 @@ def draw_vr_vt_r(N=100000,r_max=300,gamma=4):
     returns (vr,vt,r) in G=M_cluster=1 units
     """
     ## First convert r_max into max number of  virial radii
-    r_max = find_rmax_vir(r_max, gamma):
+    r_max = find_rmax_vir(r_max, gamma)
 
     ## Then draw the positions from the cumulative mass function
     r = get_positions(N,r_max,gamma)

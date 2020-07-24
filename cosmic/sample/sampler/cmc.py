@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
 
-"""`independent`
+"""`cmc`
 """
 
 import numpy as np
@@ -24,7 +24,7 @@ import numpy as np
 from .sampler import register_sampler
 from .independent import Sample
 from .. import InitialCMCTable, InitialBinaryTable
-from ..cmc import cmc_sample
+from ..cmc import elson
 from ...evolve import Evolve
 
 __author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
@@ -114,12 +114,12 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     kstar2 = initconditions.set_kstar(mass2_binary)
 
     # set radial velocity, set transverse velocity, set location in cluster
-    vr = initconditions.set_vr_vt_r(**kwargs)
+    #vr = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
 
     # sample radius /obtain radius
-    initconditions.set_reff(mass1)
+    Reff = initconditions.set_reff(mass1, **kwargs)
 
-    return InitialCMCTable.InitialCMCObjects(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
+    return InitialCMCTable.InitialCMCSingles(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind), InitialCMCBinaries(cls, index, id1, initconditions.set_kstar(mass1), mass1, Reff1, id2, k2, m2, Reff2, a, e)
 
 
 register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
@@ -128,9 +128,16 @@ register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
 
 class CMCSample(Sample):
     def set_vr_vt_r(self, **kwargs):
-        vr, vt, r = cmc_sample.carls_functions(**kwargs)
+        vr, vt, r = elson.draw_vr_vt_r(**kwargs)
         return vr, vt, r
 
-    def set_reff(self, mass):
-        breakpoint()
-        bpp, bcm, initC = Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, 0, 1000000, 0, 0.1, self.set_kstar(mass), 0, 0.17))
+    def set_reff(self, mass, **kwargs):
+        # NUMBER 1: PASS A DICTIONARY OF FLAGS
+        BSEDict = kwargs.pop('BSEDict', {})
+
+        # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+        params = kwargs.pop('params', None)
+
+        bpp, bcm, initial_conditions, kick_info = Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, np.ones_like(mass)*0, np.ones_like(mass)*1000000, np.ones_like(mass)*0, np.ones_like(mass)*0.1, self.set_kstar(mass), np.ones_like(mass)*0, np.ones_like(mass)*0.2), BSEDict=BSEDict, params=params)
+
+        return bcm.groupby('bin_num').first().rad_1
