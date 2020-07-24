@@ -23,11 +23,12 @@ import numpy as np
 
 from .sampler import register_sampler
 from .independent import Sample
-from .. import InitialBinaryTable
+from .. import InitialCMCTable, InitialBinaryTable
 from ..cmc import cmc_sample
+from ...evolve import Evolve
 
-__author__ = 'Newlin Weatherford <newlinweatherford2017@u.northwestern.edu>'
-__credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>', 'Carl Rodriguez <carllouisrodriguez@gmail.com>']
+__author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
+__credits__ = ['Newlin Weatherford <newlinweatherford2017@u.northwestern.edu>', 'Carl Rodriguez <carllouisrodriguez@gmail.com>']
 __all__ = ['get_cmc_sampler', 'CMCSample']
 
 
@@ -62,8 +63,8 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
 
     Returns
     -------
-    InitialBinaryTable : `pandas.DataFrame`
-        DataFrame in the format of the InitialBinaryTable
+    InitialCMCTable : `pandas.DataFrame`
+        DataFrame in the format of the InitialCMCTable
 
     mass_singles : `float`
         Total mass in single stars needed to generate population
@@ -87,6 +88,7 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     n_singles = 0
     n_binaries = 0
     mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size)
+    breakpoint()
     mass1_binaries, mass_single, binfrac_binaries = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
     mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
@@ -117,10 +119,10 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     # sample radius /obtain radius
     initconditions.set_reff(mass1)
 
-    return InitialBinaryTable.InitialCMCObjects(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
+    return InitialCMCTable.InitialCMCObjects(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
 
 
-register_sampler('cmc', InitialBinaryTable, get_cmc_sampler,
+register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
                  usage="binfrac_model, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
 
 
@@ -131,4 +133,4 @@ class CMCSample(Sample):
 
     def set_reff(self, mass):
         breakpoint()
-        InitialBinaryTable.InitialBinaries(mass, 0, 1000000, 0, 0.1, self.set_kstar(mass), 0, 0.17)
+        bpp, bcm, initC = Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, 0, 1000000, 0, 0.1, self.set_kstar(mass), 0, 0.17))

@@ -21,5 +21,5 @@
 from . import (  # pylint: disable=unused-import
     independent, # Independent parameter distribution sample
     multidim, # Multidimensional parameter distribution sample`
-    cmc
+    cmc, # create initial conditions for CMC
 )

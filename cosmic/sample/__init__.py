@@ -20,6 +20,7 @@
 # load tables
 from astropy.table import (Column, Table)
 from .initialbinarytable import InitialBinaryTable
+from .initialcmctable import InitialCMCTable
 
 # attach unified I/O
 from . import sampler

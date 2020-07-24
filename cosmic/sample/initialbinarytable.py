@@ -52,10 +52,6 @@ sec_in_year = 3.15569*10**7.0
 Tobs = 3.15569*10**7.0
 geo_mass = G/c**2
 
-INITIAL_CONDITIONS_COLUMNS_CMC_SINGLES = ['id', 'k', 'm', 'Reff', 'r', 'vr', 'vt', 'binind']
-
-INITIAL_CONDITIONS_COLUMNS_CMC_BINARIES = ['index', 'id1', 'k1', 'm1', 'Reff1', 'id2', 'k2', 'm2', 'Reff2', 'a', 'e']
-
 INITIAL_CONDITIONS_COLUMNS = []
 
 INITIAL_CONDITIONS_COLUMNS_CORE = ['kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'porb', 'ecc', 'metallicity', 'tphysf',]
@@ -175,48 +171,6 @@ class InitialBinaryTable():
                                columns = INITIAL_CONDITIONS_COLUMNS_ALL)
 
         return bin_dat
-
-    @classmethod
-    def InitialCMCObjects(cls, id_idx, k, m, Reff, r, vr,vt, binind):
-        """Create A Table of CMC Singles
-
-        Parameters
-        ----------
-        m1 : float
-            Primary mass [Msun]
-        m2 : float
-            Secondary mass [Msun]
-        porb : float
-            Orbital period [days]
-        ecc : float
-            Eccentricity
-        kstar1 : array
-            0-14 Initial stellar type of the larger object;
-            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-        kstar2 : array
-            0-14 Initial stellar type of the smaller object;
-            main sequence stars are 0 if m < 0.7 Msun and 1 otherwise
-        metallicity : float
-            Metallicity of the binaries; Z_sun = 0.02
-
-        **kwargs
-
-            binfrac : float
-                System-specific probability of the primary star being in a binary
-
-        Returns
-        -------
-        InitialBinaries : DataFrame
-            Single binary initial conditions
-
-        """
-        bin_dat = pd.DataFrame(np.vstack([
-                                            id_idx, k, m, Reff, r, vr,vt, binind,
-                                          ]).T,
-                               columns = INITIAL_CONDITIONS_COLUMNS_CMC_SINGLES)
-
-        return bin_dat
-
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):
