@@ -20,6 +20,7 @@
 """
 
 import pandas as pd
+import numpy as np
 
 __author__ = 'Scott Coughlin <scottcoughlin2014@u.northwestern.edu>'
 __credits__ = 'Carl Rodriguez <carllouisrodriguez@gmail.com>'

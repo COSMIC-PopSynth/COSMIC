@@ -113,13 +113,14 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, SF_start, SF_duration,
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    # set radial velocity, set transverse velocity, set location in cluster
-    #vr = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
-
     # sample radius /obtain radius
     Reff = initconditions.set_reff(mass1, **kwargs)
 
-    return InitialCMCTable.InitialCMCSingles(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind), InitialCMCBinaries(cls, index, id1, initconditions.set_kstar(mass1), mass1, Reff1, id2, k2, m2, Reff2, a, e)
+    # set radial velocity, set transverse velocity, set location in cluster
+    vr, vt, r = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
+    breakpoint()
+
+    return InitialCMCTable.InitialCMCSingles(np.arange(mass1.size), initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, np.ones_like(mass1)), InitialCMCBinaries(cls, index, id1, initconditions.set_kstar(mass1), mass1, Reff1, id2, k2, m2, Reff2, a, e)
 
 
 register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
@@ -128,7 +129,16 @@ register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
 
 class CMCSample(Sample):
     def set_vr_vt_r(self, **kwargs):
-        vr, vt, r = elson.draw_vr_vt_r(**kwargs)
+        cluster_profile = kwargs.pop('cluster_profile', 'elson')
+        if cluster_profile == 'elson':
+            elson_kwargs = {k:v for k,v in kwargs.items() if k in ['gamma', 'r_max', 'N']}
+            vr, vt, r = elson.draw_vr_vt_r(**elson_kwargs)
+        elif cluster_profile == 'plummer':
+            plummer_kwargs = {k:v for k,v in kwargs.items() if k in ['r_max', 'N']}
+            vr, vt, r = elson.draw_vr_vt_r(gamma=4, **plummer_kwargs)
+        else:
+            raise ValueError("Cluster profile passed not defined")
+
         return vr, vt, r
 
     def set_reff(self, mass, **kwargs):
@@ -138,6 +148,6 @@ class CMCSample(Sample):
         # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
         params = kwargs.pop('params', None)
 
-        bpp, bcm, initial_conditions, kick_info = Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, np.ones_like(mass)*0, np.ones_like(mass)*1000000, np.ones_like(mass)*0, np.ones_like(mass)*0.1, self.set_kstar(mass), np.ones_like(mass)*0, np.ones_like(mass)*0.2), BSEDict=BSEDict, params=params)
+        bpp, bcm, initial_conditions, kick_info = Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, np.ones_like(mass)*0, np.ones_like(mass)*1000000, np.ones_like(mass)*0, np.ones_like(mass)*0.1, self.set_kstar(mass), np.ones_like(mass)*0, np.ones_like(mass)*0.014), BSEDict=BSEDict, params=params)
 
         return bcm.groupby('bin_num').first().rad_1
