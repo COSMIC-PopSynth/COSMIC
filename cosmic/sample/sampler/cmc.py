@@ -119,7 +119,7 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, binfrac_model, met, si
     binind = np.zeros(mass1.size)
     binind[binary_index] = 1
 
-    return InitialCMCTable.InitialCMCSingles(single_ids, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind), InitialCMCTable.InitialCMCBinaries(np.arange(mass1_binaries.size), single_ids[binary_index], kstar1, mass1_binary, Reff1, binary_secondary_object_id, kstar2, mass2_binary, Reff2, porb, ecc)
+    return InitialCMCTable.InitialCMCSingles(single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind), InitialCMCTable.InitialCMCBinaries(np.arange(mass1_binaries.size), single_ids[binary_index] + 1, kstar1, mass1_binary, Reff1, binary_secondary_object_id + 1, kstar2, mass2_binary, Reff2, porb, ecc)
 
 
 register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
@@ -147,6 +147,8 @@ class CMCSample(Sample):
         # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
         params = kwargs.pop('params', None)
 
-        bpp, bcm, initial_conditions, kick_info = evolve.Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, np.ones_like(mass)*0, np.ones_like(mass)*1000000, np.ones_like(mass)*0, np.ones_like(mass)*0.1, self.set_kstar(mass), np.ones_like(mass)*0, np.ones_like(mass)*metallicity), BSEDict=BSEDict, params=params)
+        nproc = min(kwargs.pop('nproc', 1), mass.size)
+
+        bpp, bcm, initial_conditions, kick_info = evolve.Evolve.evolve(InitialBinaryTable.InitialBinaries(mass, np.ones_like(mass)*0, np.ones_like(mass)*-1, np.ones_like(mass)*-1, np.ones_like(mass)*0.1, self.set_kstar(mass), np.ones_like(mass)*0, np.ones_like(mass)*metallicity), BSEDict=BSEDict, params=params, nproc=nproc)
 
         return bcm.groupby('bin_num').first().rad_1
