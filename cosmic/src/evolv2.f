@@ -2,8 +2,8 @@
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     \ bhspin,tphys,zpars,kick_info,bppout,bcmout,
-     \ bpp_index_out,bcm_index_out,kick_info_out)
+     \ bhspin,tphys,zpars,kick_info,
+     \ bpp_index_out,bcm_index_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 ***
@@ -167,7 +167,6 @@
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
       REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,17)
-      REAL*8 kick_info_out(2,17)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
@@ -210,8 +209,6 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,43)
-      REAL*8 bcmout(50000,38)
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
@@ -240,11 +237,8 @@ Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
 Cf2py intent(in) zpars
 Cf2py intent(in) kick_info
-Cf2py intent(out) bppout
-Cf2py intent(out) bcmout
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
-Cf2py intent(out) kick_info_out
 
       if(using_cmc.eq.0)then
               CALL instar
@@ -318,11 +312,8 @@ component.
       if(using_cmc.eq.0)then
           bpp = 0.d0
           bcm = 0.d0
-          bppout = 0.d0
-          bcmout = 0.d0
           bcm_index_out = 0
           bpp_index_out = 0
-          kick_info_out = 0.d0
       endif
 
 
@@ -4266,9 +4257,6 @@ component.
       if(using_cmc.eq.0)then
           bcm_index_out = ip
           bpp_index_out = jp
-          bppout = bpp
-          bcmout = bcm
-          kick_info_out = kick_info
       endif
 *
 

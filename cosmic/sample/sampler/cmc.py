@@ -215,27 +215,27 @@ class CMCSample(Sample):
 
         rad_1 = np.zeros(len(initial_stars))
         for idx, initial_condition in enumerate(initial_conditions):
-            [bpp, bcm, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([initial_condition['kstar_1'], initial_condition['kstar_2']],
-                                                                            [initial_condition['mass_1'], initial_condition['mass_2']],
-                                                                            initial_condition['porb'], initial_condition['ecc'], initial_condition['metallicity'],
-                                                                            initial_condition['tphysf'], initial_condition['dtp'],
-                                                                            [initial_condition['mass0_1'], initial_condition['mass0_2']],
-                                                                            [initial_condition['rad_1'], initial_condition['rad_2']],
-                                                                            [initial_condition['lum_1'], initial_condition['lum_2']],
-                                                                            [initial_condition['massc_1'], initial_condition['massc_2']],
-                                                                            [initial_condition['radc_1'], initial_condition['radc_2']],
-                                                                            [initial_condition['menv_1'], initial_condition['menv_2']],
-                                                                            [initial_condition['renv_1'], initial_condition['renv_2']],
-                                                                            [initial_condition['omega_spin_1'], initial_condition['omega_spin_2']],
-                                                                            [initial_condition['B_1'], initial_condition['B_2']],
-                                                                            [initial_condition['bacc_1'], initial_condition['bacc_2']],
-                                                                            [initial_condition['tacc_1'], initial_condition['tacc_2']],
-                                                                            [initial_condition['epoch_1'], initial_condition['epoch_2']],
-                                                                            [initial_condition['tms_1'], initial_condition['tms_2']],
-                                                                            [initial_condition['bhspin_1'], initial_condition['bhspin_2']],
-                                                                            initial_condition['tphys'],
-                                                                            np.zeros(20),
-                                                                            initial_condition['kick_info'])
-            rad_1[idx] = bcm[0,5]
+            [bpp_index, bcm_index] = _evolvebin.evolv2([initial_condition['kstar_1'], initial_condition['kstar_2']],
+                                                        [initial_condition['mass_1'], initial_condition['mass_2']],
+                                                        initial_condition['porb'], initial_condition['ecc'], initial_condition['metallicity'],
+                                                        initial_condition['tphysf'], initial_condition['dtp'],
+                                                        [initial_condition['mass0_1'], initial_condition['mass0_2']],
+                                                        [initial_condition['rad_1'], initial_condition['rad_2']],
+                                                        [initial_condition['lum_1'], initial_condition['lum_2']],
+                                                        [initial_condition['massc_1'], initial_condition['massc_2']],
+                                                        [initial_condition['radc_1'], initial_condition['radc_2']],
+                                                        [initial_condition['menv_1'], initial_condition['menv_2']],
+                                                        [initial_condition['renv_1'], initial_condition['renv_2']],
+                                                        [initial_condition['omega_spin_1'], initial_condition['omega_spin_2']],
+                                                        [initial_condition['B_1'], initial_condition['B_2']],
+                                                        [initial_condition['bacc_1'], initial_condition['bacc_2']],
+                                                        [initial_condition['tacc_1'], initial_condition['tacc_2']],
+                                                        [initial_condition['epoch_1'], initial_condition['epoch_2']],
+                                                        [initial_condition['tms_1'], initial_condition['tms_2']],
+                                                        [initial_condition['bhspin_1'], initial_condition['bhspin_2']],
+                                                        initial_condition['tphys'],
+                                                        np.zeros(20),
+                                                        initial_condition['kick_info'])
+            rad_1[idx] = _evolvebin.binary.bcm[0,5]
 
         return rad_1
