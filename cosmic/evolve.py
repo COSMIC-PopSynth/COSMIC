@@ -80,7 +80,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                              'natal_kick_array', 'qcrit_array',
                              'beta', 'xi', 'acc2', 'epsnov',
-                             'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck', 
+                             'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck',
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
@@ -177,7 +177,7 @@ class Evolve(object):
             is total evolution time in Myr
 
         n_per_block : `int`, optional, default: -1
-            number of systems to evolve in a block with 
+            number of systems to evolve in a block with
             _evolve_multi_system, to allow larger multiprocessing
             queues and reduced overhead. If less than 1 use _evolve_single_system
 
@@ -377,29 +377,30 @@ class Evolve(object):
                 _evolvebin.snvars.kickflag = f['kickflag']
                 _evolvebin.cmcpass.using_cmc = 0
 
-                [bpp, bcm, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
-                                                                                [f['mass_1'], f['mass_2']],
-                                                                                f['porb'], f['ecc'], f['metallicity'], f['tphysf'], f['dtp'],
-                                                                                [f['mass0_1'], f['mass0_2']],
-                                                                                [f['rad_1'], f['rad_2']],
-                                                                                [f['lum_1'], f['lum_2']],
-                                                                                [f['massc_1'], f['massc_2']],
-                                                                                [f['radc_1'], f['radc_2']],
-                                                                                [f['menv_1'], f['menv_2']],
-                                                                                [f['renv_1'], f['renv_2']],
-                                                                                [f['omega_spin_1'], f['omega_spin_2']],
-                                                                                [f['B_1'], f['B_2']],
-                                                                                [f['bacc_1'], f['bacc_2']],
-                                                                                [f['tacc_1'], f['tacc_2']],
-                                                                                [f['epoch_1'], f['epoch_2']],
-                                                                                [f['tms_1'], f['tms_2']],
-                                                                                [f['bhspin_1'], f['bhspin_2']],
-                                                                                f['tphys'],
-                                                                                np.zeros(20),
-                                                                                f['kick_info'])
-
-                bcm = bcm[:bcm_index]
-                bpp = bpp[:bpp_index]
+                [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
+                                                                        [f['mass_1'], f['mass_2']],
+                                                                        f['porb'], f['ecc'], f['metallicity'], f['tphysf'], f['dtp'],
+                                                                        [f['mass0_1'], f['mass0_2']],
+                                                                        [f['rad_1'], f['rad_2']],
+                                                                        [f['lum_1'], f['lum_2']],
+                                                                        [f['massc_1'], f['massc_2']],
+                                                                        [f['radc_1'], f['radc_2']],
+                                                                        [f['menv_1'], f['menv_2']],
+                                                                        [f['renv_1'], f['renv_2']],
+                                                                        [f['omega_spin_1'], f['omega_spin_2']],
+                                                                        [f['B_1'], f['B_2']],
+                                                                        [f['bacc_1'], f['bacc_2']],
+                                                                        [f['tacc_1'], f['tacc_2']],
+                                                                        [f['epoch_1'], f['epoch_2']],
+                                                                        [f['tms_1'], f['tms_2']],
+                                                                        [f['bhspin_1'], f['bhspin_2']],
+                                                                        f['tphys'],
+                                                                        np.zeros(20),
+                                                                        f['kick_info'])
+                bcm = _evolvebin.binary.bcm[:bcm_index].copy()
+                bpp = _evolvebin.binary.bpp[:bpp_index].copy()
+                _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
+                _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
 
                 bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f['bin_num']))
                 bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f['bin_num']))
@@ -410,7 +411,7 @@ class Evolve(object):
             except Exception as e:
                 raise
 
-        #define multiprocessing method to process the systems in batches 
+        #define multiprocessing method to process the systems in batches
         def _evolve_multi_system(f):
             try:
                 res_bcm = np.zeros(f.shape[0],dtype=object)
@@ -477,37 +478,40 @@ class Evolve(object):
                     _evolvebin.snvars.kickflag = f[i]['kickflag']
                     _evolvebin.cmcpass.using_cmc = 0
 
-                    [bpp, bcm, bpp_index, bcm_index, kick_info_out] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],
-                                                                                    [f[i]['mass_1'], f[i]['mass_2']],
-                                                                                    f[i]['porb'], f[i]['ecc'], f[i]['metallicity'], f[i]['tphysf'], f[i]['dtp'],
-                                                                                    [f[i]['mass0_1'], f[i]['mass0_2']],
-                                                                                    [f[i]['rad_1'], f[i]['rad_2']],
-                                                                                    [f[i]['lum_1'], f[i]['lum_2']],
-                                                                                    [f[i]['massc_1'], f[i]['massc_2']],
-                                                                                    [f[i]['radc_1'], f[i]['radc_2']],
-                                                                                    [f[i]['menv_1'], f[i]['menv_2']],
-                                                                                    [f[i]['renv_1'], f[i]['renv_2']],
-                                                                                    [f[i]['omega_spin_1'], f[i]['omega_spin_2']],
-                                                                                    [f[i]['B_1'], f[i]['B_2']],
-                                                                                    [f[i]['bacc_1'], f[i]['bacc_2']],
-                                                                                    [f[i]['tacc_1'], f[i]['tacc_2']],
-                                                                                    [f[i]['epoch_1'], f[i]['epoch_2']],
-                                                                                    [f[i]['tms_1'], f[i]['tms_2']],
-                                                                                    [f[i]['bhspin_1'], f[i]['bhspin_2']],
-                                                                                    f[i]['tphys'],
-                                                                                    np.zeros(20),
-                                                                                    f[i]['kick_info'])
 
-                    bpp = bpp[:bpp_index]
-                    bcm = bcm[:bcm_index]
+                    [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f[i]['kstar_1'], f[i]['kstar_2']],
+                                                                                [f[i]['mass_1'], f[i]['mass_2']],
+                                                                                f[i]['porb'], f[i]['ecc'], f[i]['metallicity'], f[i]['tphysf'], f[i]['dtp'],
+                                                                                [f[i]['mass0_1'], f[i]['mass0_2']],
+                                                                                [f[i]['rad_1'], f[i]['rad_2']],
+                                                                                [f[i]['lum_1'], f[i]['lum_2']],
+                                                                                [f[i]['massc_1'], f[i]['massc_2']],
+                                                                                [f[i]['radc_1'], f[i]['radc_2']],
+                                                                                [f[i]['menv_1'], f[i]['menv_2']],
+                                                                                [f[i]['renv_1'], f[i]['renv_2']],
+                                                                                [f[i]['omega_spin_1'], f[i]['omega_spin_2']],
+                                                                                [f[i]['B_1'], f[i]['B_2']],
+                                                                                [f[i]['bacc_1'], f[i]['bacc_2']],
+                                                                                [f[i]['tacc_1'], f[i]['tacc_2']],
+                                                                                [f[i]['epoch_1'], f[i]['epoch_2']],
+                                                                                [f[i]['tms_1'], f[i]['tms_2']],
+                                                                                [f[i]['bhspin_1'], f[i]['bhspin_2']],
+                                                                                f[i]['tphys'],
+                                                                                np.zeros(20),
+                                                                                f[i]['kick_info'])
+
+                    bcm = _evolvebin.binary.bcm[:bcm_index].copy()
+                    bpp = _evolvebin.binary.bpp[:bpp_index].copy()
+                    _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
+                    _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
 
                     bpp_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bpp))).T
                     bcm_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(bcm))).T
-                    kick_info_out_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(kick_info_out))).T
+                    kick_info_bin_numbers = np.atleast_2d(np.array([f[i]['bin_num']] * len(kick_info))).T
 
                     res_bpp[i] = np.hstack((bpp, bpp_bin_numbers))
                     res_bcm[i] = np.hstack((bcm, bcm_bin_numbers))
-                    res_kick_info[i] = np.hstack((kick_info_out, kick_info_out_bin_numbers))
+                    res_kick_info[i] = np.hstack((kick_info, kick_info_bin_numbers))
                     res_natal_kick_array[i] = _evolvebin.snvars.natal_kick_array
 
                 return f, np.vstack(res_bpp), np.vstack(res_bcm), np.vstack(res_kick_info), np.vstack(res_natal_kick_array)

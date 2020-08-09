@@ -215,7 +215,7 @@ class CMCSample(Sample):
 
         rad_1 = np.zeros(len(initial_stars))
         for idx, initial_condition in enumerate(initial_conditions):
-            [bpp_index, bcm_index] = _evolvebin.evolv2([initial_condition['kstar_1'], initial_condition['kstar_2']],
+            [bpp_index, bcm_index, _] = _evolvebin.evolv2([initial_condition['kstar_1'], initial_condition['kstar_2']],
                                                         [initial_condition['mass_1'], initial_condition['mass_2']],
                                                         initial_condition['porb'], initial_condition['ecc'], initial_condition['metallicity'],
                                                         initial_condition['tphysf'], initial_condition['dtp'],
