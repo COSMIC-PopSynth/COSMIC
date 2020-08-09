@@ -6,6 +6,7 @@
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
+      INCLUDE 'checkstate.h'
 ***
 *
 *           B I N A R Y
@@ -1542,7 +1543,8 @@ component.
             goto 4
          endif
       endif
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+      if(check_dtp.eq.1)then
+          CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -1555,6 +1557,7 @@ component.
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
      &                      bhspin(1),bhspin(2))
+      endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
          if(sgl.or.(rad(1).lt.rol(1).and.rad(2).lt.rol(2)).
@@ -1825,7 +1828,8 @@ component.
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
 *
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+      if(check_dtp.eq.1)then
+          CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -1838,6 +1842,7 @@ component.
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
      &                      bhspin(1),bhspin(2))
+      endif
 
       if(iplot.and.tphys.gt.tiny)then
           if(B_0(1).eq.0.d0)then !PK.
@@ -3406,7 +3411,8 @@ component.
      &              radx(k) + k3*massc(k)*radc(k)*radc(k))
  110  continue
 
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+      if(check_dtp.eq.1)then
+          CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -3419,6 +3425,7 @@ component.
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
      &                      bhspin(1),bhspin(2))
+      endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
           if(B_0(1).eq.0.d0)then !PK.
