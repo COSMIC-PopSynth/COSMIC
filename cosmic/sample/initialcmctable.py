@@ -33,6 +33,70 @@ INITIAL_CONDITIONS_COLUMNS_CMC_BINARIES = ['index', 'id1', 'k1', 'm1', 'Reff1', 
 
 class InitialCMCTable():
     @classmethod
+    def ScaleToNBodyUnits(cls, Singles, Binaries, virial_radius=1):
+        """Rescale the single masses, radii, and velocities into N-body units
+           i.e. \sum m = M = 1
+                 Kinetic Energy   = 0.25
+                 Potential Energy = -0.5
+
+        Parameters
+        ----------
+        Singles : DataFrame
+            Pandas DataFrame from the InitialCMCSingles function
+        Binaries : DataFrame
+            Pandas DataFrame from the InitialCMCSingles function
+        virial_radius : float
+            Virial radius of the cluster in parsec (default 1pc)
+
+        Returns
+        -------
+        None: Pandas dataframes are modified in place
+
+        """
+
+        ## Normalize the masses to the total cluster mass
+        M_total = sum(Singles['m'])
+        Singles['m'] /= M_total
+        Binaries['m1'] /= M_total
+        Binaries['m2'] /= M_total
+
+        ## Take the radii, and offset by one
+        radius = np.array(Singles['r'])
+        radius_p1 = np.append(radius[1:],[1e100])
+
+        ## Masses and velocities
+        mass = np.array(Singles['m'])
+        cumul_mass = np.cumsum(mass)
+        vr = np.array(Singles['vr'])
+        vt = np.array(Singles['vt'])
+
+        ## Then compute the total kinetic and potential energy
+        ## There's probably a cleaner way to do the PE (this is a one-line version 
+        ##  of the for loop we use in CMC; vectorized and pythonic, but sloppy)
+        KE = 0.5*sum(mass*(vr**2 + vt**2))
+        PE = 0.5*sum(mass[::-1]*np.cumsum((cumul_mass*(1.0/radius - 1.0/radius_p1))[::-1]))
+
+        ## Compute the position and velocity scalings
+        rfac = 2*PE
+        vfac = 1.0/np.sqrt(4*KE)
+
+        ## Scale the positions and velocities s.t. KE=0.25, PE=-0.5
+        Singles['r'] *= rfac
+        Singles['vr'] *= vfac
+        Singles['vt'] *= vfac
+
+        ## Finally, scale the radii and seperations from BSE into code units  
+        PARSEC_TO_AU = 206264.806
+        DistConv = 1/PARSEC_TO_AU/virial_radius
+
+        Singles['Reff'] *= DistConv
+        Binaries['a'] *= DistConv
+        Binaries['Reff1'] *= DistConv
+        Binaries['Reff2'] *= DistConv
+
+
+
+    @classmethod
     def InitialCMCSingles(cls, id_idx, k, m, Reff, r, vr,vt, binind):
         """Create A Table of CMC Singles
 
