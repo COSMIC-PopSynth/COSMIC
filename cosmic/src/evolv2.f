@@ -200,7 +200,7 @@
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
       REAL*8 zero,ngtv,ngtv2,mt2,rrl1,rrl2,mcx,teff1,teff2
-      REAL*8 mass1i,mass2i,tbi,ecci
+      REAL*8 mass1i,mass2i,tbi,ecci,massi(2)
       LOGICAL coel,com,prec,inttry,change,snova,sgl
       LOGICAL supedd,novae,disk
       LOGICAL iplot,isave
@@ -263,6 +263,8 @@ Cf2py intent(out) kick_info_out
 
       mass1i = mass(1)
       mass2i = mass(2)
+      massi(1) = mass1i
+      massi(2) = mass2i
       tbi = tb
       ecci = ecc
 *
@@ -525,10 +527,13 @@ component.
 *
 * Calculate wind mass loss from the previous timestep.
 *
-            if(neta.gt.tiny)then
+	    if(neta.gt.tiny)then
                rlperi = rol(k)*(1.d0-ecc)
+*	       print k
+*	       print massi(k)
+*	       print mass1i
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z)
+     &                         massc(k),rlperi,z,massi(k))
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -883,8 +888,11 @@ component.
          do 503 , k = kmin,kmax
             if(neta.gt.tiny)then
                rlperi = 0.d0
+*	       print k
+*	       print massi(k)
+*	       print mass1i
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z)
+     &                         massc(k),rlperi,z,massi(k))
             else
                dmr(k) = 0.d0
             endif
@@ -2601,8 +2609,11 @@ component.
                   endif
                endif
                rlperi = rol(k)*(1.d0-ecc)
+*	       print k
+*	       print massi(k)
+*	       print mass1i
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z)
+     &                         mass(k),massc(k),rlperi,z,massi(k))
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)

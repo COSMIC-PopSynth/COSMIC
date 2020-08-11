@@ -1,11 +1,11 @@
 ***
-      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
+      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z,mi)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       integer kw,testflag
-      real*8 lum,r,mt,mc,rl,z,teff,alpha
+      real*8 lum,r,mt,mc,rl,z,teff,alpha,mi
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
-      real*8 MLalpha
+      real*8 MLalpha,a,b
       external MLalpha
       parameter(lum0=7.0d+04,kap=-0.5d0)
 
@@ -215,6 +215,16 @@
             dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
             testflag = 4
          endif
+* Apply Beasor et al (2020) prescription for redsupergiants
+         if(windflag.eq.4.or.(windflag.eq.5.and.mi.ge.8.0d0.and.
+     &      mi.le.25.0d0))then
+            if(lum.gt.1.0d+04.and.teff.le.4.2d+03.and.kw.lt.6)then
+               a = -26.4-0.23*mi
+               b = 4.8
+               dms = (10**a)*(lum**b)
+            endif
+         endif
+
 *
          mlwind = dms
       endif
