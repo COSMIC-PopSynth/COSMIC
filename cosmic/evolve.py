@@ -74,13 +74,13 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'remnantflag',
+                             'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'bhflag', 'remnantflag', 'grflag',
                              'cekickflag', 'cemergeflag', 'cehestarflag',
                              'mxns', 'pts1', 'pts2', 'pts3',
                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                              'natal_kick_array', 'qcrit_array',
                              'beta', 'xi', 'acc2', 'epsnov',
-                             'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck', 
+                             'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck',
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
@@ -177,7 +177,7 @@ class Evolve(object):
             is total evolution time in Myr
 
         n_per_block : `int`, optional, default: -1
-            number of systems to evolve in a block with 
+            number of systems to evolve in a block with
             _evolve_multi_system, to allow larger multiprocessing
             queues and reduced overhead. If less than 1 use _evolve_single_system
 
@@ -337,6 +337,7 @@ class Evolve(object):
                 _evolvebin.ceflags.cekickflag = f['cekickflag']
                 _evolvebin.ceflags.cemergeflag = f['cemergeflag']
                 _evolvebin.ceflags.cehestarflag = f['cehestarflag']
+                _evolvebin.flags.grflag = f['grflag']
                 _evolvebin.snvars.mxns = f['mxns']
                 _evolvebin.points.pts1 = f['pts1']
                 _evolvebin.points.pts2 = f['pts2']
@@ -410,7 +411,7 @@ class Evolve(object):
             except Exception as e:
                 raise
 
-        #define multiprocessing method to process the systems in batches 
+        #define multiprocessing method to process the systems in batches
         def _evolve_multi_system(f):
             try:
                 res_bcm = np.zeros(f.shape[0],dtype=object)
@@ -437,6 +438,7 @@ class Evolve(object):
                     _evolvebin.ceflags.cekickflag = f[i]['cekickflag']
                     _evolvebin.ceflags.cemergeflag = f[i]['cemergeflag']
                     _evolvebin.ceflags.cehestarflag = f[i]['cehestarflag']
+                    _evolvebin.flags.grflag = f[i]['grflag']
                     _evolvebin.snvars.mxns = f[i]['mxns']
                     _evolvebin.points.pts1 = f[i]['pts1']
                     _evolvebin.points.pts2 = f[i]['pts2']

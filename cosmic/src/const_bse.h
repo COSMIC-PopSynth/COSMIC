@@ -12,7 +12,7 @@
       INTEGER htpmb,ST_cr,ST_tide,bdecayfac
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
-     &               htpmb,ST_cr,ST_tide,bdecayfac
+     &               htpmb,ST_cr,ST_tide,bdecayfac,grflag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
