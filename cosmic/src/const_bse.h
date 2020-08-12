@@ -9,7 +9,7 @@
       COMMON /TYPES/ ktype
       INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,windflag,qcflag
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag
-      INTEGER htpmb,ST_cr,ST_tide,bdecayfac
+      INTEGER htpmb,ST_cr,ST_tide,bdecayfac,grflag
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag
