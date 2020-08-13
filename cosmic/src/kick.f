@@ -23,7 +23,7 @@
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
 * The first row contains information about the first supernova that
-* occurs, the second row the second supernova. 
+* occurs, the second row the second supernova.
 * Note that some values the second row will take into account the
 * effect of the first SN (e.g., kick_info[2,10] is the total systemic
 * velocity after both supernovae).
@@ -36,11 +36,11 @@
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of snstar=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
-*       or magnitude of total velocity of snstar=1 if disrupted, 
+*       or magnitude of total velocity of snstar=1 if disrupted,
 *       accounting for both SNe
 * kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system
 *       is disrupted
-* kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted, 
+* kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted,
 *       accounting for both SNe
 * kick_info[i,15]: (total) tilt of the orbital plane after each SN
 *       w.r.t. the original angular momentum axis after each SN
@@ -236,7 +236,7 @@
              vk = alphakick * ((m1-m1n)/m1n) + betakick
              vk2 = vk*vk
           endif
-             
+
       endif
       sigma = sigmah
 
@@ -311,26 +311,26 @@
 *       about the z-axis.
 *       We do this when the system has already had one SN (sn=2)
 *  NOTE: This prescription does not account for realignment between SNe!
-      if(sn.eq.2)then
-        cmu = COS(kick_info(1,15))
-        smu = SIN(kick_info(1,15))
-        comega = COS(kick_info(1,16))
-        somega = SIN(kick_info(1,16))
-
-        x_tilt = ctheta*cphi*comega + smu*sphi*somega -
-     &                   cmu*cphi*stheta*somega
-        y_tilt = cmu*cphi*comega*stheta + ctheta*cphi*somega -
-     &                   comega*smu*sphi
-        z_tilt = cmu*sphi + cphi*smu*stheta
-
-        phi = ASIN(z_tilt)
-        sphi = z_tilt
-        cphi = COS(phi)
-        theta = ATAN(y_tilt/x_tilt)
-        stheta = SIN(theta)
-        ctheta = COS(theta)
-      endif
-
+C      if(sn.eq.2)then
+C        cmu = COS(kick_info(1,15))
+C        smu = SIN(kick_info(1,15))
+C        comega = COS(kick_info(1,16))
+C        somega = SIN(kick_info(1,16))
+C
+C        x_tilt = ctheta*cphi*comega + smu*sphi*somega -
+C     &                   cmu*cphi*stheta*somega
+C        y_tilt = cmu*cphi*comega*stheta + ctheta*cphi*somega -
+C     &                   comega*smu*sphi
+C        z_tilt = cmu*sphi + cphi*smu*stheta
+C
+C        phi = ASIN(z_tilt)
+C        sphi = z_tilt
+C        cphi = COS(phi)
+C        theta = ATAN(y_tilt/x_tilt)
+C        stheta = SIN(theta)
+C        ctheta = COS(theta)
+C      endif
+C
       if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
 
 *
@@ -562,17 +562,17 @@
       if(ecc.gt.99.9d0) ecc = 99.9d0
 
 * For systems that were distrupted in the first SN, skip to here
- 73   continue  
+ 73   continue
 *
 * Set systemic velocity magnitudes in the kick_info array
-* For first SN, this should be identical to the magnitude 
+* For first SN, this should be identical to the magnitude
 * of the three component vectors. For the second SN, this
 * will be the systemic velocity relative to the initial frame.
       if(sn.eq.1)then
-         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) + 
+         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) +
      &              kick_info(sn,8)*kick_info(sn,8) +
      &              kick_info(sn,9)*kick_info(sn,9))
-         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) + 
+         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) +
      &              kick_info(sn,12)*kick_info(sn,12) +
      &              kick_info(sn,13)*kick_info(sn,13))
       elseif(sn.eq.2)then
