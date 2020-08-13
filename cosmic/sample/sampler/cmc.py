@@ -118,7 +118,7 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, binfrac_model, met, si
 
     # set binind
     binind = np.zeros(mass1.size)
-    binind[binary_index] = binary_index 
+    binind[binary_index] = np.arange(len(binary_index)) + 1
 
     return InitialCMCTable.InitialCMCSingles(single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind), InitialCMCTable.InitialCMCBinaries(np.arange(mass1_binaries.size), single_ids[binary_index] + 1, kstar1, mass1_binary, Reff1, binary_secondary_object_id + 1, kstar2, mass2_binary, Reff2, porb, ecc)
 
