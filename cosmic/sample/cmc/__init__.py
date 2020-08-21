@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) Katie Breivik (2017 - 2020)
+# Copyright (C) Carl Rodriguez (2017 - 2020)
 #
 # This file is part of COSMIC
 #
@@ -16,11 +16,3 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with COSMIC.  If not, see <http://www.gnu.org/licenses/>
-
-# load tables
-from astropy.table import (Column, Table)
-from .initialbinarytable import InitialBinaryTable
-from .initialcmctable import InitialCMCTable
-
-# attach unified I/O
-from . import sampler
