@@ -149,10 +149,21 @@
          if((natal_kick_array(snstar,4).ge.(0.d0)).and.
      &       (natal_kick_array(snstar,4).le.(360.d0)))then
 
-             em = natal_kick_array(snstar,4)*pi/180.d0
+             mm = natal_kick_array(snstar,4)*pi/180.d0
 * per supplied kick value we mimic a call to random number generator
              xx = RAN3(idum1)
-             goto 3
+
+* Solve for the eccentric anomaly from the mean anomaly
+             em = mm
+
+             if(mm.eq.0.d0) goto 3
+
+  4          dif = em - ecc*SIN(em) - mm
+             if(ABS(dif/mm).le.1.0d-04) goto 3
+             der = 1.d0 - ecc*COS(em)
+             del = dif/der
+             em = em - del
+             goto 4
 
          endif
 
