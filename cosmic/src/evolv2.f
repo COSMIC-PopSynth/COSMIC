@@ -2,10 +2,11 @@
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     \ bhspin,tphys,zpars,kick_info,bppout,bcmout,
+     \ bhspin,tphys,zpars,kick_info,
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
+      INCLUDE 'checkstate.h'
 ***
 *
 *           B I N A R Y
@@ -210,8 +211,6 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
-      REAL*8 bppout(1000,43)
-      REAL*8 bcmout(50000,38)
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
@@ -240,8 +239,6 @@ Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
 Cf2py intent(in) zpars
 Cf2py intent(in) kick_info
-Cf2py intent(out) bppout
-Cf2py intent(out) bcmout
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
@@ -316,10 +313,6 @@ component.
 *
 
       if(using_cmc.eq.0)then
-          bpp = 0.d0
-          bcm = 0.d0
-          bppout = 0.d0
-          bcmout = 0.d0
           bcm_index_out = 0
           bpp_index_out = 0
           kick_info_out = 0.d0
@@ -1550,7 +1543,8 @@ component.
             goto 4
          endif
       endif
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+      if(check_dtp.eq.1)then
+          CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -1563,6 +1557,7 @@ component.
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
      &                      bhspin(1),bhspin(2))
+      endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
          if(sgl.or.(rad(1).lt.rol(1).and.rad(2).lt.rol(2)).
@@ -1833,7 +1828,8 @@ component.
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2))
 *
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+      if(check_dtp.eq.1)then
+          CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -1846,6 +1842,7 @@ component.
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
      &                      bhspin(1),bhspin(2))
+      endif
 
       if(iplot.and.tphys.gt.tiny)then
           if(B_0(1).eq.0.d0)then !PK.
@@ -3414,7 +3411,8 @@ component.
      &              radx(k) + k3*massc(k)*radc(k)*radc(k))
  110  continue
 
-      CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
+      if(check_dtp.eq.1)then
+          CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
      &                      iplot,isave,binstate,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -3427,6 +3425,7 @@ component.
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
      &                      bhspin(1),bhspin(2))
+      endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
           if(B_0(1).eq.0.d0)then !PK.
@@ -4266,8 +4265,6 @@ component.
       if(using_cmc.eq.0)then
           bcm_index_out = ip
           bpp_index_out = jp
-          bppout = bpp
-          bcmout = bcm
           kick_info_out = kick_info
       endif
 *

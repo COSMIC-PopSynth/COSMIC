@@ -5,8 +5,6 @@
         INTEGER kstar(2)
         REAL*8 z,ecc,tb,tphysf
         REAL*8 mass(2)
-        REAL*8 bppout(1000,43)
-        REAL*8 bcmout(50000,42)
         REAL*8 dtptmp
         REAL*8 bhspin(2)
         REAL*8 mass0(2),massc(2),menv(2)
@@ -49,12 +47,11 @@
         bconst = 3000; CK = 1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 113271
         bhspinflag = 0; bhspinmag=0.d0; rembar_massloss=0.5;
-        bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,kick_info,bppout,bcmout,
+     & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out,kick_info_out)
 
         kstar(1) = 1; kstar(2) = 1; mass(1) = 53.4;
@@ -85,11 +82,10 @@
         eddfac = 1.0; gamma = -2.0
         bconst = 3000; CK = 1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 121025
-        bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,kick_info,bppout,bcmout,
+     & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out,kick_info_out)
         END PROGRAM benchmarkevolv2
