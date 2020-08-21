@@ -34,7 +34,7 @@
         zsun = 0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; remnantflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3, grflag = 1
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.05; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.6; aic = 1; ussn = 0
@@ -61,7 +61,7 @@
         mass0(1) = mass(1)
         mass0(2) = mass(2)
 
-        rad = 0.d0; lumin = 0.d0; massc = 0.d0        
+        rad = 0.d0; lumin = 0.d0; massc = 0.d0
         radc = 0.d0; menv = 0.d0; renv = 0.d0
         ospin = 0.d0; B_0 = 0.d0; bacc = 0.d0
         tacc = 0.d0 ; epoch = 0.d0; tms = 0.d0
@@ -71,7 +71,7 @@
         zsun=0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; remnantflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3; grflag = 1
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.001; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.4; aic = 1; ussn = 0
