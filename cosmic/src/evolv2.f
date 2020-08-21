@@ -582,7 +582,7 @@ component.
 * For very close systems include angular momentum loss owing to
 * gravitational radiation.
 *
-         if(sep.le.100000.d0)then
+         if(sep.le.100000.d0.and.grflag.eq.1)then
             djgr = 8.315d-10*mass(1)*mass(2)*(mass(1)+mass(2))/
      &             (sep*sep*sep*sep)
             f1 = (19.d0/6.d0) + (121.d0/96.d0)*ecc2
@@ -2815,7 +2815,7 @@ component.
 *
 * For very close systems include angular momentum loss mechanisms.
 *
-         if(sep.le.100000.d0)then
+         if(sep.le.100000.d0.and.grflag.eq.1)then
             djgr = 8.315d-10*mass(1)*mass(2)*(mass(1)+mass(2))/
      &             (sep*sep*sep*sep)
             f1 = (19.d0/6.d0) + (121.d0/96.d0)*ecc2
