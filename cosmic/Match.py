@@ -129,12 +129,16 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
             match_all.append(-9)
         elif (conv_param == 'ecc'):
             conv_1_ecc = conv_1.loc[conv_1.ecc > 0]
-            conv_2_ecc = conv_2.loc[conv_2.ecc > 0]
-            if len(conv_2_ecc) == len(conv_1_ecc):
-               conv_2_ecc = conv_2[:int(len(conv_2_ecc)/2)]
-            match_compute, bw = match([dat_transform(conv_1_ecc, [conv_param])[0].tolist(),\
+            if len(conv_1_ecc) < 10:
+               log_file.write('not enough eccentric binaries to compute match')
+               match_all.append(-9)
+            else:
+               conv_2_ecc = conv_2.loc[conv_2.ecc > 0]
+               if len(conv_2_ecc) == len(conv_1_ecc):
+                  conv_2_ecc = conv_2_ecc[:int(len(conv_2_ecc)/2)]
+               match_compute, bw = match([dat_transform(conv_1_ecc, [conv_param])[0].tolist(),\
                                        dat_transform(conv_2_ecc, [conv_param])[0].tolist()])
-            match_all.append(match_compute)
+               match_all.append(match_compute)
 
         elif (conv_param == 'porb') and ((np.all(conv_1[conv_param] == 0.0)) or (np.all(conv_1[conv_param] == -1.0))):
             log_file.write('{0} is the same for all converging binaries\n'.format(conv_param))
