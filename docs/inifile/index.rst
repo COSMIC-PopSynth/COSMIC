@@ -967,12 +967,12 @@ common envelope occurs regardless of the choices below:
 GR ORBITAL DECAY FLAG
 
 =======================  ===============================================================
-``grflag``           Turns on or off orbital decay due to gravitational wave radiation
+``grflag``               Turns on or off orbital decay due to gravitational wave radiation
 
-                        ``0`` : No orbital decay due to GR
+                            ``0`` : No orbital decay due to GR
 
-                        ``1`` : Orbital decay due to GR is included
-                     **grflag = 1**
+                            ``1`` : Orbital decay due to GR is included
+                         **grflag = 1**
 =======================  ===============================================================
 
 .. code-block:: ini
