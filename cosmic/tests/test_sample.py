@@ -141,19 +141,19 @@ class TestSample(unittest.TestCase):
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
-        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.0)
         self.assertEqual(len(m1_b), 0)
-        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=1.0)
         self.assertEqual(len(m1_b), 99)
-        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(len(m1_b), N_BINARY_SELECT)
 
     def test_binary_fraction(self):
         np.random.seed(2)
         # Check that the binary fraction tracking is correct
-        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.5)
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model=0.5)
         self.assertEqual(binfrac.max(), 0.5)
-        m1_b, m1_s, binfrac = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
 
