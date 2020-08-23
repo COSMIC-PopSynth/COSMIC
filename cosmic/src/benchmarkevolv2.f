@@ -5,8 +5,6 @@
         INTEGER kstar(2)
         REAL*8 z,ecc,tb,tphysf
         REAL*8 mass(2)
-        REAL*8 bppout(1000,43)
-        REAL*8 bcmout(50000,42)
         REAL*8 dtptmp
         REAL*8 bhspin(2)
         REAL*8 mass0(2),massc(2),menv(2)
@@ -36,7 +34,7 @@
         zsun = 0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; remnantflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3, grflag = 1
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.05; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.6; aic = 1; ussn = 0
@@ -49,12 +47,11 @@
         bconst = 3000; CK = 1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 113271
         bhspinflag = 0; bhspinmag=0.d0; rembar_massloss=0.5;
-        bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,kick_info,bppout,bcmout,
+     & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out,kick_info_out)
 
         kstar(1) = 1; kstar(2) = 1; mass(1) = 53.4;
@@ -64,7 +61,7 @@
         mass0(1) = mass(1)
         mass0(2) = mass(2)
 
-        rad = 0.d0; lumin = 0.d0; massc = 0.d0        
+        rad = 0.d0; lumin = 0.d0; massc = 0.d0
         radc = 0.d0; menv = 0.d0; renv = 0.d0
         ospin = 0.d0; B_0 = 0.d0; bacc = 0.d0
         tacc = 0.d0 ; epoch = 0.d0; tms = 0.d0
@@ -74,7 +71,7 @@
         zsun=0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; remnantflag = 3
+        pisn = 45.0; bhflag = 0; remnantflag = 3; grflag = 1
         cekickflag = 0; cemergeflag = 0; cehestarflag = 0
         mxns = 3.0; pts1 = 0.001; pts2 = 0.01; pts3 = 0.02
         ecsn = 2.5; ecsn_mlow = 1.4; aic = 1; ussn = 0
@@ -85,11 +82,10 @@
         eddfac = 1.0; gamma = -2.0
         bconst = 3000; CK = 1000; windflag = 3; qcflag = 1
         eddlimflag = 0; dtptmp = 13700.d0; idum1 = 121025
-        bppout = 0.d0; bcmout = 0.d0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,kick_info,bppout,bcmout,
+     & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out,kick_info_out)
         END PROGRAM benchmarkevolv2

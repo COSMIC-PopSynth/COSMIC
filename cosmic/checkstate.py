@@ -4,7 +4,7 @@ import operator
 import numpy
 
 CHECKSTATE_COLUMNS = numpy.array(['binstate', 'evol_type', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2' ,
-               'sep', 'porb', 'ecc', 'rrol_1', 'rrol_2',
+               'sep', 'porb', 'ecc', 'rrlo_1', 'rrlo_2',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
                'massc_1', 'massc_2', 'rad_1', 'rad_2',
                'mass0_1', 'mass0_2', 'lum_1', 'lum_2',
@@ -33,11 +33,22 @@ def set_checkstates(timestep_conditions=[]):
             The last condition would end time resolution for the BCM array and it
             would skip to only printing the final state
     """
+    # assume that we are not doing any special dtp setting
+    _evolvebin.checkstate_array.check_dtp = 0
+
+    # Set the default state for checkstate which is that there are no
+    # conditional states at which to set a special dtp
     checkstate_array = getattr(_evolvebin.checkstate_array, 'checkstate_array')
     checkstate_array[:,:] = DEFAULT_CONDITIONS
+
+    # Again we assume that no condtions exist to set a special dtp
     dtp_state = getattr(_evolvebin.checkstate_params, 'dtp_state')
     dtp_state[:] = DEFAULT_DTP_STATE
+
+
     for index, condition in enumerate(timestep_conditions):
+        # we are checking for conditions
+        _evolvebin.checkstate_array.check_dtp = 1
         conditions = parse_column_filters(condition)
         for param in conditions:
             # find where in the checkstate_array this param is
@@ -49,6 +60,7 @@ def set_checkstates(timestep_conditions=[]):
                 else:
                     dtp_state[index] = param[2]
                 continue
+
             if param[1] == operator.eq:
                 checkstate_array[index, param_index*3] = param[2]
                 checkstate_array[index, param_index*3 +2] = param[2]
