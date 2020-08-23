@@ -101,6 +101,7 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, binfrac_model, met, si
     binfrac = np.asarray(binfrac_binaries)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
+    sep = utils.a_from_p(porb,mass1_binary,mass2_binary)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
