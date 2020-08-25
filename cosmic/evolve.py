@@ -59,7 +59,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'porb', 'sep', 'ecc', 'B_1', 'B_2',
                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
-KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'eccentric_anomaly',
+KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
                 'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
                 'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
                 'delta_theta_total', 'omega', 'randomseed', 'bin_num']
@@ -103,7 +103,8 @@ for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array']:
 NATAL_KICK_COLUMNS = ['natal_kick',
                       'phi',
                       'theta',
-                      'eccentric_anomaly',
+                      'mean_anomaly',
+                      'omega',
                       'randomseed']
 
 FLATTENED_NATAL_KICK_COLUMNS = []

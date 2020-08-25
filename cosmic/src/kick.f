@@ -154,6 +154,7 @@
              xx = RAN3(idum1)
 
 * Solve for the eccentric anomaly from the mean anomaly
+* https://en.wikipedia.org/wiki/Eccentric_anomaly
              em = mm
 
              if(mm.eq.0.d0) goto 3
@@ -322,26 +323,26 @@
 *       about the z-axis.
 *       We do this when the system has already had one SN (sn=2)
 *  NOTE: This prescription does not account for realignment between SNe!
-C      if(sn.eq.2)then
-C        cmu = COS(kick_info(1,15))
-C        smu = SIN(kick_info(1,15))
-C        comega = COS(kick_info(1,16))
-C        somega = SIN(kick_info(1,16))
-C
-C        x_tilt = ctheta*cphi*comega + smu*sphi*somega -
-C     &                   cmu*cphi*stheta*somega
-C        y_tilt = cmu*cphi*comega*stheta + ctheta*cphi*somega -
-C     &                   comega*smu*sphi
-C        z_tilt = cmu*sphi + cphi*smu*stheta
-C
-C        phi = ASIN(z_tilt)
-C        sphi = z_tilt
-C        cphi = COS(phi)
-C        theta = ATAN(y_tilt/x_tilt)
-C        stheta = SIN(theta)
-C        ctheta = COS(theta)
-C      endif
-C
+      if(sn.eq.2)then
+        cmu = COS(kick_info(1,15)*pi/180)
+        smu = SIN(kick_info(1,15)*pi/180)
+        comega = COS(kick_info(1,16)*pi/180)
+        somega = SIN(kick_info(1,16)*pi/180)
+
+        x_tilt = ctheta*cphi*comega + smu*sphi*somega -
+     &                   cmu*cphi*stheta*somega
+        y_tilt = cmu*cphi*comega*stheta + ctheta*cphi*somega -
+     &                   comega*smu*sphi
+        z_tilt = cmu*sphi + cphi*smu*stheta
+
+        phi = ASIN(z_tilt)
+        sphi = z_tilt
+        cphi = COS(phi)
+        theta = ATAN(y_tilt/x_tilt)
+        stheta = SIN(theta)
+        ctheta = COS(theta)
+      endif
+
       if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
 
 *
@@ -369,27 +370,29 @@ C
       cmu = (vr*salpha-vk*ctheta*cphi)/SQRT(v1 + v2)
       mu = ACOS(cmu)
       smu = SIN(mu)
+
+*       omega = 0.d0
       omega = twopi*ran3(idum1)
       comega = COS(omega)
       somega = SIN(omega)
 
 * Write angle between initial and current orbital angular momentum vectors
-* and eccentric anomaly if system is still bound
+* and mean anomaly if system is still bound
       if(sn.eq.1.and.ecc.le.1)then
         kick_info(sn,15) = mu*180/pi
         kick_info(sn,16) = omega*180/pi
-        kick_info(sn,6) = em*180/pi
-        natal_kick_array(snstar,4) = em*180/pi
+        kick_info(sn,6) = mm*180/pi
+        natal_kick_array(snstar,4) = mm*180/pi
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
 *       typical spherical coordinates rather than colateral coordinates,
 *       so the rotations are slightly different than above.
 *       We rotate about z-axis by omega1 then y-axis by mu1
-        cmu1 = COS(kick_info(1,15))
-        smu1 = SIN(kick_info(1,15))
-        comega1 = COS(kick_info(1,16))
-        somega1 = SIN(kick_info(1,16))
+        cmu1 = COS(kick_info(1,15)*pi/180)
+        smu1 = SIN(kick_info(1,15)*pi/180)
+        comega1 = COS(kick_info(1,16)*pi/180)
+        somega1 = SIN(kick_info(1,16)*pi/180)
 
         x_tilt = cmu1*comega*comega1*smu + cmu*smu1
      &                - cmu1*smu*somega*somega1
@@ -399,8 +402,8 @@ C
 
         kick_info(sn,15) = ACOS(z_tilt)*180/pi
         kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
-        kick_info(sn,6) = em*180/pi
-        natal_kick_array(snstar,4) = em*180/pi
+        kick_info(sn,6) = mm*180/pi
+        natal_kick_array(snstar,4) = mm*180/pi
 
       endif
 

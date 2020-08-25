@@ -758,7 +758,7 @@ common envelope occurs regardless of the choices below:
 ``natal_kick_array``     Array of dimensions: (2,5) which takes user input values
                          for the SN natal kick, where the first row corresponds to the
                          first star and the second row corresponds to the second star and
-                         columns are: [vk, phi, theta, eccentric_anomaly, rand_seed].
+                         columns are: [vk, phi, theta, mean_anomaly, rand_seed].
                          NOTE: any numbers outside these ranges will be sampled
                          in the standard ways detailed above.
 
@@ -770,7 +770,7 @@ common envelope occurs regardless of the choices below:
                             ``theta`` : azimuthal angle in degrees, valid from
                             [0, 360]
 
-                            ``eccentric_anomaly`` : eccentric anomaly in degreed,
+                            ``mean_anomaly`` : mean anomaly in degrees,
                             valid from [0, 360]
 
                             ``rand_seed`` : supplied if restarting evolution after
