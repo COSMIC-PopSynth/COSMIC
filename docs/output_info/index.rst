@@ -163,7 +163,7 @@ velocity after both supernovae).
   * kick_info[i,2]: disrupted (0=no, 1=yes)
   * kick_info[i,3]: magnitude of the natal kick
   * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-  * kick_info[i,6]: eccentric anomaly
+  * kick_info[i,6]: mean anomaly
   * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted
   * kick_info[i,10]: magnitude of systemic velocity of the binary if bound or magnitude of total velocity of snstar=1 if disrupted, accounting for both SNe
   * kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system is disrupted
@@ -178,7 +178,7 @@ velocity after both supernovae).
 ``natal_kick``         magnitude of the natal kick [:math:`{\rm{km/s}}`]
 ``phi``                of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
 ``theta``              of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
-``eccentric anomaly``  eccentric anomaly [:math:`{\rm{degrees}}`]
+``mean anomaly``       mean anomaly [:math:`{\rm{degrees}}`]
 ``delta_vsysx_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (x)
 ``delta_vsysy_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (y)
 ``delta_vsysz_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (z)
