@@ -104,7 +104,6 @@ NATAL_KICK_COLUMNS = ['natal_kick',
                       'phi',
                       'theta',
                       'mean_anomaly',
-                      'omega',
                       'randomseed']
 
 FLATTENED_NATAL_KICK_COLUMNS = []
