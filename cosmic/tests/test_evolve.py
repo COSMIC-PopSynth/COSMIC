@@ -29,6 +29,7 @@ BSEDict['natal_kick_array'] = [[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0
 BSEDict['fprimc_array'] = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
+BSEDict['grflag'] = 1
 
 class TestEvolve(unittest.TestCase):
     """`TestCase` for the cosmic
