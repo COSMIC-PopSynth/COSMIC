@@ -1135,6 +1135,9 @@ def parse_inifile(inifile):
     # ---- Read needed variables from the inifile
     dictionary = {}
     for section in cp.sections():
+        # for cosmic we skip any CMC stuff
+        if section == 'cmc':
+            continue
         dictionary[section] = {}
         for option in cp.options(section):
             opt = cp.get(section, option)
