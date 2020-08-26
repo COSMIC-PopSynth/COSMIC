@@ -40,7 +40,7 @@ import os.path
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
- 
+
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
                'Michael Zevin <zevin@northwestern.edu>']
@@ -508,7 +508,7 @@ def mass_min_max_select(kstar_1, kstar_2):
             max_mass[ii] = 20.0
         elif k== 11.0:
             max_mass[ii] = 20.0
-        elif k <= 10.0:
+        elif k == 10.0:
             max_mass[ii] = 20.0
         ii += 1
 
@@ -823,6 +823,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1,2]:
             raise ValueError("'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
+    flag='grflag'
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0,1]:
+            raise ValueError("'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(flag,BSEDict[flag]))
     flag='qcflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1,2,3,4,5]:

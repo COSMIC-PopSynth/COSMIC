@@ -111,7 +111,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     n_binaries = 0
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
-        mass1_binaries, mass_single, binfrac_binaries = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
+        mass1_binaries, mass_single, binfrac_binaries, binary_index = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
         mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
         # track the mass sampled
@@ -323,7 +323,7 @@ class Sample(object):
         else:
             raise ValueError('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
 
-        return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx]
+        return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx], binaryIdx
 
 
     def sample_porb(self, mass1, mass2, ecc, porb_model='sana12', size=None):
