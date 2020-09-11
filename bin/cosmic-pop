@@ -15,6 +15,7 @@
 from collections import OrderedDict
 import warnings
 import argparse
+import schwimmbad
 
 import math
 import random
@@ -96,8 +97,6 @@ def parse_commandline():
                         help="Number of binaries to try before checking for "
                         "convergence, it will check ever Nstep binaries until "
                         "it reach Niter binaries", type=int, default=10000)
-    parser.add_argument("-n", "--nproc",
-                        help="number of processors", type=int, default=1)
     parser.add_argument("--binary_state", nargs='+', type=int)
     parser.add_argument("--sampling_method")
     parser.add_argument("--primary_model", help="Chooses the initial primary mass function from: salpeter55, kroupa93, kroupa01", type=str)
@@ -116,6 +115,12 @@ def parse_commandline():
     parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
                         help="Run in Verbose Mode")
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-n", "--nproc",
+                        help="number of processors", type=int, default=1)
+    group.add_argument("--mpi", dest="mpi", default=False,
+                       action="store_true", help="Run with MPI.")
 
     args = parser.parse_args(remaining_argv)
 
@@ -147,6 +152,9 @@ if __name__ == '__main__':
     # READ COMMANDLINE ARGUMENTS
     ###########################################################################
     args = parse_commandline()
+
+    # Create a pool
+    pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
 
     # SET TIME TO TRACK COMPUTATION TIME
     ###########################################################################
@@ -318,8 +326,9 @@ if __name__ == '__main__':
             filters['timestep_conditions'] = []
 
         bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                      pool=pool,
                                                       BSEDict=BSEDict,
-                                                      nproc=args.nproc, idx=idx,
+                                                      idx=idx,
                                                       dtp=dtp,
                                                       timestep_conditions=filters['timestep_conditions'],)
 

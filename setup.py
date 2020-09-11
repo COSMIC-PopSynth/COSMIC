@@ -74,13 +74,13 @@ setup_requires = [
 install_requires = [
     'numpy >= 1.16',
     'scipy >= 0.12.1',
-    'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
     'astropy >= 1.1.1 ; python_version >= \'3\'',
     'configparser',
     'tqdm >= 4.0',
     'pandas >= 0.24',
     'tables > 3.5.0',
     'h5py >= 1.3',
+    'schwimmbad >= 0.3.1',
     'matplotlib >= 2.0.0'
 ]
 tests_require = [
