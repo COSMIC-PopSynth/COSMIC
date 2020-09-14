@@ -21,6 +21,9 @@
 
 import pandas as pd
 import numpy as np
+import h5py
+from astropy.io import fits
+from astropy.table import Table
 
 __author__ = 'Scott Coughlin <scottcoughlin2014@u.northwestern.edu>'
 __credits__ = 'Carl Rodriguez <carllouisrodriguez@gmail.com>'
@@ -31,7 +34,11 @@ INITIAL_CONDITIONS_COLUMNS_CMC_SINGLES = ['id', 'k', 'm', 'Reff', 'r', 'vr', 'vt
 
 INITIAL_CONDITIONS_COLUMNS_CMC_BINARIES = ['index', 'id1', 'k1', 'm1', 'Reff1', 'id2', 'k2', 'm2', 'Reff2', 'a', 'e']
 
-class InitialCMCTable():
+class InitialCMCTable(pd.DataFrame):
+    scaled_to_nbody_units = False
+    metallicity = None
+    mass_of_cluster = None
+
     @classmethod
     def ScaleToNBodyUnits(cls, Singles, Binaries, virial_radius=1):
         """Rescale the single masses, radii, and velocities into N-body units
@@ -94,7 +101,9 @@ class InitialCMCTable():
         Binaries['Reff1'] *= DistConv
         Binaries['Reff2'] *= DistConv
 
-
+        Singles.scaled_to_nbody_units = True
+        Binaries.scaled_to_nbody_units = True
+        return
 
     @classmethod
     def InitialCMCSingles(cls, id_idx, k, m, Reff, r, vr,vt, binind):
@@ -130,10 +139,10 @@ class InitialCMCTable():
             Single binary initial conditions
 
         """
-        bin_dat = pd.DataFrame(np.vstack([
-                                            id_idx, k, m, Reff, r, vr,vt, binind,
-                                          ]).T,
-                               columns = INITIAL_CONDITIONS_COLUMNS_CMC_SINGLES)
+        bin_dat = cls(np.vstack([
+                                id_idx, k, m, Reff, r, vr,vt, binind,
+                                ]).T,
+                                columns = INITIAL_CONDITIONS_COLUMNS_CMC_SINGLES)
 
         return bin_dat
 
@@ -171,12 +180,116 @@ class InitialCMCTable():
             Single binary initial conditions
 
         """
-        bin_dat = pd.DataFrame(np.vstack([
-                                          index, id1, k1, m1, Reff1, id2, k2, m2, Reff2, a, e
-                                          ]).T,
-                               columns = INITIAL_CONDITIONS_COLUMNS_CMC_BINARIES)
+        bin_dat = cls(np.vstack([
+                                index, id1, k1, m1, Reff1, id2, k2, m2, Reff2, a, e
+                                ]).T,
+                                columns = INITIAL_CONDITIONS_COLUMNS_CMC_BINARIES)
 
         return bin_dat
+
+    @classmethod
+    def write(cls, Singles, Binaries, filename="input.hdf5", **kwargs):
+        """Save Singles and Binaries to HDF5 or FITS file
+
+        Parameters
+        ----------
+        Singles : DataFrame
+            Pandas DataFrame from the InitialCMCSingles function
+        Binaries : DataFrame
+            Pandas DataFrame from the InitialCMCSingles function
+        filename : (str)
+            Must end in ".fits" or ".hdf5/h5"
+
+        **kwargs
+
+            virial_radius
+            rtid
+        Returns
+        -------
+            None:
+
+        """
+        virial_radius = kwargs.pop("virial_radius", 1)
+        rtid = kwargs.pop("rtid", 1000000.0)
+
+        # verify parameters
+        if ( ('.hdf5' in filename) or ('.h5' in filename) ):
+            savehdf5 = True
+            savefits = False
+        elif '.fits' in filename:
+            savefits = True
+            savehdf5 = False
+        else:
+            raise ValueError("File extension not recognized, valid file types are fits and hdf5")
+
+        # If a user has not already scaled the units of the Singles and Binaries tables, and the attribute mass_of_cluster is None, then
+        # we can calculate it now
+        if (not Singles.scaled_to_nbody_units) and (Singles.mass_of_cluster is None):
+            Singles.mass_of_cluster = np.sum(Singles['m'])
+            InitialCMCTable.ScaleToNBodyUnits(Singles, Binaries, virial_radius=virial_radius)
+        elif (Singles.scaled_to_nbody_units) and (Singles.mass_of_cluster is None):
+            # we cannot get the pre-scaled mass of the cluster
+            raise ValueError("In order to save the initial conditions correctly, "
+                             "you cannot feed in Singles and Binaries which have already been scaled")
+
+        if Singles.metallicity is None:
+            raise ValueError("The user has not supplied a metallicity for the cluster. Please set the Singles.metallicity attribute")
+
+        # Need to append special rows to the start and end of the Singles table
+        singles = pd.DataFrame(np.zeros((1, Singles.shape[1])), index=[0], columns=Singles.columns)
+        singles_bottom = pd.DataFrame(np.zeros((1, Singles.shape[1])), index=[0], columns=Singles.columns)
+        singles = singles.append(Singles)
+        singles = singles.append(singles_bottom)
+        singles['r'].iloc[-1] = 1e40
+        singles['r'].iloc[0] = 2.2250738585072014e-308
+
+        # Add a special row to the end of Bianries table
+        binaries = pd.DataFrame(np.zeros((1, Binaries.shape[1])), index=[0], columns=Binaries.columns)
+        binaries = binaries.append(Binaries)
+
+        if savehdf5:
+            singles.to_hdf(filename, key="CLUS_OBJ_DATA", mode='w')
+            binaries.to_hdf(filename, key="CLUS_BINARY_DATA")
+            with h5py.File(filename, 'a') as f:
+                f["CLUS_OBJ_DATA/block0_values"].attrs['EXTNAME'] = 'CLUS_OBJ_DATA'
+                f["CLUS_OBJ_DATA/block0_values"].attrs['NOBJ'] = int(len(singles)) - 2
+                f["CLUS_OBJ_DATA/block0_values"].attrs['NBINARY'] =  int(len(binaries)) - 1
+                f["CLUS_OBJ_DATA/block0_values"].attrs['MCLUS'] = Singles.mass_of_cluster
+                f["CLUS_OBJ_DATA/block0_values"].attrs['RVIR'] = virial_radius
+                f["CLUS_OBJ_DATA/block0_values"].attrs['RTID'] = rtid
+                f["CLUS_OBJ_DATA/block0_values"].attrs['Z'] = Singles.metallicity
+
+
+        if savefits:
+            Singles_fits = Table.from_pandas(singles)
+            Binaries_fits = Table.from_pandas(binaries)
+
+            hdu1 = fits.table_to_hdu(Singles_fits)
+            hdu2 = fits.table_to_hdu(Binaries_fits)
+
+            # create a header
+            hdr = fits.Header()
+            hdr['COMMENT'] = 'CMC Configured Initial Conditions'
+            hdr['COMMENT'] = 'Produced by COSMIC'
+            primary_hdu = fits.PrimaryHDU(header=hdr)
+
+            hdu1.header['EXTNAME'] = 'CLUS_OBJ_DATA'
+            hdu1.header['NOBJ'] = int(len(Singles_fits)) - 2
+            hdu1.header['NBINARY'] =  int(len(Binaries_fits)) - 1
+            hdu1.header['MCLUS'] = Singles.mass_of_cluster
+            hdu1.header['RVIR'] = virial_radius
+            hdu1.header['RTID'] = rtid
+            hdu1.header['Z'] = Singles.metallicity
+
+
+            # put all the HDUs together
+            hdul = fits.HDUList([primary_hdu, hdu1, hdu2])
+
+            # write it out
+            hdul.writeto(filename, overwrite=True,)
+
+        return
+
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):
