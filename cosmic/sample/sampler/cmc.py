@@ -101,6 +101,7 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, binfrac_model, met, si
     binfrac = np.asarray(binfrac_binaries)
     ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
     porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
+    sep = utils.a_from_p(porb,mass1_binary,mass2_binary)
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
@@ -121,7 +122,14 @@ def get_cmc_sampler(primary_model, ecc_model, porb_model, binfrac_model, met, si
     binind[binary_index] = np.arange(len(binary_index)) + 1
     mass1[binary_index] += mass2_binary
 
-    return InitialCMCTable.InitialCMCSingles(single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind), InitialCMCTable.InitialCMCBinaries(np.arange(mass1_binaries.size), single_ids[binary_index] + 1, kstar1, mass1_binary, Reff1, binary_secondary_object_id + 1, kstar2, mass2_binary, Reff2, porb, ecc)
+    singles_table = InitialCMCTable.InitialCMCSingles(single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind)
+    singles_table.metallicity = met
+    singles_table.mass_of_cluster = np.sum(singles_table['m'])
+
+    binaries_table = InitialCMCTable.InitialCMCBinaries(np.arange(mass1_binaries.size) + 1, single_ids[binary_index] + 1, kstar1, mass1_binary, Reff1, binary_secondary_object_id + 1, kstar2, mass2_binary, Reff2, sep, ecc)
+    binaries_table.metallicity = met
+
+    return singles_table, binaries_table 
 
 
 register_sampler('cmc', InitialCMCTable, get_cmc_sampler,
