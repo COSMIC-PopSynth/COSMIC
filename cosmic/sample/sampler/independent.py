@@ -227,11 +227,11 @@ class Sample(object):
 
             a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
             a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
-            return a_0, np.sum(a0)
+            return a_0, np.sum(a_0)
 
         elif primary_model=='salpeter55':
             a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
-            return a_0, np.sum(a0)
+            return a_0, np.sum(a_0)
 
         elif primary_model=='piecewise_power':
             Ncumulative, Ntotal, coeff = [], 0., 1.
