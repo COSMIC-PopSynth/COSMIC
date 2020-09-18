@@ -202,55 +202,59 @@ class Sample(object):
         sampled_mass : float
             Total amount of mass sampled
         """
-
         if primary_model=='kroupa93':
-            total_sampled_mass = 0
-            multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
+            low_cutoff  = 0.770751
+            high_cutoff = 0.919232
 
-            low_cutoff = 0.771
-            high_cutoff = 0.919
-
-            lowIdx, = np.where(a_0 <= low_cutoff)
+            lowIdx, = np.where(a_0 <= low_cutoff) # list of indices where a_0[i] <= low_cutoff
             midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             highIdx, = np.where(a_0 >= high_cutoff)
 
+            # replace elements of a_0 with mass values sampled from the following power-law pdfs
             a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
             a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
             a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
-
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
+            return a_0, np.sum(a_0)
 
         elif primary_model=='kroupa01':
-            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
-            # at 0.08 Msun instead of 0.01
-
-            total_sampled_mass = 0
-            multiplier = 1
+            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
             a_0 = np.random.uniform(0.0, 1, size)
-
-            cutoff = 0.748
+            cutoff = 0.760631  # Original value (0.748) gives total mass too high by 3.4%
 
             lowIdx, = np.where(a_0 <= cutoff)
             highIdx, = np.where(a_0 >= cutoff)
 
             a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
             a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
-
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
+            return a_0, np.sum(a0)
 
         elif primary_model=='salpeter55':
-            total_sampled_mass = 0
-            multiplier = 1
             a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
+            return a_0, np.sum(a0)
 
-            total_sampled_mass += np.sum(a_0)
+        elif primary_model=='piecewise_power':
+            Ncumulative, Ntotal, coeff = [], 0., 1.
 
-            return a_0, total_sampled_mass
+            for i in range(len(alphas)):
+                g, h = np.array([1.,2.]) - alphas[i]
+                Ntotal += (mcuts[i+1]**g - mcuts[i]**g) * coeff/g # Total N from that piece's contribution to the IMF
+                Ncumulative.append(Ntotal)
+                if i < len(alphas)-1: coeff *= mcuts[i+1]**(alphas[i+1]-alphas[i])
+
+            cutoffs = np.array(Ncumulative)/Ntotal
+            a_0 = np.random.uniform(0.,1.,size)
+            idxs = [() for i in range(len(alphas))]
+
+            for i in range(len(alphas)):
+                if i == 0: idxs[i], = np.where(a_0 <= cutoffs[0])
+                elif i < len(alphas)-1: idxs[i], = np.where((a_0 > cutoffs[i-1]) & (a_0 <= cutoffs[i]))
+                else: idxs[i], = np.where(a_0 > cutoffs[i-1])
+
+            for i in range(len(alphas)):
+                a_0[idxs[i]] = rndm(a=mcuts[i], b=mcuts[i+1], g=-1.*alphas[i], size=len(idxs[i]))
+
+            return a_0, np.sum(a_0)
 
     # sample secondary mass
     def sample_secondary(self, primary_mass):
@@ -328,7 +332,7 @@ class Sample(object):
 
     def sample_porb(self, mass1, mass2, ecc, porb_model='sana12', size=None):
         """Sample the orbital period according to the user-specified model
-        
+
         Parameters
         ----------
         mass1 : array
@@ -344,11 +348,11 @@ class Sample(object):
                        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
                         and consistent with Dominik+2012,2013
                         and then converted to orbital period in days using Kepler III
-            sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following 
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
-            renzo19 : power law orbital period for m1 > 15Msun binaries from 
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
-                        following the implementation of 
+            sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            renzo19 : power law orbital period for m1 > 15Msun binaries from
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+                        following the implementation of
                         `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
 
         Returns
@@ -357,7 +361,7 @@ class Sample(object):
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
         """
-        if porb_model == 'log_uniform':     
+        if porb_model == 'log_uniform':
             q = mass2/mass1
             RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
 
@@ -454,7 +458,7 @@ class Sample(object):
 
         elif ecc_model=='sana12':
             from cosmic.utils import rndm
-            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size) 
+            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size)
             return ecc
 
         elif ecc_model=='circular':
