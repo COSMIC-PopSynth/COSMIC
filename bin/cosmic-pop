@@ -153,9 +153,6 @@ if __name__ == '__main__':
     ###########################################################################
     args = parse_commandline()
 
-    # Create a pool
-    pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
-
     # SET TIME TO TRACK COMPUTATION TIME
     ###########################################################################
     start_time = time.time()
@@ -325,12 +322,14 @@ if __name__ == '__main__':
                 pass
             filters['timestep_conditions'] = []
 
-        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
-                                                      pool=pool,
-                                                      BSEDict=BSEDict,
-                                                      idx=idx,
-                                                      dtp=dtp,
-                                                      timestep_conditions=filters['timestep_conditions'],)
+        # Create a pool
+        with schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc) as pool:
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          pool=pool,
+                                                          BSEDict=BSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'],)
 
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)

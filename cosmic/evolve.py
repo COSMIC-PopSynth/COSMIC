@@ -316,23 +316,36 @@ class Evolve(object):
 
         # check if a pool was passed
         if pool is None:
-            pool = MultiPool(processes=nproc)
-
-        # evolve systems
-        if n_per_block > 0:
-            initial_conditions = np.asarray(initial_conditions)
-            n_tot = initial_conditions.shape[0]
-            initial_conditions_blocked = []
-            itr_block = 0
-            while itr_block < n_tot:
-                itr_next = np.min([n_tot,itr_block+n_per_block])
-                initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
-                itr_block = itr_next
-            output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+            with MultiPool(processes=nproc) as pool:
+                # evolve systems
+                if n_per_block > 0:
+                    initial_conditions = np.asarray(initial_conditions)
+                    n_tot = initial_conditions.shape[0]
+                    initial_conditions_blocked = []
+                    itr_block = 0
+                    while itr_block < n_tot:
+                        itr_next = np.min([n_tot,itr_block+n_per_block])
+                        initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
+                        itr_block = itr_next
+                    output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+                else:
+                    output = list(pool.map(_evolve_single_system, initial_conditions))
         else:
-            output = list(pool.map(_evolve_single_system, initial_conditions))
+            # evolve systems
+            if n_per_block > 0:
+                initial_conditions = np.asarray(initial_conditions)
+                n_tot = initial_conditions.shape[0]
+                initial_conditions_blocked = []
+                itr_block = 0
+                while itr_block < n_tot:
+                    itr_next = np.min([n_tot,itr_block+n_per_block])
+                    initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
+                    itr_block = itr_next
+                output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+            else:
+                output = list(pool.map(_evolve_single_system, initial_conditions))
 
-        output = np.array(output)
+        output = np.array(output, dtype=object)
         bpp_arrays = np.vstack(output[:, 1])
         bcm_arrays = np.vstack(output[:, 2])
         kick_info_arrays = np.vstack(output[:, 3])
