@@ -23,7 +23,7 @@
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
 * The first row contains information about the first supernova that
-* occurs, the second row the second supernova. 
+* occurs, the second row the second supernova.
 * Note that some values the second row will take into account the
 * effect of the first SN (e.g., kick_info[2,10] is the total systemic
 * velocity after both supernovae).
@@ -36,11 +36,11 @@
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of snstar=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
-*       or magnitude of total velocity of snstar=1 if disrupted, 
+*       or magnitude of total velocity of snstar=1 if disrupted,
 *       accounting for both SNe
 * kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system
 *       is disrupted
-* kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted, 
+* kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted,
 *       accounting for both SNe
 * kick_info[i,15]: (total) tilt of the orbital plane after each SN
 *       w.r.t. the original angular momentum axis after each SN
@@ -149,10 +149,22 @@
          if((natal_kick_array(snstar,4).ge.(0.d0)).and.
      &       (natal_kick_array(snstar,4).le.(360.d0)))then
 
-             em = natal_kick_array(snstar,4)*pi/180.d0
+             mm = natal_kick_array(snstar,4)*pi/180.d0
 * per supplied kick value we mimic a call to random number generator
              xx = RAN3(idum1)
-             goto 3
+
+* Solve for the eccentric anomaly from the mean anomaly
+* https://en.wikipedia.org/wiki/Eccentric_anomaly
+             em = mm
+
+             if(mm.eq.0.d0) goto 3
+
+  4          dif = em - ecc*SIN(em) - mm
+             if(ABS(dif/mm).le.1.0d-04) goto 3
+             der = 1.d0 - ecc*COS(em)
+             del = dif/der
+             em = em - del
+             goto 4
 
          endif
 
@@ -236,7 +248,7 @@
              vk = alphakick * ((m1-m1n)/m1n) + betakick
              vk2 = vk*vk
           endif
-             
+
       endif
       sigma = sigmah
 
@@ -312,10 +324,10 @@
 *       We do this when the system has already had one SN (sn=2)
 *  NOTE: This prescription does not account for realignment between SNe!
       if(sn.eq.2)then
-        cmu = COS(kick_info(1,15))
-        smu = SIN(kick_info(1,15))
-        comega = COS(kick_info(1,16))
-        somega = SIN(kick_info(1,16))
+        cmu = COS(kick_info(1,15)*pi/180)
+        smu = SIN(kick_info(1,15)*pi/180)
+        comega = COS(kick_info(1,16)*pi/180)
+        somega = SIN(kick_info(1,16)*pi/180)
 
         x_tilt = ctheta*cphi*comega + smu*sphi*somega -
      &                   cmu*cphi*stheta*somega
@@ -358,27 +370,29 @@
       cmu = (vr*salpha-vk*ctheta*cphi)/SQRT(v1 + v2)
       mu = ACOS(cmu)
       smu = SIN(mu)
+
+*       omega = 0.d0
       omega = twopi*ran3(idum1)
       comega = COS(omega)
       somega = SIN(omega)
 
 * Write angle between initial and current orbital angular momentum vectors
-* and eccentric anomaly if system is still bound
+* and mean anomaly if system is still bound
       if(sn.eq.1.and.ecc.le.1)then
         kick_info(sn,15) = mu*180/pi
         kick_info(sn,16) = omega*180/pi
-        kick_info(sn,6) = em*180/pi
-        natal_kick_array(snstar,4) = em*180/pi
+        kick_info(sn,6) = mm*180/pi
+        natal_kick_array(snstar,4) = mm*180/pi
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
 *       typical spherical coordinates rather than colateral coordinates,
 *       so the rotations are slightly different than above.
 *       We rotate about z-axis by omega1 then y-axis by mu1
-        cmu1 = COS(kick_info(1,15))
-        smu1 = SIN(kick_info(1,15))
-        comega1 = COS(kick_info(1,16))
-        somega1 = SIN(kick_info(1,16))
+        cmu1 = COS(kick_info(1,15)*pi/180)
+        smu1 = SIN(kick_info(1,15)*pi/180)
+        comega1 = COS(kick_info(1,16)*pi/180)
+        somega1 = SIN(kick_info(1,16)*pi/180)
 
         x_tilt = cmu1*comega*comega1*smu + cmu*smu1
      &                - cmu1*smu*somega*somega1
@@ -388,8 +402,8 @@
 
         kick_info(sn,15) = ACOS(z_tilt)*180/pi
         kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
-        kick_info(sn,6) = em*180/pi
-        natal_kick_array(snstar,4) = em*180/pi
+        kick_info(sn,6) = mm*180/pi
+        natal_kick_array(snstar,4) = mm*180/pi
 
       endif
 
@@ -562,17 +576,17 @@
       if(ecc.gt.99.9d0) ecc = 99.9d0
 
 * For systems that were distrupted in the first SN, skip to here
- 73   continue  
+ 73   continue
 *
 * Set systemic velocity magnitudes in the kick_info array
-* For first SN, this should be identical to the magnitude 
+* For first SN, this should be identical to the magnitude
 * of the three component vectors. For the second SN, this
 * will be the systemic velocity relative to the initial frame.
       if(sn.eq.1)then
-         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) + 
+         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) +
      &              kick_info(sn,8)*kick_info(sn,8) +
      &              kick_info(sn,9)*kick_info(sn,9))
-         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) + 
+         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) +
      &              kick_info(sn,12)*kick_info(sn,12) +
      &              kick_info(sn,13)*kick_info(sn,13))
       elseif(sn.eq.2)then
