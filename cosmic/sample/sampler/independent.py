@@ -20,7 +20,6 @@
 """
 
 import numpy as np
-import multiprocessing as mp
 import math
 import random
 import scipy.integrate
