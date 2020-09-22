@@ -34,6 +34,8 @@ from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
 
+from schwimmbad import MultiPool, MPIPool
+
 def str2bool(v):
     if isinstance(v, bool):
        return v
@@ -152,6 +154,7 @@ if __name__ == '__main__':
     # READ COMMANDLINE ARGUMENTS
     ###########################################################################
     args = parse_commandline()
+    pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
 
     # SET TIME TO TRACK COMPUTATION TIME
     ###########################################################################
@@ -254,7 +257,7 @@ if __name__ == '__main__':
     dat_store.put('config/rand_seed/', pd.Series(seed_int))
 
     # Initialize the step counter and convergence array/list
-    Nstep = 0
+    Nstep = idx - np.mod(idx, args.Nstep)
     match = np.zeros(len(convergence['convergence_params']))
 
     # Simulate the fixed population
@@ -293,7 +296,8 @@ if __name__ == '__main__':
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
-                                                        size = args.Nstep)
+                                                        size = args.Nstep,
+                                                        pool=pool)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         # Log the total sampled mass from the initial binary sample
@@ -323,13 +327,12 @@ if __name__ == '__main__':
             filters['timestep_conditions'] = []
 
         # Create a pool
-        with schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc) as pool:
-            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
-                                                          pool=pool,
-                                                          BSEDict=BSEDict,
-                                                          idx=idx,
-                                                          dtp=dtp,
-                                                          timestep_conditions=filters['timestep_conditions'],)
+        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                      pool=pool,
+                                                      BSEDict=BSEDict,
+                                                      idx=idx,
+                                                      dtp=dtp,
+                                                      timestep_conditions=filters['timestep_conditions'],)
 
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)

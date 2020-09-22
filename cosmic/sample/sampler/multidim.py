@@ -25,7 +25,7 @@ import random
 import scipy.integrate
 
 from cosmic.utils import mass_min_max_select
-from schwimmbad import MultiPool
+from schwimmbad import MultiPool, MPIPool
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
@@ -128,9 +128,10 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SF_start,
         final_kstar2 = [final_kstar2]
     porb_lo = kwargs.pop('porb_lo', 0.15)
     porb_hi = kwargs.pop('porb_hi', 8.0)
+    pool = kwargs.pop("pool", None)
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc, pool=pool)
     tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size) 
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
@@ -184,7 +185,7 @@ class MultiDim:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, porb_lo=0.15, porb_hi=8.0, rand_seed=0, size=None, nproc=1):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, porb_lo=0.15, porb_hi=8.0, rand_seed=0, size=None, nproc=1, pool=None):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
@@ -234,11 +235,20 @@ class MultiDim:
         binfrac_list : array
             array of binary probabilities based on primary mass and period with size=size
         """
+        if pool is None:
+            with MultiPool(processes=nproc) as pool:
+                mp_seeds = [nproc * (task._identity[0]-1) for task in pool._pool]
+                inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds] 
+                worker = Worker()
+                results = list(pool.map(worker, inputs))
+        else:
+            if type(pool) is MPIPool:
+                print(pool.workers)
+                mp_seeds = [nproc * (task - 1) for task in pool.workers]
+            else:
+                mp_seeds = [nproc * (task._identity[0] - 1) for task in pool._pool]
 
-        with MultiPool(processes=nproc) as pool:
-            mp_seeds = [nproc * (task._identity[0]-1) for task in pool._pool]
-            inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds] 
-            print(mp_seeds)
+            inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds]
             worker = Worker()
             results = list(pool.map(worker, inputs))
 
@@ -617,7 +627,6 @@ class Worker(object):
         #; This is NOT the IMF, which is the mass distribution of single stars,
         #; primaries in binaries, and secondaries in binaries.
 
-        print(seed)
         np.random.seed(seed)
 
         mass_singles = 0.0
