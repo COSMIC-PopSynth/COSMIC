@@ -236,6 +236,7 @@ class CMCSample(Sample):
                                                         [initial_condition['bhspin_1'], initial_condition['bhspin_2']],
                                                         initial_condition['tphys'],
                                                         np.zeros(20),
+                                                        np.zeros(20),
                                                         initial_condition['kick_info'])
             rad_1[idx] = _evolvebin.binary.bcm[0,5]
 
