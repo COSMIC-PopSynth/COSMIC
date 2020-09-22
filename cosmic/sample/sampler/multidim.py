@@ -129,9 +129,10 @@ def get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SF_start,
     porb_lo = kwargs.pop('porb_lo', 0.15)
     porb_hi = kwargs.pop('porb_hi', 8.0)
     pool = kwargs.pop("pool", None)
+    mp_seeds = kwargs.pop("mp_seeds", None)
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
     initconditions = MultiDim()
-    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc, pool=pool)
+    mass1_binary, mass2_binary, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = initconditions.initial_sample(primary_min, secondary_min, primary_max, secondary_max, porb_lo, porb_hi, rand_seed, size=size, nproc = nproc, pool=pool, mp_seeds=mp_seeds)
     tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size) 
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
@@ -185,7 +186,7 @@ class MultiDim:
     #
 
 
-    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, porb_lo=0.15, porb_hi=8.0, rand_seed=0, size=None, nproc=1, pool=None):
+    def initial_sample(self, M1min=0.08, M2min = 0.08, M1max=150.0, M2max=150.0, porb_lo=0.15, porb_hi=8.0, rand_seed=0, size=None, nproc=1, pool=None, mp_seeds=None):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
 
@@ -237,16 +238,24 @@ class MultiDim:
         """
         if pool is None:
             with MultiPool(processes=nproc) as pool:
-                mp_seeds = [nproc * (task._identity[0]-1) for task in pool._pool]
+                if mp_seeds is not None:
+                    if len(list(mp_seeds)) != nproc:
+                        raise ValueError("Must supply a list of random seeds with length equal to number of processors")
+                else:
+                    mp_seeds = [nproc * (task._identity[0]-1) for task in pool._pool]
+
                 inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds] 
                 worker = Worker()
                 results = list(pool.map(worker, inputs))
         else:
-            if type(pool) is MPIPool:
-                print(pool.workers)
-                mp_seeds = [nproc * (task - 1) for task in pool.workers]
+            if mp_seeds is not None:
+                if len(list(mp_seeds)) != nproc:
+                    raise ValueError("Must supply a list of random seeds with length equal to number of processors")
             else:
-                mp_seeds = [nproc * (task._identity[0] - 1) for task in pool._pool]
+                if type(pool) is MPIPool:
+                    mp_seeds = [nproc * (task - 1) for task in pool.workers]
+                else:
+                    mp_seeds = [nproc * (task._identity[0] - 1) for task in pool._pool]
 
             inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds]
             worker = Worker()
