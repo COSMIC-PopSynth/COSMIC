@@ -155,6 +155,13 @@ if __name__ == '__main__':
     ###########################################################################
     args = parse_commandline()
     pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
+    if isinstance(pool, MPIPool):
+        if not pool.is_master():
+            pool.wait()
+            sys.exit(0)
+        nproc = len(pool.workers)
+    else:
+        nproc = args.nproc
 
     # SET TIME TO TRACK COMPUTATION TIME
     ###########################################################################
