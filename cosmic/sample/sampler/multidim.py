@@ -252,10 +252,12 @@ class MultiDim:
                 if len(list(mp_seeds)) != nproc:
                     raise ValueError("Must supply a list of random seeds with length equal to number of processors")
             else:
-                if type(pool) is MPIPool:
+                if isinstance(pool, MPIPool):
                     mp_seeds = [nproc * (task - 1) for task in pool.workers]
-                else:
+                elif isinstance(pool, MultiPool):
                     mp_seeds = [nproc * (task._identity[0] - 1) for task in pool._pool]
+                else:
+                    mp_seeds = [0 for i in range(nproc)]
 
             inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds]
             worker = Worker()
@@ -668,7 +670,6 @@ class Worker(object):
 
             #; Select primary M1 > M1min from primary mass function
             myM1 = np.interp(cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1)
-
 
             # ; Find index of M1v that is closest to myM1.
             #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
