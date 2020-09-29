@@ -61,7 +61,7 @@
       real*8 mu,cmu,smu,omega,comega,somega
       real*8 cmu1,smu1,comega1,somega1
       real*8 vr,vr2,vk2,vn2,hn2
-      real*8 vs(3),v1,v2
+      real*8 vs(3),v1,v2,v3
       real*8 mx1,mx2,r2
       real*8 sigmah,RotInvX
       real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
@@ -357,6 +357,7 @@
 * and the new relative velocity.
       v1 = vk2*sphi*sphi
       v2 = (vk*ctheta*cphi-vr*salpha)**2
+      v3 = vk2*stheta*stheta*cphi*cphi
       hn2 = r*r*(v1 + v2)
 * Calculate the new eccentricity.
       ecc2 = 1.d0 - hn2/(gmrkm*sep*(m1n+m2))
@@ -371,9 +372,8 @@
       mu = ACOS(cmu)
       smu = SIN(mu)
 
-*       omega = 0.d0
-      omega = twopi*ran3(idum1)
-      comega = COS(omega)
+      comega = (vr*salpha-vk*ctheta*cphi)/SQRT(v3 + v2)
+      omega = ACOS(omega)
       somega = SIN(omega)
 
 * Write angle between initial and current orbital angular momentum vectors
