@@ -110,7 +110,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     n_singles = 0
     n_binaries = 0
     while len(mass1_binary) < size:
-        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
+        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier, **kwargs)
         mass1_binaries, mass_single, binfrac_binaries, binary_index = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
         mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
@@ -159,7 +159,7 @@ register_sampler('independent', InitialBinaryTable, get_independent_sampler,
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa01', size=None):
+    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[1.3,2.3,2.3], mcuts=[0.08,0.5,1.0,150.]):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
