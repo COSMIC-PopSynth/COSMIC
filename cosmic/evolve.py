@@ -441,7 +441,7 @@ class Evolve(object):
                     _evolvebin.ceflags.cemergeflag = f[i]['cemergeflag']
                     _evolvebin.ceflags.cehestarflag = f[i]['cehestarflag']
                     _evolvebin.flags.grflag = f[i]['grflag']
-                    _evolvebin.flags.bhms_coll_flag = f['bhms_coll_flag']
+                    _evolvebin.flags.bhms_coll_flag = f[i]['bhms_coll_flag']
                     _evolvebin.snvars.mxns = f[i]['mxns']
                     _evolvebin.points.pts1 = f[i]['pts1']
                     _evolvebin.points.pts2 = f[i]['pts2']
