@@ -366,8 +366,8 @@
 * Calculate the new orbital angular momentum taking care to convert
 * hn to units of Rsun^2/yr.
       jorb = (m1n*m2/(m1n+m2))*SQRT(hn2)*(yearsc/rsunkm)
-* Determine the angle between the new and old orbital angular
-* momentum vectors, and randomly choose an azimuth angle
+* Determine the polar angle (mu) and azimuthal angle (omega)
+* between the new and old orbital angular momentum vectors
       cmu = (vr*salpha-vk*ctheta*cphi)/SQRT(v1 + v2)
       mu = ACOS(cmu)
       smu = SIN(mu)
