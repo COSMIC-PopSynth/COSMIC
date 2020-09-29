@@ -397,6 +397,7 @@ class Evolve(object):
                                                                         [f['bhspin_1'], f['bhspin_2']],
                                                                         f['tphys'],
                                                                         np.zeros(20),
+                                                                        np.zeros(20),
                                                                         f['kick_info'])
                 bcm = _evolvebin.binary.bcm[:bcm_index].copy()
                 bpp = _evolvebin.binary.bpp[:bpp_index].copy()
@@ -499,6 +500,7 @@ class Evolve(object):
                                                                                 [f[i]['tms_1'], f[i]['tms_2']],
                                                                                 [f[i]['bhspin_1'], f[i]['bhspin_2']],
                                                                                 f[i]['tphys'],
+                                                                                np.zeros(20),
                                                                                 np.zeros(20),
                                                                                 f[i]['kick_info'])
 

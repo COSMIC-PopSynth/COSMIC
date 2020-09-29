@@ -17,6 +17,10 @@
 * can be supplied in the initialization file with natal_kick_array, a
 * (2,5) array with the first row being for snstar=1 and second for snstar=2
 *
+* SBC (September 2020)
+* put bkick array back in for compatibility with CMC. bkick array is not used
+* for COSMIC BSE in anyway
+*
 * MJZ/SBC (April 2020)
 * kick_info is a (2,17) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
@@ -69,6 +73,7 @@
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
+      real*8 bkick(20)
 * Output
       logical output,disrupt
 *
@@ -490,7 +495,16 @@
      &           v1*(cpsic)*(m1n/mbf)
 *
             kick_info(sn,13) = (m1n/mbf)*vk*sphi
-*
+
+            bkick(1) = float(snstar)
+            bkick(2) = kick_info(sn,7)
+            bkick(3) = kick_info(sn,8)
+            bkick(4) = kick_info(sn,9)
+            bkick(5) = float(snstar)
+            bkick(6) = kick_info(sn,11)
+            bkick(7) = kick_info(sn,12)
+            bkick(8) = kick_info(sn,13)
+
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
                   kick_info(sn,7) = vs(1)
@@ -499,6 +513,12 @@
                   kick_info(sn,11) = 0.d0
                   kick_info(sn,12) = 0.d0
                   kick_info(sn,13) = 0.d0
+                  bkick(2) = vs(1)
+                  bkick(3) = vs(2)
+                  bkick(4) = vs(3)
+                  bkick(6) = 0.d0
+                  bkick(7) = 0.d0
+                  bkick(8) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -523,7 +543,16 @@
      &           v1*(cpsic)*(m1n/mbf)
 *
             kick_info(sn,9) = (m1n/mbf)*vk*sphi
-*
+
+            bkick(5) = float(snstar)
+            bkick(6) = kick_info(sn,11)
+            bkick(7) = kick_info(sn,12)
+            bkick(8) = kick_info(sn,13)
+            bkick(9) = float(snstar)
+            bkick(10) = kick_info(sn,7)
+            bkick(11) = kick_info(sn,8)
+            bkick(12) = kick_info(sn,9)
+
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
                   kick_info(sn,7) = vs(1)
@@ -532,6 +561,12 @@
                   kick_info(sn,11) = 0.d0
                   kick_info(sn,12) = 0.d0
                   kick_info(sn,13) = 0.d0
+                  bkick(6) = vs(1)
+                  bkick(7) = vs(2)
+                  bkick(8) = vs(3)
+                  bkick(10) = 0.d0
+                  bkick(11) = 0.d0
+                  bkick(12) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -550,6 +585,31 @@
          kick_info(sn,12) = 0
          kick_info(sn,13) = 0
       endif
+
+      if(ecc.lt.1.d0)then
+*         if(ecc.eq.1.d0.or.ecc.lt.0.d0) m2 = -1.d0 * m2
+* 1st time with kick.
+         if(bkick(1).le.0.d0)then
+            bkick(1) = float(snstar)
+            bkick(2) = vs(1)
+            bkick(3) = vs(2)
+            bkick(4) = vs(3)
+* 2nd time with kick.
+         elseif(bkick(5).le.0.d0)then
+            bkick(5) = float(snstar)
+            bkick(6) = vs(1)
+            bkick(7) = vs(2)
+            bkick(8) = vs(3)
+* 2nd time with kick if already disrupted.
+* MJZ - would this if statement ever be hit?
+         elseif(bkick(5).gt.0.d0)then
+            bkick(9) = float(snstar)
+            bkick(10) = vs(1)
+            bkick(11) = vs(2)
+            bkick(12) = vs(3)
+         endif
+      endif
+
 * In the impossible chance that the system is exactly parabolic...
       if(ecc.eq.1.d0.and.snstar.eq.1)then
          kick_info(sn,7) = vs(1)
@@ -558,6 +618,14 @@
          kick_info(sn,11) = -vs(1)
          kick_info(sn,12) = -vs(2)
          kick_info(sn,13) = -vs(3)
+         bkick(1) = float(snstar)
+         bkick(2) = vs(1)
+         bkick(3) = vs(2)
+         bkick(4) = vs(3)
+         bkick(5) = float(snstar)
+         bkick(6) = -vs(1)
+         bkick(7) = -vs(2)
+         bkick(8) = -vs(3)
       elseif(ecc.eq.1.d0.and.snstar.eq.2)then
          kick_info(sn,7) = -vs(1)
          kick_info(sn,8) = -vs(2)
@@ -565,6 +633,14 @@
          kick_info(sn,11) = vs(1)
          kick_info(sn,12) = vs(2)
          kick_info(sn,13) = vs(3)
+         bkick(5) = float(snstar)
+         bkick(6) = vs(1)
+         bkick(7) = vs(2)
+         bkick(8) = vs(3)
+         bkick(9) = float(snstar)
+         bkick(10) = -vs(1)
+         bkick(11) = -vs(2)
+         bkick(12) = -vs(3)
       endif
 
 * Uncomment to randomly rotate system velocities
