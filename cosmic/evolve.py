@@ -357,7 +357,8 @@ class Evolve(object):
                 _evolvebin.windvars.acc2 = f['acc2']
                 _evolvebin.windvars.epsnov = f['epsnov']
                 _evolvebin.windvars.eddfac = f['eddfac']
-                _evolvebin.windvars.gamma = f['gamma']
+                _evolvebin.windvars.gamma = f['gamma
+']
                 _evolvebin.flags.bdecayfac = f['bdecayfac']
                 _evolvebin.magvars.bconst = f['bconst']
                 _evolvebin.magvars.ck = f['ck']
