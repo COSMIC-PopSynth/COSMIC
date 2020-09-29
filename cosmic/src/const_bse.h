@@ -9,10 +9,11 @@
       COMMON /TYPES/ ktype
       INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,windflag,qcflag
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag
-      INTEGER htpmb,ST_cr,ST_tide,bdecayfac,grflag
+      INTEGER htpmb,ST_cr,ST_tide,bdecayfac,grflag,bhms_coll_flag
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
-     &               htpmb,ST_cr,ST_tide,bdecayfac,grflag
+     &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
+     &               bhms_coll_flag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)

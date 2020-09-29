@@ -31,6 +31,7 @@
         bhspin = 0.0; tphys = 0.0
         zpars = 0.0; kick_info = 0.0; bkick = 0.0
 
+        bhms_coll_flag = 0
         zsun = 0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
@@ -68,6 +69,7 @@
         bhspin = 0.d0; tphys = 0.d0
         zpars = 0.d0; kick_info = 0.d0; bkick = 0.d0
 
+        bhms_coll_flag = 0
         zsun=0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
         alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
         tflag = 1; ifflag = 0; wdflag = 0
