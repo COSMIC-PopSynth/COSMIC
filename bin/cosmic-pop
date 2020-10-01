@@ -104,6 +104,7 @@ def parse_commandline():
     parser.add_argument("--binfrac_model", help="Chooses the binary fraction model from: a float between [0,1] and vanHaaften", type=float)
     parser.add_argument("--ecc_model", help="Chooses the initial eccentricity distribution model from: thermal, uniform, and sana12", type=str)
     parser.add_argument("--porb_model", help="Chooses the initial orbital period distribution model from: log_uniform and sana12", type=str)
+    parser.add_argument("--qmin", help="Chooses the minimum mass ratio for the flat mass ratio distribution", type=float)
     parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
     parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
     parser.add_argument("--metallicity", type=float)
@@ -273,6 +274,7 @@ if __name__ == '__main__':
                                                         primary_model = args.primary_model,
                                                         ecc_model = args.ecc_model,
                                                         porb_model = args.porb_model,
+                                                        qmin = args.qmin,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
