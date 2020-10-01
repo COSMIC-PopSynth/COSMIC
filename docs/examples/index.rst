@@ -68,10 +68,9 @@ with `Breivik+2020 <https://ui.adsabs.harvard.edu/abs/2019arXiv191100903B/abstra
 Once the binary is initialized and the BSE model is set, the system is evolved with the
 the Evolve class, which calls the evolv2.f subroutine in the BSE source code.
 
-.. ipython::
+.. ipython:: :okwarning:
 
     In [6]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
-
 
 For every evolved binary system, BSE generates two arrays, which are stored as pandas DataFrames in COSMIC:
 
@@ -158,7 +157,7 @@ multiple binaries
 Multiple systems can also be initialized and evolved; below is an example for systems
 that could form GW150914 and GW170817 - like binaries.
 
-.. ipython::
+.. ipython:: :okwarning:
 
     In [11]: binary_set = InitialBinaryTable.InitialBinaries(m1=[85.543645, 11.171469], m2=[84.99784, 6.67305], porb=[446.795757, 170.758343], ecc=[0.448872, 0.370], tphysf=[13700.0, 13700.0], kstar1=[1, 1], kstar2=[1, 1], metallicity=[0.002, 0.02])
 
@@ -216,7 +215,7 @@ changing a single paramter affects the evolved binary. Here we evolve
 the same system that produces a GW150914-like binary, but run over several initial orbital
 periods spaced evenly in log space.
 
-.. ipython::
+.. ipython:: :okwarning:
 
     In [16]: n_grid = 10
 
@@ -242,7 +241,7 @@ COSMIC has the ability to set time resolution of the bcm array depending on the 
 
 First, print all time steps during mass transfer
 
-.. ipython::
+.. ipython:: :okwarning:
 
     In [16]: single_binary = InitialBinaryTable.InitialBinaries(m1=7.806106, m2=5.381412, porb=2858.942021, ecc=0.601408, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.02)
 
@@ -254,7 +253,7 @@ First, print all time steps during mass transfer
 
 Second, pick a certain resolution for the bcm array until the system mergers or is disrutped and then only print the final state
 
-.. ipython::
+.. ipython:: :okwarning:
 
     In [16]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict, timestep_conditions =[['binstate=0', 'dtp=1.0']])
 
@@ -262,7 +261,7 @@ Second, pick a certain resolution for the bcm array until the system mergers or 
 
 Finally, we show how to print a fine resolution only during the HMXRB stage of the evolution.
 
-.. ipython::
+.. ipython:: :okwarning:
 
     In [3]: single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
 
@@ -279,7 +278,9 @@ restarting a binary
 
 COSMIC allows you to restart a binary from any point in its evolution from a COSMIC generated bpp array.
 Below we provide an example of the same evolutionary track
-started from the beginning and three different points in the evolution, once sometime between the beginning and the first object going supernova, once between the first and second supernova, and finally after both supernova.::
+started from the beginning and three different points in the evolution, once sometime between the beginning and the first object going supernova, once between the first and second supernova, and finally after both supernova.
+
+::
 
     single_binary = InitialBinaryTable.InitialBinaries(m1=25.543645, m2=20.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
     BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': 1.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 0.5, 'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'remnantflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0,-100.0,-100.0,0.0]], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 4, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'bhspinflag' : 0, 'bhspinmag' : 0.0, 'rejuv_fac' : 1.0, 'rejuvflag' : 0, 'htpmb' : 1, 'ST_cr' : 1, 'ST_tide' : 0, 'bdecayfac' : 1, 'randomseed' : -1235453, 'grflag' : 1, 'rembar_massloss' : 0.5, 'kickflag' : 0, 'zsun' : 0.014,  'grflag' : 1, 'bhms_coll_flag' : 0}
