@@ -37,7 +37,7 @@ __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __all__ = ['get_independent_sampler', 'Sample']
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model,  SF_start, SF_duration, binfrac_model, met, size, **kwargs):
+def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, qmin, SF_start, SF_duration, binfrac_model, met, size, **kwargs):
     """Generates an initial binary sample according to user specified models
 
     Parameters
@@ -56,6 +56,9 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
 
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
+
+    qmin : `float`
+        Minimum mass ratio for flat mass ratio distribution
 
     SF_start : `float`
             Time in the past when star formation initiates in Myr
@@ -112,7 +115,7 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
         mass1_binaries, mass_single, binfrac_binaries, binary_index = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -253,17 +256,18 @@ class Sample(object):
             return a_0, total_sampled_mass
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass):
+    def sample_secondary(self, primary_mass, qmin):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
-
-        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
 
         Parameters
         ----------
         primary_mass : array
             sets the maximum secondary mass (for a maximum mass ratio of 1)
+
+        qmin : float
+            sets the minimum mass ratio
 
         Returns
         -------
@@ -272,7 +276,8 @@ class Sample(object):
             primary_mass
         """
 
-        secondary_mass = np.random.uniform(0.08*np.ones_like(primary_mass), primary_mass)
+        secondary_mass = primary_mass * np.random.uniform(qmin*np.ones_like(primary_mass), np.ones_like(primary_mass))
+        
 
         return secondary_mass
 

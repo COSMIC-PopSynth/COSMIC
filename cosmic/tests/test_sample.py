@@ -132,7 +132,7 @@ class TestSample(unittest.TestCase):
         np.random.seed(2)
         # Check that the sample_secondary function samples secondary mass correctly
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='salpeter55', size=1000000)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         ind_massive, = np.where(mass1 > 5.0)
         q = mass2[ind_massive]/mass1[ind_massive]
         slope = linear_fit(q)
@@ -185,7 +185,7 @@ class TestSample(unittest.TestCase):
         # next do Sana12
         np.random.seed(4)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=len(mass1))
         porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'sana12', size=len(mass1))
         power_slope = power_law_fit(np.log10(porb))
