@@ -1,6 +1,6 @@
 ***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
-     &                r2,fallback,sigmahold,kick_info,disrupt)
+     &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
