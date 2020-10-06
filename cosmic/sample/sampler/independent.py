@@ -462,7 +462,7 @@ class Sample(object):
             return ecc
 
         else:
-            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular')
+            raise ValueError('You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular')
 
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
@@ -496,7 +496,7 @@ class Sample(object):
             metallicity = np.ones(size)*met
             return tphys, metallicity
         else:
-            raise Error('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
+            raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

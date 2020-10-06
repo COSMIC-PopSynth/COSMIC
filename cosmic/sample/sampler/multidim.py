@@ -706,7 +706,7 @@ class MultiDim:
             metallicity = np.ones(size)*met
             return tphys, metallicity
         else:
-            raise Error('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
+            raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
