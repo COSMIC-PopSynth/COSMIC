@@ -33,7 +33,7 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
-        sudo apt-get gfortran swig libhdf5-serial-dev
+        sudo apt-get install gfortran swig libhdf5-serial-dev
         python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
