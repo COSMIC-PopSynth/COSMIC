@@ -23,9 +23,9 @@ import sys
 
 from tqdm import tqdm
 
-TQDM_BAR_FORMAT = ("{desc}: |{bar}| "
-                   "{n_fmt}/{total_fmt} ({percentage:3.0f}%) "
-                   "ETA {remaining:6s}")
+TQDM_BAR_FORMAT = (
+    "{desc}: |{bar}| " "{n_fmt}/{total_fmt} ({percentage:3.0f}%) " "ETA {remaining:6s}"
+)
 
 
 def progress_bar(**kwargs):
@@ -34,13 +34,13 @@ def progress_bar(**kwargs):
     This is just a thin wrapper around `tqdm.tqdm` to set some updated defaults
     """
     tqdm_kw = {
-        'desc': 'Processing',
-        'file': sys.stdout,
-        'bar_format': TQDM_BAR_FORMAT,
+        "desc": "Processing",
+        "file": sys.stdout,
+        "bar_format": TQDM_BAR_FORMAT,
     }
     tqdm_kw.update(kwargs)
     pbar = tqdm(**tqdm_kw)
     if not pbar.disable:
-        pbar.desc = pbar.desc.rstrip(': ')
+        pbar.desc = pbar.desc.rstrip(": ")
         pbar.refresh()
     return pbar
