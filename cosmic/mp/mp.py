@@ -20,7 +20,7 @@
 """
 
 import warnings
-from multiprocessing import (Queue, Process)
+from multiprocessing import Queue, Process
 from operator import itemgetter
 
 from .progress import progress_bar
@@ -61,8 +61,7 @@ def _process_in_out_queues(func, q_in, q_out):
             q_out.put((idx, exc))
 
 
-def multiprocess_with_queues(nproc, func, inputs, verbose=False,
-                             **progress_kw):
+def multiprocess_with_queues(nproc, func, inputs, verbose=False, **progress_kw):
     """Map a function over a list of inputs using multiprocess
 
     This essentially duplicates `multiprocess.map` but allows for
@@ -93,18 +92,21 @@ def multiprocess_with_queues(nproc, func, inputs, verbose=False,
         the `list` of results from calling ``func(x)`` for each element
         of ``inputs``
     """
-    if progress_kw.pop('raise_exceptions', None) is not None:
-        warnings.warn("the `raise_exceptions` keyword to "
-                      "multiprocess_with_queues is deprecated, and will be "
-                      "removed in a future release, all exceptions will be "
-                      "raised if they occur", DeprecationWarning)
+    if progress_kw.pop("raise_exceptions", None) is not None:
+        warnings.warn(
+            "the `raise_exceptions` keyword to "
+            "multiprocess_with_queues is deprecated, and will be "
+            "removed in a future release, all exceptions will be "
+            "raised if they occur",
+            DeprecationWarning,
+        )
 
     # create progress bar for verbose output
     if bool(verbose):
         if not isinstance(verbose, bool):
-            progress_kw['desc'] = str(verbose)
+            progress_kw["desc"] = str(verbose)
         if isinstance(inputs, (list, tuple)):
-            progress_kw.setdefault('total', len(inputs))
+            progress_kw.setdefault("total", len(inputs))
         pbar = progress_bar(**progress_kw)
     else:
         pbar = None
@@ -113,6 +115,7 @@ def multiprocess_with_queues(nproc, func, inputs, verbose=False,
 
     # shortcut single process
     if nproc == 1:
+
         def _inner(x):
             try:
                 return func(x)
@@ -133,7 +136,8 @@ def multiprocess_with_queues(nproc, func, inputs, verbose=False,
         Process(
             target=_process_in_out_queues,
             args=(func, q_in, q_out),
-        ) for _ in range(nproc)
+        )
+        for _ in range(nproc)
     ]
 
     for proc in proclist:
