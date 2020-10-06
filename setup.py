@@ -74,8 +74,7 @@ setup_requires = [
 install_requires = [
     'numpy >= 1.16',
     'scipy >= 0.12.1',
-    'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
-    'astropy >= 1.1.1 ; python_version >= \'3\'',
+    'astropy >= 1.1.1',
     'configparser',
     'tqdm >= 4.0',
     'pandas >= 0.24',
