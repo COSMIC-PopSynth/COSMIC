@@ -24,6 +24,7 @@ from __future__ import print_function
 
 import glob
 import os.path
+import versioneer
 
 from setuptools import find_packages
 from distutils.command.sdist import sdist
@@ -43,8 +44,6 @@ LICENSE = "GPLv3"
 cmdclass = {}
 
 # -- versioning ---------------------------------------------------------------
-
-import versioneer
 
 __version__ = versioneer.get_version()
 cmdclass.update(versioneer.get_cmdclass())
