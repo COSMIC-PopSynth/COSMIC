@@ -21,8 +21,11 @@
 """
 
 from ._version import get_versions
-__version__ = get_versions()['version']
-__author__ = 'Katie Breivik <katie.breivik@gmail.com>'
-__credits__ = ['Scott Coughlin <scott.coughlin@ligo.org>',
-               'Michael Zevin <zevin@northwestern.edu>']
+
+__version__ = get_versions()["version"]
+__author__ = "Katie Breivik <katie.breivik@gmail.com>"
+__credits__ = [
+    "Scott Coughlin <scott.coughlin@ligo.org>",
+    "Michael Zevin <zevin@northwestern.edu>",
+]
 del get_versions

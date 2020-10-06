@@ -32,12 +32,24 @@ from .. import InitialBinaryTable
 
 from cosmic.utils import idl_tabulate, rndm
 
-__author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
-__credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = ['get_independent_sampler', 'Sample']
+__author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
+__credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
+__all__ = ["get_independent_sampler", "Sample"]
 
 
-def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model,  SF_start, SF_duration, binfrac_model, met, size, **kwargs):
+def get_independent_sampler(
+    final_kstar1,
+    final_kstar2,
+    primary_model,
+    ecc_model,
+    porb_model,
+    SF_start,
+    SF_duration,
+    binfrac_model,
+    met,
+    size,
+    **kwargs
+):
     """Generates an initial binary sample according to user specified models
 
     Parameters
@@ -93,10 +105,12 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
-    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(final_kstar1, final_kstar2)
+    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(
+        final_kstar1, final_kstar2
+    )
     initconditions = Sample()
 
-    #set up multiplier if the mass sampling is inefficient
+    # set up multiplier if the mass sampling is inefficient
     multiplier = 1
     mass1_binary = []
     mass2_binary = []
@@ -110,8 +124,15 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     n_singles = 0
     n_binaries = 0
     while len(mass1_binary) < size:
-        mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size*multiplier)
-        mass1_binaries, mass_single, binfrac_binaries, binary_index = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
+        mass1, total_mass1 = initconditions.sample_primary(
+            primary_model, size=size * multiplier
+        )
+        (
+            mass1_binaries,
+            mass_single,
+            binfrac_binaries,
+            binary_index,
+        ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
         mass2_binaries = initconditions.sample_secondary(mass1_binaries)
 
         # track the mass sampled
@@ -124,15 +145,19 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
         n_binaries += len(mass1_binaries)
 
         # select out the primaries and secondaries that will produce the final kstars
-        ind_select_primary, = np.where((mass1_binaries > primary_min) & (mass1_binaries < primary_max))
-        ind_select_secondary, = np.where((mass2_binaries > secondary_min) & (mass2_binaries < secondary_max))
+        (ind_select_primary,) = np.where(
+            (mass1_binaries > primary_min) & (mass1_binaries < primary_max)
+        )
+        (ind_select_secondary,) = np.where(
+            (mass2_binaries > secondary_min) & (mass2_binaries < secondary_max)
+        )
         ind_select = list(set(ind_select_primary).intersection(ind_select_secondary))
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
         binfrac.extend(binfrac_binaries[ind_select])
         # check to see if we should increase the multiplier factor to sample the population more quickly
 
-        if len(mass1_binary) < size/100:
+        if len(mass1_binary) < size / 100:
             # well this size clearly is not working time to increase
             # the multiplier by an order of magnitude
             multiplier *= 10
@@ -140,26 +165,49 @@ def get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model
     mass1_binary = np.array(mass1_binary)
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
-    ecc =  initconditions.sample_ecc(ecc_model, size = mass1_binary.size)
-    porb =  initconditions.sample_porb(mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size)
-    tphysf, metallicity = initconditions.sample_SFH(SF_start=SF_start, SF_duration=SF_duration, met=met, size = mass1_binary.size)
+    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
+    porb = initconditions.sample_porb(
+        mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
+    )
+    tphysf, metallicity = initconditions.sample_SFH(
+        SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
+    )
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return InitialBinaryTable.InitialBinaries(mass1_binary, mass2_binary, porb, ecc, tphysf, kstar1, kstar2, metallicity, binfrac=binfrac), mass_singles, mass_binaries, n_singles, n_binaries
+    return (
+        InitialBinaryTable.InitialBinaries(
+            mass1_binary,
+            mass2_binary,
+            porb,
+            ecc,
+            tphysf,
+            kstar1,
+            kstar2,
+            metallicity,
+            binfrac=binfrac,
+        ),
+        mass_singles,
+        mass_binaries,
+        n_singles,
+        n_binaries,
+    )
 
 
-
-register_sampler('independent', InitialBinaryTable, get_independent_sampler,
-                 usage="final_kstar1, final_kstar2, binfrac_model, primary_model, ecc_model, SFH_model, component_age, metallicity, size")
+register_sampler(
+    "independent",
+    InitialBinaryTable,
+    get_independent_sampler,
+    usage="final_kstar1, final_kstar2, binfrac_model, primary_model, ecc_model, SFH_model, component_age, metallicity, size",
+)
 
 
 class Sample(object):
 
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa01', size=None):
+    def sample_primary(self, primary_model="kroupa01", size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
         kroupa93 follows Kroupa (1993), normalization comes from
@@ -203,7 +251,7 @@ class Sample(object):
             Total amount of mass sampled
         """
 
-        if primary_model=='kroupa93':
+        if primary_model == "kroupa93":
             total_sampled_mass = 0
             multiplier = 1
             a_0 = np.random.uniform(0.0, 1, size)
@@ -211,9 +259,9 @@ class Sample(object):
             low_cutoff = 0.771
             high_cutoff = 0.919
 
-            lowIdx, = np.where(a_0 <= low_cutoff)
-            midIdx, = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            highIdx, = np.where(a_0 >= high_cutoff)
+            (lowIdx,) = np.where(a_0 <= low_cutoff)
+            (midIdx,) = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
+            (highIdx,) = np.where(a_0 >= high_cutoff)
 
             a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
             a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
@@ -223,7 +271,7 @@ class Sample(object):
 
             return a_0, total_sampled_mass
 
-        elif primary_model=='kroupa01':
+        elif primary_model == "kroupa01":
             # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
             # at 0.08 Msun instead of 0.01
 
@@ -233,8 +281,8 @@ class Sample(object):
 
             cutoff = 0.748
 
-            lowIdx, = np.where(a_0 <= cutoff)
-            highIdx, = np.where(a_0 >= cutoff)
+            (lowIdx,) = np.where(a_0 <= cutoff)
+            (highIdx,) = np.where(a_0 >= cutoff)
 
             a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
             a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
@@ -243,10 +291,10 @@ class Sample(object):
 
             return a_0, total_sampled_mass
 
-        elif primary_model=='salpeter55':
+        elif primary_model == "salpeter55":
             total_sampled_mass = 0
             multiplier = 1
-            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size*multiplier)
+            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size * multiplier)
 
             total_sampled_mass += np.sum(a_0)
 
@@ -272,10 +320,11 @@ class Sample(object):
             primary_mass
         """
 
-        secondary_mass = np.random.uniform(0.08*np.ones_like(primary_mass), primary_mass)
+        secondary_mass = np.random.uniform(
+            0.08 * np.ones_like(primary_mass), primary_mass
+        )
 
         return secondary_mass
-
 
     def binary_select(self, primary_mass, binfrac_model=0.5):
         """Select which primary masses will have a companion using
@@ -303,32 +352,42 @@ class Sample(object):
         """
 
         if type(binfrac_model) == str:
-            if binfrac_model == 'vanHaaften':
-                binary_fraction = 1/2.0 + 1/4.0 * np.log10(primary_mass)
-                binary_choose =  np.random.uniform(0, 1.0, primary_mass.size)
+            if binfrac_model == "vanHaaften":
+                binary_fraction = 1 / 2.0 + 1 / 4.0 * np.log10(primary_mass)
+                binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
 
-                singleIdx, = np.where(binary_fraction < binary_choose)
-                binaryIdx, = np.where(binary_fraction >= binary_choose)
+                (singleIdx,) = np.where(binary_fraction < binary_choose)
+                (binaryIdx,) = np.where(binary_fraction >= binary_choose)
             else:
-                raise ValueError('You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float')
+                raise ValueError(
+                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float"
+                )
         elif type(binfrac_model) == float:
             if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
                 binary_fraction = binfrac_model * np.ones(primary_mass.size)
                 binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
 
-                singleIdx, = np.where(binary_choose > binary_fraction)
-                binaryIdx, = np.where(binary_choose <= binary_fraction)
+                (singleIdx,) = np.where(binary_choose > binary_fraction)
+                (binaryIdx,) = np.where(binary_choose <= binary_fraction)
             else:
-                raise ValueError('You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1.')
+                raise ValueError(
+                    "You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1."
+                )
         else:
-            raise ValueError('You have not supplied a model or a fraction. Please choose either vanHaaften or a float')
+            raise ValueError(
+                "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
+            )
 
-        return primary_mass[binaryIdx], primary_mass[singleIdx], binary_fraction[binaryIdx], binaryIdx
+        return (
+            primary_mass[binaryIdx],
+            primary_mass[singleIdx],
+            binary_fraction[binaryIdx],
+            binaryIdx,
+        )
 
-
-    def sample_porb(self, mass1, mass2, ecc, porb_model='sana12', size=None):
+    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", size=None):
         """Sample the orbital period according to the user-specified model
-        
+
         Parameters
         ----------
         mass1 : array
@@ -344,11 +403,11 @@ class Sample(object):
                        `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
                         and consistent with Dominik+2012,2013
                         and then converted to orbital period in days using Kepler III
-            sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following 
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
-            renzo19 : power law orbital period for m1 > 15Msun binaries from 
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_` 
-                        following the implementation of 
+            sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            renzo19 : power law orbital period for m1 > 15Msun binaries from
+                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+                        following the implementation of
                         `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
 
         Returns
@@ -357,70 +416,79 @@ class Sample(object):
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
         """
-        if porb_model == 'log_uniform':     
-            q = mass2/mass1
-            RL_fac = (0.49*q**(2./3.)) / (0.6*q**(2./3.) + np.log(1+q**1./3.))
+        if porb_model == "log_uniform":
+            q = mass2 / mass1
+            RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
+                0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
+            )
 
-            q2 = mass1/mass2
-            RL_fac2 = (0.49*q2**(2./3.)) / (0.6*q2**(2./3.) + np.log(1+q2**1./3.))
+            q2 = mass1 / mass2
+            RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
+                0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
+            )
             try:
-                ind_lo, = np.where(mass1 < 1.66)
-                ind_hi, = np.where(mass1 >= 1.66)
+                (ind_lo,) = np.where(mass1 < 1.66)
+                (ind_hi,) = np.where(mass1 >= 1.66)
 
                 rad1 = np.zeros(len(mass1))
-                rad1[ind_lo] = 1.06*mass1[ind_lo]**0.945
-                rad1[ind_hi] = 1.33*mass1[ind_hi]**0.555
+                rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
+                rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
             except:
                 if mass1 < 1.66:
-                    rad1 = 1.06*mass1**0.945
+                    rad1 = 1.06 * mass1 ** 0.945
                 else:
-                    rad1 = 1.33*mass1**0.555
+                    rad1 = 1.33 * mass1 ** 0.555
 
             try:
-                ind_lo, = np.where(mass2 < 1.66)
-                ind_hi, = np.where(mass2 >= 1.66)
+                (ind_lo,) = np.where(mass2 < 1.66)
+                (ind_hi,) = np.where(mass2 >= 1.66)
 
                 rad2 = np.zeros(len(mass2))
-                rad2[ind_lo] = 1.06*mass2[ind_lo]**0.945
-                rad2[ind_hi] = 1.33*mass2[ind_hi]**0.555
+                rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
+                rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
             except:
                 if mass2 < 1.66:
-                    rad2 = 1.06*mass1**0.945
+                    rad2 = 1.06 * mass1 ** 0.945
                 else:
-                    rad2 = 1.33*mass1**0.555
+                    rad2 = 1.33 * mass1 ** 0.555
 
             # include the factor for the eccentricity
-            RL_max = 2*rad1/RL_fac
-            ind_switch, = np.where(RL_max < 2*rad2/RL_fac2)
+            RL_max = 2 * rad1 / RL_fac
+            (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
             if len(ind_switch) >= 1:
-                RL_max[ind_switch] = 2*rad2/RL_fac2[ind_switch]
-            a_min = RL_max*(1+ecc)
+                RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
+            a_min = RL_max * (1 + ecc)
             a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
 
             # convert out of log space
             a_0 = np.exp(a_0)
             # convert to au
             rsun_au = 0.00465047
-            a_0 = a_0*rsun_au
+            a_0 = a_0 * rsun_au
 
             # convert to orbital period in years
             yr_day = 365.24
-            porb_yr = ((a_0**3.0)/(mass1+mass2))**0.5
-            porb = porb_yr*yr_day
-        elif porb_model == 'sana12':
+            porb_yr = ((a_0 ** 3.0) / (mass1 + mass2)) ** 0.5
+            porb = porb_yr * yr_day
+        elif porb_model == "sana12":
             from cosmic.utils import rndm
-            porb = 10**rndm(a=0.15, b=5.5, g=-0.55, size=size)
-        elif porb_model == 'renzo19':
+
+            porb = 10 ** rndm(a=0.15, b=5.5, g=-0.55, size=size)
+        elif porb_model == "renzo19":
             from cosmic.utils import rndm
-            porb = 10**(np.random.uniform(0.15, 5.5, size))
-            ind_massive, = np.where(mass1 > 15)
-            porb[ind_massive] = 10**rndm(a=0.15, b=5.5, g=-0.55, size=len(ind_massive))
+
+            porb = 10 ** (np.random.uniform(0.15, 5.5, size))
+            (ind_massive,) = np.where(mass1 > 15)
+            porb[ind_massive] = 10 ** rndm(
+                a=0.15, b=5.5, g=-0.55, size=len(ind_massive)
+            )
         else:
-            raise ValueError('You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19')
+            raise ValueError(
+                "You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19"
+            )
         return porb
 
-
-    def sample_ecc(self, ecc_model='sana12', size=None):
+    def sample_ecc(self, ecc_model="sana12", size=None):
         """Sample the eccentricity according to a user specified model
 
         Parameters
@@ -443,27 +511,29 @@ class Sample(object):
             array of sampled eccentricities with size=size
         """
 
-        if ecc_model=='thermal':
+        if ecc_model == "thermal":
             a_0 = np.random.uniform(0.0, 1.0, size)
-            ecc = a_0**0.5
+            ecc = a_0 ** 0.5
             return ecc
 
-        elif ecc_model=='uniform':
+        elif ecc_model == "uniform":
             ecc = np.random.uniform(0.0, 1.0, size)
             return ecc
 
-        elif ecc_model=='sana12':
+        elif ecc_model == "sana12":
             from cosmic.utils import rndm
-            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size) 
+
+            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size)
             return ecc
 
-        elif ecc_model=='circular':
+        elif ecc_model == "circular":
             ecc = np.zeros(size)
             return ecc
 
         else:
-            raise Error('You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular')
-
+            raise Error(
+                "You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular"
+            )
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -493,10 +563,12 @@ class Sample(object):
 
         if (SF_start > 0.0) & (SF_duration >= 0.0):
             tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
-            metallicity = np.ones(size)*met
+            metallicity = np.ones(size) * met
             return tphys, metallicity
         else:
-            raise Error('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
+            raise Error(
+                "SF_start and SF_duration must be positive and SF_start must be greater than 0.0"
+            )
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
@@ -522,4 +594,3 @@ class Sample(object):
         kstar[hiIdx] = 1
 
         return kstar
-
