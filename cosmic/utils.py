@@ -158,7 +158,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             for ii in range(3):
                 try:
                     bin_states.append(bin_state_fraction.loc[ii])
-                except:
+                except Exception:
                     bin_states.append(0)
             bin_state_fraction = pd.DataFrame([bin_states], columns=[0, 1, 2])
 
@@ -215,7 +215,7 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         "XRB_form",
     ]
 
-    if not method in _known_methods:
+    if method not in _known_methods:
         raise ValueError(
             "You have supplied an "
             "unknown method to filter the "
@@ -614,12 +614,12 @@ def idl_tabulate(x, f, p=5):
 
     ret = 0
     for idx in range(0, x.shape[0], p - 1):
-        ret += newton_cotes(x[idx : idx + p], f[idx : idx + p])
+        ret += newton_cotes(x[idx: idx + p], f[idx: idx + p])
     return ret
 
 
 def rndm(a, b, g, size):
-    """Power-law generator for pdf(x)\propto x^{g} for a<=x<=b
+    r"""Power-law generator for pdf(x)\propto x^{g} for a<=x<=b
 
     Parameters
     ----------
@@ -745,7 +745,7 @@ def knuth_bw_selector(dat_list):
     for dat in dat_list:
         try:
             bw = astrostats.knuth_bin_width(dat)
-        except:
+        except Exception:
             print("Using Scott Rule!!")
             bw = astrostats.scott_bin_width(dat)
         bw_list.append(bw)
@@ -826,9 +826,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             "XRB_form",
         ]:
             raise ValueError(
-                "{0} needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] (you set it to {1})".format(
-                    flag, convergence[flag]
-                )
+                "{0} needs to be in the list: ['formation', '1_SN', '2_SN', 'disruption', 'final_state', 'XRB_form'] "
+                "(you set it to {1})".format(
+                                             flag, convergence[flag]
+                                            )
             )
 
         flag = "match"
@@ -1095,9 +1096,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if flag in BSEDict.keys():
         if (BSEDict[flag] > BSEDict["ecsn"]) or (BSEDict[flag] < 0.0):
             raise ValueError(
-                "'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 (you set it to '{0:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
+                "'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 "
+                "(you set it to '{1:0.2f}')".format(
+                                                    flag, BSEDict[flag]
+                                                   )
             )
     flag = "sigmadiv"
     if flag in BSEDict.keys():
@@ -1132,9 +1134,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             or (BSEDict[flag] == -3)
         ):
             raise ValueError(
-                "'{0:s}' needs to be set to either 0, greater than 0 or equal to -1, -2, or -3 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
+                "'{0:s}' needs to be set to either 0, greater than 0 or equal to -1, -2, or -3 "
+                "(you set it to '{1:0.2f}')".format(
+                                                    flag, BSEDict[flag]
+                                                   )
             )
     flag = "bhsigmafrac"
     if flag in BSEDict.keys():
@@ -1548,7 +1551,7 @@ def parse_inifile(inifile):
             opt = cp.get(section, option)
             try:
                 dictionary[section][option] = arithmetic_eval(opt)
-            except:
+            except Exception:
                 dictionary[section][option] = json.loads(opt)
 
     BSEDict = dictionary["bse"]

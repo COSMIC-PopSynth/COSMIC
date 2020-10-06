@@ -108,7 +108,6 @@ def get_cmc_sampler(
     # select out the primaries and secondaries that will produce the final kstars
     mass1_binary = np.array(mass1_binaries)
     mass2_binary = np.array(mass2_binaries)
-    binfrac = np.asarray(binfrac_binaries)
     ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
     porb = initconditions.sample_porb(
         mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size

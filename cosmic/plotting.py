@@ -21,16 +21,13 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
-from matplotlib.lines import Line2D
-from .utils import a_from_p, p_from_a, calc_Roche_radius
-from .evolve import Evolve
 
+from matplotlib.lines import Line2D
+from .utils import a_from_p, calc_Roche_radius
+from .evolve import Evolve
 
 __author__ = "Jeff Andrews <andrews.jeff@gmail.com>"
 __all__ = [
@@ -47,10 +44,8 @@ __all__ = [
     "evolve_and_plot",
 ]
 
-
 rsun_in_au = 215.0954
 day_in_year = 365.242
-
 
 # Colors
 primary_color = "C0"
@@ -91,8 +86,8 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
 
     # To deal with the limited size of the bcm array, we need to reduce
     # the time resolution if we are evolving a binary for more than 100 Myr
-    if not t_max is None:
-        if not t_min is None:
+    if t_max is not None:
+        if t_min is not None:
             if t_max - t_min > 100:
                 BSEDict["dtp"] = (t_max - t_min) / 10000
         else:
@@ -100,7 +95,7 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
                 BSEDict["dtp"] = t_max / 10000
 
     # Set maximum time for evolution
-    if not t_max is None:
+    if t_max is not None:
         initC["tphysf"] = t_max
 
     # Call evolution scripts
@@ -666,7 +661,7 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
 
         # Evolve binary
         bcm = evolve_binary(
-            initC.iloc[i : i + 1], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict
+            initC.iloc[i: i + 1], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict
         )
 
         # Plot binary

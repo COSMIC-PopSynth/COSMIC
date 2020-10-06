@@ -20,7 +20,6 @@
 """
 
 import numpy as np
-import pandas as pd
 import astropy.stats as astroStats
 import warnings
 from cosmic.utils import dat_transform
@@ -61,7 +60,7 @@ def match(dataCm):
             bw, binEdges = astroStats.knuth_bin_width(
                 np.array(dataCm[0]), return_bins=True
             )
-        except:
+        except Exception:
             bw, binEdges = astroStats.scott_bin_width(
                 np.array(dataCm[0]), return_bins=True
             )

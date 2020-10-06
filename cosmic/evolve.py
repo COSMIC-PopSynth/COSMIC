@@ -335,7 +335,7 @@ class Evolve(object):
                     initial_conditions_blocked = []
                     itr_block = 0
                     while itr_block < n_tot:
-                        itr_next = np.min([n_tot,itr_block+n_per_block])
+                        itr_next = np.min([n_tot, itr_block+n_per_block])
                         initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                         itr_block = itr_next
                     output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
@@ -349,7 +349,7 @@ class Evolve(object):
                 initial_conditions_blocked = []
                 itr_block = 0
                 while itr_block < n_tot:
-                    itr_next = np.min([n_tot,itr_block+n_per_block])
+                    itr_next = np.min([n_tot, itr_block+n_per_block])
                     initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                     itr_block = itr_next
                 output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
@@ -362,15 +362,15 @@ class Evolve(object):
         kick_info_arrays = np.vstack(output[:, 3])
 
         natal_kick_arrays = np.vstack(output[:, 4])
-        natal_kick_arrays = natal_kick_arrays.reshape(-1,1,len(FLATTENED_NATAL_KICK_COLUMNS))
+        natal_kick_arrays = natal_kick_arrays.reshape(-1, 1, len(FLATTENED_NATAL_KICK_COLUMNS))
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-                # assigning values this way work for most of the parameters.
-                kwargs1 = {column : natal_kick_arrays[:,:,idx]}
-                initialbinarytable = initialbinarytable.assign(**kwargs1)
+            # assigning values this way work for most of the parameters.
+            kwargs1 = {column: natal_kick_arrays[:, :, idx]}
+            initialbinarytable = initialbinarytable.assign(**kwargs1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
-                           columns=KICK_COLUMNS,
-                           index=kick_info_arrays[:, -1].astype(int))
+                                 columns=KICK_COLUMNS,
+                                 index=kick_info_arrays[:, -1].astype(int))
 
         bpp = pd.DataFrame(bpp_arrays,
                            columns=BPP_COLUMNS,
@@ -390,10 +390,10 @@ class Evolve(object):
 
 def _evolve_single_system(f):
     try:
-        f['kick_info'] = np.zeros((2,len(KICK_COLUMNS)-1))
+        f['kick_info'] = np.zeros((2, len(KICK_COLUMNS)-1))
         # determine if we already have a compact object, if yes than one SN has already occured
-        if (f['kstar_1'] in range(10,15)) or (f['kstar_2'] in range(10,15)):
-            f['kick_info'][0,0] = 1
+        if (f['kstar_1'] in range(10, 15)) or (f['kstar_2'] in range(10, 15)):
+            f['kick_info'][0, 0] = 1
         # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
         _evolvebin.windvars.neta = f['neta']
         _evolvebin.windvars.bwind = f['bwind']
@@ -452,25 +452,26 @@ def _evolve_single_system(f):
         _evolvebin.cmcpass.using_cmc = 0
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
-                                                                [f['mass_1'], f['mass_2']],
-                                                                f['porb'], f['ecc'], f['metallicity'], f['tphysf'], f['dtp'],
-                                                                [f['mass0_1'], f['mass0_2']],
-                                                                [f['rad_1'], f['rad_2']],
-                                                                [f['lum_1'], f['lum_2']],
-                                                                [f['massc_1'], f['massc_2']],
-                                                                [f['radc_1'], f['radc_2']],
-                                                                [f['menv_1'], f['menv_2']],
-                                                                [f['renv_1'], f['renv_2']],
-                                                                [f['omega_spin_1'], f['omega_spin_2']],
-                                                                [f['B_1'], f['B_2']],
-                                                                [f['bacc_1'], f['bacc_2']],
-                                                                [f['tacc_1'], f['tacc_2']],
-                                                                [f['epoch_1'], f['epoch_2']],
-                                                                [f['tms_1'], f['tms_2']],
-                                                                [f['bhspin_1'], f['bhspin_2']],
-                                                                f['tphys'],
-                                                                np.zeros(20),
-                                                                f['kick_info'])
+                                                              [f['mass_1'], f['mass_2']],
+                                                              f['porb'], f['ecc'], f['metallicity'], f['tphysf'], f['dtp'],
+                                                              [f['mass0_1'], f['mass0_2']],
+                                                              [f['rad_1'], f['rad_2']],
+                                                              [f['lum_1'], f['lum_2']],
+                                                              [f['massc_1'], f['massc_2']],
+                                                              [f['radc_1'], f['radc_2']],
+                                                              [f['menv_1'], f['menv_2']],
+                                                              [f['renv_1'], f['renv_2']],
+                                                              [f['omega_spin_1'], f['omega_spin_2']],
+                                                              [f['B_1'], f['B_2']],
+                                                              [f['bacc_1'], f['bacc_2']],
+                                                              [f['tacc_1'], f['tacc_2']],
+                                                              [f['epoch_1'], f['epoch_2']],
+                                                              [f['tms_1'], f['tms_2']],
+                                                              [f['bhspin_1'], f['bhspin_2']],
+                                                              f['tphys'],
+                                                              np.zeros(20),
+                                                              np.zeros(20),
+                                                              f['kick_info'])
         bcm = _evolvebin.binary.bcm[:bcm_index].copy()
         bpp = _evolvebin.binary.bpp[:bpp_index].copy()
         _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
@@ -483,15 +484,16 @@ def _evolve_single_system(f):
         return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array
 
     except Exception as e:
+        print(e)
         raise
 
-#define multiprocessing method to process the systems in batches
+
 def _evolve_multi_system(f):
     try:
-        res_bcm = np.zeros(f.shape[0],dtype=object)
-        res_bpp = np.zeros(f.shape[0],dtype=object)
-        res_kick_info = np.zeros(f.shape[0],dtype=object)
-        res_natal_kick_array = np.zeros(f.shape[0],dtype=object)
+        res_bcm = np.zeros(f.shape[0], dtype=object)
+        res_bpp = np.zeros(f.shape[0], dtype=object)
+        res_kick_info = np.zeros(f.shape[0], dtype=object)
+        res_natal_kick_array = np.zeros(f.shape[0], dtype=object)
         for i in range(0, f.shape[0]):
 
             # call evolve single system
@@ -506,4 +508,5 @@ def _evolve_multi_system(f):
         return f, np.vstack(res_bpp), np.vstack(res_bcm), np.vstack(res_kick_info), np.vstack(res_natal_kick_array)
 
     except Exception as e:
+        print(e)
         raise

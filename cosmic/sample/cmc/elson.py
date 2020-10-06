@@ -40,11 +40,7 @@ def virial_radius_analytic(gamma, r_max):
 
     rho_0 = 1.0 / M_enclosed(r_max, gamma, 1)
 
-    work = (
-        lambda r: rho_r(r, gamma, rho_0) * r * 4 * np.pi * M_enclosed(r, gamma, rho_0)
-    )
-
-    integral, error = quad(work, 0, r_max)
+    integral, error = quad(lambda r: rho_r(r, gamma, rho_0) * r * 4 * np.pi * M_enclosed(r, gamma, rho_0), 0, r_max)
 
     return 1 / 2.0 / integral
 
@@ -66,7 +62,9 @@ def find_rmax_vir(r_max, gamma):
     if gamma > 4:
         rOrvirMax /= 10.0
 
-    y_zero = lambda r: r / virial_radius_analytic(gamma, r) - r_max
+    def y_zero(r):
+        return r / virial_radius_analytic(gamma, r) - r_max
+
     yMin = y_zero(rOrvirMin)
     yMax = y_zero(rOrvirMax)
 
@@ -98,17 +96,17 @@ def get_positions(N, r_max_cluster, gamma):
     density, so just invert that, and you've got positions.
     """
 
-    ## First normalize the central density s.t. M_enc(r_max) = 1
+    # First normalize the central density s.t. M_enc(r_max) = 1
     rho_0 = 1.0 / M_enclosed(r_max_cluster, gamma, 1)
 
     radii_grid = np.logspace(-3, np.log10(r_max_cluster), 1000)
 
-    ## Add r=0 to the array
+    # Add r=0 to the array
     radii_grid[0] = 0
 
     mass_enclosed_grid = M_enclosed(radii_grid, gamma, rho_0)
 
-    ## Use an interpolator, but flip x and y for the CDF
+    # Use an interpolator, but flip x and y for the CDF
     interpolator = interp1d(mass_enclosed_grid, radii_grid, kind="cubic")
 
     X = uniform(size=N)
@@ -129,9 +127,9 @@ def get_velocities(r, r_max_cluster, gamma):
 
     N = len(r)
 
-    ## Rather than calculate the integral for every stellar position, just
-    ## create an interpolator of 1000 or so points, then sample from the
-    ## interpolated curve
+    # Rather than calculate the integral for every stellar position, just
+    # create an interpolator of 1000 or so points, then sample from the
+    # interpolated curve
     radii_grid = np.logspace(np.log10(min(r) * 0.999), np.log10(max(r) * 1.001), 1000)
     sigma_sqr_grid = np.array(
         [find_sigma_sqr(rr, r_max_cluster, gamma) for rr in radii_grid]
@@ -139,10 +137,10 @@ def get_velocities(r, r_max_cluster, gamma):
 
     interpolator = interp1d(radii_grid, sigma_sqr_grid, kind="cubic")
 
-    ## Draw the 1D velocity dispersions
+    # Draw the 1D velocity dispersions
     sigma = np.sqrt(interpolator(r))
 
-    ## Then sample an isotropic gaussian in vx,vy,vz using those dispersions
+    # Then sample an isotropic gaussian in vx,vy,vz using those dispersions
     vx = normal(scale=sigma, size=N)
     vy = normal(scale=sigma, size=N)
     vz = normal(scale=sigma, size=N)
@@ -165,17 +163,17 @@ def draw_vr_vt_r(N=100000, r_max=300, gamma=4):
 
     returns (vr,vt,r) in G=M_cluster=1 units
     """
-    ## First convert r_max into max number of  virial radii
+    # First convert r_max into max number of  virial radii
     r_max = find_rmax_vir(r_max, gamma)
 
-    ## Then draw the positions from the cumulative mass function
+    # Then draw the positions from the cumulative mass function
     r = get_positions(N, r_max, gamma)
 
-    ## Sort the radii (needed later)
+    # Sort the radii (needed later)
     r = np.sort(r)
 
-    ## Finally, draw the velocities using the radii and one of the Jeans
-    ## equations
+    # Finally, draw the velocities using the radii and one of the Jeans
+    # equations
     vr, vt = get_velocities(r, r_max, gamma)
 
     return vr, vt, r

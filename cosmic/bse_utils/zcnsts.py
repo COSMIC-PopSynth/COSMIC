@@ -51,16 +51,11 @@ def zcnsts(z):
 
     # initialize arrays
     msp = numpy.zeros(shape=(200, len(z)))
-    gbp = numpy.zeros(shape=(200, len(z)))
     zpars = numpy.zeros(shape=(20, len(z)))
-    tscls = numpy.zeros(shape=(20, len(z)))
-    lums = numpy.zeros(shape=(10, len(z)))
-    GB = numpy.zeros(shape=(10, len(z)))
 
     lzs = numpy.log10(z / 0.020)
     dlzs = 1.0 / (z * numpy.log(10.0))
     lz = numpy.log10(z)
-    lzd = lzs + 1.0
 
     zpars[0] = 1.01850 + lzs * (0.16015 + lzs * 0.0892)
     zpars[1] = 1.9950 + lzs * (0.25 + lzs * 0.087)

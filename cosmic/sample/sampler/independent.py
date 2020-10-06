@@ -20,16 +20,13 @@
 """
 
 import numpy as np
-import math
-import random
-import scipy.integrate
 
 from cosmic.utils import mass_min_max_select
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
 
-from cosmic.utils import idl_tabulate, rndm
+from cosmic.utils import rndm
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -407,7 +404,8 @@ class Sample(object):
             renzo19 : power law orbital period for m1 > 15Msun binaries from
                         `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
                         following the implementation of
-                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
+                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
+                         and flat in log otherwise
 
         Returns
         -------
@@ -432,7 +430,7 @@ class Sample(object):
                 rad1 = np.zeros(len(mass1))
                 rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
                 rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
-            except:
+            except Exception:
                 if mass1 < 1.66:
                     rad1 = 1.06 * mass1 ** 0.945
                 else:
@@ -445,7 +443,7 @@ class Sample(object):
                 rad2 = np.zeros(len(mass2))
                 rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
                 rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
-            except:
+            except Exception:
                 if mass2 < 1.66:
                     rad2 = 1.06 * mass1 ** 0.945
                 else:
@@ -496,7 +494,8 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            'sana12' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            'sana12' samples from the eccentricity distribution from
+                 `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
 
@@ -530,7 +529,8 @@ class Sample(object):
             return ecc
 
         else:
-            raise ValueError('You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular')
+            raise ValueError("You have specified an unsupported model. Please choose from thermal, "
+                             "uniform, sana12, or circular")
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
