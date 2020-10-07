@@ -51,7 +51,5 @@ jobs:
         coverage run ./setup.py test
         coverage run --append `which cosmic-pop` --help
         cd docs && make html; cd ../
-    - name: Run coveralls after successful test
-      run: |
-        bash <(curl -s https://codecov.io/bash)
-        coveralls --gcov-options '\-lp'
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
