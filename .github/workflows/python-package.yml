@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install gfortran swig libhdf5-serial-dev
-        python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner numpy
+        python -m pip install coverage cpp-coveralls "pytest>=3.1" pytest-runner "numpy==1.18.4"
         pip install flake8 pytest
         python -m pip install .[doc]
     - name: Lint with flake8
