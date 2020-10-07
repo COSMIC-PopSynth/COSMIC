@@ -68,7 +68,7 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     t_max : `float`
         ending time for plot in Myr
 
-    BSEDict : `Dict
+    BSEDict : `Dict`
         Dictionary containing all BSE flags needed
 
     Returns
@@ -626,7 +626,7 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
     t_max : `float or list`
         ending time for plot in Myr
 
-    BSEDict : `Dict
+    BSEDict : `Dict`
         Dictionary containing all BSE flags needed
 
     sys_obs : `Dict`

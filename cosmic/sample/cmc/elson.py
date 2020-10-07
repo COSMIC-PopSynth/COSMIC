@@ -25,7 +25,7 @@ def M_enclosed(r, gamma, rho_0):
 def rho_r(r, gamma, rho_0):
     """
     Compute the density of the Elson profile at radius r
-    Best to use the same normalized rho_0 from M_enclosed */
+    Best to use the same normalized rho_0 from M_enclosed
     """
 
     return rho_0 * pow(1 + r * r, -(gamma + 1.0) / 2.0)
@@ -76,7 +76,7 @@ def find_rmax_vir(r_max, gamma):
 def find_sigma_sqr(r, r_max_cluster, gamma):
     """
     Find the 1D velocity dispersion at a given radius r using one of the
-    spherial Jeans equations (and assuming velocity is isotropic) */
+    spherial Jeans equations (and assuming velocity is isotropic)
     """
 
     rho_0 = 1.0 / M_enclosed(r_max_cluster, gamma, 1)

@@ -206,16 +206,6 @@ class Sample(object):
     def sample_primary(self, primary_model="kroupa01", size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
-        kroupa93 follows Kroupa (1993), normalization comes from
-        `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-        between 0.08 and 150 Msun
-        salpter55 follows
-        `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-        between 0.08 and 150 Msun
-        kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
-        between 0.08 and 100 Msun
-
-
         Parameters
         ----------
         primary_model : str, optional
@@ -330,21 +320,24 @@ class Sample(object):
 
         Parameters
         ----------
-        primary_mass : array
-            Mass that determines the binary fraction
-        binfrac_model : str or float
-            vanHaaften - primary mass dependent and ONLY VALID
-                         up to 100 Msun
-            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1 means every star is in a binary pair
+            primary_mass : array
+                Mass that determines the binary fraction
+
+            binfrac_model : str or float
+                vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
+                float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
+                means every star is in a binary pair
 
         Returns
         -------
-        primary_mass[binaryIdx] : array
-            primary masses that will have a binary companion
-        primary_mass[singleIdx] : array
-            primary masses that will be single stars
-        binary_fraction[binaryIdx] : array
-            system-specific probability of being in a binary
+            primary_mass[binaryIdx] : array
+                primary masses that will have a binary companion
+
+            primary_mass[singleIdx] : array
+                primary masses that will be single stars
+
+            binary_fraction[binaryIdx] : array
+                system-specific probability of being in a binary
         """
 
         if type(binfrac_model) == str:
@@ -394,18 +387,17 @@ class Sample(object):
             eccentricity
         model : string
             selects which model to sample orbital periods, choices include:
-            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up
-                       to 1e5 Rsun according to
-                       `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
-                        and consistent with Dominik+2012,2013
-                        and then converted to orbital period in days using Kepler III
+            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
+            `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+            and consistent with Dominik+2012,2013
+            and then converted to orbital period in days using Kepler III
             sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             renzo19 : power law orbital period for m1 > 15Msun binaries from
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-                        following the implementation of
-                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
-                         and flat in log otherwise
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            following the implementation of
+            `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
+            and flat in log otherwise
 
         Returns
         -------
@@ -495,13 +487,13 @@ class Sample(object):
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
             'sana12' samples from the eccentricity distribution from
-                 `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
 
         size : int, optional
             number of eccentricities to sample
-            NOTE: this is set in cosmic-pop call as Nstep
+            this is set in cosmic-pop call as Nstep
 
         Returns
         -------
