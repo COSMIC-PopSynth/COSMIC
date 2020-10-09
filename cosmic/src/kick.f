@@ -108,17 +108,19 @@
       if(kick_info(1,1).eq.0) sn=1
       if(kick_info(1,1).gt.0) sn=2
 
+      if(using_cmc.eq.0)then
 * check if we have supplied a randomseed for this SN from kick_info
 * already
-      if(natal_kick_array(snstar,5).gt.0.d0)then
+          if(natal_kick_array(snstar,5).gt.0.d0)then
 * if we have we need to run ran3 enough times until
 * we are at the same state of the random number generator
 * as we were before
-          do while (natal_kick_array(snstar,5).ne.idum1
+              do while (natal_kick_array(snstar,5).ne.idum1
      &                          .and.safety.le.20)
-              xx = RAN3(idum1)
-              safety = safety + 1
-          end do
+                  xx = RAN3(idum1)
+                  safety = safety + 1
+              end do
+          endif
       endif
 * save the current idum1
       natal_kick_array(snstar,5) = idum1
