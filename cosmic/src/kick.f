@@ -105,8 +105,13 @@
       betakick = 120.0d0
 
 * find whether this is the first or second supernova
-      if(kick_info(1,1).eq.0) sn=1
-      if(kick_info(1,1).gt.0) sn=2
+      if(using_cmc.eq.0)then
+          if(kick_info(1,1).eq.0) sn=1
+          if(kick_info(1,1).gt.0) sn=2
+      else
+          if(bkick(1).eq.0) sn=1
+          if(bkick(1).gt.0) sn=2
+      endif
 
       if(using_cmc.eq.0)then
 * check if we have supplied a randomseed for this SN from kick_info
