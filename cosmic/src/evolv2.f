@@ -2497,9 +2497,10 @@ component.
 *
 *
 * KB: adding in stable mass transfer factor from
-*     eqs 10-11 of Claeys+2014
+*     eqs 10-11 of Claeys+2014 as don_lim flag instead
+*     of qcflag (10/12/20)
 *
-         if(qcflag.gt.1.and.qcflag.le.3)then
+         if(don_lim.eq.-1.d0)then
             if(q(j1).gt.1)then
                f_fac=1000.d0
             else
@@ -2645,14 +2646,26 @@ component.
 *
 * Limit according to the thermal timescale of the secondary.
 *
-            dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            if(acc_lim.eq.0)then
+                dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            elseif(acc_lim.eq.-1.d0)then
+                dm2 = MIN(1.d0,tkh(j1)/tkh(j2))*dm1
+            elseif(acc_lim.eq.-2.d0)then
+                dm2 = MIN(1.d0,10.d0*tkh(j1)/tkh(j2))*dm1
+            endif
          elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
 *
 * Naked helium star secondary swells up to a core helium burning star
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               if(acc_lim.eq.0)then
+                  dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               elseif(acc_lim.eq.-1.d0)then
+                   dm2 = MIN(1.d0,tkh(j1)/tkh(j2))*dm1
+               elseif(acc_lim.eq.-2.d0)then
+                  dm2 = MIN(1.d0,10.d0*tkh(j1)/tkh(j2))*dm1
+               endif
             else
                dm2 = dm1
                dmchk = dm2 - 1.05d0*dms(j2)
@@ -2723,7 +2736,7 @@ component.
 * We have a giant whose envelope can absorb any transferred material.
 *
             dm2 = dm1
-         endif
+
          if(.not.novae) dm22 = dm2
 *
          if(kst.ge.10.and.kst.le.12)then
@@ -2775,6 +2788,15 @@ component.
                endif
             endif
          endif
+
+*
+* Place an overall fraction of mass accreted from donor; KB 10/12/2020
+*
+         if(acc_lim.gt.0)then
+             dm2 = acc_lim*dm1
+         endif
+
+
 *
 *       Modify mass loss terms by speed-up factor.
 *

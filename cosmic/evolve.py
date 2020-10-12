@@ -80,7 +80,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                              'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv', 'bhsigmafrac', 'polar_kick_angle',
                              'natal_kick_array', 'qcrit_array',
                              'beta', 'xi', 'acc2', 'epsnov',
-                             'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck',
+                             'eddfac', 'gamma', 'don_lim', 'acc_lim', 'bdecayfac', 'bconst', 'ck',
                              'windflag', 'qcflag', 'eddlimflag',
                              'fprimc_array', 'dtp', 'randomseed',
                              'bhspinflag','bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
@@ -359,6 +359,8 @@ class Evolve(object):
                 _evolvebin.windvars.epsnov = f['epsnov']
                 _evolvebin.windvars.eddfac = f['eddfac']
                 _evolvebin.windvars.gamma = f['gamma']
+                _evolvebin.flags.don_lim = f['don_lim']
+                _evolvebin.flags.acc_lim = f['acc_lim']
                 _evolvebin.flags.bdecayfac = f['bdecayfac']
                 _evolvebin.magvars.bconst = f['bconst']
                 _evolvebin.magvars.ck = f['ck']
@@ -463,6 +465,8 @@ class Evolve(object):
                     _evolvebin.windvars.epsnov = f[i]['epsnov']
                     _evolvebin.windvars.eddfac = f[i]['eddfac']
                     _evolvebin.windvars.gamma = f[i]['gamma']
+                    _evolvebin.flags.don_lim = f[i]['don_lim']
+                    _evolvebin.flags.acc_lim = f[i]['acc_lim']
                     _evolvebin.flags.bdecayfac = f[i]['bdecayfac']
                     _evolvebin.magvars.bconst = f[i]['bconst']
                     _evolvebin.magvars.ck = f[i]['ck']
