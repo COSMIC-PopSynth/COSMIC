@@ -2512,7 +2512,7 @@ component.
             endif
             dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
-         else
+         elseif(don_lim.eq.0)then
             dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
          endif
@@ -2736,6 +2736,7 @@ component.
 * We have a giant whose envelope can absorb any transferred material.
 *
             dm2 = dm1
+         endif
 
          if(.not.novae) dm22 = dm2
 *
