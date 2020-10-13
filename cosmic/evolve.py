@@ -31,8 +31,12 @@ import pandas as pd
 import warnings
 import os
 import sys
-import multiprocessing
-multiprocessing.set_start_method("fork")
+try:
+    import multiprocessing
+    multiprocessing.set_start_method("fork")
+except RuntimeError:
+    pass
+
 
 __author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
