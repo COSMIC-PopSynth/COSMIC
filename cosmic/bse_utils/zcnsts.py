@@ -26,10 +26,7 @@ c = numpy.array([3.040581e-01, 8.049509e-02, 8.967485e-02, 8.780198e-02, 2.21917
 
 
 def zcnsts(z):
-    """
-    *
-    *       ------------------------------------------------------------
-    *
+    """Calculate constants based on the metallicty
     *      zpars:  1; M below which hook doesn't appear on MS, Mhook.
     *              2; M above which He ignition occurs non-degenerately, Mhef.
     *              3; M above which He ignition occurs on the HG, Mfgb.
@@ -44,23 +41,15 @@ def zcnsts(z):
     *             12; helium abundance.
     *             13; constant x in rnumpy.minimum = rgb*x**y used by LM CHeB.
     *             14; z**0.4 to be used for WD L formula.
-    *
-    *       ------------------------------------------------------------
-    *
     """
 
     # initialize arrays
     msp = numpy.zeros(shape=(200, len(z)))
-    gbp = numpy.zeros(shape=(200, len(z)))
     zpars = numpy.zeros(shape=(20, len(z)))
-    tscls = numpy.zeros(shape=(20, len(z)))
-    lums = numpy.zeros(shape=(10, len(z)))
-    GB = numpy.zeros(shape=(10, len(z)))
 
     lzs = numpy.log10(z / 0.020)
     dlzs = 1.0 / (z * numpy.log(10.0))
     lz = numpy.log10(z)
-    lzd = lzs + 1.0
 
     zpars[0] = 1.01850 + lzs * (0.16015 + lzs * 0.0892)
     zpars[1] = 1.9950 + lzs * (0.25 + lzs * 0.087)

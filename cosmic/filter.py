@@ -28,8 +28,6 @@ from collections import OrderedDict
 from six import string_types
 from six.moves import StringIO
 
-import numpy
-
 __author__ = "Duncan Macleod <duncan.macleod@ligo.org>"
 
 OPERATORS = OrderedDict(

@@ -456,7 +456,7 @@ common envelope occurs regardless of the choices below:
                             ``positive values`` : uses variable lambda prescription detailed
                             in appendix of `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
                             where lambdaf is the fraction of the ionization energy that can go into ejecting
-                             the envelope; to use this prescription without extra ionization energy, set lambdaf=0
+                            the envelope; to use this prescription without extra ionization energy, set lambdaf=0
 
                             ``negative values`` : fixes :math:`{\lambda}` to a value of -1.0* *lambdaf*
 
@@ -619,6 +619,7 @@ common envelope occurs regardless of the choices below:
 .. note::
 
     KICK FLAGS
+
 =======================  =====================================================
 ``kickflag``             Sets the particular natal kick prescription to use
                          Note that ``sigmadiv``, ``bhflag``, ``bhsigmafrac``,
@@ -892,6 +893,7 @@ common envelope occurs regardless of the choices below:
                             ``positive values`` : sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (:math:`{\sim 5 \mathrm{M}_\odot}` Fryer, private communication)
 
                             ``-1 < *rembar_massloss* < 0`` : assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., *rembar_massloss* = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)
+
                      **rembar_massloss = 0.5**
 ===================  =====================================================
 
@@ -934,6 +936,7 @@ common envelope occurs regardless of the choices below:
                             ``1`` : draws a random BH spin between 0 and bhspinmag for every BH
 
                             ``2`` : core-mass dependent BH spin (based on `Belczynski+2017 v1 <https://arxiv.org/abs/1706.07053v1>`_)
+
                          **bhspinflag = 0**
 
 ``bhspinmag``            Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins
@@ -963,8 +966,7 @@ common envelope occurs regardless of the choices below:
 
 .. note::
 
-
-GR ORBITAL DECAY FLAG
+    GR ORBITAL DECAY FLAG
 
 =======================  ===============================================================
 ``grflag``               Turns on or off orbital decay due to gravitational wave radiation
@@ -972,6 +974,7 @@ GR ORBITAL DECAY FLAG
                             ``0`` : No orbital decay due to GR
 
                             ``1`` : Orbital decay due to GR is included
+
                          **grflag = 1**
 =======================  ===============================================================
 
@@ -1200,6 +1203,7 @@ GR ORBITAL DECAY FLAG
     MIXING VARIABLES
 
 =======================  =====================================================
+
 ``rejuv_fac``            Sets the mixing factor in main sequence star collisions.
                          This is hard coded to 0.1 in the original BSE release
                          and in Equation 80 of `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
@@ -1221,6 +1225,11 @@ GR ORBITAL DECAY FLAG
                             ``1`` : modified mixing times
 
                          **rejuvflag = 0**
+
+``bhms_coll_flag``       If set to 1 then if BH+star collision and if Mstar > Mbh, do not destroy the star
+
+                         **default = 0**
+
 =======================  =====================================================
 
 .. code-block:: ini
@@ -1241,6 +1250,11 @@ GR ORBITAL DECAY FLAG
     ; helium core mass of the merger product at the base of the giant branch
     ; default=0
     rejuvflag=0
+
+    ; bhms_coll_flag 
+    ; If set to 1 then if BH+star collision and if Mstar > Mbh, do not destroy the star
+    ; default = 0
+    bhms_coll_flag=0
 
 .. note::
 

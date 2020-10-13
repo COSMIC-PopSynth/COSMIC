@@ -20,17 +20,10 @@
 """
 
 import numpy as np
-import multiprocessing as mp
 import math
-import random
-import scipy.integrate
 import sys
 
-from astropy.table import Table, Column
-from astropy import units
 import pandas as pd
-
-from cosmic.utils import idl_tabulate, rndm
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"

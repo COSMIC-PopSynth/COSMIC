@@ -43,11 +43,17 @@ The ``bse`` subsection is where all the BSE flags are specified.
 Sample command line
 -------------------
 
-Below is an example command line call for ``cosmic-pop``:
+Below is an example command line call for ``cosmic-pop`` with multiprocessing (i.e. shared memory on a single computer):
 
 .. code-block:: bash
 
    cosmic-pop --final-kstar1 13 14 --final-kstar2 13 14 --inifile Params.ini --Nstep 1000 --Niter 1000000000 -n 2
+
+Below is an example command line call for ``cosmic-pop`` with MPI (i.e. across many computers):
+
+.. code-block:: bash
+
+    mpiexec -n 2 python PATHTOEXECTUABLEDIRECTORY/cosmic-pop --final-kstar1 13 14 --final-kstar2 13 14 --inifile Params.ini --Nstep 1000 --Niter 1000000000
 
 A breakdown of each argument follows:
 
@@ -55,7 +61,7 @@ A breakdown of each argument follows:
 
 * ``--inifile Params.ini`` : this tells COSMIC where to look for the BSE flags that set the binary evolution model; in this case, the inifile is assumed to be in the same directory that the command line call is made
 
-* ``--Nstep 5000 --Niter 10000000 -n 1`` : this tells COSMIC to use 1 processor to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
+* ``--Nstep 5000 --Niter 10000000 -n 2`` : this tells COSMIC to use 2 processors (or in the MPI case, MPI tasks) to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change
 
 ===================
 Stopping conditions

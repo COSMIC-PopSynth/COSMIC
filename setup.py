@@ -24,6 +24,7 @@ from __future__ import print_function
 
 import glob
 import os.path
+import versioneer
 
 from setuptools import find_packages
 from distutils.command.sdist import sdist
@@ -43,8 +44,6 @@ LICENSE = "GPLv3"
 cmdclass = {}
 
 # -- versioning ---------------------------------------------------------------
-
-import versioneer
 
 __version__ = versioneer.get_version()
 cmdclass.update(versioneer.get_cmdclass())
@@ -73,7 +72,8 @@ setup_requires = [
     "numpy",
 ]
 install_requires = [
-    'numpy >= 1.16',
+    'numpy >= 1.16, <=1.18.4 ; python_version == \'3.6\'',
+    'numpy >= 1.16 ; python_version > \'3.6\'',
     'scipy >= 0.12.1',
     'astropy >= 1.1.1',
     'configparser',
@@ -81,12 +81,12 @@ install_requires = [
     'pandas >= 0.24',
     'tables > 3.5.0',
     'h5py >= 1.3',
+    'schwimmbad >= 0.3.1',
     'matplotlib >= 2.0.0'
 ]
 tests_require = [
     'pytest'
 ]
-tests_require = ["pytest"]
 extras_require = {
     "doc": [
         "sphinx >= 1.6.1",
@@ -131,44 +131,43 @@ wrapper = Extension(
 packagenames = find_packages()
 scripts = glob.glob(os.path.join("bin", "*"))
 
-setup(
-    name=DISTNAME,
-    provides=[PACKAGENAME],
-    version=__version__,
-    description="Compact Object Synthesis and Monte Carlo Investigation Code",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    ext_modules=[wrapper],
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
-    license=LICENSE,
-    packages=packagenames,
-    include_package_data=True,
-    cmdclass=cmdclass,
-    url="https://github.com/COSMIC-PopSynth/COSMIC",
-    scripts=scripts,
-    setup_requires=setup_requires,
-    install_requires=install_requires,
-    tests_require=tests_require,
-    extras_require=extras_require,
-    python_requires=">3.5, <4",
-    use_2to3=True,
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Intended Audience :: Science/Research",
-        "Intended Audience :: End Users/Desktop",
-        "Intended Audience :: Science/Research",
-        "Natural Language :: English",
-        "Topic :: Scientific/Engineering",
-        "Topic :: Scientific/Engineering :: Astronomy",
-        "Topic :: Scientific/Engineering :: Physics",
-        "Operating System :: POSIX",
-        "Operating System :: Unix",
-        "Operating System :: MacOS",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    ],
-)
+setup(name=DISTNAME,
+      provides=[PACKAGENAME],
+      version=__version__,
+      description="Compact Object Synthesis and Monte Carlo Investigation Code",
+      long_description=long_description,
+      long_description_content_type='text/markdown',
+      ext_modules=[wrapper],
+      author=AUTHOR,
+      author_email=AUTHOR_EMAIL,
+      license=LICENSE,
+      packages=packagenames,
+      include_package_data=True,
+      cmdclass=cmdclass,
+      url='https://github.com/COSMIC-PopSynth/COSMIC',
+      scripts=scripts,
+      setup_requires=setup_requires,
+      install_requires=install_requires,
+      tests_require=tests_require,
+      extras_require=extras_require,
+      python_requires='>3.5, <4',
+      use_2to3=True,
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
+          'Intended Audience :: Science/Research',
+          'Intended Audience :: End Users/Desktop',
+          'Intended Audience :: Science/Research',
+          'Natural Language :: English',
+          'Topic :: Scientific/Engineering',
+          'Topic :: Scientific/Engineering :: Astronomy',
+          'Topic :: Scientific/Engineering :: Physics',
+          'Operating System :: POSIX',
+          'Operating System :: Unix',
+          'Operating System :: MacOS',
+          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+                  ],
+      )

@@ -64,6 +64,8 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/api/
+docs/input.hdf5
+docs/input.fits
 
 # PyBuilder
 target/

@@ -20,17 +20,13 @@
 """
 
 import numpy as np
-import multiprocessing as mp
-import math
-import random
-import scipy.integrate
 
 from cosmic.utils import mass_min_max_select
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
 
-from cosmic.utils import idl_tabulate, rndm
+from cosmic.utils import rndm
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -210,16 +206,6 @@ class Sample(object):
     def sample_primary(self, primary_model="kroupa01", size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
-        kroupa93 follows Kroupa (1993), normalization comes from
-        `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-        between 0.08 and 150 Msun
-        salpter55 follows
-        `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-        between 0.08 and 150 Msun
-        kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
-        between 0.08 and 100 Msun
-
-
         Parameters
         ----------
         primary_model : str, optional
@@ -334,21 +320,24 @@ class Sample(object):
 
         Parameters
         ----------
-        primary_mass : array
-            Mass that determines the binary fraction
-        binfrac_model : str or float
-            vanHaaften - primary mass dependent and ONLY VALID
-                         up to 100 Msun
-            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1 means every star is in a binary pair
+            primary_mass : array
+                Mass that determines the binary fraction
+
+            binfrac_model : str or float
+                vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
+                float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
+                means every star is in a binary pair
 
         Returns
         -------
-        primary_mass[binaryIdx] : array
-            primary masses that will have a binary companion
-        primary_mass[singleIdx] : array
-            primary masses that will be single stars
-        binary_fraction[binaryIdx] : array
-            system-specific probability of being in a binary
+            primary_mass[binaryIdx] : array
+                primary masses that will have a binary companion
+
+            primary_mass[singleIdx] : array
+                primary masses that will be single stars
+
+            binary_fraction[binaryIdx] : array
+                system-specific probability of being in a binary
         """
 
         if type(binfrac_model) == str:
@@ -398,17 +387,17 @@ class Sample(object):
             eccentricity
         model : string
             selects which model to sample orbital periods, choices include:
-            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up
-                       to 1e5 Rsun according to
-                       `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
-                        and consistent with Dominik+2012,2013
-                        and then converted to orbital period in days using Kepler III
+            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
+            `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+            and consistent with Dominik+2012,2013
+            and then converted to orbital period in days using Kepler III
             sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             renzo19 : power law orbital period for m1 > 15Msun binaries from
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-                        following the implementation of
-                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            following the implementation of
+            `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
+            and flat in log otherwise
 
         Returns
         -------
@@ -433,7 +422,7 @@ class Sample(object):
                 rad1 = np.zeros(len(mass1))
                 rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
                 rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
-            except:
+            except Exception:
                 if mass1 < 1.66:
                     rad1 = 1.06 * mass1 ** 0.945
                 else:
@@ -446,7 +435,7 @@ class Sample(object):
                 rad2 = np.zeros(len(mass2))
                 rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
                 rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
-            except:
+            except Exception:
                 if mass2 < 1.66:
                     rad2 = 1.06 * mass1 ** 0.945
                 else:
@@ -497,13 +486,14 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            'sana12' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            'sana12' samples from the eccentricity distribution from
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
 
         size : int, optional
             number of eccentricities to sample
-            NOTE: this is set in cosmic-pop call as Nstep
+            this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -531,9 +521,8 @@ class Sample(object):
             return ecc
 
         else:
-            raise Error(
-                "You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular"
-            )
+            raise ValueError("You have specified an unsupported model. Please choose from thermal, "
+                             "uniform, sana12, or circular")
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -566,9 +555,7 @@ class Sample(object):
             metallicity = np.ones(size) * met
             return tphys, metallicity
         else:
-            raise Error(
-                "SF_start and SF_duration must be positive and SF_start must be greater than 0.0"
-            )
+            raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

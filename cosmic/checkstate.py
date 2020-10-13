@@ -59,13 +59,13 @@ def set_checkstates(timestep_conditions=[]):
 
     Parameters:
         timestep_conditions : (list) default empty (no dynamic dtp setting)
-            a nest list of the many different time resolutions and conditions
+            a nested list of the many different time resolutions and conditions
             for which you would like to apply those time resolution, e.g.,
-            ```
-            timestep_conditions =[['20.0<mass_1<25.5', '15.5>mass_2>10.0', 'dtp=1.0'],
-                                 ['kstar_1=14', 'lum_1>10.0', 'dtp=0.01'],
-                                 ['2>=binstate>=1', 'dtp=None']]
-            ```
+
+            >>> timestep_conditions = [['20.0<mass_1<25.5', '15.5>mass_2>10.0', 'dtp=1.0'],
+            >>> ['kstar_1=14', 'lum_1>10.0', 'dtp=0.01'],
+            >>> ['2>=binstate>=1', 'dtp=None']]
+
             The first two sets of conditons would be done in a AND fashion.
             The last condition would end time resolution for the BCM array and it
             would skip to only printing the final state

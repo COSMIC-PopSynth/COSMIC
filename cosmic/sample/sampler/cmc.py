@@ -55,6 +55,14 @@ def get_cmc_sampler(
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
 
+    cluster_profile : `str`
+        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
+        options include king, plummer and elson.
+
+    params : `str`
+        Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
+        running BSE for a tiny time step.
+
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is 0.02
 
@@ -108,7 +116,6 @@ def get_cmc_sampler(
     # select out the primaries and secondaries that will produce the final kstars
     mass1_binary = np.array(mass1_binaries)
     mass2_binary = np.array(mass2_binaries)
-    binfrac = np.asarray(binfrac_binaries)
     ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
     porb = initconditions.sample_porb(
         mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
