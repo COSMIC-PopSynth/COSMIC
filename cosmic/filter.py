@@ -28,38 +28,40 @@ from collections import OrderedDict
 from six import string_types
 from six.moves import StringIO
 
-import numpy
+__author__ = "Duncan Macleod <duncan.macleod@ligo.org>"
 
-__author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
+OPERATORS = OrderedDict(
+    [
+        ("<", operator.lt),
+        ("<=", operator.le),
+        ("=", operator.eq),
+        ("==", operator.eq),
+        (">=", operator.ge),
+        (">", operator.gt),
+        ("!=", operator.ne),
+    ]
+)
 
-OPERATORS = OrderedDict([
-    ('<', operator.lt),
-    ('<=', operator.le),
-    ('=', operator.eq),
-    ('==', operator.eq),
-    ('>=', operator.ge),
-    ('>', operator.gt),
-    ('!=', operator.ne),
-])
+OPERATORS_INV = OrderedDict(
+    [
+        ("<=", operator.ge),
+        ("<", operator.gt),
+        (">", operator.lt),
+        (">=", operator.le),
+    ]
+)
 
-OPERATORS_INV = OrderedDict([
-    ('<=', operator.ge),
-    ('<', operator.gt),
-    ('>', operator.lt),
-    ('>=', operator.le),
-])
-
-QUOTE_REGEX = re.compile(r'^[\s\"\']+|[\s\"\']+$')
-DELIM_REGEX = re.compile(r'(and|&+)', re.I)
+QUOTE_REGEX = re.compile(r"^[\s\"\']+|[\s\"\']+$")
+DELIM_REGEX = re.compile(r"(and|&+)", re.I)
 
 
 # -- filter parsing -----------------------------------------------------------
 
+
 def _float_or_str(value):
-    """Internal method to attempt `float(value)` handling a `ValueError`
-    """
+    """Internal method to attempt `float(value)` handling a `ValueError`"""
     # remove any surrounding quotes
-    value = QUOTE_REGEX.sub('', value)
+    value = QUOTE_REGEX.sub("", value)
     try:  # attempt `float()` conversion
         return float(value)
     except ValueError:  # just return the input
@@ -92,7 +94,7 @@ def parse_operator(mathstr):
     try:
         return OPERATORS[mathstr]
     except KeyError as exc:
-        exc.args = ('Unrecognised operator %r' % mathstr,)
+        exc.args = ("Unrecognised operator %r" % mathstr,)
         raise
 
 
@@ -151,12 +153,12 @@ def parse_column_filter(definition):
     if len(parts) == 3:
         a, b, c = parts  # pylint: disable=invalid-name
         if a[0] in [token.NAME, token.STRING]:  # string comparison
-            name = QUOTE_REGEX.sub('', a[1])
+            name = QUOTE_REGEX.sub("", a[1])
             oprtr = OPERATORS[b[1]]
             value = _float_or_str(c[1])
             return [(name, oprtr, value)]
         elif b[0] in [token.NAME, token.STRING]:
-            name = QUOTE_REGEX.sub('', b[1])
+            name = QUOTE_REGEX.sub("", b[1])
             oprtr = OPERATORS_INV[b[1]]
             value = _float_or_str(a[1])
             return [(name, oprtr, value)]
@@ -164,9 +166,11 @@ def parse_column_filter(definition):
     # parse between definition: e.g: 5 < snr < 10
     elif len(parts) == 5:
         a, b, c, d, e = list(zip(*parts))[1]  # pylint: disable=invalid-name
-        name = QUOTE_REGEX.sub('', c)
-        return [(name, OPERATORS_INV[b], _float_or_str(a)),
-                (name, OPERATORS[d], _float_or_str(e))]
+        name = QUOTE_REGEX.sub("", c)
+        return [
+            (name, OPERATORS_INV[b], _float_or_str(a)),
+            (name, OPERATORS[d], _float_or_str(e)),
+        ]
 
     raise ValueError("Cannot parse filter definition from %r" % definition)
 
@@ -192,8 +196,7 @@ def parse_column_filters(*definitions):
 
 
 def _flatten(container):
-    """Flatten arbitrary nested list of filters into a 1-D list
-    """
+    """Flatten arbitrary nested list of filters into a 1-D list"""
     if isinstance(container, string_types):
         container = [container]
     for elem in container:
@@ -205,9 +208,7 @@ def _flatten(container):
 
 
 def is_filter_tuple(tup):
-    """Return whether a `tuple` matches the format for a column filter
-    """
+    """Return whether a `tuple` matches the format for a column filter"""
     return isinstance(tup, (tuple, list)) and (
-        len(tup) == 3 and
-        isinstance(tup[0], string_types) and
-        callable(tup[1]))
+        len(tup) == 3 and isinstance(tup[0], string_types) and callable(tup[1])
+    )

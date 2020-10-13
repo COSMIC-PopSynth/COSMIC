@@ -24,6 +24,7 @@ from __future__ import print_function
 
 import glob
 import os.path
+import versioneer
 
 from setuptools import find_packages
 from distutils.command.sdist import sdist
@@ -34,17 +35,16 @@ except ImportError:
     raise ImportError("Building fortran extensions requires numpy.")
 
 # set basic metadata
-PACKAGENAME = 'cosmic'
-DISTNAME = 'cosmic-popsynth'
-AUTHOR = 'Katie Breivik'
-AUTHOR_EMAIL = 'katie.breivik@gmail.com'
-LICENSE = 'GPLv3'
+PACKAGENAME = "cosmic"
+DISTNAME = "cosmic-popsynth"
+AUTHOR = "Katie Breivik"
+AUTHOR_EMAIL = "katie.breivik@gmail.com"
+LICENSE = "GPLv3"
 
 cmdclass = {}
 
 # -- versioning ---------------------------------------------------------------
 
-import versioneer
 __version__ = versioneer.get_version()
 cmdclass.update(versioneer.get_cmdclass())
 
@@ -56,56 +56,80 @@ try:
 except ImportError:
     pass
 else:
-    cmdclass['build_sphinx'] = BuildDoc
+    cmdclass["build_sphinx"] = BuildDoc
 
 cmdclass["sdist"] = sdist
 
 # read description
-with open('README.md', 'rb') as f:
+with open("README.md", "rb") as f:
     long_description = f.read().decode().strip()
 
 # -- dependencies -------------------------------------------------------------
 
 setup_requires = [
-    'setuptools',
-    'pytest-runner',
-    'numpy',
+    "setuptools",
+    "pytest-runner",
+    "numpy",
 ]
 install_requires = [
-    'numpy >= 1.16',
+    'numpy >= 1.16, <=1.18.4 ; python_version == \'3.6\'',
+    'numpy >= 1.16 ; python_version > \'3.6\'',
     'scipy >= 0.12.1',
-    'astropy >= 1.1.1, < 3.0.0 ; python_version < \'3\'',
-    'astropy >= 1.1.1 ; python_version >= \'3\'',
+    'astropy >= 1.1.1',
     'configparser',
     'tqdm >= 4.0',
     'pandas >= 0.24',
     'tables > 3.5.0',
     'h5py >= 1.3',
+    'schwimmbad >= 0.3.1',
     'matplotlib >= 2.0.0'
 ]
 tests_require = [
     'pytest'
 ]
 extras_require = {
-    'doc': [
-        'sphinx >= 1.6.1',
-        'numpydoc >= 0.8.0',
-        'sphinx-bootstrap-theme >= 0.6',
-        'sphinxcontrib-programoutput',
-        'sphinx-automodapi',
-        'ipython',
-        'sphinx_rtd_theme',
+    "doc": [
+        "sphinx >= 1.6.1",
+        "numpydoc >= 0.8.0",
+        "sphinx-bootstrap-theme >= 0.6",
+        "sphinxcontrib-programoutput",
+        "sphinx-automodapi",
+        "ipython",
+        "sphinx_rtd_theme",
     ],
 }
 
 # fortran compile
-wrapper = Extension('cosmic._evolvebin',
-                    sources=['cosmic/src/comenv.f', 'cosmic/src/corerd.f', 'cosmic/src/deltat.f', 'cosmic/src/dgcore.f', 'cosmic/src/evolv2.f', 'cosmic/src/gntage.f', 'cosmic/src/hrdiag.f', 'cosmic/src/instar.f', 'cosmic/src/kick.f', 'cosmic/src/mix.f', 'cosmic/src/mlwind.f', 'cosmic/src/mrenv.f', 'cosmic/src/ran3.f', 'cosmic/src/rl.f', 'cosmic/src/star.f', 'cosmic/src/zcnsts.f', 'cosmic/src/zfuncs.f', 'cosmic/src/concatkstars.f', 'cosmic/src/bpp_array.f', 'cosmic/src/checkstate.f'],) #extra_compile_args = ["-g","-O0"], extra_f77_compile_args=["-O0"], extra_f90_compile_args=["-O0"])
+wrapper = Extension(
+    "cosmic._evolvebin",
+    sources=[
+        "cosmic/src/comenv.f",
+        "cosmic/src/corerd.f",
+        "cosmic/src/deltat.f",
+        "cosmic/src/dgcore.f",
+        "cosmic/src/evolv2.f",
+        "cosmic/src/gntage.f",
+        "cosmic/src/hrdiag.f",
+        "cosmic/src/instar.f",
+        "cosmic/src/kick.f",
+        "cosmic/src/mix.f",
+        "cosmic/src/mlwind.f",
+        "cosmic/src/mrenv.f",
+        "cosmic/src/ran3.f",
+        "cosmic/src/rl.f",
+        "cosmic/src/star.f",
+        "cosmic/src/zcnsts.f",
+        "cosmic/src/zfuncs.f",
+        "cosmic/src/concatkstars.f",
+        "cosmic/src/bpp_array.f",
+        "cosmic/src/checkstate.f",
+    ],
+)  # extra_compile_args = ["-g","-O0"], extra_f77_compile_args=["-O0"], extra_f90_compile_args=["-O0"])
 
 # -- run setup ----------------------------------------------------------------
 
 packagenames = find_packages()
-scripts = glob.glob(os.path.join('bin', '*'))
+scripts = glob.glob(os.path.join("bin", "*"))
 
 setup(name=DISTNAME,
       provides=[PACKAGENAME],
@@ -113,7 +137,7 @@ setup(name=DISTNAME,
       description="Compact Object Synthesis and Monte Carlo Investigation Code",
       long_description=long_description,
       long_description_content_type='text/markdown',
-      ext_modules = [wrapper],
+      ext_modules=[wrapper],
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,
@@ -144,6 +168,6 @@ setup(name=DISTNAME,
           'Operating System :: POSIX',
           'Operating System :: Unix',
           'Operating System :: MacOS',
-          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-      ],
-)
+          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+                  ],
+      )

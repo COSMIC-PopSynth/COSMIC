@@ -28,11 +28,10 @@ from astropy.table import Table
 
 _SAMPLERS = {}
 
-__author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
+__author__ = "Duncan Macleod <duncan.macleod@ligo.org>"
 
 
-def register_sampler(data_format, data_class, function, force=False,
-                     usage=None):
+def register_sampler(data_format, data_class, function, force=False, usage=None):
     """Register a new method to InitialBinaryTable.sampler() for a given format
 
     Parameters
@@ -54,9 +53,11 @@ def register_sampler(data_format, data_class, function, force=False,
     if key not in _SAMPLERS or force:
         _SAMPLERS[key] = (function, usage)
     else:
-        raise IORegistryError("Fetcher for format '{0}' and class '{1}' "
-                              "has already been " "defined".format(
-                                  data_format, data_class))
+        raise IORegistryError(
+            "Fetcher for format '{0}' and class '{1}' "
+            "has already been "
+            "defined".format(data_format, data_class)
+        )
     _update__doc__(data_class)
 
 
@@ -79,10 +80,11 @@ def get_sampler(data_format, data_class):
     try:
         return _SAMPLERS[(data_format, data_class)][0]
     except KeyError:
-        formats = '\n'.join(_SAMPLERS.keys())
-        raise IORegistryError("No sampler definer for format %r. "
-                              "The available formats are:\n%r"
-                              % (data_format, formats))
+        formats = "\n".join(_SAMPLERS.keys())
+        raise IORegistryError(
+            "No sampler definer for format %r. "
+            "The available formats are:\n%r" % (data_format, formats)
+        )
 
 
 def _update__doc__(data_class):
@@ -103,7 +105,7 @@ def _update__doc__(data_class):
         lines = lines[:pos]
 
     # work out the indentation
-    matches = [re.search(r'(\S)', line) for line in lines[1:]]
+    matches = [re.search(r"(\S)", line) for line in lines[1:]]
     indent = min(match.start() for match in matches if match)
 
     # now re-write the format list
@@ -112,17 +114,17 @@ def _update__doc__(data_class):
         if cls is not data_class:
             continue
         usage = _SAMPLERS[(fmt, cls)][1]
-        formats.append((
-            fmt, '``sampler(%r, %s)``' % (fmt, usage)))
-    format_str = Table(rows=formats, names=['Format', 'Basic usage']).pformat(
-        max_lines=-1, max_width=80, align=('>', '<'))
-    format_str[1] = format_str[1].replace('-', '=')
+        formats.append((fmt, "``sampler(%r, %s)``" % (fmt, usage)))
+    format_str = Table(rows=formats, names=["Format", "Basic usage"]).pformat(
+        max_lines=-1, max_width=80, align=(">", "<")
+    )
+    format_str[1] = format_str[1].replace("-", "=")
     format_str.insert(0, format_str[1])
     format_str.append(format_str[0])
 
-    lines.extend([' ' * indent + line for line in [header, ''] + format_str])
+    lines.extend([" " * indent + line for line in [header, ""] + format_str])
     # and overwrite the docstring
     try:
-        sampler.__doc__ = '\n'.join(lines)
+        sampler.__doc__ = "\n".join(lines)
     except AttributeError:
-        sampler.__func__.__doc__ = '\n'.join(lines)
+        sampler.__func__.__doc__ = "\n".join(lines)
