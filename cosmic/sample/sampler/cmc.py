@@ -215,6 +215,8 @@ class CMCSample(Sample):
         _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
         _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
+        _evolvebin.flags.grflag = BSEDict["grflag"]
+        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
         _evolvebin.snvars.mxns = BSEDict["mxns"]
         _evolvebin.points.pts1 = BSEDict["pts1"]
         _evolvebin.points.pts2 = BSEDict["pts2"]
@@ -255,6 +257,7 @@ class CMCSample(Sample):
         _evolvebin.snvars.kickflag = BSEDict["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
 
+        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
         initial_stars = InitialBinaryTable.InitialBinaries(
             mass,
             np.ones_like(mass) * 0,

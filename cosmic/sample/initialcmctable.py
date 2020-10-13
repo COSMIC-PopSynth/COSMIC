@@ -267,6 +267,10 @@ class InitialCMCTable(pd.DataFrame):
             InitialCMCTable.ScaleToNBodyUnits(
                 Singles, Binaries, virial_radius=virial_radius
             )
+        elif (not Singles.scaled_to_nbody_units) and (Singles.mass_of_cluster is not None):
+            InitialCMCTable.ScaleToNBodyUnits(
+                Singles, Binaries, virial_radius=virial_radius
+            )
         elif (Singles.scaled_to_nbody_units) and (Singles.mass_of_cluster is None):
             # we cannot get the pre-scaled mass of the cluster
             raise ValueError(

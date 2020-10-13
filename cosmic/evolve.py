@@ -396,96 +396,97 @@ class Evolve(object):
 
 def _evolve_single_system(f):
     try:
-        f['kick_info'] = np.zeros((2, len(KICK_COLUMNS)-1))
+        f["kick_info"] = np.zeros((2, len(KICK_COLUMNS)-1))
         # determine if we already have a compact object, if yes than one SN has already occured
-        if (f['kstar_1'] in range(10, 15)) or (f['kstar_2'] in range(10, 15)):
-            f['kick_info'][0, 0] = 1
+        if (f["kstar_1"] in range(10, 15)) or (f["kstar_2"] in range(10, 15)):
+            f["kick_info"][0, 0] = 1
         # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-        _evolvebin.windvars.neta = f['neta']
-        _evolvebin.windvars.bwind = f['bwind']
-        _evolvebin.windvars.hewind = f['hewind']
-        _evolvebin.cevars.alpha1 = f['alpha1']
-        _evolvebin.cevars.lambdaf = f['lambdaf']
-        _evolvebin.ceflags.ceflag = f['ceflag']
-        _evolvebin.flags.tflag = f['tflag']
-        _evolvebin.flags.ifflag = f['ifflag']
-        _evolvebin.flags.wdflag = f['wdflag']
-        _evolvebin.snvars.pisn = f['pisn']
-        _evolvebin.flags.bhflag = f['bhflag']
-        _evolvebin.flags.remnantflag = f['remnantflag']
-        _evolvebin.ceflags.cekickflag = f['cekickflag']
-        _evolvebin.ceflags.cemergeflag = f['cemergeflag']
-        _evolvebin.ceflags.cehestarflag = f['cehestarflag']
-        _evolvebin.flags.grflag = f['grflag']
-        _evolvebin.snvars.mxns = f['mxns']
-        _evolvebin.points.pts1 = f['pts1']
-        _evolvebin.points.pts2 = f['pts2']
-        _evolvebin.points.pts3 = f['pts3']
-        _evolvebin.snvars.ecsn = f['ecsn']
-        _evolvebin.snvars.ecsn_mlow = f['ecsn_mlow']
-        _evolvebin.flags.aic = f['aic']
-        _evolvebin.ceflags.ussn = f['ussn']
-        _evolvebin.snvars.sigma = f['sigma']
-        _evolvebin.snvars.sigmadiv = f['sigmadiv']
-        _evolvebin.snvars.bhsigmafrac = f['bhsigmafrac']
-        _evolvebin.snvars.polar_kick_angle = f['polar_kick_angle']
-        _evolvebin.snvars.natal_kick_array = f['natal_kick_array']
-        _evolvebin.cevars.qcrit_array = f['qcrit_array']
-        _evolvebin.windvars.beta = f['beta']
-        _evolvebin.windvars.xi = f['xi']
-        _evolvebin.windvars.acc2 = f['acc2']
-        _evolvebin.windvars.epsnov = f['epsnov']
-        _evolvebin.windvars.eddfac = f['eddfac']
-        _evolvebin.windvars.gamma = f['gamma']
-        _evolvebin.flags.bdecayfac = f['bdecayfac']
-        _evolvebin.magvars.bconst = f['bconst']
-        _evolvebin.magvars.ck = f['ck']
-        _evolvebin.flags.windflag = f['windflag']
-        _evolvebin.flags.qcflag = f['qcflag']
-        _evolvebin.flags.eddlimflag = f['eddlimflag']
-        _evolvebin.tidalvars.fprimc_array = f['fprimc_array']
-        _evolvebin.rand1.idum1 = f['randomseed']
-        _evolvebin.flags.bhspinflag = f['bhspinflag']
-        _evolvebin.snvars.bhspinmag = f['bhspinmag']
-        _evolvebin.mixvars.rejuv_fac = f['rejuv_fac']
-        _evolvebin.flags.rejuvflag = f['rejuvflag']
-        _evolvebin.flags.htpmb = f['htpmb']
-        _evolvebin.flags.st_cr = f['ST_cr']
-        _evolvebin.flags.st_tide = f['ST_tide']
-        _evolvebin.snvars.rembar_massloss = f['rembar_massloss']
-        _evolvebin.metvars.zsun = f['zsun']
-        _evolvebin.snvars.kickflag = f['kickflag']
+        _evolvebin.windvars.neta = f["neta"]
+        _evolvebin.windvars.bwind = f["bwind"]
+        _evolvebin.windvars.hewind = f["hewind"]
+        _evolvebin.cevars.alpha1 = f["alpha1"]
+        _evolvebin.cevars.lambdaf = f["lambdaf"]
+        _evolvebin.ceflags.ceflag = f["ceflag"]
+        _evolvebin.flags.tflag = f["tflag"]
+        _evolvebin.flags.ifflag = f["ifflag"]
+        _evolvebin.flags.wdflag = f["wdflag"]
+        _evolvebin.snvars.pisn = f["pisn"]
+        _evolvebin.flags.bhflag = f["bhflag"]
+        _evolvebin.flags.remnantflag = f["remnantflag"]
+        _evolvebin.ceflags.cekickflag = f["cekickflag"]
+        _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
+        _evolvebin.ceflags.cehestarflag = f["cehestarflag"]
+        _evolvebin.flags.grflag = f["grflag"]
+        _evolvebin.flags.bhms_coll_flag = f["bhms_coll_flag"]
+        _evolvebin.snvars.mxns = f["mxns"]
+        _evolvebin.points.pts1 = f["pts1"]
+        _evolvebin.points.pts2 = f["pts2"]
+        _evolvebin.points.pts3 = f["pts3"]
+        _evolvebin.snvars.ecsn = f["ecsn"]
+        _evolvebin.snvars.ecsn_mlow = f["ecsn_mlow"]
+        _evolvebin.flags.aic = f["aic"]
+        _evolvebin.ceflags.ussn = f["ussn"]
+        _evolvebin.snvars.sigma = f["sigma"]
+        _evolvebin.snvars.sigmadiv = f["sigmadiv"]
+        _evolvebin.snvars.bhsigmafrac = f["bhsigmafrac"]
+        _evolvebin.snvars.polar_kick_angle = f["polar_kick_angle"]
+        _evolvebin.snvars.natal_kick_array = f["natal_kick_array"]
+        _evolvebin.cevars.qcrit_array = f["qcrit_array"]
+        _evolvebin.windvars.beta = f["beta"]
+        _evolvebin.windvars.xi = f["xi"]
+        _evolvebin.windvars.acc2 = f["acc2"]
+        _evolvebin.windvars.epsnov = f["epsnov"]
+        _evolvebin.windvars.eddfac = f["eddfac"]
+        _evolvebin.windvars.gamma = f["gamma"]
+        _evolvebin.flags.bdecayfac = f["bdecayfac"]
+        _evolvebin.magvars.bconst = f["bconst"]
+        _evolvebin.magvars.ck = f["ck"]
+        _evolvebin.flags.windflag = f["windflag"]
+        _evolvebin.flags.qcflag = f["qcflag"]
+        _evolvebin.flags.eddlimflag = f["eddlimflag"]
+        _evolvebin.tidalvars.fprimc_array = f["fprimc_array"]
+        _evolvebin.rand1.idum1 = f["randomseed"]
+        _evolvebin.flags.bhspinflag = f["bhspinflag"]
+        _evolvebin.snvars.bhspinmag = f["bhspinmag"]
+        _evolvebin.mixvars.rejuv_fac = f["rejuv_fac"]
+        _evolvebin.flags.rejuvflag = f["rejuvflag"]
+        _evolvebin.flags.htpmb = f["htpmb"]
+        _evolvebin.flags.st_cr = f["ST_cr"]
+        _evolvebin.flags.st_tide = f["ST_tide"]
+        _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
+        _evolvebin.metvars.zsun = f["zsun"]
+        _evolvebin.snvars.kickflag = f["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
 
-        [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f['kstar_1'], f['kstar_2']],
-                                                              [f['mass_1'], f['mass_2']],
-                                                              f['porb'], f['ecc'], f['metallicity'], f['tphysf'], f['dtp'],
-                                                              [f['mass0_1'], f['mass0_2']],
-                                                              [f['rad_1'], f['rad_2']],
-                                                              [f['lum_1'], f['lum_2']],
-                                                              [f['massc_1'], f['massc_2']],
-                                                              [f['radc_1'], f['radc_2']],
-                                                              [f['menv_1'], f['menv_2']],
-                                                              [f['renv_1'], f['renv_2']],
-                                                              [f['omega_spin_1'], f['omega_spin_2']],
-                                                              [f['B_1'], f['B_2']],
-                                                              [f['bacc_1'], f['bacc_2']],
-                                                              [f['tacc_1'], f['tacc_2']],
-                                                              [f['epoch_1'], f['epoch_2']],
-                                                              [f['tms_1'], f['tms_2']],
-                                                              [f['bhspin_1'], f['bhspin_2']],
-                                                              f['tphys'],
+        [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
+                                                              [f["mass_1"], f["mass_2"]],
+                                                              f["porb"], f["ecc"], f["metallicity"], f["tphysf"], f["dtp"],
+                                                              [f["mass0_1"], f["mass0_2"]],
+                                                              [f["rad_1"], f["rad_2"]],
+                                                              [f["lum_1"], f["lum_2"]],
+                                                              [f["massc_1"], f["massc_2"]],
+                                                              [f["radc_1"], f["radc_2"]],
+                                                              [f["menv_1"], f["menv_2"]],
+                                                              [f["renv_1"], f["renv_2"]],
+                                                              [f["omega_spin_1"], f["omega_spin_2"]],
+                                                              [f["B_1"], f["B_2"]],
+                                                              [f["bacc_1"], f["bacc_2"]],
+                                                              [f["tacc_1"], f["tacc_2"]],
+                                                              [f["epoch_1"], f["epoch_2"]],
+                                                              [f["tms_1"], f["tms_2"]],
+                                                              [f["bhspin_1"], f["bhspin_2"]],
+                                                              f["tphys"],
                                                               np.zeros(20),
                                                               np.zeros(20),
-                                                              f['kick_info'])
+                                                              f["kick_info"])
         bcm = _evolvebin.binary.bcm[:bcm_index].copy()
         bpp = _evolvebin.binary.bpp[:bpp_index].copy()
         _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
         _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
 
-        bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f['bin_num']))
-        bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f['bin_num']))
-        kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f['bin_num']))
+        bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
+        bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
+        kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
 
         return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array
 
