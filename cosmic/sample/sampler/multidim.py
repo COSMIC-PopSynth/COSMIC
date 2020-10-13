@@ -18,9 +18,6 @@
 
 """`multidim`
 """
-
-import numpy as np
-
 from cosmic.utils import mass_min_max_select
 from schwimmbad import MultiPool, MPIPool
 
@@ -28,6 +25,8 @@ from .sampler import register_sampler
 from .. import InitialBinaryTable
 
 from cosmic.utils import idl_tabulate
+
+import numpy as np
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"

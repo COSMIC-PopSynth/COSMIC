@@ -31,6 +31,8 @@ import pandas as pd
 import warnings
 import os
 import sys
+import multiprocessing
+multiprocessing.set_start_method("fork")
 
 __author__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
 __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
