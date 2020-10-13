@@ -21,9 +21,7 @@
 
 import numpy as np
 import math
-import random
 import scipy.special as ss
-import scipy.stats as stats
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
