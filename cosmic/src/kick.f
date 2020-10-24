@@ -216,7 +216,6 @@
           xx = RAN3(idum1)
           xx = RAN3(idum1)
       else
-*
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
 * Use Henon's method for pairwise components (Douglas Heggie 22/5/97).
           do 20 k = 1,2
@@ -266,8 +265,9 @@
 
 * save natal kick velocity in the kick_info array and natal_kick_array
       kick_info(sn,3) = vk
-      natal_kick_array(snstar,1) = vk
-
+      if(using_cmc.eq.0)then
+          natal_kick_array(snstar,1) = vk
+      endif
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
       if((natal_kick_array(snstar,2).ge.(-90.d0)).and.
@@ -308,8 +308,10 @@
 *     natal_kick_array
       kick_info(sn,4) = phi*180/pi
       kick_info(sn,5) = theta*180/pi
-      natal_kick_array(snstar,2) = phi*180/pi
-      natal_kick_array(snstar,3) = theta*180/pi
+      if(using_cmc.eq.0)then
+          natal_kick_array(snstar,2) = phi*180/pi
+          natal_kick_array(snstar,3) = theta*180/pi
+      endif
 
 * If the system is already disrupted, apply this kick only to the
 * exploding star, and skip ahead.
@@ -394,7 +396,9 @@
         kick_info(sn,15) = mu*180/pi
         kick_info(sn,16) = omega*180/pi
         kick_info(sn,6) = mm*180/pi
-        natal_kick_array(snstar,4) = mm*180/pi
+        if(using_cmc.eq.0)then
+            natal_kick_array(snstar,4) = mm*180/pi
+        endif
       elseif(sn.eq.2)then
 * MJZ - Here we calculate the total change in the orbital plane
 *       from both SN. Note that these angles mu and omega are in
@@ -415,7 +419,9 @@
         kick_info(sn,15) = ACOS(z_tilt)*180/pi
         kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
         kick_info(sn,6) = mm*180/pi
-        natal_kick_array(snstar,4) = mm*180/pi
+        if(using_cmc.eq.0)then
+            natal_kick_array(snstar,4) = mm*180/pi
+        endif
 
       endif
 
