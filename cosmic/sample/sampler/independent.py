@@ -193,7 +193,6 @@ def get_independent_sampler(
             metallicity,
             binfrac=binfrac,
         )
-        breakpoint()
         tphysf, metallicity = initconditions.sample_SFH(
             SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
         )
