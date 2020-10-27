@@ -55,7 +55,12 @@ def get_cmc_sampler(
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
 
-    cluster_profile : `str`
+    qmin : `float`
+        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
+        of the companion for primary mass > 5 msun to set q and sets q=0.1 
+        for all primary mass < 5 msun if q < 0
+
+        cluster_profile : `str`
         Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
         options include king, plummer and elson.
 
@@ -102,7 +107,7 @@ def get_cmc_sampler(
         binfrac_binaries,
         binary_index,
     ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-    mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+    mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
 
     # track the mass sampled
     mass_singles += np.sum(mass_single)
