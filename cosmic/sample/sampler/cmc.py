@@ -37,7 +37,7 @@ __all__ = ["get_cmc_sampler", "CMCSample"]
 
 
 def get_cmc_sampler(
-    primary_model, ecc_model, porb_model, binfrac_model, met, size, **kwargs
+    primary_model, ecc_model, porb_model, qmin, binfrac_model, met, size, **kwargs
 ):
     """Generates an initial binary sample according to user specified models
 
