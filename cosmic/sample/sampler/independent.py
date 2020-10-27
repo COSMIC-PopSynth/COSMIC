@@ -302,7 +302,8 @@ class Sample(object):
             sets the maximum secondary mass (for a maximum mass ratio of 1)
 
         qmin : float
-            sets the minimum mass ratio
+            sets the minimum mass ratio if qmin > 0 and assumes the minimum
+            mass ratio is set by pre-MS lifetimes if qmin < 0
 
         Returns
         -------
@@ -311,8 +312,28 @@ class Sample(object):
             primary_mass
         """
 
-        secondary_mass = primary_mass * np.random.uniform(qmin*np.ones_like(primary_mass), np.ones_like(primary_mass))
-        
+        if qmin > 0.0:
+            secondary_mass = primary_mass * np.random.uniform(qmin*np.ones_like(primary_mass), np.ones_like(primary_mass))
+        else:
+            q = np.ones_like(primary_mass) * 0.01
+            ind_10, = np.where(primary_mass >= 10)
+            dat_q = np.array([[6.999999999999993, 0.1363522012578616],
+                              [12.599999999999994, 0.11874213836477984],
+                              [20.999999999999993, 0.09962264150943395],
+                              [29.39999999999999, 0.0820125786163522],
+                              [41, 0.06490566037735851],
+                              [55, 0.052327044025157254],
+                              [70.19999999999999, 0.04301886792452836],
+                              [87.4, 0.03622641509433966],
+                              [107.40000000000002, 0.030188679245283068],
+                              [133.40000000000003, 0.02515723270440262],
+                              [156.60000000000002, 0.02163522012578628],
+                              [175.40000000000003, 0.01962264150943399],
+                              [200.20000000000005, 0.017358490566037776]])
+             from scipy.interpolate import interp1d       
+             qmin_interp = interp1d(dat_q[:,0], dat_q[:,1])
+             q[ind_10] = qmin_interp(primary_mass[ind_10])
+             secondary_mass = q * primary_mass
         return secondary_mass
 
     def binary_select(self, primary_mass, binfrac_model=0.5):
