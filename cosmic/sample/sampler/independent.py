@@ -39,6 +39,7 @@ def get_independent_sampler(
     primary_model,
     ecc_model,
     porb_model,
+    qmin,
     SF_start,
     SF_duration,
     binfrac_model,
@@ -64,6 +65,9 @@ def get_independent_sampler(
 
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
+
+    qmin : `float`
+        Minimum mass ratio for flat mass ratio distribution
 
     SF_start : `float`
             Time in the past when star formation initiates in Myr
@@ -129,7 +133,7 @@ def get_independent_sampler(
             binfrac_binaries,
             binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -287,17 +291,18 @@ class Sample(object):
             return a_0, total_sampled_mass
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass):
+    def sample_secondary(self, primary_mass, qmin):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
-
-        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
 
         Parameters
         ----------
         primary_mass : array
             sets the maximum secondary mass (for a maximum mass ratio of 1)
+
+        qmin : float
+            sets the minimum mass ratio
 
         Returns
         -------
@@ -306,10 +311,8 @@ class Sample(object):
             primary_mass
         """
 
-        secondary_mass = np.random.uniform(
-            0.08 * np.ones_like(primary_mass), primary_mass
-        )
-
+        secondary_mass = primary_mass * np.random.uniform(qmin*np.ones_like(primary_mass), np.ones_like(primary_mass))
+        
         return secondary_mass
 
     def binary_select(self, primary_mass, binfrac_model=0.5):
