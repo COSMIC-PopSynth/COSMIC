@@ -119,9 +119,13 @@ def get_independent_sampler(
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
+
+    # see if custom IMF parameters were passed
+    alphas = kwargs.pop("alphas", [1.3,2.3,2.3])
+    mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier
+            primary_model, size=size * multiplier, alphas=alphas, mcuts=mcuts
         )
         (
             mass1_binaries,
