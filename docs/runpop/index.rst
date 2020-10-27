@@ -72,7 +72,7 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
 .. ipython::
 
-    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=0.1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
 
     In [7]: print(InitialBinaries)
 
@@ -100,6 +100,7 @@ Since we are interested in binaries, we only retain the binary systems that are 
     >>>                                                                                         primary_model='kroupa01',
     >>>                                                                                         ecc_model='thermal',
     >>>                                                                                         porb_model='log_uniform',
+    >>>                                                                                         qmin=0.1,
     >>>                                                                                         SF_start=13700.0,
     >>>                                                                                         SF_duration=0.0,
     >>>                                                                                         met=0.02,
@@ -110,7 +111,8 @@ Since we are interested in binaries, we only retain the binary systems that are 
     >>>                                                                                         binfrac_model=1.0,
     >>>                                                                                         primary_model='kroupa01',
     >>>                                                                                         ecc_model='sana12',
-    >>>                                                                                         porb_model='sana12',
+    >>>                                                                                         porb_model='sana12',,
+    >>>                                                                                         qmin=0.1,
     >>>                                                                                         SF_start=13700.0,
     >>>                                                                                         SF_duration=0.0,
     >>>                                                                                         met=0.02,
@@ -155,87 +157,6 @@ Since we are interested in binaries, we only retain the binary systems that are 
     >>> ax6.hist(np.log10(initC_logP.sep*(1-initC_logP.ecc)), bins = 20, histtype='step', density=True,
     >>>          lw=3, color=colors['purple'], label='independent')
     >>> ax6.hist(np.log10(initC_Sana.sep*(1-initC_Sana.ecc)), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='Sana+2012')
-    >>> ax6.set_xlabel(r'Log$_{10}$(a(1-e)/R$_{\odot}$)', size=18)
-    >>> fig.tight_layout()
-    >>> fig.show()
-
-For the entirety of the mass range: :math:`{0.08 \mathrm{M}_\odot < \mathrm{M}_1 < 150 \mathrm{M}_\odot}`, the mass ratio looks not uniform.  This is entirely due to the lower limit of :math:`{\mathrm{M}_2 > 0.08 \mathrm{M}_\odot}`. If we filter on massive stars (:math:`{\mathrm{M}_1 > 8 \mathrm{M}_\odot}`), then the mass ratio is totally flat:
-
-.. plot::
-   :include-source: False
-
-    >>> from cosmic.utils import a_from_p
-    >>> from cosmic.sample.initialbinarytable import InitialBinaryTable
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> import matplotlib.pyplot as plt
-    >>> final_kstar = np.linspace(0,14,15)
-    >>> colors = {'green' : '#1b9e77', 'purple' : '#d95f02', 'orange' : '#7570b3'}
-    >>> initC_logP, m_sin_logP, m_bin_logP, n_sin_logP, n_bin_logP = InitialBinaryTable.sampler('independent',
-    >>>                                                                                         final_kstar1=final_kstar,
-    >>>                                                                                         final_kstar2=final_kstar,
-    >>>                                                                                         binfrac_model=1.0,
-    >>>                                                                                         primary_model='kroupa01',
-    >>>                                                                                         ecc_model='thermal',
-    >>>                                                                                         porb_model='log_uniform',
-    >>>                                                                                         SF_start=13700.0,
-    >>>                                                                                         SF_duration=0.0,
-    >>>                                                                                         met=0.02,
-    >>>                                                                                         size=100000)
-    >>> initC_Sana, m_sin_Sana, m_bin_Sana, n_sin_Sana, n_bin_Sana = InitialBinaryTable.sampler('independent',
-    >>>                                                                                         final_kstar1=final_kstar,
-    >>>                                                                                         final_kstar2=final_kstar,
-    >>>                                                                                         binfrac_model=1.0,
-    >>>                                                                                         primary_model='kroupa01',
-    >>>                                                                                         ecc_model='sana12',
-    >>>                                                                                         porb_model='sana12',
-    >>>                                                                                         SF_start=13700.0,
-    >>>                                                                                         SF_duration=0.0,
-    >>>                                                                                         met=0.02,
-    >>>                                                                                         size=100000)
-    >>> initC_logP['sep'] = a_from_p(p=initC_logP.porb, m1=initC_logP.mass_1, m2=initC_logP.mass_2)
-    >>> initC_Sana['sep'] = a_from_p(p=initC_Sana.porb, m1=initC_Sana.mass_1, m2=initC_Sana.mass_2)
-    >>> initC_Sana_filter = initC_Sana.loc[initC_Sana.mass_1 > 8.0]
-    >>> initC_logP_filter = initC_logP.loc[initC_logP.mass_1 > 8.0]
-    >>> fig = plt.figure(figsize = (14,6))
-    >>> ax1 = plt.subplot(231)
-    >>> ax2 = plt.subplot(232)
-    >>> ax3 = plt.subplot(233)
-    >>> ax4 = plt.subplot(234)
-    >>> ax5 = plt.subplot(235)
-    >>> ax6 = plt.subplot(236)
-    >>> ax1.hist(np.log10(initC_logP_filter.mass_1), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax1.hist(np.log10(initC_Sana_filter.mass_1), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='Sana+2012')
-    >>> ax1.set_xlabel(r'Log$_{10}$(M$_1$/M$_{\odot}$)', size=18)
-    >>> ax1.set_ylabel('normalized counts', size=18)
-    >>> ax1.legend(prop={'size' : 18})
-    >>> ax2.hist(np.log10(initC_logP_filter.porb), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax2.hist(np.log10(initC_Sana_filter.porb), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='Sana+2012')
-    >>> ax2.set_xlabel(r'Log$_{10}$(P$_{\rm{orb}}$/day)', size=18)
-    >>> ax3.hist(initC_logP_filter.ecc, bins = 10, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax3.hist(initC_Sana_filter.ecc, bins = 10, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='Sana+2012')
-    >>> ax3.set_xlabel('Eccentricity', size=18)
-    >>> ax4.hist(initC_logP_filter.mass_2/initC_logP_filter.mass_1, bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax4.hist(initC_Sana_filter.mass_2/initC_Sana_filter.mass_1, bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='Sana+2012')
-    >>> ax4.set_xlabel(r'q=M$_1$/M$_2$', size=18)
-    >>> ax4.set_ylabel('normalized counts', size=18)
-    >>> ax5.hist(np.log10(initC_logP_filter.sep), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax5.hist(np.log10(initC_Sana_filter.sep), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['orange'], label='Sana+2012')
-    >>> ax5.set_xlabel(r'Log$_{10}$(a/R$_{\odot}$)', size=18)
-    >>> ax6.hist(np.log10(initC_logP_filter.sep*(1-initC_logP_filter.ecc)), bins = 20, histtype='step', density=True,
-    >>>          lw=3, color=colors['purple'], label='independent')
-    >>> ax6.hist(np.log10(initC_Sana_filter.sep*(1-initC_Sana_filter.ecc)), bins = 20, histtype='step', density=True,
     >>>          lw=3, color=colors['orange'], label='Sana+2012')
     >>> ax6.set_xlabel(r'Log$_{10}$(a(1-e)/R$_{\odot}$)', size=18)
     >>> fig.tight_layout()
