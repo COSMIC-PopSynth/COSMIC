@@ -315,7 +315,7 @@ class Sample(object):
         if qmin > 0.0:
             secondary_mass = primary_mass * np.random.uniform(qmin*np.ones_like(primary_mass), np.ones_like(primary_mass))
         else:
-            q = np.ones_like(primary_mass) * 0.01
+            q = np.ones_like(primary_mass) * 0.1
             ind_10, = np.where(primary_mass >= 10)
             dat_q = np.array([[6.999999999999993, 0.1363522012578616],
                               [12.599999999999994, 0.11874213836477984],
