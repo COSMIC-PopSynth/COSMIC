@@ -111,7 +111,7 @@ Since we are interested in binaries, we only retain the binary systems that are 
     >>>                                                                                         binfrac_model=1.0,
     >>>                                                                                         primary_model='kroupa01',
     >>>                                                                                         ecc_model='sana12',
-    >>>                                                                                         porb_model='sana12',,
+    >>>                                                                                         porb_model='sana12',
     >>>                                                                                         qmin=0.1,
     >>>                                                                                         SF_start=13700.0,
     >>>                                                                                         SF_duration=0.0,
