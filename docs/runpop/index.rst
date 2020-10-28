@@ -262,7 +262,7 @@ To see the arguments necessary to call the CMC sampler use the help function:
 
     In [1]: from cosmic.sample import InitialCMCTable
       
-    In [2]: Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=40000, params='../examples/Params.ini', gamma=4, r_max=100)
+    In [2]: Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1.0, cluster_profile='plummer', met=0.014, size=40000, params='../examples/Params.ini', gamma=4, r_max=100)
 
     In [3]: InitialCMCTable.write(Singles, Binaries, filename="input.hdf5")
 
