@@ -334,7 +334,7 @@ class Sample(object):
                             [156.60000000000002, 0.02163522012578628],
                             [175.40000000000003, 0.01962264150943399],
                             [200.20000000000005, 0.017358490566037776]])
-            from scipy import interp1d
+            from scipy.interpolate import interp1d
             qmin_interp = interp1d(dat[:,0], dat[:,1])
             q = np.ones_like(primary_mass) * 0.1
             ind_5, = np.where(primary_mass > 5.0)
