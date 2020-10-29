@@ -2169,7 +2169,7 @@ component.
          qc = qc_fixed
       endif
 
-      if(kstar(j1).eq.0.and.q(j1).gt.qc)then
+      if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
 * common-envelope evolution.  The result is always a single
