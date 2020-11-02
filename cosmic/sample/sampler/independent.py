@@ -336,9 +336,11 @@ class Sample(object):
                             [200.20000000000005, 0.017358490566037776]])
             from scipy.interpolate import interp1d
             qmin_interp = interp1d(dat[:,0], dat[:,1])
-            q = np.ones_like(primary_mass) * 0.1
+            qmin = np.ones_like(primary_mass) * 0.1
             ind_5, = np.where(primary_mass > 5.0)
-            q[ind_5] = qmin_interp(primary_mass[ind_5])
+            qmin[ind_5] = qmin_interp(primary_mass[ind_5])
+
+            q = np.random.uniform(qmin, 1.0)
             secondary_mass = q * primary_mass                            
         return secondary_mass
 
