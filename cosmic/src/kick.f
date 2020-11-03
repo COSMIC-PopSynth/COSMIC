@@ -387,7 +387,7 @@
       smu = SIN(mu)
 
       comega = (vr*salpha-vk*ctheta*cphi)/SQRT(v3 + v2)
-      omega = ACOS(omega)
+      omega = ACOS(comega)
       somega = SIN(omega)
 
 * Write angle between initial and current orbital angular momentum vectors
