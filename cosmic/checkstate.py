@@ -71,7 +71,7 @@ def set_checkstates(timestep_conditions=[]):
             would skip to only printing the final state
     """
     # assume that we are not doing any special dtp setting
-    _evolvebin.checkstate_array.check_dtp = 0
+    _evolvebin.check_dtp.check_dtp = 0
 
     # Set the default state for checkstate which is that there are no
     # conditional states at which to set a special dtp
@@ -84,7 +84,7 @@ def set_checkstates(timestep_conditions=[]):
 
     for index, condition in enumerate(timestep_conditions):
         # we are checking for conditions
-        _evolvebin.checkstate_array.check_dtp = 1
+        _evolvebin.check_dtp.check_dtp = 1
         conditions = parse_column_filters(condition)
         for param in conditions:
             # find where in the checkstate_array this param is
