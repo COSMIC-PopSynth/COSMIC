@@ -114,6 +114,7 @@ def get_independent_sampler(
 
     # set up multiplier if the mass sampling is inefficient
     multiplier = 1
+    mass1_singles = []
     mass1_binary = []
     mass2_binary = []
     binfrac = []
@@ -157,8 +158,14 @@ def get_independent_sampler(
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
         binfrac.extend(binfrac_binaries[ind_select])
-        # check to see if we should increase the multiplier factor to sample the population more quickly
 
+        # select out the single stars that will produce the final kstar
+        (ind_select_single,) = np.where(
+            (mass_single > primary_min) & (mass_single < primary_max)
+        )
+        mass1_singles.extend(mass_single[ind_select_single])
+
+        # check to see if we should increase the multiplier factor to sample the population more quickly
         if len(mass1_binary) < size / 100:
             # well this size clearly is not working time to increase
             # the multiplier by an order of magnitude
@@ -167,6 +174,7 @@ def get_independent_sampler(
     mass1_binary = np.array(mass1_binary)
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
+    mass1_singles = np.asarray(mass1_singles)
     ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
     porb = initconditions.sample_porb(
         mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
@@ -179,8 +187,8 @@ def get_independent_sampler(
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return (
-        InitialBinaryTable.InitialBinaries(
+    if kwargs.pop("keep_singles", False):
+        binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
             mass2_binary,
             porb,
@@ -190,7 +198,39 @@ def get_independent_sampler(
             kstar2,
             metallicity,
             binfrac=binfrac,
-        ),
+        )
+        tphysf, metallicity = initconditions.sample_SFH(
+            SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
+        )
+        metallicity[metallicity < 1e-4] = 1e-4
+        metallicity[metallicity > 0.03] = 0.03
+        kstar1 = initconditions.set_kstar(mass1_singles)
+        singles_table = InitialBinaryTable.InitialBinaries(
+            mass1_singles,
+            np.ones_like(mass1_singles)*0,
+            np.ones_like(mass1_singles)*-1,
+            np.ones_like(mass1_singles)*-1,
+            tphysf,
+            kstar1,
+            np.ones_like(mass1_singles)*0,
+            metallicity,
+        )
+        binary_table = binary_table.append(singles_table)
+    else:
+        binary_table = InitialBinaryTable.InitialBinaries(
+            mass1_binary,
+            mass2_binary,
+            porb,
+            ecc,
+            tphysf,
+            kstar1,
+            kstar2,
+            metallicity,
+            binfrac=binfrac,
+        )
+
+    return (
+        binary_table,
         mass_singles,
         mass_binaries,
         n_singles,

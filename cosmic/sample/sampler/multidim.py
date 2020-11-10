@@ -176,8 +176,8 @@ def get_multidim_sampler(
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
 
-    return (
-        InitialBinaryTable.InitialBinaries(
+    if kwargs.pop("keep_singles", False):
+        binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
             mass2_binary,
             porb,
@@ -187,13 +187,44 @@ def get_multidim_sampler(
             kstar2,
             metallicity,
             binfrac=binfrac,
-        ),
+        )
+        tphysf, metallicity = initconditions.sample_SFH(
+            SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass_singles.size
+        )
+        metallicity[metallicity < 1e-4] = 1e-4
+        metallicity[metallicity > 0.03] = 0.03
+        kstar1 = initconditions.set_kstar(mass_singles)
+        singles_table = InitialBinaryTable.InitialBinaries(
+            mass_singles,
+            np.ones_like(mass_singles)*0,
+            np.ones_like(mass_singles)*-1,
+            np.ones_like(mass_singles)*-1,
+            tphysf,
+            kstar1,
+            np.ones_like(mass_singles)*0,
+            metallicity,
+        )
+        binary_table = binary_table.append(singles_table)
+    else:
+        binary_table = InitialBinaryTable.InitialBinaries(
+            mass1_binary,
+            mass2_binary,
+            porb,
+            ecc,
+            tphysf,
+            kstar1,
+            kstar2,
+            metallicity,
+            binfrac=binfrac,
+        )
+
+    return (
+        binary_table,
         mass_singles,
         mass_binaries,
         n_singles,
         n_binaries,
     )
-
 
 register_sampler(
     "multidim",
