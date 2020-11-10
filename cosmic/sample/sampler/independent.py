@@ -39,6 +39,7 @@ def get_independent_sampler(
     primary_model,
     ecc_model,
     porb_model,
+    qmin,
     SF_start,
     SF_duration,
     binfrac_model,
@@ -65,11 +66,16 @@ def get_independent_sampler(
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
 
+    qmin : `float`
+        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
+        of the companion for primary mass > 5 msun to set q and sets q=0.1 
+        for all primary mass < 5 msun if q < 0
+
     SF_start : `float`
-            Time in the past when star formation initiates in Myr
+        Time in the past when star formation initiates in Myr
 
     SF_duration : `float`
-            Duration of constant star formation beginning from SF_Start in Myr
+        Duration of constant star formation beginning from SF_Start in Myr
 
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
@@ -130,7 +136,7 @@ def get_independent_sampler(
             binfrac_binaries,
             binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -327,17 +333,20 @@ class Sample(object):
             return a_0, total_sampled_mass
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass):
+    def sample_secondary(self, primary_mass, qmin):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
 
-        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
+        NOTE: the lower lim is set by qmin
 
         Parameters
         ----------
         primary_mass : array
             sets the maximum secondary mass (for a maximum mass ratio of 1)
+
+        qmin : float
+            
 
         Returns
         -------
@@ -346,10 +355,33 @@ class Sample(object):
             primary_mass
         """
 
-        secondary_mass = np.random.uniform(
-            0.08 * np.ones_like(primary_mass), primary_mass
-        )
+        if qmin > 0.0:
+            secondary_mass = np.random.uniform(
+                qmin, 1.0, len(primary_mass)
+            ) * primary_mass
+        else:
+            dat = np.array([[5.0, 0.1363522012578616],
+                            [6.999999999999993, 0.1363522012578616],
+                            [12.599999999999994, 0.11874213836477984],
+                            [20.999999999999993, 0.09962264150943395],
+                            [29.39999999999999, 0.0820125786163522],
+                            [41, 0.06490566037735851],
+                            [55, 0.052327044025157254],
+                            [70.19999999999999, 0.04301886792452836],
+                            [87.4, 0.03622641509433966],
+                            [107.40000000000002, 0.030188679245283068],
+                            [133.40000000000003, 0.02515723270440262],
+                            [156.60000000000002, 0.02163522012578628],
+                            [175.40000000000003, 0.01962264150943399],
+                            [200.20000000000005, 0.017358490566037776]])
+            from scipy.interpolate import interp1d
+            qmin_interp = interp1d(dat[:,0], dat[:,1])
+            qmin = np.ones_like(primary_mass) * 0.1
+            ind_5, = np.where(primary_mass > 5.0)
+            qmin[ind_5] = qmin_interp(primary_mass[ind_5])
 
+            q = np.random.uniform(qmin, 1.0)
+            secondary_mass = q * primary_mass                            
         return secondary_mass
 
     def binary_select(self, primary_mass, binfrac_model=0.5):
