@@ -328,7 +328,7 @@ if __name__ == '__main__':
 
         # If dtp is not set, filter out first timestep in bcm
         if np.all(dtp == IBT['tphysf'].values):
-            bcm = bcm.loc[bcm['tphys'] == dtp[0]]
+            bcm = bcm.loc[bcm['tphys'].isin(dtp)]
 
         bcm_filter, bin_state_nums = utils.filter_bpp_bcm(bcm, bpp, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:

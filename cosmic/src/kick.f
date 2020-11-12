@@ -226,12 +226,15 @@
           elseif(kickflag.eq.-1)then
 * Use kick scaling from Giacobbo & Mapelli 2020, Eq. 1
              vk = vk * ((m1-m1n)/mean_mej) * (mean_mns/m1n)
+             vk2 = vk*vk
           elseif(kickflag.eq.-2)then
 * Use kick scaling from Giacobbo & Mapelli 2020, Eq. 2
              vk = vk * ((m1-m1n)/mean_mej)
+             vk2 = vk*vk
           elseif(kickflag.eq.-3)then
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
              vk = alphakick * ((m1-m1n)/m1n) + betakick
+             vk2 = vk*vk
           endif
              
       endif
