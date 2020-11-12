@@ -7,8 +7,9 @@
       COMMON /RAND2/ idum2,iy,ir
       INTEGER ktype(0:14,0:14)
       COMMON /TYPES/ ktype
-      INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,windflag,qcflag
+      INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,qcflag
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag
+      REAL*8 windflag
       INTEGER htpmb,ST_cr,ST_tide,bdecayfac
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
