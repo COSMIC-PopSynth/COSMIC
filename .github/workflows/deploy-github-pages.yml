@@ -35,6 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install gfortran swig libhdf5-serial-dev libmpich-dev
+        python -m pip install "numpy==1.18.4"
         python -m pip install .[doc]
 
     - name: Make dependencies
