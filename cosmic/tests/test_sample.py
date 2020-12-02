@@ -7,10 +7,10 @@ import os
 import unittest
 import numpy as np
 import pandas as pd
-from cosmic.sample.sampler.independent import Sample
-from cosmic.sample.sampler.multidim import MultiDim
+from ..sample.sampler.independent import Sample
+from ..sample.sampler.multidim import MultiDim
 from scipy.optimize import curve_fit
-from cosmic.utils import a_from_p
+from ..utils import a_from_p
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()

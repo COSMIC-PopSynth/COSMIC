@@ -37,6 +37,7 @@ jobs:
         sudo apt-get install gfortran swig libhdf5-serial-dev
         python -m pip install coverage cpp-coveralls flake8 pytest pytest-cov "numpy==1.18.4"
         python -m pip install .[doc]
+        python setup.py build_ext --inplace
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
