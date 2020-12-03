@@ -2515,6 +2515,7 @@ component.
             dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
          endif
+*         dm1 = MIN(dm1, mass(j1)*tb/tkh(j1))
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
@@ -2533,7 +2534,7 @@ component.
 * Limit mass transfer to the thermal rate for remaining giant-like stars
 * and to the dynamical rate for all others.
 *
-         if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+         if(kstar(j1).ge.0.and.kstar(j1).le.9)then
 ***
 * JH_temp ... this may be good for HG RLOF??
 *           if(kstar(j1).eq.2)then
