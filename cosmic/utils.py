@@ -744,13 +744,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag='windflag'
     if flag in BSEDict.keys():
-<<<<<<< HEAD
         if BSEDict[flag] > 4:
             raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, 4 or a negative number (you set it to '{1:d}')".format(flag, BSEDict[flag]))
-=======
-        if BSEDict[flag] not in [0,1,2,3,4,5]:
-            raise ValueError("'{0:s}' needs to be set to either 0, 1, 2, 3, 4 or 5 (you set it to '{1:d}')".format(flag, BSEDict[flag]))
->>>>>>> upstream/develop
     flag='eddlimflag'
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0,1]:
