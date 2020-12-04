@@ -21,7 +21,8 @@
      &            ' Massless Supernova '/
 *
 *      windflag = 0 !BSE=0, startrack08=1, vink=2, vink+LBV for all
-*      stars=3.
+*      stars=3, vink+LBV(modified) for all stars=4, beasor+modified
+*      LBV<0
 * Must be one of these values or mlwind will cause problem with code,
 * i.e. mlwind not set (see last line of main if statement...).
       if(windflag.eq.0)then
@@ -197,6 +198,7 @@
          endif
 
 * Apply Beasor et al (2020) prescription for redsupergiants
+* Optional flag (windflag < 0)
          if(windflag.lt.0)then
             if(lum.gt.1.0d+04.and.teff.le.7.5d+03.and.kw.lt.6)then
                a = -26.4-0.23*mi
@@ -208,7 +210,8 @@
          if(((windflag.eq.4.or.windflag.lt.0).or.kw.ge.2).and.
      &   kw.le.6)then
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-* Optional flag (windflag=3) to use for every non-degenerate star
+*(this modification brings the HD limit down on the HR diagram)
+* Optional flag (windflag=4) to use for every non-degenerate star
 * past the limit, rather than just for giant, evolved stars
             x = 1.0d-5*r*sqrt(lum)
             if((log10(lum).gt.5.65.and.x.gt.1.d0))then
@@ -246,16 +249,6 @@
             dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
             testflag = 4
          endif
-* Apply Beasor et al (2020) prescription for redsupergiants
-         if(windflag.eq.4.or.(windflag.eq.5.and.mi.ge.8.0d0.and.
-     &      mi.le.25.0d0))then
-            if(lum.gt.1.0d+04.and.teff.le.4.2d+03.and.kw.lt.6)then
-               a = -26.4-0.23*mi
-               b = 4.8
-               dms = (10**a)*(lum**b)
-            endif
-         endif
-
 *
          mlwind = dms
       endif
