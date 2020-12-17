@@ -200,33 +200,12 @@
 * Apply Beasor et al (2020) prescription for redsupergiants
 * Optional flag (windflag < 0)
          if(windflag.lt.0)then
-            if(lum.gt.1.0d+04.and.teff.le.7.5d+03.and.kw.lt.6)then
+            if(lum.gt.1.0d+04.and.teff.le.7.5d+03.and.kw.lt.6.and.
+     &      kw.gt.1)then
                a = -26.4-0.23*mi
                b = windflag
                dms = (10.0**a)*(lum**abs(b))
             endif
-         endif
-
-         if(((windflag.eq.4.or.windflag.lt.0).or.kw.ge.2).and.
-     &   kw.le.6)then
-* LBV-like mass loss beyond the Humphreys-Davidson limit.
-*(this modification brings the HD limit down on the HR diagram)
-* Optional flag (windflag=4) to use for every non-degenerate star
-* past the limit, rather than just for giant, evolved stars
-            x = 1.0d-5*r*sqrt(lum)
-            if((log10(lum).gt.5.65.and.x.gt.1.d0))then
-               if(eddlimflag.eq.0) alpha = 0.d0
-               if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-               dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
-               testflag = 3
-            endif
-         elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
-* If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
-* 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
-            if(eddlimflag.eq.0) alpha = 0.86d0
-            if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-            dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
-            testflag = 4
          endif
 
          if((windflag.eq.3.or.kw.ge.2).and.
@@ -249,6 +228,23 @@
             dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
             testflag = 4
          endif
+
+** Following applied modified LBV winds for windflags 4 and < 0   
+         if((windflag.eq.4.or.windflag.lt.0).and.
+     &   kw.le.6)then
+* LBV-like mass loss beyond the Humphreys-Davidson limit.
+*(this modification brings the HD limit down on the HR diagram)
+* Optional flag (windflag=4) to use for every non-degenerate star
+* past the limit, rather than just for giant, evolved stars
+            x = 1.0d-5*r*sqrt(lum)
+            if((log10(lum).gt.5.65.and.x.gt.1.d0))then
+               if(eddlimflag.eq.0) alpha = 0.d0
+               if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
+               dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
+               testflag = 3
+            endif
+         endif
+
 *
          mlwind = dms
       endif
