@@ -18,19 +18,15 @@
 
 """`multidim`
 """
-
-import numpy as np
-import multiprocessing as mp
-import math
-import random
-import scipy.integrate
-
 from cosmic.utils import mass_min_max_select
+from schwimmbad import MultiPool, MPIPool
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
 
-from cosmic.utils import idl_tabulate, rndm
+from cosmic.utils import idl_tabulate
+
+import numpy as np
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -138,10 +134,15 @@ def get_multidim_sampler(
         final_kstar2 = [final_kstar2]
     porb_lo = kwargs.pop("porb_lo", 0.15)
     porb_hi = kwargs.pop("porb_hi", 8.0)
+    pool = kwargs.pop("pool", None)
+    mp_seeds = kwargs.pop("mp_seeds", None)
+
     primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(
         final_kstar1, final_kstar2
     )
+
     initconditions = MultiDim()
+
     (
         mass1_binary,
         mass2_binary,
@@ -162,16 +163,21 @@ def get_multidim_sampler(
         rand_seed,
         size=size,
         nproc=nproc,
+        pool=pool,
+        mp_seeds=mp_seeds,
     )
+
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
+
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
-    return (
-        InitialBinaryTable.InitialBinaries(
+
+    if kwargs.pop("keep_singles", False):
+        binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
             mass2_binary,
             porb,
@@ -181,13 +187,44 @@ def get_multidim_sampler(
             kstar2,
             metallicity,
             binfrac=binfrac,
-        ),
+        )
+        tphysf, metallicity = initconditions.sample_SFH(
+            SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass_singles.size
+        )
+        metallicity[metallicity < 1e-4] = 1e-4
+        metallicity[metallicity > 0.03] = 0.03
+        kstar1 = initconditions.set_kstar(mass_singles)
+        singles_table = InitialBinaryTable.InitialBinaries(
+            mass_singles,
+            np.ones_like(mass_singles)*0,
+            np.ones_like(mass_singles)*-1,
+            np.ones_like(mass_singles)*-1,
+            tphysf,
+            kstar1,
+            np.ones_like(mass_singles)*0,
+            metallicity,
+        )
+        binary_table = binary_table.append(singles_table)
+    else:
+        binary_table = InitialBinaryTable.InitialBinaries(
+            mass1_binary,
+            mass2_binary,
+            porb,
+            ecc,
+            tphysf,
+            kstar1,
+            kstar2,
+            metallicity,
+            binfrac=binfrac,
+        )
+
+    return (
+        binary_table,
         mass_singles,
         mass_binaries,
         n_singles,
         n_binaries,
     )
-
 
 register_sampler(
     "multidim",
@@ -234,9 +271,6 @@ class MultiDim:
     # ; Step 2 - Implement Monte Carlo method to generate stellar
     # ;          population from those density functions.
     # ;
-    #
-    #
-
     def initial_sample(
         self,
         M1min=0.08,
@@ -248,6 +282,8 @@ class MultiDim:
         rand_seed=0,
         size=None,
         nproc=1,
+        pool=None,
+        mp_seeds=None,
     ):
         """Sample initial binary distribution according to Moe & Di Stefano (2017)
         <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
@@ -298,6 +334,129 @@ class MultiDim:
         binfrac_list : array
             array of binary probabilities based on primary mass and period with size=size
         """
+        if pool is None:
+            with MultiPool(processes=nproc) as pool:
+                if mp_seeds is not None:
+                    if len(list(mp_seeds)) != nproc:
+                        raise ValueError("Must supply a list of random seeds with length equal to number of processors")
+                else:
+                    mp_seeds = [nproc * (task._identity[0]-1) for task in pool._pool]
+
+                inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed)
+                          for mp_seed in mp_seeds]
+                worker = Worker()
+                results = list(pool.map(worker, inputs))
+        else:
+            if mp_seeds is not None:
+                if len(list(mp_seeds)) != nproc:
+                    raise ValueError("Must supply a list of random seeds with length equal to number of processors")
+            else:
+                if isinstance(pool, MPIPool):
+                    mp_seeds = [nproc * (task - 1) for task in pool.workers]
+                elif isinstance(pool, MultiPool):
+                    mp_seeds = [nproc * (task._identity[0] - 1) for task in pool._pool]
+                else:
+                    mp_seeds = [0 for i in range(nproc)]
+
+            inputs = [(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size/nproc, rand_seed + mp_seed) for mp_seed in mp_seeds]
+            worker = Worker()
+            results = list(pool.map(worker, inputs))
+
+        dat_lists = [[], [], [], [], [], [], [], [], []]
+
+        for output_list in results:
+            ii = 0
+            for dat_list in output_list:
+                dat_lists[ii].append(dat_list)
+                ii += 1
+
+        primary_mass_list = np.hstack(dat_lists[0])
+        secondary_mass_list = np.hstack(dat_lists[1])
+        porb_list = np.hstack(dat_lists[2])
+        ecc_list = np.hstack(dat_lists[3])
+        mass_singles = np.sum(dat_lists[4])
+        mass_binaries = np.sum(dat_lists[5])
+        n_singles = np.sum(dat_lists[6])
+        n_binaries = np.sum(dat_lists[7])
+        binfrac_list = np.hstack(dat_lists[8])
+
+        return (
+                primary_mass_list,
+                secondary_mass_list,
+                porb_list,
+                ecc_list,
+                mass_singles,
+                mass_binaries,
+                n_singles,
+                n_binaries,
+                binfrac_list
+               )
+
+    def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
+        """Sample an evolution time for each binary based on a user-specified
+        time at the start of star formation and the duration of star formation.
+        The default is a burst of star formation 13,700 Myr in the past.
+
+        Parameters
+        ----------
+        SF_start : float
+            Time in the past when star formation initiates in Myr
+        SF_duration : float
+            Duration of constant star formation beginning from SF_Start in Myr
+        met : float
+            metallicity of the population [Z_sun = 0.02]
+            Default: 0.02
+        size : int, optional
+            number of evolution times to sample
+            NOTE: this is set in cosmic-pop call as Nstep
+
+        Returns
+        -------
+        tphys : array
+            array of evolution times of size=size
+        metallicity : array
+            array of metallicities
+        """
+
+        if (SF_start > 0.0) & (SF_duration >= 0.0):
+            tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
+            metallicity = np.ones(size)*met
+            return tphys, metallicity
+        else:
+            raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
+
+    def set_kstar(self, mass):
+        """Initialize stellar types according to BSE classification
+        kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
+
+        Parameters
+        ----------
+        mass : array
+            array of masses
+
+        Returns
+        -------
+        kstar : array
+            array of initial stellar types
+        """
+
+        kstar = np.zeros(mass.size)
+        low_cutoff = 0.7
+        lowIdx = np.where(mass < low_cutoff)[0]
+        hiIdx = np.where(mass >= low_cutoff)[0]
+
+        kstar[lowIdx] = 0
+        kstar[hiIdx] = 1
+
+        return kstar
+
+
+class Worker(object):
+    def __call__(self, task):
+        M1min, M2min, M1max, M2max, porb_hi, porb_lo, size, seed = task
+        return self._sample_initial_pop(M1min, M2min, M1max, M2max, porb_hi, porb_lo, size, seed)
+
+    def _sample_initial_pop(self, M1min, M2min, M1max, M2max, porb_hi, porb_lo, size, seed):
         # Tabulate probably density functions of periods,
         # mass ratios, and eccentricities based on
         # analytic fits to corrected binary star populations.
@@ -608,255 +767,109 @@ class MultiDim:
         # ; This is NOT the IMF, which is the mass distribution of single stars,
         # ; primaries in binaries, and secondaries in binaries.
 
+        np.random.seed(seed)
+
+        mass_singles = 0.0
+        mass_binaries = 0.0
+        n_singles = 0
+        n_binaries = 0
         primary_mass_list = []
         secondary_mass_list = []
         porb_list = []
         ecc_list = []
-
-        def _sample_initial_pop(M1min, M2min, M1max, M2max, size, nproc, seed, output):
-            # get unique and replicatable seed for each process
-            process = mp.Process()
-            mp_seed = (process._identity[0] - 1) + (nproc * (process._identity[1] - 1))
-            np.random.seed(seed + mp_seed)
-
-            mass_singles = 0.0
-            mass_binaries = 0.0
-            n_singles = 0
-            n_binaries = 0
-            primary_mass_list = []
-            secondary_mass_list = []
-            porb_list = []
-            ecc_list = []
-            binfrac_list = []
-
-            # ; Full primary mass vector across 0.08 < M1 < 150
-            M1 = np.linspace(0, 150, 150000) + 0.08
-            # ; Slope = -2.3 for M1 > 1 Msun
-            fM1 = M1 ** (-2.3)
-            # ; Slope = -1.6 for M1 = 0.5 - 1.0 Msun
-            ind = np.where(M1 <= 1.0)
-            fM1[ind] = M1[ind] ** (-1.6)
-            # ; Slope = -0.8 for M1 = 0.15 - 0.5 Msun
-            ind = np.where(M1 <= 0.5)
-            fM1[ind] = M1[ind] ** (-0.8) / 0.5 ** (1.6 - 0.8)
-            # ; Cumulative primary mass distribution function
-            cumfM1 = np.cumsum(fM1) - fM1[0]
-            cumfM1 = cumfM1 / np.max(cumfM1)
-            # ; Value of primary mass CDF where M1 = M1min
-            # ; Minimum primary mass to generate (must be >0.080 Msun)
-            cumf_M1min = np.interp(0.08, M1, cumfM1)
-            while len(primary_mass_list) < size:
-
-                # ; Select primary M1 > M1min from primary mass function
-                myM1 = np.interp(
-                    cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1
-                )
-
-                # ; Find index of M1v that is closest to myM1.
-                #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
-                #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
-                #     ; scale and interpolate the companion frequencies so that the
-                #     ; binary star fraction of M1 = 0.08 Msun primaries is zero,
-                #     ; and truncate the q distribution so that q > q_min = 0.08/M1
-                indM1 = np.where(abs(myM1 - M1v) == min(abs(myM1 - M1v)))
-                indM1 = indM1[0]
-
-                # ; Given M1, determine cumulative binary period distribution
-                mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
-                # ; If M1 < 0.8 Msun, rescale to appropriate binary star fraction
-                if myM1 <= 0.8:
-                    mycumPbindist_flat = mycumPbindist_flat * np.interp(
-                        np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0]
-                    )
-
-                # ; Given M1, determine the binary star fraction
-                mybinfrac = np.max(mycumPbindist_flat)
-
-                # ; Generate random number myrand between 0 and 1
-                myrand = np.random.rand()
-                # ; If random number < binary star fraction, generate a binary
-                if myrand < mybinfrac:
-                    # ; Given myrand, select P and corresponding index in logPv
-                    mylogP = np.interp(myrand, mycumPbindist_flat, logPv)
-                    indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
-                    indlogP = indlogP[0]
-
-                    # ; Given M1 & P, select e from eccentricity distribution
-                    mye = np.interp(
-                        np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev
-                    )
-
-                    # ; Given M1 & P, determine mass ratio distribution.
-                    # ; If M1 < 0.8 Msun, truncate q distribution and consider
-                    # ; only mass ratios q > q_min = 0.08 / M1
-                    mycumqdist = cumqdist[:, indlogP, indM1].flatten()
-                    if myM1 < 0.8:
-                        q_min = 0.08 / myM1
-                        # ; Calculate cumulative probability at q = q_min
-                        cum_qmin = np.interp(q_min, qv, mycumqdist)
-                        # ; Rescale and renormalize cumulative distribution for q > q_min
-                        mycumqdist = mycumqdist - cum_qmin
-                        mycumqdist = mycumqdist / max(mycumqdist)
-                        # ; Set probability = 0 where q < q_min
-                        indq = np.where(qv <= q_min)
-                        mycumqdist[indq] = 0.0
-
-                    # ; Given M1 & P, select q from cumulative mass ratio distribution
-                    myq = np.interp(np.random.rand(), mycumqdist, qv)
-
-                    if (
-                        myM1 > M1min
-                        and myq * myM1 > M2min
-                        and myM1 < M1max
-                        and myq * myM1 < M2max
-                        and mylogP < porb_hi
-                        and mylogP > porb_lo
-                    ):
-                        primary_mass_list.append(myM1)
-                        secondary_mass_list.append(myq * myM1)
-                        porb_list.append(10 ** mylogP)
-                        ecc_list.append(mye)
-                        binfrac_list.append(mybinfrac)
-                    mass_binaries += myM1
-                    mass_binaries += myq * myM1
-                    n_binaries += 1
-                else:
-                    mass_singles += myM1
-                    n_singles += 1
-            output.put(
-                [
-                    primary_mass_list,
-                    secondary_mass_list,
-                    porb_list,
-                    ecc_list,
-                    mass_singles,
-                    mass_binaries,
-                    n_singles,
-                    n_binaries,
-                    binfrac_list,
-                ]
-            )
-            return
-
-        output = mp.Queue()
-        processes = [
-            mp.Process(
-                target=_sample_initial_pop,
-                args=(
-                    M1min,
-                    M2min,
-                    M1max,
-                    M2max,
-                    size / nproc,
-                    nproc,
-                    rand_seed,
-                    output,
-                ),
-            )
-            for x in range(nproc)
-        ]
-        for p in processes:
-            p.daemon = True
-            p.start()
-        results = [output.get() for p in processes]
-        for p in processes:
-            p.join()
-
-        primary_mass_list = []
-        secondary_mass_list = []
-        porb_list = []
-        ecc_list = []
-        mass_singles = []
-        mass_binaries = []
-        n_singles = []
-        n_binaries = []
         binfrac_list = []
-        dat_lists = [[], [], [], [], [], [], [], [], []]
 
-        for output_list in results:
-            ii = 0
-            for dat_list in output_list:
-                dat_lists[ii].append(dat_list)
-                ii += 1
+        # Full primary mass vector across 0.08 < M1 < 150
+        M1 = np.linspace(0, 150, 150000) + 0.08
+        # Slope = -2.3 for M1 > 1 Msun
+        fM1 = M1**(-2.3)
+        # Slope = -1.6 for M1 = 0.5 - 1.0 Msun
+        ind = np.where(M1 <= 1.0)
+        fM1[ind] = M1[ind]**(-1.6)
+        # Slope = -0.8 for M1 = 0.15 - 0.5 Msun
+        ind = np.where(M1 <= 0.5)
+        fM1[ind] = M1[ind]**(-0.8) / 0.5**(1.6 - 0.8)
+        # Cumulative primary mass distribution function
+        cumfM1 = np.cumsum(fM1) - fM1[0]
+        cumfM1 = cumfM1 / np.max(cumfM1)
+        # Value of primary mass CDF where M1 = M1min
+        # Minimum primary mass to generate (must be >0.080 Msun)
+        cumf_M1min = np.interp(0.08, M1, cumfM1)
+        while len(primary_mass_list) < size:
 
-        primary_mass_list = np.hstack(dat_lists[0])
-        secondary_mass_list = np.hstack(dat_lists[1])
-        porb_list = np.hstack(dat_lists[2])
-        ecc_list = np.hstack(dat_lists[3])
-        mass_singles = np.sum(dat_lists[4])
-        mass_binaries = np.sum(dat_lists[5])
-        n_singles = np.sum(dat_lists[6])
-        n_binaries = np.sum(dat_lists[7])
-        binfrac_list = np.hstack(dat_lists[8])
+            # Select primary M1 > M1min from primary mass function
+            myM1 = np.interp(cumf_M1min + (1.0 - cumf_M1min) * np.random.rand(), cumfM1, M1)
+
+            # Find index of M1v that is closest to myM1.
+            #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
+            #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
+            #     ; scale and interpolate the companion frequencies so that the
+            #     ; binary star fraction of M1 = 0.08 Msun primaries is zero,
+            #     ; and truncate the q distribution so that q > q_min = 0.08/M1
+            indM1 = np.where(abs(myM1 - M1v) == min(abs(myM1 - M1v)))
+            indM1 = indM1[0]
+
+            # ; Given M1, determine cumulative binary period distribution
+            mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
+            # If M1 < 0.8 Msun, rescale to appropriate binary star fraction
+            if(myM1 <= 0.8):
+                mycumPbindist_flat = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
+
+            # ; Given M1, determine the binary star fraction
+            mybinfrac = np.max(mycumPbindist_flat)
+
+            # ; Generate random number myrand between 0 and 1
+            myrand = np.random.rand()
+            # If random number < binary star fraction, generate a binary
+            if(myrand < mybinfrac):
+                # Given myrand, select P and corresponding index in logPv
+                mylogP = np.interp(myrand, mycumPbindist_flat, logPv)
+                indlogP = np.where(abs(mylogP - logPv) == min(abs(mylogP - logPv)))
+                indlogP = indlogP[0]
+
+                # Given M1 & P, select e from eccentricity distribution
+                mye = np.interp(np.random.rand(), cumedist[:, indlogP, indM1].flatten(), ev)
+
+                # Given M1 & P, determine mass ratio distribution.
+                # If M1 < 0.8 Msun, truncate q distribution and consider
+                # only mass ratios q > q_min = 0.08 / M1
+                mycumqdist = cumqdist[:, indlogP, indM1].flatten()
+                if(myM1 < 0.8):
+                    q_min = 0.08 / myM1
+                    # Calculate cumulative probability at q = q_min
+                    cum_qmin = np.interp(q_min, qv, mycumqdist)
+                    # Rescale and renormalize cumulative distribution for q > q_min
+                    mycumqdist = mycumqdist - cum_qmin
+                    mycumqdist = mycumqdist / max(mycumqdist)
+                    # Set probability = 0 where q < q_min
+                    indq = np.where(qv <= q_min)
+                    mycumqdist[indq] = 0.0
+
+                # Given M1 & P, select q from cumulative mass ratio distribution
+                myq = np.interp(np.random.rand(), mycumqdist, qv)
+
+                if ((myM1 > M1min) and (myq * myM1 > M2min) and (myM1 < M1max) and
+                   (myq * myM1 < M2max) and (mylogP < porb_hi) and (mylogP > porb_lo)):
+                    primary_mass_list.append(myM1)
+                    secondary_mass_list.append(myq * myM1)
+                    porb_list.append(10**mylogP)
+                    ecc_list.append(mye)
+                    binfrac_list.append(mybinfrac)
+                mass_binaries += myM1
+                mass_binaries += myq * myM1
+                n_binaries += 1
+            else:
+                mass_singles += myM1
+                n_singles += 1
 
         return (
-            primary_mass_list,
-            secondary_mass_list,
-            porb_list,
-            ecc_list,
-            mass_singles,
-            mass_binaries,
-            n_singles,
-            n_binaries,
-            binfrac_list,
-        )
-
-    def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
-        """Sample an evolution time for each binary based on a user-specified
-        time at the start of star formation and the duration of star formation.
-        The default is a burst of star formation 13,700 Myr in the past.
-
-        Parameters
-        ----------
-        SF_start : float
-            Time in the past when star formation initiates in Myr
-        SF_duration : float
-            Duration of constant star formation beginning from SF_Start in Myr
-        met : float
-            metallicity of the population [Z_sun = 0.02]
-            Default: 0.02
-        size : int, optional
-            number of evolution times to sample
-            NOTE: this is set in cosmic-pop call as Nstep
-
-        Returns
-        -------
-        tphys : array
-            array of evolution times of size=size
-        metallicity : array
-            array of metallicities
-        """
-
-        if (SF_start > 0.0) & (SF_duration >= 0.0):
-            tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
-            metallicity = np.ones(size) * met
-            return tphys, metallicity
-        else:
-            raise Error(
-                "SF_start and SF_duration must be positive and SF_start must be greater than 0.0"
-            )
-
-    def set_kstar(self, mass):
-        """Initialize stellar types according to BSE classification
-        kstar=1 if M>=0.7 Msun; kstar=0 if M<0.7 Msun
-
-        Parameters
-        ----------
-        mass : array
-            array of masses
-
-        Returns
-        -------
-        kstar : array
-            array of initial stellar types
-        """
-
-        kstar = np.zeros(mass.size)
-        low_cutoff = 0.7
-        lowIdx = np.where(mass < low_cutoff)[0]
-        hiIdx = np.where(mass >= low_cutoff)[0]
-
-        kstar[lowIdx] = 0
-        kstar[hiIdx] = 1
-
-        return kstar
+                primary_mass_list,
+                secondary_mass_list,
+                porb_list,
+                ecc_list,
+                mass_singles,
+                mass_binaries,
+                n_singles,
+                n_binaries,
+                binfrac_list
+               )

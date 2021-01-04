@@ -37,7 +37,7 @@ __all__ = ["get_cmc_sampler", "CMCSample"]
 
 
 def get_cmc_sampler(
-    primary_model, ecc_model, porb_model, binfrac_model, met, size, **kwargs
+    primary_model, ecc_model, porb_model, qmin, binfrac_model, met, size, **kwargs
 ):
     """Generates an initial binary sample according to user specified models
 
@@ -54,6 +54,19 @@ def get_cmc_sampler(
 
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+
+    qmin : `float`
+        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
+        of the companion for primary mass > 5 msun to set q and sets q=0.1 
+        for all primary mass < 5 msun if q < 0
+
+        cluster_profile : `str`
+        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
+        options include king, plummer and elson.
+
+    params : `str`
+        Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
+        running BSE for a tiny time step.
 
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is 0.02
@@ -94,7 +107,7 @@ def get_cmc_sampler(
         binfrac_binaries,
         binary_index,
     ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-    mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+    mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
 
     # track the mass sampled
     mass_singles += np.sum(mass_single)
@@ -108,7 +121,6 @@ def get_cmc_sampler(
     # select out the primaries and secondaries that will produce the final kstars
     mass1_binary = np.array(mass1_binaries)
     mass2_binary = np.array(mass2_binaries)
-    binfrac = np.asarray(binfrac_binaries)
     ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
     porb = initconditions.sample_porb(
         mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
@@ -208,6 +220,8 @@ class CMCSample(Sample):
         _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
         _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
+        _evolvebin.flags.grflag = BSEDict["grflag"]
+        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
         _evolvebin.snvars.mxns = BSEDict["mxns"]
         _evolvebin.points.pts1 = BSEDict["pts1"]
         _evolvebin.points.pts2 = BSEDict["pts2"]
@@ -248,6 +262,7 @@ class CMCSample(Sample):
         _evolvebin.snvars.kickflag = BSEDict["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
 
+        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
         initial_stars = InitialBinaryTable.InitialBinaries(
             mass,
             np.ones_like(mass) * 0,

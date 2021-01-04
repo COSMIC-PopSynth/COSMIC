@@ -20,17 +20,13 @@
 """
 
 import numpy as np
-import multiprocessing as mp
-import math
-import random
-import scipy.integrate
 
 from cosmic.utils import mass_min_max_select
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
 
-from cosmic.utils import idl_tabulate, rndm
+from cosmic.utils import rndm
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -43,6 +39,7 @@ def get_independent_sampler(
     primary_model,
     ecc_model,
     porb_model,
+    qmin,
     SF_start,
     SF_duration,
     binfrac_model,
@@ -69,11 +66,16 @@ def get_independent_sampler(
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
 
+    qmin : `float`
+        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
+        of the companion for primary mass > 5 msun to set q and sets q=0.1 
+        for all primary mass < 5 msun if q < 0
+
     SF_start : `float`
-            Time in the past when star formation initiates in Myr
+        Time in the past when star formation initiates in Myr
 
     SF_duration : `float`
-            Duration of constant star formation beginning from SF_Start in Myr
+        Duration of constant star formation beginning from SF_Start in Myr
 
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
@@ -112,6 +114,7 @@ def get_independent_sampler(
 
     # set up multiplier if the mass sampling is inefficient
     multiplier = 1
+    mass1_singles = []
     mass1_binary = []
     mass2_binary = []
     binfrac = []
@@ -133,7 +136,7 @@ def get_independent_sampler(
             binfrac_binaries,
             binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -155,8 +158,14 @@ def get_independent_sampler(
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
         binfrac.extend(binfrac_binaries[ind_select])
-        # check to see if we should increase the multiplier factor to sample the population more quickly
 
+        # select out the single stars that will produce the final kstar
+        (ind_select_single,) = np.where(
+            (mass_single > primary_min) & (mass_single < primary_max)
+        )
+        mass1_singles.extend(mass_single[ind_select_single])
+
+        # check to see if we should increase the multiplier factor to sample the population more quickly
         if len(mass1_binary) < size / 100:
             # well this size clearly is not working time to increase
             # the multiplier by an order of magnitude
@@ -165,6 +174,7 @@ def get_independent_sampler(
     mass1_binary = np.array(mass1_binary)
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
+    mass1_singles = np.asarray(mass1_singles)
     ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
     porb = initconditions.sample_porb(
         mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
@@ -177,8 +187,8 @@ def get_independent_sampler(
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
-    return (
-        InitialBinaryTable.InitialBinaries(
+    if kwargs.pop("keep_singles", False):
+        binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
             mass2_binary,
             porb,
@@ -188,7 +198,39 @@ def get_independent_sampler(
             kstar2,
             metallicity,
             binfrac=binfrac,
-        ),
+        )
+        tphysf, metallicity = initconditions.sample_SFH(
+            SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
+        )
+        metallicity[metallicity < 1e-4] = 1e-4
+        metallicity[metallicity > 0.03] = 0.03
+        kstar1 = initconditions.set_kstar(mass1_singles)
+        singles_table = InitialBinaryTable.InitialBinaries(
+            mass1_singles,
+            np.ones_like(mass1_singles)*0,
+            np.ones_like(mass1_singles)*-1,
+            np.ones_like(mass1_singles)*-1,
+            tphysf,
+            kstar1,
+            np.ones_like(mass1_singles)*0,
+            metallicity,
+        )
+        binary_table = binary_table.append(singles_table)
+    else:
+        binary_table = InitialBinaryTable.InitialBinaries(
+            mass1_binary,
+            mass2_binary,
+            porb,
+            ecc,
+            tphysf,
+            kstar1,
+            kstar2,
+            metallicity,
+            binfrac=binfrac,
+        )
+
+    return (
+        binary_table,
         mass_singles,
         mass_binaries,
         n_singles,
@@ -209,16 +251,6 @@ class Sample(object):
     # sample primary masses
     def sample_primary(self, primary_model="kroupa01", size=None):
         """Sample the primary mass (always the most massive star) from a user-selected model
-
-        kroupa93 follows Kroupa (1993), normalization comes from
-        `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
-        between 0.08 and 150 Msun
-        salpter55 follows
-        `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
-        between 0.08 and 150 Msun
-        kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
-        between 0.08 and 100 Msun
-
 
         Parameters
         ----------
@@ -301,17 +333,20 @@ class Sample(object):
             return a_0, total_sampled_mass
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass):
+    def sample_secondary(self, primary_mass, qmin):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
 
-        NOTE: the lower lim is: 0.08 Msun while the higher lim is the primary mass
+        NOTE: the lower lim is set by qmin
 
         Parameters
         ----------
         primary_mass : array
             sets the maximum secondary mass (for a maximum mass ratio of 1)
+
+        qmin : float
+            
 
         Returns
         -------
@@ -320,10 +355,33 @@ class Sample(object):
             primary_mass
         """
 
-        secondary_mass = np.random.uniform(
-            0.08 * np.ones_like(primary_mass), primary_mass
-        )
+        if qmin > 0.0:
+            secondary_mass = np.random.uniform(
+                qmin, 1.0, len(primary_mass)
+            ) * primary_mass
+        else:
+            dat = np.array([[5.0, 0.1363522012578616],
+                            [6.999999999999993, 0.1363522012578616],
+                            [12.599999999999994, 0.11874213836477984],
+                            [20.999999999999993, 0.09962264150943395],
+                            [29.39999999999999, 0.0820125786163522],
+                            [41, 0.06490566037735851],
+                            [55, 0.052327044025157254],
+                            [70.19999999999999, 0.04301886792452836],
+                            [87.4, 0.03622641509433966],
+                            [107.40000000000002, 0.030188679245283068],
+                            [133.40000000000003, 0.02515723270440262],
+                            [156.60000000000002, 0.02163522012578628],
+                            [175.40000000000003, 0.01962264150943399],
+                            [200.20000000000005, 0.017358490566037776]])
+            from scipy.interpolate import interp1d
+            qmin_interp = interp1d(dat[:,0], dat[:,1])
+            qmin = np.ones_like(primary_mass) * 0.1
+            ind_5, = np.where(primary_mass > 5.0)
+            qmin[ind_5] = qmin_interp(primary_mass[ind_5])
 
+            q = np.random.uniform(qmin, 1.0)
+            secondary_mass = q * primary_mass                            
         return secondary_mass
 
     def binary_select(self, primary_mass, binfrac_model=0.5):
@@ -334,21 +392,24 @@ class Sample(object):
 
         Parameters
         ----------
-        primary_mass : array
-            Mass that determines the binary fraction
-        binfrac_model : str or float
-            vanHaaften - primary mass dependent and ONLY VALID
-                         up to 100 Msun
-            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1 means every star is in a binary pair
+            primary_mass : array
+                Mass that determines the binary fraction
+
+            binfrac_model : str or float
+                vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
+                float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
+                means every star is in a binary pair
 
         Returns
         -------
-        primary_mass[binaryIdx] : array
-            primary masses that will have a binary companion
-        primary_mass[singleIdx] : array
-            primary masses that will be single stars
-        binary_fraction[binaryIdx] : array
-            system-specific probability of being in a binary
+            primary_mass[binaryIdx] : array
+                primary masses that will have a binary companion
+
+            primary_mass[singleIdx] : array
+                primary masses that will be single stars
+
+            binary_fraction[binaryIdx] : array
+                system-specific probability of being in a binary
         """
 
         if type(binfrac_model) == str:
@@ -398,17 +459,17 @@ class Sample(object):
             eccentricity
         model : string
             selects which model to sample orbital periods, choices include:
-            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up
-                       to 1e5 Rsun according to
-                       `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
-                        and consistent with Dominik+2012,2013
-                        and then converted to orbital period in days using Kepler III
+            log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
+            `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
+            and consistent with Dominik+2012,2013
+            and then converted to orbital period in days using Kepler III
             sana12 : power law orbital period between 0.15 < log(P/day) < 5.5 following
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             renzo19 : power law orbital period for m1 > 15Msun binaries from
-                        `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-                        following the implementation of
-                        `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_` and flat in log otherwise
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            following the implementation of
+            `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
+            and flat in log otherwise
 
         Returns
         -------
@@ -433,7 +494,7 @@ class Sample(object):
                 rad1 = np.zeros(len(mass1))
                 rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
                 rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
-            except:
+            except Exception:
                 if mass1 < 1.66:
                     rad1 = 1.06 * mass1 ** 0.945
                 else:
@@ -446,7 +507,7 @@ class Sample(object):
                 rad2 = np.zeros(len(mass2))
                 rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
                 rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
-            except:
+            except Exception:
                 if mass2 < 1.66:
                     rad2 = 1.06 * mass1 ** 0.945
                 else:
@@ -497,13 +558,14 @@ class Sample(object):
             'thermal' samples from a  thermal eccentricity distribution following
             `Heggie (1975) <http://adsabs.harvard.edu/abs/1975MNRAS.173..729H>`_
             'uniform' samples from a uniform eccentricity distribution
-            'sana12' samples from the eccentricity distribution from `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            'sana12' samples from the eccentricity distribution from
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
 
         size : int, optional
             number of eccentricities to sample
-            NOTE: this is set in cosmic-pop call as Nstep
+            this is set in cosmic-pop call as Nstep
 
         Returns
         -------
@@ -531,9 +593,8 @@ class Sample(object):
             return ecc
 
         else:
-            raise Error(
-                "You have specified an unsupported model. Please choose from thermal, uniform, sana12, or circular"
-            )
+            raise ValueError("You have specified an unsupported model. Please choose from thermal, "
+                             "uniform, sana12, or circular")
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -566,9 +627,7 @@ class Sample(object):
             metallicity = np.ones(size) * met
             return tphys, metallicity
         else:
-            raise Error(
-                "SF_start and SF_duration must be positive and SF_start must be greater than 0.0"
-            )
+            raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification

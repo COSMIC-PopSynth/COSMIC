@@ -59,19 +59,19 @@ def set_checkstates(timestep_conditions=[]):
 
     Parameters:
         timestep_conditions : (list) default empty (no dynamic dtp setting)
-            a nest list of the many different time resolutions and conditions
+            a nested list of the many different time resolutions and conditions
             for which you would like to apply those time resolution, e.g.,
-            ```
-            timestep_conditions =[['20.0<mass_1<25.5', '15.5>mass_2>10.0', 'dtp=1.0'],
-                                 ['kstar_1=14', 'lum_1>10.0', 'dtp=0.01'],
-                                 ['2>=binstate>=1', 'dtp=None']]
-            ```
+
+            >>> timestep_conditions = [['20.0<mass_1<25.5', '15.5>mass_2>10.0', 'dtp=1.0'],
+            >>> ['kstar_1=14', 'lum_1>10.0', 'dtp=0.01'],
+            >>> ['2>=binstate>=1', 'dtp=None']]
+
             The first two sets of conditons would be done in a AND fashion.
             The last condition would end time resolution for the BCM array and it
             would skip to only printing the final state
     """
     # assume that we are not doing any special dtp setting
-    _evolvebin.checkstate_array.check_dtp = 0
+    _evolvebin.check_dtp.check_dtp = 0
 
     # Set the default state for checkstate which is that there are no
     # conditional states at which to set a special dtp
@@ -84,7 +84,7 @@ def set_checkstates(timestep_conditions=[]):
 
     for index, condition in enumerate(timestep_conditions):
         # we are checking for conditions
-        _evolvebin.checkstate_array.check_dtp = 1
+        _evolvebin.check_dtp.check_dtp = 1
         conditions = parse_column_filters(condition)
         for param in conditions:
             # find where in the checkstate_array this param is
