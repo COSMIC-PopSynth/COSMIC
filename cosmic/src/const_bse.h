@@ -11,7 +11,7 @@
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag
       REAL*8 windflag
       INTEGER htpmb,ST_cr,ST_tide,bdecayfac
-      COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
+      COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
@@ -24,7 +24,7 @@
       REAL*8 neta,bwind,hewind,beta,xi,acc2,epsnov
       REAL*8 eddfac,gamma
       COMMON /WINDVARS/ neta,bwind,hewind,beta,xi,acc2,epsnov,
-     &                  eddfac,gamma
+     &                  eddfac,gamma,windflag
       REAL*8 alpha1,lambdaf
       REAL*8 qcrit_array(16)
       COMMON /CEVARS/ qcrit_array,alpha1,lambdaf
