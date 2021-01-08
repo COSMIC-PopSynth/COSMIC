@@ -136,7 +136,6 @@ def get_cmc_sampler(
 
     # set radial velocity, set transverse velocity, set location in cluster
     vr, vt, r = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
-    breakpoint()
 
     # set singles id
     single_ids = np.arange(mass1.size)
@@ -191,7 +190,7 @@ class CMCSample(Sample):
             plummer_kwargs = {k: v for k, v in kwargs.items() if k in ["r_max", "N"]}
             vr, vt, r = elson.draw_vr_vt_r(gamma=4, **plummer_kwargs)
         elif cluster_profile == "king":
-            king_kwargs = {k: v for k, v in kwargs.items() if k in ["w0", "N"]}
+            king_kwargs = {k: v for k, v in kwargs.items() if k in ["w0", "N", "king_seed"]}
             vr, vt, r = king.draw_vr_vt_r(**king_kwargs)
         else:
             raise ValueError("Cluster profile passed not defined")

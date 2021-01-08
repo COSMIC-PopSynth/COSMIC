@@ -7,7 +7,6 @@ LARGE_DISTANCE = 1.0e40
 DBL_MIN = 2.2250738585072014e-308
 DBL_EPSILON = 2.2204460492503131e-016 
 
-SEED = 0
 debug=0
 
 class strpar:
@@ -112,9 +111,8 @@ def create_random_array(X,N):
         X = X2
     return(X)
 
-def draw_vr_vt_r(w0, N):
+def draw_vr_vt_r(w0, N, king_seed=0):
     #### Main
-    seed = SEED
     tol = 1e-10
     hmax = 0.01
     hmin = 1e-11
