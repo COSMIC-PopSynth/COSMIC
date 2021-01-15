@@ -3,7 +3,7 @@
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
-from cosmic.sample import InitialBinaryTable
+from ..sample import InitialBinaryTable
 
 import os
 import unittest
@@ -13,7 +13,7 @@ import pandas as pd
 import scipy.special as special
 import pytest
 
-import cosmic.utils as utils
+from .. import utils
 
 f  = np.linspace(0,1,10)
 x = np.linspace(0,1,10)

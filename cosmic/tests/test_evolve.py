@@ -8,10 +8,10 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from cosmic.evolve import Evolve
-from cosmic.sample.initialbinarytable import InitialBinaryTable
-from cosmic.sample import initialbinarytable
-from cosmic import evolve
+from ..evolve import Evolve
+from ..sample.initialbinarytable import InitialBinaryTable
+from ..sample import initialbinarytable
+from .. import evolve
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
