@@ -21,7 +21,7 @@
 
 import numpy as np
 
-from cosmic.utils import mass_min_max_select
+from cosmic.utils import mass_min_max_select, a_from_p
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
@@ -446,7 +446,7 @@ class Sample(object):
             binaryIdx,
         )
 
-    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", size=None):
+    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", porb_max=None, size=None):
         """Sample the orbital period according to the user-specified model
 
         Parameters
@@ -519,7 +519,13 @@ class Sample(object):
             if len(ind_switch) >= 1:
                 RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
             a_min = RL_max * (1 + ecc)
-            a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
+            if porb_max is None:
+                a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
+            else:
+                ## If in CMC, only sample binaries as wide as the local hard/soft boundary
+                a_max = a_from_p(porb_max,mass1,mass2) 
+                a_0 = np.random.uniform(np.log(a_min), np.log(a_max), size)
+
 
             # convert out of log space
             a_0 = np.exp(a_0)
@@ -534,14 +540,24 @@ class Sample(object):
         elif porb_model == "sana12":
             from cosmic.utils import rndm
 
-            porb = 10 ** rndm(a=0.15, b=5.5, g=-0.55, size=size)
+            if porb_max is None:
+                log10_porb_max = 5.5
+            else:
+                log10_porb_max = np.log10(porb_max)
+
+            porb = 10 ** rndm(a=0.15, b=log10_porb_max, g=-0.55, size=size)
         elif porb_model == "renzo19":
             from cosmic.utils import rndm
 
-            porb = 10 ** (np.random.uniform(0.15, 5.5, size))
+            if porb_max is None:
+                log10_porb_max = 5.5
+            else:
+                log10_porb_max = np.log10(porb_max)
+
+            porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
             porb[ind_massive] = 10 ** rndm(
-                a=0.15, b=5.5, g=-0.55, size=len(ind_massive)
+                a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
             )
         else:
             raise ValueError(

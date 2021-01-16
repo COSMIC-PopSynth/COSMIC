@@ -114,29 +114,6 @@ def get_cmc_sampler(
     mass_binaries += np.sum(mass1_binaries)
     mass_binaries += np.sum(mass2_binaries)
 
-    # track the total number sampled
-    n_singles += len(mass_single)
-    n_binaries += len(mass1_binaries)
-
-    # select out the primaries and secondaries that will produce the final kstars
-    mass1_binary = np.array(mass1_binaries)
-    mass2_binary = np.array(mass2_binaries)
-    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
-    porb = initconditions.sample_porb(
-        mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
-    )
-    sep = utils.a_from_p(porb, mass1_binary, mass2_binary)
-    kstar1 = initconditions.set_kstar(mass1_binary)
-    kstar2 = initconditions.set_kstar(mass2_binary)
-
-    # obtain radius
-    Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
-    Reff1 = Reff[binary_index]
-    Reff2 = initconditions.set_reff(mass2_binary, metallicity=met, **kwargs)
-
-    # set radial velocity, set transverse velocity, set location in cluster
-    vr, vt, r = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
-
     # set singles id
     single_ids = np.arange(mass1.size)
     binary_secondary_object_id = np.arange(mass1.size, mass1.size + mass2_binaries.size)
@@ -144,7 +121,30 @@ def get_cmc_sampler(
     # set binind and correct masses of binaries
     binind = np.zeros(mass1.size)
     binind[binary_index] = np.arange(len(binary_index)) + 1
-    mass1[binary_index] += mass2_binary
+    mass1[binary_index] += mass2_binaries
+
+    # set radial velocity, set transverse velocity, set location in cluster
+    vr, vt, r = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
+
+    # track the total number sampled
+    n_singles += len(mass_single)
+    n_binaries += len(mass1_binaries)
+
+    # select out the primaries and secondaries that will produce the final kstars
+    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binaries.size)
+    porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
+    porb = initconditions.sample_porb(
+        mass1_binaries, mass2_binaries, ecc, porb_model, porb_max, size=mass1_binaries.size
+    )
+    sep = utils.a_from_p(porb, mass1_binaries, mass2_binaries)
+    kstar1 = initconditions.set_kstar(mass1_binaries)
+    kstar2 = initconditions.set_kstar(mass2_binaries)
+
+    # obtain radius
+    Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
+    Reff1 = Reff[binary_index]
+    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
+    ## TODO: CARL!!! MAKE GODDAMN SURE THESE ARE ALL IN RSUN AND NOT AU!!!!!
 
     singles_table = InitialCMCTable.InitialCMCSingles(
         single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind
@@ -156,11 +156,11 @@ def get_cmc_sampler(
         np.arange(mass1_binaries.size) + 1,
         single_ids[binary_index] + 1,
         kstar1,
-        mass1_binary,
+        mass1_binaries,
         Reff1,
         binary_secondary_object_id + 1,
         kstar2,
-        mass2_binary,
+        mass2_binaries,
         Reff2,
         sep,
         ecc,
@@ -196,6 +196,47 @@ class CMCSample(Sample):
             raise ValueError("Cluster profile passed not defined")
 
         return vr, vt, r
+
+    def calc_porb_max(self, mass, vr, vt, binary_index, mass1_binary, mass2_binary, **kwargs): 
+
+        ## First, compute a rolling average with window length of AVEKERNEL
+        ## NOTE: this is in cluster code units (i.e. M=G=1), same as vr and vt
+        AVEKERNEL = 20
+
+        ## Then compute the avergae mass and avergae of m*v^2
+        ## First, to do this properly, we need to reflect the boundary points (so that the average 
+        ## at the boundary doesn't go to zero artifically))
+        m = np.concatenate([mass[AVEKERNEL-1::-1],mass,mass[:-AVEKERNEL-1:-1]])
+        mv2 = mass*(vr*vr + vt*vt) 
+        mv2 = np.concatenate([mv2[AVEKERNEL-1::-1],mv2,mv2[:-AVEKERNEL-1:-1]])
+
+        ## Then compute the averages by convolving with a uniform array (note we trim the reflected points off here)
+        m_average = np.convolve(m,np.ones(AVEKERNEL),mode='same')[AVEKERNEL:-AVEKERNEL]/AVEKERNEL
+        mv2_average = np.convolve(mv2,np.ones(AVEKERNEL),mode='same')[AVEKERNEL:-AVEKERNEL]/AVEKERNEL
+
+        ## Finally return the mass-weighted average 3D velocity dispersion (in cluster code units)
+        sigma =  np.sqrt(mv2_average/m_average)
+
+        ## Now compute the orbital velocity corresponding to the hard/soft boundary; we only want it for the binaries
+        v_orb = 0.7*1.30294*sigma[binary_index]   #sigma * 4/sqrt(3/pi); 0.7 is a factor we use in CMC
+        v_orb = 0.7*1.30294*np.mean(sigma[:AVEKERNEL])*np.ones_like(mass1_binary)   #sigma * 4/sqrt(3/pi); 0.7 is a factor we use in CMC
+
+        ## Maximum semi-major axis just comes from Kepler's 3rd
+        ## Note, to keep in code units, we need to divide binary masses by total cluster mass
+        amax = (mass1_binary+mass2_binary) / v_orb**2 / np.sum(mass) 
+
+        ## Convert from code units (virial radii) to RSUN 
+        virial_radius = kwargs.get("virial_radius",1) ## get the virial radius of the cluster (uses 1pc if not given)
+        RSUN_PARSEC = 4.435e+7
+        amax *= RSUN_PARSEC * virial_radius 
+
+        ## Finally go from sep to porb
+        porb_max = utils.p_from_a(amax, mass1_binary, mass2_binary)
+
+        print(sigma[:5],amax[:5]/RSUN_PARSEC,porb_max[:5])
+
+        return porb_max ## returns orbital period IN DAYS
+
 
     def set_reff(self, mass, metallicity, **kwargs):
         # NUMBER 1: PASS A DICTIONARY OF FLAGS

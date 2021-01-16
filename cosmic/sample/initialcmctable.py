@@ -117,8 +117,8 @@ class InitialCMCTable(pd.DataFrame):
         Singles["vt"] *= vfac
 
         # Finally, scale the radii and seperations from BSE into code units
-        PARSEC_TO_AU = 206264.806
-        DistConv = 1 / PARSEC_TO_AU / virial_radius
+        RSUN_TO_AU = 215.032
+        DistConv = 1 / RSUN_TO_AU / virial_radius
 
         Singles["Reff"] *= DistConv
         Binaries["a"] *= DistConv
