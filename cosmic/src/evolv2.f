@@ -2532,7 +2532,7 @@ component.
 *        spnfac = MIN(3.d0,MAX(ospin(j1)/oorb,1.d0))
 *        dm1 = dm1/spnfac**2
 *
-* Limit mass transfer to the thermal rate for remaining giant-like stars
+* Limit mass transfer to the thermal rate for all fusing stars
 * and to the dynamical rate for all others.
 *
          if(kstar(j1).ge.0.and.kstar(j1).le.9)then
@@ -2545,7 +2545,8 @@ component.
 *           endif
 ***
             dm1 = MIN(dm1,mass(j1)*tb/tkh(j1))
-         elseif(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
+         endif
+         if(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
      &          kstar(j2).le.1.and.q(j1).gt.qc))then
 *
 * Allow the stars to merge with the product in *1.
@@ -2569,7 +2570,8 @@ component.
             coel = .true.
             binstate = 1
             goto 135
-         else
+         endif
+         if(kstar(j1).gt.9)then
             dm1 = MIN(dm1,mass(j1)*tb/tdyn)
          endif
 *
