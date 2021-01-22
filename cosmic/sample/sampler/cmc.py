@@ -233,8 +233,6 @@ class CMCSample(Sample):
         ## Finally go from sep to porb
         porb_max = utils.p_from_a(amax, mass1_binary, mass2_binary)
 
-        print(sigma[:5],amax[:5]/RSUN_PARSEC,porb_max[:5])
-
         return porb_max ## returns orbital period IN DAYS
 
 
