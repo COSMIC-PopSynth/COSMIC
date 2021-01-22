@@ -271,24 +271,25 @@ class Sample(object):
 
         Ncumulative, Ntotal, coeff = [], 0., 1.
         for i in range(len(alphas)):
-            g, h = np.array([1.,2.]) - alphas[i]
-            Ntotal += (mcuts[i+1]**g - mcuts[i]**g) * coeff/g # Total N from that piece's contribution to the IMF
+            g = 1. - alphas[i]
+            # Compute this piece of the IMF's contribution to Ntotal
+            if alphas[i] == 1: Ntotal += coeff * np.log(mcuts[i+1]/mcuts[i])
+            else: Ntotal += coeff/g * (mcuts[i+1]**g - mcuts[i]**g)
             Ncumulative.append(Ntotal)
             if i < len(alphas)-1: coeff *= mcuts[i+1]**(alphas[i+1]-alphas[i])
 
         cutoffs = np.array(Ncumulative)/Ntotal
-        a_0 = np.random.uniform(0.,1.,size)
+        u = np.random.uniform(0.,1.,size)
         idxs = [() for i in range(len(alphas))]
 
         for i in range(len(alphas)):
-            if i == 0: idxs[i], = np.where(a_0 <= cutoffs[0])
-            elif i < len(alphas)-1: idxs[i], = np.where((a_0 > cutoffs[i-1]) & (a_0 <= cutoffs[i]))
-            else: idxs[i], = np.where(a_0 > cutoffs[i-1])
-
+            if i == 0: idxs[i], = np.where(u <= cutoffs[0])
+            elif i < len(alphas)-1: idxs[i], = np.where((u > cutoffs[i-1]) & (u <= cutoffs[i]))
+            else: idxs[i], = np.where(u > cutoffs[i-1])
         for i in range(len(alphas)):
-            a_0[idxs[i]] = rndm(a=mcuts[i], b=mcuts[i+1], g=-1.*alphas[i], size=len(idxs[i]))
+            u[idxs[i]] = rndm(a=mcuts[i], b=mcuts[i+1], g=-1.*alphas[i], size=len(idxs[i]))
 
-        return a_0, np.sum(a_0)
+        return u, np.sum(u)
 
     # sample secondary mass
     def sample_secondary(self, primary_mass):
