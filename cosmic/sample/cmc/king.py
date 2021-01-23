@@ -35,67 +35,6 @@ def calc_rho_rho0(t,x,y,w0):
 def incr(k1,k2,k3,k4,k5,k6):
     return(25.0/216.0*k1 + 1408.0/2565.0*k3 + 2197.0/4104.0*k4 - 1.0/5.0*k5)
 
-def scale_pos_and_vel(m, r, vr, vt, N, strpar):
-    PEtot = 0.0
-    KEtot = 0.0
-    U = 0.0
-    MM = 1.0 #because of units, the total mass has to be 1 initially 
-    for i in range(N,0,-1):
-        U -= MM*(1.0/r[i] - 1.0/r[i+1])
-        T = 0.5 * (vr[i]*vr[i] + vt[i]*vt[i])
-        MM -= m[i]
-        PEtot += 0.5*U*m[i]
-        KEtot += T*m[i]
-    print("Before scaling: PEtot = %f, KEtot = %f, vir rat = %f\n" % (PEtot, KEtot, KEtot/PEtot))
-    #scaling position and velocity
-    rfac = -PEtot*2.0
-    vfac = 1.0/np.sqrt(4.0*KEtot)
-    for i in range(0,N):
-        r[i] *= rfac
-        vr[i] *= vfac
-        vt[i] *= vfac
-
-    PEtot = 0.0
-    KEtot = 0.0
-    U = 0.0
-    MM = 1.0; # because of units, the total mass has to be 1 initially
-    for i in range(N,0,-1):
-        U -= MM*(1.0/r[i] - 1.0/r[i+1])
-        T = 0.5 * (vr[i]*vr[i] + vt[i]*vt[i])
-        MM -= m[i]
-        PEtot += 0.5*U*m[i]
-        KEtot += T*m[i]
-    print("After  scaling: PEtot = %f, KEtot = %f, vir rat = %f\n" % (PEtot, KEtot, KEtot/PEtot)) 
-    strpar.rk = rfac
-    strpar.rt *= rfac
-    print("value of r_0 is: %e\n" % (strpar.rk))
-    print("value of r_t is: %e\n" % (strpar.rt))
-
-def write_output_file(m, r, vr, vt, N, OUTFILE, strpar):
-    NOBJ = N
-    NBINARY = 0
-    Mclus = N
-    Rvir = 1.0
-    Rtid = strpar.rt
-    Z = 0.02
-
-    #####cmc_malloc_fits_data_t(&cfd);
-    obj_id = []
-    obj_k = []
-    obj_id, obj_k, obj_m, obj_Reff, obj_r, obj_vr, obj_vt, obj_binind = ([] for i in range(8))      
-    for i in range(0,N+1):
-        obj_id.append(i)
-        obj_k.append(0)
-        obj_m.append(m[i])
-        obj_Reff.append(0.0)
-        obj_r.append(r[i])
-        obj_vr.append(vr[i])
-        obj_vt.append(vt[i])
-        obj_binind.append(0)
-
-    for i in range(1,N+1):
-        print(obj_id[i], obj_k[i], obj_m[i], obj_Reff[i], obj_r[i], obj_vr[i], obj_vt[i], obj_binind[i] ,file=OUTFILE)                  
-
 def create_random_array(X,N):
     for i in range(0,N):
         # Is this sufficient?
@@ -223,7 +162,8 @@ def draw_vr_vt_r(w0, N, king_seed=0):
     vt = np.zeros(N)
     X = np.zeros(N)
 
-    create_random_array(X, N)
+    #create_random_array(X, N)
+    X = np.uniform(size=N)
     for i in range(0,N):
         #XXX below is uniformly spaced points, use RNG for a more random distribution distribution in r XXX changed
         jmin = np.int(0)
