@@ -2263,10 +2263,10 @@ component.
      &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
      &       (kstar(j1).eq.2.and.q(j1).gt.qc).or.
      &       (kstar(j1).eq.4.and.q(j1).gt.qc).or.
-     &       ((kstar(j1).eq.2.or.kstar(j1).eq.3.or.
+     &       (((kstar(j1).eq.2.or.kstar(j1).eq.3.or.
      &         kstar(j1).eq.5.or.kstar(j1).eq.6).or.
-     &        (kstar(j1).ge.8.and.kstar(j1).le.9)
-     &        .and.rrl1.gt.100.d0))then
+     &        (kstar(j1).ge.8.and.kstar(j1).le.9)).and.
+     &        rrl1.gt.10.d0))then
 *
 * Common-envelope evolution.
 *
