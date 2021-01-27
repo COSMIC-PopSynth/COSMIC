@@ -2255,12 +2255,18 @@ component.
             kstar(j2) = 15
          endif
          goto 135
-
+*
+*KB added RRLO_1 flag to send RRLO_1 > 10 into CE for post-MS binaries
+*
       elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
      &        kstar(j1).eq.8.or.kstar(j1).eq.9)
      &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
-     &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
-     &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
+     &       (kstar(j1).eq.2.and.q(j1).gt.qc).or.
+     &       (kstar(j1).eq.4.and.q(j1).gt.qc).or.
+     &       ((kstar(j1).eq.2.or.kstar(j1).eq.3.or.
+     &         kstar(j1).eq.5.or.kstar(j1).eq.6).or.
+     &        (kstar(j1).ge.8.and.kstar(j1).le.9)
+     &        .and.rrl1.gt.100.d0))then
 *
 * Common-envelope evolution.
 *
@@ -2546,8 +2552,14 @@ component.
 ***
             dm1 = MIN(dm1,mass(j1)*tb/tkh(j1))
          endif
-         if(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
-     &          kstar(j2).le.1.and.q(j1).gt.qc))then
+*
+* Now we will initiate a CE for giants or merger for MS
+* if RRLO_1 > 10. Previously a MS + MS & q > c conditional
+* existed here, but it is completely defunct at this point
+*
+
+         if(rad(j1).gt.10.d0*rol(j1).and.kstar(j1).le.1.and.
+     &      kstar(j2).le.1)then
 *
 * Allow the stars to merge with the product in *1.
 *
