@@ -1072,7 +1072,7 @@ common envelope occurs regardless of the choices below:
     ; acc_lim = 0: assumes standard BSE choice as outlined in Hurley+2002
     ; acc_lim = -1: assumes the accretion is limited by the ratio of the KH timescales: tkh_acc/tkh_don
     ; acc_lim = -2: assumes the accretion is limited by 10x's the ratio of the KH timescales: 10*tkh_acc/tkh_don
-    acc_lim = -1
+    acc_lim = 0
 
 
 .. note::
