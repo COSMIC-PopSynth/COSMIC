@@ -1350,7 +1350,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         flag, BSEDict[flag]
                     )
                 )
-            )
+
     return
 
 
