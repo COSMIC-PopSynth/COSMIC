@@ -2663,14 +2663,14 @@ component.
 * KB 4/Jan/21: adding in acc_lim flags
 * acc_lim = 0: standard BSE w/ MS/HG/CHeB assumed to have thermal
 *              limit of 10*tkh while giants are unlimited. If the
-*              donor is He-rich (>=7), limit is 10*tkh if accretor
+*              accretor is He-rich (>=7), limit is 10*tkh if accretor
 *              is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
 * acc_lim = -1: same as acc_lim = 0, but for 1*tkh instead
 * acc_lim = -2: accretor kw=0-6 have thermal limit of 10*tkh. If the
-*               donor is He-rich (>=7), limit is 10*tkh if accretor
+*               acretor is He-rich (>=7), limit is 10*tkh if donor
 *               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
 * acc_lim = -3: accretor kw=0-6 have thermal limit of tkh. If the
-*               donor is He-rich (>=7), limit is 10*tkh if accretor
+*               accretor is He-rich (>=7), limit is 10*tkh if donor
 *               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
 * acc_lim > 0: fraction of donor mass loss accreted
 *
