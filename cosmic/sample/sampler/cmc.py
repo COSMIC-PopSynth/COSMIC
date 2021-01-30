@@ -78,20 +78,11 @@ def get_cmc_sampler(
     -------
     InitialCMCTable : `pandas.DataFrame`
         DataFrame in the format of the InitialCMCTable
-
-    mass_singles : `float`
-        Total mass in single stars needed to generate population
-
-    mass_binaries : `float`
-        Total mass in binaries needed to generate population
-
-    n_singles : `int`
-        Number of single stars needed to generate a population
-
-    n_binaries : `int`
-        Number of binaries needed to generate a population
     """
     initconditions = CMCSample()
+
+    # get radii, radial and transverse velocities
+    r, vr, vt = initconditions.set_r_vr_vt(N=size, **kwargs)
 
     # track the mass in singles and the mass in binaries
     mass_singles = 0.0
@@ -123,9 +114,6 @@ def get_cmc_sampler(
     binind[binary_index] = np.arange(len(binary_index)) + 1
     mass1[binary_index] += mass2_binaries
 
-    # set radial velocity, set transverse velocity, set location in cluster
-    vr, vt, r = initconditions.set_vr_vt_r(N=mass1.size, **kwargs)
-
     # track the total number sampled
     n_singles += len(mass_single)
     n_binaries += len(mass1_binaries)
@@ -149,8 +137,6 @@ def get_cmc_sampler(
     singles_table = InitialCMCTable.InitialCMCSingles(
         single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind
     )
-    singles_table.metallicity = met
-    singles_table.mass_of_cluster = np.sum(singles_table["m"])
 
     binaries_table = InitialCMCTable.InitialCMCBinaries(
         np.arange(mass1_binaries.size) + 1,
@@ -165,6 +151,9 @@ def get_cmc_sampler(
         sep,
         ecc,
     )
+
+    singles_table.metallicity = met
+    singles_table.mass_of_cluster = np.sum(singles_table["m"])
     binaries_table.metallicity = met
 
     return singles_table, binaries_table
@@ -177,25 +166,80 @@ register_sampler(
     usage="primary_model ecc_model porb_model binfrac_model met size",
 )
 
+def get_cmc_point_mass_sampler(
+    size, **kwargs
+):
+    """Generates an CMC cluster model according  
+
+    Parameters
+    ----------
+    cluster_profile : `str`
+        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
+        options include king, plummer and elson.
+
+    params : `str`
+        Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
+        running BSE for a tiny time step.
+
+    size : `int`
+        Size of the population to sample
+
+    Returns
+    -------
+    InitialCMCTable : `pandas.DataFrame`
+        DataFrame in the format of the InitialCMCTable
+
+    """
+    initconditions = CMCSample()
+
+    # get radii, radial and transverse velocities
+    r, vr, vt = initconditions.set_r_vr_vt(N=size, **kwargs)
+
+    mass1 = np.ones(size)/size
+    Reff = np.zeros(size)
+    binind = np.zeros(size)
+    single_ids = np.arange(size)
+
+    singles_table = InitialCMCTable.InitialCMCSingles(
+        single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind
+    )
+    # Already scaled from the IC generators
+    singles_table.scaled_to_nbody_units = True
+
+    # We assume no binaries for the point mass models
+    binaries_table = InitialCMCTable.InitialCMCBinaries(1,1,0,0,0,1,0,0,0,0,0)
+
+    singles_table.metallicity = 0.02
+    singles_table.mass_of_cluster = np.sum(singles_table["m"])
+    binaries_table.metallicity = 0.02
+
+    return singles_table, binaries_table
+
+register_sampler(
+    "cmc_point_mass",
+    InitialCMCTable,
+    get_cmc_point_mass_sampler,
+    usage="size",
+)
 
 class CMCSample(Sample):
-    def set_vr_vt_r(self, **kwargs):
+    def set_r_vr_vt(self, **kwargs):
         cluster_profile = kwargs.pop("cluster_profile", "elson")
         if cluster_profile == "elson":
             elson_kwargs = {
                 k: v for k, v in kwargs.items() if k in ["gamma", "r_max", "N"]
             }
-            vr, vt, r = elson.draw_vr_vt_r(**elson_kwargs)
+            r, vr, vt = elson.draw_r_vr_vt(**elson_kwargs)
         elif cluster_profile == "plummer":
             plummer_kwargs = {k: v for k, v in kwargs.items() if k in ["r_max", "N"]}
-            vr, vt, r = elson.draw_vr_vt_r(gamma=4, **plummer_kwargs)
+            r, vr, vt = elson.draw_r_vr_vt(gamma=4, **plummer_kwargs)
         elif cluster_profile == "king":
             king_kwargs = {k: v for k, v in kwargs.items() if k in ["w0", "N", "king_seed"]}
-            vr, vt, r = king.draw_vr_vt_r(**king_kwargs)
+            r, vr, vt = king.draw_r_vr_vt(**king_kwargs)
         else:
             raise ValueError("Cluster profile passed not defined")
 
-        return vr, vt, r
+        return r, vr, vt
 
     def calc_porb_max(self, mass, vr, vt, binary_index, mass1_binary, mass2_binary, **kwargs): 
 
@@ -219,7 +263,6 @@ class CMCSample(Sample):
 
         ## Now compute the orbital velocity corresponding to the hard/soft boundary; we only want it for the binaries
         v_orb = 0.7*1.30294*sigma[binary_index]   #sigma * 4/sqrt(3/pi); 0.7 is a factor we use in CMC
-        v_orb = 0.7*1.30294*np.mean(sigma[:AVEKERNEL])*np.ones_like(mass1_binary)   #sigma * 4/sqrt(3/pi); 0.7 is a factor we use in CMC
 
         ## Maximum semi-major axis just comes from Kepler's 3rd
         ## Note, to keep in code units, we need to divide binary masses by total cluster mass
