@@ -347,7 +347,7 @@ class TestSample(unittest.TestCase):
 class TestCMCSample(unittest.TestCase):
     def test_elson_profile(self):
         np.random.seed(2)
-        vr, vt, r = CMCSAMPLECLASS.set_vr_vt_r(N=100, r_max=300, gamma=4)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, r_max=300, gamma=4)
         np.testing.assert_allclose(VR_TEST_ARRAY, vr, rtol=1e-5)
         np.testing.assert_allclose(VT_TEST_ARRAY, vt, rtol=1e-5)
         np.testing.assert_allclose(R_TEST_ARRAY, r, rtol=1e-5)
