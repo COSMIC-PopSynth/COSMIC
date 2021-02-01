@@ -27,7 +27,7 @@ from scipy.special import erf
 
 __author__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
 __credits__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
-__all__ = ["King"]
+__all__ = ["integrate_king_profile"]
 
 def calc_rho(w):
     """
@@ -168,15 +168,15 @@ def get_velocities(r, r_profile, psi_profile, M_enclosed_profile):
     resample = np.ones(N,dtype=bool)
     number_to_resample = N
 
-    maxF = (np.exp(psi) - 1)*2*psi
+    minF = (np.exp(psi) - 1)*2*psi
     v = x_rand * np.sqrt(2*psi)
-    f_0 = y_rand*maxF
+    f_0 = y_rand*minF
     f = (np.exp(psi-v**2/2)-1)*v**2
 
     # Now do the rejection sampling
     while number_to_resample > 0: 
         v[resample] = x_rand[resample] * np.sqrt(2*psi[resample])
-        f_0[resample] = y_rand[resample]*maxF[resample]
+        f_0[resample] = y_rand[resample]*minF[resample]
         f[resample] = (np.exp(psi[resample]-v[resample]**2/2)-1)*v[resample]**2
 
         resample[resample] = f[resample] < f_0[resample]

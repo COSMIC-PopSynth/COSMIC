@@ -29,7 +29,6 @@ from scipy.stats import maxwell
 
 __author__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
 __credits__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
-__all__ = ["Elson"]
 
 
 def M_enclosed(r, gamma, rho_0):
