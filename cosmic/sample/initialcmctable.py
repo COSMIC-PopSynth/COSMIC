@@ -68,6 +68,10 @@ class InitialCMCTable(pd.DataFrame):
                  Kinetic Energy   = 0.25
                  Potential Energy = -0.5
 
+        Note that this is already done for r, vr, and vt from the profile generators.
+        However, after the stellar masses are assigned we need to redo it, and 
+        the stellar radii and seperations need to be converted from RSUN to code units
+
         Parameters
         ----------
         Singles : DataFrame
@@ -117,8 +121,8 @@ class InitialCMCTable(pd.DataFrame):
         Singles["vt"] *= vfac
 
         # Finally, scale the radii and seperations from BSE into code units
-        RSUN_TO_AU = 215.032
-        DistConv = 1 / RSUN_TO_AU / virial_radius
+        PARSEC_PER_RSUN = 2.2546101516664447e-08 
+        DistConv = PARSEC_PER_RSUN / virial_radius
 
         Singles["Reff"] *= DistConv
         Binaries["a"] *= DistConv

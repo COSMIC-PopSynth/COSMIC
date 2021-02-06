@@ -132,7 +132,6 @@ def get_cmc_sampler(
     Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
     Reff1 = Reff[binary_index]
     Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
-    ## TODO: CARL!!! MAKE GODDAMN SURE THESE ARE ALL IN RSUN AND NOT AU!!!!!
 
     singles_table = InitialCMCTable.InitialCMCSingles(
         single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind
@@ -247,7 +246,7 @@ class CMCSample(Sample):
         ## NOTE: this is in cluster code units (i.e. M=G=1), same as vr and vt
         AVEKERNEL = 20
 
-        ## Then compute the avergae mass and avergae of m*v^2
+        ## Then compute the average mass and avergae of m*v^2
         ## First, to do this properly, we need to reflect the boundary points (so that the average 
         ## at the boundary doesn't go to zero artifically))
         m = np.concatenate([mass[AVEKERNEL-1::-1],mass,mass[:-AVEKERNEL-1:-1]])
@@ -263,6 +262,8 @@ class CMCSample(Sample):
 
         ## Now compute the orbital velocity corresponding to the hard/soft boundary; we only want it for the binaries
         v_orb = 0.7*1.30294*sigma[binary_index]   #sigma * 4/sqrt(3/pi); 0.7 is a factor we use in CMC
+        #v_orb = 0.7*1.30294*np.mean(sigma[:20])   #old CMC way of using just core velocity dispersion; TODO: possibly make flag option?
+
 
         ## Maximum semi-major axis just comes from Kepler's 3rd
         ## Note, to keep in code units, we need to divide binary masses by total cluster mass
@@ -270,8 +271,8 @@ class CMCSample(Sample):
 
         ## Convert from code units (virial radii) to RSUN 
         virial_radius = kwargs.get("virial_radius",1) ## get the virial radius of the cluster (uses 1pc if not given)
-        RSUN_PARSEC = 4.435e+7
-        amax *= RSUN_PARSEC * virial_radius 
+        RSUN_PER_PARSEC = 4.435e+7
+        amax *= RSUN_PER_PARSEC * virial_radius 
 
         ## Finally go from sep to porb
         porb_max = utils.p_from_a(amax, mass1_binary, mass2_binary)

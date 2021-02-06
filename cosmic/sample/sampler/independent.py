@@ -523,6 +523,7 @@ class Sample(object):
             else:
                 ## If in CMC, only sample binaries as wide as the local hard/soft boundary
                 a_max = utils.a_from_p(porb_max,mass1,mass2) 
+                a_max[a_max < a_min] = a_min[a_max < a_min]
                 a_0 = np.random.uniform(np.log(a_min), np.log(a_max), size)
 
 
