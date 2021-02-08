@@ -224,7 +224,7 @@ def scale_pos_and_vel(r,vr,vt):
 
     return r*rfac, vr*vfac, vt*vfac
 
-def draw_r_vr_vt(N=100000, w_0=5, tidal_boundary=1e-6):
+def draw_r_vr_vt(N=100000, w_0=6, tidal_boundary=1e-6):
     """
     Draw random velocities and positions from the King profile.
 

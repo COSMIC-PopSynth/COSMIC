@@ -517,7 +517,7 @@ class Sample(object):
             (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
             if len(ind_switch) >= 1:
                 RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
-            a_min = RL_max * (1 + ecc)
+            a_min = RL_max / (1 - ecc)
             if porb_max is None:
                 a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
             else:
