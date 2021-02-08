@@ -30,8 +30,8 @@ from ... import utils
 
 __author__ = "Scott Coughlin <scott.coughlin@ligo.org>"
 __credits__ = [
-    "Newlin Weatherford <newlinweatherford2017@u.northwestern.edu>",
-    "Carl Rodriguez <carllouisrodriguez@gmail.com>",
+   "Carl Rodriguez <carllouisrodriguez@gmail.com>", 
+   "Newlin Weatherford <newlinweatherford2017@u.northwestern.edu>"
 ]
 __all__ = ["get_cmc_sampler", "CMCSample"]
 
@@ -80,6 +80,11 @@ def get_cmc_sampler(
         DataFrame in the format of the InitialCMCTable
     """
     initconditions = CMCSample()
+
+    # if RNG seed is provided, then use it globally
+    rng_seed = kwargs.pop("seed", 0)
+    if rng_seed != 0:
+        np.random.seed(rng_seed)
 
     # get radii, radial and transverse velocities
     r, vr, vt = initconditions.set_r_vr_vt(N=size, **kwargs)
@@ -233,7 +238,7 @@ class CMCSample(Sample):
             plummer_kwargs = {k: v for k, v in kwargs.items() if k in ["r_max", "N"]}
             r, vr, vt = elson.draw_r_vr_vt(gamma=4, **plummer_kwargs)
         elif cluster_profile == "king":
-            king_kwargs = {k: v for k, v in kwargs.items() if k in ["w0", "N", "king_seed"]}
+            king_kwargs = {k: v for k, v in kwargs.items() if k in ["w0", "N"]}
             r, vr, vt = king.draw_r_vr_vt(**king_kwargs)
         else:
             raise ValueError("Cluster profile passed not defined")
