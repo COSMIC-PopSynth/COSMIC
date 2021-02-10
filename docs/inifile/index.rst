@@ -1001,6 +1001,8 @@ common envelope occurs regardless of the choices below:
 
                             ``values >1`` : permit super-Eddington accretion
                             up to value of *eddfac*
+                            ``values 0<=eddfac<1`` : restrict accretion limit
+                            to fraction of Eddington (sub-Eddington accretion)
 
                          **eddfac = 1.0**
 
