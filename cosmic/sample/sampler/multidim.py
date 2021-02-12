@@ -18,13 +18,11 @@
 
 """`multidim`
 """
-from cosmic.utils import mass_min_max_select
 from schwimmbad import MultiPool, MPIPool
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
-
-from cosmic.utils import idl_tabulate
+from ... import utils
 
 import numpy as np
 
@@ -137,7 +135,7 @@ def get_multidim_sampler(
     pool = kwargs.pop("pool", None)
     mp_seeds = kwargs.pop("mp_seeds", None)
 
-    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(
+    primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
         final_kstar1, final_kstar2
     )
 
@@ -527,7 +525,7 @@ class Worker(object):
         H = np.zeros(numq)
         ind = np.where(qv >= 0.95)
         H[ind] = 1.0
-        H = H / idl_tabulate(qv, H)  # ;normalize so that integral is unity
+        H = H / utils.idl_tabulate(qv, H)  # ;normalize so that integral is unity
 
         # ; Relevant indices with respect to mass ratio
         indlq = np.where(qv >= 0.3)
@@ -640,7 +638,7 @@ class Worker(object):
                 # ; Given Ftwin, gamma_smallq, and gamma_largeq at the specified M1 & P,
                 # ; tabulate the cumulative mass ratio distribution across 0.1 < q < 1.0
                 fq = qv ** gl  # ; slope across 0.3 < q < 1.0
-                fq = fq / idl_tabulate(
+                fq = fq / utils.idl_tabulate(
                     qv[indlq], fq[indlq]
                 )  # ; normalize to 0.3 < q < 1.0
                 fq = fq * (1.0 - Ftwin) + H * Ftwin  # ; add twins
@@ -653,7 +651,7 @@ class Worker(object):
 
                 # ; Given M1 and P, q_factor is the ratio of all binaries 0.1 < q < 1.0
                 # ; to those with 0.3 < q < 1.0
-                q_factor = idl_tabulate(qv, fq)
+                q_factor = utils.idl_tabulate(qv, fq)
 
                 # ; Given M1 & P, calculate power-law slope eta of eccentricity dist.
                 if mylogP >= 0.7:
@@ -754,7 +752,7 @@ class Worker(object):
             mycumPbindist = (
                 mycumPbindist
                 / np.max(mycumPbindist)
-                * idl_tabulate(logPv, flogP_sq[:, i] * probbin[:, i])
+                * utils.idl_tabulate(logPv, flogP_sq[:, i] * probbin[:, i])
             )
             cumPbindist[:, i] = mycumPbindist  # ;save to grid
 

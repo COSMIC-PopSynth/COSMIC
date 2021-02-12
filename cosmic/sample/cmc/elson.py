@@ -1,9 +1,34 @@
-from scipy.interpolate import interp1d
+# -*- coding: utf-8 -*-
+# Copyright (C) Carl Rodriguez (2020 - 2021)
+#
+# This file is part of cosmic.
+#
+# cosmic is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cosmic is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cosmic.  If not, see <http://www.gnu.org/licenses/>.
+
+"""`Elson`
+"""
+
+from scipy.interpolate import interp1d, CubicSpline
 from scipy.integrate import quad
 from scipy.special import hyp2f1
 from scipy.optimize import brentq
 import numpy as np
 from numpy.random import uniform, normal
+from scipy.stats import maxwell
+
+__author__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
+__credits__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
 
 
 def M_enclosed(r, gamma, rho_0):
@@ -21,6 +46,19 @@ def M_enclosed(r, gamma, rho_0):
 
     return prefactor * hypergeometric
 
+def phi_r(r, gamma, rho_0):
+    """
+    Compute the gravitational potential of an Elson profile at radius r with slope
+    gamma, central concentration rho_0, and assumed scale factor a = 1
+
+    Needed to compute the escape speed (for resampling stars)
+    """
+
+    prefactor = - 4 * np.pi * rho_0 / (gamma - 1)
+
+    hypergeometric = hyp2f1(0.5, (gamma - 1.0) / 2.0, 1.5, -(r ** 2))
+
+    return prefactor * hypergeometric
 
 def rho_r(r, gamma, rho_0):
     """
@@ -99,7 +137,7 @@ def get_positions(N, r_max_cluster, gamma):
     # First normalize the central density s.t. M_enc(r_max) = 1
     rho_0 = 1.0 / M_enclosed(r_max_cluster, gamma, 1)
 
-    radii_grid = np.logspace(-3, np.log10(r_max_cluster), 1000)
+    radii_grid = np.logspace(-3, np.log10(r_max_cluster), 100)
 
     # Add r=0 to the array
     radii_grid[0] = 0
@@ -115,17 +153,45 @@ def get_positions(N, r_max_cluster, gamma):
 
     return positions
 
+    #   vr[0]=vt[0]=0.0;
+    #   for(i=1; i<=N; i++){
+    #           F = (exp(psi[i])-1.0)*2.0*psi[i];
+    #           do {
+    #                   X1 = rng_t113_dbl();
+    #                   X2 = rng_t113_dbl();
+    #                   v_0 = X1*sqrt(2.0*psi[i]);
+    #                   f_0 = X2*F;
+    #                   f = (exp(psi[i]-v_0*v_0/2.0)-1.0)*v_0*v_0;
+    #           } while (f_0>f);
+    #           X3 = rng_t113_dbl();
+    #           vr[i] = (1.0 - 2.0*X3) * v_0;
+    #           vt[i] = sqrt(v_0*v_0 - vr[i]*vr[i]);
+    #           /* v[i] = v_0; */
 
-def get_velocities(r, r_max_cluster, gamma):
+def get_velocities_old(r, r_max_cluster, gamma):
     """
     Uses the spherical Jeans functions to sample the velocity dispersion for the
     cluster at different radii, then draws a random, isotropic velocity for each
     star
 
+    NOTE: this gives you correct velocity dispersion and produces a cluster in virial
+    equilibrium, but it's not strictly speaking correct (the distribution should
+    have some kurtosis, in addition to getting the variance of the Gaussian correct).
+    You can see the disagreement in the tail of the distributions when sampling a
+    Plummer sphere.  This is what mcluster does...
+
+    Use the new get_velocities function, which generates a distribution function
+    directly from rho and samples velocities from it
+
+    This is kept around because it's super useful to sample from when the rejection sampling
+    gets too slow at the last X samples (e.g. gamma ~ 10)
+
     returns (vr,vt) with same length as r
     """
 
     N = len(r)
+
+    rho_0 = 1.0 / M_enclosed(r_max_cluster, gamma, 1)
 
     # Rather than calculate the integral for every stellar position, just
     # create an interpolator of 1000 or so points, then sample from the
@@ -144,14 +210,139 @@ def get_velocities(r, r_max_cluster, gamma):
     vx = normal(scale=sigma, size=N)
     vy = normal(scale=sigma, size=N)
     vz = normal(scale=sigma, size=N)
+    
+    # Finally the rejection sampling: because of the Gaussian, some of the velocities
+    # we draw will naturally be above the local escape speed of the cluster.  To avoid 
+    # this, we flag them, and resample them from the velocity distribution
+    while False:
+        ve = np.sqrt(-2*phi_r(r, gamma, rho_0))
+        escapers = (np.sqrt(vx**2 + vy**2 + vz**2) > ve)
 
-    vr = vx
-    vt = np.sqrt(vy ** 2 + vz ** 2)
+        number_of_escapers = np.sum(escapers)
+        if number_of_escapers == 0:
+            break
+        else:
+            vx_temp = normal(scale=sigma[escapers], size=number_of_escapers)
+            vy_temp = normal(scale=sigma[escapers], size=number_of_escapers)
+            vz_temp = normal(scale=sigma[escapers], size=number_of_escapers)
+
+        vx[escapers] = vx_temp
+        vy[escapers] = vy_temp
+        vz[escapers] = vz_temp
+
+    return np.sqrt(vx**2 + vy**2 + vz**2) 
+
+def get_velocities(r, r_max_cluster, gamma):
+    """
+    The correct way to generate velocities: generate the distribution function from rho,
+    then use rejection sampling.
+
+    returns (vr,vt) with same length as r
+    """
+
+    N = len(r)
+
+    # First get phi and rho over 100 points or so
+    rho_0 = 1.0 / M_enclosed(max(r), gamma, 1)
+
+    r_stensil = np.logspace(np.log10(min(r)),np.log10(max(r)),100)
+    phi = phi_r(r_stensil,gamma,rho_0)
+    rho = rho_r(r_stensil,gamma,rho_0)
+
+    # Then construct a cubic spline of rho as a function of phi
+    # Technically should be psi = -phi, but FITPACK only accepts increasing values
+    rho_phi_spline = CubicSpline(phi,rho,extrapolate=False)
+
+    f_E = []
+    energies = []
+
+    # Now integrate over energies to get the distribution function 
+    for en in np.linspace(min(-phi),max(-phi),100):
+
+        integrand = lambda psi: rho_phi_spline(-psi,2) / np.sqrt(en - psi)
+
+        # Eqn 4.46b of Binney and Tremain (2nd Edition)
+        # (4.140b in 1st edition)
+        temp_f_E = ((quad(integrand,min(-phi)*1.01,en,limit=200)[0] +
+                     rho_phi_spline(-min(-phi),1)/np.sqrt(en)) / 17.493418) # sqrt(8)*pi^2
+
+        # Extrapolating derivatives from a cubic spline is hella dangerous
+        # Better to have it throw NaNs and discard them
+        if np.isnan(temp_f_E):
+            continue
+        else:
+            f_E.append(temp_f_E)
+            energies.append(en)
+
+    # Set f(E) to zero at zero energy 
+    f_E = np.array([0] + f_E)
+    energies = np.array([0] + energies)
+
+    # Make an interpolator for f(E) and compute f and phi at every star
+    f_E_interp = interp1d(energies,f_E)
+    phi_at_r = phi_r(r,gamma,rho_0)
+    f_E_at_r = f_E_interp(-phi_at_r)
+
+    # Make an initial guess for every velocity
+    x_rand = uniform(size=N)
+    y_rand = uniform(size=N)
+    velocities = x_rand*np.sqrt(-2*phi_at_r)
+
+    resample = np.ones(N,dtype=bool)
+    number_to_resample = N
+
+    # Now do the rejection sampling
+    while number_to_resample > 0: 
+        resample[resample] = (y_rand[resample]*f_E_at_r[resample] > 
+                              x_rand[resample]**2 * f_E_interp(-phi_at_r[resample]*(1 - x_rand[resample]**2)))
+        number_to_resample = np.sum(resample)
+        x_rand[resample] = uniform(size=number_to_resample)
+        y_rand[resample] = uniform(size=number_to_resample)
+
+    velocities = x_rand * np.sqrt(-2*phi_at_r)
+
+    theta = np.arccos(uniform(-1,1,N))
+
+    vr = velocities*np.cos(theta)
+    vt = velocities*np.sin(theta)
 
     return vr, vt
 
 
-def draw_vr_vt_r(N=100000, r_max=300, gamma=4):
+def scale_pos_and_vel(r,vr,vt):
+    """
+    Scale the positions and velocities to be in N-body units
+    If we add binaries we'll do this again in initialcmctable.py
+
+    takes r, vr, and vt as input
+
+    returns (r,vr,vt) scaled to Henon units
+    """
+
+    # Normalize masses to 1/Mtotal
+    mass = np.ones_like(r)/len(r)
+    cumul_mass = np.cumsum(mass)
+
+    radius = np.array(r)
+    radius_p1 = np.append(radius[1:], [1e100])
+
+    # Then compute the total kinetic and potential energy
+    # There's probably a cleaner way to do the PE (this is a one-line version
+    #  of the for loop we use in CMC; vectorized and pythonic, but sloppy)
+    KE = 0.5 * sum(mass * (vr ** 2 + vt ** 2))
+    PE = 0.5 * sum(
+        mass[::-1]
+        * np.cumsum((cumul_mass * (1.0 / radius - 1.0 / radius_p1))[::-1])
+    )
+
+    # Compute the position and velocity scalings
+    rfac = 2 * PE
+    vfac = 1.0 / np.sqrt(4 * KE)
+
+    return r*rfac, vr*vfac, vt*vfac
+
+
+def draw_r_vr_vt(N=100000, r_max=300, gamma=4):
     """
     Draw random velocities and positions from the Elson profile.
 
@@ -162,6 +353,9 @@ def draw_vr_vt_r(N=100000, r_max=300, gamma=4):
     Note that gamma=4 is the Plummer profile
 
     returns (vr,vt,r) in G=M_cluster=1 units
+
+    N.B. if you're getting a "Expect x to not have duplicates" error
+    with a large gamma, use a smaller r_max. 
     """
     # First convert r_max into max number of  virial radii
     r_max = find_rmax_vir(r_max, gamma)
@@ -176,4 +370,7 @@ def draw_vr_vt_r(N=100000, r_max=300, gamma=4):
     # equations
     vr, vt = get_velocities(r, r_max, gamma)
 
-    return vr, vt, r
+    # And scale them to Henon units 
+    r,vr,vt = scale_pos_and_vel(r,vr,vt)
+
+    return r, vr, vt

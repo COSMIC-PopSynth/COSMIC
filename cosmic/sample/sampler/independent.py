@@ -21,12 +21,11 @@
 
 import numpy as np
 
-from cosmic.utils import mass_min_max_select
+from ... import utils
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
 
-from cosmic.utils import rndm
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -119,7 +118,7 @@ def get_independent_sampler(
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
-    primary_min, primary_max, secondary_min, secondary_max = mass_min_max_select(
+    primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
         final_kstar1, final_kstar2
     )
     initconditions = Sample()
@@ -309,9 +308,9 @@ class Sample(object):
             (midIdx,) = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
             (highIdx,) = np.where(a_0 >= high_cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[midIdx] = rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
-            a_0[highIdx] = rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
+            a_0[lowIdx] = utils.rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[midIdx] = utils.rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
+            a_0[highIdx] = utils.rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -330,8 +329,8 @@ class Sample(object):
             (lowIdx,) = np.where(a_0 <= cutoff)
             (highIdx,) = np.where(a_0 >= cutoff)
 
-            a_0[lowIdx] = rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[highIdx] = rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
+            a_0[lowIdx] = utils.rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
+            a_0[highIdx] = utils.rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
 
             total_sampled_mass += np.sum(a_0)
 
@@ -340,7 +339,7 @@ class Sample(object):
         elif primary_model == "salpeter55":
             total_sampled_mass = 0
             multiplier = 1
-            a_0 = rndm(a=0.08, b=150, g=-2.35, size=size * multiplier)
+            a_0 = utils.rndm(a=0.08, b=150, g=-2.35, size=size * multiplier)
 
             total_sampled_mass += np.sum(a_0)
 
@@ -591,7 +590,7 @@ class Sample(object):
             binaryIdx,
         )
 
-    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", size=None):
+    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", porb_max=None, size=None):
         """Sample the orbital period according to the user-specified model
 
         Parameters
@@ -663,8 +662,15 @@ class Sample(object):
             (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
             if len(ind_switch) >= 1:
                 RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
-            a_min = RL_max * (1 + ecc)
-            a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
+            a_min = RL_max / (1 - ecc)
+            if porb_max is None:
+                a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
+            else:
+                ## If in CMC, only sample binaries as wide as the local hard/soft boundary
+                a_max = utils.a_from_p(porb_max,mass1,mass2) 
+                a_max[a_max < a_min] = a_min[a_max < a_min]
+                a_0 = np.random.uniform(np.log(a_min), np.log(a_max), size)
+
 
             # convert out of log space
             a_0 = np.exp(a_0)
@@ -677,16 +683,22 @@ class Sample(object):
             porb_yr = ((a_0 ** 3.0) / (mass1 + mass2)) ** 0.5
             porb = porb_yr * yr_day
         elif porb_model == "sana12":
-            from cosmic.utils import rndm
+            if porb_max is None:
+                log10_porb_max = 5.5
+            else:
+                log10_porb_max = np.log10(porb_max)
 
-            porb = 10 ** rndm(a=0.15, b=5.5, g=-0.55, size=size)
+            porb = 10 ** utils.rndm(a=0.15, b=log10_porb_max, g=-0.55, size=size)
         elif porb_model == "renzo19":
-            from cosmic.utils import rndm
+            if porb_max is None:
+                log10_porb_max = 5.5
+            else:
+                log10_porb_max = np.log10(porb_max)
 
-            porb = 10 ** (np.random.uniform(0.15, 5.5, size))
+            porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
-            porb[ind_massive] = 10 ** rndm(
-                a=0.15, b=5.5, g=-0.55, size=len(ind_massive)
+            porb[ind_massive] = 10 ** utils.rndm(
+                a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
             )
         else:
             raise ValueError(
@@ -728,9 +740,7 @@ class Sample(object):
             return ecc
 
         elif ecc_model == "sana12":
-            from cosmic.utils import rndm
-
-            ecc = rndm(a=0.001, b=0.9, g=-0.45, size=size)
+            ecc = utils.rndm(a=0.001, b=0.9, g=-0.45, size=size)
             return ecc
 
         elif ecc_model == "circular":
