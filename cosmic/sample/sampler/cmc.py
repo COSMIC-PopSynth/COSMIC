@@ -24,7 +24,7 @@ import numpy as np
 from .sampler import register_sampler
 from .independent import Sample
 from .. import InitialCMCTable, InitialBinaryTable
-from ..cmc import elson
+from ..cmc import elson, king
 from ... import _evolvebin
 from ... import utils
 
