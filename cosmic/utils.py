@@ -106,10 +106,7 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             # array for the system and see what its properities are today
             bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
             bin_num_save.extend(
-                bcm_0_2.loc[
-                    (bcm_0_2.kstar_1.isin(kstar1_range))
-                    & (bcm_0_2.kstar_2.isin(kstar2_range))
-                ].bin_num.tolist()
+                bcm_0_2.bin_num.tolist()
             )
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
