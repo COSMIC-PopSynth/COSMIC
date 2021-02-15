@@ -15,6 +15,7 @@
 from collections import OrderedDict
 import warnings
 import argparse
+import schwimmbad
 
 import math
 import random
@@ -32,6 +33,8 @@ import warnings
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
+
+from schwimmbad import MultiPool, MPIPool
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -96,8 +99,6 @@ def parse_commandline():
                         help="Number of binaries to try before checking for "
                         "convergence, it will check ever Nstep binaries until "
                         "it reach Niter binaries", type=int, default=10000)
-    parser.add_argument("-n", "--nproc",
-                        help="number of processors", type=int, default=1)
     parser.add_argument("--binary_state", nargs='+', type=int)
     parser.add_argument("--sampling_method")
     parser.add_argument("--primary_model", help="Chooses the initial primary mass function from: salpeter55, kroupa93, kroupa01", type=str)
@@ -116,6 +117,12 @@ def parse_commandline():
     parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
                         help="Run in Verbose Mode")
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-n", "--nproc",
+                        help="number of processors", type=int, default=1)
+    group.add_argument("--mpi", dest="mpi", default=False,
+                       action="store_true", help="Run with MPI.")
 
     args = parser.parse_args(remaining_argv)
 
@@ -147,6 +154,14 @@ if __name__ == '__main__':
     # READ COMMANDLINE ARGUMENTS
     ###########################################################################
     args = parse_commandline()
+    pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
+    if isinstance(pool, MPIPool):
+        if not pool.is_master():
+            pool.wait()
+            sys.exit(0)
+        nproc = len(pool.workers)
+    else:
+        nproc = args.nproc
 
     # SET TIME TO TRACK COMPUTATION TIME
     ###########################################################################
@@ -249,7 +264,7 @@ if __name__ == '__main__':
     dat_store.put('config/rand_seed/', pd.Series(seed_int))
 
     # Initialize the step counter and convergence array/list
-    Nstep = 0
+    Nstep = idx - np.mod(idx, args.Nstep)
     match = np.zeros(len(convergence['convergence_params']))
 
     # Simulate the fixed population
@@ -273,6 +288,8 @@ if __name__ == '__main__':
                                                         primary_model = args.primary_model,
                                                         ecc_model = args.ecc_model,
                                                         porb_model = args.porb_model,
+                                                        qmin = args.qmin,
+                                                        keep_singles = args.keep_singles,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
@@ -283,12 +300,14 @@ if __name__ == '__main__':
             init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
+                                                        keep_singles = args.keep_singles,
                                                         rand_seed = rand_seed,
                                                         nproc = args.nproc,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
-                                                        size = args.Nstep)
+                                                        size = args.Nstep,
+                                                        pool=pool)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         # Log the total sampled mass from the initial binary sample
@@ -317,9 +336,11 @@ if __name__ == '__main__':
                 pass
             filters['timestep_conditions'] = []
 
+        # Create a pool
         bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                      pool=pool,
                                                       BSEDict=BSEDict,
-                                                      nproc=args.nproc, idx=idx,
+                                                      idx=idx,
                                                       dtp=dtp,
                                                       timestep_conditions=filters['timestep_conditions'],)
 

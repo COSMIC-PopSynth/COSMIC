@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-import cosmic.MC_samp as MC_samp
+from .. import MC_samp
 
 x_sun = 8000.0
 y_sun = 0.0
