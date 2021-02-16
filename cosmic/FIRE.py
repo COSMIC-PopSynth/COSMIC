@@ -29,7 +29,7 @@ from cosmic.utils import epanechnikov
 
 __author__ = 'Katelyn Breivik <katie.breivik@gmail.com>'
 __credits__ = 'Scott Coughlin <scott.coughlin@ligo.org>'
-__all__ = ['fire_sfh', 'fire_positions']
+__all__ = ['SFH', 'positions']
 
 def SFH(n_samp):
     """Samples evolution time and metallicity for sources according

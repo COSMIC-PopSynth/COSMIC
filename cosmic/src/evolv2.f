@@ -2,7 +2,7 @@
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     \ bhspin,tphys,zpars,kick_info,
+     \ bhspin,tphys,zpars,bkick,kick_info,
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -168,6 +168,7 @@
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
       REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,17)
+      REAL*8 bkick(20)
       REAL*8 kick_info_out(2,17)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
@@ -238,6 +239,7 @@ Cf2py intent(in) tms
 Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
 Cf2py intent(in) zpars
+Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
@@ -1301,7 +1303,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                   0.d0,fallback,sigmahold,kick_info,disrupt)
+     &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1340,7 +1342,7 @@ component.
      &                       epoch(2),bhspin(1),bhspin(2))
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                   rad(3-k),fallback,sigmahold,kick_info,disrupt)
+     &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -2167,7 +2169,7 @@ component.
          qc = qc_fixed
       endif
 
-      if(kstar(j1).eq.0.and.q(j1).gt.qc)then
+      if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
 * common-envelope evolution.  The result is always a single
@@ -2253,12 +2255,14 @@ component.
             kstar(j2) = 15
          endif
          goto 135
-
+*
+*KB added RRLO_1 flag to send RRLO_1 > 10 into CE for post-MS binaries
+*
       elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
      &        kstar(j1).eq.8.or.kstar(j1).eq.9)
      &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
-     &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
-     &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
+     &       (kstar(j1).eq.2.and.q(j1).gt.qc).or.
+     &       (kstar(j1).eq.4.and.q(j1).gt.qc))then
 *
 * Common-envelope evolution.
 *
@@ -2310,7 +2314,7 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
@@ -2495,9 +2499,10 @@ component.
 *
 *
 * KB: adding in stable mass transfer factor from
-*     eqs 10-11 of Claeys+2014
+*     eqs 10-11 of Claeys+2014 as don_lim flag instead
+*     of qcflag (10/12/20)
 *
-         if(qcflag.gt.1.and.qcflag.le.3)then
+         if(don_lim.eq.-1.d0)then
             if(q(j1).gt.1)then
                f_fac=1000.d0
             else
@@ -2509,10 +2514,11 @@ component.
             endif
             dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
-         else
+         elseif(don_lim.eq.0)then
             dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
          endif
+*         dm1 = MIN(dm1, mass(j1)*tb/tkh(j1))
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
@@ -2528,10 +2534,10 @@ component.
 *        spnfac = MIN(3.d0,MAX(ospin(j1)/oorb,1.d0))
 *        dm1 = dm1/spnfac**2
 *
-* Limit mass transfer to the thermal rate for remaining giant-like stars
+* Limit mass transfer to the thermal rate for all fusing stars
 * and to the dynamical rate for all others.
 *
-         if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+         if(kstar(j1).ge.0.and.kstar(j1).le.9)then
 ***
 * JH_temp ... this may be good for HG RLOF??
 *           if(kstar(j1).eq.2)then
@@ -2541,8 +2547,15 @@ component.
 *           endif
 ***
             dm1 = MIN(dm1,mass(j1)*tb/tkh(j1))
-         elseif(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
-     &          kstar(j2).le.1.and.q(j1).gt.qc))then
+         endif
+*
+* Now we will initiate a CE for giants or merger for MS
+* if RRLO_1 > 10. Previously a MS + MS & q > c conditional
+* existed here, but it is completely defunct at this point
+*
+
+         if(rad(j1).gt.10.d0*rol(j1).and.kstar(j1).le.1.and.
+     &      kstar(j2).le.1)then
 *
 * Allow the stars to merge with the product in *1.
 *
@@ -2565,7 +2578,8 @@ component.
             coel = .true.
             binstate = 1
             goto 135
-         else
+         endif
+         if(kstar(j1).gt.9)then
             dm1 = MIN(dm1,mass(j1)*tb/tdyn)
          endif
 *
@@ -2639,18 +2653,44 @@ component.
 * Decide between accreted mass by secondary and/or system mass loss.
 *
          taum = mass(j2)/dm1*tb
+         
+
+*
+* KB 4/Jan/21: adding in acc_lim flags
+* acc_lim = 0: standard BSE w/ MS/HG/CHeB assumed to have thermal
+*              limit of 10*tkh while giants are unlimited. If the
+*              accretor is He-rich (>=7), limit is 10*tkh if accretor
+*              is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
+* acc_lim = -1: same as acc_lim = 0, but for 1*tkh instead
+* acc_lim = -2: accretor kw=0-6 have thermal limit of 10*tkh. If the
+*               acretor is He-rich (>=7), limit is 10*tkh if donor
+*               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
+* acc_lim = -3: accretor kw=0-6 have thermal limit of tkh. If the
+*               accretor is He-rich (>=7), limit is 10*tkh if donor
+*               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
+* acc_lim > 0: fraction of donor mass loss accreted
+*
+* Note that acc_lim > 0 means that the thermal limit is not considered
+*
+
+
          if(kstar(j2).le.2.or.kstar(j2).eq.4)then
-*
-* Limit according to the thermal timescale of the secondary.
-*
-            dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            if(acc_lim.eq.0.or.acc_lim.eq.-2)then
+               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            elseif(acc_lim.eq.-1.d0.or.acc_lim.eq.-3)then
+               dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+            endif
          elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
 *
 * Naked helium star secondary swells up to a core helium burning star
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               if(acc_lim.eq.0.or.acc_lim.eq.-2)then
+                  dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               elseif(acc_lim.eq.-1.d0.or.acc_lim.eq.-3)then
+                  dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+               endif
             else
                dm2 = dm1
                dmchk = dm2 - 1.05d0*dms(j2)
@@ -2717,11 +2757,28 @@ component.
 *
 *
          else
+* We have a giant w/ kstar(j2) = 3,5,6
 *
-* We have a giant whose envelope can absorb any transferred material.
-*
-            dm2 = dm1
+
+            if(acc_lim.eq.0.or.acc_lim.eq.-1)then
+               dm2 = dm1
+            elseif(acc_lim.eq.-2)then
+               dm2 = MIN(1.d0,10*taum/tkh(j2))*dm1
+            elseif(acc_lim.eq.-3)then
+               dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+            endif
+
+
          endif
+
+*
+* If acc_lim > 0: override the above
+*
+         if(acc_lim.gt.0)then
+            dm2 = acc_lim*dm1
+         endif
+
+
          if(.not.novae) dm22 = dm2
 *
          if(kst.ge.10.and.kst.le.12)then
@@ -2773,6 +2830,7 @@ component.
                endif
             endif
          endif
+
 *
 *       Modify mass loss terms by speed-up factor.
 *
@@ -3332,7 +3390,7 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &                rad(3-k),fallback,sigmahold,kick_info,disrupt)
+     &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
             if(mass(3-k).lt.0.d0)then
@@ -3655,7 +3713,7 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3736,7 +3794,7 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.

@@ -140,6 +140,15 @@ C      ENDIF
         KW = 1
         M03 = M3
       ENDIF
+
+      IF(bhms_coll_flag.eq.1)THEN
+          IF(K1.EQ.14.AND.K2.LT.10.AND.M2.GT.M1)THEN
+             KW = K2
+             M03 = M2
+             M3 = M2
+             AGE3 = AGE2
+          ENDIF
+      ENDIF
 *
 * Put the result in *1.
 *
