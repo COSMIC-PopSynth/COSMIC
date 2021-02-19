@@ -52,15 +52,27 @@ def get_cmc_sampler(
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
 
+    msort : `float`
+        Stars with M>msort can have different pairing and sampling of companions
+
+    pair : `float`
+        Sets the pairing of stars M>msort only with stars with M>msort
+
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+
+    binfrac_model_msort : `str or float`
+        Same as binfrac_model for M>msort
 
     qmin : `float`
         Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
         of the companion for primary mass > 5 msun to set q and sets q=0.1 
         for all primary mass < 5 msun if q < 0
 
-        cluster_profile : `str`
+    qmin_msort : `float`
+        Same as qmin for M>msort
+
+    cluster_profile : `str`
         Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
         options include king, plummer and elson.
 
@@ -96,14 +108,16 @@ def get_cmc_sampler(
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
-    mass1, total_mass1 = initconditions.sample_primary(primary_model, size=size)
+    mass1, total_mass1 = initconditions.sample_primary(
+        primary_model, size=size)
     (
         mass1_binaries,
         mass_single,
         binfrac_binaries,
         binary_index,
-    ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-    mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
+    ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
+    mass2_binaries = initconditions.sample_secondary(
+        mass1_binaries, qmin, **kwargs)
 
     # track the mass sampled
     mass_singles += np.sum(mass_single)
@@ -139,7 +153,8 @@ def get_cmc_sampler(
     Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
 
     singles_table = InitialCMCTable.InitialCMCSingles(
-        single_ids + 1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind
+        single_ids +
+        1, initconditions.set_kstar(mass1), mass1, Reff, r, vr, vt, binind
     )
 
     binaries_table = InitialCMCTable.InitialCMCBinaries(
@@ -388,7 +403,8 @@ class CMCSample(Sample):
                 [initial_condition["radc_1"], initial_condition["radc_2"]],
                 [initial_condition["menv_1"], initial_condition["menv_2"]],
                 [initial_condition["renv_1"], initial_condition["renv_2"]],
-                [initial_condition["omega_spin_1"], initial_condition["omega_spin_2"]],
+                [initial_condition["omega_spin_1"],
+                    initial_condition["omega_spin_2"]],
                 [initial_condition["B_1"], initial_condition["B_2"]],
                 [initial_condition["bacc_1"], initial_condition["bacc_2"]],
                 [initial_condition["tacc_1"], initial_condition["tacc_2"]],
