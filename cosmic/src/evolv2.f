@@ -2747,19 +2747,9 @@ component.
                endif
 *
             endif
-         elseif(kstar(j2).ge.10)then
-*
-* Impose the Eddington limit.
-*
-            dm2 = MIN(dm1,dme)
-            if(dm2.lt.dm1) supedd = .true.
-* Can add pulsar propeller evolution here if need be. PK.
-*
-*
-         else
+         elseif(kstar(j2).eq.3.or.kstar(j2).eq.5.or.kstar(j2).eq.6)then
 * We have a giant w/ kstar(j2) = 3,5,6
 *
-
             if(acc_lim.eq.0.or.acc_lim.eq.-1)then
                dm2 = dm1
             elseif(acc_lim.eq.-2)then
@@ -2768,7 +2758,6 @@ component.
                dm2 = MIN(1.d0,taum/tkh(j2))*dm1
             endif
 
-
          endif
 
 *
@@ -2776,6 +2765,17 @@ component.
 *
          if(acc_lim.gt.0)then
             dm2 = acc_lim*dm1
+         endif
+
+*
+* Impose the Eddington limit.
+*
+         if(kstar(j2).ge.10)then
+            dm2 = MIN(dm1,dme)
+            if(dm2.lt.dm1) supedd = .true.
+*
+* Can add pulsar propeller evolution here if need be. PK.
+*
          endif
 
 
