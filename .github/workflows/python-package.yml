@@ -48,6 +48,5 @@ jobs:
       run: |
         bash ci/compile_benchmark.sh
         pytest --cov=./cosmic --cov-report=xml
-        cd docs && make html; cd ../
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
