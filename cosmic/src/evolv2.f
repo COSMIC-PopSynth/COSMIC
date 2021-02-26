@@ -2668,7 +2668,8 @@ component.
 * acc_lim = -3: accretor kw=0-6 have thermal limit of tkh. If the
 *               accretor is He-rich (>=7), limit is 10*tkh if donor
 *               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
-* acc_lim > 0: fraction of donor mass loss accreted
+* acc_lim > 0: fraction of donor mass loss accreted; supersceded by
+*              eddington limits and/or novae on WDs.
 *
 * Note that acc_lim > 0 means that the thermal limit is not considered
 *
@@ -2679,6 +2680,8 @@ component.
                dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
             elseif(acc_lim.eq.-1.d0.or.acc_lim.eq.-3)then
                dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+            elseif(acc_lim.gt.0.d0)then
+               dm2 = acc_lim*dm1
             endif
          elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
 *
@@ -2690,21 +2693,27 @@ component.
                   dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
                elseif(acc_lim.eq.-1.d0.or.acc_lim.eq.-3)then
                   dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+               elseif(acc_lim.gt.0.d0)then
+                  dm2 = acc_lim*dm1
                endif
             else
-               dm2 = dm1
-               dmchk = dm2 - 1.05d0*dms(j2)
-               if(dmchk.gt.0.d0.and.dm2/mass(j2).gt.1.0d-04)then
-                  kst = MIN(6,2*kstar(j2)-10)
-                  if(kst.eq.4)then
-                     aj(j2) = aj(j2)/tms(j2)
-                     mcx = mass(j2)
-                  else
-                     mcx = massc(j2)
+               if(acc_lim.lt.0.d0)then
+                  dm2 = dm1
+                  dmchk = dm2 - 1.05d0*dms(j2)
+                  if(dmchk.gt.0.d0.and.dm2/mass(j2).gt.1.0d-04)then
+                     kst = MIN(6,2*kstar(j2)-10)
+                     if(kst.eq.4)then
+                        aj(j2) = aj(j2)/tms(j2)
+                        mcx = mass(j2)
+                     else
+                        mcx = massc(j2)
+                     endif
+                     mt2 = mass(j2) + km*(dm2 - dms(j2))
+                     CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
+                     epoch(j2) = tphys + dtm - aj(j2)
                   endif
-                  mt2 = mass(j2) + km*(dm2 - dms(j2))
-                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
-                  epoch(j2) = tphys + dtm - aj(j2)
+               elseif(acc_lim.gt.0.d0)then
+                  dm2 = acc_lim*dm1
                endif
             endif
          elseif(kstar(j1).le.6.and.
@@ -2721,17 +2730,26 @@ component.
                   dm2 = MIN(dm1,dme)
                   if(dm2.lt.dm1) supedd = .true.
                   dm22 = epsnov*dm2
+                  if(acc_lim.gt.0.d0)then
+                     dm2 = MIN(dm2,acc_lim*dm1)
+                  endif
                else
 *
 * Steady burning at the surface
 *
                   dm2 = dm1
+                  if(acc_lim.gt.0.d0)then
+                     dm2 = acc_lim*dm1
+                  endif
                endif
             else
 *
 * Make a new giant envelope.
 *
                dm2 = dm1
+               if(acc_lim.gt.0.d0)then
+                  dm2 = MIN(dm2,acc_lim*dm1)
+               endif
 *
 * Check for planets or low-mass WDs.
 *
@@ -2756,15 +2774,10 @@ component.
                dm2 = MIN(1.d0,10*taum/tkh(j2))*dm1
             elseif(acc_lim.eq.-3)then
                dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+            elseif(acc_lim.gt.0.d0)then
+               dm2 = MIN(dm2,acc_lim*dm1)
             endif
 
-         endif
-
-*
-* If acc_lim > 0: override the above
-*
-         if(acc_lim.gt.0)then
-            dm2 = acc_lim*dm1
          endif
 
 *
@@ -2772,6 +2785,9 @@ component.
 *
          if(kstar(j2).ge.10)then
             dm2 = MIN(dm1,dme)
+            if(acc_lim.gt.0.d0)then
+                dm2 = MIN(acc_lim*dm1,dme)
+            endif
             if(dm2.lt.dm1) supedd = .true.
 *
 * Can add pulsar propeller evolution here if need be. PK.
