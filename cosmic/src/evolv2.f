@@ -2699,21 +2699,21 @@ component.
             else
                if(acc_lim.lt.0.d0)then
                   dm2 = dm1
-                  dmchk = dm2 - 1.05d0*dms(j2)
-                  if(dmchk.gt.0.d0.and.dm2/mass(j2).gt.1.0d-04)then
-                     kst = MIN(6,2*kstar(j2)-10)
-                     if(kst.eq.4)then
-                        aj(j2) = aj(j2)/tms(j2)
-                        mcx = mass(j2)
-                     else
-                        mcx = massc(j2)
-                     endif
-                     mt2 = mass(j2) + km*(dm2 - dms(j2))
-                     CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
-                     epoch(j2) = tphys + dtm - aj(j2)
-                  endif
                elseif(acc_lim.ge.0.d0)then
                   dm2 = acc_lim*dm1
+               endif
+               dmchk = dm2 - 1.05d0*dms(j2)
+               if(dmchk.gt.0.d0.and.dm2/mass(j2).gt.1.0d-04)then
+                  kst = MIN(6,2*kstar(j2)-10)
+                  if(kst.eq.4)then
+                     aj(j2) = aj(j2)/tms(j2)
+                     mcx = mass(j2)
+                  else
+                     mcx = massc(j2)
+                  endif
+                  mt2 = mass(j2) + km*(dm2 - dms(j2))
+                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
+                  epoch(j2) = tphys + dtm - aj(j2)
                endif
             endif
          elseif(kstar(j1).le.6.and.
@@ -2791,7 +2791,7 @@ component.
             if(acc_lim.lt.0.d0)then
                dm2 = MIN(dm1,dme)
                if(dm2.lt.dm1) supedd = .true.
-            if(acc_lim.gt.0.d0)then
+            elseif(acc_lim.gt.0.d0)then
                dm2 = MIN(acc_lim*dm1,dme)
                if(dm2.lt.acc_lim*dm1) supedd = .true.
             endif
