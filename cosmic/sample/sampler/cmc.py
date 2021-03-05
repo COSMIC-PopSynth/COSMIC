@@ -229,7 +229,7 @@ def get_cmc_point_mass_sampler(
     binaries_table = InitialCMCTable.InitialCMCBinaries(1,1,0,0,0,1,0,0,0,0,0)
 
     singles_table.metallicity = 0.02
-    singles_table.mass_of_cluster = np.sum(singles_table["m"])
+    singles_table.mass_of_cluster = np.sum(singles_table["m"])*size
     binaries_table.metallicity = 0.02
 
     return singles_table, binaries_table
