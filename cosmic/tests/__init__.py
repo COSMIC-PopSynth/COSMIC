@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) Katie Breivik (2017 - 2020)
+# Copyright (C) Katie Breivik (2017 - 2021)
 #
 # This file is part of COSMIC
 #

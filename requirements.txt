@@ -1,4 +1,5 @@
-numpy >= 1.16
+numpy >= 1.16, <=1.18.4 ; python_version == '3.6'
+numpy >= 1.16 ; python_version > '3.6'
 scipy >= 0.12.1
 astropy >= 1.1.1
 configparser
@@ -6,6 +7,7 @@ tqdm >= 4.0
 pandas >= 0.24
 tables > 3.5.0
 h5py >= 1.3
+schwimmbad >= 0.3.1
 matplotlib >= 2.0.0
 sphinx >= 1.6.1
 numpydoc >= 0.8.0
@@ -14,3 +16,8 @@ sphinxcontrib-programoutput
 sphinx-automodapi
 ipython
 sphinx_rtd_theme
+coverage
+cpp-coveralls
+flake8
+pytest
+pytest-cov
