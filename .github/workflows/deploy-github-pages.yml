@@ -34,6 +34,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
+        sudo apt-get install gfortran swig libhdf5-serial-dev libmpich-dev
         pip install -r requirements.txt
         pip install .
         python setup.py build_ext --inplace
