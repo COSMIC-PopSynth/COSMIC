@@ -259,6 +259,7 @@ To see the arguments necessary to call the CMC sampler use the help function:
     In [3]: help(cmc.get_cmc_sampler)
 
 .. ipython::
+    :okwarning:
 
     In [1]: from cosmic.sample import InitialCMCTable
       
