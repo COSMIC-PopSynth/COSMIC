@@ -56,44 +56,44 @@ _KNOWN_METHODS = ['select_final_state',
 class TestUtils(unittest.TestCase):
     """`TestCase` for the utilities method
     """
-    def test_filter_bpp_bcm(self):
-        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
+    def test_filter_bin_state(self):
+        self.assertRaises(ValueError, utils.filter_bin_state, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
 
-        bcm_true, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
+        bcm_true, bin_state_fraction = utils.filter_bin_state(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
 
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
 
-        bcm_false, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
+        bcm_false, bin_state_fraction = utils.filter_bin_state(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
 
 
     def test_conv_select(self):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], {})
         self.assertTrue(np.all(conv.evol_type.isin([2,4])))
         self.assertTrue(np.all(conv.sep >= 0))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['convergence_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['convergence_filter'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['convergence_filter'], {})
         self.assertEqual(len(conv), 4)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['convergence_filter'], {})
         self.assertEqual(len(conv), int(len(BCM_TEST)))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['convergence_filter'], {})
         self.assertEqual(len(conv), 0)
 
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict, {})
 
     def test_conv_lims(self):
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], conv_lim_dict)
-        self.assertTrue(conv.sep.max() < conv_lim_dict["sep"][1])
-        self.assertTrue(conv.sep.min() > conv_lim_dict["sep"][0])
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], conv_lim_dict)
+        self.assertTrue(conv.loc[conv.bin_num.isin(bin_nums)].sep.max() < conv_lim_dict["sep"][1])
+        self.assertTrue(conv.loc[conv.bin_num.isin(bin_nums)].sep.min() > conv_lim_dict["sep"][0])
 
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
