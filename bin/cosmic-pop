@@ -347,8 +347,6 @@ if __name__ == '__main__':
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
 
-        import pdb
-        pdb.set_trace()
         # If dtp is not set, filter out first timestep in bcm
         if np.all(dtp == IBT['tphysf'].values):
             bcm = bcm.loc[bcm['tphys'].isin(dtp)]
@@ -362,7 +360,6 @@ if __name__ == '__main__':
         if conv_filter.empty:
             warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
             log_file.write("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
-            continue
 
         bcm_filter = bcm.loc[bcm.bin_num.isin(conv_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(conv_filter.bin_num)]
@@ -374,11 +371,10 @@ if __name__ == '__main__':
         if bcm_filter.empty:
             warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
             log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep\n")
-            continue
         initC_filter = initC_filter.loc[initC_filter.bin_num.isin(bcm_filter.bin_num)]
         kick_info_filter = kick_info_filter.loc[kick_info_filter.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(bcm_filter.bin_num)]
-
+        conv_filter = conv_filter.loc[conv_filter.bin_num.isin(bcm_filter.bin_num)]
 
         if convergence['bcm_bpp_initCond_filter'] == True:
             initC_filter = initC_filter.loc[initC_filter.bin_num.isin(conv_lims_bin_num)]
