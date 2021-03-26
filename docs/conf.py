@@ -24,6 +24,15 @@ from cosmic import __version__ as cosmic_version
 sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
+# This is the expected signature of the handler for this event, cf doc
+def autodoc_skip_member_handler(app, what, name, obj, skip, options):
+    # Basic approach; you might want a regex instead
+    return name.startswith("test_")
+
+# Automatically called by sphinx at startup
+def setup(app):
+    # Connect the autodoc-skip-member event from apidoc to the callback
+    app.connect('autodoc-skip-member', autodoc_skip_member_handler)
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'
@@ -101,7 +110,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'cosmic'
-copyright = u'2020, Katie Breivik'
+copyright = u'2021, Katie Breivik'
 author = u'Katie Breivik'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -129,7 +138,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "*tests*"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

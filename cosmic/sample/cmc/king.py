@@ -27,7 +27,7 @@ from scipy.special import erf
 
 __author__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
 __credits__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
-__all__ = ["integrate_king_profile"]
+__all__ = ["calc_rho", "integrate_king_profile", "virial_radius_numerical", "find_sigma_sqr", "get_positions", "get_velocities", "scale_pos_and_vel", "draw_r_vr_vt"]
 
 def calc_rho(w):
     """
