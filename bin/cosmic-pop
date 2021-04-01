@@ -108,12 +108,15 @@ def parse_commandline():
     parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
     parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
     parser.add_argument("--metallicity", type=float)
-    parser.add_argument("--convergence_params", nargs='+',)
-    parser.add_argument("--convergence_limits", type=json.loads)
-    parser.add_argument("--convergence_filter")
-    parser.add_argument("--match", type=float)
-    parser.add_argument("--bcm_bpp_initcond_filter", type=str2bool, nargs='?',
-                        const=True, default=False,)
+    parser.add_argument("--convergence_params", nargs='+', help="specifies the list of parameters for which you"
+                                                                " would like to track the distribution shapes for convergence")
+    parser.add_argument("--convergence_limits", type=json.loads, help="dictionary that can contain limits for convergence params")
+    parser.add_argument("--pop_select", help="Used in combination with the specified final_kstar1 and final_kstar2 values"
+                                             " to select the subpopulation of interest from the evolved population")
+    parser.add_argument("--match", type=float, help="provides the tolerance for the convergence calculation")
+    parser.add_argument("--apply_convergence_limits", type=str2bool, nargs='?',
+                        const=True, default=False, help="filters the evolved binary population to contain"
+                                                        " only the binaries that satsify the convergence limits")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
                         help="Run in Verbose Mode")
@@ -355,7 +358,7 @@ if __name__ == '__main__':
         # satisfy the convergence_limits
         conv_filter, conv_lims_bin_num = utils.conv_select(bcm, bpp,
                                                            kstar1_range, kstar2_range,
-                                                           convergence['convergence_filter'],
+                                                           convergence['pop_select'],
                                                            convergence['convergence_limits'])
         if conv_filter.empty:
             warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
@@ -376,7 +379,7 @@ if __name__ == '__main__':
         bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(bcm_filter.bin_num)]
         conv_filter = conv_filter.loc[conv_filter.bin_num.isin(bcm_filter.bin_num)]
 
-        if convergence['bcm_bpp_initCond_filter'] == True:
+        if convergence['apply_convergence_limits'] == True:
             initC_filter = initC_filter.loc[initC_filter.bin_num.isin(conv_lims_bin_num)]
             kick_info_filter = kick_info_filter.loc[kick_info_filter.bin_num.isin(conv_lims_bin_num)]
             bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(conv_lims_bin_num)]

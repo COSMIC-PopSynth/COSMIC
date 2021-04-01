@@ -126,62 +126,64 @@ sampling
 [convergence]
 -------------
 
-===========================  ===================================================================================
-``convergence_params``       A list of parameters you would like to verify have converged
-                             to a single distribution shape.
-                             Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
-                             ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
+============================  ===================================================================================
+``convergence_params``        A list of parameters you would like to verify have converged
+                              to a single distribution shape.
+                              Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
+                              ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
 
-``convergence_limits``       Specifies limits for parameters included in the convergence
-                             params list. If specified, the lower and upper limit must
-                             be specified:
+``convergence_limits``        Specifies limits for parameters included in the convergence
+                              params list. If specified, the lower and upper limit must
+                              be specified:
 
-                                ``convergence_limits = {'mass_1' : [5, 10], 'sep' : [0, 10]}``
+                                 ``convergence_limits = {'mass_1' : [5, 10], 'sep' : [0, 10]}``
 
-``convergence_filter``       Selects the stage of the evolution at which you would like
-                             to check for convergence. This will filter for systems that
-                             satisfy the final_kstar1 and final_kstar2 selections from
-                             the command line call of cosmic-pop
+``pop_select``                Selects the stage of the evolution at which you would like
+                              to check for convergence. This will filter for systems that
+                              satisfy the final_kstar1 and final_kstar2 selections from
+                              the command line call of cosmic-pop
 
-                                ``formation``: computes convergence on binary properties
-                                at formation with user-specified final kstars
+                                 ``formation``: computes convergence on binary properties
+                                 at formation with user-specified final kstars
 
-                                ``1_SN``: computes convergence on binary properties
-                                just before the first supernova for the population with
-                                user-specified final kstars
+                                 ``1_SN``: computes convergence on binary properties
+                                 just before the first supernova for the population with
+                                 user-specified final kstars
 
-                                ``2_SN``: computes convergence on binary properties
-                                just before the second supernova for the population with
-                                user-specified final kstars
+                                 ``2_SN``: computes convergence on binary properties
+                                 just before the second supernova for the population with
+                                 user-specified final kstars
 
-                                ``disruption``: computes convergence on binary properties
-                                just before disruption of the population with
-                                user-specified final kstars
+                                 ``disruption``: computes convergence on binary properties
+                                 just before disruption of the population with
+                                 user-specified final kstars
 
-                                ``final_state``: computes convergence on binary properties
-                                after the full evolution specified by the user-supplied evolution time
-                                and with the user specified final kstars
+                                 ``final_state``: computes convergence on binary properties
+                                 after the full evolution specified by the user-supplied evolution time
+                                 and with the user specified final kstars
 
-                                ``XRB_form``: computes convergence on binary properties
-                                at the start of RLO following the first supernova on the population with
-                                user-specified final kstars
+                                 ``XRB_form``: computes convergence on binary properties
+                                 at the start of RLO following the first supernova on the population with
+                                 user-specified final kstars
 
-``match``                    match provides the tolerance for the convergence calculation
-                             and is calculated as match = Log\ :sub:`10` (1-convergence)
+``match``                     match provides the tolerance for the convergence calculation
+                              and is calculated as match = Log\ :sub:`10` (1-convergence)
 
-``bcm_bpp_initCond_filter``  The bcm_bpp_initCond_filter will filter the bcm, bpp, and initCond
-                             DataFrames to only contain the binaries that satisfy the constraints
-                             from ``convergence_limits`` and/or ``convergence_filer``
+``apply_convergence_limits``  apply_convergence_limits will filter the binary population,
+                              including the bcm, bpp, initCond, and kick_info
+                              DataFrames to only contain the binaries that satisfy the constraints
+                              from ``convergence_limits``
 
-                                ``True``: bcm, bpp, initCond will contain only the binaries which
-                                are in the conv DataFrame
+                                 ``True``: bcm, bpp, initCond, kick_info will contain only the binaries which
+                                 are in the conv DataFrame
 
-                                ``False``: bcm, bpp, initCond will contain all systems which satisfy the
-                                final kstar selection and will **not** be filtered.
+                                 ``False``: bcm, bpp, initCond, infor will contain all systems which satisfy the
+                                 final kstar and pop_select selection and will **not** be filtered based on the
+                                 convergence_limits
 
-                             **bcm_bpp_initCond_filter=False**
+                              **bcm_bpp_initCond_filter=False**
 
-===========================  ===================================================================================
+============================  ===================================================================================
 
 .. code-block:: ini
 
