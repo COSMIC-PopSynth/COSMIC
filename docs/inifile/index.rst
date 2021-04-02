@@ -220,7 +220,7 @@ sampling
     ; XRB_form computes convergence on binary properties
     ; at the start of RLO following the first supernova on the population with
     ; user-specified final kstars
-    convergence_filter = formation
+    pop_select = formation
 
     ; match provides the tolerance for the convergence calculation
     ; and is calculated as match = log10(1-convergence)

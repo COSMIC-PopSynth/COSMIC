@@ -773,7 +773,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError("Convergence criteria must be supplied via a dictionary")
         for option in [
             "convergence_params",
-            "convergence_filter",
+            "pop_select",
             "match",
             "convergence_limits",
         ]:
@@ -816,7 +816,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                             key, len(item)
                         )
                     )
-        flag = "convergence_filter"
+        flag = "pop_select"
         if not convergence[flag] in [
             "formation",
             "1_SN",

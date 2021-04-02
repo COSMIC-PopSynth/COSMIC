@@ -361,8 +361,8 @@ if __name__ == '__main__':
                                                            convergence['pop_select'],
                                                            convergence['convergence_limits'])
         if conv_filter.empty:
-            warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
-            log_file.write("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and convergence_filters, e.g. bin_state=[0,1], convergence_filter='disruption'")
+            warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
+            log_file.write("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
 
         bcm_filter = bcm.loc[bcm.bin_num.isin(conv_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(conv_filter.bin_num)]
