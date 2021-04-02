@@ -2502,7 +2502,7 @@ component.
 *     eqs 10-11 of Claeys+2014 as don_lim flag instead
 *     of qcflag (10/12/20)
 *
-         if(don_lim.eq.-1.d0)then
+         if(don_lim.eq.-2)then
             if(q(j1).gt.1)then
                f_fac=1000.d0
             else
@@ -2514,7 +2514,7 @@ component.
             endif
             dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
-         elseif(don_lim.eq.0)then
+         elseif(don_lim.eq.-1)then
             dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
          endif
@@ -2653,32 +2653,33 @@ component.
 * Decide between accreted mass by secondary and/or system mass loss.
 *
          taum = mass(j2)/dm1*tb
-         
+
 
 *
 * KB 4/Jan/21: adding in acc_lim flags
-* acc_lim = 0: standard BSE w/ MS/HG/CHeB assumed to have thermal
+* MZ 30/Mar/21: slight adjustment to flag designations
+* acc_lim >= 0: fraction of donor mass loss accreted; supersceded by
+*              eddington limits and/or novae on WDs.
+* acc_lim = -1: standard BSE w/ MS/HG/CHeB assumed to have thermal
 *              limit of 10*tkh while giants are unlimited. If the
 *              accretor is He-rich (>=7), limit is 10*tkh if accretor
 *              is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
-* acc_lim = -1: same as acc_lim = 0, but for 1*tkh instead
-* acc_lim = -2: accretor kw=0-6 have thermal limit of 10*tkh. If the
+* acc_lim = -2: same as acc_lim = -1, but for 1*tkh instead
+* acc_lim = -3: accretor kw=0-6 have thermal limit of 10*tkh. If the
 *               acretor is He-rich (>=7), limit is 10*tkh if donor
 *               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
-* acc_lim = -3: accretor kw=0-6 have thermal limit of tkh. If the
-*               accretor is He-rich (>=7), limit is 10*tkh if donor
+* acc_lim = -4: accretor kw=0-6 have thermal limit of tkh. If the
+*               accretor is He-rich (>=7), limit is 1*tkh if donor
 *               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
-* acc_lim > 0: fraction of donor mass loss accreted; supersceded by
-*              eddington limits and/or novae on WDs.
 *
-* Note that acc_lim > 0 means that the thermal limit is not considered
+* Note that acc_lim >= 0 means that the thermal limit is not considered
 *
 
 
          if(kstar(j2).le.2.or.kstar(j2).eq.4)then
-            if(acc_lim.eq.0.or.acc_lim.eq.-2)then
+            if(acc_lim.eq.-1.or.acc_lim.eq.-3)then
                dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
-            elseif(acc_lim.eq.-1.d0.or.acc_lim.eq.-3)then
+            elseif(acc_lim.eq.-2.or.acc_lim.eq.-4)then
                dm2 = MIN(1.d0,taum/tkh(j2))*dm1
             elseif(acc_lim.ge.0.d0)then
                dm2 = acc_lim*dm1
@@ -2689,9 +2690,9 @@ component.
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               if(acc_lim.eq.0.or.acc_lim.eq.-2)then
+               if(acc_lim.eq.-1.or.acc_lim.eq.-3)then
                   dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
-               elseif(acc_lim.eq.-1.d0.or.acc_lim.eq.-3)then
+               elseif(acc_lim.eq.-2.or.acc_lim.eq.-4)then
                   dm2 = MIN(1.d0,taum/tkh(j2))*dm1
                elseif(acc_lim.ge.0.d0)then
                   dm2 = acc_lim*dm1
@@ -2733,7 +2734,7 @@ component.
                   elseif(acc_lim.ge.0.d0)then
                      dm2 = MIN(dm2,acc_lim*dm1)
                      if(dm2.lt.acc_lim*dm1) supedd = .true.
-                  endif   
+                  endif
                   dm22 = epsnov*dm2
                else
 *
@@ -2772,11 +2773,11 @@ component.
          elseif(kstar(j2).eq.3.or.kstar(j2).eq.5.or.kstar(j2).eq.6)then
 * We have a giant w/ kstar(j2) = 3,5,6
 *
-            if(acc_lim.eq.0.or.acc_lim.eq.-1)then
+            if(acc_lim.eq.-1.or.acc_lim.eq.-2)then
                dm2 = dm1
-            elseif(acc_lim.eq.-2)then
-               dm2 = MIN(1.d0,10*taum/tkh(j2))*dm1
             elseif(acc_lim.eq.-3)then
+               dm2 = MIN(1.d0,10*taum/tkh(j2))*dm1
+            elseif(acc_lim.eq.-4)then
                dm2 = MIN(1.d0,taum/tkh(j2))*dm1
             elseif(acc_lim.ge.0.d0)then
                dm2 = MIN(dm2,acc_lim*dm1)
@@ -2791,7 +2792,7 @@ component.
             if(acc_lim.lt.0.d0)then
                dm2 = MIN(dm1,dme)
                if(dm2.lt.dm1) supedd = .true.
-            elseif(acc_lim.gt.0.d0)then
+            elseif(acc_lim.ge.0.d0)then
                dm2 = MIN(acc_lim*dm1,dme)
                if(dm2.lt.acc_lim*dm1) supedd = .true.
             endif

@@ -39,7 +39,7 @@ __credits__ = [
     "Michael Zevin <zevin@northwestern.edu>",
 ]
 __all__ = [
-    "filter_bpp_bcm",
+    "filter_bin_state",
     "conv_select",
     "mass_min_max_select",
     "idl_tabulate",
@@ -57,8 +57,9 @@ __all__ = [
 ]
 
 
-def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
-    """Filter the output of bpp and bcm
+def filter_bin_state(bcm, bpp, method, kstar1_range, kstar2_range):
+    """Filter the output of bpp and bcm, where the kstar ranges
+    have already been selected by the conv_select module
 
     Parameters
     ----------
@@ -105,12 +106,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             # that are alive today we can simply check the last entry in the bcm
             # array for the system and see what its properities are today
             bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
-            bin_num_save.extend(
-                bcm_0_2.loc[
-                    (bcm_0_2.kstar_1.isin(kstar1_range))
-                    & (bcm_0_2.kstar_2.isin(kstar2_range))
-                ].bin_num.tolist()
-            )
+            bin_num_save.extend(bcm_0_2.bin_num.tolist())
+
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
             # of the objects right at merge because the bcm will report
@@ -325,9 +322,12 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         for key in conv_lims.keys():
             filter_lo = conv_lims[key][0]
             filter_hi = conv_lims[key][1]
-            conv_save = conv_save.loc[conv_save[key] < filter_hi]
-            conv_save = conv_save.loc[conv_save[key] > filter_lo]
-    return conv_save
+            conv_save_lim = conv_save.loc[conv_save[key] < filter_hi]
+            conv_lims_bin_num = conv_save_lim.loc[conv_save[key] > filter_lo].bin_num
+    else:
+        conv_lims_bin_num = conv_save.bin_num
+
+    return conv_save, conv_lims_bin_num
 
 
 def pop_write(
@@ -1335,18 +1335,18 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
     flag = "don_lim"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, -1]:
+        if BSEDict[flag] not in [-1, -2]:
             raise ValueError(
-                "'{0:s}' needs to be set to 0 or -1 (you set it to '{1:0.2f}')".format(
+                "'{0:s}' needs to be set to -1 or -2 (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
                 )
             )
     flag = "acc_lim"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, -1, -2, -3]:
+        if BSEDict[flag] not in [-1, -2, -3, -4]:
             if BSEDict[flag] < 0.0:
                 raise ValueError(
-                    "'{0:s}' needs to be set to 0, -1, -2, -3 or be >0 (you set it to '{1:0.2f}')".format(
+                    "'{0:s}' needs to be set to -1, -2, -3, -4 or be >=0 (you set it to '{1:0.2f}')".format(
                         flag, BSEDict[flag]
                     )
                 )
