@@ -1025,27 +1025,27 @@ common envelope occurs regardless of the choices below:
 ``don_lim``              Calculates the rate of thermal mass loss through Roche
                          overflow mass transfer from the donor star
 
-                            ``0`` : donor mass loss rate is calculated following
+                            ``-1`` : donor mass loss rate is calculated following
                             `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
-                            ``-1`` : donor mass loss rate is calculated following
+                            ``-2`` : donor mass loss rate is calculated following
                              `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
 
 ``acc_lim``              Limits the amount of mass accreted during Roche overflow
 
-                            ``0`` : limited to 10x's the thermal rate of the accretor
+                            ``-1`` : limited to 10x's the thermal rate of the accretor
                             for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
 
-                            ``-1`` : limited to 1x's the thermal rate of the accretor
+                            ``-2`` : limited to 1x's the thermal rate of the accretor
                             for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
 
-                            ``-2`` : limited to 10x's the thermal rate of the accretor
+                            ``-3`` : limited to 10x's the thermal rate of the accretor
                             for all stars
 
-                            ``-3`` : limited to 1x's the thermal rate of the accretor
+                            ``-4`` : limited to 1x's the thermal rate of the accretor
                             for all stars
 
-                            ``>0`` : sets overall accretion fraction of donor mass
+                            ``>=0`` : sets overall accretion fraction of donor mass
                             as in Belcyznski+2008 w/ acc_lim = 0.5
 =======================  =====================================================
 
@@ -1067,16 +1067,17 @@ common envelope occurs regardless of the choices below:
     gamma=-1.0
 
     ; don_lim is a flag which determines how much mass is lost during thermal timescale MT
-    ; don_lim = 0: assumes standard BSE choice as outlined in Hurley+2002
-    ; don_lim = -1: Follows Claeys+2014
-    don_lim = 0
+    ; don_lim = -1: assumes standard BSE choice as outlined in Hurley+2002
+    ; don_lim = -2: Follows Claeys+2014
+    don_lim = -1
 
     ; acc_lim is a flag which determines how much mass is accreted from the donor
-    ; if acc_lim > 0: this provides the fraction of mass accreted
-    ; acc_lim = 0: assumes standard BSE choice as outlined in Hurley+2002
-    ; acc_lim = -1: assumes the accretion is limited by the ratio of the KH timescales: tkh_acc/tkh_don
-    ; acc_lim = -2: assumes the accretion is limited by 10x's the ratio of the KH timescales: 10*tkh_acc/tkh_don
-    acc_lim = 0
+    ; if acc_lim >= 0: this provides the fraction of mass accreted
+    ; acc_lim = -1: assumes standard BSE choice as outlined in Hurley+2002, limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
+    ; acc_lim = -2: limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
+    ; acc_lim = -3: limited to 10x the thermal rate of the accretor for all stars
+    ; acc_lim = -4: limited to 1x the thermal rate of the accretor for all stars
+    acc_lim = -1
 
 
 .. note::
