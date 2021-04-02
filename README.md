@@ -23,9 +23,7 @@ The easiest method to install cosmic is using pip directly:
 pip install cosmic-popsynth
 ```
 
-[![Build Status](https://travis-ci.com/COSMIC-PopSynth/COSMIC.svg?branch=develop)](https://travis-ci.com/COSMIC-PopSynth/COSMIC)
-
-[![Coverage Status](https://coveralls.io/repos/github/COSMIC-PopSynth/COSMIC/badge.svg?branch=develop)](https://coveralls.io/github/COSMIC-PopSynth/COSMIC?branch=develop)
+[![Unit Test COSMIC](https://github.com/COSMIC-PopSynth/COSMIC/actions/workflows/python-package.yml/badge.svg)](https://github.com/COSMIC-PopSynth/COSMIC/actions/workflows/python-package.yml)
 
 [![codecov](https://codecov.io/gh/COSMIC-PopSynth/COSMIC/branch/develop/graph/badge.svg)](https://codecov.io/gh/COSMIC-PopSynth/COSMIC)
 
