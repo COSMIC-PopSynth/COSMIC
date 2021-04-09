@@ -760,7 +760,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError("Filters criteria must be supplied via a dictionary")
-        for option in ["binary_state"]:
+        for option in ["binary_state", "timestep_conditions"]:
             if option not in filters.keys():
                 raise ValueError(
                     "Inifile section filters must have option {0} supplied".format(
@@ -772,10 +772,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if not isinstance(convergence, dict):
             raise ValueError("Convergence criteria must be supplied via a dictionary")
         for option in [
+            "pop_select",
             "convergence_params",
-            "convergence_filter",
             "match",
-            "convergence_limits",
+            "apply_convergence_limits",
         ]:
             if option not in convergence.keys():
                 raise ValueError(
@@ -787,7 +787,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if sampling is not None:
         if not isinstance(sampling, dict):
             raise ValueError("Sampling criteria must be supplied via a dictionary")
-        for option in ["sampling_method", "SF_start", "SF_duration", "metallicity"]:
+        for option in ["sampling_method", "SF_start", "SF_duration", "metallicity", "keep_singles"]:
             if option not in sampling.keys():
                 raise ValueError(
                     "Inifile section sampling must have option {0} supplied".format(
@@ -804,6 +804,13 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     flag, filters[flag]
                 )
             )
+        flag = "binary_state"
+        if (type(filters[flag]) != str) or (type(filters[flag]) != list):
+            raise ValueError(
+                "{0} needs to either be a string like 'dtp=None' or a list of conditions like [['binstate==0', 'dtp=1.0']] (you set it to {1})".format(
+                    flag, filters[flag]
+                )
+            )
 
     # convergence
     if convergence is not None:
@@ -816,7 +823,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                             key, len(item)
                         )
                     )
-        flag = "convergence_filter"
+        flag = "pop_select"
         if not convergence[flag] in [
             "formation",
             "1_SN",
@@ -861,6 +868,29 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     )
                 )
 
+        flag = "convergence_limits"
+        if type(convergence[flag]) != dict:
+            raise ValueError(
+                "Supplied convergence limits must be passed as a dict "
+                "(you passed type {0})".format(type(convergence[flag]))
+                )
+
+        for key in convergence[flag].keys():
+            if key not in convergence["convergence_params"]:
+                raise ValueError(
+                    "Supplied convergence limits must correspond to already "
+                    "supplied convergence_params. The supplied convergence_params "
+                    "are {0}, while you supplied {1}".format(
+                        convergence["convergence_params"], key)
+                    )
+        flag = "apply_convergence_limits"
+        if type(convergence[flag]) != bool:
+            raise ValueError(
+                "apply_convergence_limits must be either True or False, "
+                "you supplied {}".format(
+                    convergence[flag])
+                )  
+ 
     # sampling
     if sampling is not None:
         flag = "sampling_method"
