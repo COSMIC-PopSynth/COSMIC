@@ -1560,9 +1560,11 @@ def parse_inifile(inifile):
 
     # ---- Read needed variables from the inifile
     dictionary = {}
+    generating_cmc_ics = False
     for section in cp.sections():
         # for cosmic we skip any CMC stuff
         if section == "cmc":
+            generating_cmc_ics = True
             continue
         dictionary[section] = {}
         for option in cp.options(section):
@@ -1573,10 +1575,16 @@ def parse_inifile(inifile):
                 dictionary[section][option] = json.loads(opt)
 
     BSEDict = dictionary["bse"]
-    seed_int = int(dictionary["rand_seed"]["seed"])
-    filters = dictionary["filters"]
-    convergence = dictionary["convergence"]
-    sampling = dictionary["sampling"]
+    if not generating_cmc_ics:
+        seed_int = int(dictionary["rand_seed"]["seed"])
+        filters = dictionary["filters"]
+        convergence = dictionary["convergence"]
+        sampling = dictionary["sampling"]
+    else:
+        seed_int = 0
+        filters = 0
+        convergence = 0
+        sampling = 0
 
     return BSEDict, seed_int, filters, convergence, sampling
 
