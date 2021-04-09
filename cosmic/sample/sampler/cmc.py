@@ -138,11 +138,17 @@ def get_cmc_sampler(
     n_binaries += len(mass1_binaries)
 
     # select out the primaries and secondaries that will produce the final kstars
-    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binaries.size)
     porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
-    porb = initconditions.sample_porb(
-        mass1_binaries, mass2_binaries, ecc, porb_model, porb_max, size=mass1_binaries.size
-    )
+    if kwargs.pop("sample_porb_first",True):
+        porb,aRL_over_a = initconditions.sample_porb(
+            mass1_binaries, mass2_binaries, porb_model, ecc=None, size=mass1_binaries.size
+        )
+        ecc = initconditions.sample_ecc(ecc_model, aRL_over_a=aRL_over_a, size=mass1_binaries.size)
+    else:
+        ecc = initconditions.sample_ecc(ecc_model, aRL_over_a=None, size=mass1_binaries.size)
+        porb,_ = initconditions.sample_porb(
+            mass1_binaries, mass2_binaries, porb_model, porb_max=porb_max, ecc=ecc, size=mass1_binaries.size
+        )
     sep = utils.a_from_p(porb, mass1_binaries, mass2_binaries)
     kstar1 = initconditions.set_kstar(mass1_binaries)
     kstar2 = initconditions.set_kstar(mass2_binaries)

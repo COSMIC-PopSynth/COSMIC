@@ -188,10 +188,21 @@ def get_independent_sampler(
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
     mass1_singles = np.asarray(mass1_singles)
-    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
-    porb = initconditions.sample_porb(
-        mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
-    )
+
+    # sample periods and eccentricities
+    # Order depends on whether we want to sample periods first and truncate eccentricities at RL overflow
+    # or vise versa
+    if kwargs.pop("sample_porb_first",True):
+        porb,aRL_over_a = initconditions.sample_porb(
+            mass1_binary, mass2_binary, porb_model, ecc=None, size=mass1_binary.size
+        )
+        ecc = initconditions.sample_ecc(ecc_model, aRL_over_a=aRL_over_a, size=mass1_binary.size)
+    else:
+        ecc = initconditions.sample_ecc(ecc_model, aRL_over_a=None, size=mass1_binary.size)
+        porb,_ = initconditions.sample_porb(
+            mass1_binary, mass2_binary, porb_model, ecc=ecc, size=mass1_binary.size
+        )
+
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
@@ -620,49 +631,69 @@ class Sample(object):
         porb : array
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
+        aRL_over_a: array
+            ratio of radius where RL overflow starts to the sampled seperation
+            used to truncate the eccentricitiy distribution
         """
-        if porb_model == "log_uniform":
-            q = mass2 / mass1
-            RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-                0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
-            )
 
-            q2 = mass1 / mass2
-            RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-                0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
-            )
-            try:
-                (ind_lo,) = np.where(mass1 < 1.66)
-                (ind_hi,) = np.where(mass1 >= 1.66)
+        ## First we need to compute where RL overflow starts.  We truncate the lower-bound
+        ## of the period distribution there
 
-                rad1 = np.zeros(len(mass1))
-                rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
-                rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
-            except Exception:
-                if mass1 < 1.66:
-                    rad1 = 1.06 * mass1 ** 0.945
-                else:
-                    rad1 = 1.33 * mass1 ** 0.555
+        ## We use approximate formulae for the ZAMS radii here, rather than calling BSE
+        q = mass2 / mass1
+        RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
+            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
+        )
 
-            try:
-                (ind_lo,) = np.where(mass2 < 1.66)
-                (ind_hi,) = np.where(mass2 >= 1.66)
+        q2 = mass1 / mass2
+        RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
+            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
+        )
+        try:
+            (ind_lo,) = np.where(mass1 < 1.66)
+            (ind_hi,) = np.where(mass1 >= 1.66)
 
-                rad2 = np.zeros(len(mass2))
-                rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
-                rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
-            except Exception:
-                if mass2 < 1.66:
-                    rad2 = 1.06 * mass1 ** 0.945
-                else:
-                    rad2 = 1.33 * mass1 ** 0.555
+            rad1 = np.zeros(len(mass1))
+            rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
+            rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
+        except Exception:
+            if mass1 < 1.66:
+                rad1 = 1.06 * mass1 ** 0.945
+            else:
+                rad1 = 1.33 * mass1 ** 0.555
 
-            # include the factor for the eccentricity
-            RL_max = 2 * rad1 / RL_fac
-            (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
-            if len(ind_switch) >= 1:
-                RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
+        try:
+            (ind_lo,) = np.where(mass2 < 1.66)
+            (ind_hi,) = np.where(mass2 >= 1.66)
+
+            rad2 = np.zeros(len(mass2))
+            rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
+            rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
+        except Exception:
+            if mass2 < 1.66:
+                rad2 = 1.06 * mass1 ** 0.945
+            else:
+                rad2 = 1.33 * mass1 ** 0.555
+
+        # include the factor for the eccentricity
+        RL_max = 2 * rad1 / RL_fac
+        (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
+        if len(ind_switch) >= 1:
+            RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
+
+        ## Can either sample the porb first and truncate the eccentricities at RL overflow
+        ## or sample the eccentricities first and truncate a(1-e) at RL overflow
+        ##
+        ## If we haven't sampled the eccentricities, then the minimum semi-major axis is at
+        ## RL overflow
+        ##
+        ## If we have, then the minimum pericenter is set to RL overflow
+        if ecc is None: 
+            a_min = RL_max 
+        else:
             a_min = RL_max / (1 - ecc)
+
+        if porb_model == "log_uniform":
             if porb_max is None:
                 a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
             else:
@@ -671,9 +702,10 @@ class Sample(object):
                 a_max[a_max < a_min] = a_min[a_max < a_min]
                 a_0 = np.random.uniform(np.log(a_min), np.log(a_max), size)
 
-
             # convert out of log space
             a_0 = np.exp(a_0)
+            aRL_over_a = a_min/a_0
+
             # convert to au
             rsun_au = 0.00465047
             a_0 = a_0 * rsun_au
@@ -683,30 +715,47 @@ class Sample(object):
             porb_yr = ((a_0 ** 3.0) / (mass1 + mass2)) ** 0.5
             porb = porb_yr * yr_day
         elif porb_model == "sana12":
+            ## Set the minimum to the larger of either the RL overflow or 0.15
+            log10_porb_min = np.log10(utils.p_from_a(a_min,mass1,mass2))
+            log10_porb_min = np.maximum(np.ones_like(mass1)*0.15,log10_porb_min)
+
+            ## Same here: if using CMC, set the maximum porb to the smaller of either the
+            ## hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
             else:
                 log10_porb_max = np.log10(porb_max)
+                log10_porb_max = np.minimum(np.ones_like(mass1)*5.5,np.log10(porb_max))
 
-            porb = 10 ** utils.rndm(a=0.15, b=log10_porb_max, g=-0.55, size=size)
+            porb = 10 ** utils.rndm(a=log10_porb_min, b=log10_porb_max, g=-0.55, size=size)
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+
         elif porb_model == "renzo19":
+            ## Set the minimum to the larger of either the RL overflow or 0.15
+            log10_porb_min = np.log10(utils.p_from_a(a_min,mass1,mass2))
+            log10_porb_min = np.maximum(np.ones_like(mass1)*0.15,log10_porb_min)
+
+            ## Same here: if using CMC, set the maximum porb to the smaller of either the
+            ## hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
             else:
                 log10_porb_max = np.log10(porb_max)
+                log10_porb_max = np.minimum(np.ones_like(mass1)*5.5,np.log10(porb_max))
 
-            porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
+            porb = 10 ** (np.random.uniform(log10_porb_min, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
             porb[ind_massive] = 10 ** utils.rndm(
-                a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
+                a=log10_porb_min, b=log10_porb_max, g=-0.55, size=len(ind_massive)
             )
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
         else:
             raise ValueError(
                 "You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19"
             )
-        return porb
+        return porb, aRL_over_a 
 
-    def sample_ecc(self, ecc_model="sana12", size=None):
+    def sample_ecc(self, ecc_model="sana12", aRL_over_a=None ,size=None):
         """Sample the eccentricity according to a user specified model
 
         Parameters
@@ -720,6 +769,10 @@ class Sample(object):
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
 
+        aRL_over_a : ratio of the minimum seperation (where RL overflow starts)
+            to the sampled semi-major axis.  Can use this to truncate the eccentricitiy
+            distribution if sample_porb_first kwarg is True
+
         size : int, optional
             number of eccentricities to sample
             this is set in cosmic-pop call as Nstep
@@ -730,17 +783,30 @@ class Sample(object):
             array of sampled eccentricities with size=size
         """
 
+        # if we sampled the periods first, we need to truncate the eccentricities
+        # to avoid RL overflow/collision at pericenter
+        if aRL_over_a is None:
+            if ecc_model == "sana12":
+                e_max = 0.9
+            else:
+                e_max = 1.0
+        else:
+            e_max = 1.0 - aRL_over_a
+            if ecc_model == "sana12":
+                e_max = np.minimum(e_max,0.9)
+
+
         if ecc_model == "thermal":
-            a_0 = np.random.uniform(0.0, 1.0, size)
+            a_0 = np.random.uniform(0.0, e_max**2, size)
             ecc = a_0 ** 0.5
             return ecc
 
         elif ecc_model == "uniform":
-            ecc = np.random.uniform(0.0, 1.0, size)
+            ecc = np.random.uniform(0.0, e_max, size)
             return ecc
 
         elif ecc_model == "sana12":
-            ecc = utils.rndm(a=0.001, b=0.9, g=-0.45, size=size)
+            ecc = utils.rndm(a=0.001, b=e_max, g=-0.45, size=size)
             return ecc
 
         elif ecc_model == "circular":
