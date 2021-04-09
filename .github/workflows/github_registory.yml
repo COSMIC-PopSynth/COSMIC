@@ -2,7 +2,7 @@ name: CI to Docker Hub
 
 on:
   push:
-    branches: [ add-dockerhub-action ]
+    branches: [ develop ]
 
 jobs:
 
