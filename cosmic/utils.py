@@ -774,6 +774,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         for option in [
             "pop_select",
             "convergence_params",
+            "convergence_limits",
             "match",
             "apply_convergence_limits",
         ]:
@@ -804,8 +805,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     flag, filters[flag]
                 )
             )
-        flag = "binary_state"
-        if (type(filters[flag]) != str) or (type(filters[flag]) != list):
+        flag = "timestep_conditions"
+        if (type(filters[flag]) != str) and (type(filters[flag]) != list):
             raise ValueError(
                 "{0} needs to either be a string like 'dtp=None' or a list of conditions like [['binstate==0', 'dtp=1.0']] (you set it to {1})".format(
                     flag, filters[flag]
