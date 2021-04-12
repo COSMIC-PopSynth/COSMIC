@@ -42,6 +42,25 @@ def get_cmc_sampler(
 
     Parameters
     ----------
+    cluster_profile : `str`
+        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
+        Options include:
+        'plummer' : Standard Plummer sphere.
+            Additional parameters:
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'elson' : EFF 1987 profile.  Generalization of Plummer that better fits young massive clusters
+            Additional parameters:
+            'gamma' : `float`
+                steepness paramter for Elson profile; note that gamma=4 is same is Plummer
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'king' : King profile 
+            'w_0' : `float`
+                King concentration parameter
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+
     primary_model : `str`
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
 
@@ -70,10 +89,6 @@ def get_cmc_sampler(
 
     qmin_msort : `float`
         Same as qmin for M>msort
-
-    cluster_profile : `str`
-        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
-        options include king, plummer and elson.
 
     params : `str`
         Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
@@ -200,7 +215,22 @@ def get_cmc_point_mass_sampler(
     ----------
     cluster_profile : `str`
         Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
-        options include king, plummer and elson.
+        Options include:
+        'plummer' : Standard Plummer sphere.
+            Additional parameters:
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'elson' : EFF 1987 profile.  Generalization of Plummer that better fits young massive clusters
+            Additional parameters:
+            'gamma' : `float`
+                steepness paramter for Elson profile; note that gamma=4 is same is Plummer
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'king' : King profile 
+            'w_0' : `float`
+                King concentration parameter
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
 
     params : `str`
         Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
