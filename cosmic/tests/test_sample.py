@@ -131,11 +131,11 @@ class TestSample(unittest.TestCase):
     def test_sample_secondary(self):
         np.random.seed(2)
         # Check that the sample_secondary function samples secondary mass correctly
-        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='salpeter55', size=1000000)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='salpeter55', size=10000000)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1)
         ind_massive, = np.where(mass1 > 5.0)
         q = mass2[ind_massive]/mass1[ind_massive]
-        slope = linear_fit(q)
+        slope = linear_fit(q[q>0.1])
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
     def test_binary_select(self):
