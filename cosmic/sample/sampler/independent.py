@@ -287,7 +287,12 @@ class Sample(object):
             elif i < len(alphas)-1: idxs[i], = np.where((u > cutoffs[i-1]) & (u <= cutoffs[i]))
             else: idxs[i], = np.where(u > cutoffs[i-1])
         for i in range(len(alphas)):
-            u[idxs[i]] = rndm(a=mcuts[i], b=mcuts[i+1], g=-1.*alphas[i], size=len(idxs[i]))
+            if alphas[i] == 1.0:
+                u[idxs[i]] = 10**np.random.uniform(np.log10(mcuts[i]), 
+                                                   np.log10(mcuts[i+1]), 
+                                                   len(idxs[i]))
+            else:
+                u[idxs[i]] = rndm(a=mcuts[i], b=mcuts[i+1], g=-1.*alphas[i], size=len(idxs[i]))
 
         return u, np.sum(u)
 
