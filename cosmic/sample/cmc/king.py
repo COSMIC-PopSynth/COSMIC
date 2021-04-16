@@ -60,7 +60,7 @@ def integrate_king_profile(w0,tidal_boundary=1e-6):
     w(0) = w_0
     w'(0) = 0
 
-    returns (radii, rho, M_enclosed)
+    returns (radii, rho, phi, M_enclosed)
     """
 
     rho_0 = calc_rho(w0)
