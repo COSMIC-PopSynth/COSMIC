@@ -127,6 +127,10 @@ C      ENDIF
          IF(ICASE.EQ.13.AND.M3.GT.MXNS)then
             KW = 14
          ENDIF
+*       Special case for NSNS mergers below MXNS
+         IF(K1.EQ.13.AND.K2.EQ.13.AND.M3.LE.MXNS)then
+            KW = 13
+         ENDIF
       ELSEIF(ICASE.EQ.15)THEN
          M3 = 0.D0
       ELSEIF(ICASE.GT.100)THEN
