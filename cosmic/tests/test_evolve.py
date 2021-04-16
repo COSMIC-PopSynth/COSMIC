@@ -16,12 +16,16 @@ from .. import evolve
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
+INITC_GRID = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initC_grid.h5'), key='initC')
 
 init_conds_columns = initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL
 
 INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
 BCM_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bcm')
+BPP_DF_GRID = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'grid_test_results.h5'), key='bpp')
+BCM_DF_GRID = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'grid_test_results.h5'), key='bcm')
+
 BSEFlag_columns = list(set(evolve.INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL)) 
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
@@ -95,3 +99,13 @@ class TestEvolve(unittest.TestCase):
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False, check_less_precise=True)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False, check_less_precise=True)
+
+    def test_evolve_grid(self):
+        EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
+            initialbinarytable=INITC_GRID, BSEDict={}, randomseed=2)
+
+        for ind, row in EvolvedBinaryBPP.iterrows(): 
+            print(row.tphys)
+        pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF_GRID, check_dtype=False, check_exact=False, check_less_precise=True)
+        pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF_GRID, check_dtype=False, check_exact=False, check_less_precise=True)
+
