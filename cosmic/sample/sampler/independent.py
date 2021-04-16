@@ -25,6 +25,7 @@ from ... import utils
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
+from ... import _evolvebin
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
@@ -188,10 +189,16 @@ def get_independent_sampler(
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
     mass1_singles = np.asarray(mass1_singles)
-    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
-    porb = initconditions.sample_porb(
-        mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
+
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, **kwargs)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, **kwargs)
+
+    # sample periods and eccentricities
+    porb,aRL_over_a = initconditions.sample_porb(
+        mass1_binary, mass2_binary, rad1, rad2, porb_model, size=mass1_binary.size
     )
+    ecc = initconditions.sample_ecc(aRL_over_a, ecc_model, size=mass1_binary.size)
+
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
@@ -590,7 +597,7 @@ class Sample(object):
             binaryIdx,
         )
 
-    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", porb_max=None, size=None):
+    def sample_porb(self, mass1, mass2, rad1, rad2, porb_model="sana12", porb_max=None, size=None):
         """Sample the orbital period according to the user-specified model
 
         Parameters
@@ -599,8 +606,10 @@ class Sample(object):
             primary masses
         mass2 : array
             secondary masses
-        ecc : array
-            eccentricity
+        rad1 : array
+            radii of the primaries. 
+        rad2 : array
+            radii of the secondaries 
         model : string
             selects which model to sample orbital periods, choices include:
             log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
@@ -620,60 +629,51 @@ class Sample(object):
         porb : array
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
+        aRL_over_a: array
+            ratio of radius where RL overflow starts to the sampled seperation
+            used to truncate the eccentricitiy distribution
         """
+
+        # First we need to compute where RL overflow starts.  We truncate the lower-bound
+        # of the period distribution there
+        q = mass2 / mass1
+        RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
+            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
+        )
+
+        q2 = mass1 / mass2
+        RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
+            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
+        )
+
+        # include the factor for the eccentricity
+        RL_max = 2 * rad1 / RL_fac
+        (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
+        if len(ind_switch) >= 1:
+            RL_max[ind_switch] = 2 * rad2[ind_switch] / RL_fac2[ind_switch]
+
+        # Can either sample the porb first and truncate the eccentricities at RL overflow
+        # or sample the eccentricities first and truncate a(1-e) at RL overflow
+        #
+        # If we haven't sampled the eccentricities, then the minimum semi-major axis is at
+        # RL overflow
+        #
+        # If we have, then the minimum pericenter is set to RL overflow
+        a_min = RL_max 
+
         if porb_model == "log_uniform":
-            q = mass2 / mass1
-            RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-                0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
-            )
-
-            q2 = mass1 / mass2
-            RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-                0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
-            )
-            try:
-                (ind_lo,) = np.where(mass1 < 1.66)
-                (ind_hi,) = np.where(mass1 >= 1.66)
-
-                rad1 = np.zeros(len(mass1))
-                rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
-                rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
-            except Exception:
-                if mass1 < 1.66:
-                    rad1 = 1.06 * mass1 ** 0.945
-                else:
-                    rad1 = 1.33 * mass1 ** 0.555
-
-            try:
-                (ind_lo,) = np.where(mass2 < 1.66)
-                (ind_hi,) = np.where(mass2 >= 1.66)
-
-                rad2 = np.zeros(len(mass2))
-                rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
-                rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
-            except Exception:
-                if mass2 < 1.66:
-                    rad2 = 1.06 * mass1 ** 0.945
-                else:
-                    rad2 = 1.33 * mass1 ** 0.555
-
-            # include the factor for the eccentricity
-            RL_max = 2 * rad1 / RL_fac
-            (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
-            if len(ind_switch) >= 1:
-                RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
-            a_min = RL_max / (1 - ecc)
             if porb_max is None:
                 a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
             else:
-                ## If in CMC, only sample binaries as wide as the local hard/soft boundary
+                # If in CMC, only sample binaries as wide as the local hard/soft boundary
                 a_max = utils.a_from_p(porb_max,mass1,mass2) 
                 a_max[a_max < a_min] = a_min[a_max < a_min]
                 a_0 = np.random.uniform(np.log(a_min), np.log(a_max), size)
 
-
             # convert out of log space
             a_0 = np.exp(a_0)
+            aRL_over_a = a_min/a_0
+
             # convert to au
             rsun_au = 0.00465047
             a_0 = a_0 * rsun_au
@@ -683,30 +683,37 @@ class Sample(object):
             porb_yr = ((a_0 ** 3.0) / (mass1 + mass2)) ** 0.5
             porb = porb_yr * yr_day
         elif porb_model == "sana12":
+            # Same here: if using CMC, set the maximum porb to the smaller of either the
+            # hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
             else:
-                log10_porb_max = np.log10(porb_max)
+                log10_porb_max = np.minimum(5.5,np.log10(porb_max))
 
             porb = 10 ** utils.rndm(a=0.15, b=log10_porb_max, g=-0.55, size=size)
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+
         elif porb_model == "renzo19":
+            # Same here: if using CMC, set the maximum porb to the smaller of either the
+            # hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
             else:
-                log10_porb_max = np.log10(porb_max)
+                log10_porb_max = np.minimum(5.5,np.log10(porb_max))
 
             porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
             porb[ind_massive] = 10 ** utils.rndm(
                 a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
             )
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
         else:
             raise ValueError(
                 "You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19"
             )
-        return porb
+        return porb, aRL_over_a 
 
-    def sample_ecc(self, ecc_model="sana12", size=None):
+    def sample_ecc(self, aRL_over_a, ecc_model="sana12", size=None):
         """Sample the eccentricity according to a user specified model
 
         Parameters
@@ -720,6 +727,9 @@ class Sample(object):
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
 
+        aRL_over_a : ratio of the minimum seperation (where RL overflow starts)
+            to the sampled semi-major axis.  Use this to truncate the eccentricitiy
+
         size : int, optional
             number of eccentricities to sample
             this is set in cosmic-pop call as Nstep
@@ -730,13 +740,17 @@ class Sample(object):
             array of sampled eccentricities with size=size
         """
 
+        # if we sampled the periods first, we need to truncate the eccentricities
+        # to avoid RL overflow/collision at pericenter
+        e_max = 1.0 - aRL_over_a
+
         if ecc_model == "thermal":
-            a_0 = np.random.uniform(0.0, 1.0, size)
+            a_0 = np.random.uniform(0.0, e_max**2, size)
             ecc = a_0 ** 0.5
             return ecc
 
         elif ecc_model == "uniform":
-            ecc = np.random.uniform(0.0, 1.0, size)
+            ecc = np.random.uniform(0.0, e_max, size)
             return ecc
 
         elif ecc_model == "sana12":
@@ -809,3 +823,129 @@ class Sample(object):
         kstar[hiIdx] = 1
 
         return kstar
+
+    def set_reff(self, mass, metallicity, **kwargs):
+
+        # Make sure you've specified the BSE parameters
+        if "BSEDict" not in kwargs and "params" not in kwargs:
+            raise ValueError(
+                'Must specify either BSEDict or params=param.ini to use set_radii_with_BSE')
+
+        # NUMBER 1: PASS A DICTIONARY OF FLAGS
+        BSEDict = kwargs.pop("BSEDict", {})
+
+        # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+        params = kwargs.pop("params", None)
+
+        if params is not None:
+            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+
+        # set BSE consts
+        _evolvebin.windvars.neta = BSEDict["neta"]
+        _evolvebin.windvars.bwind = BSEDict["bwind"]
+        _evolvebin.windvars.hewind = BSEDict["hewind"]
+        _evolvebin.cevars.alpha1 = BSEDict["alpha1"]
+        _evolvebin.cevars.lambdaf = BSEDict["lambdaf"]
+        _evolvebin.ceflags.ceflag = BSEDict["ceflag"]
+        _evolvebin.flags.tflag = BSEDict["tflag"]
+        _evolvebin.flags.ifflag = BSEDict["ifflag"]
+        _evolvebin.flags.wdflag = BSEDict["wdflag"]
+        _evolvebin.snvars.pisn = BSEDict["pisn"]
+        _evolvebin.flags.bhflag = BSEDict["bhflag"]
+        _evolvebin.flags.remnantflag = BSEDict["remnantflag"]
+        _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
+        _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
+        _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
+        _evolvebin.flags.grflag = BSEDict["grflag"]
+        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
+        _evolvebin.snvars.mxns = BSEDict["mxns"]
+        _evolvebin.points.pts1 = BSEDict["pts1"]
+        _evolvebin.points.pts2 = BSEDict["pts2"]
+        _evolvebin.points.pts3 = BSEDict["pts3"]
+        _evolvebin.snvars.ecsn = BSEDict["ecsn"]
+        _evolvebin.snvars.ecsn_mlow = BSEDict["ecsn_mlow"]
+        _evolvebin.flags.aic = BSEDict["aic"]
+        _evolvebin.ceflags.ussn = BSEDict["ussn"]
+        _evolvebin.snvars.sigma = BSEDict["sigma"]
+        _evolvebin.snvars.sigmadiv = BSEDict["sigmadiv"]
+        _evolvebin.snvars.bhsigmafrac = BSEDict["bhsigmafrac"]
+        _evolvebin.snvars.polar_kick_angle = BSEDict["polar_kick_angle"]
+        _evolvebin.snvars.natal_kick_array = BSEDict["natal_kick_array"]
+        _evolvebin.cevars.qcrit_array = BSEDict["qcrit_array"]
+        _evolvebin.windvars.beta = BSEDict["beta"]
+        _evolvebin.windvars.xi = BSEDict["xi"]
+        _evolvebin.windvars.acc2 = BSEDict["acc2"]
+        _evolvebin.windvars.epsnov = BSEDict["epsnov"]
+        _evolvebin.windvars.eddfac = BSEDict["eddfac"]
+        _evolvebin.windvars.gamma = BSEDict["gamma"]
+        _evolvebin.flags.bdecayfac = BSEDict["bdecayfac"]
+        _evolvebin.magvars.bconst = BSEDict["bconst"]
+        _evolvebin.magvars.ck = BSEDict["ck"]
+        _evolvebin.flags.windflag = BSEDict["windflag"]
+        _evolvebin.flags.qcflag = BSEDict["qcflag"]
+        _evolvebin.flags.eddlimflag = BSEDict["eddlimflag"]
+        _evolvebin.tidalvars.fprimc_array = BSEDict["fprimc_array"]
+        _evolvebin.rand1.idum1 = -1
+        _evolvebin.flags.bhspinflag = BSEDict["bhspinflag"]
+        _evolvebin.snvars.bhspinmag = BSEDict["bhspinmag"]
+        _evolvebin.mixvars.rejuv_fac = BSEDict["rejuv_fac"]
+        _evolvebin.flags.rejuvflag = BSEDict["rejuvflag"]
+        _evolvebin.flags.htpmb = BSEDict["htpmb"]
+        _evolvebin.flags.st_cr = BSEDict["ST_cr"]
+        _evolvebin.flags.st_tide = BSEDict["ST_tide"]
+        _evolvebin.snvars.rembar_massloss = BSEDict["rembar_massloss"]
+        _evolvebin.metvars.zsun = BSEDict["zsun"]
+        _evolvebin.snvars.kickflag = BSEDict["kickflag"]
+        _evolvebin.cmcpass.using_cmc = 0
+
+        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
+        initial_stars = InitialBinaryTable.InitialBinaries(
+            mass,
+            np.ones_like(mass) * 0,
+            np.ones_like(mass) * -1,
+            np.ones_like(mass) * -1,
+            np.ones_like(mass) * 0.1,
+            self.set_kstar(mass),
+            np.ones_like(mass) * 0,
+            np.ones_like(mass) * metallicity,
+        )
+        initial_stars["dtp"] = initial_stars["tphysf"]
+
+        initial_stars = initial_stars.assign(
+            kick_info=[np.zeros((2, 17))] * len(initial_stars)
+        )
+        initial_conditions = initial_stars.to_dict("records")
+
+        rad_1 = np.zeros(len(initial_stars))
+        for idx, initial_condition in enumerate(initial_conditions):
+            [bpp_index, bcm_index, _] = _evolvebin.evolv2(
+                [initial_condition["kstar_1"], initial_condition["kstar_2"]],
+                [initial_condition["mass_1"], initial_condition["mass_2"]],
+                initial_condition["porb"],
+                initial_condition["ecc"],
+                initial_condition["metallicity"],
+                initial_condition["tphysf"],
+                initial_condition["dtp"],
+                [initial_condition["mass0_1"], initial_condition["mass0_2"]],
+                [initial_condition["rad_1"], initial_condition["rad_2"]],
+                [initial_condition["lum_1"], initial_condition["lum_2"]],
+                [initial_condition["massc_1"], initial_condition["massc_2"]],
+                [initial_condition["radc_1"], initial_condition["radc_2"]],
+                [initial_condition["menv_1"], initial_condition["menv_2"]],
+                [initial_condition["renv_1"], initial_condition["renv_2"]],
+                [initial_condition["omega_spin_1"],
+                    initial_condition["omega_spin_2"]],
+                [initial_condition["B_1"], initial_condition["B_2"]],
+                [initial_condition["bacc_1"], initial_condition["bacc_2"]],
+                [initial_condition["tacc_1"], initial_condition["tacc_2"]],
+                [initial_condition["epoch_1"], initial_condition["epoch_2"]],
+                [initial_condition["tms_1"], initial_condition["tms_2"]],
+                [initial_condition["bhspin_1"], initial_condition["bhspin_2"]],
+                initial_condition["tphys"],
+                np.zeros(20),
+                np.zeros(20),
+                initial_condition["kick_info"],
+            )
+            rad_1[idx] = _evolvebin.binary.bcm[0, 5]
+
+        return rad_1
