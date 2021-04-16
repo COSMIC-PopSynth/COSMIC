@@ -1593,7 +1593,18 @@ def parse_inifile(inifile):
     dictionary = {}
     for section in cp.sections():
         # for cosmic we skip any CMC stuff
+        # if "cmc" is a section in the ini file, then we can optionally skip the 
+        # COSMIC population sections (or not, if they exist)
         if section == "cmc":
+            if "rand_seed" not in dictionary.keys():
+                dictionary["rand_seed"] = {}
+                dictionary["rand_seed"]["seed"] = 0
+            if "filters" not in dictionary.keys():
+                dictionary["filters"] = 0
+            if "convergence" not in dictionary.keys():
+                dictionary["convergence"] = 0
+            if "sampling" not in dictionary.keys():
+                dictionary["sampling"] = 0
             continue
         dictionary[section] = {}
         for option in cp.options(section):
