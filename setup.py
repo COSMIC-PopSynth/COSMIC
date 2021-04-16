@@ -25,6 +25,7 @@ from __future__ import print_function
 import glob
 import os.path
 import versioneer
+import sys
 
 from setuptools import find_packages
 from distutils.command.sdist import sdist
@@ -67,10 +68,15 @@ with open("README.md", "rb") as f:
 # -- dependencies -------------------------------------------------------------
 
 setup_requires = [
-    "setuptools",
-    "pytest-runner",
     "numpy",
 ]
+
+if 'test' in sys.argv:
+    setup_requires.extend([
+        'setuptools',
+        'pytest-runner',
+    ])
+
 install_requires = [
     'numpy >= 1.16, <=1.18.4 ; python_version == \'3.6\'',
     'numpy >= 1.16 ; python_version > \'3.6\'',

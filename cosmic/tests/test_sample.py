@@ -7,13 +7,17 @@ import os
 import unittest
 import numpy as np
 import pandas as pd
-from cosmic.sample.sampler.independent import Sample
-from cosmic.sample.sampler.multidim import MultiDim
+from ..sample.sampler.independent import Sample
+from ..sample.sampler.multidim import MultiDim
+from ..sample.sampler.cmc import CMCSample
+from ..sample.cmc import elson
+from ..sample.initialcmctable import InitialCMCTable
 from scipy.optimize import curve_fit
-from cosmic.utils import a_from_p
+from ..utils import a_from_p
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
+CMCSAMPLECLASS = CMCSample()
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 
 #distribution slopes/power laws
@@ -39,6 +43,15 @@ KSTAR_SOLAR = 1.0
 MOE_TOTAL_MASS = 20.27926225850954
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
+
+KING_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_king_test.npz"))
+ELSON_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_elson_test.npz"))
+R_ELSON_TEST_ARRAY, VR_ELSON_TEST_ARRAY, VT_ELSON_TEST_ARRAY = ELSON_TEST_DATA["arr_0"], ELSON_TEST_DATA["arr_1"], ELSON_TEST_DATA["arr_2"] 
+R_KING_TEST_ARRAY, VR_KING_TEST_ARRAY, VT_KING_TEST_ARRAY = KING_TEST_DATA["arr_0"], KING_TEST_DATA["arr_1"], KING_TEST_DATA["arr_2"]
+
+REFF_TEST_ARRAY = np.array([3.94190562, 5.99895482])
+
+SINGLES_CMC_FITS, BINARIES_CMC_FITS = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.fits"))
 
 def power_law_fit(data, n_bins=100):
     def line(x, a, b):
@@ -185,7 +198,7 @@ class TestSample(unittest.TestCase):
         # next do Sana12
         np.random.seed(4)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=len(mass1))
         porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'sana12', size=len(mass1))
         power_slope = power_law_fit(np.log10(porb))
@@ -276,4 +289,33 @@ class TestSample(unittest.TestCase):
         kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
+class TestCMCSample(unittest.TestCase):
+    def test_elson_profile(self):
+        np.random.seed(2)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, r_max=300, gamma=4)
+        np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
+        np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
+        np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
 
+    def test_king_profile(self):
+        np.random.seed(2)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, w_0=5)
+        np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
+        np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
+        np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
+
+    def test_set_reff(self):
+        reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02, params=os.path.join(TEST_DATA_DIR,'Params.ini'))
+        np.testing.assert_allclose(REFF_TEST_ARRAY, reff)
+
+    def test_cmc_sampler(self):
+        np.random.seed(2)
+        # Test generating CMC initial conditions and test saving the output to files
+        Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
+        InitialCMCTable.write(Singles, Binaries, filename="input.hdf5")
+        InitialCMCTable.write(Singles, Binaries, filename="input.fits")
+        Singles, Binaries = InitialCMCTable.read(filename="input.hdf5")
+        Singles, Binaries = InitialCMCTable.read(filename="input.fits")
+        # read the test files and compare to the static unit tests files
+        pd.testing.assert_frame_equal(Singles, SINGLES_CMC_FITS)
+        pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_FITS)

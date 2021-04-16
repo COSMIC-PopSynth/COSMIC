@@ -2169,7 +2169,7 @@ component.
          qc = qc_fixed
       endif
 
-      if(kstar(j1).eq.0.and.q(j1).gt.qc)then
+      if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc)then
 *
 * This will be dynamical mass transfer of a similar nature to
 * common-envelope evolution.  The result is always a single
@@ -2255,12 +2255,14 @@ component.
             kstar(j2) = 15
          endif
          goto 135
-
+*
+*KB added RRLO_1 flag to send RRLO_1 > 10 into CE for post-MS binaries
+*
       elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
      &        kstar(j1).eq.8.or.kstar(j1).eq.9)
      &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
-     &        (kstar(j1).eq.2.and.q(j1).gt.qc).or.
-     &        (kstar(j1).eq.4.and.q(j1).gt.qc))then
+     &       (kstar(j1).eq.2.and.q(j1).gt.qc).or.
+     &       (kstar(j1).eq.4.and.q(j1).gt.qc))then
 *
 * Common-envelope evolution.
 *
@@ -2497,9 +2499,10 @@ component.
 *
 *
 * KB: adding in stable mass transfer factor from
-*     eqs 10-11 of Claeys+2014
+*     eqs 10-11 of Claeys+2014 as don_lim flag instead
+*     of qcflag (10/12/20)
 *
-         if(qcflag.gt.1.and.qcflag.le.3)then
+         if(don_lim.eq.-2)then
             if(q(j1).gt.1)then
                f_fac=1000.d0
             else
@@ -2511,10 +2514,11 @@ component.
             endif
             dm1 = f_fac*3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
-         else
+         elseif(don_lim.eq.-1)then
             dm1 = 3.0d-06*tb*(LOG(rad(j1)/rol(j1))**3)*
      &            MIN(mass(j1),5.d0)**2
          endif
+*         dm1 = MIN(dm1, mass(j1)*tb/tkh(j1))
          if(kstar(j1).eq.2)then
             mew = (mass(j1) - massc(j1))/mass(j1)
             dm1 = MAX(mew,0.01d0)*dm1
@@ -2530,10 +2534,10 @@ component.
 *        spnfac = MIN(3.d0,MAX(ospin(j1)/oorb,1.d0))
 *        dm1 = dm1/spnfac**2
 *
-* Limit mass transfer to the thermal rate for remaining giant-like stars
+* Limit mass transfer to the thermal rate for all fusing stars
 * and to the dynamical rate for all others.
 *
-         if(kstar(j1).ge.2.and.kstar(j1).le.9.and.kstar(j1).ne.7)then
+         if(kstar(j1).ge.0.and.kstar(j1).le.9)then
 ***
 * JH_temp ... this may be good for HG RLOF??
 *           if(kstar(j1).eq.2)then
@@ -2543,8 +2547,15 @@ component.
 *           endif
 ***
             dm1 = MIN(dm1,mass(j1)*tb/tkh(j1))
-         elseif(rad(j1).gt.10.d0*rol(j1).or.(kstar(j1).le.1.and.
-     &          kstar(j2).le.1.and.q(j1).gt.qc))then
+         endif
+*
+* Now we will initiate a CE for giants or merger for MS
+* if RRLO_1 > 10. Previously a MS + MS & q > c conditional
+* existed here, but it is completely defunct at this point
+*
+
+         if(rad(j1).gt.10.d0*rol(j1).and.kstar(j1).le.1.and.
+     &      kstar(j2).le.1)then
 *
 * Allow the stars to merge with the product in *1.
 *
@@ -2567,7 +2578,8 @@ component.
             coel = .true.
             binstate = 1
             goto 135
-         else
+         endif
+         if(kstar(j1).gt.9)then
             dm1 = MIN(dm1,mass(j1)*tb/tdyn)
          endif
 *
@@ -2641,20 +2653,56 @@ component.
 * Decide between accreted mass by secondary and/or system mass loss.
 *
          taum = mass(j2)/dm1*tb
+
+
+*
+* KB 4/Jan/21: adding in acc_lim flags
+* MZ 30/Mar/21: slight adjustment to flag designations
+* acc_lim >= 0: fraction of donor mass loss accreted; supersceded by
+*              eddington limits and/or novae on WDs.
+* acc_lim = -1: standard BSE w/ MS/HG/CHeB assumed to have thermal
+*              limit of 10*tkh while giants are unlimited. If the
+*              accretor is He-rich (>=7), limit is 10*tkh if accretor
+*              is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
+* acc_lim = -2: same as acc_lim = -1, but for 1*tkh instead
+* acc_lim = -3: accretor kw=0-6 have thermal limit of 10*tkh. If the
+*               acretor is He-rich (>=7), limit is 10*tkh if donor
+*               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
+* acc_lim = -4: accretor kw=0-6 have thermal limit of tkh. If the
+*               accretor is He-rich (>=7), limit is 1*tkh if donor
+*               is He-MS/HeHG/HeAGB and unlimited if donor is H-rich
+*
+* Note that acc_lim >= 0 means that the thermal limit is not considered
+*
+
+
          if(kstar(j2).le.2.or.kstar(j2).eq.4)then
-*
-* Limit according to the thermal timescale of the secondary.
-*
-            dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            if(acc_lim.eq.-1.or.acc_lim.eq.-3)then
+               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+            elseif(acc_lim.eq.-2.or.acc_lim.eq.-4)then
+               dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+            elseif(acc_lim.ge.0.d0)then
+               dm2 = acc_lim*dm1
+            endif
          elseif(kstar(j2).ge.7.and.kstar(j2).le.9)then
 *
 * Naked helium star secondary swells up to a core helium burning star
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               if(acc_lim.eq.-1.or.acc_lim.eq.-3)then
+                  dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
+               elseif(acc_lim.eq.-2.or.acc_lim.eq.-4)then
+                  dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+               elseif(acc_lim.ge.0.d0)then
+                  dm2 = acc_lim*dm1
+               endif
             else
-               dm2 = dm1
+               if(acc_lim.lt.0.d0)then
+                  dm2 = dm1
+               elseif(acc_lim.ge.0.d0)then
+                  dm2 = acc_lim*dm1
+               endif
                dmchk = dm2 - 1.05d0*dms(j2)
                if(dmchk.gt.0.d0.and.dm2/mass(j2).gt.1.0d-04)then
                   kst = MIN(6,2*kstar(j2)-10)
@@ -2680,20 +2728,33 @@ component.
 * Accrete until a nova explosion blows away most of the accreted material.
 *
                   novae = .true.
-                  dm2 = MIN(dm1,dme)
-                  if(dm2.lt.dm1) supedd = .true.
+                  if(acc_lim.lt.0.d0)then
+                     dm2 = MIN(dm1,dme)
+                     if(dm2.lt.dm1) supedd = .true.
+                  elseif(acc_lim.ge.0.d0)then
+                     dm2 = MIN(dm2,acc_lim*dm1)
+                     if(dm2.lt.acc_lim*dm1) supedd = .true.
+                  endif
                   dm22 = epsnov*dm2
                else
 *
 * Steady burning at the surface
 *
-                  dm2 = dm1
+                  if(acc_lim.lt.0.d0)then
+                     dm2 = dm1
+                  elseif(acc_lim.ge.0.d0)then
+                     dm2 = acc_lim*dm1
+                  endif
                endif
             else
 *
 * Make a new giant envelope.
 *
-               dm2 = dm1
+               if(acc_lim.lt.0.d0)then
+                  dm2 = dm1
+               elseif(acc_lim.ge.0.d0)then
+                  dm2 = MIN(dm2,acc_lim*dm1)
+               endif
 *
 * Check for planets or low-mass WDs.
 *
@@ -2709,21 +2770,38 @@ component.
                endif
 *
             endif
-         elseif(kstar(j2).ge.10)then
+         elseif(kstar(j2).eq.3.or.kstar(j2).eq.5.or.kstar(j2).eq.6)then
+* We have a giant w/ kstar(j2) = 3,5,6
+*
+            if(acc_lim.eq.-1.or.acc_lim.eq.-2)then
+               dm2 = dm1
+            elseif(acc_lim.eq.-3)then
+               dm2 = MIN(1.d0,10*taum/tkh(j2))*dm1
+            elseif(acc_lim.eq.-4)then
+               dm2 = MIN(1.d0,taum/tkh(j2))*dm1
+            elseif(acc_lim.ge.0.d0)then
+               dm2 = MIN(dm2,acc_lim*dm1)
+            endif
+
+         endif
+
 *
 * Impose the Eddington limit.
 *
-            dm2 = MIN(dm1,dme)
-            if(dm2.lt.dm1) supedd = .true.
+         if(kstar(j2).ge.10)then
+            if(acc_lim.lt.0.d0)then
+               dm2 = MIN(dm1,dme)
+               if(dm2.lt.dm1) supedd = .true.
+            elseif(acc_lim.ge.0.d0)then
+               dm2 = MIN(acc_lim*dm1,dme)
+               if(dm2.lt.acc_lim*dm1) supedd = .true.
+            endif
+*
 * Can add pulsar propeller evolution here if need be. PK.
 *
-*
-         else
-*
-* We have a giant whose envelope can absorb any transferred material.
-*
-            dm2 = dm1
          endif
+
+
          if(.not.novae) dm22 = dm2
 *
          if(kst.ge.10.and.kst.le.12)then
@@ -2775,6 +2853,7 @@ component.
                endif
             endif
          endif
+
 *
 *       Modify mass loss terms by speed-up factor.
 *

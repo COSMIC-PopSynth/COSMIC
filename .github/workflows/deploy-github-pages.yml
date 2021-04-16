@@ -1,9 +1,9 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+name: Website Deploy
 
-name: Unit Test COSMIC
-
-on: [pull_request]
+on:
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -32,18 +32,31 @@ jobs:
           ${{ runner.os }}-
     - name: Install dependencies
       run: |
+        sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install -r requirements.txt
+        pip install .
         python setup.py build_ext --inplace
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude docs
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude docs,versioneer.py,cosmic/_version.py,cosmic/tests,cosmic/*/__init__.py
+
     - name: Test with pytest
       run: |
         bash ci/compile_benchmark.sh
         pytest --cov=./cosmic --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
+
+    - name: Make dependencies
+      env:
+        PATH_TO_COSMIC: /home/runner/work/COSMIC/COSMIC/
+      run: |
+        cd docs && make html; cd ../
+        touch docs/_build/html/.nojekyll
+
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        target_branch: gh-pages
+        build_dir: docs/_build/html/
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

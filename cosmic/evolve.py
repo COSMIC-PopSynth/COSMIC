@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2020)
+# Copyright (C) Scott Coughlin (2017 - 2021)
 #
 # This file is part of cosmic.
 #
@@ -86,7 +86,8 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                                   'bhsigmafrac', 'polar_kick_angle',
                                   'natal_kick_array', 'qcrit_array',
                                   'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'bdecayfac', 'bconst', 'ck',
+                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 
+                                  'bdecayfac', 'bconst', 'ck',
                                   'windflag', 'qcflag', 'eddlimflag',
                                   'fprimc_array', 'dtp', 'randomseed',
                                   'bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
@@ -432,6 +433,8 @@ def _evolve_single_system(f):
         _evolvebin.snvars.polar_kick_angle = f["polar_kick_angle"]
         _evolvebin.snvars.natal_kick_array = f["natal_kick_array"]
         _evolvebin.cevars.qcrit_array = f["qcrit_array"]
+        _evolvebin.mtvars.don_lim = f["don_lim"]
+        _evolvebin.mtvars.acc_lim = f["acc_lim"]
         _evolvebin.windvars.beta = f["beta"]
         _evolvebin.windvars.xi = f["xi"]
         _evolvebin.windvars.acc2 = f["acc2"]

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2020)
+# Copyright (C) Scott Coughlin (2017 - 2021)
 #
 # This file is part of cosmic.
 #
@@ -68,6 +68,10 @@ class InitialCMCTable(pd.DataFrame):
                  Kinetic Energy   = 0.25
                  Potential Energy = -0.5
 
+        Note that this is already done for r, vr, and vt from the profile generators.
+        However, after the stellar masses are assigned we need to redo it, and 
+        the stellar radii and seperations need to be converted from RSUN to code units
+
         Parameters
         ----------
         Singles : DataFrame
@@ -117,8 +121,8 @@ class InitialCMCTable(pd.DataFrame):
         Singles["vt"] *= vfac
 
         # Finally, scale the radii and seperations from BSE into code units
-        PARSEC_TO_AU = 206264.806
-        DistConv = 1 / PARSEC_TO_AU / virial_radius
+        PARSEC_PER_RSUN = 2.2546101516664447e-08 
+        DistConv = PARSEC_PER_RSUN / virial_radius
 
         Singles["Reff"] *= DistConv
         Binaries["a"] *= DistConv
@@ -231,7 +235,7 @@ class InitialCMCTable(pd.DataFrame):
         Singles : DataFrame
             Pandas DataFrame from the InitialCMCSingles function
         Binaries : DataFrame
-            Pandas DataFrame from the InitialCMCSingles function
+            Pandas DataFrame from the InitialCMCBinaries function
         filename : (str)
             Must end in ".fits" or ".hdf5/h5"
 
@@ -348,6 +352,43 @@ class InitialCMCTable(pd.DataFrame):
             )
 
         return
+
+    @classmethod
+    def read(cls, filename):
+        """Read Singles and Binaries to HDF5 or FITS file
+
+        Parameters
+        ----------
+        filename : (str)
+            Must end in ".fits" or ".hdf5/h5"
+
+        Returns
+        -------
+        Singles : DataFrame
+            Pandas DataFrame from the InitialCMCSingles function
+        Binaries : DataFrame
+            Pandas DataFrame from the InitialCMCBinaries function
+        """
+        # verify parameters
+        if (".hdf5" in filename) or (".h5" in filename):
+            savehdf5 = True
+            savefits = False
+        elif ".fits" in filename:
+            savefits = True
+            savehdf5 = False
+        else:
+            raise ValueError(
+                "File extension not recognized, valid file types are fits and hdf5"
+            )
+
+        if savehdf5:
+            Singles = pd.read_hdf(filename, "CLUS_OBJ_DATA")
+            Binaries = pd.read_hdf(filename, "CLUS_BINARY_DATA")
+        elif savefits:
+            Singles = cls(Table.read(filename,hdu=1).to_pandas())
+            Binaries = cls(Table.read(filename, hdu=2).to_pandas())
+        return Singles, Binaries
+
 
     @classmethod
     def sampler(cls, format_, *args, **kwargs):
