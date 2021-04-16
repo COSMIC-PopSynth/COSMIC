@@ -151,27 +151,23 @@ def get_cmc_sampler(
     n_singles += len(mass_single)
     n_binaries += len(mass1_binaries)
 
-    # select out the primaries and secondaries that will produce the final kstars
-    porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
-    if kwargs.pop("sample_porb_first",True):
-        porb,aRL_over_a = initconditions.sample_porb(
-            mass1_binaries, mass2_binaries, ecc=None, porb_model=porb_model, porb_max=porb_max, size=mass1_binaries.size
-        )
-        ecc = initconditions.sample_ecc(ecc_model, aRL_over_a=aRL_over_a, size=mass1_binaries.size)
-    else:
-        ecc = initconditions.sample_ecc(ecc_model, aRL_over_a=None, porb_max=porb_max, size=mass1_binaries.size)
-        porb,_ = initconditions.sample_porb(
-            mass1_binaries, mass2_binaries, ecc=ecc, porb_model=porb_model, porb_max=porb_max, size=mass1_binaries.size
-        )
-    sep = utils.a_from_p(porb, mass1_binaries, mass2_binaries)
-    kstar1 = initconditions.set_kstar(mass1_binaries)
-    kstar2 = initconditions.set_kstar(mass2_binaries)
-
     # Obtain radii (technically this is done for the binaries in the independent sampler 
     # if set_radii_with_BSE is true, but that's not a huge amount of overhead)
     Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
     Reff1 = Reff[binary_index]
     Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
+
+    # select out the primaries and secondaries that will produce the final kstars
+    porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
+
+    porb,aRL_over_a = initconditions.sample_porb(
+        mass1_binaries, mass2_binaries, Reff1, Reff2, porb_model=porb_model, porb_max=porb_max, size=mass1_binaries.size
+    )
+    ecc = initconditions.sample_ecc(aRL_over_a, ecc_model, size=mass1_binaries.size)
+
+    sep = utils.a_from_p(porb, mass1_binaries, mass2_binaries)
+    kstar1 = initconditions.set_kstar(mass1_binaries)
+    kstar2 = initconditions.set_kstar(mass2_binaries)
 
     singles_table = InitialCMCTable.InitialCMCSingles(
         single_ids +
