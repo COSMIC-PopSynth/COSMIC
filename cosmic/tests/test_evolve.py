@@ -1,4 +1,5 @@
 """Unit test for cosmic
+iip(EvolvedBinaryBPP.groupby('bin_num').size().index, EvolvedBinaryBPP.groupby('bin_num').size().values):
 """
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
@@ -103,9 +104,9 @@ class TestEvolve(unittest.TestCase):
     def test_evolve_grid(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=INITC_GRID, BSEDict={}, randomseed=2)
-
+        cols_keep = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'ecc', 'sep']
         for ind, row in EvolvedBinaryBPP.iterrows(): 
-            print(row.tphys)
-        pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF_GRID, check_dtype=False, check_exact=False, check_less_precise=True)
-        pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF_GRID, check_dtype=False, check_exact=False, check_less_precise=True)
+            print(row.sep)
+        pd.testing.assert_frame_equal(EvolvedBinaryBPP[cols_keep], BPP_DF_GRID[cols_keep], check_dtype=False, check_exact=False, check_less_precise=True)
+        pd.testing.assert_frame_equal(EvolvedBinaryBCM[cols_keep], BCM_DF_GRID[cols_keep], check_dtype=False, check_exact=False, check_less_precise=True)
 
