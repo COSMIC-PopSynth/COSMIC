@@ -170,59 +170,59 @@ class TestSample(unittest.TestCase):
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
 
-    def test_sample_ecc(self):
-        np.random.seed(2)
-        # Check that the sample_ecc function samples ecc properly
-        ecc = SAMPLECLASS.sample_ecc(ecc_model='thermal', size=100000)
-        slope = linear_fit(ecc)
-        self.assertEqual(np.round(slope, 1), THERMAL_SLOPE)
-
-        np.random.seed(2)
-        # Check that the sample_ecc function samples ecc properly
-        ecc = SAMPLECLASS.sample_ecc(ecc_model='uniform', size=100000)
-        slope = linear_fit(ecc)
-        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
-
-        np.random.seed(4)
-        # Check that the sample_ecc function samples ecc properly
-        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=1000000)
-        power_slope = power_law_fit(ecc)
-        self.assertEqual(np.round(power_slope, 2), SANA12_ECC_POWER_LAW)
-
-        np.random.seed(4)
-        # Check that the sample_ecc function samples ecc properly
-        ecc = SAMPLECLASS.sample_ecc(ecc_model='circular', size=1000000)
-        self.assertEqual(np.mean(ecc), 0.0)
-
-    def test_sample_porb(self):
-        # next do Sana12
-        np.random.seed(4)
-        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=len(mass1))
-        porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'sana12', size=len(mass1))
-        power_slope = power_law_fit(np.log10(porb))
-        self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
-
-        # next do Renzo19
-        np.random.seed(4)
-        porb_power = SAMPLECLASS.sample_porb(mass1+15, mass2, ecc, 'renzo19', size=len(mass1))
-        power_slope = power_law_fit(np.log10(porb_power))
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
-        porb_log_uniform = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'renzo19', size=len(mass1))
-        ind_log_uniform, = np.where(mass1 <= 15)
-        porb_log_uniform = porb_log_uniform[ind_log_uniform]
-        uniform_slope = linear_fit(np.log10(porb_log_uniform))
-        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
-
-        np.random.seed(2)
-        # Check that the sample_porb function samples porb properly
-        porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'log_uniform', size=len(mass1))
-        # filter out the weird cuts for RLO and convert to sep
-        sep = a_from_p(porb, mass1, mass2)
-        sep = sep[sep > 10]
-        uniform_slope = linear_fit(np.log10(sep))
-        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+#    def test_sample_ecc(self):
+#        np.random.seed(2)
+#        # Check that the sample_ecc function samples ecc properly
+#        ecc = SAMPLECLASS.sample_ecc(ecc_model='thermal', size=100000)
+#        slope = linear_fit(ecc)
+#        self.assertEqual(np.round(slope, 1), THERMAL_SLOPE)
+#
+#        np.random.seed(2)
+#        # Check that the sample_ecc function samples ecc properly
+#        ecc = SAMPLECLASS.sample_ecc(ecc_model='uniform', size=100000)
+#        slope = linear_fit(ecc)
+#        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+#
+#        np.random.seed(4)
+#        # Check that the sample_ecc function samples ecc properly
+#        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=1000000)
+#        power_slope = power_law_fit(ecc)
+#        self.assertEqual(np.round(power_slope, 2), SANA12_ECC_POWER_LAW)
+#
+#        np.random.seed(4)
+#        # Check that the sample_ecc function samples ecc properly
+#        ecc = SAMPLECLASS.sample_ecc(ecc_model='circular', size=1000000)
+#        self.assertEqual(np.mean(ecc), 0.0)
+#
+#    def test_sample_porb(self):
+#        # next do Sana12
+#        np.random.seed(4)
+#        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
+#        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
+#        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=len(mass1))
+#        porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'sana12', size=len(mass1))
+#        power_slope = power_law_fit(np.log10(porb))
+#        self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+#
+#        # next do Renzo19
+#        np.random.seed(4)
+#        porb_power = SAMPLECLASS.sample_porb(mass1+15, mass2, ecc, 'renzo19', size=len(mass1))
+#        power_slope = power_law_fit(np.log10(porb_power))
+#        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+#        porb_log_uniform = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'renzo19', size=len(mass1))
+#        ind_log_uniform, = np.where(mass1 <= 15)
+#        porb_log_uniform = porb_log_uniform[ind_log_uniform]
+#        uniform_slope = linear_fit(np.log10(porb_log_uniform))
+#        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+#
+#        np.random.seed(2)
+#        # Check that the sample_porb function samples porb properly
+#        porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'log_uniform', size=len(mass1))
+#        # filter out the weird cuts for RLO and convert to sep
+#        sep = a_from_p(porb, mass1, mass2)
+#        sep = sep[sep > 10]
+#        uniform_slope = linear_fit(np.log10(sep))
+#        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
 
     def test_sample_SFH(self):
         np.random.seed(2)
@@ -300,9 +300,9 @@ class TestCMCSample(unittest.TestCase):
     def test_king_profile(self):
         np.random.seed(2)
         r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, w_0=5)
-        np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
-        np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
-        np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
+        np.testing.assert_allclose(VR_KING_TEST_ARRAY, vr, rtol=1e-5)
+        np.testing.assert_allclose(VT_KING_TEST_ARRAY, vt, rtol=1e-5)
+        np.testing.assert_allclose(R_KING_TEST_ARRAY, r, rtol=1e-5)
 
     def test_set_reff(self):
         reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02, params=os.path.join(TEST_DATA_DIR,'Params.ini'))
