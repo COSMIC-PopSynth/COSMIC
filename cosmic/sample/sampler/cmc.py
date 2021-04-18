@@ -25,7 +25,6 @@ from .sampler import register_sampler
 from .independent import Sample
 from .. import InitialCMCTable, InitialBinaryTable
 from ..cmc import elson, king
-from ... import _evolvebin
 from ... import utils
 
 __author__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -43,6 +42,25 @@ def get_cmc_sampler(
 
     Parameters
     ----------
+    cluster_profile : `str`
+        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
+        Options include:
+        'plummer' : Standard Plummer sphere.
+            Additional parameters:
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'elson' : EFF 1987 profile.  Generalization of Plummer that better fits young massive clusters
+            Additional parameters:
+            'gamma' : `float`
+                steepness paramter for Elson profile; note that gamma=4 is same is Plummer
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'king' : King profile 
+            'w_0' : `float`
+                King concentration parameter
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+
     primary_model : `str`
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
 
@@ -71,10 +89,6 @@ def get_cmc_sampler(
 
     qmin_msort : `float`
         Same as qmin for M>msort
-
-    cluster_profile : `str`
-        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
-        options include king, plummer and elson.
 
     params : `str`
         Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
@@ -137,20 +151,23 @@ def get_cmc_sampler(
     n_singles += len(mass_single)
     n_binaries += len(mass1_binaries)
 
-    # select out the primaries and secondaries that will produce the final kstars
-    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binaries.size)
-    porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
-    porb = initconditions.sample_porb(
-        mass1_binaries, mass2_binaries, ecc, porb_model, porb_max, size=mass1_binaries.size
-    )
-    sep = utils.a_from_p(porb, mass1_binaries, mass2_binaries)
-    kstar1 = initconditions.set_kstar(mass1_binaries)
-    kstar2 = initconditions.set_kstar(mass2_binaries)
-
-    # obtain radius
+    # Obtain radii (technically this is done for the binaries in the independent sampler 
+    # if set_radii_with_BSE is true, but that's not a huge amount of overhead)
     Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
     Reff1 = Reff[binary_index]
     Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
+
+    # select out the primaries and secondaries that will produce the final kstars
+    porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
+
+    porb,aRL_over_a = initconditions.sample_porb(
+        mass1_binaries, mass2_binaries, Reff1, Reff2, porb_model=porb_model, porb_max=porb_max, size=mass1_binaries.size
+    )
+    ecc = initconditions.sample_ecc(aRL_over_a, ecc_model, size=mass1_binaries.size)
+
+    sep = utils.a_from_p(porb, mass1_binaries, mass2_binaries)
+    kstar1 = initconditions.set_kstar(mass1_binaries)
+    kstar2 = initconditions.set_kstar(mass2_binaries)
 
     singles_table = InitialCMCTable.InitialCMCSingles(
         single_ids +
@@ -194,7 +211,22 @@ def get_cmc_point_mass_sampler(
     ----------
     cluster_profile : `str`
         Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)
-        options include king, plummer and elson.
+        Options include:
+        'plummer' : Standard Plummer sphere.
+            Additional parameters:
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'elson' : EFF 1987 profile.  Generalization of Plummer that better fits young massive clusters
+            Additional parameters:
+            'gamma' : `float`
+                steepness paramter for Elson profile; note that gamma=4 is same is Plummer
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
+        'king' : King profile 
+            'w_0' : `float`
+                King concentration parameter
+            'r_max' : `float`
+                the maximum radius (in virial radii) to sample the clsuter
 
     params : `str`
         Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
@@ -300,122 +332,3 @@ class CMCSample(Sample):
         return porb_max ## returns orbital period IN DAYS
 
 
-    def set_reff(self, mass, metallicity, **kwargs):
-        # NUMBER 1: PASS A DICTIONARY OF FLAGS
-        BSEDict = kwargs.pop("BSEDict", {})
-
-        # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
-        params = kwargs.pop("params", None)
-
-        if params is not None:
-            BSEDict, _, _, _, _ = utils.parse_inifile(params)
-
-        # set BSE consts
-        _evolvebin.windvars.neta = BSEDict["neta"]
-        _evolvebin.windvars.bwind = BSEDict["bwind"]
-        _evolvebin.windvars.hewind = BSEDict["hewind"]
-        _evolvebin.cevars.alpha1 = BSEDict["alpha1"]
-        _evolvebin.cevars.lambdaf = BSEDict["lambdaf"]
-        _evolvebin.ceflags.ceflag = BSEDict["ceflag"]
-        _evolvebin.flags.tflag = BSEDict["tflag"]
-        _evolvebin.flags.ifflag = BSEDict["ifflag"]
-        _evolvebin.flags.wdflag = BSEDict["wdflag"]
-        _evolvebin.snvars.pisn = BSEDict["pisn"]
-        _evolvebin.flags.bhflag = BSEDict["bhflag"]
-        _evolvebin.flags.remnantflag = BSEDict["remnantflag"]
-        _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
-        _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
-        _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
-        _evolvebin.flags.grflag = BSEDict["grflag"]
-        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
-        _evolvebin.snvars.mxns = BSEDict["mxns"]
-        _evolvebin.points.pts1 = BSEDict["pts1"]
-        _evolvebin.points.pts2 = BSEDict["pts2"]
-        _evolvebin.points.pts3 = BSEDict["pts3"]
-        _evolvebin.snvars.ecsn = BSEDict["ecsn"]
-        _evolvebin.snvars.ecsn_mlow = BSEDict["ecsn_mlow"]
-        _evolvebin.flags.aic = BSEDict["aic"]
-        _evolvebin.ceflags.ussn = BSEDict["ussn"]
-        _evolvebin.snvars.sigma = BSEDict["sigma"]
-        _evolvebin.snvars.sigmadiv = BSEDict["sigmadiv"]
-        _evolvebin.snvars.bhsigmafrac = BSEDict["bhsigmafrac"]
-        _evolvebin.snvars.polar_kick_angle = BSEDict["polar_kick_angle"]
-        _evolvebin.snvars.natal_kick_array = BSEDict["natal_kick_array"]
-        _evolvebin.cevars.qcrit_array = BSEDict["qcrit_array"]
-        _evolvebin.windvars.beta = BSEDict["beta"]
-        _evolvebin.windvars.xi = BSEDict["xi"]
-        _evolvebin.windvars.acc2 = BSEDict["acc2"]
-        _evolvebin.windvars.epsnov = BSEDict["epsnov"]
-        _evolvebin.windvars.eddfac = BSEDict["eddfac"]
-        _evolvebin.windvars.gamma = BSEDict["gamma"]
-        _evolvebin.flags.bdecayfac = BSEDict["bdecayfac"]
-        _evolvebin.magvars.bconst = BSEDict["bconst"]
-        _evolvebin.magvars.ck = BSEDict["ck"]
-        _evolvebin.flags.windflag = BSEDict["windflag"]
-        _evolvebin.flags.qcflag = BSEDict["qcflag"]
-        _evolvebin.flags.eddlimflag = BSEDict["eddlimflag"]
-        _evolvebin.tidalvars.fprimc_array = BSEDict["fprimc_array"]
-        _evolvebin.rand1.idum1 = -1
-        _evolvebin.flags.bhspinflag = BSEDict["bhspinflag"]
-        _evolvebin.snvars.bhspinmag = BSEDict["bhspinmag"]
-        _evolvebin.mixvars.rejuv_fac = BSEDict["rejuv_fac"]
-        _evolvebin.flags.rejuvflag = BSEDict["rejuvflag"]
-        _evolvebin.flags.htpmb = BSEDict["htpmb"]
-        _evolvebin.flags.st_cr = BSEDict["ST_cr"]
-        _evolvebin.flags.st_tide = BSEDict["ST_tide"]
-        _evolvebin.snvars.rembar_massloss = BSEDict["rembar_massloss"]
-        _evolvebin.metvars.zsun = BSEDict["zsun"]
-        _evolvebin.snvars.kickflag = BSEDict["kickflag"]
-        _evolvebin.cmcpass.using_cmc = 0
-
-        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-        initial_stars = InitialBinaryTable.InitialBinaries(
-            mass,
-            np.ones_like(mass) * 0,
-            np.ones_like(mass) * -1,
-            np.ones_like(mass) * -1,
-            np.ones_like(mass) * 0.1,
-            self.set_kstar(mass),
-            np.ones_like(mass) * 0,
-            np.ones_like(mass) * metallicity,
-        )
-        initial_stars["dtp"] = initial_stars["tphysf"]
-
-        initial_stars = initial_stars.assign(
-            kick_info=[np.zeros((2, 17))] * len(initial_stars)
-        )
-        initial_conditions = initial_stars.to_dict("records")
-
-        rad_1 = np.zeros(len(initial_stars))
-        for idx, initial_condition in enumerate(initial_conditions):
-            [bpp_index, bcm_index, _] = _evolvebin.evolv2(
-                [initial_condition["kstar_1"], initial_condition["kstar_2"]],
-                [initial_condition["mass_1"], initial_condition["mass_2"]],
-                initial_condition["porb"],
-                initial_condition["ecc"],
-                initial_condition["metallicity"],
-                initial_condition["tphysf"],
-                initial_condition["dtp"],
-                [initial_condition["mass0_1"], initial_condition["mass0_2"]],
-                [initial_condition["rad_1"], initial_condition["rad_2"]],
-                [initial_condition["lum_1"], initial_condition["lum_2"]],
-                [initial_condition["massc_1"], initial_condition["massc_2"]],
-                [initial_condition["radc_1"], initial_condition["radc_2"]],
-                [initial_condition["menv_1"], initial_condition["menv_2"]],
-                [initial_condition["renv_1"], initial_condition["renv_2"]],
-                [initial_condition["omega_spin_1"],
-                    initial_condition["omega_spin_2"]],
-                [initial_condition["B_1"], initial_condition["B_2"]],
-                [initial_condition["bacc_1"], initial_condition["bacc_2"]],
-                [initial_condition["tacc_1"], initial_condition["tacc_2"]],
-                [initial_condition["epoch_1"], initial_condition["epoch_2"]],
-                [initial_condition["tms_1"], initial_condition["tms_2"]],
-                [initial_condition["bhspin_1"], initial_condition["bhspin_2"]],
-                initial_condition["tphys"],
-                np.zeros(20),
-                np.zeros(20),
-                initial_condition["kick_info"],
-            )
-            rad_1[idx] = _evolvebin.binary.bcm[0, 5]
-
-        return rad_1
