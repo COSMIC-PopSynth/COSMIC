@@ -300,9 +300,9 @@ class TestCMCSample(unittest.TestCase):
     def test_king_profile(self):
         np.random.seed(2)
         r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, w_0=5)
-        np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
-        np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
-        np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
+        np.testing.assert_allclose(VR_KING_TEST_ARRAY, vr, rtol=1e-5)
+        np.testing.assert_allclose(VT_KING_TEST_ARRAY, vt, rtol=1e-5)
+        np.testing.assert_allclose(R_KING_TEST_ARRAY, r, rtol=1e-5)
 
     def test_set_reff(self):
         reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02, params=os.path.join(TEST_DATA_DIR,'Params.ini'))
