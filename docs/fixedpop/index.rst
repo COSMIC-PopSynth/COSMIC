@@ -169,62 +169,22 @@ Instead, if you want to scale by mass, you can choose between supplying your own
 
     In [15]: print(N_13_14_13_14_astro)
 
-If you specified a Milky Way star formation history in the inifile for the ``cosmic-pop`` call (e.g. ThinDisk, Thick Disk, or Bulge), you can easily scale to a representative Milky Way population with the ``MC_samp`` module. This will assume masses according to the `McMillan 2011 <https://ui.adsabs.harvard.edu/abs/2011MNRAS.414.2446M/abstract>`_ model:
+Now we can generate the astrophysical population:
 
 .. ipython::
 
-    In [16]: from cosmic import MC_samp
+    In [16]: pop_astro = conv.sample(N_13_14_13_14_astro, replace=True)
 
-    In [17]: N_13_14_13_14_ThinDisk = MC_samp.mass_weighted_number(dat=conv, total_sampled_mass=total_mass, component_mass=MC_samp.select_component_mass('ThinDisk'))
-
-    In [18]: N_13_14_13_14_Bulge = MC_samp.mass_weighted_number(dat=conv, total_sampled_mass=total_mass, component_mass=MC_samp.select_component_mass('Bulge'))
-
-    In [19]: N_13_14_13_14_ThickDisk = MC_samp.mass_weighted_number(dat=conv, total_sampled_mass=total_mass, component_mass=MC_samp.select_component_mass('ThickDisk'))
-
-It is also possible to convolve a star formation history with a DeltaBurst population. As an example, let's create a population of NSs and BHs in the Milky Way thin disk. First, use the number of NS/BHs for the thin disk calculated above, and resample the ``conv`` array:
-
+If you specified a star formation history in the inifile for the ``cosmic-pop`` call (i.e. by setting ``SF_start`` and ``SF_duration`` to follow a star formation history of your choice), the data in the resampled population will also be consistent with that star formation history. If you assigned the same ``SF_start`` to all binaries in the ``cosmic-pop`` call, you can assign birth times in post processing. As an example, we can assign a uniform birth time, assuming that the age of the population is 10 Gyr:
 
 .. ipython::
 
-    In [20]: print('The number of NS/BH systems in the simulated Milky Way thin disk is: {}'.format(N_13_14_13_14_ThinDisk))
-
-    In [21]: thin_disk_sample = conv.sample(n=N_13_14_13_14_ThinDisk, replace=True)
-
-    In [22]: print(thin_disk_sample)
-
-Now, we can assign a uniform birth time, assuming that the age of the thin disk is 10 Gyr:
-
-.. ipython::
-
-    In [23]: thin_disk_sample['tbirth'] = np.random.uniform(0, 10000, N_13_14_13_14_ThinDisk)
+    In [23]: pop_astro['tbirth'] = np.random.uniform(0, 10000, N_13_14_13_14_astro)
 
 Since we are interested in NSs/BHs that form before the present, we can filter out anything that has a formation time after 10 Gyr: 
 
 .. ipython::
 
-    In [24]: thin_disk_sample = thin_disk_sample.loc[thin_disk_sample.tbirth + thin_disk_sample.tphys < 10000]
+    In [24]: pop_astro = pop_astro.loc[pop_astro.tbirth + pop_astro.tphys < 10000]
 
 This leaves us with a population of NSs/BHs at formation where the formation time is the sum of the birth time and tphys in the ``conv`` array. 
-
-*********************************************
-Assigning positions for Milky Way populations
-*********************************************
-The ``MC_samp`` module also contains methods which assign positions in the Milky Way according to the `McMillan 2011 <https://ui.adsabs.harvard.edu/abs/2011MNRAS.414.2446M/abstract>`_ model. As an example, let's assign positions and orientations for the thin disk population:
-
-.. ipython::
-
-    In [25]: xGx, yGx, zGx, inc, omega, OMEGA = MC_samp.galactic_positions(gx_component='ThinDisk', model='McMillan', size=len(thin_disk_sample))
-
-    In [26]: thin_disk_sample['xGx'] = xGx
-             thin_disk_sample['yGx'] = yGx
-             thin_disk_sample['zGx'] = zGx
-             thin_disk_sample['inc'] = inc
-             thin_disk_sample['omega'] = omega
-             thin_disk_sample['OMEGA'] = OMEGA
-
-    In [27]: print(thin_disk_sample)
-
-Now we have a representative Milky Way population of NS/BH binaries in the thin disk! TADA!! 
-
-
-
