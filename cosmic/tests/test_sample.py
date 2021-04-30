@@ -194,35 +194,74 @@ class TestSample(unittest.TestCase):
 #        ecc = SAMPLECLASS.sample_ecc(ecc_model='circular', size=1000000)
 #        self.assertEqual(np.mean(ecc), 0.0)
 #
-#    def test_sample_porb(self):
-#        # next do Sana12
-#        np.random.seed(4)
-#        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
-#        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-#        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=len(mass1))
-#        porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'sana12', size=len(mass1))
-#        power_slope = power_law_fit(np.log10(porb))
-#        self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
-#
-#        # next do Renzo19
-#        np.random.seed(4)
-#        porb_power = SAMPLECLASS.sample_porb(mass1+15, mass2, ecc, 'renzo19', size=len(mass1))
-#        power_slope = power_law_fit(np.log10(porb_power))
-#        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
-#        porb_log_uniform = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'renzo19', size=len(mass1))
-#        ind_log_uniform, = np.where(mass1 <= 15)
-#        porb_log_uniform = porb_log_uniform[ind_log_uniform]
-#        uniform_slope = linear_fit(np.log10(porb_log_uniform))
-#        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
-#
-#        np.random.seed(2)
-#        # Check that the sample_porb function samples porb properly
-#        porb = SAMPLECLASS.sample_porb(mass1, mass2, ecc, 'log_uniform', size=len(mass1))
-#        # filter out the weird cuts for RLO and convert to sep
-#        sep = a_from_p(porb, mass1, mass2)
-#        sep = sep[sep > 10]
-#        uniform_slope = linear_fit(np.log10(sep))
-#        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+    def test_sample_porb(self):
+        # next do Sana12
+        np.random.seed(4)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
+        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
+        )
+        power_slope = power_law_fit(np.log10(porb))
+        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+
+        # next do Renzo+19
+        m1_high = mass1+15
+        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
+        )
+        power_slope = power_law_fit(np.log10(porb))
+        self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'renzo19', size=mass1.size
+        )
+        ind_log_uniform, = np.where(mass1 <= 15)
+        porb_log_uniform = porb[ind_log_uniform]
+        uniform_slope = linear_fit(np.log10(porb_log_uniform))
+        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+
+        # finally do the log uniform
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'log_uniform', size=mass1.size
+        )
+        power_slope = linear_fit(np.log10(porb))
+        sep = a_from_p(porb, mass1, mass2)
+        sep = sep[sep > 10]
+        uniform_slope = linear_fit(np.log10(sep))
+        self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+
+    def test_sample_ecc(self):
+        np.random.seed(2)
+        # Check that the sample_ecc function samples ecc properly
+
+        # first sample orbital periods
+        np.random.seed(4)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
+        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
+        )
+
+        # now we feed aRL_over_a into sample_ecc
+        ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='thermal', size=mass1.size)
+        ecc_cut = ecc[ecc < 0.91]
+        slope = linear_fit(ecc_cut)
+        self.assertEqual(np.round(slope, 1), THERMAL_SLOPE)
+
+        ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='sana12', size=mass1.size)
+        ecc_cut = ecc[ecc < 0.91]
+        power_slope = power_law_fit(ecc_cut)
+        self.assertEqual(np.round(power_slope, 2), SANA12_ECC_POWER_LAW)
+
+        ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='circular', size=mass1.size)
+        self.assertEqual(np.mean(ecc), 0.0)
+
 
     def test_sample_SFH(self):
         np.random.seed(2)
