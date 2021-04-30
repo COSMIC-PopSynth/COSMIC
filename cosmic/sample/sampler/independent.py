@@ -307,7 +307,7 @@ class Sample(object):
 
             alphas : array, optional
             absolute values of the power law slopes for primary_model = 'piecewise_power'
-            Default [1.3,2.3,2.3] (identical to slopes for primary_model = 'kroupa01')
+            Default [-1.3,-2.3,-2.3] (identical to slopes for primary_model = 'kroupa01')
 
             mcuts : array, optional, units of Msun
             break points separating the power law 'pieces' for primary_model = 'piecewise_power'
