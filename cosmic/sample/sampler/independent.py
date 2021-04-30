@@ -138,9 +138,13 @@ def get_independent_sampler(
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
+
+    # see if custom IMF parameters were passed
+    alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
+    mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier
+            primary_model, size=size * multiplier, alphas=alphas, mcuts=mcuts
         )
         (
             mass1_binaries,
@@ -267,20 +271,28 @@ register_sampler(
 
 
 class Sample(object):
-
     # sample primary masses
-    def sample_primary(self, primary_model="kroupa01", size=None):
+    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[-1.3,-2.3,-2.3], mcuts=[0.08,0.5,1.0,150.]):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
-        Parameters
-        ----------
-        primary_model : str, optional
+            kroupa93 follows Kroupa (1993), normalization comes from
+            `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
+            between 0.08 and 150 Msun
+            salpter55 follows
+            `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+            between 0.08 and 150 Msun
+            kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
+            between 0.08 and 100 Msun
+
+
+            Parameters
+            ----------
+            primary_model : str, optional
             model for mass distribution; choose from:
 
             kroupa93 follows Kroupa (1993), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             valid for masses between 0.1 and 100 Msun
-
 
             salpter55 follows
             `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
@@ -290,67 +302,64 @@ class Sample(object):
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
 
+            custom is a generic piecewise power law that takes in the power
+            law slopes and break points given in the optional input lists (alphas, mcuts)
+            default alphas and mcuts yield an IMF identical to kroupa01
+
             Default kroupa01
-        size : int, optional
+
+            size : int, optional
             number of initial primary masses to sample
             NOTE: this is set in cosmic-pop call as Nstep
 
-        Returns
-        -------
-        a_0 : array
+            alphas : array, optional
+            absolute values of the power law slopes for primary_model = 'piecewise_power'
+            Default [-1.3,-2.3,-2.3] (identical to slopes for primary_model = 'kroupa01')
+
+            mcuts : array, optional, units of Msun
+            break points separating the power law 'pieces' for primary_model = 'piecewise_power'
+            Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
+
+            Returns
+            -------
+            a_0 : array
             Sampled primary masses
-        sampled_mass : float
+            np.sum(a_0) : float
             Total amount of mass sampled
-        """
+            """
 
-        if primary_model == "kroupa93":
-            total_sampled_mass = 0
-            multiplier = 1
-            a_0 = np.random.uniform(0.0, 1, size)
+        if primary_model == 'kroupa93': alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
+        # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
+        elif primary_model == 'kroupa01': alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
+        elif primary_model == 'salpeter55': alphas, mcuts = [-2.35], [0.08,150.]
+        elif primary_model == 'custom': alphas, mcuts = alphas, mcuts
 
-            low_cutoff = 0.771
-            high_cutoff = 0.919
+        Ncumulative, Ntotal, coeff = [], 0., 1.
+        for i in range(len(alphas)):
+            g = 1. + alphas[i]
+            # Compute this piece of the IMF's contribution to Ntotal
+            if alphas[i] == -1: Ntotal += coeff * np.log(mcuts[i+1]/mcuts[i])
+            else: Ntotal += coeff/g * (mcuts[i+1]**g - mcuts[i]**g)
+            Ncumulative.append(Ntotal)
+            if i < len(alphas)-1: coeff *= mcuts[i+1]**(-alphas[i+1]+alphas[i])
 
-            (lowIdx,) = np.where(a_0 <= low_cutoff)
-            (midIdx,) = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            (highIdx,) = np.where(a_0 >= high_cutoff)
+        cutoffs = np.array(Ncumulative)/Ntotal
+        u = np.random.uniform(0.,1.,size)
+        idxs = [() for i in range(len(alphas))]
 
-            a_0[lowIdx] = utils.rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[midIdx] = utils.rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
-            a_0[highIdx] = utils.rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
+        for i in range(len(alphas)):
+            if i == 0: idxs[i], = np.where(u <= cutoffs[0])
+            elif i < len(alphas)-1: idxs[i], = np.where((u > cutoffs[i-1]) & (u <= cutoffs[i]))
+            else: idxs[i], = np.where(u > cutoffs[i-1])
+        for i in range(len(alphas)):
+            if alphas[i] == -1.0:
+                u[idxs[i]] = 10**np.random.uniform(np.log10(mcuts[i]), 
+                                                   np.log10(mcuts[i+1]), 
+                                                   len(idxs[i]))
+            else:
+                u[idxs[i]] = utils.rndm(a=mcuts[i], b=mcuts[i+1], g=alphas[i], size=len(idxs[i]))
 
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
-
-        elif primary_model == "kroupa01":
-            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
-            # at 0.08 Msun instead of 0.01
-
-            total_sampled_mass = 0
-            multiplier = 1
-            a_0 = np.random.uniform(0.0, 1, size)
-
-            cutoff = 0.748
-
-            (lowIdx,) = np.where(a_0 <= cutoff)
-            (highIdx,) = np.where(a_0 >= cutoff)
-
-            a_0[lowIdx] = utils.rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[highIdx] = utils.rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
-
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
-
-        elif primary_model == "salpeter55":
-            total_sampled_mass = 0
-            multiplier = 1
-            a_0 = utils.rndm(a=0.08, b=150, g=-2.35, size=size * multiplier)
-
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
+        return u, np.sum(u)
 
     # sample secondary mass
     def sample_secondary(self, primary_mass, qmin, **kwargs):
