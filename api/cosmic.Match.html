@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>&lt;no title&gt; &mdash; cosmic 0+untagged.1.g17193b9 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> cosmic
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.g17193b9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/cosmic.Match.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-cosmic.Match"></span><p><cite>Match</cite></p>
+<dl class="py function">
+<dt id="cosmic.Match.dat_transform">
+<code class="sig-prename descclassname"><span class="pre">cosmic.Match.</span></code><code class="sig-name descname"><span class="pre">dat_transform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dat_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.Match.dat_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a data set to have limits between zero and one using
+param_transform, then transform to log space</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dat ” DataFrame</strong></p>
+<blockquote>
+<div><p>Data to transform to eventually perform KDE</p>
+</div></blockquote>
+<p><strong>dat_list</strong> : list</p>
+<blockquote>
+<div><p>List of DataFrame columns to include in transformation</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>dat_trans</strong> : array</p>
+<blockquote>
+<div><p>Transformed data for columns in dat_list</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="cosmic.Match.match">
+<code class="sig-prename descclassname"><span class="pre">cosmic.Match.</span></code><code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataCm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.Match.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the Match calculation in Eq. 1 of Breivik &amp; Larson (2018)</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataCm</strong> : list</p>
+<blockquote>
+<div><p>List of two cumulative data sets for a single paramter</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>match</strong> : list</p>
+<blockquote>
+<div><p>List of matches for each cumulative data set</p>
+</div></blockquote>
+<p><strong>binwidth</strong> : float</p>
+<blockquote>
+<div><p>Binwidth of histograms used for match computation</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="cosmic.Match.perform_convergence">
+<code class="sig-prename descclassname"><span class="pre">cosmic.Match.</span></code><code class="sig-name descname"><span class="pre">perform_convergence</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conv_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.Match.perform_convergence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the convergence calculations for each convergence parameter
+and binary state</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>conv_params</strong> : dict</p>
+<blockquote>
+<div><p>List of user supplied convergence parameters</p>
+</div></blockquote>
+<p><strong>conv_1</strong> : DataFrame</p>
+<blockquote>
+<div><p>Cumulative data set of conv arrays</p>
+</div></blockquote>
+<p><strong>conv_2</strong> : DataFrame</p>
+<blockquote>
+<div><p>Most recent data set of conv array from most recent BSE run</p>
+</div></blockquote>
+<p><strong>log_file</strong> : file write</p>
+<blockquote>
+<div><p>File to log matches or if the convergence params are not appropriate
+e.g. eccentricity for a disrupted system</p>
+</div></blockquote>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>match</strong> : array</p>
+<blockquote>
+<div><p>Matches for each cumulative data set</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Katie Breivik.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

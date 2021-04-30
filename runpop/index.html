@@ -1,0 +1,658 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Generate a binary population by hand &mdash; cosmic 0+untagged.1.g17193b9 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generate a population the COSMIC way" href="../fixedpop/index.html" />
+    <link rel="prev" title="Using COSMIC to evolve binaries" href="../examples/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> cosmic
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.g17193b9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generate a binary population by hand</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#independent">independent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multidim">multidim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evolving-an-initial-binary-population">Evolving an initial binary population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustermontecarlo">ClusterMonteCarlo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Generate a binary population by hand</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/runpop/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generate-a-binary-population-by-hand">
+<span id="runpop"></span><h1>Generate a binary population by hand<a class="headerlink" href="#generate-a-binary-population-by-hand" title="Permalink to this headline">¶</a></h1>
+<p>The process to generate a synthetic binary population, is similar to the
+process to evolve a single/multiple binaries by hand: first generate an
+initial population, then evolve it with the Evolve class.</p>
+<p>An initialized binary population consists of a collection of binary systems
+with assigned primary and secondary masses, orbital periods, eccentricities,
+metallicities, and star formation histories. These parameters are randomly
+sampled from observationally motivated distribution functions.</p>
+<p>In COSMIC, the initial sample is done through an initial binary sampler which works
+with the InitialBinaryTable class. There are two samplers available:</p>
+<p>1. <cite>independent</cite> : initialize binaries with independent parameter
+distributions for the primary mass, mass ratio, eccentricity, separation,
+and binary fraction</p>
+<p>2. <cite>multidim</cite> : initialize binaries with multidimensional parameter
+distributions according to <a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a></p>
+<p>We consider both cases below.</p>
+<div class="section" id="independent">
+<h2>independent<a class="headerlink" href="#independent" title="Permalink to this headline">¶</a></h2>
+<p>First import the InitialBinaryTable class and the independent sampler</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.initialbinarytable</span> <span class="kn">import</span> <span class="n">InitialBinaryTable</span>
+
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.sampler</span> <span class="kn">import</span> <span class="n">independent</span>
+</pre></div>
+</div>
+<p>The independent sampler contains multiple models for each binary parameter.
+You can access the available models using the independent sampler help call:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">help</span><span class="p">(</span><span class="n">independent</span><span class="o">.</span><span class="n">get_independent_sampler</span><span class="p">)</span>
+<span class="go">Help on function get_independent_sampler in module cosmic.sample.sampler.independent:</span>
+
+<span class="go">get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, qmin, SF_start, SF_duration, binfrac_model, met, size, **kwargs)</span>
+<span class="go">    Generates an initial binary sample according to user specified models</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    final_kstar1 : `int or list`</span>
+<span class="go">        Int or list of final kstar1</span>
+<span class="go">    </span>
+<span class="go">    final_kstar2 : `int or list`</span>
+<span class="go">        Int or list of final kstar2</span>
+<span class="go">    </span>
+<span class="go">    primary_model : `str`</span>
+<span class="go">        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55</span>
+<span class="go">    </span>
+<span class="go">    ecc_model : `str`</span>
+<span class="go">        Model to sample eccentricity; choices include: thermal, uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    porb_model : `str`</span>
+<span class="go">        Model to sample orbital period; choices include: log_uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    msort : `float`</span>
+<span class="go">        Stars with M&gt;msort can have different pairing and sampling of companions</span>
+<span class="go">    </span>
+<span class="go">    pair : `float`</span>
+<span class="go">        Sets the pairing of stars M&gt;msort only with stars with M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    qmin : `float`</span>
+<span class="go">        Sets the minimum mass ratio if q&gt;0 and uses the pre-MS lifetime</span>
+<span class="go">        of the companion for primary mass &gt; 5 msun to set q and sets q=0.1 </span>
+<span class="go">        for all primary mass &lt; 5 msun if q &lt; 0</span>
+<span class="go">    </span>
+<span class="go">    qmin_msort : `float`</span>
+<span class="go">        Same as qmin for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    SF_start : `float`</span>
+<span class="go">        Time in the past when star formation initiates in Myr</span>
+<span class="go">    </span>
+<span class="go">    SF_duration : `float`</span>
+<span class="go">        Duration of constant star formation beginning from SF_Start in Myr</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model : `str or float`</span>
+<span class="go">        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model_msort : `str or float`</span>
+<span class="go">        Same as binfrac_model for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    met : `float`</span>
+<span class="go">        Sets the metallicity of the binary population where solar metallicity is 0.02</span>
+<span class="go">    </span>
+<span class="go">    size : `int`</span>
+<span class="go">        Size of the population to sample</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    InitialBinaryTable : `pandas.DataFrame`</span>
+<span class="go">        DataFrame in the format of the InitialBinaryTable</span>
+<span class="go">    </span>
+<span class="go">    mass_singles : `float`</span>
+<span class="go">        Total mass in single stars needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    mass_binaries : `float`</span>
+<span class="go">        Total mass in binaries needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    n_singles : `int`</span>
+<span class="go">        Number of single stars needed to generate a population</span>
+<span class="go">    </span>
+<span class="go">    n_binaries : `int`</span>
+<span class="go">        Number of binaries needed to generate a population</span>
+</pre></div>
+</div>
+<p>The final_kstar1 and final_kstar2 parameters are lists that contain the kstar types
+that you would like the final population to contain.</p>
+<p>The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming convention, see <a class="reference internal" href="../output_info/index.html#kstar-table"><span class="std std-ref">Evolutionary State of the Star</span></a> for more information.</p>
+<p>Thus, if you want to generate a
+population containing double white dwarfs with CO and ONe WD primaries and He-WD secondaries,
+the final kstar inputs would be:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">final_kstar1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+
+<span class="gp">In [5]: </span><span class="n">final_kstar2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Similar to the help for the sampler, the different models that can be used for each parameter
+to be sampled can be accessed by the help function for the argument. The syntax for each parameter
+sample is always: sample_`parameter`. See the example for the star formation
+history (SFH) below:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">help</span><span class="p">(</span><span class="n">independent</span><span class="o">.</span><span class="n">Sample</span><span class="o">.</span><span class="n">sample_SFH</span><span class="p">)</span>
+<span class="go">Help on function sample_SFH in module cosmic.sample.sampler.independent:</span>
+
+<span class="go">sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None)</span>
+<span class="go">    Sample an evolution time for each binary based on a user-specified</span>
+<span class="go">    time at the start of star formation and the duration of star formation.</span>
+<span class="go">    The default is a burst of star formation 13,700 Myr in the past.</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    SF_start : float</span>
+<span class="go">        Time in the past when star formation initiates in Myr</span>
+<span class="go">    SF_duration : float</span>
+<span class="go">        Duration of constant star formation beginning from SF_Start in Myr</span>
+<span class="go">    met : float</span>
+<span class="go">        metallicity of the population [Z_sun = 0.02]</span>
+<span class="go">        Default: 0.02</span>
+<span class="go">    size : int, optional</span>
+<span class="go">        number of evolution times to sample</span>
+<span class="go">        NOTE: this is set in cosmic-pop call as Nstep</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    tphys : array</span>
+<span class="go">        array of evolution times of size=size</span>
+<span class="go">    metallicity : array</span>
+<span class="go">        array of metallicities</span>
+</pre></div>
+</div>
+<p>Using the final kstar inputs above, the initial binary population is sampled as:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">BSEDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;bhflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;neta&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;windflag&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wdflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;alpha1&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pts1&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;pts3&#39;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s1">&#39;pts2&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;epsnov&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;hewind&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;ck&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;bwind&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;lambdaf&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;mxns&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="mf">0.125</span><span class="p">,</span> <span class="s1">&#39;tflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;acc2&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;remnantflag&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;ceflag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;eddfac&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;ifflag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bconst&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">265.0</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pisn&#39;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span> <span class="s1">&#39;natal_kick_array&#39;</span> <span class="p">:</span> <span class="p">[[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span> <span class="s1">&#39;bhsigmafrac&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;polar_kick_angle&#39;</span> <span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;qcrit_array&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="s1">&#39;cekickflag&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;cehestarflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;cemergeflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ecsn&#39;</span> <span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ecsn_mlow&#39;</span> <span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span> <span class="s1">&#39;aic&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ussn&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;sigmadiv&#39;</span> <span class="p">:</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="s1">&#39;qcflag&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;eddlimflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;fprimc_array&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">],</span> <span class="s1">&#39;bhspinflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bhspinmag&#39;</span> <span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;rejuv_fac&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;rejuvflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;htpmb&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ST_cr&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ST_tide&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bdecayfac&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;grflag&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;rembar_massloss&#39;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;kickflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;zsun&#39;</span> <span class="p">:</span> <span class="mf">0.014</span><span class="p">,</span> <span class="s1">&#39;bhms_coll_flag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;don_lim&#39;</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;acc_lim&#39;</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+
+<span class="gp">In [8]: </span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">mass_singles</span><span class="p">,</span> <span class="n">mass_binaries</span><span class="p">,</span> <span class="n">n_singles</span><span class="p">,</span> <span class="n">n_binaries</span> <span class="o">=</span> <span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span> <span class="n">final_kstar1</span><span class="p">,</span> <span class="n">final_kstar2</span><span class="p">,</span> <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">&#39;kroupa01&#39;</span><span class="p">,</span> <span class="n">ecc_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">BSEDict</span><span class="o">=</span><span class="n">BSEDict</span><span class="p">)</span>
+
+<span class="gp">In [9]: </span><span class="nb">print</span><span class="p">(</span><span class="n">InitialBinaries</span><span class="p">)</span>
+<span class="go">       kstar_1  kstar_2     mass_1  ...  bhspin_2  tphys  binfrac</span>
+<span class="go">0          1.0      0.0   1.545164  ...       0.0    0.0      0.5</span>
+<span class="go">1          1.0      1.0   3.157127  ...       0.0    0.0      0.5</span>
+<span class="go">2          1.0      1.0   1.810039  ...       0.0    0.0      0.5</span>
+<span class="go">3          1.0      1.0   1.407712  ...       0.0    0.0      0.5</span>
+<span class="go">4          1.0      1.0   1.397477  ...       0.0    0.0      0.5</span>
+<span class="go">...        ...      ...        ...  ...       ...    ...      ...</span>
+<span class="go">10469      1.0      1.0   3.110464  ...       0.0    0.0      0.5</span>
+<span class="go">10470      1.0      0.0   0.847130  ...       0.0    0.0      0.5</span>
+<span class="go">10471      1.0      1.0   1.620213  ...       0.0    0.0      0.5</span>
+<span class="go">10472      1.0      1.0  11.050187  ...       0.0    0.0      0.5</span>
+<span class="go">10473      1.0      0.0   1.046963  ...       0.0    0.0      0.5</span>
+
+<span class="go">[10474 rows x 38 columns]</span>
+</pre></div>
+</div>
+<p>NOTE: the length of the initial binary data set, InitialBinaries, does not always match
+the size parameter provided to InitialBinaryTable.sampler.
+This is becuase the sampler accounts for a binary fraction specified by the user with the binfrac_model parameter, which is either a fraction between 0 and 1 or mass dependend following the prescription in <a class="reference external" href="http://adsabs.harvard.edu/abs/2012A%26A...537A.104V">van Haaften+2013</a>.</p>
+<p>Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types. However, we also keep track of the total mass of the single and binary stars as well as the numbre of binary and single stars so that we can scale our results to larger populations. If you don’t want to filter the binaries, you can supply final kstars as</p>
+<p>(<a class="reference external" href="../runpop/index-1.py">Source code</a>, <a class="reference external" href="../runpop/index-1.png">png</a>, <a class="reference external" href="../runpop/index-1.hires.png">hires.png</a>, <a class="reference external" href="../runpop/index-1.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/index-11.png" class="plot-directive" src="../_images/index-11.png" />
+</div>
+</div>
+<div class="section" id="multidim">
+<h2>multidim<a class="headerlink" href="#multidim" title="Permalink to this headline">¶</a></h2>
+<p>COSMIC implements multidimensionally distributed initial binaries according to <a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a>. The python code used in COSMIC to create this sample was written by Mads Sorenson, and is based on the IDL codes written to accompany <a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a>.</p>
+<p>The multidimensional initial binary data is sampled in COSMIC as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.initialbinarytable</span> <span class="kn">import</span> <span class="n">InitialBinaryTable</span>
+
+<span class="gp">In [11]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.sampler</span> <span class="kn">import</span> <span class="n">multidim</span>
+</pre></div>
+</div>
+<p>To see the arguments necessary to call the multidimensional sampler use the help function:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">help</span><span class="p">(</span><span class="n">multidim</span><span class="o">.</span><span class="n">get_multidim_sampler</span><span class="p">)</span>
+<span class="go">Help on function get_multidim_sampler in module cosmic.sample.sampler.multidim:</span>
+
+<span class="go">get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SF_start, SF_duration, met, size, **kwargs)</span>
+<span class="go">    adapted version of Maxwell Moe&#39;s IDL code that generates a population of single and binary stars</span>
+<span class="go">    </span>
+<span class="go">    Below is the adapted version of Maxwell Moe&#39;s IDL code</span>
+<span class="go">    that generates a population of single and binary stars</span>
+<span class="go">    based on the paper Mind your P&#39;s and Q&#39;s</span>
+<span class="go">    By Maxwell Moe and Rosanne Di Stefano</span>
+<span class="go">    </span>
+<span class="go">    The python code has been adopted by Mads Sørensen</span>
+<span class="go">    </span>
+<span class="go">    Version history:</span>
+<span class="go">    V. 0.1; 2017/02/03</span>
+<span class="go">    By Mads Sørensen</span>
+<span class="go">    - This is a pure adaption from IDL to Python.</span>
+<span class="go">    - The function idl_tabulate is similar to</span>
+<span class="go">    the IDL function int_tabulated except, this function seems to be slightly</span>
+<span class="go">    more exact in its solution.</span>
+<span class="go">    Therefore, relative to the IDL code, there are small numerical differences.</span>
+<span class="go">    </span>
+<span class="go">    Comments below beginning with ; is the original nodes by Maxwell Moe.</span>
+<span class="go">    Please read these careful for understanding the script.</span>
+<span class="go">    ; NOTE - This version produces only the statistical distributions of</span>
+<span class="go">    ;        single stars, binaries, and inner binaries in hierarchical triples.</span>
+<span class="go">    ;        Outer tertiaries in hierarchical triples are NOT generated.</span>
+<span class="go">    ;        Moreover, given a set of companions, all with period P to</span>
+<span class="go">    ;        primary mass M1, this version currently uses an approximation to</span>
+<span class="go">    ;        determine the fraction of those companions that are inner binaries</span>
+<span class="go">    ;        vs. outer triples. Nevertheless, this approximation reproduces</span>
+<span class="go">    ;        the overall multiplicity statistics.</span>
+<span class="go">    ; Step 1 - Tabulate probably density functions of periods,</span>
+<span class="go">    ;          mass ratios, and eccentricities based on</span>
+<span class="go">    ;          analytic fits to corrected binary star populations.</span>
+<span class="go">    ; Step 2 - Implement Monte Carlo method to generate stellar</span>
+<span class="go">    ;          population from those density functions.</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    final_kstar1 : `list` or `int`</span>
+<span class="go">        Int or list of final kstar1</span>
+<span class="go">    </span>
+<span class="go">    final_kstar2 : `list` or `int`</span>
+<span class="go">        Int or list of final kstar2</span>
+<span class="go">    </span>
+<span class="go">    rand_seed : `int`</span>
+<span class="go">        Int to seed random number generator</span>
+<span class="go">    </span>
+<span class="go">    nproc : `int`</span>
+<span class="go">        Number of processors to use to generate population</span>
+<span class="go">    </span>
+<span class="go">    SF_start : `float`</span>
+<span class="go">            Time in the past when star formation initiates in Myr</span>
+<span class="go">    </span>
+<span class="go">    SF_duration : `float`</span>
+<span class="go">            Duration of constant star formation beginning from SF_Start in Myr</span>
+<span class="go">    </span>
+<span class="go">    met : `float`</span>
+<span class="go">        Sets the metallicity of the binary population where solar metallicity is 0.02</span>
+<span class="go">    </span>
+<span class="go">    size : `int`</span>
+<span class="go">        Size of the population to sample</span>
+<span class="go">    </span>
+<span class="go">    **porb_lo : `float`</span>
+<span class="go">        Lower limit in days for the orbital period distribution</span>
+<span class="go">    </span>
+<span class="go">    **porb_hi: `float`</span>
+<span class="go">        Upper limit in days for the orbital period distribution</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    InitialBinaryTable : `pandas.DataFrame`</span>
+<span class="go">        DataFrame in the format of the InitialBinaryTable</span>
+<span class="go">    </span>
+<span class="go">    mass_singles : `float`</span>
+<span class="go">        Total mass in single stars needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    mass_binaries : `float`</span>
+<span class="go">        Total mass in binaries needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    n_singles : `int`</span>
+<span class="go">        Number of single stars needed to generate a population</span>
+<span class="go">    </span>
+<span class="go">    n_binaries : `int`</span>
+<span class="go">        Number of binaries needed to generate a population</span>
+</pre></div>
+</div>
+<p>The random seed is used to reproduce your initial sample, since there are several stochastic processes involved in the muldimensional sample.
+As in the independent sampler, the final_kstar1 and final_kstar2 inputs are lists containing the kstar types that the evolved population should contain.</p>
+<p>The multidimensional sample is generated as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">mass_singles</span><span class="p">,</span> <span class="n">mass_binaries</span><span class="p">,</span> <span class="n">n_singles</span><span class="p">,</span> <span class="n">n_binaries</span> <span class="o">=</span> <span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;multidim&#39;</span><span class="p">,</span> <span class="n">final_kstar1</span><span class="o">=</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">final_kstar2</span><span class="o">=</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">rand_seed</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="gp">In [14]: </span><span class="nb">print</span><span class="p">(</span><span class="n">InitialBinaries</span><span class="p">)</span>
+<span class="go">   kstar_1  kstar_2     mass_1    mass_2  ...  bhspin_1  bhspin_2  tphys   binfrac</span>
+<span class="go">0      1.0      1.0   1.934019  1.739939  ...       0.0       0.0    0.0  0.485316</span>
+<span class="go">1      1.0      1.0   4.753717  2.337412  ...       0.0       0.0    0.0  0.710306</span>
+<span class="go">2      1.0      1.0   2.247170  1.931134  ...       0.0       0.0    0.0  0.506297</span>
+<span class="go">3      1.0      1.0   2.493545  0.986557  ...       0.0       0.0    0.0  0.528636</span>
+<span class="go">4      1.0      1.0  13.887092  1.878842  ...       0.0       0.0    0.0  0.883698</span>
+<span class="go">5      1.0      1.0   0.846927  0.809051  ...       0.0       0.0    0.0  0.403828</span>
+<span class="go">6      1.0      1.0   4.034753  3.898217  ...       0.0       0.0    0.0  0.639754</span>
+<span class="go">7      1.0      1.0   1.098126  1.089017  ...       0.0       0.0    0.0  0.410034</span>
+<span class="go">8      1.0      1.0   2.732838  1.394244  ...       0.0       0.0    0.0  0.544208</span>
+<span class="go">9      1.0      1.0   2.152541  1.864218  ...       0.0       0.0    0.0  0.499146</span>
+
+<span class="go">[10 rows x 38 columns]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass of singles and binaries as well as the total number of single and binary stars to scale thesimulated population to astrophysical populations.</p>
+</div>
+<p>(<a class="reference external" href="../runpop/index-2.py">Source code</a>)</p>
+</div>
+<div class="section" id="evolving-an-initial-binary-population">
+<h2>Evolving an initial binary population<a class="headerlink" href="#evolving-an-initial-binary-population" title="Permalink to this headline">¶</a></h2>
+<p>As in <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">Using COSMIC to evolve binaries</span></a>, once an initial binary population is sampled, it is evolved using the Evolve class. Note that the same process used in <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">Using COSMIC to evolve binaries</span></a> applies here as well: the BSEDict must be supplied, but only need be resupplied if the flags in the dictionary change.</p>
+<p>The syntax for the Evolve class is as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="kn">from</span> <span class="nn">cosmic.evolve</span> <span class="kn">import</span> <span class="n">Evolve</span>
+
+<span class="gp">In [16]: </span><span class="n">BSEDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;bhflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;neta&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;windflag&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wdflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;alpha1&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pts1&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;pts3&#39;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s1">&#39;pts2&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;epsnov&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;hewind&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;ck&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;bwind&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;lambdaf&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;mxns&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="mf">0.125</span><span class="p">,</span> <span class="s1">&#39;tflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;acc2&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;remnantflag&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;ceflag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;eddfac&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;ifflag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bconst&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">265.0</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pisn&#39;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span> <span class="s1">&#39;natal_kick_array&#39;</span> <span class="p">:</span> <span class="p">[[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span> <span class="s1">&#39;bhsigmafrac&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;polar_kick_angle&#39;</span> <span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;qcrit_array&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="s1">&#39;cekickflag&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;cehestarflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;cemergeflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ecsn&#39;</span> <span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;ecsn_mlow&#39;</span> <span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span> <span class="s1">&#39;aic&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ussn&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;sigmadiv&#39;</span> <span class="p">:</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="s1">&#39;qcflag&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;eddlimflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;fprimc_array&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">],</span> <span class="s1">&#39;bhspinflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bhspinmag&#39;</span> <span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;rejuv_fac&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;rejuvflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;htpmb&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ST_cr&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ST_tide&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bdecayfac&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;grflag&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;rembar_massloss&#39;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;kickflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;zsun&#39;</span> <span class="p">:</span> <span class="mf">0.014</span><span class="p">,</span> <span class="s1">&#39;bhms_coll_flag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;don_lim&#39;</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;acc_lim&#39;</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+
+<span class="gp">In [17]: </span><span class="n">bpp</span><span class="p">,</span> <span class="n">bcm</span><span class="p">,</span> <span class="n">initC</span><span class="p">,</span> <span class="n">kick_info</span>  <span class="o">=</span> <span class="n">Evolve</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">initialbinarytable</span><span class="o">=</span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">BSEDict</span><span class="o">=</span><span class="n">BSEDict</span><span class="p">)</span>
+
+<span class="gp">In [18]: </span><span class="nb">print</span><span class="p">(</span><span class="n">bcm</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">     tphys  kstar_1    mass0_1     mass_1  ...  SN_2  bin_state  merger_type  bin_num</span>
+<span class="go">0      0.0      1.0   1.934019   1.934019  ...   0.0          0         -001        0</span>
+<span class="go">0  13700.0     11.0   0.587444   0.641101  ...   0.0          0         -001        0</span>
+<span class="go">1      0.0      1.0   4.753717   4.753717  ...   0.0          0         -001        1</span>
+<span class="go">1  13700.0     12.0   1.147191   1.147191  ...   0.0          1         0711        1</span>
+<span class="go">2      0.0      1.0   2.247170   2.247170  ...   0.0          0         -001        2</span>
+<span class="go">2  13700.0     11.0   0.597705   0.598101  ...   0.0          0         -001        2</span>
+<span class="go">3      0.0      1.0   2.493545   2.493545  ...   0.0          0         -001        3</span>
+<span class="go">3  13700.0     11.0   0.569706   0.570070  ...   0.0          0         -001        3</span>
+<span class="go">4      0.0      1.0  13.887092  13.887092  ...   0.0          0         -001        4</span>
+<span class="go">4  13700.0     13.0  14.128624   1.353412  ...   0.0          1         0201        4</span>
+
+<span class="go">[10 rows x 39 columns]</span>
+
+<span class="gp">In [19]: </span><span class="nb">print</span><span class="p">(</span><span class="n">bpp</span><span class="p">)</span>
+<span class="go">           tphys    mass_1    mass_2  ...  bhspin_1  bhspin_2  bin_num</span>
+<span class="go">0       0.000000  1.934019  1.739939  ...       0.0       0.0        0</span>
+<span class="go">0    1370.603296  1.934019  1.739939  ...       0.0       0.0        0</span>
+<span class="go">0    1381.640183  1.933902  1.739939  ...       0.0       0.0        0</span>
+<span class="go">0    1417.067054  1.925023  1.739960  ...       0.0       0.0        0</span>
+<span class="go">0    1580.123032  1.897833  1.739973  ...       0.0       0.0        0</span>
+<span class="go">..           ...       ...       ...  ...       ...       ...      ...</span>
+<span class="go">9    1552.223119  0.589934  1.917971  ...       0.0       0.0        9</span>
+<span class="go">9    1712.421812  0.589934  1.890822  ...       0.0       0.0        9</span>
+<span class="go">9    1716.169648  0.589946  1.854251  ...       0.0       0.0        9</span>
+<span class="go">9    1717.391976  0.592323  0.586825  ...       0.0       0.0        9</span>
+<span class="go">9   13700.000000  0.592323  0.586825  ...       0.0       0.0        9</span>
+
+<span class="go">[132 rows x 44 columns]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="clustermontecarlo">
+<h2>ClusterMonteCarlo<a class="headerlink" href="#clustermontecarlo" title="Permalink to this headline">¶</a></h2>
+<p>New in COSMIC 3.4, you can now use COSMIC to sample initial conditions that can be used in the simulation of a Globular Cluster (GC), using the ClusterMonteCarlo (CMC) software package. To create these initial conditions, and save them in a format readable by CMC, you can do the following.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.initialcmctable</span> <span class="kn">import</span> <span class="n">InitialCMCTable</span>
+
+<span class="gp">In [21]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.sampler</span> <span class="kn">import</span> <span class="n">cmc</span>
+</pre></div>
+</div>
+<p>To see the arguments necessary to call the CMC sampler use the help function:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [22]: </span><span class="n">help</span><span class="p">(</span><span class="n">cmc</span><span class="o">.</span><span class="n">get_cmc_sampler</span><span class="p">)</span>
+<span class="go">Help on function get_cmc_sampler in module cosmic.sample.sampler.cmc:</span>
+
+<span class="go">get_cmc_sampler(primary_model, ecc_model, porb_model, qmin, binfrac_model, met, size, **kwargs)</span>
+<span class="go">    Generates an initial binary sample according to user specified models</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    cluster_profile : `str`</span>
+<span class="go">        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)</span>
+<span class="go">        Options include:</span>
+<span class="go">        &#39;plummer&#39; : Standard Plummer sphere.</span>
+<span class="go">            Additional parameters:</span>
+<span class="go">            &#39;r_max&#39; : `float`</span>
+<span class="go">                the maximum radius (in virial radii) to sample the clsuter</span>
+<span class="go">        &#39;elson&#39; : EFF 1987 profile.  Generalization of Plummer that better fits young massive clusters</span>
+<span class="go">            Additional parameters:</span>
+<span class="go">            &#39;gamma&#39; : `float`</span>
+<span class="go">                steepness paramter for Elson profile; note that gamma=4 is same is Plummer</span>
+<span class="go">            &#39;r_max&#39; : `float`</span>
+<span class="go">                the maximum radius (in virial radii) to sample the clsuter</span>
+<span class="go">        &#39;king&#39; : King profile </span>
+<span class="go">            &#39;w_0&#39; : `float`</span>
+<span class="go">                King concentration parameter</span>
+<span class="go">            &#39;r_max&#39; : `float`</span>
+<span class="go">                the maximum radius (in virial radii) to sample the clsuter</span>
+<span class="go">    </span>
+<span class="go">    primary_model : `str`</span>
+<span class="go">        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55</span>
+<span class="go">    </span>
+<span class="go">    ecc_model : `str`</span>
+<span class="go">        Model to sample eccentricity; choices include: thermal, uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    porb_model : `str`</span>
+<span class="go">        Model to sample orbital period; choices include: log_uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    msort : `float`</span>
+<span class="go">        Stars with M&gt;msort can have different pairing and sampling of companions</span>
+<span class="go">    </span>
+<span class="go">    pair : `float`</span>
+<span class="go">        Sets the pairing of stars M&gt;msort only with stars with M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model : `str or float`</span>
+<span class="go">        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model_msort : `str or float`</span>
+<span class="go">        Same as binfrac_model for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    qmin : `float`</span>
+<span class="go">        Sets the minimum mass ratio if q&gt;0 and uses the pre-MS lifetime</span>
+<span class="go">        of the companion for primary mass &gt; 5 msun to set q and sets q=0.1 </span>
+<span class="go">        for all primary mass &lt; 5 msun if q &lt; 0</span>
+<span class="go">    </span>
+<span class="go">    qmin_msort : `float`</span>
+<span class="go">        Same as qmin for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    params : `str`</span>
+<span class="go">        Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by</span>
+<span class="go">        running BSE for a tiny time step.</span>
+<span class="go">    </span>
+<span class="go">    met : `float`</span>
+<span class="go">        Sets the metallicity of the binary population where solar metallicity is 0.02</span>
+<span class="go">    </span>
+<span class="go">    size : `int`</span>
+<span class="go">        Size of the population to sample</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    InitialCMCTable : `pandas.DataFrame`</span>
+<span class="go">        DataFrame in the format of the InitialCMCTable</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [23]: </span><span class="kn">from</span> <span class="nn">cosmic.sample</span> <span class="kn">import</span> <span class="n">InitialCMCTable</span>
+
+<span class="gp">In [24]: </span><span class="n">Singles</span><span class="p">,</span> <span class="n">Binaries</span> <span class="o">=</span> <span class="n">InitialCMCTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;cmc&#39;</span><span class="p">,</span> <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">&#39;kroupa01&#39;</span><span class="p">,</span> <span class="n">ecc_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">cluster_profile</span><span class="o">=</span><span class="s1">&#39;plummer&#39;</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.014</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="s1">&#39;../examples/Params.ini&#39;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="gp">In [25]: </span><span class="n">InitialCMCTable</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Singles</span><span class="p">,</span> <span class="n">Binaries</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;input.hdf5&quot;</span><span class="p">)</span>
+
+<span class="gp">In [26]: </span><span class="n">InitialCMCTable</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Singles</span><span class="p">,</span> <span class="n">Binaries</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;input.fits&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../fixedpop/index.html" class="btn btn-neutral float-right" title="Generate a population the COSMIC way" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../examples/index.html" class="btn btn-neutral float-left" title="Using COSMIC to evolve binaries" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Katie Breivik.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
