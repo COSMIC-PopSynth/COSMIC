@@ -139,7 +139,7 @@ def get_independent_sampler(
     n_binaries = 0
 
     # see if custom IMF parameters were passed
-    alphas = kwargs.pop("alphas", [1.3,2.3,2.3])
+    alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
     mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
@@ -265,7 +265,7 @@ register_sampler(
 
 class Sample(object):
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[1.3,2.3,2.3], mcuts=[0.08,0.5,1.0,150.]):
+    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[-1.3,-2.3,-2.3], mcuts=[0.08,0.5,1.0,150.]):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
             kroupa93 follows Kroupa (1993), normalization comes from
@@ -321,20 +321,20 @@ class Sample(object):
             Total amount of mass sampled
             """
 
-        if primary_model == 'kroupa93': alphas, mcuts = [1.3,2.2,2.7], [0.08,0.5,1.0,150.]
+        if primary_model == 'kroupa93': alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
         # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
-        elif primary_model == 'kroupa01': alphas, mcuts = [1.3,2.3], [0.08,0.5,150.]
-        elif primary_model == 'salpeter55': alphas, mcuts = [2.35], [0.08,150.]
+        elif primary_model == 'kroupa01': alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
+        elif primary_model == 'salpeter55': alphas, mcuts = [-2.35], [0.08,150.]
         elif primary_model == 'custom': alphas, mcuts = alphas, mcuts
 
         Ncumulative, Ntotal, coeff = [], 0., 1.
         for i in range(len(alphas)):
-            g = 1. - alphas[i]
+            g = 1. + alphas[i]
             # Compute this piece of the IMF's contribution to Ntotal
-            if alphas[i] == 1: Ntotal += coeff * np.log(mcuts[i+1]/mcuts[i])
+            if alphas[i] == -1: Ntotal += coeff * np.log(mcuts[i+1]/mcuts[i])
             else: Ntotal += coeff/g * (mcuts[i+1]**g - mcuts[i]**g)
             Ncumulative.append(Ntotal)
-            if i < len(alphas)-1: coeff *= mcuts[i+1]**(alphas[i+1]-alphas[i])
+            if i < len(alphas)-1: coeff *= mcuts[i+1]**(-alphas[i+1]+alphas[i])
 
         cutoffs = np.array(Ncumulative)/Ntotal
         u = np.random.uniform(0.,1.,size)
@@ -345,12 +345,12 @@ class Sample(object):
             elif i < len(alphas)-1: idxs[i], = np.where((u > cutoffs[i-1]) & (u <= cutoffs[i]))
             else: idxs[i], = np.where(u > cutoffs[i-1])
         for i in range(len(alphas)):
-            if alphas[i] == 1.0:
+            if alphas[i] == -1.0:
                 u[idxs[i]] = 10**np.random.uniform(np.log10(mcuts[i]), 
                                                    np.log10(mcuts[i+1]), 
                                                    len(idxs[i]))
             else:
-                u[idxs[i]] = rndm(a=mcuts[i], b=mcuts[i+1], g=-1.*alphas[i], size=len(idxs[i]))
+                u[idxs[i]] = utils.rndm(a=mcuts[i], b=mcuts[i+1], g=alphas[i], size=len(idxs[i]))
 
         return u, np.sum(u)
 
