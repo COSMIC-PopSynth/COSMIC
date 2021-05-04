@@ -293,12 +293,14 @@ if __name__ == '__main__':
                                                         primary_model = args.primary_model,
                                                         ecc_model = args.ecc_model,
                                                         porb_model = args.porb_model,
-                                                        qmin = args.qmin,
+                                                        m2_min_select = sampling['m2_min_select'],
+                                                        m2_min_val = sampling['m2_min_val'],
                                                         keep_singles = args.keep_singles,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
-                                                        size = args.Nstep)
+                                                        size = args.Nstep,
+                                                        params = './Params.ini')
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
