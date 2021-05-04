@@ -39,7 +39,8 @@ def get_independent_sampler(
     primary_model,
     ecc_model,
     porb_model,
-    qmin,
+    m2_min_select,
+    m2_min_val,
     SF_start,
     SF_duration,
     binfrac_model,
@@ -72,10 +73,17 @@ def get_independent_sampler(
     pair : `float`
         Sets the pairing of stars M>msort only with stars with M>msort
 
-    qmin : `float`
-        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
-        of the companion for primary mass > 5 msun to set q and sets q=0.1 
-        for all primary mass < 5 msun if q < 0
+    m2_min_select : `string`
+        Sets the method for determining the minimum secondary mass
+
+    m2_min_val : `float`
+        If m2_min_select=='qmin':
+            Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
+            of the companion for primary mass > 5 msun to set q and sets q=0.1 
+            for all primary mass < 5 msun if q < 0
+        If m2_min_select=='m2min':
+            Sets the minimum secondary mass such that
+            m2 = np.random.uniform(min(m2_min_val, primary_mass), primary_mass)
 
     qmin_msort : `float`
         Same as qmin for M>msort
@@ -153,7 +161,7 @@ def get_independent_sampler(
             binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
         mass2_binaries = initconditions.sample_secondary(
-            mass1_binaries, qmin, **kwargs)
+            mass1_binaries, m2_min_select, m2_min_val, **kwargs)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -362,7 +370,7 @@ class Sample(object):
         return u, np.sum(u)
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass, qmin, **kwargs):
+    def sample_secondary(self, primary_mass, min_select, min_val, **kwargs):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
@@ -371,10 +379,20 @@ class Sample(object):
 
         Parameters
         ----------
-        primary_mass : array
+        primary_mass : `array`
             sets the maximum secondary mass (for a maximum mass ratio of 1)
 
-        qmin : float
+        min_select : `string`
+            sets the method for selecting the minimum secondary mass
+            choose from: 'qmin' or 'm2min'
+
+        min_val : `float`
+            sets the minimum value corresponding to min_select
+            allowed qmin values are: min_val= -1, which sets the minimum mass
+            ratio according to the pre-main-sequence lifetimes using the MIST
+            stellar evolution grids or 0 < min_val < 1, which sets qmin to a float 
+            allowed m2min values are min_val > 0.08, which means that the the minimum
+            secondary masses will be determined according to m2 = np.random.uniform(min(0.08,primary_mass), primary_mass)
 
         Returns
         -------
@@ -398,11 +416,12 @@ class Sample(object):
         primary_mass_high = primary_mass[mhighIdx]
         primary_mass_low = primary_mass[mlowIdx]
 
-        if qmin > 0.0:
+        
+        if (min_select == 'qmin') & (min_val >= 0.0):
             secondary_mass_low = np.random.uniform(
-                qmin, 1.0, len(primary_mass_low)
+                min_val, 1.0, len(primary_mass_low)
             ) * primary_mass_low
-        else:
+        elif (min_select == 'qmin') & (min_val < 0.0):
             dat = np.array([[5.0, 0.1363522012578616],
                             [6.999999999999993, 0.1363522012578616],
                             [12.599999999999994, 0.11874213836477984],
@@ -425,6 +444,12 @@ class Sample(object):
 
             q = np.random.uniform(qmin, 1.0)
             secondary_mass_low = q * primary_mass_low
+
+        if (min_select == 'm2min'):
+            m2_min = np.ones_like(primary_mass_low) * min_val
+            ind_m1_lim, = np.where(m2_min > primary_mass_low)
+            m2_min[ind_m1_lim] = primary_mass_low[ind_m1_lim]
+            secondary_mass_low = np.random.uniform(m2_min, primary_mass_low)
 
         if msort < 10000.0:
             if qmin_msort > 0.0 and pair == 0:
