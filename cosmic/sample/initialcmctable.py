@@ -241,15 +241,19 @@ class InitialCMCTable(pd.DataFrame):
 
         **kwargs
 
-            virial_radius
-            rtid
+
+        virial_radius : Float
+            virial radius to scale the cluster to, in parsec (default 1)
+        tidal_radius : float
+            initial tidal boundary of the cluster, in virial radii (default 1e6)
+            
         Returns
         -------
             None:
 
         """
         virial_radius = kwargs.pop("virial_radius", 1)
-        rtid = kwargs.pop("rtid", 1000000.0)
+        rtid = kwargs.pop("tidal_radius", 1000000.0)
 
         # verify parameters
         if (".hdf5" in filename) or (".h5" in filename):
