@@ -296,7 +296,8 @@ if __name__ == '__main__':
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
-                                                        size = args.Nstep)
+                                                        size = args.Nstep,
+                                                        params = args.params)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
