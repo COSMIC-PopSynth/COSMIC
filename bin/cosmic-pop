@@ -286,6 +286,12 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
+            if args.qmin is not None:
+                secondary_kwarg = args.qmin
+            elif args.m2_min is not None:
+                secondary_kwarg = args.m2_min
+            else:
+                raise ValueError("You must specify either qmin or m2_min")
             init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
@@ -293,14 +299,13 @@ if __name__ == '__main__':
                                                         primary_model = args.primary_model,
                                                         ecc_model = args.ecc_model,
                                                         porb_model = args.porb_model,
-                                                        m2_min_select = sampling['m2_min_select'],
-                                                        m2_min_val = sampling['m2_min_val'],
                                                         keep_singles = args.keep_singles,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep,
-                                                        params = './Params.ini')
+                                                        params = './Params.ini'
+                                                        secondary_kwarg)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':

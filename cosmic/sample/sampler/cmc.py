@@ -36,7 +36,7 @@ __all__ = ["get_cmc_sampler", "CMCSample"]
 
 
 def get_cmc_sampler(
-    primary_model, ecc_model, porb_model, qmin, binfrac_model, met, size, **kwargs
+    primary_model, ecc_model, porb_model, binfrac_model, met, size, **kwargs
 ):
     """Generates an initial binary sample according to user specified models
 
@@ -83,12 +83,19 @@ def get_cmc_sampler(
         Same as binfrac_model for M>msort
 
     qmin : `float`
-        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
-        of the companion for primary mass > 5 msun to set q and sets q=0.1 
-        for all primary mass < 5 msun if q < 0
+        kwarg which sets the minimum mass ratio for sampling the secondary
+        where the mass ratio distribution is flat in q
+        if q > 0, qmin sets the minimum mass ratio
+        q = -1, this limits the minimum mass ratio to be set such that
+        the pre-MS lifetime of the secondary is not longer than the full
+        lifetime of the primary if it were to evolve as a single star
+
+    m2_min : `float`
+        kwarg which sets the minimum secondary mass for sampling
+        the secondary as uniform in mass_2 between m2_min and mass_1
 
     qmin_msort : `float`
-        Same as qmin for M>msort
+        Same as qmin for M>msort; only applies if qmin is supplied
 
     params : `str`
         Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
@@ -130,8 +137,9 @@ def get_cmc_sampler(
         binfrac_binaries,
         binary_index,
     ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
+
     mass2_binaries = initconditions.sample_secondary(
-        mass1_binaries, qmin, **kwargs)
+        mass1_binaries, **kwargs)
 
     # track the mass sampled
     mass_singles += np.sum(mass_single)

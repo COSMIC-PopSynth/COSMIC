@@ -83,7 +83,7 @@ def linear_fit(data):
             mid_bin.append(bin_lo + (bin_hi-bin_lo)/2)
         return mid_bin
     
-    hist, bins = np.histogram(data, bins=50, density=True)
+    hist, bins = np.histogram(data, bins=100, density=True)
     bins = center_bins(bins)
     popt, pcov = curve_fit(line, bins, hist)
 
@@ -148,6 +148,18 @@ class TestSample(unittest.TestCase):
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         ind_massive, = np.where(mass1 > 5.0)
         q = mass2[ind_massive]/mass1[ind_massive]
+        slope = linear_fit(q)
+        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=-1)
+        ind_not_massive, = np.where(mass1 < 5.0)
+        q = mass2[ind_not_massive] / mass1[ind_not_massive]
+        slope = linear_fit(q)
+        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
+        np.random.seed(2)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, m2_min=0.1)
+        q = mass2[ind_massive] / mass1[ind_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 

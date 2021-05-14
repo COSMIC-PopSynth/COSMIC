@@ -39,8 +39,6 @@ def get_independent_sampler(
     primary_model,
     ecc_model,
     porb_model,
-    m2_min_select,
-    m2_min_val,
     SF_start,
     SF_duration,
     binfrac_model,
@@ -73,20 +71,20 @@ def get_independent_sampler(
     pair : `float`
         Sets the pairing of stars M>msort only with stars with M>msort
 
-    m2_min_select : `string`
-        Sets the method for determining the minimum secondary mass
+    qmin : `float`
+        kwarg which sets the minimum mass ratio for sampling the secondary
+        where the mass ratio distribution is flat in q
+        if q > 0, qmin sets the minimum mass ratio
+        q = -1, this limits the minimum mass ratio to be set such that
+        the pre-MS lifetime of the secondary is not longer than the full
+        lifetime of the primary if it were to evolve as a single star
 
-    m2_min_val : `float`
-        If m2_min_select=='qmin':
-            Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
-            of the companion for primary mass > 5 msun to set q and sets q=0.1 
-            for all primary mass < 5 msun if q < 0
-        If m2_min_select=='m2min':
-            Sets the minimum secondary mass such that
-            m2 = np.random.uniform(min(m2_min_val, primary_mass), primary_mass)
+    m2_min : `float`
+        kwarg which sets the minimum secondary mass for sampling
+        the secondary as uniform in mass_2 between m2_min and mass_1
 
     qmin_msort : `float`
-        Same as qmin for M>msort
+        Same as qmin for M>msort; only applies if qmin is supplied
 
     SF_start : `float`
         Time in the past when star formation initiates in Myr
@@ -161,7 +159,7 @@ def get_independent_sampler(
             binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
         mass2_binaries = initconditions.sample_secondary(
-            mass1_binaries, m2_min_select, m2_min_val, **kwargs)
+            mass1_binaries, **kwargs)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -370,29 +368,17 @@ class Sample(object):
         return u, np.sum(u)
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass, min_select, min_val, **kwargs):
+    def sample_secondary(self, primary_mass, **kwargs):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
 
-        NOTE: the lower lim is set by qmin
+        NOTE: the lower lim is set by either qmin or m2_min which are passed as kwargs
 
         Parameters
         ----------
         primary_mass : `array`
             sets the maximum secondary mass (for a maximum mass ratio of 1)
-
-        min_select : `string`
-            sets the method for selecting the minimum secondary mass
-            choose from: 'qmin' or 'm2min'
-
-        min_val : `float`
-            sets the minimum value corresponding to min_select
-            allowed qmin values are: min_val= -1, which sets the minimum mass
-            ratio according to the pre-main-sequence lifetimes using the MIST
-            stellar evolution grids or 0 < min_val < 1, which sets qmin to a float 
-            allowed m2min values are min_val > 0.08, which means that the the minimum
-            secondary masses will be determined according to m2 = np.random.uniform(min(0.08,primary_mass), primary_mass)
 
         Returns
         -------
@@ -402,6 +388,14 @@ class Sample(object):
         """
 
         flag_msort = kwargs.pop("flag_msort", "no_msort")
+        try:
+            qmin = kwargs.pop("qmin")
+        except:
+            qmin = None
+        try:
+            m2_min = kwargs.pop("m2_min")
+        except:
+            m2_min = None
 
         if flag_msort == "binfrac_high_mass":
             msort = kwargs.pop("msort")
@@ -417,41 +411,46 @@ class Sample(object):
         primary_mass_low = primary_mass[mlowIdx]
 
         
-        if (min_select == 'qmin') & (min_val >= 0.0):
-            secondary_mass_low = np.random.uniform(
-                min_val, 1.0, len(primary_mass_low)
-            ) * primary_mass_low
-        elif (min_select == 'qmin') & (min_val < 0.0):
-            dat = np.array([[5.0, 0.1363522012578616],
-                            [6.999999999999993, 0.1363522012578616],
-                            [12.599999999999994, 0.11874213836477984],
-                            [20.999999999999993, 0.09962264150943395],
-                            [29.39999999999999, 0.0820125786163522],
-                            [41, 0.06490566037735851],
-                            [55, 0.052327044025157254],
-                            [70.19999999999999, 0.04301886792452836],
-                            [87.4, 0.03622641509433966],
-                            [107.40000000000002, 0.030188679245283068],
-                            [133.40000000000003, 0.02515723270440262],
-                            [156.60000000000002, 0.02163522012578628],
-                            [175.40000000000003, 0.01962264150943399],
-                            [200.20000000000005, 0.017358490566037776]])
-            from scipy.interpolate import interp1d
-            qmin_interp = interp1d(dat[:, 0], dat[:, 1])
-            qmin = np.ones_like(primary_mass_low) * 0.1
-            ind_5, = np.where(primary_mass_low > 5.0)
-            qmin[ind_5] = qmin_interp(primary_mass_low[ind_5])
+        if qmin is not None:
+            if (qmin >= 0.0):
+                secondary_mass_low = np.random.uniform(
+                    qmin, 1.0, len(primary_mass_low)
+                ) * primary_mass_low
+            elif (qmin < 0.0):
+                dat = np.array([[5.0, 0.1363522012578616],
+                                [6.999999999999993, 0.1363522012578616],
+                                [12.599999999999994, 0.11874213836477984],
+                                [20.999999999999993, 0.09962264150943395],
+                                [29.39999999999999, 0.0820125786163522],
+                                [41, 0.06490566037735851],
+                                [55, 0.052327044025157254],
+                                [70.19999999999999, 0.04301886792452836],
+                                [87.4, 0.03622641509433966],
+                                [107.40000000000002, 0.030188679245283068],
+                                [133.40000000000003, 0.02515723270440262],
+                                [156.60000000000002, 0.02163522012578628],
+                                [175.40000000000003, 0.01962264150943399],
+                                [200.20000000000005, 0.017358490566037776]])
+                from scipy.interpolate import interp1d
+                qmin_interp = interp1d(dat[:, 0], dat[:, 1])
+                qmin = np.ones_like(primary_mass_low) * 0.1
+                ind_5, = np.where(primary_mass_low > 5.0)
+                qmin[ind_5] = qmin_interp(primary_mass_low[ind_5])
 
-            q = np.random.uniform(qmin, 1.0)
-            secondary_mass_low = q * primary_mass_low
+                q = np.random.uniform(qmin, 1.0)
+                secondary_mass_low = q * primary_mass_low
 
-        if (min_select == 'm2min'):
-            m2_min = np.ones_like(primary_mass_low) * min_val
+        if m2_min is not None:
+            m2_min = np.ones_like(primary_mass_low) * m2_min
             ind_m1_lim, = np.where(m2_min > primary_mass_low)
             m2_min[ind_m1_lim] = primary_mass_low[ind_m1_lim]
             secondary_mass_low = np.random.uniform(m2_min, primary_mass_low)
 
-        if msort < 10000.0:
+        if (m2_min is None) & (qmin is None):
+            raise ValueError("You must supply either qmin or m2_min to the"
+                             " independent initial binary sampler")
+
+        if (msort < 10000.0) & (m2_min is None):
             if qmin_msort > 0.0 and pair == 0:
                 secondary_mass_high = np.random.uniform(
                     qmin_msort, 1.0, len(primary_mass_high)
