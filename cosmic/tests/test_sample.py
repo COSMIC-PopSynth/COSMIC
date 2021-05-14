@@ -343,14 +343,14 @@ class TestSample(unittest.TestCase):
 class TestCMCSample(unittest.TestCase):
     def test_elson_profile(self):
         np.random.seed(2)
-        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, r_max=300, gamma=4)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('elson',N=100, r_max=300, gamma=4)
         np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
         np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
         np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
 
     def test_king_profile(self):
         np.random.seed(2)
-        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, w_0=5)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('king',N=100, w_0=5)
         np.testing.assert_allclose(VR_KING_TEST_ARRAY, vr, rtol=1e-5)
         np.testing.assert_allclose(VT_KING_TEST_ARRAY, vt, rtol=1e-5)
         np.testing.assert_allclose(R_KING_TEST_ARRAY, r, rtol=1e-5)

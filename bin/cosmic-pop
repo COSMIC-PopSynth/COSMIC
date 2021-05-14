@@ -304,8 +304,8 @@ if __name__ == '__main__':
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep,
-                                                        params = './Params.ini'
-                                                        secondary_kwarg)
+                                                        secondary_kwarg,
+                                                        params = args.inifile)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
