@@ -60,6 +60,8 @@ class InitialCMCTable(pd.DataFrame):
     scaled_to_nbody_units = False
     metallicity = None
     mass_of_cluster = None
+    virial_radius = None
+    tidal_radius = None
 
     @classmethod
     def ScaleToNBodyUnits(cls, Singles, Binaries, virial_radius=1):
@@ -239,17 +241,25 @@ class InitialCMCTable(pd.DataFrame):
         filename : (str)
             Must end in ".fits" or ".hdf5/h5"
 
-        **kwargs
+        Optional Parameteres
+        --------------------
+        These are automatically set in the Singles df, but can be OVERWRITTEN here 
 
-            virial_radius
-            rtid
+        virial_radius : `float`
+            the initial virial radius of the cluster, in parsecs
+
+        tidal_radius : `float`
+            the initial tidal radius of the cluster, in units of the virial_radius
+
+        metallicity : `float`
+            the stellar metallicity of the cluster
+
+
         Returns
         -------
             None:
 
         """
-        virial_radius = kwargs.pop("virial_radius", 1)
-        rtid = kwargs.pop("rtid", 1000000.0)
 
         # verify parameters
         if (".hdf5" in filename) or (".h5" in filename):
@@ -262,6 +272,10 @@ class InitialCMCTable(pd.DataFrame):
             raise ValueError(
                 "File extension not recognized, valid file types are fits and hdf5"
             )
+
+        virial_radius = kwargs.pop('virial_radius',Singles.virial_radius)
+        tidal_radius = kwargs.pop('tidal_radius',Singles.tidal_radius)
+        metallicity = kwargs.pop('metallicity',Singles.metallicity)
 
         # If a user has not already scaled the units of the Singles and Binaries tables,
         # and the attribute mass_of_cluster is None, then
@@ -317,9 +331,9 @@ class InitialCMCTable(pd.DataFrame):
                 f["CLUS_OBJ_DATA/block0_values"].attrs[
                     "MCLUS"
                 ] = Singles.mass_of_cluster
-                f["CLUS_OBJ_DATA/block0_values"].attrs["RVIR"] = virial_radius
-                f["CLUS_OBJ_DATA/block0_values"].attrs["RTID"] = rtid
-                f["CLUS_OBJ_DATA/block0_values"].attrs["Z"] = Singles.metallicity
+                f["CLUS_OBJ_DATA/block0_values"].attrs["RVIR"] = virial_radius 
+                f["CLUS_OBJ_DATA/block0_values"].attrs["RTID"] = tidal_radius 
+                f["CLUS_OBJ_DATA/block0_values"].attrs["Z"] = metallicity
 
         if savefits:
             Singles_fits = Table.from_pandas(singles)
@@ -339,8 +353,8 @@ class InitialCMCTable(pd.DataFrame):
             hdu1.header["NBINARY"] = int(len(Binaries_fits)) - 1
             hdu1.header["MCLUS"] = Singles.mass_of_cluster
             hdu1.header["RVIR"] = virial_radius
-            hdu1.header["RTID"] = rtid
-            hdu1.header["Z"] = Singles.metallicity
+            hdu1.header["RTID"] = tidal_radius
+            hdu1.header["Z"] = metallicity
 
             # put all the HDUs together
             hdul = fits.HDUList([primary_hdu, hdu1, hdu2])
