@@ -420,6 +420,10 @@ class MultiDim:
             tphys = np.random.uniform(SF_start - SF_duration, SF_start, size)
             metallicity = np.ones(size)*met
             return tphys, metallicity
+        elif (SF_start <0.0):
+            import cosmic.FIRE as FIRE
+            tphys, metallicity = FIRE.SFH(size)
+            return tphys, metallicity
         else:
             raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
