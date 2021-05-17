@@ -30,13 +30,13 @@ wrong_dict = {'test_wrong_dict' : False}
 alive_dict = {'binary_state' : [0]}
 noLISA_dict = {'binary_state' : [0]}
 false_dict = {'binary_state' : [0,1,2]}
-conv_dict_formation = {'convergence_filter' : 'formation'}
-conv_dict_1_SN = {'convergence_filter' : '1_SN'}
-conv_dict_2_SN = {'convergence_filter' : '2_SN'}
-conv_dict_disruption = {'convergence_filter' : 'disruption'}
-conv_dict_final_state = {'convergence_filter' : 'final_state'}
-conv_dict_XRB_form = {'convergence_filter' : 'XRB_form'}
-conv_dict_false = {'convergence_filter' : 'wrong'}
+conv_dict_formation = {'pop_select' : 'formation'}
+conv_dict_1_SN = {'pop_select' : '1_SN'}
+conv_dict_2_SN = {'pop_select' : '2_SN'}
+conv_dict_disruption = {'pop_select' : 'disruption'}
+conv_dict_final_state = {'pop_select' : 'final_state'}
+conv_dict_XRB_form = {'pop_select' : 'XRB_form'}
+conv_dict_false = {'pop_select' : 'wrong'}
 conv_lim_dict = {"sep" : [10, 5000]}
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
@@ -56,44 +56,44 @@ _KNOWN_METHODS = ['select_final_state',
 class TestUtils(unittest.TestCase):
     """`TestCase` for the utilities method
     """
-    def test_filter_bpp_bcm(self):
-        self.assertRaises(ValueError, utils.filter_bpp_bcm, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
+    def test_filter_bin_state(self):
+        self.assertRaises(ValueError, utils.filter_bin_state, BCM_TEST, BPP_TEST, wrong_dict, kstar_double, kstar_double)
 
-        bcm_true, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
+        bcm_true, bin_state_fraction = utils.filter_bin_state(BCM_TEST, BPP_TEST, alive_dict, k1_range, k2_range)
 
         self.assertTrue(bcm_true.tphys.all() >= 1.0)
 
-        bcm_false, bin_state_fraction = utils.filter_bpp_bcm(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
+        bcm_false, bin_state_fraction = utils.filter_bin_state(BCM_TEST, BPP_TEST, false_dict, k1_range_false, k2_range_false)
 
 
     def test_conv_select(self):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['pop_select'], {})
         self.assertTrue(np.all(conv.evol_type.isin([2,4])))
         self.assertTrue(np.all(conv.sep >= 0))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['pop_select'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_2_SN['pop_select'], {})
         self.assertEqual(len(conv), 0)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_disruption['pop_select'], {})
         self.assertEqual(len(conv), 4)
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['pop_select'], {})
         self.assertEqual(len(conv), int(len(BCM_TEST)))
 
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['convergence_filter'], {})
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['pop_select'], {})
         self.assertEqual(len(conv), 0)
 
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], false_dict, {})
 
     def test_conv_lims(self):
-        conv = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['convergence_filter'], conv_lim_dict)
-        self.assertTrue(conv.sep.max() < conv_lim_dict["sep"][1])
-        self.assertTrue(conv.sep.min() > conv_lim_dict["sep"][0])
+        conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['pop_select'], conv_lim_dict)
+        self.assertTrue(conv.loc[conv.bin_num.isin(bin_nums)].sep.max() < conv_lim_dict["sep"][1])
+        self.assertTrue(conv.loc[conv.bin_num.isin(bin_nums)].sep.min() > conv_lim_dict["sep"][0])
 
     def test_idl_tabulate(self):
         # Give this custom integrator a simple integration
@@ -142,12 +142,12 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(bw.round(3) == BW_KNUTH)
 
     def test_error_check(self):
-        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.5, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0,-100.0,-100.0,0.0]], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'rembar_massloss' : 0.5, 'zsun' : 0.02, 'kickflag' : 0, 'grflag' : 1, 'acc_lim' : 0, 'don_lim' : 0}
-        filters = {'select_final_state': True, 'binary_state': [0]}
-        convergence = {'convergence_params': ['mass_1', 'mass_2', 'porb', 'ecc'], 'convergence_filter': 'formation',\
+        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.5, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0,-100.0,-100.0,0.0]], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'rembar_massloss' : 0.5, 'zsun' : 0.02, 'kickflag' : 0, 'grflag' : 1, 'acc_lim' : -1, 'don_lim' : -1}
+        filters = {'binary_state': [0], 'timestep_conditions' : 'dtp=None'}
+        convergence = {'convergence_params': ['mass_1', 'mass_2', 'sep', 'ecc'], 'pop_select': 'formation',\
                        'match': -5.0, 'convergence_limits' : {"sep" : [0,1000]}, 'match' : -3.0,\
-                       'bcm_bpp_initCond_filter' : True}
-        sampling = {'sampling_method': 'multidim', 'SF_start': '13700.0', 'SF_duration' : 0.0, 'metallicity': 0.02}
+                       'apply_convergence_limits' : True}
+        sampling = {'sampling_method': 'multidim', 'SF_start': '13700.0', 'SF_duration' : 0.0, 'metallicity': 0.02, 'keep_singles': False}
         utils.error_check(BSEDict,filters,convergence,sampling)
         utils.error_check(BSEDict)
         assert 1==1
