@@ -794,7 +794,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         option
                     )
                 )
-
+        if ("qmin" in sampling.keys()) & ("m2_min" in sampling.keys()):
+            raise ValueError("You have specified both qmin and m2_min. Only one of these can be specified.")
     # filters
     if filters is not None:
         flag = "binary_state"
