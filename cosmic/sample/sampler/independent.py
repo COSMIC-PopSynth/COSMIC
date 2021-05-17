@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Katelyn Breivik (2017 - 2020)
+# Copyright (C) Katelyn Breivik (2017 - 2021)
 #
 # This file is part of cosmic.
 #
@@ -25,6 +25,7 @@ from ... import utils
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
+from ... import _evolvebin
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
@@ -38,7 +39,6 @@ def get_independent_sampler(
     primary_model,
     ecc_model,
     porb_model,
-    qmin,
     SF_start,
     SF_duration,
     binfrac_model,
@@ -65,10 +65,26 @@ def get_independent_sampler(
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
 
+    msort : `float`
+        Stars with M>msort can have different pairing and sampling of companions
+
+    pair : `float`
+        Sets the pairing of stars M>msort only with stars with M>msort
+
     qmin : `float`
-        Sets the minimum mass ratio if q>0 and uses the pre-MS lifetime
-        of the companion for primary mass > 5 msun to set q and sets q=0.1 
-        for all primary mass < 5 msun if q < 0
+        kwarg which sets the minimum mass ratio for sampling the secondary
+        where the mass ratio distribution is flat in q
+        if q > 0, qmin sets the minimum mass ratio
+        q = -1, this limits the minimum mass ratio to be set such that
+        the pre-MS lifetime of the secondary is not longer than the full
+        lifetime of the primary if it were to evolve as a single star
+
+    m2_min : `float`
+        kwarg which sets the minimum secondary mass for sampling
+        the secondary as uniform in mass_2 between m2_min and mass_1
+
+    qmin_msort : `float`
+        Same as qmin for M>msort; only applies if qmin is supplied
 
     SF_start : `float`
         Time in the past when star formation initiates in Myr
@@ -78,6 +94,9 @@ def get_independent_sampler(
 
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+
+    binfrac_model_msort : `str or float`
+        Same as binfrac_model for M>msort
 
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is 0.02
@@ -125,17 +144,22 @@ def get_independent_sampler(
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
+
+    # see if custom IMF parameters were passed
+    alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
+    mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier
+            primary_model, size=size * multiplier, alphas=alphas, mcuts=mcuts
         )
         (
             mass1_binaries,
             mass_single,
             binfrac_binaries,
             binary_index,
-        ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model)
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries, qmin)
+        ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
+        mass2_binaries = initconditions.sample_secondary(
+            mass1_binaries, **kwargs)
 
         # track the mass sampled
         mass_singles += np.sum(mass_single)
@@ -153,7 +177,8 @@ def get_independent_sampler(
         (ind_select_secondary,) = np.where(
             (mass2_binaries > secondary_min) & (mass2_binaries < secondary_max)
         )
-        ind_select = list(set(ind_select_primary).intersection(ind_select_secondary))
+        ind_select = list(
+            set(ind_select_primary).intersection(ind_select_secondary))
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
         binfrac.extend(binfrac_binaries[ind_select])
@@ -174,10 +199,16 @@ def get_independent_sampler(
     mass2_binary = np.array(mass2_binary)
     binfrac = np.asarray(binfrac)
     mass1_singles = np.asarray(mass1_singles)
-    ecc = initconditions.sample_ecc(ecc_model, size=mass1_binary.size)
-    porb = initconditions.sample_porb(
-        mass1_binary, mass2_binary, ecc, porb_model, size=mass1_binary.size
+
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, **kwargs)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, **kwargs)
+
+    # sample periods and eccentricities
+    porb,aRL_over_a = initconditions.sample_porb(
+        mass1_binary, mass2_binary, rad1, rad2, porb_model, size=mass1_binary.size
     )
+    ecc = initconditions.sample_ecc(aRL_over_a, ecc_model, size=mass1_binary.size)
+
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
@@ -246,102 +277,95 @@ register_sampler(
 
 
 class Sample(object):
-
     # sample primary masses
-    def sample_primary(self, primary_model="kroupa01", size=None):
+    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[-1.3,-2.3,-2.3], mcuts=[0.08,0.5,1.0,150.]):
         """Sample the primary mass (always the most massive star) from a user-selected model
-
-        Parameters
-        ----------
-        primary_model : str, optional
+            kroupa93 follows Kroupa (1993), normalization comes from
+            `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
+            between 0.08 and 150 Msun
+            salpter55 follows
+            `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
+            between 0.08 and 150 Msun
+            kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
+            between 0.08 and 100 Msun
+            Parameters
+            ----------
+            primary_model : str, optional
             model for mass distribution; choose from:
-
             kroupa93 follows Kroupa (1993), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             valid for masses between 0.1 and 100 Msun
-
-
             salpter55 follows
             `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
             valid for masses between 0.1 and 100 Msun
-
             kroupa01 follows Kroupa (2001), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
-
+            custom is a generic piecewise power law that takes in the power
+            law slopes and break points given in the optional input lists (alphas, mcuts)
+            default alphas and mcuts yield an IMF identical to kroupa01
             Default kroupa01
-        size : int, optional
+            size : int, optional
             number of initial primary masses to sample
             NOTE: this is set in cosmic-pop call as Nstep
-
-        Returns
-        -------
-        a_0 : array
+            alphas : array, optional
+            absolute values of the power law slopes for primary_model = 'piecewise_power'
+            Default [-1.3,-2.3,-2.3] (identical to slopes for primary_model = 'kroupa01')
+            mcuts : array, optional, units of Msun
+            break points separating the power law 'pieces' for primary_model = 'piecewise_power'
+            Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
+            Returns
+            -------
+            a_0 : array
             Sampled primary masses
-        sampled_mass : float
+            np.sum(a_0) : float
             Total amount of mass sampled
-        """
+            """
 
-        if primary_model == "kroupa93":
-            total_sampled_mass = 0
-            multiplier = 1
-            a_0 = np.random.uniform(0.0, 1, size)
+        if primary_model == 'kroupa93': alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
+        # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
+        elif primary_model == 'kroupa01': alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
+        elif primary_model == 'salpeter55': alphas, mcuts = [-2.35], [0.08,150.]
+        elif primary_model == 'custom': alphas, mcuts = alphas, mcuts
 
-            low_cutoff = 0.771
-            high_cutoff = 0.919
+        Ncumulative, Ntotal, coeff = [], 0., 1.
+        for i in range(len(alphas)):
+            g = 1. + alphas[i]
+            # Compute this piece of the IMF's contribution to Ntotal
+            if alphas[i] == -1: Ntotal += coeff * np.log(mcuts[i+1]/mcuts[i])
+            else: Ntotal += coeff/g * (mcuts[i+1]**g - mcuts[i]**g)
+            Ncumulative.append(Ntotal)
+            if i < len(alphas)-1: coeff *= mcuts[i+1]**(-alphas[i+1]+alphas[i])
 
-            (lowIdx,) = np.where(a_0 <= low_cutoff)
-            (midIdx,) = np.where((a_0 > low_cutoff) & (a_0 < high_cutoff))
-            (highIdx,) = np.where(a_0 >= high_cutoff)
+        cutoffs = np.array(Ncumulative)/Ntotal
+        u = np.random.uniform(0.,1.,size)
+        idxs = [() for i in range(len(alphas))]
 
-            a_0[lowIdx] = utils.rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[midIdx] = utils.rndm(a=0.50, b=1.0, g=-2.2, size=len(midIdx))
-            a_0[highIdx] = utils.rndm(a=1.0, b=150.0, g=-2.7, size=len(highIdx))
+        for i in range(len(alphas)):
+            if i == 0: idxs[i], = np.where(u <= cutoffs[0])
+            elif i < len(alphas)-1: idxs[i], = np.where((u > cutoffs[i-1]) & (u <= cutoffs[i]))
+            else: idxs[i], = np.where(u > cutoffs[i-1])
+        for i in range(len(alphas)):
+            if alphas[i] == -1.0:
+                u[idxs[i]] = 10**np.random.uniform(np.log10(mcuts[i]), 
+                                                   np.log10(mcuts[i+1]), 
+                                                   len(idxs[i]))
+            else:
+                u[idxs[i]] = utils.rndm(a=mcuts[i], b=mcuts[i+1], g=alphas[i], size=len(idxs[i]))
 
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
-
-        elif primary_model == "kroupa01":
-            # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate
-            # at 0.08 Msun instead of 0.01
-
-            total_sampled_mass = 0
-            multiplier = 1
-            a_0 = np.random.uniform(0.0, 1, size)
-
-            cutoff = 0.748
-
-            (lowIdx,) = np.where(a_0 <= cutoff)
-            (highIdx,) = np.where(a_0 >= cutoff)
-
-            a_0[lowIdx] = utils.rndm(a=0.08, b=0.5, g=-1.3, size=len(lowIdx))
-            a_0[highIdx] = utils.rndm(a=0.5, b=150.0, g=-2.3, size=len(highIdx))
-
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
-
-        elif primary_model == "salpeter55":
-            total_sampled_mass = 0
-            multiplier = 1
-            a_0 = utils.rndm(a=0.08, b=150, g=-2.35, size=size * multiplier)
-
-            total_sampled_mass += np.sum(a_0)
-
-            return a_0, total_sampled_mass
+        return u, np.sum(u)
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass, qmin):
+    def sample_secondary(self, primary_mass, **kwargs):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
 
-        NOTE: the lower lim is set by qmin
+        NOTE: the lower lim is set by either qmin or m2_min which are passed as kwargs
 
         Parameters
         ----------
-        primary_mass : array
+        primary_mass : `array`
             sets the maximum secondary mass (for a maximum mass ratio of 1)
 
         qmin : float
@@ -354,81 +378,177 @@ class Sample(object):
             primary_mass
         """
 
-        if qmin > 0.0:
-            secondary_mass = np.random.uniform(
-                qmin, 1.0, len(primary_mass)
-            ) * primary_mass
-        else:
-            dat = np.array([[5.0, 0.1363522012578616],
-                            [6.999999999999993, 0.1363522012578616],
-                            [12.599999999999994, 0.11874213836477984],
-                            [20.999999999999993, 0.09962264150943395],
-                            [29.39999999999999, 0.0820125786163522],
-                            [41, 0.06490566037735851],
-                            [55, 0.052327044025157254],
-                            [70.19999999999999, 0.04301886792452836],
-                            [87.4, 0.03622641509433966],
-                            [107.40000000000002, 0.030188679245283068],
-                            [133.40000000000003, 0.02515723270440262],
-                            [156.60000000000002, 0.02163522012578628],
-                            [175.40000000000003, 0.01962264150943399],
-                            [200.20000000000005, 0.017358490566037776]])
-            from scipy.interpolate import interp1d
-            qmin_interp = interp1d(dat[:,0], dat[:,1])
-            qmin = np.ones_like(primary_mass) * 0.1
-            ind_5, = np.where(primary_mass > 5.0)
-            qmin[ind_5] = qmin_interp(primary_mass[ind_5])
+        flag_msort = kwargs.pop("flag_msort", "no_msort")
+        try:
+            qmin = kwargs.pop("qmin")
+        except:
+            qmin = None
+        try:
+            m2_min = kwargs.pop("m2_min")
+        except:
+            m2_min = None
 
-            q = np.random.uniform(qmin, 1.0)
-            secondary_mass = q * primary_mass                            
+        if flag_msort == "binfrac_high_mass":
+            msort = kwargs.pop("msort")
+            qmin_msort = kwargs.pop("qmin_msort")
+            pair = kwargs.pop("pair")
+        else:
+            msort, qmin_msort, pair = 10000., 0., 0
+
+        sorting = msort * np.ones(primary_mass.size)
+        (mhighIdx,) = np.where(primary_mass >= sorting)
+        (mlowIdx,) = np.where(primary_mass < sorting)
+        primary_mass_high = primary_mass[mhighIdx]
+        primary_mass_low = primary_mass[mlowIdx]
+
+        
+        if qmin is not None:
+            if (qmin >= 0.0):
+                secondary_mass_low = np.random.uniform(
+                    qmin, 1.0, len(primary_mass_low)
+                ) * primary_mass_low
+            elif (qmin < 0.0):
+                dat = np.array([[5.0, 0.1363522012578616],
+                                [6.999999999999993, 0.1363522012578616],
+                                [12.599999999999994, 0.11874213836477984],
+                                [20.999999999999993, 0.09962264150943395],
+                                [29.39999999999999, 0.0820125786163522],
+                                [41, 0.06490566037735851],
+                                [55, 0.052327044025157254],
+                                [70.19999999999999, 0.04301886792452836],
+                                [87.4, 0.03622641509433966],
+                                [107.40000000000002, 0.030188679245283068],
+                                [133.40000000000003, 0.02515723270440262],
+                                [156.60000000000002, 0.02163522012578628],
+                                [175.40000000000003, 0.01962264150943399],
+                                [200.20000000000005, 0.017358490566037776]])
+                from scipy.interpolate import interp1d
+                qmin_interp = interp1d(dat[:, 0], dat[:, 1])
+                qmin = np.ones_like(primary_mass_low) * 0.1
+                ind_5, = np.where(primary_mass_low > 5.0)
+                qmin[ind_5] = qmin_interp(primary_mass_low[ind_5])
+
+                q = np.random.uniform(qmin, 1.0)
+                secondary_mass_low = q * primary_mass_low
+
+        if m2_min is not None:
+            m2_min = np.ones_like(primary_mass_low) * m2_min
+            ind_m1_lim, = np.where(m2_min > primary_mass_low)
+            m2_min[ind_m1_lim] = primary_mass_low[ind_m1_lim]
+            secondary_mass_low = np.random.uniform(m2_min, primary_mass_low)
+
+        if (m2_min is None) & (qmin is None):
+            raise ValueError("You must supply either qmin or m2_min to the"
+                             " independent initial binary sampler")
+
+        if (msort < 10000.0) & (m2_min is None):
+            if qmin_msort > 0.0 and pair == 0:
+                secondary_mass_high = np.random.uniform(
+                    qmin_msort, 1.0, len(primary_mass_high)
+                ) * primary_mass_high
+            elif qmin_msort > 0.0 and pair == 1:
+                qmin_m = msort/primary_mass_high
+                qmin_msort_arr = qmin_msort * np.ones(primary_mass_high.size)
+                (qIdx,) = np.where(qmin_m < qmin_msort_arr)
+                qmin_m[qIdx] = qmin_msort * np.ones(qIdx.size)
+                q_msort = np.random.uniform(qmin_m, 1.0)
+                secondary_mass_high = q_msort * primary_mass_high
+            else:
+                dat = np.array([[5.0, 0.1363522012578616],
+                                [6.999999999999993, 0.1363522012578616],
+                                [12.599999999999994, 0.11874213836477984],
+                                [20.999999999999993, 0.09962264150943395],
+                                [29.39999999999999, 0.0820125786163522],
+                                [41, 0.06490566037735851],
+                                [55, 0.052327044025157254],
+                                [70.19999999999999, 0.04301886792452836],
+                                [87.4, 0.03622641509433966],
+                                [107.40000000000002, 0.030188679245283068],
+                                [133.40000000000003, 0.02515723270440262],
+                                [156.60000000000002, 0.02163522012578628],
+                                [175.40000000000003, 0.01962264150943399],
+                                [200.20000000000005, 0.017358490566037776]])
+                from scipy.interpolate import interp1d
+                qmin_interp = interp1d(dat[:, 0], dat[:, 1])
+                qmin_msort = np.ones_like(primary_mass_high) * 0.1
+                ind_5, = np.where(primary_mass_high > 5.0)
+                qmin_msort[ind_5] = qmin_interp(primary_mass_high[ind_5])
+
+                q_msort = np.random.uniform(qmin_msort, 1.0)
+                secondary_mass_high = q_msort * primary_mass_high
+
+        secondary_mass = np.ones(primary_mass.size)
+        secondary_mass[mlowIdx] = secondary_mass_low
+        if msort < 10000.0:
+            secondary_mass[mhighIdx] = secondary_mass_high
+
         return secondary_mass
 
-    def binary_select(self, primary_mass, binfrac_model=0.5):
+    def binary_select(self, primary_mass, binfrac_model=0.5, **kwargs):
         """Select which primary masses will have a companion using
         either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
-
         Parameters
         ----------
             primary_mass : array
                 Mass that determines the binary fraction
-
             binfrac_model : str or float
                 vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
                 float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
                 means every star is in a binary pair
-
         Returns
         -------
-            primary_mass[binaryIdx] : array
+            stars_in_binary : array
                 primary masses that will have a binary companion
-
-            primary_mass[singleIdx] : array
+            stars_in_single : array
                 primary masses that will be single stars
-
-            binary_fraction[binaryIdx] : array
+            binary_fraction : array
                 system-specific probability of being in a binary
+            binaryIdx : array
+                Idx of stars in binary
         """
+
+        flag_msort = kwargs.pop("flag_msort", "no_msort")
+
+        if flag_msort == "binfrac_high_mass":
+            msort = kwargs.pop("msort")
+            binfrac_model_msort = kwargs.pop("binfrac_model_msort")
+        else:
+            msort, binfrac_model_msort = 10000., 0.
+
+        sorting = msort * np.ones(primary_mass.size)
+        (mhighIdx,) = np.where(primary_mass >= sorting)
+        (mlowIdx,) = np.where(primary_mass < sorting)
+        primary_mass_high = primary_mass[mhighIdx]
+        primary_mass_low = primary_mass[mlowIdx]
 
         if type(binfrac_model) == str:
             if binfrac_model == "vanHaaften":
-                binary_fraction = 1 / 2.0 + 1 / 4.0 * np.log10(primary_mass)
-                binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
+                binary_fraction_low = 1 / 2.0 + 1 / \
+                    4.0 * np.log10(primary_mass_low)
+                binary_choose_low = np.random.uniform(
+                    0, 1.0, primary_mass_low.size)
 
-                (singleIdx,) = np.where(binary_fraction < binary_choose)
-                (binaryIdx,) = np.where(binary_fraction >= binary_choose)
+                (singleIdx_low,) = np.where(
+                    binary_fraction_low < binary_choose_low)
+                (binaryIdx_low,) = np.where(
+                    binary_fraction_low >= binary_choose_low)
             else:
                 raise ValueError(
                     "You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float"
                 )
         elif type(binfrac_model) == float:
             if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
-                binary_fraction = binfrac_model * np.ones(primary_mass.size)
-                binary_choose = np.random.uniform(0, 1.0, primary_mass.size)
+                binary_fraction_low = binfrac_model * \
+                    np.ones(primary_mass_low.size)
+                binary_choose_low = np.random.uniform(
+                    0, 1.0, primary_mass_low.size)
 
-                (singleIdx,) = np.where(binary_choose > binary_fraction)
-                (binaryIdx,) = np.where(binary_choose <= binary_fraction)
+                (singleIdx_low,) = np.where(
+                    binary_choose_low > binary_fraction_low)
+                (binaryIdx_low,) = np.where(
+                    binary_choose_low <= binary_fraction_low)
             else:
                 raise ValueError(
                     "You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1."
@@ -438,24 +558,76 @@ class Sample(object):
                 "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
             )
 
+        if msort < 10000. and type(binfrac_model_msort) == str:
+            if binfrac_model_msort == "vanHaaften":
+                binary_fraction_high = 1 / 2.0 + 1 / \
+                    4.0 * np.log10(primary_mass_high)
+                binary_choose_high = np.random.uniform(
+                    0, 1.0, primary_mass_high.size)
+
+                (singleIdx_high,) = np.where(
+                    binary_fraction_high < binary_choose_high)
+                (binaryIdx_high,) = np.where(
+                    binary_fraction_high >= binary_choose_high)
+            else:
+                raise ValueError(
+                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float"
+                )
+        elif msort < 10000. and type(binfrac_model_msort) == float:
+            if (binfrac_model_msort <= 1.0) & (binfrac_model_msort >= 0.0):
+                binary_fraction_high = binfrac_model_msort * \
+                    np.ones(primary_mass_high.size)
+                binary_choose_high = np.random.uniform(
+                    0, 1.0, primary_mass_high.size)
+
+                (singleIdx_high,) = np.where(
+                    binary_choose_high > binary_fraction_high)
+                (binaryIdx_high,) = np.where(
+                    binary_choose_high <= binary_fraction_high)
+            else:
+                raise ValueError(
+                    "You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1."
+                )
+        elif msort < 10000.:
+            raise ValueError(
+                "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
+            )
+
+        if msort < 10000.:
+            stars_in_binary = np.append(
+                primary_mass_high[binaryIdx_high], primary_mass_low[binaryIdx_low])
+            stars_in_single = np.append(
+                primary_mass_high[singleIdx_high], primary_mass_low[singleIdx_low])
+            binary_fraction = np.append(
+                binary_fraction_high[binaryIdx_high], binary_fraction_low[binaryIdx_low])
+            binaryIdx = np.append(
+                mhighIdx[binaryIdx_high], mlowIdx[binaryIdx_low])
+        else:
+            stars_in_binary = primary_mass_low[binaryIdx_low]
+            stars_in_single = primary_mass_low[singleIdx_low]
+            binary_fraction = binary_fraction_low[binaryIdx_low]
+            binaryIdx = mlowIdx[binaryIdx_low]
+
         return (
-            primary_mass[binaryIdx],
-            primary_mass[singleIdx],
-            binary_fraction[binaryIdx],
+            stars_in_binary,
+            stars_in_single,
+            binary_fraction,
             binaryIdx,
         )
 
-    def sample_porb(self, mass1, mass2, ecc, porb_model="sana12", porb_max=None, size=None):
-        """Sample the orbital period according to the user-specified model
 
+    def sample_porb(self, mass1, mass2, rad1, rad2, porb_model="sana12", porb_max=None, size=None):
+        """Sample the orbital period according to the user-specified model
         Parameters
         ----------
         mass1 : array
             primary masses
         mass2 : array
             secondary masses
-        ecc : array
-            eccentricity
+        rad1 : array
+            radii of the primaries. 
+        rad2 : array
+            radii of the secondaries 
         model : string
             selects which model to sample orbital periods, choices include:
             log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
@@ -469,66 +641,56 @@ class Sample(object):
             following the implementation of
             `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
             and flat in log otherwise
-
         Returns
         -------
         porb : array
             orbital period with array size equalling array size
             of mass1 and mass2 in units of days
+        aRL_over_a: array
+            ratio of radius where RL overflow starts to the sampled seperation
+            used to truncate the eccentricitiy distribution
         """
+
+        # First we need to compute where RL overflow starts.  We truncate the lower-bound
+        # of the period distribution there
+        q = mass2 / mass1
+        RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
+            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
+        )
+
+        q2 = mass1 / mass2
+        RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
+            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
+        )
+
+        # include the factor for the eccentricity
+        RL_max = 2 * rad1 / RL_fac
+        (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
+        if len(ind_switch) >= 1:
+            RL_max[ind_switch] = 2 * rad2[ind_switch] / RL_fac2[ind_switch]
+
+        # Can either sample the porb first and truncate the eccentricities at RL overflow
+        # or sample the eccentricities first and truncate a(1-e) at RL overflow
+        #
+        # If we haven't sampled the eccentricities, then the minimum semi-major axis is at
+        # RL overflow
+        #
+        # If we have, then the minimum pericenter is set to RL overflow
+        a_min = RL_max 
+
         if porb_model == "log_uniform":
-            q = mass2 / mass1
-            RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-                0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
-            )
-
-            q2 = mass1 / mass2
-            RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-                0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
-            )
-            try:
-                (ind_lo,) = np.where(mass1 < 1.66)
-                (ind_hi,) = np.where(mass1 >= 1.66)
-
-                rad1 = np.zeros(len(mass1))
-                rad1[ind_lo] = 1.06 * mass1[ind_lo] ** 0.945
-                rad1[ind_hi] = 1.33 * mass1[ind_hi] ** 0.555
-            except Exception:
-                if mass1 < 1.66:
-                    rad1 = 1.06 * mass1 ** 0.945
-                else:
-                    rad1 = 1.33 * mass1 ** 0.555
-
-            try:
-                (ind_lo,) = np.where(mass2 < 1.66)
-                (ind_hi,) = np.where(mass2 >= 1.66)
-
-                rad2 = np.zeros(len(mass2))
-                rad2[ind_lo] = 1.06 * mass2[ind_lo] ** 0.945
-                rad2[ind_hi] = 1.33 * mass2[ind_hi] ** 0.555
-            except Exception:
-                if mass2 < 1.66:
-                    rad2 = 1.06 * mass1 ** 0.945
-                else:
-                    rad2 = 1.33 * mass1 ** 0.555
-
-            # include the factor for the eccentricity
-            RL_max = 2 * rad1 / RL_fac
-            (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
-            if len(ind_switch) >= 1:
-                RL_max[ind_switch] = 2 * rad2 / RL_fac2[ind_switch]
-            a_min = RL_max / (1 - ecc)
             if porb_max is None:
                 a_0 = np.random.uniform(np.log(a_min), np.log(1e5), size)
             else:
-                ## If in CMC, only sample binaries as wide as the local hard/soft boundary
+                # If in CMC, only sample binaries as wide as the local hard/soft boundary
                 a_max = utils.a_from_p(porb_max,mass1,mass2) 
                 a_max[a_max < a_min] = a_min[a_max < a_min]
                 a_0 = np.random.uniform(np.log(a_min), np.log(a_max), size)
 
-
             # convert out of log space
             a_0 = np.exp(a_0)
+            aRL_over_a = a_min/a_0
+
             # convert to au
             rsun_au = 0.00465047
             a_0 = a_0 * rsun_au
@@ -538,32 +700,38 @@ class Sample(object):
             porb_yr = ((a_0 ** 3.0) / (mass1 + mass2)) ** 0.5
             porb = porb_yr * yr_day
         elif porb_model == "sana12":
+            # Same here: if using CMC, set the maximum porb to the smaller of either the
+            # hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
             else:
-                log10_porb_max = np.log10(porb_max)
+                log10_porb_max = np.minimum(5.5,np.log10(porb_max))
 
             porb = 10 ** utils.rndm(a=0.15, b=log10_porb_max, g=-0.55, size=size)
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+
         elif porb_model == "renzo19":
+            # Same here: if using CMC, set the maximum porb to the smaller of either the
+            # hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
             else:
-                log10_porb_max = np.log10(porb_max)
+                log10_porb_max = np.minimum(5.5,np.log10(porb_max))
 
             porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
             porb[ind_massive] = 10 ** utils.rndm(
                 a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
             )
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
         else:
             raise ValueError(
                 "You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19"
             )
-        return porb
+        return porb, aRL_over_a    
 
-    def sample_ecc(self, ecc_model="sana12", size=None):
+    def sample_ecc(self, aRL_over_a, ecc_model="sana12", size=None):
         """Sample the eccentricity according to a user specified model
-
         Parameters
         ----------
         ecc_model : string
@@ -574,24 +742,28 @@ class Sample(object):
             `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
-
+        aRL_over_a : ratio of the minimum seperation (where RL overflow starts)
+            to the sampled semi-major axis.  Use this to truncate the eccentricitiy
         size : int, optional
             number of eccentricities to sample
             this is set in cosmic-pop call as Nstep
-
         Returns
         -------
         ecc : array
             array of sampled eccentricities with size=size
         """
 
+        # if we sampled the periods first, we need to truncate the eccentricities
+        # to avoid RL overflow/collision at pericenter
+        e_max = 1.0 - aRL_over_a
+
         if ecc_model == "thermal":
-            a_0 = np.random.uniform(0.0, 1.0, size)
+            a_0 = np.random.uniform(0.0, e_max**2, size)
             ecc = a_0 ** 0.5
             return ecc
 
         elif ecc_model == "uniform":
-            ecc = np.random.uniform(0.0, 1.0, size)
+            ecc = np.random.uniform(0.0, e_max, size)
             return ecc
 
         elif ecc_model == "sana12":
@@ -604,7 +776,7 @@ class Sample(object):
 
         else:
             raise ValueError("You have specified an unsupported model. Please choose from thermal, "
-                             "uniform, sana12, or circular")
+                             "uniform, sana12, or circular")    
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -643,6 +815,7 @@ class Sample(object):
             return tphys, metallicity
         else:
             raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
+    
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
@@ -668,3 +841,129 @@ class Sample(object):
         kstar[hiIdx] = 1
 
         return kstar
+
+    def set_reff(self, mass, metallicity, **kwargs):
+
+        # Make sure you've specified the BSE parameters
+        if "BSEDict" not in kwargs and "params" not in kwargs:
+            raise ValueError(
+                'Must specify either BSEDict or params=param.ini to use set_radii_with_BSE')
+
+        # NUMBER 1: PASS A DICTIONARY OF FLAGS
+        BSEDict = kwargs.pop("BSEDict", {})
+
+        # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
+        params = kwargs.pop("params", None)
+
+        if params is not None:
+            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+
+        # set BSE consts
+        _evolvebin.windvars.neta = BSEDict["neta"]
+        _evolvebin.windvars.bwind = BSEDict["bwind"]
+        _evolvebin.windvars.hewind = BSEDict["hewind"]
+        _evolvebin.cevars.alpha1 = BSEDict["alpha1"]
+        _evolvebin.cevars.lambdaf = BSEDict["lambdaf"]
+        _evolvebin.ceflags.ceflag = BSEDict["ceflag"]
+        _evolvebin.flags.tflag = BSEDict["tflag"]
+        _evolvebin.flags.ifflag = BSEDict["ifflag"]
+        _evolvebin.flags.wdflag = BSEDict["wdflag"]
+        _evolvebin.snvars.pisn = BSEDict["pisn"]
+        _evolvebin.flags.bhflag = BSEDict["bhflag"]
+        _evolvebin.flags.remnantflag = BSEDict["remnantflag"]
+        _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
+        _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
+        _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
+        _evolvebin.flags.grflag = BSEDict["grflag"]
+        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
+        _evolvebin.snvars.mxns = BSEDict["mxns"]
+        _evolvebin.points.pts1 = BSEDict["pts1"]
+        _evolvebin.points.pts2 = BSEDict["pts2"]
+        _evolvebin.points.pts3 = BSEDict["pts3"]
+        _evolvebin.snvars.ecsn = BSEDict["ecsn"]
+        _evolvebin.snvars.ecsn_mlow = BSEDict["ecsn_mlow"]
+        _evolvebin.flags.aic = BSEDict["aic"]
+        _evolvebin.ceflags.ussn = BSEDict["ussn"]
+        _evolvebin.snvars.sigma = BSEDict["sigma"]
+        _evolvebin.snvars.sigmadiv = BSEDict["sigmadiv"]
+        _evolvebin.snvars.bhsigmafrac = BSEDict["bhsigmafrac"]
+        _evolvebin.snvars.polar_kick_angle = BSEDict["polar_kick_angle"]
+        _evolvebin.snvars.natal_kick_array = BSEDict["natal_kick_array"]
+        _evolvebin.cevars.qcrit_array = BSEDict["qcrit_array"]
+        _evolvebin.windvars.beta = BSEDict["beta"]
+        _evolvebin.windvars.xi = BSEDict["xi"]
+        _evolvebin.windvars.acc2 = BSEDict["acc2"]
+        _evolvebin.windvars.epsnov = BSEDict["epsnov"]
+        _evolvebin.windvars.eddfac = BSEDict["eddfac"]
+        _evolvebin.windvars.gamma = BSEDict["gamma"]
+        _evolvebin.flags.bdecayfac = BSEDict["bdecayfac"]
+        _evolvebin.magvars.bconst = BSEDict["bconst"]
+        _evolvebin.magvars.ck = BSEDict["ck"]
+        _evolvebin.flags.windflag = BSEDict["windflag"]
+        _evolvebin.flags.qcflag = BSEDict["qcflag"]
+        _evolvebin.flags.eddlimflag = BSEDict["eddlimflag"]
+        _evolvebin.tidalvars.fprimc_array = BSEDict["fprimc_array"]
+        _evolvebin.rand1.idum1 = -1
+        _evolvebin.flags.bhspinflag = BSEDict["bhspinflag"]
+        _evolvebin.snvars.bhspinmag = BSEDict["bhspinmag"]
+        _evolvebin.mixvars.rejuv_fac = BSEDict["rejuv_fac"]
+        _evolvebin.flags.rejuvflag = BSEDict["rejuvflag"]
+        _evolvebin.flags.htpmb = BSEDict["htpmb"]
+        _evolvebin.flags.st_cr = BSEDict["ST_cr"]
+        _evolvebin.flags.st_tide = BSEDict["ST_tide"]
+        _evolvebin.snvars.rembar_massloss = BSEDict["rembar_massloss"]
+        _evolvebin.metvars.zsun = BSEDict["zsun"]
+        _evolvebin.snvars.kickflag = BSEDict["kickflag"]
+        _evolvebin.cmcpass.using_cmc = 0
+
+        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
+        initial_stars = InitialBinaryTable.InitialBinaries(
+            mass,
+            np.ones_like(mass) * 0,
+            np.ones_like(mass) * -1,
+            np.ones_like(mass) * -1,
+            np.ones_like(mass) * 0.1,
+            self.set_kstar(mass),
+            np.ones_like(mass) * 0,
+            np.ones_like(mass) * metallicity,
+        )
+        initial_stars["dtp"] = initial_stars["tphysf"]
+
+        initial_stars = initial_stars.assign(
+            kick_info=[np.zeros((2, 17))] * len(initial_stars)
+        )
+        initial_conditions = initial_stars.to_dict("records")
+
+        rad_1 = np.zeros(len(initial_stars))
+        for idx, initial_condition in enumerate(initial_conditions):
+            [bpp_index, bcm_index, _] = _evolvebin.evolv2(
+                [initial_condition["kstar_1"], initial_condition["kstar_2"]],
+                [initial_condition["mass_1"], initial_condition["mass_2"]],
+                initial_condition["porb"],
+                initial_condition["ecc"],
+                initial_condition["metallicity"],
+                initial_condition["tphysf"],
+                initial_condition["dtp"],
+                [initial_condition["mass0_1"], initial_condition["mass0_2"]],
+                [initial_condition["rad_1"], initial_condition["rad_2"]],
+                [initial_condition["lum_1"], initial_condition["lum_2"]],
+                [initial_condition["massc_1"], initial_condition["massc_2"]],
+                [initial_condition["radc_1"], initial_condition["radc_2"]],
+                [initial_condition["menv_1"], initial_condition["menv_2"]],
+                [initial_condition["renv_1"], initial_condition["renv_2"]],
+                [initial_condition["omega_spin_1"],
+                    initial_condition["omega_spin_2"]],
+                [initial_condition["B_1"], initial_condition["B_2"]],
+                [initial_condition["bacc_1"], initial_condition["bacc_2"]],
+                [initial_condition["tacc_1"], initial_condition["tacc_2"]],
+                [initial_condition["epoch_1"], initial_condition["epoch_2"]],
+                [initial_condition["tms_1"], initial_condition["tms_2"]],
+                [initial_condition["bhspin_1"], initial_condition["bhspin_2"]],
+                initial_condition["tphys"],
+                np.zeros(20),
+                np.zeros(20),
+                initial_condition["kick_info"],
+            )
+            rad_1[idx] = _evolvebin.binary.bcm[0, 5]
+
+        return rad_1
