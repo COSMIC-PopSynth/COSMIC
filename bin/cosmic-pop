@@ -105,8 +105,6 @@ def parse_commandline():
     parser.add_argument("--binfrac_model", help="Chooses the binary fraction model from: a float between [0,1] and vanHaaften", type=float)
     parser.add_argument("--ecc_model", help="Chooses the initial eccentricity distribution model from: thermal, uniform, and sana12", type=str)
     parser.add_argument("--porb_model", help="Chooses the initial orbital period distribution model from: log_uniform and sana12", type=str)
-    parser.add_argument("--m2_min_select", help="Chooses the method for setting the minimum secondary mass: from qmin and m2min", type=str)
-    parser.add_argument("--m2_min_val", help="Sets the minimum value corresponding to m2_min_select", type=float)
     parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
     parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
     parser.add_argument("--metallicity", type=float)
@@ -287,25 +285,37 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if args.qmin is not None:
-                secondary_kwarg = args.qmin
+                init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
+                                                            final_kstar1 = kstar1_range,
+                                                            final_kstar2 = kstar2_range,
+                                                            binfrac_model = args.binfrac_model,
+                                                            primary_model = args.primary_model,
+                                                            ecc_model = args.ecc_model,
+                                                            porb_model = args.porb_model,
+                                                            keep_singles = args.keep_singles,
+                                                            SF_start = sampling['SF_start'],
+                                                            SF_duration = sampling['SF_duration'],
+                                                            met = sampling['metallicity'],
+                                                            size = args.Nstep,
+                                                            qmin = args.qmin,
+                                                            params = args.inifile)
             elif args.m2_min is not None:
-                secondary_kwarg = args.m2_min
+                init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
+                                                            final_kstar1 = kstar1_range,
+                                                            final_kstar2 = kstar2_range,
+                                                            binfrac_model = args.binfrac_model,
+                                                            primary_model = args.primary_model,
+                                                            ecc_model = args.ecc_model,
+                                                            porb_model = args.porb_model,
+                                                            keep_singles = args.keep_singles,
+                                                            SF_start = sampling['SF_start'],
+                                                            SF_duration = sampling['SF_duration'],
+                                                            met = sampling['metallicity'],
+                                                            size = args.Nstep,
+                                                            m2_min = args.m2_min,
+                                                            params = args.inifile)
             else:
                 raise ValueError("You must specify either qmin or m2_min")
-            init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
-                                                        final_kstar1 = kstar1_range,
-                                                        final_kstar2 = kstar2_range,
-                                                        binfrac_model = args.binfrac_model,
-                                                        primary_model = args.primary_model,
-                                                        ecc_model = args.ecc_model,
-                                                        porb_model = args.porb_model,
-                                                        keep_singles = args.keep_singles,
-                                                        SF_start = sampling['SF_start'],
-                                                        SF_duration = sampling['SF_duration'],
-                                                        met = sampling['metallicity'],
-                                                        size = args.Nstep,
-                                                        secondary_kwarg,
-                                                        params = args.inifile)
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
