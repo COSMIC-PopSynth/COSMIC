@@ -213,8 +213,8 @@ def get_cmc_sampler(
     singles_table.metallicity = met
     singles_table.mass_of_cluster = np.sum(singles_table["m"])
     binaries_table.metallicity = met
-    singles_table.virial_radius = kwargs.pop("virial_radius",1) 
-    singles_table.tidal_radius = kwargs.pop("tidal_radius",1e6) 
+    singles_table.virial_radius = kwargs.get("virial_radius",1) 
+    singles_table.tidal_radius = kwargs.get("tidal_radius",1e6) 
 
     return singles_table, binaries_table
 
