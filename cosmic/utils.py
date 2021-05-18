@@ -794,7 +794,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         option
                     )
                 )
-        if ("qmin" not in sampling.keys()) & ("m2_min" not in sampling.keys()):
+        if ("qmin" not in sampling.keys()) & ("m2_min" not in sampling.keys()) & (sampling["sampling_method"] == 'independent'):
             raise ValueError("You have not specified qmin or m2_min. At least one of these must be specified.")
     # filters
     if filters is not None:
