@@ -417,7 +417,12 @@
      &               - comega*comega1*smu*smu1
 
         kick_info(sn,15) = ACOS(z_tilt)*180/pi
-        kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
+* If both kicks were 0 then x_tilt for SN2 will be 0 since smu=0
+        if(x_tilt.eq.0)then
+          kick_info(sn,16) = 0
+        else
+          kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
+        endif
         kick_info(sn,6) = mm*180/pi
         if(using_cmc.eq.0)then
             natal_kick_array(snstar,4) = mm*180/pi
