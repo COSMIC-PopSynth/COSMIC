@@ -127,6 +127,7 @@ wrapper = Extension(
         "cosmic/src/zcnsts.f",
         "cosmic/src/zfuncs.f",
         "cosmic/src/concatkstars.f",
+        "cosmic/src/comprad.f",
         "cosmic/src/bpp_array.f",
         "cosmic/src/checkstate.f",
     ],

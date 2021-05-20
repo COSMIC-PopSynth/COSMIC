@@ -362,7 +362,7 @@ class TestCMCSample(unittest.TestCase):
     def test_cmc_sampler(self):
         np.random.seed(2)
         # Test generating CMC initial conditions and test saving the output to files
-        Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
+        Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, zsun=0.017, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
         InitialCMCTable.write(Singles, Binaries, filename="input.hdf5")
         InitialCMCTable.write(Singles, Binaries, filename="input.fits")
         Singles, Binaries = InitialCMCTable.read(filename="input.hdf5")

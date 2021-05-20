@@ -97,12 +97,8 @@ def get_cmc_sampler(
     qmin_msort : `float`
         Same as qmin for M>msort; only applies if qmin is supplied
 
-    params : `str`
-        Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
-        running BSE for a tiny time step.
-
     met : `float`
-        Sets the metallicity of the binary population where solar metallicity is 0.02
+        Sets the metallicity of the binary population where solar metallicity is zsun 
 
     size : `int`
         Size of the population to sample
@@ -117,6 +113,9 @@ def get_cmc_sampler(
     tidal_radius : `float`
         the initial tidal radius of the cluster, in units of the virial_radius
         Default -- 1e6 rvir
+
+    seed : `float`
+        seed to the random number generator, for reproducability
 
     Returns
     -------
@@ -175,9 +174,9 @@ def get_cmc_sampler(
 
     # Obtain radii (technically this is done for the binaries in the independent sampler 
     # if set_radii_with_BSE is true, but that's not a huge amount of overhead)
-    Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
+    Reff = initconditions.set_reff(mass1, metallicity=met)
     Reff1 = Reff[binary_index]
-    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
+    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met)
 
     # select out the primaries and secondaries that will produce the final kstars
     porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
