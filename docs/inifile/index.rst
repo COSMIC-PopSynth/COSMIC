@@ -493,8 +493,8 @@ common envelope occurs regardless of the choices below:
 ``cemergeflag``          Determines whether stars that begin a CE
                          without a core-envelope boundary automatically lead to
                          merger in CE. These systems include:
-                         kstars = [0,1,2,7,8,10,11,12]. Note that while the current
-                         optimal choice is cemergeflag=1, cemergeflag=0 allows for
+                         kstars = [0,1,2,7,8,10,11,12]. Note that while the
+                         best choice is cemergeflag=1, cemergeflag=0 allows for
                          both options where the systems which would merge if
                          cemergeflag=1 can be treated in post processing.
 
@@ -1011,7 +1011,7 @@ common envelope occurs regardless of the choices below:
 
                          **eddfac = 1.0**
 
-``gamma``                Angular momentum prescriptions for mass lost during RLO
+``gamma``                Angular momentum prescriptions for mass lost during Roche-lobe overflow
                          at super-Eddington mass transfer rates
 
                             ``-1`` : assumes the lost material carries away the
@@ -1025,7 +1025,7 @@ common envelope occurs regardless of the choices below:
 
                          **gamma = -2.0**
 
-``don_lim``              Calculates the rate of thermal mass loss through Roche
+``don_lim``              Calculates the rate of mass loss through Roche-lobe
                          overflow mass transfer from the donor star
 
                             ``-1`` : donor mass loss rate is calculated following
@@ -1034,7 +1034,7 @@ common envelope occurs regardless of the choices below:
                             ``-2`` : donor mass loss rate is calculated following
                              `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
 
-``acc_lim``              Limits the amount of mass accreted during Roche overflow
+``acc_lim``              Limits the amount of mass accreted during Roche-lobe overflow
 
                             ``-1`` : limited to 10x's the thermal rate of the accretor
                             for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
@@ -1062,19 +1062,19 @@ common envelope occurs regardless of the choices below:
     ; default=1.0
     eddfac=1.0
 
-    ; gamma is the angular momentum factor for mass lost during RLO
+    ; gamma is the angular momentum factor for mass lost during Roche-lobe overflow
     ; gamma=-2: assumes material is lost from the system as if it is a wind from the secondary (for super-Eddington mass transfer rates)
     ; gamma=-1: assumes the lost material carries with is the specific angular momentum of the primary
     ; gamma>0: assumes that the lost material take away a fraction (gamma) of the orbital angular momentum
     ; default=-1
     gamma=-1.0
 
-    ; don_lim is a flag which determines how much mass is lost during thermal timescale MT
+    ; don_lim is a flag which determines how much mass is lost during Roche-lobe overflow
     ; don_lim = -1: assumes standard BSE choice as outlined in Hurley+2002
     ; don_lim = -2: Follows Claeys+2014
     don_lim = -1
 
-    ; acc_lim is a flag which determines how much mass is accreted from the donor
+    ; acc_lim is a flag which determines how much mass is accreted from the donor during Roche-lobe overflow
     ; if acc_lim >= 0: this provides the fraction of mass accreted
     ; acc_lim = -1: assumes standard BSE choice as outlined in Hurley+2002, limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
     ; acc_lim = -2: limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
