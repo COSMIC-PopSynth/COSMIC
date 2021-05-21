@@ -211,8 +211,8 @@ class TestSample(unittest.TestCase):
         np.random.seed(4)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
-        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
+        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
@@ -221,7 +221,7 @@ class TestSample(unittest.TestCase):
 
         # next do Renzo+19
         m1_high = mass1+15
-        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
@@ -254,8 +254,8 @@ class TestSample(unittest.TestCase):
         np.random.seed(4)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
-        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
+        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
@@ -356,7 +356,7 @@ class TestCMCSample(unittest.TestCase):
         np.testing.assert_allclose(R_KING_TEST_ARRAY, r, rtol=1e-5)
 
     def test_set_reff(self):
-        reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02, params=os.path.join(TEST_DATA_DIR,'Params.ini'))
+        reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02)
         np.testing.assert_allclose(REFF_TEST_ARRAY, reff)
 
     def test_cmc_sampler(self):
