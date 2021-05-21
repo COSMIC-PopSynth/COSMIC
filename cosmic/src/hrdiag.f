@@ -536,9 +536,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &                    mcbagb.ge.ecsn_mlow)then
                         mcx = 1.38d0
-                     elseif(ecsn.eq.0.d0.and.mcbagb.le.2.25d0)then !this should be ecsn, unless ecsn=0
-*                     if(mcbagb.le.2.35d0)then
-                        mcx = 1.38d0
 *                     elseif(mc.lt.4.29d0)then
                      elseif(mc.lt.4.82d0)then
                         mcx = 1.5d0
@@ -915,8 +912,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      !First calculate the proto-core mass
                      if(ecsn.gt.0.d0.and.mc.le.ecsn.and.
      &                    mc.ge.ecsn_mlow)then
-                        mcx = 1.38d0
-                     elseif(ecsn.eq.0.d0.and.mc.le.2.25d0)then !this should be ecsn, unless ecsn=0
                         mcx = 1.38d0
                      elseif(mc.lt.4.82d0)then
                         mcx = 1.5d0
