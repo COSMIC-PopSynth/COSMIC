@@ -493,7 +493,10 @@ common envelope occurs regardless of the choices below:
 ``cemergeflag``          Determines whether stars that begin a CE
                          without a core-envelope boundary automatically lead to
                          merger in CE. These systems include:
-                         kstars = [0,1,2,7,8,10,11,12].
+                         kstars = [0,1,2,7,8,10,11,12]. Note that while the current
+                         optimal choice is cemergeflag=1, cemergeflag=0 allows for
+                         both options where the systems which would merge if
+                         cemergeflag=1 can be treated in post processing.
 
                             ``0`` : allows the CE to proceed
 
