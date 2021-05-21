@@ -29,7 +29,6 @@ Cf2py intent(in) z
 Cf2py intent(in) num
 Cf2py intent(out) rad
 
-      zsun=0.014
       CALL zcnsts(z,zpars)
       
 ***

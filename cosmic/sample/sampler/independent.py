@@ -104,6 +104,9 @@ def get_independent_sampler(
     size : `int`
         Size of the population to sample
 
+    zsun : `float`
+        optional kwarg for setting effective radii, default is 0.02
+
     Returns
     -------
     InitialBinaryTable : `pandas.DataFrame`
@@ -200,8 +203,10 @@ def get_independent_sampler(
     binfrac = np.asarray(binfrac)
     mass1_singles = np.asarray(mass1_singles)
 
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met)
+    zsun = kwargs.pop("zsun", 0.02)
+
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
 
     # sample periods and eccentricities
     porb,aRL_over_a = initconditions.sample_porb(
@@ -857,7 +862,7 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self, mass, metallicity):
+    def set_reff(self, mass, metallicity, zsun=0.02):
         """
         Better way to set the radii from BSE, by calling it directly
 
@@ -871,6 +876,8 @@ class Sample(object):
         max_array_size = 100000
         total_length = len(mass)
         radii = np.zeros(total_length)
+
+        _evolvebin.metvars.zsun = zsun
 
         idx = 0
         while total_length > max_array_size:

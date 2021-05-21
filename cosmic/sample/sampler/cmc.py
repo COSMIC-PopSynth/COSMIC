@@ -103,6 +103,8 @@ def get_cmc_sampler(
     size : `int`
         Size of the population to sample
 
+    zsun : `float`
+        optional kwarg for setting effective radii, default is 0.02
 
     Optional Parameters
     -------------------
@@ -174,9 +176,11 @@ def get_cmc_sampler(
 
     # Obtain radii (technically this is done for the binaries in the independent sampler 
     # if set_radii_with_BSE is true, but that's not a huge amount of overhead)
-    Reff = initconditions.set_reff(mass1, metallicity=met)
+    zsun = kwargs.pop("zsun", 0.02)
+
+    Reff = initconditions.set_reff(mass1, metallicity=met, zsun=zsun)
     Reff1 = Reff[binary_index]
-    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met)
+    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, zsun=zsun)
 
     # select out the primaries and secondaries that will produce the final kstars
     porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
