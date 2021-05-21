@@ -99,10 +99,13 @@ def get_independent_sampler(
         Same as binfrac_model for M>msort
 
     met : `float`
-        Sets the metallicity of the binary population where solar metallicity is 0.02
+        Sets the metallicity of the binary population where solar metallicity is zsun 
 
     size : `int`
         Size of the population to sample
+
+    zsun : `float`
+        optional kwarg for setting effective radii, default is 0.02
 
     Returns
     -------
@@ -200,8 +203,10 @@ def get_independent_sampler(
     binfrac = np.asarray(binfrac)
     mass1_singles = np.asarray(mass1_singles)
 
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, **kwargs)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, **kwargs)
+    zsun = kwargs.pop("zsun", 0.02)
+
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
 
     # sample periods and eccentricities
     porb,aRL_over_a = initconditions.sample_porb(
@@ -857,128 +862,45 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self, mass, metallicity, **kwargs):
+    def set_reff(self, mass, metallicity, zsun=0.02):
+        """
+        Better way to set the radii from BSE, by calling it directly
 
-        # Make sure you've specified the BSE parameters
-        if "BSEDict" not in kwargs and "params" not in kwargs:
-            raise ValueError(
-                'Must specify either BSEDict or params=param.ini to use set_radii_with_BSE')
+        takes masses and metallicities, and returns the radii
 
-        # NUMBER 1: PASS A DICTIONARY OF FLAGS
-        BSEDict = kwargs.pop("BSEDict", {})
+        Note that the BSE function is hard-coded to go through arrays
+        of length 10^5.  If your masses are more than that, you'll
+        need to divide it into chunks
+        """
 
-        # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
-        params = kwargs.pop("params", None)
+        max_array_size = 100000
+        total_length = len(mass)
+        radii = np.zeros(total_length)
 
-        if params is not None:
-            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+        _evolvebin.metvars.zsun = zsun
 
-        # set BSE consts
-        _evolvebin.windvars.neta = BSEDict["neta"]
-        _evolvebin.windvars.bwind = BSEDict["bwind"]
-        _evolvebin.windvars.hewind = BSEDict["hewind"]
-        _evolvebin.cevars.alpha1 = BSEDict["alpha1"]
-        _evolvebin.cevars.lambdaf = BSEDict["lambdaf"]
-        _evolvebin.ceflags.ceflag = BSEDict["ceflag"]
-        _evolvebin.flags.tflag = BSEDict["tflag"]
-        _evolvebin.flags.ifflag = BSEDict["ifflag"]
-        _evolvebin.flags.wdflag = BSEDict["wdflag"]
-        _evolvebin.snvars.pisn = BSEDict["pisn"]
-        _evolvebin.flags.bhflag = BSEDict["bhflag"]
-        _evolvebin.flags.remnantflag = BSEDict["remnantflag"]
-        _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
-        _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
-        _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
-        _evolvebin.flags.grflag = BSEDict["grflag"]
-        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
-        _evolvebin.snvars.mxns = BSEDict["mxns"]
-        _evolvebin.points.pts1 = BSEDict["pts1"]
-        _evolvebin.points.pts2 = BSEDict["pts2"]
-        _evolvebin.points.pts3 = BSEDict["pts3"]
-        _evolvebin.snvars.ecsn = BSEDict["ecsn"]
-        _evolvebin.snvars.ecsn_mlow = BSEDict["ecsn_mlow"]
-        _evolvebin.flags.aic = BSEDict["aic"]
-        _evolvebin.ceflags.ussn = BSEDict["ussn"]
-        _evolvebin.snvars.sigma = BSEDict["sigma"]
-        _evolvebin.snvars.sigmadiv = BSEDict["sigmadiv"]
-        _evolvebin.snvars.bhsigmafrac = BSEDict["bhsigmafrac"]
-        _evolvebin.snvars.polar_kick_angle = BSEDict["polar_kick_angle"]
-        _evolvebin.snvars.natal_kick_array = BSEDict["natal_kick_array"]
-        _evolvebin.cevars.qcrit_array = BSEDict["qcrit_array"]
-        _evolvebin.windvars.beta = BSEDict["beta"]
-        _evolvebin.windvars.xi = BSEDict["xi"]
-        _evolvebin.windvars.acc2 = BSEDict["acc2"]
-        _evolvebin.windvars.epsnov = BSEDict["epsnov"]
-        _evolvebin.windvars.eddfac = BSEDict["eddfac"]
-        _evolvebin.windvars.gamma = BSEDict["gamma"]
-        _evolvebin.flags.bdecayfac = BSEDict["bdecayfac"]
-        _evolvebin.magvars.bconst = BSEDict["bconst"]
-        _evolvebin.magvars.ck = BSEDict["ck"]
-        _evolvebin.flags.windflag = BSEDict["windflag"]
-        _evolvebin.flags.qcflag = BSEDict["qcflag"]
-        _evolvebin.flags.eddlimflag = BSEDict["eddlimflag"]
-        _evolvebin.tidalvars.fprimc_array = BSEDict["fprimc_array"]
-        _evolvebin.rand1.idum1 = -1
-        _evolvebin.flags.bhspinflag = BSEDict["bhspinflag"]
-        _evolvebin.snvars.bhspinmag = BSEDict["bhspinmag"]
-        _evolvebin.mixvars.rejuv_fac = BSEDict["rejuv_fac"]
-        _evolvebin.flags.rejuvflag = BSEDict["rejuvflag"]
-        _evolvebin.flags.htpmb = BSEDict["htpmb"]
-        _evolvebin.flags.st_cr = BSEDict["ST_cr"]
-        _evolvebin.flags.st_tide = BSEDict["ST_tide"]
-        _evolvebin.snvars.rembar_massloss = BSEDict["rembar_massloss"]
-        _evolvebin.metvars.zsun = BSEDict["zsun"]
-        _evolvebin.snvars.kickflag = BSEDict["kickflag"]
-        _evolvebin.cmcpass.using_cmc = 0
+        idx = 0
+        while total_length > max_array_size:
+            ## cycle through the masses max_array_size number at a time
+            temp_mass = mass[idx*max_array_size:(idx+1)*max_array_size]
 
-        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-        initial_stars = InitialBinaryTable.InitialBinaries(
-            mass,
-            np.ones_like(mass) * 0,
-            np.ones_like(mass) * -1,
-            np.ones_like(mass) * -1,
-            np.ones_like(mass) * 0.1,
-            self.set_kstar(mass),
-            np.ones_like(mass) * 0,
-            np.ones_like(mass) * metallicity,
-        )
-        initial_stars["dtp"] = initial_stars["tphysf"]
+            temp_radii = _evolvebin.compute_r(temp_mass,metallicity,max_array_size)
 
-        initial_stars = initial_stars.assign(
-            kick_info=[np.zeros((2, 17))] * len(initial_stars)
-        )
-        initial_conditions = initial_stars.to_dict("records")
+            ## put these in the radii array
+            radii[idx*max_array_size:(idx+1)*max_array_size] = temp_radii
 
-        rad_1 = np.zeros(len(initial_stars))
-        for idx, initial_condition in enumerate(initial_conditions):
-            [bpp_index, bcm_index, _] = _evolvebin.evolv2(
-                [initial_condition["kstar_1"], initial_condition["kstar_2"]],
-                [initial_condition["mass_1"], initial_condition["mass_2"]],
-                initial_condition["porb"],
-                initial_condition["ecc"],
-                initial_condition["metallicity"],
-                initial_condition["tphysf"],
-                initial_condition["dtp"],
-                [initial_condition["mass0_1"], initial_condition["mass0_2"]],
-                [initial_condition["rad_1"], initial_condition["rad_2"]],
-                [initial_condition["lum_1"], initial_condition["lum_2"]],
-                [initial_condition["massc_1"], initial_condition["massc_2"]],
-                [initial_condition["radc_1"], initial_condition["radc_2"]],
-                [initial_condition["menv_1"], initial_condition["menv_2"]],
-                [initial_condition["renv_1"], initial_condition["renv_2"]],
-                [initial_condition["omega_spin_1"],
-                    initial_condition["omega_spin_2"]],
-                [initial_condition["B_1"], initial_condition["B_2"]],
-                [initial_condition["bacc_1"], initial_condition["bacc_2"]],
-                [initial_condition["tacc_1"], initial_condition["tacc_2"]],
-                [initial_condition["epoch_1"], initial_condition["epoch_2"]],
-                [initial_condition["tms_1"], initial_condition["tms_2"]],
-                [initial_condition["bhspin_1"], initial_condition["bhspin_2"]],
-                initial_condition["tphys"],
-                np.zeros(20),
-                np.zeros(20),
-                initial_condition["kick_info"],
-            )
-            rad_1[idx] = _evolvebin.binary.bcm[0, 5]
+            total_length -= max_array_size
+            idx += 1
 
-        return rad_1
+        length_remaining = total_length
+
+        ## if smaller than 10^5, need to pad out the array
+        temp_mass = np.zeros(max_array_size)
+        temp_mass[:length_remaining] = mass[-length_remaining:]
+
+        temp_radii = _evolvebin.compute_r(temp_mass,metallicity,length_remaining)
+
+        #finish up the array
+        radii[-length_remaining:] = temp_radii[:length_remaining]
+
+        return radii
