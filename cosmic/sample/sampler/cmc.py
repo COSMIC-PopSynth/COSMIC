@@ -63,7 +63,7 @@ def get_cmc_sampler(
 
     primary_model : `str`
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
-        if 'custom' is selected, must also pass optional arguemts:
+        if 'custom' is selected, must also pass arguemts:
         alphas : `array`
             list of power law indicies
         mcuts : `array`

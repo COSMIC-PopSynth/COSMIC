@@ -58,7 +58,7 @@ def get_independent_sampler(
 
     primary_model : `str`
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
-        if 'custom' is selected, must also pass optional arguemts:
+        if 'custom' is selected, must also pass arguemts:
         alphas : `array`
             list of power law indicies
         mcuts : `array`
@@ -355,7 +355,7 @@ class Sample(object):
                 alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
                 mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
             else:
-                raise ValueError("You must supply either alphas and mcuts to use"
+                raise ValueError("You must supply both alphas and mcuts to use"
                                  " a custom IMF generator")
 
         Ncumulative, Ntotal, coeff = [], 0., 1.
