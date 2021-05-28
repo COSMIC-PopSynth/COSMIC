@@ -156,7 +156,7 @@ def get_independent_sampler(
 
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier, alphas=alphas, mcuts=mcuts
+            primary_model, size=size * multiplier, **kwargs 
         )
         (
             mass1_binaries,
