@@ -62,7 +62,13 @@ def get_cmc_sampler(
                 the maximum radius (in virial radii) to sample the clsuter
 
     primary_model : `str`
-        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
+        if 'custom' is selected, must also pass arguemts:
+        alphas : `array`
+            list of power law indicies
+        mcuts : `array`
+            breaks in the power laws.
+        e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF
 
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
@@ -144,8 +150,9 @@ def get_cmc_sampler(
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
+
     mass1, total_mass1 = initconditions.sample_primary(
-        primary_model, size=size)
+        primary_model, size=size, **kwargs)
     (
         mass1_binaries,
         mass_single,
