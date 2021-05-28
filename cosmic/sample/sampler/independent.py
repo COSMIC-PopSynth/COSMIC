@@ -57,7 +57,13 @@ def get_independent_sampler(
         Int or list of final kstar2
 
     primary_model : `str`
-        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
+        if 'custom' is selected, must also pass arguemts:
+        alphas : `array`
+            list of power law indicies
+        mcuts : `array`
+            breaks in the power laws.
+        e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF
 
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
@@ -148,12 +154,9 @@ def get_independent_sampler(
     n_singles = 0
     n_binaries = 0
 
-    # see if custom IMF parameters were passed
-    alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
-    mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier, alphas=alphas, mcuts=mcuts
+            primary_model, size=size * multiplier, **kwargs 
         )
         (
             mass1_binaries,
@@ -283,7 +286,7 @@ register_sampler(
 
 class Sample(object):
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[-1.3,-2.3,-2.3], mcuts=[0.08,0.5,1.0,150.]):
+    def sample_primary(self, primary_model='kroupa01', size=None, **kwargs):
         """Sample the primary mass (always the most massive star) from a user-selected model
 
             kroupa93 follows Kroupa (1993), normalization comes from
@@ -324,11 +327,11 @@ class Sample(object):
             NOTE: this is set in cosmic-pop call as Nstep
 
             alphas : array, optional
-            absolute values of the power law slopes for primary_model = 'piecewise_power'
+            absolute values of the power law slopes for primary_model = 'custom'
             Default [-1.3,-2.3,-2.3] (identical to slopes for primary_model = 'kroupa01')
 
             mcuts : array, optional, units of Msun
-            break points separating the power law 'pieces' for primary_model = 'piecewise_power'
+            break points separating the power law 'pieces' for primary_model = 'custom'
             Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
 
             Returns
@@ -339,11 +342,21 @@ class Sample(object):
             Total amount of mass sampled
             """
 
-        if primary_model == 'kroupa93': alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
+
+        if primary_model == 'kroupa93': 
+            alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
         # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
-        elif primary_model == 'kroupa01': alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
-        elif primary_model == 'salpeter55': alphas, mcuts = [-2.35], [0.08,150.]
-        elif primary_model == 'custom': alphas, mcuts = alphas, mcuts
+        elif primary_model == 'kroupa01': 
+            alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
+        elif primary_model == 'salpeter55': 
+            alphas, mcuts = [-2.35], [0.08,150.]
+        elif primary_model == 'custom': 
+            if 'alphas' in kwargs and 'mcuts' in kwargs:
+                alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
+                mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
+            else:
+                raise ValueError("You must supply both alphas and mcuts to use"
+                                 " a custom IMF generator")
 
         Ncumulative, Ntotal, coeff = [], 0., 1.
         for i in range(len(alphas)):
