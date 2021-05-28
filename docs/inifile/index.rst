@@ -33,7 +33,7 @@ filters
 
 ``timestep_conditions``  timestep_conditions allow a user to pick specific time resolutions
                          to print at targeted stages of the binary evolution.
-                         This is used in conjuction with the [bse] section value dtp to determine the
+                         This is used in conjunction with the [bse] section value dtp to determine the
                          timestep resolution for printing to the bcm array.
 
 
@@ -60,8 +60,8 @@ filters
     binary_state = [0,1]
 
     ; timestep_conditions allow a user to pick specific time resolutions
-    ; to print at targetted stages of the binary evolution
-    ; This is used in conjuction with the [bse] section value dtp to determine the resolution
+    ; to print at targeted stages of the binary evolution
+    ; This is used in conjunction with the [bse] section value dtp to determine the resolution
     ; at which thing are printed into the so called bcm array
     ; For example, if you only want dtp set to a value while the system is
     ; intact i.e. has not merged or been disrupted you could do so with the following
@@ -109,8 +109,8 @@ sampling
 .. code-block:: ini
 
     [sampling]
-    ; Specify if you woud like to sample initial conditions via
-    ; the independent method (indepedent) or would like to sample
+    ; Specify if you would like to sample initial conditions via
+    ; the independent method (independent) or would like to sample
     ; initial conditions follow Moe & Di Stefano (2017) (multidim)
     sampling_method=multidim
 
@@ -128,20 +128,21 @@ sampling
 
 ============================  ===================================================================================
 ``convergence_params``        A list of parameters you would like to verify have converged
-                              to a single distribution shape.
+                              to a single distribution shape when running cosmic-pop from the command line.
                               Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
                               ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
 
 ``convergence_limits``        Specifies limits for parameters included in the convergence
                               params list. If specified, the lower and upper limit must
-                              be specified:
+                              be specified for all parameters:
 
                                  ``convergence_limits = {'mass_1' : [5, 10], 'sep' : [0, 10]}``
 
 ``pop_select``                Selects the stage of the evolution at which you would like
                               to check for convergence. This will filter for systems that
                               satisfy the final_kstar1 and final_kstar2 selections from
-                              the command line call of cosmic-pop
+                              the command line call of cosmic-pop as well as the following
+                              states:
 
                                  ``formation``: computes convergence on binary properties
                                  at formation with user-specified final kstars
@@ -177,11 +178,11 @@ sampling
                                  ``True``: bcm, bpp, initCond, kick_info will contain only the binaries which
                                  are in the conv DataFrame
 
-                                 ``False``: bcm, bpp, initCond, infor will contain all systems which satisfy the
+                                 ``False``: bcm, bpp, initCond, kick_info will contain all systems which satisfy the
                                  final kstar and pop_select selection and will **not** be filtered based on the
                                  convergence_limits
 
-                              **bcm_bpp_initCond_filter=False**
+                              **apply_convergence_limits=False**
 
 ============================  ===================================================================================
 
@@ -222,14 +223,15 @@ sampling
     ; user-specified final kstars
     pop_select = formation
 
+    ; apply_convergence_limits filters the evolved binary population
+    ; to only the binaries that satisfy the convergence limits
+    ; selection criteria if True
+    apply_convergence_limits = False
+
     ; match provides the tolerance for the convergence calculation
     ; and is calculated as match = log10(1-convergence)
     ; default = -5.0
     match = -5.0
-
-    ; bcm_bpp_initCond_filter filters the bcm/bpp/initCond
-    ; arrays to only the binaries that are in the conv array if true
-    bcm_bpp_initCond_filter = False
 
 [rand_seed]
 -----------
@@ -343,7 +345,7 @@ sampling
 
                          **eddlimflag = 0**
 
-``neta``                 Reimers mass-loss coefficent (`Equation 106 SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_).
+``neta``                 Reimers mass-loss coefficient (`Equation 106 SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_).
                          Note: this equation has a typo. There is an extra
                          :math:`{\eta}` out front; the correct rate is directly proportional
                          to :math:`{\eta}`.
@@ -417,8 +419,8 @@ sampling
 
     ; beta is wind velocity factor: proportional to vwind^2
     ; beta<0: follows StarTrack 2008; beta=0.125: stock BSE
-    ; default=0.125
-    beta=0.125
+    ; default=-1
+    beta=-1
 
     ; xi is the wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion
     ; default=1.0
@@ -494,9 +496,10 @@ common envelope occurs regardless of the choices below:
                          without a core-envelope boundary automatically lead to
                          merger in CE. These systems include:
                          kstars = [0,1,2,7,8,10,11,12]. Note that while the
-                         best choice is cemergeflag=1, cemergeflag=0 allows for
-                         both options where the systems which would merge if
-                         cemergeflag=1 can be treated in post processing.
+                         best choice is cemergeflag=1 according to
+                         `Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_,
+                         cemergeflag=0 allows for both options where the systems
+                         which would merge if cemergeflag=1 can be treated in post processing.
 
                             ``0`` : allows the CE to proceed
 
@@ -613,8 +616,8 @@ common envelope occurs regardless of the choices below:
     ; 3: following binary_c from Claeys+2014 Table 2 but with Hjellming & Webbink, 1987, ApJ, 318, 794 GB/AGB stars
     ; 4: following StarTrack from Belczynski+2008 Section 5.1. WD donors follow standard BSE
     ; 5: following COMPAS from Neijssel+2020 Section 2.3. Stripped stars are always dynamically stable
-    ; default=3
-    qcflag=3
+    ; default=1
+    qcflag=1
 
     ; qcrit_array is a 16-length array for user-input values for the critical mass ratios that govern the onset of unstable mass transfer and a common envelope
     ; each item is set individually for its associated kstar, and a value of 0.0 will apply prescription of the qcflag for that kstar
@@ -882,7 +885,7 @@ common envelope occurs regardless of the choices below:
 
                             ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
 
-                     **remnantflag = 3**
+                     **remnantflag = 4**
 
 ``mxns``             Sets the boundary between the maximum NS mass
                      and the minimum BH mass
@@ -914,12 +917,12 @@ common envelope occurs regardless of the choices below:
     ; remnantflag=2: Belczynski et al. 2008
     ; remnantflag=3: rapid prescription (Fryer+ 2012), updated as in Giacobbo & Mapelli 2020
     ; remnantflag=4: delayed prescription (Fryer+ 2012)
-    ; default=3
-    remnantflag=3
+    ; default=4
+    remnantflag=4
 
     ; mxns sets the maximum NS mass
-    ; default=2.5
-    mxns=2.5
+    ; default=3.0
+    mxns=3.0
 
     ; rembar_massloss determines the mass conversion from baryonic to
     ; gravitational mass
@@ -1212,18 +1215,18 @@ common envelope occurs regardless of the choices below:
 ``bconst``               Sets the magnetic field decay time-scale for pulsars following
                          Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
 
-                            ``negative values`` : sets k in Myr from Equation 8 to
-                            -1 * *bconst*
+                            ``positive values`` : sets k in Myr from Equation 8 to
+                            *bconst*
 
-                         **bconst = -3000**
+                         **bconst = 3000**
 
 ``ck``                   Sets the magnetic field decay time-scale for pulsars following
                          Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
 
-                            ``negative values`` : sets :math:`{\tau}`\ :sub:`b` in Myr
-                            from Equation 2 to  -1 * *ck*
+                            ``positive values`` : sets :math:`{\tau}`\ :sub:`b` in Myr
+                            from Equation 2 to  *ck*
 
-                         **ck = -1000**
+                         **ck = 1000**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -1238,12 +1241,12 @@ common envelope occurs regardless of the choices below:
     bdecayfac=1
 
     ; bconst is related to magnetic field evolution of pulsars, see Kiel+2008
-    ; default=-3000
-    bconst=-3000
+    ; default=3000
+    bconst=3000
 
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
-    ; default=-1000
-    ck=-1000
+    ; default=1000
+    ck=1000
 
 .. note::
 

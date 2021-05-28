@@ -48,7 +48,7 @@ The evolutionary changes of the binary are logged in the evol_type column, which
     1           initial state
     2           kstar change
     3           begin Roche lobe overflow
-    4           end Roche lobe overlow
+    4           end Roche lobe overflow
     5           contact
     6           coalescence
     7           begin common envelope
