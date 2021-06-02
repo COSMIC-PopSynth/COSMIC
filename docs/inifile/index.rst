@@ -57,7 +57,7 @@ filters
     [filters]
     ; binary_state determines which types of binaries endstates to retain
     ; 0 alive today, 1 merged, 2 disrupted
-    ; default=[0,1]
+    ; default = [0,1]
     binary_state = [0,1]
 
     ; timestep_conditions allow a user to pick specific time resolutions
@@ -116,7 +116,7 @@ sampling
     ; Specify if you would like to sample initial conditions via
     ; the independent method (independent) or would like to sample
     ; initial conditions follow Moe & Di Stefano (2017) (multidim)
-    sampling_method=multidim
+    sampling_method = multidim
 
     ; Sets the time in the past when star formation initiates in Myr
     SF_start = 13700.0
@@ -292,12 +292,12 @@ sampling
     ;;;;;;;;;;;;;;;;;;;;;;
 
     ; pts1,pts2,pts3 determine the timesteps chosen in each
-    ;                 pts1 - MS                  (default=0.001, see Banerjee+ 2019)
-    pts1=0.001
-    ;                 pts2 - GB, CHeB, AGB, HeGB (default=0.01)
-    pts2=0.01
-    ;                 pts3 - HG, HeMS            (default=0.02)
-    pts3=0.02
+    ;                 pts1 - MS                  (default = 0.001, see Banerjee+ 2019)
+    pts1 = 0.001
+    ;                 pts2 - GB, CHeB, AGB, HeGB (default = 0.01)
+    pts2 = 0.01
+    ;                 pts3 - HG, HeMS            (default = 0.02)
+    pts3 = 0.02
 
 .. note::
 
@@ -377,7 +377,7 @@ sampling
 
                             ``positive value`` : supplies :math:`{\beta}`\ :sub:`w` to `Equation 9 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
 
-                         **beta = -1.0**
+                         **beta = -1**
 
 ``xi``                   Wind accretion efficiency factor, which gives the fraction
                          of angular momentum lost via winds from the primary that
@@ -404,36 +404,36 @@ sampling
     ; windflag sets the wind prescription
     ; windflag=0: stock BSE; windflag=1: StarTrack 2008
     ; windflag=2: Vink+2001; windflag=3: Vink+2005 (Vink plus LBV winds)
-    ; default=3
-    windflag=3
+    ; default = 3
+    windflag = 3
 
     ; neta is the Reimers mass-loss coefficent
     ; for more information, see Kudritzki & Reimers 1978, A&A 70, 227
-    ; default=0.5
+    ; default = 0.5
     neta = 0.5
 
     ; bwind is the binary enhanced mass loss parameter
     ; bwind it is always inactive for single stars
-    ; default=0.0
+    ; default = 0.0
     bwind = 0.0
 
     ; hewind is a helium star mass loss factor, between 0 and 1
     ; only applies if windflag=0, otherwise it is overwritten
-    ; default=0.5
+    ; default = 0.5
     hewind = 0.5
 
     ; beta is wind velocity factor: proportional to vwind^2
     ; beta<0: follows StarTrack 2008; beta=0.125: stock BSE
-    ; default=-1
-    beta=-1
+    ; default = -1
+    beta = -1
 
     ; xi is the wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion
-    ; default=1.0
-    xi=1.0
+    ; default = 1.0
+    xi = 1.0
 
     ; acc2 sets the Bondi-Hoyle wind accretion factor onto companion
-    ; default=1.5
-    acc2=1.5
+    ; default = 1.5
+    acc2 = 1.5
 
 .. note::
 
@@ -483,7 +483,7 @@ common envelope occurs regardless of the choices below:
                             ``1`` : Uses the `de Kool 1990 <https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract>`_
                             model
 
-                         **ceflag = 0**
+                         **ceflag = 1**
 
 ``cekickflag``           Selects which mass and separation values to use when
                          a supernova occurs during the CE and a kick
@@ -511,7 +511,7 @@ common envelope occurs regardless of the choices below:
 
                             ``1`` : causes these systems to merge in the CE (pessimistic CE)
 
-                         **cemergeflag = 0**
+                         **cemergeflag = 1**
 
 ``cehestarflag``         Uses fitting formulae from `Tauris+2015 <https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract>`_
                          for evolving RLO systems with a helium star donor
@@ -580,39 +580,39 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; alpha1 is the common-envelope efficiency parameter
-    ; default=1.0
+    ; default = 1.0
     alpha1 = 1.0
 
     ; lambdaf is the binding energy factor for common envelope evolution
     ; lambdaf>0.0 uses variable lambda prescription in appendix of Claeys+2014
     ; lambdaf<0 uses fixes lambda to a value of -1.0*lambdaf
-    ; default=0.5
+    ; default = 0.5
     lambdaf = 0.5
 
     ; ceflag=1 used the method from de Kool 1990 for setting the initial orbital energy
     ; ceflag=0 does not use this method (uses the core mass to calculate initial orbital energy)
-    ; default=0
-    ceflag=0
+    ; default = 1
+    ceflag = 1
 
     ; cekickflag determined the prescription for calling kick.f in comenv.f
     ; 0: default BSE
     ; 1: uses pre-CE mass and sep values
     ; 2: uses post-CE mass and sep
-    ; default=0
-    cekickflag=0
+    ; default = 2
+    cekickflag = 2
 
     ; cemergeflag determines whether stars without a core-envelope boundary automatically lead to merger in CE
     ; cemergeflag=1 turns this on (causes these systems to merge)
-    ; default=0
-    cemergeflag=0
+    ; default = 1
+    cemergeflag = 1
 
     ; cehestarflag uses fitting formulae from TLP, 2015, MNRAS, 451 for evolving RLO systems with a helium star donor and compact object accretor
     ; this flag will override choice made by cekickflag if set
     ; 0: off
     ; 1: fits for final period only
     ; 2: fits for both final mass and final period
-    ; default=0
-    cehestarflag=0
+    ; default = 0
+    cehestarflag = 0
 
     ; qcflag is an integer flag that sets the model to determine which critical mass ratios to use for the onset of unstable mass transfer and/or a common envelope. NOTE: this is overridden by qcrit_array if any of the values are non-zero.
     ; 0: standard BSE
@@ -621,13 +621,13 @@ common envelope occurs regardless of the choices below:
     ; 3: following binary_c from Claeys+2014 Table 2 but with Hjellming & Webbink, 1987, ApJ, 318, 794 GB/AGB stars
     ; 4: following StarTrack from Belczynski+2008 Section 5.1. WD donors follow standard BSE
     ; 5: following COMPAS from Neijssel+2020 Section 2.3. Stripped stars are always dynamically stable
-    ; default=1
-    qcflag=1
+    ; default = 1
+    qcflag = 1
 
     ; qcrit_array is a 16-length array for user-input values for the critical mass ratios that govern the onset of unstable mass transfer and a common envelope
     ; each item is set individually for its associated kstar, and a value of 0.0 will apply prescription of the qcflag for that kstar
-    ; default: [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-    qcrit_array=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+    ; default = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+    qcrit_array = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
 .. note::
 
@@ -658,14 +658,14 @@ common envelope occurs regardless of the choices below:
                             ``-3`` : Natal kicks are drawn according to Eq. 1 of
                             `Bray & Eldridge 2016 <https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract>`_
 
-                         **default=0**
+                         **default = 0**
 
 ``sigma``                Sets the dispersion in the Maxwellian for the
                          SN kick velocity in km/s
 
                             ``positive value`` : sets Maxwellian dispersion
 
-                         **default=265.0**
+                         **default = 265.0**
 
 ``bhflag``               Sets the model for how SN kicks are applied to BHs,
                          where bhflag != 0 allows for velocity kick at BH formation
@@ -683,6 +683,23 @@ common envelope occurs regardless of the choices below:
                             dispersion = *sigma* set above
 
                          **bhflag = 1**
+
+``bhsigmafrac``          Sets a fractional modification which scales down *sigma*
+                         for BHs. This works in addition to whatever is chosen for
+                         *bhflag*, and is applied to *sigma* **before** the *bhflag*
+                         prescriptions are applied
+
+                            ``values between [0, 1]`` : reduces *sigma* by *bhsigmafrac*
+
+                         **bhsigmafrac = 1.0**
+
+``sigmadiv``             Sets the modified ECSN kick strength
+
+                            ``positive values`` : divide *sigma* (defined above) by *sigmadiv*
+
+                            ``negative values`` : sets ECSN kicks to be drawn from a Maxwellian distribution with dispersion given by *sigmadiv*
+
+                         **sigmadiv = -20.0**
 
 ``ecsn``                 Allows for electron capture SNe and sets the
                          maximum He-star mass (at core helium depletion) that will
@@ -708,15 +725,6 @@ common envelope occurs regardless of the choices below:
 
                          **ecsn_mlow = 1.6**
 
-``sigmadiv``             Sets the modified ECSN kick strength
-
-                            ``positive values`` : divide *sigma* (defined above) by *sigmadiv*
-
-                            ``negative values`` : sets ECSN kicks to be drawn from a Maxwellian
-                         distribution with dispersion given by *sigmadiv*
-
-                         **sigmadiv = -20.0**
-
 ``aic``                  Reduces kick strengths for accretion induced collapse SN
                          according to *sigmadiv*
 
@@ -737,7 +745,7 @@ common envelope occurs regardless of the choices below:
 
                             ``1`` : sets kick strength according to *sigmadiv*
 
-                         **ussn = 0**
+                         **ussn = 1**
 
 ``pisn``                 Allows for (pulsational) pair instability supernovae
                          and sets either the model to use or the maximum mass
@@ -761,15 +769,6 @@ common envelope occurs regardless of the choices below:
                             instability SN and leave no remnant. 
 
                          **pisn = -2**
-
-``bhsigmafrac``          Sets a fractional modification which scales down *sigma*
-                         for BHs. This works in addition to whatever is chosen for
-                         *bhflag*, and is applied to *sigma* **before** the *bhflag*
-                         prescriptions are applied
-
-                            ``values between [0, 1]`` : reduces *sigma* by *bhsigmafrac*
-
-                         **bhsigmafrac = 1.0**
 
 ``polar_kick_angle``     Sets the opening angle of the SN kick relative to the
                          pole of the exploding star, where 0 gives strictly polar
@@ -823,55 +822,55 @@ common envelope occurs regardless of the choices below:
     kickflag = 0
 
     ; sigma sets is the dispersion in the Maxwellian for the SN kick velocity in km/s
-    ; default=265.0
-    sigma=265.0
+    ; default = 265.0
+    sigma = 265.0
 
     ; bhflag != 0 allows velocity kick at BH formation
     ; bhflag=0: no BH kicks; bhflag=1: fallback-modulated kicks
     ; bhflag=2: mass-weighted (proportional) kicks; bhflag=3: full NS kicks
-    ; default=1
-    bhflag=1
+    ; default = 1
+    bhflag = 1
 
-    ; ecsn>0 turns on ECSN and also sets the maximum ECSN mass range (at the time of the SN)
-    ; stock BSE and StarTrack: ecsn=2.25; Podsiadlowski+2004: ecsn=2.5)
-    ; default=2.25
-    ecsn=2.25
-
-    ; ecsn_mlow sets the low end of the ECSN mass range
-    ; stock BSE:1.6; StarTrack:1.85; Podsiadlowski+2004:1.4)
-    ; default=1.6
-    ecsn_mlow=1.6
+    ; bhsigmafrac sets the fractional modification used for scaling down the sigma for BHs
+    ; this works in addition to whatever is chosen for bhflag, and is applied to the sigma beforehand these prescriptions are implemented
+    ; default = 1.0
+    bhsigmafrac = 1.0
 
     ; sigmadiv sets the modified ECSN kick
     ; negative values sets the ECSN sigma value, positive values divide sigma above by sigmadiv
-    ; default=-20.0
-    sigmadiv=-20.0
+    ; default = -20.0
+    sigmadiv = -20.0
+
+    ; ecsn>0 turns on ECSN and also sets the maximum ECSN mass range (at the time of the SN)
+    ; stock BSE and StarTrack: ecsn=2.25; Podsiadlowski+2004: ecsn=2.5)
+    ; default = 2.25
+    ecsn = 2.25
+
+    ; ecsn_mlow sets the low end of the ECSN mass range
+    ; stock BSE:1.6; StarTrack:1.85; Podsiadlowski+2004:1.4)
+    ; default = 1.6
+    ecsn_mlow = 1.6
 
     ; aic=1 turns on low kicks for accretion induced collapse
     ; works even if ecsn=0
-    ; default=1
-    aic=1
+    ; default = 1
+    aic = 1
 
     ; ussn=1 uses reduced kicks (drawn from the sigmadiv distritbuion) for ultra-stripped supernovae
     ; these happen whenever a He-star undergoes a CE with a compact companion
-    ; default=0
-    ussn=1
+    ; default = 0
+    ussn = 1
 
     ; pisn>0 allows for (pulsational) pair instability supernovae
     ; and sets the maximum mass of the remnant
     ; pisn=-1 uses the formulae from Spera+Mapelli 2017 for the mass
     ; pisn=0 turns off (pulsational) pair instability supernovae
-    ; default=-2
-    pisn=-2
-
-    ; bhsigmafrac sets the fractional modification used for scaling down the sigma for BHs
-    ; this works in addition to whatever is chosen for bhflag, and is applied to the sigma beforehand these prescriptions are implemented
-    ; default=1.0
-    bhsigmafrac = 1.0
+    ; default = -2
+    pisn = -2
 
     ; polar_kick_angle sets the opening angle of the kick relative to the pole of the exploding star
     ; this can range from 0 (strictly polar kicks) to 90 (fully isotropic kicks)
-    ; default=90.0
+    ; default = 90.0
     polar_kick_angle = 90.0
 
     ; natal_kick_array is a (2,5) array for user-input values for the SN natal kick
@@ -879,8 +878,8 @@ common envelope occurs regardless of the choices below:
     ; vk is valid on the range [0, inf], phi are the co-lateral polar angles (in degrees) valid from [-90.0, 90.0], theta are azimuthal angles (in degrees) valid from [0, 360], and eccentric anomaly are the eccentric anomaly of the orbit at the time of SN (in degrees) valid from [0, 360]
     ; any number outside of these ranges will be sampled in the standard way in kick.f
     ; rand_seed is for reproducing a supernova if the the system is started mid-evolution, set to 0 if starting binary from the beginning
-    ; default=[[-100.0,-100.0,-100.0,-100.0,0],[-100.0,-100.0,-100.0,-100.0,0.0]]
-    natal_kick_array=[[-100.0,-100.0,-100.0,-100.0,0],[-100.0,-100.0,-100.0,-100.0,0.0]]
+    ; default = [[-100.0,-100.0,-100.0,-100.0,0],[-100.0,-100.0,-100.0,-100.0,0.0]]
+    natal_kick_array = [[-100.0,-100.0,-100.0,-100.0,0],[-100.0,-100.0,-100.0,-100.0,0.0]]
 
 .. note::
 
@@ -931,20 +930,20 @@ common envelope occurs regardless of the choices below:
     ; remnantflag=2: Belczynski et al. 2008
     ; remnantflag=3: rapid prescription (Fryer+ 2012), updated as in Giacobbo & Mapelli 2020
     ; remnantflag=4: delayed prescription (Fryer+ 2012)
-    ; default=4
-    remnantflag=4
+    ; default = 4
+    remnantflag = 4
 
     ; mxns sets the maximum NS mass
-    ; default=3.0
-    mxns=3.0
+    ; default = 3.0
+    mxns = 3.0
 
     ; rembar_massloss determines the mass conversion from baryonic to
     ; gravitational mass
     ; rembar_massloss >= 0: sets the maximum amount of mass loss
     ; -1 < rembar_massloss < 0: uses the prescription from Fryer et al. 2012,
     ; assuming for BHs Mrem = (1+rembar_massloss)*Mrem,bar for negative rembar_massloss
-    ; default=0.5
-    rembar_massloss=0.5
+    ; default = 0.5
+    rembar_massloss = 0.5
 
 .. note::
 
@@ -978,13 +977,13 @@ common envelope occurs regardless of the choices below:
     ; bhspinflag=0; sets all BH spins to bhspinmag
     ; bhspinflag=1; draws a random BH spin between 0 and bhspinmag for every BH
     ; bhspinflag=2; core-mass dependent BH spin (based on Belczynski+2017; 1706.07053, v1)
-    ; default=0
+    ; default = 0
     bhspinflag = 0
 
     ; bhspinmag sets either the spin of all BHs or the upper limit of the uniform
     ; distribution for BH spins
-    ; default=0.0
-    bhspinmag=0.0
+    ; default = 0.0
+    bhspinmag = 0.0
 
 .. note::
 
@@ -1008,6 +1007,7 @@ common envelope occurs regardless of the choices below:
     ; grflag turns on or off orbital decay due to gravitational wave radiation
     ; grflag=0; no orbital decay due to GR
     ; grflag=1; orbital decay due to GR is included
+    ; default = 1
     grflag = 1
 
 .. note::
@@ -1082,19 +1082,20 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; eddfac is Eddington limit factor for mass transfer
-    ; default=1.0
-    eddfac=1.0
+    ; default = 1.0
+    eddfac = 1.0
 
     ; gamma is the angular momentum factor for mass lost during Roche-lobe overflow
     ; gamma=-2: assumes material is lost from the system as if it is a wind from the secondary (for super-Eddington mass transfer rates)
     ; gamma=-1: assumes the lost material carries with is the specific angular momentum of the primary
     ; gamma>0: assumes that the lost material take away a fraction (gamma) of the orbital angular momentum
-    ; default=-2
-    gamma=-2
+    ; default = -2
+    gamma = -2
 
     ; don_lim is a flag which determines how much mass is lost during Roche-lobe overflow
     ; don_lim = -1: assumes standard BSE choice as outlined in Hurley+2002
     ; don_lim = -2: Follows Claeys+2014
+    ; default = -1
     don_lim = -1
 
     ; acc_lim is a flag which determines how much mass is accreted from the donor during Roche-lobe overflow
@@ -1103,6 +1104,7 @@ common envelope occurs regardless of the choices below:
     ; acc_lim = -2: limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
     ; acc_lim = -3: limited to 10x the thermal rate of the accretor for all stars
     ; acc_lim = -4: limited to 1x the thermal rate of the accretor for all stars
+    ; default = -1
     acc_lim = -1
 
 
@@ -1148,22 +1150,22 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;;
 
     ; tflag=1 activates tidal circularisation
-    ; default=1
-    tflag=1
+    ; default = 1
+    tflag = 1
 
     ; ST_tide sets which tidal method to use. 0=Hurley+2002, 1=StarTrack: Belczynski+2008
     ; Note, here startrack method does not use a better integration scheme (yet) but simply
     ; follows similar set up to startrack (including initial vrot, using roche-lobe check
     ; at periastron, and circularisation and synchronisation at start of MT).
-    ; default=1
-    ST_tide=1
+    ; default = 1
+    ST_tide = 1
 
     ; fprimc_array controls the scaling factor for convective tides
     ; each item is set individually for its associated kstar
     ; The releveant equation is Equation 21 from the BSE paper
     ; The default is to send the same coefficient (2/21) as is in the equation
     ; for every kstar
-    fprimc_array=[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
+    fprimc_array = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
 
 .. note::
 
@@ -1207,16 +1209,16 @@ common envelope occurs regardless of the choices below:
     ;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800
-    ; default=0
-    ifflag=0
+    ; default = 0
+    ifflag = 0
 
     ; wdflag > 0 uses modified-Mestel cooling for WDs
-    ; default=1
-    wdflag=1
+    ; default = 1
+    wdflag = 1
 
     ; epsnov is the fraction of accreted matter retained in nova eruptions
-    ; default=0.001
-    epsnov=0.001
+    ; default = 0.001
+    epsnov = 0.001
 
 .. note::
 
@@ -1257,16 +1259,16 @@ common envelope occurs regardless of the choices below:
 
     ; bdecayfac determines which accretion induced field decay method to
     ; use from Kiel+2008: 0=exp, 1=inverse
-    ; default=1
-    bdecayfac=1
+    ; default = 1
+    bdecayfac = 1
 
     ; bconst is related to magnetic field evolution of pulsars, see Kiel+2008
-    ; default=3000
-    bconst=3000
+    ; default = 3000
+    bconst = 3000
 
     ; ck is related to magnetic field evolution of pulsars, see Kiel+2008
-    ; default=1000
-    ck=1000
+    ; default = 1000
+    ck = 1000
 
 .. note::
 
@@ -1299,7 +1301,7 @@ common envelope occurs regardless of the choices below:
 ``bhms_coll_flag``       If set to 1, then if in a BH+star collision the star is
                          not destroyed if Mstar > Mbh
 
-                         **default = 0**
+                         **bhms_coll_flag = 0**
 
 =======================  =====================================================
 
@@ -1312,20 +1314,21 @@ common envelope occurs regardless of the choices below:
     ; rejuv_fac allows different mixing factors in Equation 80 from the BSE
     ; paper. This was originally hard coded to 0.1, which leads massive
     ; stars to potentially have extended main sequence lifetimes.
-    rejuv_fac=1.0
+    ; default = 1.0
+    rejuv_fac = 1.0
 
     ; rejuvflag toggles between the original BSE prescription for MS mixing and
     ; lifetimes of stars based on the mass of the MS stars (equation 80) or a
     ; prescription that uses the ratio of helium core mass of the pre-merger stars
     ; at the base of the first ascent of the giant branch to determine relative to the
     ; helium core mass of the merger product at the base of the giant branch
-    ; default=0
-    rejuvflag=0
+    ; default = 0
+    rejuvflag = 0
 
     ; bhms_coll_flag 
     ; If set to 1 then if BH+star collision and if Mstar > Mbh, do not destroy the star
     ; default = 0
-    bhms_coll_flag=0
+    bhms_coll_flag = 0
 
 .. note::
 
@@ -1350,13 +1353,13 @@ common envelope occurs regardless of the choices below:
     ; htpmb allows for different magnetic braking models.
     ; 0=follows BSE paper Section 2.4
     ; 1=follows Ivanova & Taam 2003 method which kicks in later than the standard
-    ; default=1
-    htpmb=1
+    ; default = 1
+    htpmb = 1
 
 
 .. note::
 
-    MISC FLAGS
+    MISCELLANEOUS FLAGS
 
 =======================  =====================================================
 ``ST_cr``                Activates different convective vs radiative boundaries
@@ -1377,5 +1380,5 @@ common envelope occurs regardless of the choices below:
     ; ST_cr sets which convective/radiative boundary to use
     ; 0=follows BSE paper
     ; 1=follows StarTrack (Belcyznski+2008)
-    ; default=1
-    ST_cr=1
+    ; default = 1
+    ST_cr = 1
