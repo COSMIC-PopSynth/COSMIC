@@ -8,7 +8,8 @@ How to write a configuration file
 =================================
 
 The `cosmic-pop` command-line executable cannot run without a configuration file.
-Each of the sections below lists inputs for COSMIC's modified version of BSE. Each input has a description of the allowed values and an example of what that section might look like in the INI format.
+Each of the sections below lists inputs for COSMIC's modified version of BSE. Each input has a description of the allowed values and an example of what that section might look like in the INI format; recommended  default settings for many parameters are 
+given after their description in boldface.
 
 Here is a link to the most recent stable release version of the default
 inifile for COSMIC: `Stable Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini>`_
@@ -101,8 +102,11 @@ sampling
 
                             ``SF_duration`` : 13700.0
 
-``metallicity``          Single value for the metallicity of the population
-                         where solar metallicity is defined using *zsun* defined below
+``metallicity``          Single value for the metallicity of the population. 
+                         COSMIC expects an **absolute** metallicity (i.e., not units of
+                         *zsun*). For example, if you would like to run a population at
+                         Solar metallicity and specify *zsun=0.02*, you would want to
+                         set *metallicity=0.02*. 
 
 =======================  ===================================================================================
 
@@ -132,17 +136,16 @@ sampling
                               Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
                               ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
 
-``convergence_limits``        Specifies limits for parameters included in the convergence
-                              params list. If specified, the lower and upper limit must
-                              be specified for all parameters:
+``convergence_limits``        Specifies limits for parameters included in the ``convergence_params``
+                              list. For each parameter specified in ``convergence_limits``, the lower
+                              and upper limit must be included. 
 
                                  ``convergence_limits = {'mass_1' : [5, 10], 'sep' : [0, 10]}``
 
 ``pop_select``                Selects the stage of the evolution at which you would like
                               to check for convergence. This will filter for systems that
                               satisfy the final_kstar1 and final_kstar2 selections from
-                              the command line call of cosmic-pop as well as the following
-                              states:
+                              the command line call of cosmic-pop at the following states:
 
                                  ``formation``: computes convergence on binary properties
                                  at formation with user-specified final kstars
@@ -167,22 +170,24 @@ sampling
                                  at the start of RLO following the first supernova on the population with
                                  user-specified final kstars
 
-``match``                     match provides the tolerance for the convergence calculation
+``match``                     ``match`` provides the tolerance for the convergence calculation
                               and is calculated as match = Log\ :sub:`10` (1-convergence)
 
-``apply_convergence_limits``  apply_convergence_limits will filter the binary population,
+                              **match = -5.0**
+
+``apply_convergence_limits``  ``apply_convergence_limits`` will filter the binary population,
                               including the bcm, bpp, initCond, and kick_info
                               DataFrames to only contain the binaries that satisfy the constraints
                               from ``convergence_limits``
 
                                  ``True``: bcm, bpp, initCond, kick_info will contain only the binaries which
-                                 are in the conv DataFrame
+                                 are in the population that was used to check for convergence
 
                                  ``False``: bcm, bpp, initCond, kick_info will contain all systems which satisfy the
                                  final kstar and pop_select selection and will **not** be filtered based on the
-                                 convergence_limits
+                                 convergence limits
 
-                              **apply_convergence_limits=False**
+                              **apply_convergence_limits = False**
 
 ============================  ===================================================================================
 
@@ -335,30 +340,30 @@ sampling
 
                          **windflag = 3**
 
-``eddlimflag``           Limits the mass-loss rate of low-metallicity stars near
+``eddlimflag``           Adjusts the dependence of mass loss on metallicity for stars near
                          the Eddington limit
                          (see `Grafener+2011 <https://ui.adsabs.harvard.edu/abs/2011A%26A...535A..56G/abstract>`_, `Giacobbo+2018 <https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract>`_).
 
-                            ``0`` : does not apply Eddington limit
+                            ``0`` : does not adjust metallicity dependence for stars near the Eddington limit
 
-                            ``1`` : applies Eddington limit
+                            ``1`` : adjusts metallicity dependence for stars near the Eddington limit as in `Giacobbo+2018 <https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract>`_.  
 
                          **eddlimflag = 0**
 
-``neta``                 Reimers mass-loss coefficient (`Equation 106 SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_).
+``neta``                 Reimers mass-loss coefficient (`Equation 106 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_).
                          Note: this equation has a typo. There is an extra
                          :math:`{\eta}` out front; the correct rate is directly proportional
                          to :math:`{\eta}`.
                          See also `Kurdritzki+1978, Section Vb <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1978A%26A....70..227K&link_type=ARTICLE&db_key=AST&high=#page=12>`_ for discussion.
 
-                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_
+                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_
 
                          **neta = 0.5**
 
 ``bwind``                Binary enhanced mass loss parameter.
-                         See `Equation 12 BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+                         See `Equation 12 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
 
-                            ``positive value`` : supplies B\ :sub:`w` to `Equation 12 BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
+                            ``positive value`` : supplies B\ :sub:`w` to `Equation 12 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
 
                          **bwind = 0, inactive for single**
 
@@ -493,25 +498,25 @@ common envelope occurs regardless of the choices below:
                          **cekickflag = 2**
 
 ``cemergeflag``          Determines whether stars that begin a CE
-                         without a core-envelope boundary automatically lead to
-                         merger in CE. These systems include:
+                         without a distinct core-envelope boundary automatically
+                         lead to merger in a CE. These systems include:
                          kstars = [0,1,2,7,8,10,11,12]. Note that while the
-                         best choice is cemergeflag=1 according to
+                         optimal choice is *cemergeflag=1* according to
                          `Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_,
-                         cemergeflag=0 allows for both options where the systems
-                         which would merge if cemergeflag=1 can be treated in post processing.
+                         *cemergeflag=0* allows for both options to be explored, since 
+                         it is trivial to remove these systems from a population
+                         in post processing. 
 
-                            ``0`` : allows the CE to proceed
+                            ``0`` : allows the CE to proceed (optimistic CE)
 
-                            ``1`` : causes these systems to merge in the CE
+                            ``1`` : causes these systems to merge in the CE (pessimistic CE)
 
                          **cemergeflag = 0**
 
 ``cehestarflag``         Uses fitting formulae from `Tauris+2015 <https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract>`_
                          for evolving RLO systems with a helium star donor
                          and compact object accretor.
-                         NOTE: this flag will override choice made by
-                         cekickflag if set
+                         NOTE: this flag will override *cekickflag* if set
 
                             ``0`` : does NOT use Tauris+2015 at all
 
@@ -540,11 +545,11 @@ common envelope occurs regardless of the choices below:
 
                             ``4`` : follows `Section 5.1 of Belcyznski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_ except for WD donors which follow BSE
 
-                            ``5`` : follows `Section 2.3 of Neijssel+2020 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract>`_ Mass transfer from stripped stars is always assumed to be dynamically stable
+                            ``5`` : follows `Section 2.3 of Neijssel+2020 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract>`_; mass transfer from stripped stars is always assumed to be dynamically stable
 
                          **qcflag = 1**
 
-                         .. csv-table:: Comparison of Q Crit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options
+                         .. csv-table:: Comparison of qcrit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options
                             :file: qcrit_table.csv
                             :header-rows: 1
 
@@ -553,16 +558,16 @@ common envelope occurs regardless of the choices below:
 
                          Eq.2: ``qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0``, which is from Claeys+ 2014
 
-``qcrit_array``          Array with length: 16 for user-input values for the
+``qcrit_array``          Array of dimensions (1,16) specifying user-input values for the
                          critical mass ratios that govern the onset of unstable
                          mass transfer and a common envelope. Each item is set
                          individually for its associated kstar, and a value of
-                         0.0 will apply prescription of the qcflag for that kstar.
+                         0.0 will apply the prescription specified qcflag for that kstar.
 
                          **Note:** there are cases where a common envelope is forced
                          regardless of the critical mass ratio for unstable mass
                          transfer; in the following cases, a common envelope occurs
-                         regardless of the qcrit or qcflag
+                         regardless of the qcrit or qcflag. See above. 
 
                          **qcrit_array = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]**
 
@@ -629,7 +634,7 @@ common envelope occurs regardless of the choices below:
     KICK FLAGS
 
 =======================  =====================================================
-``kickflag``             Sets the particular natal kick prescription to use
+``kickflag``             Sets the particular natal kick prescription to use.
                          Note that ``sigmadiv``, ``bhflag``, ``bhsigmafrac``,
                          ``aic``, and ``ussn``, which are described below, are
                          only used when ``kickflag=0``
@@ -637,7 +642,7 @@ common envelope occurs regardless of the choices below:
                             ``0`` : The standard COSMIC kick prescription, where
                             kicks are drawn from a bimodal distribution with
                             standard FeCCSN getting a kick drawn from a Maxwellian
-                            distribution with dispersion parameter ``sigma`` and ECSN
+                            distribution with dispersion parameter ``sigma`` and ECSN/USSN
                             are drawn according to ``sigmadiv``. This setting has
                             additional possible options for ``bhflag``, ``bhsigmafrac``,
                             ``aic`` and ``ussn``.
@@ -662,8 +667,8 @@ common envelope occurs regardless of the choices below:
 
                          **default=265.0**
 
-``bhflag``               Sets the model for how SN kicks are applied to BHs
-                         where bhflag != 0 allows velocity kick at BH formation
+``bhflag``               Sets the model for how SN kicks are applied to BHs,
+                         where bhflag != 0 allows for velocity kick at BH formation
 
                             ``0`` : no BH kicks
 
@@ -673,57 +678,62 @@ common envelope occurs regardless of the choices below:
                             ``2`` : kicks decreased by ratio of BH mass to NS mass
                             (1.44 Msun); conserves linear momentum
 
-                            ``3`` : full strength kick drawn from Maxwellian
-                            with dispersion = *sigma* selected above
+                            ``3`` : BH natal kicks are not decreased compared to NS kicks
+                            and are drawn from the same Maxwellian distribution with
+                            dispersion = *sigma* set above
 
                          **bhflag = 1**
 
-``ecsn``                 Allows for electron capture SN and sets the
-                         maximum ECSN mass range at the time of SN
+``ecsn``                 Allows for electron capture SNe and sets the
+                         maximum He-star mass (at core helium depletion) that will
+                         result in an ECSN
 
                             ``0`` : turns off ECSN
 
-                            ``positive values`` : `BSE (Hurley+2002) <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
+                            ``positive values`` : sets maximum He-star mass for ECSN; 
+                            `BSE (Hurley+2002) <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
                             and `StarTrack (Belczynski+2008) <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_
                             use ecsn = 2.25, while `Podsiadlowksi+2004 <https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract>`_
-                            use ecsn = 2.5
+                            argues that binarity can increase this to ecsn = 2.5
 
-                         **ecsn = 2.5**
+                         **ecsn = 2.25**
 
 ``ecsn_mlow``            Sets the low end of the ECSN mass range
 
-                            ``positive values`` : `BSE (Hurley+2002) <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
-                            use ecsn_mlow = 1.6, while `StarTrack (Belczynski+2008) <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_
-                            use ecsn_mlow = 1.85, while `Podsiadlowksi+2004 <https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract>`_
-                            use ecsn_mlow = 1.4
+                            ``positive values`` : sets maximum He-star mass for ECSN;
+                            `BSE (Hurley+2002) <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
+                            uses ecsn_mlow = 1.6, `StarTrack (Belczynski+2008) <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_
+                            uses ecsn_mlow = 1.85, `Podsiadlowksi+2004 <https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract>`_
+                            argues that binarity can decrease this to ecsn_mlow = 1.4
 
-                         **ecsn_mlow = 1.4**
+                         **ecsn_mlow = 1.6**
 
 ``sigmadiv``             Sets the modified ECSN kick strength
 
-                         ``positive values`` : divide *sigma* above by *sigmadiv*
+                            ``positive values`` : divide *sigma* (defined above) by *sigmadiv*
 
-                         ``negative values`` : sets the ECSN *sigma* value
+                            ``negative values`` : sets ECSN kicks to be drawn from a Maxwellian
+                         distribution with dispersion given by *sigmadiv*
 
                          **sigmadiv = -20.0**
 
-``aic``                  reduces kick strengths for accretion induced collapse SN
+``aic``                  Reduces kick strengths for accretion induced collapse SN
                          according to *sigmadiv*
 
                             ``0`` : AIC SN receive kicks drawn from Maxwellian
-                            with dispersion = *sigma* above
+                            with dispersion = *sigma* defined above
 
-                            ``1`` : sets kick strength according to *sigmadiv*
-                            NOTE: this will applies even if ecsn = 0.0
+                            ``1`` : sets kick strength according to *sigmadiv*;
+                            NOTE that this will apply even if ecsn = 0.0
 
                          **aic = 1**
 
 ``ussn``                 Reduces kicks according to the *sigmadiv* selection
-                         for ultra-stripped supernovae which happen whenever
+                         for ultra-stripped supernovae, assumed to happen if
                          a He-star undergoes a CE with a compact companion
 
                             ``0`` : USSN receive kicks drawn from Maxwellian
-                            with dispersion = *sigma* above
+                            with dispersion = *sigma* defined above
 
                             ``1`` : sets kick strength according to *sigmadiv*
 
@@ -742,10 +752,15 @@ common envelope occurs regardless of the choices below:
                             ``-3`` : uses a polynomial fit to `Table 5 in Woosley 2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract>`_
 
                             ``positive values`` : turns on pulsational pair
-                            instability SN and sets the maximum mass of the allowed
-                            remnant
+                            instability and pair instability SNe, and sets the
+                            maximum mass of the allowed remnant (i.e., the bottom
+                            of the pair instability mass gap). He core masses between
+                            *pisn* and 65 Msun are assumed to go through pulsational
+                            pair instability and limit the He core mass to *pisn*, while
+                            He core masses from 65-135 Msun are assumed have a pair
+                            instability SN and leave no remnant. 
 
-                         **pisn = 45.0**
+                         **pisn = -2**
 
 ``bhsigmafrac``          Sets a fractional modification which scales down *sigma*
                          for BHs. This works in addition to whatever is chosen for
@@ -764,7 +779,7 @@ common envelope occurs regardless of the choices below:
 
                          **polar_kick_angle = 90.0**
 
-``natal_kick_array``     Array of dimensions: (2,5) which takes user input values
+``natal_kick_array``     Array of dimensions (2,5) which takes user input values
                          for the SN natal kick, where the first row corresponds to the
                          first star and the second row corresponds to the second star and
                          columns are: [vk, phi, theta, mean_anomaly, rand_seed].
@@ -819,13 +834,13 @@ common envelope occurs regardless of the choices below:
 
     ; ecsn>0 turns on ECSN and also sets the maximum ECSN mass range (at the time of the SN)
     ; stock BSE and StarTrack: ecsn=2.25; Podsiadlowski+2004: ecsn=2.5)
-    ; default=2.5
-    ecsn=2.5
+    ; default=2.25
+    ecsn=2.25
 
     ; ecsn_mlow sets the low end of the ECSN mass range
     ; stock BSE:1.6; StarTrack:1.85; Podsiadlowski+2004:1.4)
-    ; default=1.4
-    ecsn_mlow=1.4
+    ; default=1.6
+    ecsn_mlow=1.6
 
     ; sigmadiv sets the modified ECSN kick
     ; negative values sets the ECSN sigma value, positive values divide sigma above by sigmadiv
@@ -846,8 +861,8 @@ common envelope occurs regardless of the choices below:
     ; and sets the maximum mass of the remnant
     ; pisn=-1 uses the formulae from Spera+Mapelli 2017 for the mass
     ; pisn=0 turns off (pulsational) pair instability supernovae
-    ; default=45
-    pisn=45.0
+    ; default=-2
+    pisn=-2
 
     ; bhsigmafrac sets the fractional modification used for scaling down the sigma for BHs
     ; this works in addition to whatever is chosen for bhflag, and is applied to the sigma beforehand these prescriptions are implemented
@@ -881,9 +896,9 @@ common envelope occurs regardless of the choices below:
 
                             ``2`` : follows `Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_
 
-                            ``3`` : follows the rapid prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_, with updated proto-core mass from `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
+                            ``3`` : follows the rapid prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_, with updated proto-core mass from `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_. This leads to a mass gap between neutron stars and black holes. 
 
-                            ``4`` : delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
+                            ``4`` : follows the delayed prescription from `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_. This fills the mass gap between neutron stars and black holes. 
 
                      **remnantflag = 4**
 
@@ -894,9 +909,8 @@ common envelope occurs regardless of the choices below:
 
                      **mxns = 3.0**
 
-``rembar_massloss``  Determines the prescriptions for mass conversion from
-                     baryonic to gravitational mass during the collapse of
-                     the proto-compact object
+``rembar_massloss``  Determines the prescriptions for mass conversion due to
+                     neutrino emission during the collapse of the proto-compact object
 
                             ``positive values`` : sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (:math:`{\sim 5 \mathrm{M}_\odot}` Fryer, private communication)
 
@@ -941,7 +955,7 @@ common envelope occurs regardless of the choices below:
 
                             ``0`` : sets all BH spins to *bhspinmag*
 
-                            ``1`` : draws a random BH spin between 0 and bhspinmag for every BH
+                            ``1`` : draws a random BH spin between 0 and *bhspinmag* for every BH
 
                             ``2`` : core-mass dependent BH spin (based on `Belczynski+2017 v1 <https://arxiv.org/abs/1706.07053v1>`_)
 
@@ -977,7 +991,7 @@ common envelope occurs regardless of the choices below:
     GR ORBITAL DECAY FLAG
 
 =======================  ===============================================================
-``grflag``               Turns on or off orbital decay due to gravitational wave radiation
+``grflag``               Turns on or off orbital decay due to gravitational wave emission
 
                             ``0`` : No orbital decay due to GR
 
@@ -1026,16 +1040,18 @@ common envelope occurs regardless of the choices below:
                             ``>0`` : assumes that the lost material takes away a
                             fraction *gamma* of the orbital angular momentum
 
-                         **gamma = -2.0**
+                         **gamma = -2**
 
-``don_lim``              Calculates the rate of mass loss through Roche-lobe
+``don_lim``              Determines the rate of mass loss through Roche-lobe
                          overflow mass transfer from the donor star
 
                             ``-1`` : donor mass loss rate is calculated following
                             `Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                             ``-2`` : donor mass loss rate is calculated following
-                             `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
+                            `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
+
+                         **don_lim = -1**
 
 ``acc_lim``              Limits the amount of mass accreted during Roche-lobe overflow
 
@@ -1051,8 +1067,12 @@ common envelope occurs regardless of the choices below:
                             ``-4`` : limited to 1x's the thermal rate of the accretor
                             for all stars
 
-                            ``>=0`` : sets overall accretion fraction of donor mass
-                            as in Belcyznski+2008 w/ acc_lim = 0.5
+                            ``>=0`` : sets overall fraction of donor material that is
+                            accreted, with the rest being lost from the system
+                            (*acc_lim = 0.5* assumes 50% accretion efficiency as in
+                            `Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_)
+
+                         **acc_lim = -1**
 =======================  =====================================================
 
 .. code-block:: ini
@@ -1069,8 +1089,8 @@ common envelope occurs regardless of the choices below:
     ; gamma=-2: assumes material is lost from the system as if it is a wind from the secondary (for super-Eddington mass transfer rates)
     ; gamma=-1: assumes the lost material carries with is the specific angular momentum of the primary
     ; gamma>0: assumes that the lost material take away a fraction (gamma) of the orbital angular momentum
-    ; default=-1
-    gamma=-1.0
+    ; default=-2
+    gamma=-2
 
     ; don_lim is a flag which determines how much mass is lost during Roche-lobe overflow
     ; don_lim = -1: assumes standard BSE choice as outlined in Hurley+2002
@@ -1109,9 +1129,9 @@ common envelope occurs regardless of the choices below:
 
                          **ST_tide = 1**
 
-``fprimc_array``         controls the scaling factor for convective tides
-                         each item is set individually for its associated kstar
-                         The releveant equation is `Equation 21 of Hurley+2002 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_
+``fprimc_array``         Controls the scaling factor for convective tides.
+                         Each value in hte array is set individually for its associated kstar.
+                         The releveant equation is `Equation 21 of Hurley+2002 <https://watermark.silverchair.com/329-4-897.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAnAwggJsBgkqhkiG9w0BBwagggJdMIICWQIBADCCAlIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMYUoYtydpxVKmZePqAgEQgIICI1b5IZldHg9_rX6JacIe-IR042LnNi-4F9DMp-2lm3djjQ8xehKOv5I0VBjSNJfa6n-FErAH7ed1llADY7tMDTvqo1GHKBMDslNku5XDGfmae0sF-Zp5ndeGoZsyqISABLHEbdY4VFl8Uz_6jzAuBjGztnuxVmUh9bKIOaxuDpfB3Mn2xOfP9lcCVkjzQ0JWzr98nQNmVwDkI9bPv98Ab46BjBdGdcBKajCC-sqASjtmAQS2h6SGTTBqyRAyigqXcPtWf3Ye1SbxtL3zag6_Lf01rgCoUCK9eT_pavb5F8vVkUTMWbZQ79DWxn5pfZYi72C7_BtlPoUnS8Gs3wvw18BTIaHTKblwh225DcXuTEh_ngMmRvPEVctvG8tjlr9md-eFK0cEsq0734eGYtnwxeqvFxcWsW6mRbXrFHFsInQK16j6n36XuCimY665l_-HPAuu-lTTlwpMTUR7K1eYMBsco_tp_TdxEipRNvBpaWZX3J0FxPMzi84Y01UvWiW69pxb-LLTpf8aG4YCm9asRFyfDZ9nbSdgrIlCiuzy7QSmkvsHOaTEecmwRimFRycDuIuWLvA_tILmYCIM2KzvqYJSVCQPJH39xEHZG8LbMqImwAVYO3H90qh-90gNrtZn4ofSskcgqxeqfZly9CPfmEevX5s-SlLHMh1N6gdZwenvMC0kTWg_rskbvGiANtuGngD-kKDbunGpYJU_nI7uDnhGtdY#page=5>`_.
 
                             ``positive values`` : sets scaling factor of
                             Equation 21 referenced above
@@ -1212,7 +1232,7 @@ common envelope occurs regardless of the choices below:
 
                          **bdecayfac = 1**
 
-``bconst``               Sets the magnetic field decay time-scale for pulsars following
+``bconst``               Sets the magnetic field decay timescale for pulsars following
                          Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
 
                             ``positive values`` : sets k in Myr from Equation 8 to
@@ -1220,7 +1240,7 @@ common envelope occurs regardless of the choices below:
 
                          **bconst = 3000**
 
-``ck``                   Sets the magnetic field decay time-scale for pulsars following
+``ck``                   Sets the magnetic field decay timescale for pulsars following
                          Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
 
                             ``positive values`` : sets :math:`{\tau}`\ :sub:`b` in Myr
@@ -1276,7 +1296,8 @@ common envelope occurs regardless of the choices below:
 
                          **rejuvflag = 0**
 
-``bhms_coll_flag``       If set to 1 then if BH+star collision and if Mstar > Mbh, do not destroy the star
+``bhms_coll_flag``       If set to 1, then if in a BH+star collision the star is
+                         not destroyed if Mstar > Mbh
 
                          **default = 0**
 
@@ -1349,9 +1370,9 @@ common envelope occurs regardless of the choices below:
 
 .. code-block:: ini
 
-    ;;;;;;;;;;;;;;;;;
-    ;; MISC FLAGS ;;;
-    ;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; MISCELLANEOUS FLAGS ;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ; ST_cr sets which convective/radiative boundary to use
     ; 0=follows BSE paper
