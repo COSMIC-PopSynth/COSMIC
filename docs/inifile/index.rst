@@ -354,9 +354,9 @@ sampling
                          Note: this equation has a typo. There is an extra
                          :math:`{\eta}` out front; the correct rate is directly proportional
                          to :math:`{\eta}`.
-                         See also `Kurdritzki+1978, Section Vb <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1978A%26A....70..227K&link_type=ARTICLE&db_key=AST&high=#page=12>`_ for discussion.
+                         See also `Kurdritzki+1978, Section Vb <https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract>`_ for discussion.
 
-                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 of SSE paper <https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract>`_
+                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 of SSE paper <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
 
                          **neta = 0.5**
 
@@ -566,8 +566,11 @@ common envelope occurs regardless of the choices below:
 
                          **Note:** there are cases where a common envelope is forced
                          regardless of the critical mass ratio for unstable mass
-                         transfer; in the following cases, a common envelope occurs
-                         regardless of the qcrit or qcflag. See above. 
+                         transfer; these cases include when a natal kick causes a
+                         a large enough eccentricity that the radius of the stellar
+                         companion is larger than the orbital pericenter distance,
+                         and when two stars expand to fill their Roche lobes at the
+                         same time.
 
                          **qcrit_array = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]**
 
