@@ -491,7 +491,7 @@ def _evolve_single_system(f):
         bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
         kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
 
-        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array
+        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy()
 
     except Exception as e:
         print(e)

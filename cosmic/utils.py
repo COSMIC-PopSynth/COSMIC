@@ -226,7 +226,6 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         conv_save = bpp_save.loc[
             (bpp_save.kstar_1.isin(final_kstar_1))
             & (bpp_save.kstar_2.isin(final_kstar_2))
-            & (bpp_save.sep > 0)
             & (bpp_save.evol_type.isin([2.0, 4.0]))
         ]
 
@@ -795,7 +794,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         option
                     )
                 )
-
+        if ("qmin" not in sampling.keys()) & ("m2_min" not in sampling.keys()) & (sampling["sampling_method"] == 'independent'):
+            raise ValueError("You have not specified qmin or m2_min. At least one of these must be specified.")
     # filters
     if filters is not None:
         flag = "binary_state"

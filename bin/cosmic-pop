@@ -277,6 +277,14 @@ if __name__ == '__main__':
     bpp_filter_match = []
     initC_filter_match = []
 
+    # Warn about qmin and m2_min
+    if (hasattr(args,'qmin')) & (hasattr(args,'m2_min')):
+        print("You have specified both qmin and m2_min.")
+        print("COSMIC will use qmin={} to determine the secondary masses in the initial sample.".format(args.qmin))
+
+        log_file.write("You have specified both qmin and m2_min.\n")
+        log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
+
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']):
         # Set random seed such that each iteration gets a unique, determinable seed
         rand_seed = seed_int + Nstep
@@ -284,19 +292,39 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
-            init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
-                                                        final_kstar1 = kstar1_range,
-                                                        final_kstar2 = kstar2_range,
-                                                        binfrac_model = args.binfrac_model,
-                                                        primary_model = args.primary_model,
-                                                        ecc_model = args.ecc_model,
-                                                        porb_model = args.porb_model,
-                                                        qmin = args.qmin,
-                                                        keep_singles = args.keep_singles,
-                                                        SF_start = sampling['SF_start'],
-                                                        SF_duration = sampling['SF_duration'],
-                                                        met = sampling['metallicity'],
-                                                        size = args.Nstep)
+            if hasattr(args,'qmin'):
+                init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
+                                                            final_kstar1 = kstar1_range,
+                                                            final_kstar2 = kstar2_range,
+                                                            binfrac_model = args.binfrac_model,
+                                                            primary_model = args.primary_model,
+                                                            ecc_model = args.ecc_model,
+                                                            porb_model = args.porb_model,
+                                                            keep_singles = args.keep_singles,
+                                                            SF_start = sampling['SF_start'],
+                                                            SF_duration = sampling['SF_duration'],
+                                                            met = sampling['metallicity'],
+                                                            size = args.Nstep,
+                                                            qmin = args.qmin,
+                                                            params = args.inifile)
+            elif hasattr(args,'m2_min'):
+                init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
+                                                            final_kstar1 = kstar1_range,
+                                                            final_kstar2 = kstar2_range,
+                                                            binfrac_model = args.binfrac_model,
+                                                            primary_model = args.primary_model,
+                                                            ecc_model = args.ecc_model,
+                                                            porb_model = args.porb_model,
+                                                            keep_singles = args.keep_singles,
+                                                            SF_start = sampling['SF_start'],
+                                                            SF_duration = sampling['SF_duration'],
+                                                            met = sampling['metallicity'],
+                                                            size = args.Nstep,
+                                                            m2_min = args.m2_min,
+                                                            params = args.inifile)
+            else:
+                raise ValueError("You must specify either qmin or m2_min in the",
+                                 " inifile if you are using the independent sampler")
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':

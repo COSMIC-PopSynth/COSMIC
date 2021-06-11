@@ -204,7 +204,7 @@
       REAL*8 zero,ngtv,ngtv2,mt2,rrl1,rrl2,mcx,teff1,teff2
       REAL*8 mass1i,mass2i,tbi,ecci
       LOGICAL coel,com,prec,inttry,change,snova,sgl
-      LOGICAL supedd,novae,disk
+      LOGICAL supedd,novae,disk,inspiral
       LOGICAL iplot,isave
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
@@ -492,6 +492,7 @@ component.
       snova = .false.
       coel = .false.
       com = .false.
+      inspiral = .false.
       tphys0 = tphys
       ecc1 = ecc
       j1 = 1
@@ -3278,6 +3279,11 @@ component.
 * primary overfills its Roche lobe initially. In this case we simply
 * allow contact to occur.
 *
+* NOTE: there is a possibility that if contact occurs and we're at/past
+* the current tphysf, then the binary will spiral in and we don't catch
+* it.  If that happens, we could return an impossibly small binary which
+* will break energy conservation in CMC.  Flag this here
+         if((jorb-djorb).lt.1.d0) inspiral=.true.
          jorb = MAX(1.d0,jorb - djorb)
          sep = (mass(1) + mass(2))*jorb*jorb/
      &         ((mass(1)*mass(2)*twopi)**2*aursun**3*(1.d0-ecc*ecc))
@@ -3554,7 +3560,7 @@ component.
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
       endif
 *
-      if(tphys.ge.tphysf) goto 140
+      if(tphys.ge.tphysf.and..not.inspiral) goto 140
 *
       if(change)then
          change = .false.

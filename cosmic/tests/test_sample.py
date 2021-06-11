@@ -83,7 +83,7 @@ def linear_fit(data):
             mid_bin.append(bin_lo + (bin_hi-bin_lo)/2)
         return mid_bin
     
-    hist, bins = np.histogram(data, bins=50, density=True)
+    hist, bins = np.histogram(data, bins=100, density=True)
     bins = center_bins(bins)
     popt, pcov = curve_fit(line, bins, hist)
 
@@ -151,6 +151,18 @@ class TestSample(unittest.TestCase):
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=-1)
+        ind_not_massive, = np.where(mass1 < 5.0)
+        q = mass2[ind_not_massive] / mass1[ind_not_massive]
+        slope = linear_fit(q)
+        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
+        np.random.seed(2)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, m2_min=0.1)
+        q = mass2[ind_massive] / mass1[ind_massive]
+        slope = linear_fit(q)
+        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
@@ -199,8 +211,8 @@ class TestSample(unittest.TestCase):
         np.random.seed(4)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
-        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
+        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
@@ -209,7 +221,7 @@ class TestSample(unittest.TestCase):
 
         # next do Renzo+19
         m1_high = mass1+15
-        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
@@ -242,8 +254,8 @@ class TestSample(unittest.TestCase):
         np.random.seed(4)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
-        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02, params=os.path.join(TEST_DATA_DIR, "Params.ini"))
+        rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
+        rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
@@ -331,20 +343,20 @@ class TestSample(unittest.TestCase):
 class TestCMCSample(unittest.TestCase):
     def test_elson_profile(self):
         np.random.seed(2)
-        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, r_max=300, gamma=4)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('elson',N=100, r_max=300, gamma=4)
         np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
         np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
         np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
 
     def test_king_profile(self):
         np.random.seed(2)
-        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt(N=100, w_0=5)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('king',N=100, w_0=5)
         np.testing.assert_allclose(VR_KING_TEST_ARRAY, vr, rtol=1e-5)
         np.testing.assert_allclose(VT_KING_TEST_ARRAY, vt, rtol=1e-5)
         np.testing.assert_allclose(R_KING_TEST_ARRAY, r, rtol=1e-5)
 
     def test_set_reff(self):
-        reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02, params=os.path.join(TEST_DATA_DIR,'Params.ini'))
+        reff = CMCSAMPLECLASS.set_reff(mass=np.array([10.0, 20.0]), metallicity=0.02)
         np.testing.assert_allclose(REFF_TEST_ARRAY, reff)
 
     def test_cmc_sampler(self):
