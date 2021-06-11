@@ -12,7 +12,7 @@ COSMIC's primary purpose is to generate synthetic populations with an adaptive s
 This is done using the cosmic-pop exectuable which is installed with COSMIC. See :ref:`fixedpop` for more details.
 
 
-COSMIC can also be used to simulate a single binary at a time, a list of multiple binaries, a grid of binaries, or a fixed population size. For more details on how to use COSMIC in these ways see :ref:`examples` and :ref:`runpop`.
+COSMIC can also be used to simulate a single binary at a time, a list of multiple binaries, a grid of binaries, or a fixed population size as well as restart binaries at a mid point in their evolution. For more details on how to use COSMIC in these ways see :ref:`examples` and :ref:`runpop`.
 
 *****************
 Table of Contents
@@ -32,8 +32,6 @@ Table of Contents
 Package documentation
 *********************
 
-Please consult these pages for more details on using COSMIC:
+Please consult these pages for more details on the modules in COSMIC:
 
-* :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
