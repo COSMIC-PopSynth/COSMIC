@@ -7,6 +7,7 @@ Installation
 =====
 Conda
 =====
+Since COSMIC requires compilation of Fortran code, we strongly recommend the use of virtual environments like Anaconda to mitigate any potential compiling issues with other Fortran code bases.
 
 MacOS
 -----

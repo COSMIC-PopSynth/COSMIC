@@ -1099,6 +1099,15 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     flag, BSEDict[flag]
                 )
             )
+        if (BSEDict[flag] in [-1, -2]):
+            if (BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6):
+                print("You have chosen a kick flag that assumes compact object formation "
+                      "according to Giacobbo & Mapelli 2020, but supplied electron "
+                      "capture SN (ECSN) flags that are inconsistent with this study. "
+                      "To maintain consistency, COSMIC will update your "
+                      "ECSN flags to be ecsn=2.25 and ecsn_mlow=1.6")
+                BSEDict['ecsn'] = 2.25
+                BSEDict['ecsn_mlow'] = 1.6
     flag = "sigma"
     if flag in BSEDict.keys():
         if BSEDict[flag] < 0:
