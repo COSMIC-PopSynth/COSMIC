@@ -350,47 +350,47 @@ sampling
 
                          **eddlimflag = 0**
 
-``neta``                 Reimers mass-loss coefficient (`Equation 106 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_).
+``neta``                 Reimers mass-loss coefficient (`Equation 106 of SSE <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_).
                          Note: this equation has a typo. There is an extra
                          :math:`{\eta}` out front; the correct rate is directly proportional
                          to :math:`{\eta}`.
                          See also `Kurdritzki+1978, Section Vb <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1978A%26A....70..227K&link_type=ARTICLE&db_key=AST&high=#page=12>`_ for discussion.
 
-                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_
+                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 of SSE paper <https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract>`_
 
                          **neta = 0.5**
 
 ``bwind``                Binary enhanced mass loss parameter.
-                         See `Equation 12 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+                         See `Equation 12 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
 
-                            ``positive value`` : supplies B\ :sub:`w` to `Equation 12 of BSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
+                            ``positive value`` : supplies B\ :sub:`w` to `Equation 12 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                          **bwind = 0, inactive for single**
 
-``hewind``               Helium star mass loss parameter: 10\ :sup:`-13` *hewind* L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2000MNRAS.315..543H&link_type=ARTICLE&db_key=AST&high=#page=19>`_.
+``hewind``               Helium star mass loss parameter: 10\ :sup:`-13` *hewind* L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_.
 
                          **hewind = 0.5**
 
-``beta``                 Wind velocity factor: v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+``beta``                 Wind velocity factor: v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of BSE paper <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
 
                             ``negative value`` : StarTrack (`Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_)
 
-                            ``positive value`` : supplies :math:`{\beta}`\ :sub:`w` to `Equation 9 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
+                            ``positive value`` : supplies :math:`{\beta}`\ :sub:`w` to `Equation 9 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                          **beta = -1**
 
 ``xi``                   Wind accretion efficiency factor, which gives the fraction
                          of angular momentum lost via winds from the primary that
                          transfers to the spin angular momentum of the companion.
-                         Corresponds to :math:`{\mu}`\ :sub:`w` in `Equation 11 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
+                         Corresponds to :math:`{\mu}`\ :sub:`w` in `Equation 11 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
 
-                            ``positive value`` : supplies :math:`{\mu}`\ :sub:`w` in `Equation 11 of Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_
+                            ``positive value`` : supplies :math:`{\mu}`\ :sub:`w` in `Equation 11 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                          **xi = 0.5**
 
-``acc2``                 Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to *acc2*. See `Equation 6 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=2>`_.
+``acc2``                 Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to *acc2*. See `Equation 6 in BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
 
-                            ``positive value`` : supplies :math:`{\alpha}`\ :sub:`w` in `Equation 6 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=2>`_
+                            ``positive value`` : supplies :math:`{\alpha}`\ :sub:`w` in `Equation 6 in BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                          **acc2 = 1.5**
 =======================  =====================================================
@@ -452,15 +452,15 @@ common envelope occurs regardless of the choices below:
 =======================  =====================================================
 ``alpha1``               Common-envelope efficiency parameter which scales the
                          efficiency of transferring orbital energy to the
-                         envelope. See `Equation 71 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=11>`_.
+                         envelope. See `Equation 71 in Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
 
-                            ``positive values`` : supplies :math:`{\alpha}` to `Equation 71 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=11>`_
+                            ``positive values`` : supplies :math:`{\alpha}` to `Equation 71 in Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
 
                          **alpha1 = 1.0**
 
 ``lambdaf``              Binding energy factor for common envelope evolution.
                          The initial binding energy of the stellar envelope
-                         goes like 1 / :math:`{\lambda}`. See `Equation 69 in Hurley+2002 <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=11>`_.
+                         goes like 1 / :math:`{\lambda}`. See `Equation 69 in Hurley+2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
 
                             ``positive values`` : uses variable lambda prescription detailed
                             in appendix of `Claeys+2014 <https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract>`_
@@ -1226,7 +1226,7 @@ common envelope occurs regardless of the choices below:
 
 =======================  =====================================================
 ``bdecayfac``            Activates different models for accretion induced field decay; see
-                         `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                         `Kiel+2008 <https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract>`_.
 
                             ``0`` : uses an exponential decay
 
@@ -1235,7 +1235,7 @@ common envelope occurs regardless of the choices below:
                          **bdecayfac = 1**
 
 ``bconst``               Sets the magnetic field decay timescale for pulsars following
-                         Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                         Section 3 of `Kiel+2008 <https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract>`_.
 
                             ``positive values`` : sets k in Myr from Equation 8 to
                             *bconst*
@@ -1243,7 +1243,7 @@ common envelope occurs regardless of the choices below:
                          **bconst = 3000**
 
 ``ck``                   Sets the magnetic field decay timescale for pulsars following
-                         Section 3 of `Kiel+2008 <https://academic.oup.com/mnras/article/388/1/393/1013977>`_.
+                         Section 3 of `Kiel+2008 <https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract>`_.
 
                             ``positive values`` : sets :math:`{\tau}`\ :sub:`b` in Myr
                             from Equation 2 to  *ck*
