@@ -70,7 +70,6 @@ class TestUtils(unittest.TestCase):
         self.assertRaises(ValueError, utils.conv_select, BCM_TEST, BPP_TEST, [11], [11], wrong_dict, {})
 
         conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_formation['pop_select'], {})
-        self.assertTrue(np.all(conv.evol_type.isin([2,4])))
         self.assertTrue(np.all(conv.sep >= 0))
 
         conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_1_SN['pop_select'], {})
