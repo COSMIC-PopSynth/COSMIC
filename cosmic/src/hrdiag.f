@@ -758,7 +758,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = polyfit
                            pisn_track(kidx)=6
                         elseif(mcbagb.gt.61.10d0.and.
-     &                         mcbagb.lt.113.29d0)then
+     &                         mcbagb.lt.124.12d0)then
                            mt = 0.d0
                            kw = 15
                            pisn_track(kidx)=7
@@ -1135,7 +1135,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                            mt = polyfit
                            pisn_track(kidx)=6
                         elseif(mc.gt.61.10d0.and.
-     &                         mc.lt.113.29d0)then
+     &                         mc.lt.124.12d0)then
                            mt = 0.d0
                            kw = 15
                            pisn_track(kidx)=7
