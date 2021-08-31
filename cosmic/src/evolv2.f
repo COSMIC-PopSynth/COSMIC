@@ -519,12 +519,19 @@ component.
          ivsqm = 1.d0/SQRT(1.d0-ecc*ecc)
          do 501 , k = 1,2
 *
+* Determine the eddington limit for the accretor (3-k)
+* Just in case the wind mass loss rates are *very* high
+*
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)*tb
+
+*
 * Calculate wind mass loss from the previous timestep.
 *
             if(neta.gt.tiny)then
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z)
+
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -556,6 +563,10 @@ component.
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
      &                    /(2.d0*sep*sep*omv2)
                dmt(3-k) = MIN(dmt(3-k),0.8d0*dmr(k))
+*
+* Apply Eddington limit just in case
+*
+               dmt(3-k) = MIN(dmt(3-k),dme)
                beta = betahold
             else
                dmr(k) = 0.d0
@@ -2854,7 +2865,6 @@ component.
                endif
             endif
          endif
-
 *
 *       Modify mass loss terms by speed-up factor.
 *
