@@ -522,7 +522,7 @@ component.
 * Determine the eddington limit for the accretor (3-k)
 * Just in case the wind mass loss rates are *very* high
 *
-            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)*tb
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)
 
 *
 * Calculate wind mass loss from the previous timestep.
@@ -566,13 +566,16 @@ component.
 *
 * Apply Eddington limit just in case
 *
-               dmt(3-k) = MIN(dmt(3-k),dme)
+               if(dt.gt.0)then
+                  dmt(3-k) = MIN(dmt(3-k),dme)
+               endif
                beta = betahold
             else
                dmr(k) = 0.d0
                dmt(3-k) = 0.d0
             endif
  501     continue
+
 *
 * Diagnostic for Symbiotic-type stars.
 *
