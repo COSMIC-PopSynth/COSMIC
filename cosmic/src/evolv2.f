@@ -2816,7 +2816,13 @@ component.
 *
          if(kstar(j2).ge.10)then
             if(acc_lim.lt.0.d0)then
-               dm2 = MIN(dm1,dme)
+*
+* If there is wind accretion the total amount of mass change is
+* dms(j2) = dmr(j2) - dmt(j2), where dmt(j2) is the accretion
+* from the companion. We should limit to the Eddington limit minus
+* the amount of accretion that is already coming in from Winds
+*
+               dm2 = MIN(dm1,dme + dms(j2))
 *
 * If we already hit supereddington wind accretion, don't add
 * any more mass through RLO
@@ -2824,7 +2830,13 @@ component.
                if(supedd.eqv..true.) dm2 = 0.d0
                if(dm2.lt.dm1) supedd = .true.
             elseif(acc_lim.ge.0.d0)then
-               dm2 = MIN(acc_lim*dm1,dme)
+*
+* If there is wind accretion the total amount of mass change is
+* dms(j2) = dmr(j2) - dmt(j2), where dmt(j2) is the accretion
+* from the companion. We should limit to the Eddington limit minus
+* the amount of accretion that is already coming in from Winds
+*
+               dm2 = MIN(acc_lim*dm1,dme + dms(j2))
 *
 * If we already hit supereddington wind accretion, don't add
 * any more mass through RLO
