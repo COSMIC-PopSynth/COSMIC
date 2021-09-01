@@ -2814,11 +2814,22 @@ component.
          if(kstar(j2).ge.10)then
             if(acc_lim.lt.0.d0)then
                dm2 = MIN(dm1,dme)
+*
+* If we already hit supereddington wind accretion, don't add
+* any more mass through RLO
+*
+               if(supedd.eqv..true.) dm2 = 0.d0
                if(dm2.lt.dm1) supedd = .true.
             elseif(acc_lim.ge.0.d0)then
                dm2 = MIN(acc_lim*dm1,dme)
+*
+* If we already hit supereddington wind accretion, don't add
+* any more mass through RLO
+*
+               if(supedd.eqv..true.) dm2 = 0.d0
                if(dm2.lt.acc_lim*dm1) supedd = .true.
             endif
+
 *
 * Can add pulsar propeller evolution here if need be. PK.
 *
