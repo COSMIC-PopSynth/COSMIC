@@ -2600,6 +2600,12 @@ component.
          vorb2 = acc1*(mass(1)+mass(2))/sep
          ivsqm = 1.d0/SQRT(1.d0-ecc*ecc)
          do 14 , k = 1,2
+*
+* Determine the eddington limit for the accretor (3-k)
+* Just in case the wind mass loss rates are *very* high
+*
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)*tb
+
             if(neta.gt.tiny)then
                if(beta.lt.0.d0)then !PK. following startrack
                   beta = 0.125
@@ -2631,6 +2637,11 @@ component.
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
      &                    /(2.d0*sep*sep*omv2)
                dmt(3-k) = MIN(dmt(3-k),dmr(k))
+*
+* Apply Eddington limit
+*
+               dmt(3-k) = MIN(dmt(3-k),dme/tb)
+               if(dmt(3-k).eq.dme/tb) supedd = .true.
                beta = betahold
             else
                dmr(k) = 0.d0
@@ -2921,6 +2932,8 @@ component.
          do 602 , k = 1,2
 *
             dms(k) = km*dms(k)
+*            WRITE(*,*)dme/tb,dms(j2)/tb/km,dmt(j2),dms(j1)/tb/km,dmr(j1)
+
             if(kstar(k).lt.10) dms(k) = MIN(dms(k),mass(k) - massc(k))
 *
 * Calculate change in the intrinsic spin of the star.
