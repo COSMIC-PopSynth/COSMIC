@@ -65,9 +65,9 @@ def rho_r(r, gamma, rho_0):
     Compute the density of the Elson profile at radius r
     Best to use the same normalized rho_0 from M_enclosed
     """
+    
 
     return rho_0 * pow(1 + r * r, -(gamma + 1.0) / 2.0)
-
 
 def virial_radius_analytic(gamma, r_max):
     """
@@ -98,7 +98,8 @@ def find_rmax_vir(r_max, gamma):
     # rvir ~ 1 for gamma > 4, and the M_enclosed integral doesn't converge.
     # Here's a cheap fix for that...
     if gamma > 4:
-        rOrvirMax /= 10.0
+        rOrvirMax /= 10
+
 
     def y_zero(r):
         return r / virial_radius_analytic(gamma, r) - r_max
@@ -106,7 +107,7 @@ def find_rmax_vir(r_max, gamma):
     yMin = y_zero(rOrvirMin)
     yMax = y_zero(rOrvirMax)
 
-    rmax_vir = brentq(y_zero, yMin, yMax)
+    rmax_vir = brentq(y_zero, rOrvirMin,rOrvirMax)
 
     return rmax_vir
 
@@ -137,12 +138,17 @@ def get_positions(N, r_max_cluster, gamma):
     # First normalize the central density s.t. M_enc(r_max) = 1
     rho_0 = 1.0 / M_enclosed(r_max_cluster, gamma, 1)
 
-    radii_grid = np.logspace(-3, np.log10(r_max_cluster), 100)
+    radii_grid = np.logspace(-3, np.log10(r_max_cluster), 1000)
 
     # Add r=0 to the array
     radii_grid[0] = 0
 
     mass_enclosed_grid = M_enclosed(radii_grid, gamma, rho_0)
+
+    # if it's a steep profile, you'll get a lot of similar numbers (to machine precision)
+    # remove them here
+    mass_enclosed_grid, unique_idx = np.unique(mass_enclosed_grid,return_index=True)
+    radii_grid = radii_grid[unique_idx]
 
     # Use an interpolator, but flip x and y for the CDF
     interpolator = interp1d(mass_enclosed_grid, radii_grid, kind="cubic")

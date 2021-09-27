@@ -48,7 +48,7 @@ The evolutionary changes of the binary are logged in the evol_type column, which
     1           initial state
     2           kstar change
     3           begin Roche lobe overflow
-    4           end Roche lobe overlow
+    4           end Roche lobe overflow
     5           contact
     6           coalescence
     7           begin common envelope
@@ -69,7 +69,7 @@ bpp
 
 This `pandas.DataFrame` tracks a selection of binary parameters at key evolutionary changes.
 Entries are added with changes in the :ref:`evolve-type-table`.
-All values with a `_1` label refer to the primary; the bpp DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
+All values with a `_1` label refer to the primary (i.e., the initially more massive component); the bpp DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
 
 ================  =====================================================
 ``tphys``         Evolution time [:math:`{\rm{Myr}}`]
@@ -92,11 +92,11 @@ All values with a `_1` label refer to the primary; the bpp DataFrame also includ
 ``renv_1``        Radius of the envelope of the primary [:math:`{\mathrm{R}_\odot}`]
 ``omega_spin_1``  Angular velocity of the primary [:math:`{\rm{yr}}^{-1}`]
 ``B_1``           Neutron star magnetic field [:math:`{\rm{G}}`]
-``bacc_1``        (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion see Equation 7 in COSMIC paper
+``bacc_1``        (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion, see Equation 7 in COSMIC paper
 ``tacc_1``        Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
-``epoch_1``
-``bhspin_1``      Black hole spin magnitude [unitless]
-``bin_num``       Unique binary index that is consistent across initial conditions, bcm and bpp DataFrames
+``epoch_1``       Time spent in current evolutionary epoch [:math:`{\rm{Myr}}`]
+``bhspin_1``      Black hole spin magnitude [dimensionless]
+``bin_num``       Unique binary index that is consistent across initial conditions, bcm, bpp, and kick_info DataFrames
 ================  =====================================================
 
 
@@ -129,27 +129,27 @@ All values with a `_1` label refer to the primary; the bcm DataFrame also includ
 ``B_1``            Neutron star magnetic field [:math:`{\rm{G}}`]
 ``SN_1``           Supernova type:
 
-                    1: Fe Core-collapse SN
+                    1: Iron core-collapse supernova
 
-                    2: Electron capture SN
+                    2: Electron capture supernova
 
-                    3: Ultra-stripped supernovae (these happen whenever a He-star undergoes a CE with a compact companion)
+                    3: Ultra-stripped supernova (these happen whenever a He-star undergoes a common envelope with a compact companion)
 
-                    4: Accretion induced collapse SN
+                    4: Accretion induced collapse supernova
 
                     5: Merger induced collapse
 
-                    6: Pulsational-pair instability
+                    6: Pulsational pair instability
 
-                    7: Pair instability SN
+                    7: Pair instability supernova
 ``bin_state``      State of the binary: 0 [binary], 1 [merged], 2 [disrupted]
-``merger_type``    String of the kstar's in the merger, '-001' if not merged
-``bin_num``        Unique binary index that is consistent across initial conditions, bcm and bpp DataFrames
+``merger_type``    String of the kstar's in the merger. For example, two neutron stars that merged will be '1313'. Set to '-001' if binary has not merged. 
+``bin_num``        Unique binary index that is consistent across initial conditions, bcm. bpp, and kick_info DataFrames
 =================  =====================================================
 
 kick_info
 ---------
-kick_info is a (2,17) array that tracks information about the supernova
+kick_info is a (2,17) array that tracks information about supernova
 kicks. This allows us to track the total change to the systemic
 velocity and the total change in the orbital plane tilt after both
 supernovae, as well as reproduce systems.
@@ -159,36 +159,23 @@ Note that some values the second row will take into account the
 effect of the first SN (e.g., kick_info[2,10] is the total systemic
 velocity after both supernovae).
 
-  * kick_info[i,1]: snstar of exploding star
-  * kick_info[i,2]: disrupted (0=no, 1=yes)
-  * kick_info[i,3]: magnitude of the natal kick
-  * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-  * kick_info[i,6]: mean anomaly
-  * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted
-  * kick_info[i,10]: magnitude of systemic velocity of the binary if bound or magnitude of total velocity of snstar=1 if disrupted, accounting for both SNe
-  * kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system is disrupted
-  * kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted,  accounting for both SNe
-  * kick_info[i,15]: (total) tilt of the orbital plane after each SN w.r.t. the original angular momentum axis after each SN
-  * kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
-  * kick_info[i,17]: random seed at the start of call to kick.f
+==========================================  ========================================================================================================================================
+``kick_info[i,1]: star``                    whether the exploding star is the primary (1) or secondary (2)
+``kick_info[i,2]: disrupted``               whether the system was disrupted from the SN (0=no, 1=yes)
+``kick_info[i,3]: natal_kick``              magnitude of the natal kick [:math:`{\rm{km/s}}`]
+``kick_info[i,4]: phi``                     polar angle of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
+``kick_info[i,5]: theta``                   azimuthal angle of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
+``kick_info[i,6]: mean anomaly``            mean anomaly at time of explosion [:math:`{\rm{degrees}}`]
+``kick_info[i,7]: delta_vsysx_1``           change in 3D systemic velocity of the binary, or the change in 3D velocity of star=1 if the system is disrupted (x-component)
+``kick_info[i,8]: delta_vsysy_1``           change in 3D systemic velocity of the binary, or the change in 3D velocity of star=1 if the system is disrupted (y-component)
+``kick_info[i,9]: delta_vsysz_1``           change in 3D systemic velocity of the binary, or the change in 3D velocity of star=1 if the system is disrupted (z-component)
+``kick_info[i,10]: vsys_1_total``           magnitude of systemic velocity of the binary if bound, or magnitude of total velocity of star=1 if disrupted, accounting for both SNe
+``kick_info[i,11]: delta_vsysx_2``          change in 3D velocity of the star=2 if system is disrupted (x-component)
+``kick_info[i,12]: delta_vsysy_2``          change in 3D velocity of the star=2 if system is disrupted (y-component)
+``kick_info[i,13]: delta_vsysz_2``          change in 3D velocity of the star=2 if system is disrupted (z-component)
+``kick_info[i,14]: vsys_2_total``           magnitude of velocity of star=2 if disrupted, accounting for both SNe [:math:`{\rm{km/s}}`]
+``kick_info[i,15]: delta_theta_total``      angular change in orbital plane due to supernovae, relative to the pre-SN1 orbital plane [:math:`{\rm{degrees}}`]
+``kick_info[i,16]: omega``                  azimuthal angle of the orbital plane w.r.t. spins [:math:`{\rm{degrees}}`]
+``kick_info[i,17]: randomseed``             random seed at the start of call to kick.f
 
-=====================  =====================================================
-``star``               snstar of exploding star
-``disrupted``          disrupted (0=no, 1=yes)
-``natal_kick``         magnitude of the natal kick [:math:`{\rm{km/s}}`]
-``phi``                of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
-``theta``              of explosion (in the frame of the exploding star) [:math:`{\rm{degrees}}`]
-``mean anomaly``       mean anomaly [:math:`{\rm{degrees}}`]
-``delta_vsysx_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (x)
-``delta_vsysy_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (y)
-``delta_vsysz_1``      change in 3D systemic velocity of the binary, or the change in 3D velocity of snstar=1 if the system is disrupted (z)
-``vsys_1_total``       magnitude of systemic velocity of the binary if bound or magnitude of total velocity of snstar=1 if disrupted, accounting for both SNe
-``delta_vsysx_2``      change in 3D velocity of the snstar=2 if system is disrupted (x)
-``delta_vsysy_2``      change in 3D velocity of the snstar=2 if system is disrupted (y)
-``delta_vsysz_2``      change in 3D velocity of the snstar=2 if system is disrupted (z)
-``vsys_2_total``       magnitude of velocity of snstar=2 if disrupted,  accounting for both SNe [:math:`{\rm{km/s}}`]
-``delta_theta_total``  Angular change in orbital plane due to supernova [:math:`{\rm{degrees}}`]
-``omega``              azimuthal angle of the orbital plane w.r.t. spins [:math:`{\rm{degrees}}`]
-``randomseed``         random seed at the start of call to kick.f
-
-=====================  =====================================================
+==========================================  ========================================================================================================================================

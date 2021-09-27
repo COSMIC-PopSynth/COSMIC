@@ -7,20 +7,21 @@ Installation
 =====
 Conda
 =====
+Since COSMIC requires compilation of Fortran code, we strongly recommend the use of virtual environments like Anaconda to mitigate any potential compiling issues with other Fortran code bases.
 
 MacOS
 -----
 .. note::
 
-    IMPORTANT NOTE: On OS X 10.14 (Mojave), you need to install the development header files. These must be installed by hand. To do so, run the command 
+    IMPORTANT NOTE: On OS X 10.16 (Big Sur), you may need to supply the following extra linker flag 
 
-    ``open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg``
+    ``LDFLAGS="-L /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" pip install cosmic-popsynth``
 
 .. code-block:: bash
 
     conda create -n cosmic gfortran_osx-64 numpy h5py python=3.7
     source activate cosmic
-    pip install --upgrade cosmic-popsynth
+    pip install cosmic-popsynth
 
 
 Unix
@@ -29,7 +30,7 @@ Unix
 
     conda create --name cosmic python=3.7 numpy h5py
     source activate cosmic
-    pip install --upgrade cosmic-popsynth
+    pip install cosmic-popsynth
 
 Installation Notes/FAQ
 ----------------------

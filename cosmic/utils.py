@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) Scott Coughlin (2017 - 2020)
+# Copyright (C) Scott Coughlin (2017 - 2021)
 #
 # This file is part of cosmic.
 #
@@ -47,7 +47,7 @@ __credits__ = [
     "Michael Zevin <zevin@northwestern.edu>",
 ]
 __all__ = [
-    "filter_bpp_bcm",
+    "filter_bin_state",
     "conv_select",
     "mass_min_max_select",
     "idl_tabulate",
@@ -65,6 +65,7 @@ __all__ = [
 ]
 
 
+<<<<<<< HEAD
 def epanechnikov(kern_len, pos):
     kernel = np.array(kern_len)
     samp = []
@@ -85,8 +86,9 @@ def epanechnikov(kern_len, pos):
 
 
 
-def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
-    """Filter the output of bpp and bcm
+def filter_bin_state(bcm, bpp, method, kstar1_range, kstar2_range):
+    """Filter the output of bpp and bcm, where the kstar ranges
+    have already been selected by the conv_select module
 
     Parameters
     ----------
@@ -133,12 +135,8 @@ def filter_bpp_bcm(bcm, bpp, method, kstar1_range, kstar2_range):
             # that are alive today we can simply check the last entry in the bcm
             # array for the system and see what its properities are today
             bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
-            bin_num_save.extend(
-                bcm_0_2.loc[
-                    (bcm_0_2.kstar_1.isin(kstar1_range))
-                    & (bcm_0_2.kstar_2.isin(kstar2_range))
-                ].bin_num.tolist()
-            )
+            bin_num_save.extend(bcm_0_2.bin_num.tolist())
+
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
             # of the objects right at merge because the bcm will report
@@ -255,10 +253,13 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         # filter the bpp array to find the systems that match the user-specified
         # final kstars
         conv_save = bpp_save.loc[
-            (bpp_save.kstar_1.isin(final_kstar_1))
-            & (bpp_save.kstar_2.isin(final_kstar_2))
-            & (bpp_save.sep > 0)
-            & (bpp_save.evol_type.isin([2.0, 4.0]))
+            ((bpp_save.kstar_1.isin(final_kstar_1)) 
+             & (bpp_save.kstar_2.isin(final_kstar_2))
+            )
+            |
+            ((bpp_save.kstar_1.isin(final_kstar_2))
+             & (bpp_save.kstar_2.isin(final_kstar_1))
+            )
         ]
 
         # select the formation parameters
@@ -353,9 +354,12 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         for key in conv_lims.keys():
             filter_lo = conv_lims[key][0]
             filter_hi = conv_lims[key][1]
-            conv_save = conv_save.loc[conv_save[key] < filter_hi]
-            conv_save = conv_save.loc[conv_save[key] > filter_lo]
-    return conv_save
+            conv_save_lim = conv_save.loc[conv_save[key] < filter_hi]
+            conv_lims_bin_num = conv_save_lim.loc[conv_save[key] > filter_lo].bin_num
+    else:
+        conv_lims_bin_num = conv_save.bin_num
+
+    return conv_save, conv_lims_bin_num
 
 
 def pop_write(
@@ -788,7 +792,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError("Filters criteria must be supplied via a dictionary")
-        for option in ["binary_state"]:
+        for option in ["binary_state", "timestep_conditions"]:
             if option not in filters.keys():
                 raise ValueError(
                     "Inifile section filters must have option {0} supplied".format(
@@ -800,10 +804,11 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if not isinstance(convergence, dict):
             raise ValueError("Convergence criteria must be supplied via a dictionary")
         for option in [
+            "pop_select",
             "convergence_params",
-            "convergence_filter",
-            "match",
             "convergence_limits",
+            "match",
+            "apply_convergence_limits",
         ]:
             if option not in convergence.keys():
                 raise ValueError(
@@ -815,20 +820,28 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if sampling is not None:
         if not isinstance(sampling, dict):
             raise ValueError("Sampling criteria must be supplied via a dictionary")
-        for option in ["sampling_method", "SF_start", "SF_duration", "metallicity"]:
+        for option in ["sampling_method", "SF_start", "SF_duration", "metallicity", "keep_singles"]:
             if option not in sampling.keys():
                 raise ValueError(
                     "Inifile section sampling must have option {0} supplied".format(
                         option
                     )
                 )
-
+        if ("qmin" not in sampling.keys()) & ("m2_min" not in sampling.keys()) & (sampling["sampling_method"] == 'independent'):
+            raise ValueError("You have not specified qmin or m2_min. At least one of these must be specified.")
     # filters
     if filters is not None:
         flag = "binary_state"
         if any(x not in [0, 1, 2] for x in filters[flag]):
             raise ValueError(
                 "{0} needs to be a subset of [0,1,2] (you set it to {1})".format(
+                    flag, filters[flag]
+                )
+            )
+        flag = "timestep_conditions"
+        if (type(filters[flag]) != str) and (type(filters[flag]) != list):
+            raise ValueError(
+                "{0} needs to either be a string like 'dtp=None' or a list of conditions like [['binstate==0', 'dtp=1.0']] (you set it to {1})".format(
                     flag, filters[flag]
                 )
             )
@@ -844,7 +857,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                             key, len(item)
                         )
                     )
-        flag = "convergence_filter"
+        flag = "pop_select"
         if not convergence[flag] in [
             "formation",
             "1_SN",
@@ -889,6 +902,29 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     )
                 )
 
+        flag = "convergence_limits"
+        if type(convergence[flag]) != dict:
+            raise ValueError(
+                "Supplied convergence limits must be passed as a dict "
+                "(you passed type {0})".format(type(convergence[flag]))
+                )
+
+        for key in convergence[flag].keys():
+            if key not in convergence["convergence_params"]:
+                raise ValueError(
+                    "Supplied convergence limits must correspond to already "
+                    "supplied convergence_params. The supplied convergence_params "
+                    "are {0}, while you supplied {1}".format(
+                        convergence["convergence_params"], key)
+                    )
+        flag = "apply_convergence_limits"
+        if type(convergence[flag]) != bool:
+            raise ValueError(
+                "apply_convergence_limits must be either True or False, "
+                "you supplied {}".format(
+                    convergence[flag])
+                )  
+ 
     # sampling
     if sampling is not None:
         flag = "sampling_method"
@@ -1096,6 +1132,15 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     flag, BSEDict[flag]
                 )
             )
+        if (BSEDict[flag] in [-1, -2]):
+            if (BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6):
+                print("You have chosen a kick flag that assumes compact object formation "
+                      "according to Giacobbo & Mapelli 2020, but supplied electron "
+                      "capture SN (ECSN) flags that are inconsistent with this study. "
+                      "To maintain consistency, COSMIC will update your "
+                      "ECSN flags to be ecsn=2.25 and ecsn_mlow=1.6")
+                BSEDict['ecsn'] = 2.25
+                BSEDict['ecsn_mlow'] = 1.6
     flag = "sigma"
     if flag in BSEDict.keys():
         if BSEDict[flag] < 0:
@@ -1363,18 +1408,18 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
     flag = "don_lim"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, -1]:
+        if BSEDict[flag] not in [-1, -2]:
             raise ValueError(
-                "'{0:s}' needs to be set to 0 or -1 (you set it to '{1:0.2f}')".format(
+                "'{0:s}' needs to be set to -1 or -2 (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
                 )
             )
     flag = "acc_lim"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, -1, -2, -3]:
+        if BSEDict[flag] not in [-1, -2, -3, -4]:
             if BSEDict[flag] < 0.0:
                 raise ValueError(
-                    "'{0:s}' needs to be set to 0, -1, -2, -3 or be >0 (you set it to '{1:0.2f}')".format(
+                    "'{0:s}' needs to be set to -1, -2, -3, -4 or be >=0 (you set it to '{1:0.2f}')".format(
                         flag, BSEDict[flag]
                     )
                 )
@@ -1590,15 +1635,33 @@ def parse_inifile(inifile):
     dictionary = {}
     for section in cp.sections():
         # for cosmic we skip any CMC stuff
+        # if "cmc" is a section in the ini file, then we can optionally skip the 
+        # COSMIC population sections (or not, if they exist)
         if section == "cmc":
+            if "rand_seed" not in dictionary.keys():
+                dictionary["rand_seed"] = {}
+                dictionary["rand_seed"]["seed"] = 0
+            if "filters" not in dictionary.keys():
+                dictionary["filters"] = 0
+            if "convergence" not in dictionary.keys():
+                dictionary["convergence"] = 0
+            if "sampling" not in dictionary.keys():
+                dictionary["sampling"] = 0
             continue
         dictionary[section] = {}
         for option in cp.options(section):
             opt = cp.get(section, option)
+            if "\n" in opt:
+                raise ValueError("We have detected an error in your inifile. A parameter was read in with the following "
+                                 "value: {0}. Likely, you have an unexpected syntax, such as a space before an parameter/option (i.e. "
+                                 "the parameter must be flush to the far left of the file".format(opt))
             try:
                 dictionary[section][option] = arithmetic_eval(opt)
             except Exception:
                 dictionary[section][option] = json.loads(opt)
+            finally:
+                if option not in dictionary[section].keys():
+                    raise ValueError("We have detected an error in your inifile. The folloiwng parameter failed to be read correctly: {0}".format(option))
 
     BSEDict = dictionary["bse"]
     seed_int = int(dictionary["rand_seed"]["seed"])
