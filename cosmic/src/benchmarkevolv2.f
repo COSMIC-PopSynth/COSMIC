@@ -19715,8 +19715,7 @@
         bhspin = 0.0; tphys = 0.0
         zpars = 0.0; kick_info = 0.0; bkick = 0.0
 
-
-natal_kick_array = -100.d0; qcrit_array = 0.d0;
+        natal_kick_array = -100.d0; qcrit_array = 0.d0;
         natal_kick_array(1, 5) = 0.d0
         natal_kick_array(2, 5) = 0.d0
         fprimc_array = 2.d0/21.d0;
