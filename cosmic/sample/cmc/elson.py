@@ -69,7 +69,6 @@ def rho_r(r, gamma, rho_0):
 
     return rho_0 * pow(1 + r * r, -(gamma + 1.0) / 2.0)
 
-
 def virial_radius_analytic(gamma, r_max):
     """
     Virial radius is best calculated directly, since rmax may be pretty far from
@@ -99,7 +98,6 @@ def find_rmax_vir(r_max, gamma):
     # rvir ~ 1 for gamma > 4, and the M_enclosed integral doesn't converge.
     # Here's a cheap fix for that...
     if gamma > 4:
-        rOrvirMax /= 10.0
         rOrvirMax /= 10
 
 
@@ -129,6 +127,7 @@ def find_sigma_sqr(r, r_max_cluster, gamma):
     integral, error = quad(jeans_integrand, r, r_max_cluster)
 
     return integral / rho_r(r, gamma, rho_0)
+
 
 
 def get_positions(N, r_max_cluster, gamma):
@@ -210,6 +209,7 @@ def get_velocities_old(r, r_max_cluster, gamma):
     )
 
     interpolator = interp1d(radii_grid, sigma_sqr_grid, kind="cubic")
+
 
     # Draw the 1D velocity dispersions
     sigma = np.sqrt(interpolator(r))
@@ -310,6 +310,7 @@ def get_velocities(r, r_max_cluster, gamma):
     velocities = x_rand * np.sqrt(-2*phi_at_r)
 
     theta = np.arccos(uniform(-1,1,N))
+
 
     vr = velocities*np.cos(theta)
     vt = velocities*np.sin(theta)

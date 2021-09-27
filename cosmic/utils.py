@@ -252,9 +252,13 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
         # filter the bpp array to find the systems that match the user-specified
         # final kstars
         conv_save = bpp_save.loc[
-            (bpp_save.kstar_1.isin(final_kstar_1))
-            & (bpp_save.kstar_2.isin(final_kstar_2))
-            & (bpp_save.evol_type.isin([2.0, 4.0]))
+            ((bpp_save.kstar_1.isin(final_kstar_1)) 
+             & (bpp_save.kstar_2.isin(final_kstar_2))
+            )
+            |
+            ((bpp_save.kstar_1.isin(final_kstar_2))
+             & (bpp_save.kstar_2.isin(final_kstar_1))
+            )
         ]
 
         # select the formation parameters
@@ -822,8 +826,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         option
                     )
                 )
-        if ("qmin" in sampling.keys()) & ("m2_min" in sampling.keys()):
-            raise ValueError("You have specified both qmin and m2_min. Only one of these can be specified.")
+        if ("qmin" not in sampling.keys()) & ("m2_min" not in sampling.keys()) & (sampling["sampling_method"] == 'independent'):
+            raise ValueError("You have not specified qmin or m2_min. At least one of these must be specified.")
     # filters
     if filters is not None:
         flag = "binary_state"
@@ -1127,6 +1131,15 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     flag, BSEDict[flag]
                 )
             )
+        if (BSEDict[flag] in [-1, -2]):
+            if (BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6):
+                print("You have chosen a kick flag that assumes compact object formation "
+                      "according to Giacobbo & Mapelli 2020, but supplied electron "
+                      "capture SN (ECSN) flags that are inconsistent with this study. "
+                      "To maintain consistency, COSMIC will update your "
+                      "ECSN flags to be ecsn=2.25 and ecsn_mlow=1.6")
+                BSEDict['ecsn'] = 2.25
+                BSEDict['ecsn_mlow'] = 1.6
     flag = "sigma"
     if flag in BSEDict.keys():
         if BSEDict[flag] < 0:

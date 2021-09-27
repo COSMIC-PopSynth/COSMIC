@@ -59,20 +59,34 @@ def get_cmc_sampler(
                 King concentration parameter
             'r_max' : `float`
                 the maximum radius (in virial radii) to sample the clsuter
+
     primary_model : `str`
-        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
+        if 'custom' is selected, must also pass arguemts:
+        alphas : `array`
+            list of power law indicies
+        mcuts : `array`
+            breaks in the power laws.
+        e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF
+    
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
+    
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
+
     msort : `float`
         Stars with M>msort can have different pairing and sampling of companions
+
     pair : `float`
         Sets the pairing of stars M>msort only with stars with M>msort
+
     binfrac_model : `str or float`
         Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+
     binfrac_model_msort : `str or float`
         Same as binfrac_model for M>msort
+
     qmin : `float`
         kwarg which sets the minimum mass ratio for sampling the secondary
         where the mass ratio distribution is flat in q
@@ -80,30 +94,42 @@ def get_cmc_sampler(
         q = -1, this limits the minimum mass ratio to be set such that
         the pre-MS lifetime of the secondary is not longer than the full
         lifetime of the primary if it were to evolve as a single star
+
     m2_min : `float`
         kwarg which sets the minimum secondary mass for sampling
         the secondary as uniform in mass_2 between m2_min and mass_1
+
     qmin_msort : `float`
         Same as qmin for M>msort; only applies if qmin is supplied
-    params : `str`
-        Path to the inifile with the BSE parameters. We need to generate radii for the single stars of the cluster by
-        running BSE for a tiny time step.
+
     met : `float`
-        Sets the metallicity of the binary population where solar metallicity is 0.02
+        Sets the metallicity of the binary population where solar metallicity is zsun 
+
     size : `int`
         Size of the population to sample
+
+    zsun : `float`
+        optional kwarg for setting effective radii, default is 0.02
+
+
     Optional Parameters
     -------------------
     virial_radius : `float`
         the initial virial radius of the cluster, in parsecs
         Default -- 1 pc
+
     tidal_radius : `float`
         the initial tidal radius of the cluster, in units of the virial_radius
         Default -- 1e6 rvir
+
+    seed : `float`
+        seed to the random number generator, for reproducability
+
     Returns
     -------
     Singles: `pandas.DataFrame`
         DataFrame of Single objects in the format of the InitialCMCTable
+
     Binaries: `pandas.DataFrame`
         DataFrame of Single objects in the format of the InitialCMCTable
     """
@@ -124,8 +150,9 @@ def get_cmc_sampler(
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
+
     mass1, total_mass1 = initconditions.sample_primary(
-        primary_model, size=size)
+        primary_model, size=size, **kwargs)
     (
         mass1_binaries,
         mass_single,
@@ -156,9 +183,11 @@ def get_cmc_sampler(
 
     # Obtain radii (technically this is done for the binaries in the independent sampler 
     # if set_radii_with_BSE is true, but that's not a huge amount of overhead)
-    Reff = initconditions.set_reff(mass1, metallicity=met, **kwargs)
+    zsun = kwargs.pop("zsun", 0.02)
+
+    Reff = initconditions.set_reff(mass1, metallicity=met, zsun=zsun)
     Reff1 = Reff[binary_index]
-    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, **kwargs)
+    Reff2 = initconditions.set_reff(mass2_binaries, metallicity=met, zsun=zsun)
 
     # select out the primaries and secondaries that will produce the final kstars
     porb_max = initconditions.calc_porb_max(mass1, vr, vt, binary_index, mass1_binaries, mass2_binaries, **kwargs)
@@ -194,8 +223,8 @@ def get_cmc_sampler(
     singles_table.metallicity = met
     singles_table.mass_of_cluster = np.sum(singles_table["m"])
     binaries_table.metallicity = met
-    singles_table.virial_radius = kwargs.pop("virial_radius",1) 
-    singles_table.tidal_radius = kwargs.pop("tidal_radius",1e6) 
+    singles_table.virial_radius = kwargs.get("virial_radius",1) 
+    singles_table.tidal_radius = kwargs.get("tidal_radius",1e6) 
 
     return singles_table, binaries_table
 
@@ -211,6 +240,7 @@ def get_cmc_point_mass_sampler(
     cluster_profile, size, **kwargs
 ):
     """Generates an CMC cluster model according  
+
     Parameters
     ----------
     cluster_profile : `str`
@@ -231,14 +261,17 @@ def get_cmc_point_mass_sampler(
                 King concentration parameter
             'r_max' : `float`
                 the maximum radius (in virial radii) to sample the clsuter
+
     size : `int`
         Size of the population to sample
+
     Returns
     -------
     Singles: `pandas.DataFrame`
         DataFrame of Single objects in the format of the InitialCMCTable
     Binaries: `pandas.DataFrame`
         DataFrame of Single objects in the format of the InitialCMCTable
+
     """
     initconditions = CMCSample()
 
@@ -262,8 +295,11 @@ def get_cmc_point_mass_sampler(
     singles_table.metallicity = 0.02
     singles_table.mass_of_cluster = np.sum(singles_table["m"])*size
     binaries_table.metallicity = 0.02
-
+    singles_table.virial_radius = kwargs.get("virial_radius",1) 
+    singles_table.tidal_radius = kwargs.get("tidal_radius",1e6) 
+   
     return singles_table, binaries_table
+
 
 register_sampler(
     "cmc_point_mass",

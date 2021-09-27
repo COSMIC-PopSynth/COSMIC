@@ -57,7 +57,13 @@ def get_independent_sampler(
         Int or list of final kstar2
 
     primary_model : `str`
-        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55
+        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
+        if 'custom' is selected, must also pass arguemts:
+        alphas : `array`
+            list of power law indicies
+        mcuts : `array`
+            breaks in the power laws.
+        e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF
 
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
@@ -99,10 +105,13 @@ def get_independent_sampler(
         Same as binfrac_model for M>msort
 
     met : `float`
-        Sets the metallicity of the binary population where solar metallicity is 0.02
+        Sets the metallicity of the binary population where solar metallicity is zsun 
 
     size : `int`
         Size of the population to sample
+
+    zsun : `float`
+        optional kwarg for setting effective radii, default is 0.02
 
     Returns
     -------
@@ -145,12 +154,9 @@ def get_independent_sampler(
     n_singles = 0
     n_binaries = 0
 
-    # see if custom IMF parameters were passed
-    alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
-    mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier, alphas=alphas, mcuts=mcuts
+            primary_model, size=size * multiplier, **kwargs 
         )
         (
             mass1_binaries,
@@ -200,8 +206,10 @@ def get_independent_sampler(
     binfrac = np.asarray(binfrac)
     mass1_singles = np.asarray(mass1_singles)
 
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, **kwargs)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, **kwargs)
+    zsun = kwargs.pop("zsun", 0.02)
+
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
 
     # sample periods and eccentricities
     porb,aRL_over_a = initconditions.sample_porb(
@@ -278,8 +286,9 @@ register_sampler(
 
 class Sample(object):
     # sample primary masses
-    def sample_primary(self, primary_model='kroupa01', size=None, alphas=[-1.3,-2.3,-2.3], mcuts=[0.08,0.5,1.0,150.]):
+    def sample_primary(self, primary_model='kroupa01', size=None, **kwargs):
         """Sample the primary mass (always the most massive star) from a user-selected model
+
             kroupa93 follows Kroupa (1993), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             between 0.08 and 150 Msun
@@ -288,6 +297,7 @@ class Sample(object):
             between 0.08 and 150 Msun
             kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
             between 0.08 and 100 Msun
+
             Parameters
             ----------
             primary_model : str, optional
@@ -295,25 +305,33 @@ class Sample(object):
             kroupa93 follows Kroupa (1993), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             valid for masses between 0.1 and 100 Msun
+
             salpter55 follows
             `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
             valid for masses between 0.1 and 100 Msun
             kroupa01 follows Kroupa (2001), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
+
             custom is a generic piecewise power law that takes in the power
             law slopes and break points given in the optional input lists (alphas, mcuts)
             default alphas and mcuts yield an IMF identical to kroupa01
+
             Default kroupa01
+
             size : int, optional
             number of initial primary masses to sample
             NOTE: this is set in cosmic-pop call as Nstep
+
             alphas : array, optional
-            absolute values of the power law slopes for primary_model = 'piecewise_power'
+            absolute values of the power law slopes for primary_model = 'custom'
             Default [-1.3,-2.3,-2.3] (identical to slopes for primary_model = 'kroupa01')
+
             mcuts : array, optional, units of Msun
-            break points separating the power law 'pieces' for primary_model = 'piecewise_power'
+            break points separating the power law 'pieces' for primary_model = 'custom'
             Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
+
+
             Returns
             -------
             a_0 : array
@@ -322,11 +340,21 @@ class Sample(object):
             Total amount of mass sampled
             """
 
-        if primary_model == 'kroupa93': alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
+
+        if primary_model == 'kroupa93': 
+            alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
         # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
-        elif primary_model == 'kroupa01': alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
-        elif primary_model == 'salpeter55': alphas, mcuts = [-2.35], [0.08,150.]
-        elif primary_model == 'custom': alphas, mcuts = alphas, mcuts
+        elif primary_model == 'kroupa01': 
+            alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
+        elif primary_model == 'salpeter55': 
+            alphas, mcuts = [-2.35], [0.08,150.]
+        elif primary_model == 'custom': 
+            if 'alphas' in kwargs and 'mcuts' in kwargs:
+                alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
+                mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
+            else:
+                raise ValueError("You must supply both alphas and mcuts to use"
+                                 " a custom IMF generator")
 
         Ncumulative, Ntotal, coeff = [], 0., 1.
         for i in range(len(alphas)):
@@ -491,22 +519,27 @@ class Sample(object):
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
         Parameters
         ----------
-            primary_mass : array
-                Mass that determines the binary fraction
-            binfrac_model : str or float
-                vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
-                float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
-                means every star is in a binary pair
+        primary_mass : array
+            Mass that determines the binary fraction
+        
+        binfrac_model : str or float
+            vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
+            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
+            means every star is in a binary pair
+        
         Returns
         -------
-            stars_in_binary : array
-                primary masses that will have a binary companion
-            stars_in_single : array
-                primary masses that will be single stars
-            binary_fraction : array
-                system-specific probability of being in a binary
-            binaryIdx : array
-                Idx of stars in binary
+        stars_in_binary : array
+            primary masses that will have a binary companion
+
+        stars_in_single : array
+            primary masses that will be single stars
+
+        binary_fraction : array
+            system-specific probability of being in a binary
+
+        binaryIdx : array
+            Idx of stars in binary
         """
 
         flag_msort = kwargs.pop("flag_msort", "no_msort")
@@ -549,6 +582,7 @@ class Sample(object):
                     binary_choose_low > binary_fraction_low)
                 (binaryIdx_low,) = np.where(
                     binary_choose_low <= binary_fraction_low)
+
             else:
                 raise ValueError(
                     "You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1."
@@ -615,9 +649,9 @@ class Sample(object):
             binaryIdx,
         )
 
-
     def sample_porb(self, mass1, mass2, rad1, rad2, porb_model="sana12", porb_max=None, size=None):
         """Sample the orbital period according to the user-specified model
+
         Parameters
         ----------
         mass1 : array
@@ -728,10 +762,11 @@ class Sample(object):
             raise ValueError(
                 "You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19"
             )
-        return porb, aRL_over_a    
+        return porb, aRL_over_a 
 
     def sample_ecc(self, aRL_over_a, ecc_model="sana12", size=None):
         """Sample the eccentricity according to a user specified model
+        
         Parameters
         ----------
         ecc_model : string
@@ -742,11 +777,14 @@ class Sample(object):
             `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
             'circular' assumes zero eccentricity for all systems
             DEFAULT = 'sana12'
+
         aRL_over_a : ratio of the minimum seperation (where RL overflow starts)
             to the sampled semi-major axis.  Use this to truncate the eccentricitiy
+
         size : int, optional
             number of eccentricities to sample
             this is set in cosmic-pop call as Nstep
+
         Returns
         -------
         ecc : array
@@ -776,7 +814,7 @@ class Sample(object):
 
         else:
             raise ValueError("You have specified an unsupported model. Please choose from thermal, "
-                             "uniform, sana12, or circular")    
+                             "uniform, sana12, or circular")
 
     def sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None):
         """Sample an evolution time for each binary based on a user-specified
@@ -814,8 +852,8 @@ class Sample(object):
             tphys, metallicity = FIRE.SFH(size)
             return tphys, metallicity
         else:
-            raise ValueError('SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
-    
+            raise ValueError(
+                'SF_start and SF_duration must be positive and SF_start must be greater than 0.0')
 
     def set_kstar(self, mass):
         """Initialize stellar types according to BSE classification
@@ -842,128 +880,45 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self, mass, metallicity, **kwargs):
+    def set_reff(self, mass, metallicity, zsun=0.02):
+        """
+        Better way to set the radii from BSE, by calling it directly
 
-        # Make sure you've specified the BSE parameters
-        if "BSEDict" not in kwargs and "params" not in kwargs:
-            raise ValueError(
-                'Must specify either BSEDict or params=param.ini to use set_radii_with_BSE')
+        takes masses and metallicities, and returns the radii
 
-        # NUMBER 1: PASS A DICTIONARY OF FLAGS
-        BSEDict = kwargs.pop("BSEDict", {})
+        Note that the BSE function is hard-coded to go through arrays
+        of length 10^5.  If your masses are more than that, you'll
+        need to divide it into chunks
+        """
 
-        # NUMBER 2: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED
-        params = kwargs.pop("params", None)
+        max_array_size = 100000
+        total_length = len(mass)
+        radii = np.zeros(total_length)
 
-        if params is not None:
-            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+        _evolvebin.metvars.zsun = zsun
 
-        # set BSE consts
-        _evolvebin.windvars.neta = BSEDict["neta"]
-        _evolvebin.windvars.bwind = BSEDict["bwind"]
-        _evolvebin.windvars.hewind = BSEDict["hewind"]
-        _evolvebin.cevars.alpha1 = BSEDict["alpha1"]
-        _evolvebin.cevars.lambdaf = BSEDict["lambdaf"]
-        _evolvebin.ceflags.ceflag = BSEDict["ceflag"]
-        _evolvebin.flags.tflag = BSEDict["tflag"]
-        _evolvebin.flags.ifflag = BSEDict["ifflag"]
-        _evolvebin.flags.wdflag = BSEDict["wdflag"]
-        _evolvebin.snvars.pisn = BSEDict["pisn"]
-        _evolvebin.flags.bhflag = BSEDict["bhflag"]
-        _evolvebin.flags.remnantflag = BSEDict["remnantflag"]
-        _evolvebin.ceflags.cekickflag = BSEDict["cekickflag"]
-        _evolvebin.ceflags.cemergeflag = BSEDict["cemergeflag"]
-        _evolvebin.ceflags.cehestarflag = BSEDict["cehestarflag"]
-        _evolvebin.flags.grflag = BSEDict["grflag"]
-        _evolvebin.flags.bhms_coll_flag = BSEDict["bhms_coll_flag"]
-        _evolvebin.snvars.mxns = BSEDict["mxns"]
-        _evolvebin.points.pts1 = BSEDict["pts1"]
-        _evolvebin.points.pts2 = BSEDict["pts2"]
-        _evolvebin.points.pts3 = BSEDict["pts3"]
-        _evolvebin.snvars.ecsn = BSEDict["ecsn"]
-        _evolvebin.snvars.ecsn_mlow = BSEDict["ecsn_mlow"]
-        _evolvebin.flags.aic = BSEDict["aic"]
-        _evolvebin.ceflags.ussn = BSEDict["ussn"]
-        _evolvebin.snvars.sigma = BSEDict["sigma"]
-        _evolvebin.snvars.sigmadiv = BSEDict["sigmadiv"]
-        _evolvebin.snvars.bhsigmafrac = BSEDict["bhsigmafrac"]
-        _evolvebin.snvars.polar_kick_angle = BSEDict["polar_kick_angle"]
-        _evolvebin.snvars.natal_kick_array = BSEDict["natal_kick_array"]
-        _evolvebin.cevars.qcrit_array = BSEDict["qcrit_array"]
-        _evolvebin.windvars.beta = BSEDict["beta"]
-        _evolvebin.windvars.xi = BSEDict["xi"]
-        _evolvebin.windvars.acc2 = BSEDict["acc2"]
-        _evolvebin.windvars.epsnov = BSEDict["epsnov"]
-        _evolvebin.windvars.eddfac = BSEDict["eddfac"]
-        _evolvebin.windvars.gamma = BSEDict["gamma"]
-        _evolvebin.flags.bdecayfac = BSEDict["bdecayfac"]
-        _evolvebin.magvars.bconst = BSEDict["bconst"]
-        _evolvebin.magvars.ck = BSEDict["ck"]
-        _evolvebin.flags.windflag = BSEDict["windflag"]
-        _evolvebin.flags.qcflag = BSEDict["qcflag"]
-        _evolvebin.flags.eddlimflag = BSEDict["eddlimflag"]
-        _evolvebin.tidalvars.fprimc_array = BSEDict["fprimc_array"]
-        _evolvebin.rand1.idum1 = -1
-        _evolvebin.flags.bhspinflag = BSEDict["bhspinflag"]
-        _evolvebin.snvars.bhspinmag = BSEDict["bhspinmag"]
-        _evolvebin.mixvars.rejuv_fac = BSEDict["rejuv_fac"]
-        _evolvebin.flags.rejuvflag = BSEDict["rejuvflag"]
-        _evolvebin.flags.htpmb = BSEDict["htpmb"]
-        _evolvebin.flags.st_cr = BSEDict["ST_cr"]
-        _evolvebin.flags.st_tide = BSEDict["ST_tide"]
-        _evolvebin.snvars.rembar_massloss = BSEDict["rembar_massloss"]
-        _evolvebin.metvars.zsun = BSEDict["zsun"]
-        _evolvebin.snvars.kickflag = BSEDict["kickflag"]
-        _evolvebin.cmcpass.using_cmc = 0
+        idx = 0
+        while total_length > max_array_size:
+            ## cycle through the masses max_array_size number at a time
+            temp_mass = mass[idx*max_array_size:(idx+1)*max_array_size]
 
-        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-        initial_stars = InitialBinaryTable.InitialBinaries(
-            mass,
-            np.ones_like(mass) * 0,
-            np.ones_like(mass) * -1,
-            np.ones_like(mass) * -1,
-            np.ones_like(mass) * 0.1,
-            self.set_kstar(mass),
-            np.ones_like(mass) * 0,
-            np.ones_like(mass) * metallicity,
-        )
-        initial_stars["dtp"] = initial_stars["tphysf"]
+            temp_radii = _evolvebin.compute_r(temp_mass,metallicity,max_array_size)
 
-        initial_stars = initial_stars.assign(
-            kick_info=[np.zeros((2, 17))] * len(initial_stars)
-        )
-        initial_conditions = initial_stars.to_dict("records")
+            ## put these in the radii array
+            radii[idx*max_array_size:(idx+1)*max_array_size] = temp_radii
 
-        rad_1 = np.zeros(len(initial_stars))
-        for idx, initial_condition in enumerate(initial_conditions):
-            [bpp_index, bcm_index, _] = _evolvebin.evolv2(
-                [initial_condition["kstar_1"], initial_condition["kstar_2"]],
-                [initial_condition["mass_1"], initial_condition["mass_2"]],
-                initial_condition["porb"],
-                initial_condition["ecc"],
-                initial_condition["metallicity"],
-                initial_condition["tphysf"],
-                initial_condition["dtp"],
-                [initial_condition["mass0_1"], initial_condition["mass0_2"]],
-                [initial_condition["rad_1"], initial_condition["rad_2"]],
-                [initial_condition["lum_1"], initial_condition["lum_2"]],
-                [initial_condition["massc_1"], initial_condition["massc_2"]],
-                [initial_condition["radc_1"], initial_condition["radc_2"]],
-                [initial_condition["menv_1"], initial_condition["menv_2"]],
-                [initial_condition["renv_1"], initial_condition["renv_2"]],
-                [initial_condition["omega_spin_1"],
-                    initial_condition["omega_spin_2"]],
-                [initial_condition["B_1"], initial_condition["B_2"]],
-                [initial_condition["bacc_1"], initial_condition["bacc_2"]],
-                [initial_condition["tacc_1"], initial_condition["tacc_2"]],
-                [initial_condition["epoch_1"], initial_condition["epoch_2"]],
-                [initial_condition["tms_1"], initial_condition["tms_2"]],
-                [initial_condition["bhspin_1"], initial_condition["bhspin_2"]],
-                initial_condition["tphys"],
-                np.zeros(20),
-                np.zeros(20),
-                initial_condition["kick_info"],
-            )
-            rad_1[idx] = _evolvebin.binary.bcm[0, 5]
+            total_length -= max_array_size
+            idx += 1
 
-        return rad_1
+        length_remaining = total_length
+
+        ## if smaller than 10^5, need to pad out the array
+        temp_mass = np.zeros(max_array_size)
+        temp_mass[:length_remaining] = mass[-length_remaining:]
+
+        temp_radii = _evolvebin.compute_r(temp_mass,metallicity,length_remaining)
+
+        #finish up the array
+        radii[-length_remaining:] = temp_radii[:length_remaining]
+
+        return radii

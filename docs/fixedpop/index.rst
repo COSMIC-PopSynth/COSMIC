@@ -69,7 +69,7 @@ Stopping conditions
 
 There are two stopping conditions for ``cosmic-pop``:
 
-1. The shape of the parameter distributions for the parameters specified in convergence_params section of the inifile file converge to a shape, regardless of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2019 in prep
+1. The shape of the parameter distributions for the parameters specified in convergence_params section of the inifile file converge to a shape, regardless of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2020
 
 2. The number of binaries sampled exceeds ``--Niter``.
 

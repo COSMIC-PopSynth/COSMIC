@@ -19553,16 +19553,6 @@
         bhspin = 0.0; tphys = 0.0
         zpars = 0.0; kick_info = 0.0; bkick = 0.0
 
-        bhms_coll_flag = 0
-        zsun = 0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
-        alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
-        tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; remnantflag = 3; grflag = 1
-        cekickflag = 0; cemergeflag = 0; cehestarflag = 0
-        mxns = 3.0; pts1 = 0.05; pts2 = 0.01; pts3 = 0.02
-        ecsn = 2.5; ecsn_mlow = 1.6; aic = 1; ussn = 0
-        kickflag=0; sigma = 265.0; sigmadiv = -20.0
-        bhsigmafrac = 1.0; polar_kick_angle = 90.0
         natal_kick_array = -100.d0; qcrit_array = 0.d0;
         natal_kick_array(1, 5) = 0.d0
         natal_kick_array(2, 5) = 0.d0
@@ -19718,23 +19708,13 @@
         mass0(1) = mass(1)
         mass0(2) = mass(2)
 
-        rad = 0.d0; lumin = 0.d0; massc = 0.d0
-        radc = 0.d0; menv = 0.d0; renv = 0.d0
-        ospin = 0.d0; B_0 = 0.d0; bacc = 0.d0
-        tacc = 0.d0 ; epoch = 0.d0; tms = 0.d0
-        bhspin = 0.d0; tphys = 0.d0
-        zpars = 0.d0; kick_info = 0.d0; bkick = 0.d0
+        rad = 0.0; lumin = 0.0; massc = 0.0
+        radc = 0.0; menv = 0.0; renv = 0.0
+        ospin = 0.0; B_0 = 0.0; bacc = 0.0
+        tacc = 0.0 ; epoch = 0.0; tms = 0.0
+        bhspin = 0.0; tphys = 0.0
+        zpars = 0.0; kick_info = 0.0; bkick = 0.0
 
-        bhms_coll_flag = 0
-        zsun=0.02; neta = 0.5; bwind = 0.0; hewind = 1.0
-        alpha1 = 1.0; lambdaf = 0.5; ceflag = 0
-        tflag = 1; ifflag = 0; wdflag = 0
-        pisn = 45.0; bhflag = 0; remnantflag = 3; grflag = 1
-        cekickflag = 0; cemergeflag = 0; cehestarflag = 0
-        mxns = 3.0; pts1 = 0.001; pts2 = 0.01; pts3 = 0.02
-        ecsn = 2.5; ecsn_mlow = 1.4; aic = 1; ussn = 0
-        sigma = 265.0; sigmadiv = -20.0
-        bhsigmafrac = 1.0; polar_kick_angle = 90.0
         natal_kick_array = -100.d0; qcrit_array = 0.d0;
         natal_kick_array(1, 5) = 0.d0
         natal_kick_array(2, 5) = 0.d0

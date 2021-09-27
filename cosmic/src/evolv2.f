@@ -204,7 +204,7 @@
       REAL*8 zero,ngtv,ngtv2,mt2,rrl1,rrl2,mcx,teff1,teff2
       REAL*8 mass1i,mass2i,tbi,ecci
       LOGICAL coel,com,prec,inttry,change,snova,sgl
-      LOGICAL supedd,novae,disk
+      LOGICAL supedd,novae,disk,inspiral
       LOGICAL iplot,isave
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
@@ -492,6 +492,7 @@ component.
       snova = .false.
       coel = .false.
       com = .false.
+      inspiral = .false.
       tphys0 = tphys
       ecc1 = ecc
       j1 = 1
@@ -518,12 +519,19 @@ component.
          ivsqm = 1.d0/SQRT(1.d0-ecc*ecc)
          do 501 , k = 1,2
 *
+* Determine the eddington limit for the accretor (3-k)
+* Just in case the wind mass loss rates are *very* high
+*
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)
+
+*
 * Calculate wind mass loss from the previous timestep.
 *
             if(neta.gt.tiny)then
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z)
+
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -555,12 +563,19 @@ component.
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
      &                    /(2.d0*sep*sep*omv2)
                dmt(3-k) = MIN(dmt(3-k),0.8d0*dmr(k))
+*
+* Apply Eddington limit just in case
+*
+               if(dt.gt.0)then
+                  dmt(3-k) = MIN(dmt(3-k),dme)
+               endif
                beta = betahold
             else
                dmr(k) = 0.d0
                dmt(3-k) = 0.d0
             endif
  501     continue
+
 *
 * Diagnostic for Symbiotic-type stars.
 *
@@ -2588,6 +2603,12 @@ component.
          vorb2 = acc1*(mass(1)+mass(2))/sep
          ivsqm = 1.d0/SQRT(1.d0-ecc*ecc)
          do 14 , k = 1,2
+*
+* Determine the eddington limit for the accretor (3-k)
+* Just in case the wind mass loss rates are *very* high
+*
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)*tb
+
             if(neta.gt.tiny)then
                if(beta.lt.0.d0)then !PK. following startrack
                   beta = 0.125
@@ -2619,6 +2640,11 @@ component.
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
      &                    /(2.d0*sep*sep*omv2)
                dmt(3-k) = MIN(dmt(3-k),dmr(k))
+*
+* Apply Eddington limit
+*
+               dmt(3-k) = MIN(dmt(3-k),dme/tb)
+               if(dmt(3-k).eq.dme/tb) supedd = .true.
                beta = betahold
             else
                dmr(k) = 0.d0
@@ -2653,7 +2679,6 @@ component.
 * Decide between accreted mass by secondary and/or system mass loss.
 *
          taum = mass(j2)/dm1*tb
-         
 
 *
 * KB 4/Jan/21: adding in acc_lim flags
@@ -2790,13 +2815,37 @@ component.
 *
          if(kstar(j2).ge.10)then
             if(acc_lim.lt.0.d0)then
-               dm2 = MIN(dm1,dme)
+*
+* If there is wind accretion the total amount of mass change is
+* dms(j2) = dmr(j2) - dmt(j2), where dmt(j2) is the accretion
+* from the companion. We should limit to the Eddington limit minus
+* the amount of accretion that is already coming in from Winds
+*
+               dm2 = MIN(dm1,dme + dms(j2))
+*
+* If we already hit supereddington wind accretion, don't add
+* any more mass through RLO
+*
+               if(supedd.eqv..true.) dm2 = 0.d0
                if(dm2.lt.dm1) supedd = .true.
             elseif(acc_lim.ge.0.d0)then
-               dm2 = MIN(acc_lim*dm1,dme)
+*
+* If there is wind accretion the total amount of mass change is
+* dms(j2) = dmr(j2) - dmt(j2), where dmt(j2) is the accretion
+* from the companion. We should limit to the Eddington limit minus
+* the amount of accretion that is already coming in from Winds
+*
+               dm2 = MIN(acc_lim*dm1,dme + dms(j2))
+*
+* If we already hit supereddington wind accretion, don't add
+* any more mass through RLO
+*
+               if(supedd.eqv..true.) dm2 = 0.d0
                if(dm2.lt.acc_lim*dm1) supedd = .true.
             endif
+
 *
+
 * Can add pulsar propeller evolution here if need be. PK.
 *
          endif
@@ -2910,6 +2959,8 @@ component.
          do 602 , k = 1,2
 *
             dms(k) = km*dms(k)
+*            WRITE(*,*)dme/tb,dms(j2)/tb/km,dmt(j2),dms(j1)/tb/km,dmr(j1)
+
             if(kstar(k).lt.10) dms(k) = MIN(dms(k),mass(k) - massc(k))
 *
 * Calculate change in the intrinsic spin of the star.
@@ -3278,6 +3329,11 @@ component.
 * primary overfills its Roche lobe initially. In this case we simply
 * allow contact to occur.
 *
+* NOTE: there is a possibility that if contact occurs and we're at/past
+* the current tphysf, then the binary will spiral in and we don't catch
+* it.  If that happens, we could return an impossibly small binary which
+* will break energy conservation in CMC.  Flag this here
+         if((jorb-djorb).lt.1.d0) inspiral=.true.
          jorb = MAX(1.d0,jorb - djorb)
          sep = (mass(1) + mass(2))*jorb*jorb/
      &         ((mass(1)*mass(2)*twopi)**2*aursun**3*(1.d0-ecc*ecc))
@@ -3554,7 +3610,7 @@ component.
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
       endif
 *
-      if(tphys.ge.tphysf) goto 140
+      if(tphys.ge.tphysf.and..not.inspiral) goto 140
 *
       if(change)then
          change = .false.
