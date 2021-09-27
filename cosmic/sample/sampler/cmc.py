@@ -39,7 +39,6 @@ def get_cmc_sampler(
     cluster_profile, primary_model, ecc_model, porb_model, binfrac_model, met, size, **kwargs
 ):
     """Generates an initial binary sample according to user specified models
-
     Parameters
     ----------
     cluster_profile : `str`
@@ -69,10 +68,10 @@ def get_cmc_sampler(
         mcuts : `array`
             breaks in the power laws.
         e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF
-
+    
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
-
+    
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
 
@@ -111,6 +110,7 @@ def get_cmc_sampler(
 
     zsun : `float`
         optional kwarg for setting effective radii, default is 0.02
+
 
     Optional Parameters
     -------------------
@@ -300,6 +300,7 @@ def get_cmc_point_mass_sampler(
    
     return singles_table, binaries_table
 
+
 register_sampler(
     "cmc_point_mass",
     InitialCMCTable,
@@ -363,5 +364,4 @@ class CMCSample(Sample):
         porb_max = utils.p_from_a(amax, mass1_binary, mass2_binary)
 
         return porb_max ## returns orbital period IN DAYS
-
 

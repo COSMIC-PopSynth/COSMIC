@@ -2680,7 +2680,6 @@ component.
 *
          taum = mass(j2)/dm1*tb
 
-
 *
 * KB 4/Jan/21: adding in acc_lim flags
 * MZ 30/Mar/21: slight adjustment to flag designations
@@ -2846,6 +2845,7 @@ component.
             endif
 
 *
+
 * Can add pulsar propeller evolution here if need be. PK.
 *
          endif
@@ -2902,6 +2902,7 @@ component.
                endif
             endif
          endif
+
 *
 *       Modify mass loss terms by speed-up factor.
 *

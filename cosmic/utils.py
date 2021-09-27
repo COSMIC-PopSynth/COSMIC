@@ -65,7 +65,6 @@ __all__ = [
 ]
 
 
-<<<<<<< HEAD
 def epanechnikov(kern_len, pos):
     kernel = np.array(kern_len)
     samp = []

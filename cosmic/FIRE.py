@@ -88,13 +88,13 @@ def positions(times, mets):
     data_dir = cwd+'/data/'
     FIRE = pd.read_hdf(data_dir+'FIRE.h5')
 
-    part_data_ind = FIRE.age.searchsorted(time/1e3)
+    part_data_ind = FIRE.age.searchsorted(times/1e3)
     part_data = FIRE.iloc[part_data_ind-1]
     
     part_data['rGx'] = (part_data.xGx**2 + part_data.yGx**2 + part_data.zGx**2)**0.5
     r_Gx = epanechnikov(part_data.kern_len, np.array(part_data.rGx))
     phi_Gx = np.random.uniform(0,2*np.pi, len(r_Gx))
-    theta_Gx = np.pi - np.arccos(np.random.uniform(-1, 1, size))
+    theta_Gx = np.pi - np.arccos(np.random.uniform(-1, 1, len(r_Gx)))
 
     x_Gx = r_Gx * np.sin(phi_Gx) * np.sin(theta_Gx)
     y_Gx = r_Gx * np.cos(phi_Gx) * np.sin(theta_Gx)

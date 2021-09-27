@@ -189,6 +189,7 @@ sampling
 
                               **apply_convergence_limits = False**
 
+
 ============================  ===================================================================================
 
 .. code-block:: ini
@@ -1111,6 +1112,20 @@ common envelope occurs regardless of the choices below:
     acc_lim = -1
 
 
+    ; don_lim is a flag which determines how much mass is lost during thermal timescale MT
+    ; don_lim = -1: assumes standard BSE choice as outlined in Hurley+2002
+    ; don_lim = -2: Follows Claeys+2014
+    don_lim = -1
+
+    ; acc_lim is a flag which determines how much mass is accreted from the donor
+    ; if acc_lim >= 0: this provides the fraction of mass accreted
+    ; acc_lim = -1: assumes standard BSE choice as outlined in Hurley+2002, limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
+    ; acc_lim = -2: limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars
+    ; acc_lim = -3: limited to 10x the thermal rate of the accretor for all stars
+    ; acc_lim = -4: limited to 1x the thermal rate of the accretor for all stars
+    acc_lim = -1
+
+
 .. note::
 
     TIDES FLAGS
@@ -1332,6 +1347,11 @@ common envelope occurs regardless of the choices below:
     ; If set to 1 then if BH+star collision and if Mstar > Mbh, do not destroy the star
     ; default = 0
     bhms_coll_flag = 0
+
+    ; bhms_coll_flag 
+    ; If set to 1 then if BH+star collision and if Mstar > Mbh, do not destroy the star
+    ; default = 0
+    bhms_coll_flag=0
 
 .. note::
 

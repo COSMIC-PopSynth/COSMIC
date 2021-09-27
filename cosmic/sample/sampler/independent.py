@@ -298,12 +298,10 @@ class Sample(object):
             kroupa01 follows Kroupa (2001) <https://arxiv.org/abs/astro-ph/0009005>
             between 0.08 and 100 Msun
 
-
             Parameters
             ----------
             primary_model : str, optional
             model for mass distribution; choose from:
-
             kroupa93 follows Kroupa (1993), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0201220>`_
             valid for masses between 0.1 and 100 Msun
@@ -311,7 +309,6 @@ class Sample(object):
             salpter55 follows
             `Salpeter (1955) <http://adsabs.harvard.edu/abs/1955ApJ...121..161S>`_
             valid for masses between 0.1 and 100 Msun
-
             kroupa01 follows Kroupa (2001), normalization comes from
             `Hurley 2002 <https://arxiv.org/abs/astro-ph/0009005>`_
             valid for masses between 0.1 and 100 Msun
@@ -333,6 +330,7 @@ class Sample(object):
             mcuts : array, optional, units of Msun
             break points separating the power law 'pieces' for primary_model = 'custom'
             Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
+
 
             Returns
             -------
@@ -397,6 +395,9 @@ class Sample(object):
         ----------
         primary_mass : `array`
             sets the maximum secondary mass (for a maximum mass ratio of 1)
+
+        qmin : float
+            
 
         Returns
         -------
@@ -516,30 +517,29 @@ class Sample(object):
         either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
-
         Parameters
         ----------
-            primary_mass : array
-                Mass that determines the binary fraction
-
-            binfrac_model : str or float
-                vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
-                float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
-                means every star is in a binary pair
-
+        primary_mass : array
+            Mass that determines the binary fraction
+        
+        binfrac_model : str or float
+            vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
+            float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
+            means every star is in a binary pair
+        
         Returns
         -------
-            stars_in_binary : array
-                primary masses that will have a binary companion
+        stars_in_binary : array
+            primary masses that will have a binary companion
 
-            stars_in_single : array
-                primary masses that will be single stars
+        stars_in_single : array
+            primary masses that will be single stars
 
-            binary_fraction : array
-                system-specific probability of being in a binary
+        binary_fraction : array
+            system-specific probability of being in a binary
 
-            binaryIdx : array
-                Idx of stars in binary
+        binaryIdx : array
+            Idx of stars in binary
         """
 
         flag_msort = kwargs.pop("flag_msort", "no_msort")
@@ -582,6 +582,7 @@ class Sample(object):
                     binary_choose_low > binary_fraction_low)
                 (binaryIdx_low,) = np.where(
                     binary_choose_low <= binary_fraction_low)
+
             else:
                 raise ValueError(
                     "You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1."
@@ -674,7 +675,6 @@ class Sample(object):
             following the implementation of
             `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
             and flat in log otherwise
-
         Returns
         -------
         porb : array
@@ -766,7 +766,7 @@ class Sample(object):
 
     def sample_ecc(self, aRL_over_a, ecc_model="sana12", size=None):
         """Sample the eccentricity according to a user specified model
-
+        
         Parameters
         ----------
         ecc_model : string

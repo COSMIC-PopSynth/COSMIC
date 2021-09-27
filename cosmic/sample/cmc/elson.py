@@ -129,6 +129,7 @@ def find_sigma_sqr(r, r_max_cluster, gamma):
     return integral / rho_r(r, gamma, rho_0)
 
 
+
 def get_positions(N, r_max_cluster, gamma):
     """
     This one's easy: the mass enclosed function is just the CDF of the mass
@@ -208,6 +209,7 @@ def get_velocities_old(r, r_max_cluster, gamma):
     )
 
     interpolator = interp1d(radii_grid, sigma_sqr_grid, kind="cubic")
+
 
     # Draw the 1D velocity dispersions
     sigma = np.sqrt(interpolator(r))
@@ -308,6 +310,7 @@ def get_velocities(r, r_max_cluster, gamma):
     velocities = x_rand * np.sqrt(-2*phi_at_r)
 
     theta = np.arccos(uniform(-1,1,N))
+
 
     vr = velocities*np.cos(theta)
     vt = velocities*np.sin(theta)
