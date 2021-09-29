@@ -55,15 +55,17 @@ def SFH(n_samp):
     cwd = os.getcwd()
     data_dir = cwd+'/data/'
     FIRE = pd.read_hdf(data_dir+'FIRE.h5')
-
-    kde_dat = np.vstack([FIRE.age, FIRE.met])
-    SFH_kde = stats.gaussian_kde(kde_dat, bw_method=0.01)
-    dat_sample = SFH_kde.resample(n_samp)
-
+   
+    FIRE_cut = FIRE.loc[:,['age','met']]
+    #kde_dat = np.vstack([FIRE.age, FIRE.met])
+    #SFH_kde = stats.gaussian_kde(kde_dat, bw_method=0.01)
+    #dat_sample = SFH_kde.resample(n_samp)
+     
+    dat_sample = FIRE_cut.sample(n=n_samp,replace=True)
     # Convert the times into Myr
-    times = dat_sample[0,:]*1e3
+    times = np.array(dat_sample.age)*1e3
     # Convert the solar unit metallicity to BSE units
-    mets = dat_sample[1,:]*0.02
+    mets = np.array(dat_sample.met)*0.02
 
     return times, mets
 
