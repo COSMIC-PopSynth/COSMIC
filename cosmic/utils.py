@@ -66,22 +66,43 @@ __all__ = [
 
 
 def epanechnikov(kern_len, pos):
+    # make sure that kern_len and pos are arrays
     kernel = np.array(kern_len)
-    samp = []
+    pos = np.array(pos)
+
+    # create an array to fill for the displacement sample
+    disp_samp = np.zeros(len(kernel))
+
+    # create an array that keeps track of the indices that we
+    # need to resample
     ind_toss = np.arange(0,len(kernel),1)
-    n_samp = len(kernel)
+
+    # if we get a successful sample, we'll remove the index from ind_toss
     while len(ind_toss) > 0:
+
+        # sample a value between -kern_len to +kern_len
         a_samp = np.random.uniform(-1,1,len(kernel))
         a_samp = np.array(kernel)*a_samp
+
+        #evaluate the sample
         a_eval = 3/(4*kernel[ind_toss])*(1-(a_samp[ind_toss])**2/kernel[ind_toss]**2)
+
+        #sample the rejection probability
         a_test = np.random.uniform(0,1,len(ind_toss))
         a_test = a_test*(3/(4*kernel[ind_toss]))
-        ind_keep, = np.where(a_eval/a_test <= 1)
-        if len(ind_keep >0):
-            samp.extend(a_samp[ind_keep])
 
-        ind_toss, = np.where(a_eval/a_test > 1)
-    return np.array(samp + pos)
+        #determine which values to keep
+        ind_keep, = np.where(a_eval >= a_test)
+
+        if len(ind_keep > 0):
+            #save the successful samples to the disp_samp array
+            disp_samp[ind_toss[ind_keep]] = a_samp[ind_toss[ind_keep]]
+
+        # throw out any indices which were successful by retaining the 
+        # non-successful ind_toss values
+        inds_toss, = np.where(a_eval < a_test)
+        ind_toss = ind_toss[inds_toss]
+    return disp_samp + pos 
 
 
 
