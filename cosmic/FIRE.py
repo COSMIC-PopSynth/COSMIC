@@ -56,9 +56,9 @@ def SFH(n_samp):
     data_dir = cwd+'/data/'
     FIRE = pd.read_hdf(data_dir+'FIRE.h5')
    
-    FIRE_cut = FIRE.loc[:,['age','met']]
-     
+    FIRE_cut = FIRE.loc[:,['age','met']] 
     dat_sample = FIRE_cut.sample(n=n_samp,replace=True)
+
     # Convert the times into Myr
     times = np.array(dat_sample.age)*1e3
     # Convert the solar unit metallicity to BSE units
