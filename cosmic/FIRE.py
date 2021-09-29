@@ -57,9 +57,6 @@ def SFH(n_samp):
     FIRE = pd.read_hdf(data_dir+'FIRE.h5')
    
     FIRE_cut = FIRE.loc[:,['age','met']]
-    #kde_dat = np.vstack([FIRE.age, FIRE.met])
-    #SFH_kde = stats.gaussian_kde(kde_dat, bw_method=0.01)
-    #dat_sample = SFH_kde.resample(n_samp)
      
     dat_sample = FIRE_cut.sample(n=n_samp,replace=True)
     # Convert the times into Myr
