@@ -158,7 +158,7 @@ setup(name=DISTNAME,
       tests_require=tests_require,
       extras_require=extras_require,
       python_requires='>3.5, <4',
-      use_2to3=True,
+      use2to3=True,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python',
