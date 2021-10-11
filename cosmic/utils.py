@@ -155,8 +155,7 @@ def filter_bin_state(bcm, bpp, method, kstar1_range, kstar2_range):
             # that are alive today we can simply check the last entry in the bcm
             # array for the system and see what its properities are today
             bcm_0_2 = bcm_last_entry.loc[(bcm_last_entry.bin_state != 1)]
-            bin_num_save.extend(bcm_0_2.loc[(bcm_0_2.kstar_1.isin(kstar1_range)) &
-                                          (bcm_0_2.kstar_2.isin(kstar2_range))].bin_num.tolist())
+            bin_num_save.extend(bcm_0_2.bin_num.tolist())
 
             # in order to find the properities of merged systems
             # we actually need to search in the BPP array for the properities
@@ -355,7 +354,9 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
 
     elif method == "final_state":
         # the bcm array is all that we need!
-        conv_save = bcm_save
+        conv_save = bcm_save.loc[
+            (bcm_save.kstar_1.isin(final_kstar_1)) & (bcm_save.kstar_2.isin(final_kstar_2))
+        ]
 
     elif method == "XRB_form":
         # select out the systems which undergo a SN
