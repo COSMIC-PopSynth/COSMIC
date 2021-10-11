@@ -354,7 +354,9 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
 
     elif method == "final_state":
         # the bcm array is all that we need!
-        conv_save = bcm_save
+        conv_save = bcm_save.loc[
+            (bcm_save.kstar_1.isin(final_kstar_1)) & (bcm_save.kstar_2.isin(final_kstar_2))
+        ]
 
     elif method == "XRB_form":
         # select out the systems which undergo a SN

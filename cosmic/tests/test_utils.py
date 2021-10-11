@@ -82,7 +82,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(conv), 4)
 
         conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [11], [11], conv_dict_final_state['pop_select'], {})
-        self.assertEqual(len(conv), int(len(BCM_TEST)))
+        self.assertEqual(len(conv), int(len(BCM_TEST.loc[(BCM_TEST.kstar_1 ==11) & (BCM_TEST.kstar_2 ==11)])))
 
         conv, bin_nums = utils.conv_select(BCM_TEST, BPP_TEST, [13,14], range(0,15), conv_dict_XRB_form['pop_select'], {})
         self.assertEqual(len(conv), 0)
