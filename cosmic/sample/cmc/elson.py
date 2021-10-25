@@ -159,21 +159,6 @@ def get_positions(N, r_max_cluster, gamma):
 
     return positions
 
-    #   vr[0]=vt[0]=0.0;
-    #   for(i=1; i<=N; i++){
-    #           F = (exp(psi[i])-1.0)*2.0*psi[i];
-    #           do {
-    #                   X1 = rng_t113_dbl();
-    #                   X2 = rng_t113_dbl();
-    #                   v_0 = X1*sqrt(2.0*psi[i]);
-    #                   f_0 = X2*F;
-    #                   f = (exp(psi[i]-v_0*v_0/2.0)-1.0)*v_0*v_0;
-    #           } while (f_0>f);
-    #           X3 = rng_t113_dbl();
-    #           vr[i] = (1.0 - 2.0*X3) * v_0;
-    #           vt[i] = sqrt(v_0*v_0 - vr[i]*vr[i]);
-    #           /* v[i] = v_0; */
-
 def get_velocities_old(r, r_max_cluster, gamma):
     """
     Uses the spherical Jeans functions to sample the velocity dispersion for the
@@ -248,6 +233,12 @@ def get_velocities(r, r_max_cluster, gamma):
 
     N = len(r)
 
+    # If we actually want a plummer sphere, we can default to the simpler function
+    # using the analytic distribution function
+    if gamma == 4:
+        return get_velocities_plummer(r,r_max_cluster)
+    # Otherwise need to compute f(E) numerically
+
     # First get phi and rho over 100 points or so
     rho_0 = 1.0 / M_enclosed(max(r), gamma, 1)
 
@@ -306,6 +297,44 @@ def get_velocities(r, r_max_cluster, gamma):
         y_rand[resample] = uniform(size=number_to_resample)
 
     velocities = x_rand * np.sqrt(-2*phi_at_r)
+
+    theta = np.arccos(uniform(-1,1,N))
+
+    vr = velocities*np.cos(theta)
+    vt = velocities*np.sin(theta)
+
+    return vr, vt
+
+def get_velocities_plummer(r, r_max_cluster):
+    """
+    The correct way to generate velocities
+
+    this is a special case for gamma=4, which is the plummer sphere (and has an analytic distribution function)
+
+    returns (vr,vt) with same length as r
+    """
+
+    N = len(r)
+
+
+    # Make an initial guess for every velocity
+    x_rand = uniform(size=N)
+    y_rand = uniform(size=N)
+    vesc = np.sqrt(2/np.sqrt(1+r**2))
+    velocities = x_rand * vesc
+
+    resample = np.ones(N,dtype=bool)
+    number_to_resample = N
+
+    # Now do the rejection sampling; this is taken from Aarseth's original algorithm using the dist function
+    while number_to_resample > 0: 
+        resample[resample] = 0.1*y_rand[resample] > x_rand[resample]**2 * (1 - x_rand[resample]**2)**3.5
+        number_to_resample = np.sum(resample)
+        x_rand[resample] = uniform(size=number_to_resample)
+        y_rand[resample] = uniform(size=number_to_resample)
+
+    # Scale up to the local escape speed
+    velocities = x_rand * vesc 
 
     theta = np.arccos(uniform(-1,1,N))
 

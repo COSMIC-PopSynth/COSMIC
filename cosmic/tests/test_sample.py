@@ -46,6 +46,8 @@ METALLICITY_13000 = 0.02*0.15
 
 KING_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_king_test.npz"))
 ELSON_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_elson_test.npz"))
+PLUMMER_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_plummer_test.npz"))
+R_PLUMMER_TEST_ARRAY, VR_PLUMMER_TEST_ARRAY, VT_PLUMMER_TEST_ARRAY = PLUMMER_TEST_DATA["arr_0"], PLUMMER_TEST_DATA["arr_1"], PLUMMER_TEST_DATA["arr_2"] 
 R_ELSON_TEST_ARRAY, VR_ELSON_TEST_ARRAY, VT_ELSON_TEST_ARRAY = ELSON_TEST_DATA["arr_0"], ELSON_TEST_DATA["arr_1"], ELSON_TEST_DATA["arr_2"] 
 R_KING_TEST_ARRAY, VR_KING_TEST_ARRAY, VT_KING_TEST_ARRAY = KING_TEST_DATA["arr_0"], KING_TEST_DATA["arr_1"], KING_TEST_DATA["arr_2"]
 
@@ -341,9 +343,16 @@ class TestSample(unittest.TestCase):
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
 
 class TestCMCSample(unittest.TestCase):
+    def test_plummer_profile(self):
+        np.random.seed(2)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('plummer',N=100, r_max=300)
+        np.testing.assert_allclose(VR_PLUMMER_TEST_ARRAY, vr, rtol=1e-5)
+        np.testing.assert_allclose(VT_PLUMMER_TEST_ARRAY, vt, rtol=1e-5)
+        np.testing.assert_allclose(R_PLUMMER_TEST_ARRAY, r, rtol=1e-5)
+
     def test_elson_profile(self):
         np.random.seed(2)
-        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('elson',N=100, r_max=300, gamma=4)
+        r, vr, vt = CMCSAMPLECLASS.set_r_vr_vt('elson',N=100, r_max=300, gamma=3)
         np.testing.assert_allclose(VR_ELSON_TEST_ARRAY, vr, rtol=1e-5)
         np.testing.assert_allclose(VT_ELSON_TEST_ARRAY, vt, rtol=1e-5)
         np.testing.assert_allclose(R_ELSON_TEST_ARRAY, r, rtol=1e-5)
