@@ -54,6 +54,7 @@ R_KING_TEST_ARRAY, VR_KING_TEST_ARRAY, VT_KING_TEST_ARRAY = KING_TEST_DATA["arr_
 REFF_TEST_ARRAY = np.array([3.94190562, 5.99895482])
 
 SINGLES_CMC_FITS, BINARIES_CMC_FITS = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.fits"))
+SINGLES_CMC_HDF5, BINARIES_CMC_HDF5 = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.hdf5"))
 
 def power_law_fit(data, n_bins=100):
     def line(x, a, b):
@@ -374,8 +375,10 @@ class TestCMCSample(unittest.TestCase):
         Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
         InitialCMCTable.write(Singles, Binaries, filename="input.hdf5")
         InitialCMCTable.write(Singles, Binaries, filename="input.fits")
-        Singles, Binaries = InitialCMCTable.read(filename="input.hdf5")
         Singles, Binaries = InitialCMCTable.read(filename="input.fits")
         # read the test files and compare to the static unit tests files
         pd.testing.assert_frame_equal(Singles, SINGLES_CMC_FITS)
         pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_FITS)
+        Singles, Binaries = InitialCMCTable.read(filename="input.hdf5")
+        pd.testing.assert_frame_equal(Singles, SINGLES_CMC_HDF5)
+        pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_HDF5)
