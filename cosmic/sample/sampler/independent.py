@@ -95,7 +95,8 @@ def get_independent_sampler(
     qmin_msort : `float`
         Same as qmin for M>msort; only applies if qmin is supplied
         For `qmin_msort`>=0, sets `qmin` for masses M>msort
-        For `qmin_msort`<0, sets qmin as MIN(|`qmin_msort`|, `msort`/m_max) for M>msort
+        For `qmin_msort`<0, sets qmin as MAX(|`qmin_msort`|, `msort`/m_max) for M>msort,
+            which makes the minimum mass of the secondary `msort`
 
     SF_start : `float`
         Time in the past when star formation initiates in Myr
@@ -472,7 +473,7 @@ class Sample(object):
             elif qmin_msort < 0:
                 qmin_vals_high = np.ones_like(qmin_vals[highmassIdx]) * np.abs(qmin_msort)
                 qmin_m = msort / primary_mass[highmassIdx]
-                (qIdx,) = np.where(qmin_m < np.abs(qmin_msort))
+                (qIdx,) = np.where(qmin_m > np.abs(qmin_msort))
                 qmin_vals_high[qIdx] = qmin_m[qIdx]
                 qmin_vals[highmassIdx] = qmin_vals_high
 
