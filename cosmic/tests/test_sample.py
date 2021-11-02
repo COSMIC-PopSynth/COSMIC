@@ -152,20 +152,29 @@ class TestSample(unittest.TestCase):
         np.random.seed(2)
         # Check that the sample_secondary function samples secondary mass correctly
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='salpeter55', size=10000000)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        ind_massive, = np.where(mass1 > 5.0)
-        q = mass2[ind_massive]/mass1[ind_massive]
+        ind_massive, = np.where(mass1 > 15.0)
+        ind_not_massive, = np.where(mass1 < 15.0)
+
+        np.random.seed(2)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1)
+        q = mass2[ind_massive] / mass1[ind_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
+        np.random.seed(2)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=-1)
-        ind_not_massive, = np.where(mass1 < 5.0)
         q = mass2[ind_not_massive] / mass1[ind_not_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
         np.random.seed(2)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, m2_min=0.1)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, m2_min=0.08)
+        q = mass2[ind_massive] / mass1[ind_massive]
+        slope = linear_fit(q)
+        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
+        np.random.seed(2)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1, m2_min=0.08)
         q = mass2[ind_massive] / mass1[ind_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
