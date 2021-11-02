@@ -20,6 +20,7 @@
 """
 
 import numpy as np
+import warnings
 
 from ... import utils
 
@@ -81,9 +82,13 @@ def get_independent_sampler(
 
     m_max : `float`
         kwarg which sets the maximum primary and secondary mass for sampling
+        NOTE: this value changes the range of the IMF and should *not* be used
+            as a means of selecting certain kstar types!
 
     m1_min : `float`
         kwarg which sets the minimum primary mass for sampling
+        NOTE: this value changes the range of the IMF and should *not* be used
+            as a means of selecting certain kstar types!
 
     m2_min : `float`
         kwarg which sets the minimum secondary mass for sampling
@@ -93,10 +98,10 @@ def get_independent_sampler(
         Stars with M>msort can have different pairing and sampling of companions
 
     qmin_msort : `float`
-        Same as qmin for M>msort; only applies if qmin is supplied
-        For `qmin_msort`>=0, sets `qmin` for masses M>msort
-        For `qmin_msort`<0, sets qmin as MAX(|`qmin_msort`|, `msort`/m_max) for M>msort,
-            which makes the minimum mass of the secondary `msort`
+        Same as qmin for M>msort
+
+    m2_min_msort : `float`
+        Same as m2_min for M>msort
 
     SF_start : `float`
         Time in the past when star formation initiates in Myr
@@ -339,6 +344,8 @@ class Sample(object):
             break points separating the power law 'pieces' for primary_model = 'custom'
             Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
 
+            Optional kwargs are defined in `get_independent_sampler`
+
             Returns
             -------
             a_0 : array
@@ -351,12 +358,14 @@ class Sample(object):
         m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
         m_max = kwargs["m_max"] if "m_max" in kwargs.keys() else 150.0
 
+        # Make sure m1_min value is below 0.5, since otherwise it will not work for Kroupa IMF
+        if m1_min > 0.5:
+            raise ValueError("m1_min must be greater than 0.5 Msun")
+
         if primary_model == 'kroupa93':
             alphas, mcuts = [-1.3,-2.2,-2.7], [m1_min,0.5,1.0,m_max]
         # Since COSMIC/BSE can't handle < 0.08Msun, we by default truncate at 0.08 Msun instead of 0.01
         elif primary_model == 'kroupa01':
-            if m1_min > 0.5:
-                raise ValueError("m1_min must be greater than 0.5 Msun for a Kroupa IMF")
             alphas, mcuts = [-1.3,-2.3], [m1_min,0.5,m_max]
         elif primary_model == 'salpeter55':
             alphas, mcuts = [-2.35], [m1_min,m_max]
@@ -408,6 +417,8 @@ class Sample(object):
         primary_mass : `array`
             sets the maximum secondary mass (for a maximum mass ratio of 1)
 
+        Optional kwargs are defined in `get_independent_sampler`
+
         Returns
         -------
         secondary_mass : array
@@ -419,18 +430,24 @@ class Sample(object):
         m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
         m2_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else None
         if (m2_min is None) & (qmin is None):
-            raise ValueError("You must supply either qmin or m2_min to the"
-                             " independent initial binary sampler")
+            warnings.warn("It is highly recommended that you specify either qmin or m2_min!")
         if (m2_min is not None) and (m2_min > m1_min):
             raise ValueError("The m2_min you specified is above the minimum"
-                             " primary mass, either lower m2_min or raise the"
-                             " lower value of your sampled primaries")
+                             " primary mass of the IMF, either lower m2_min or"
+                             " raise the lower value of your sampled primaries")
 
         # --- `msort` kwarg can be set to have different qmin above `msort`
         msort = kwargs["msort"] if "msort" in kwargs.keys() else None
         qmin_msort = kwargs["qmin_msort"] if "qmin_msort" in kwargs.keys() else None
+        m2_min_msort = kwargs["m2_min_msort"] if "m2_min_msort" in kwargs.keys() else None
         if (msort is None) and (qmin_msort is not None):
             raise ValueError("If qmin_msort is specified, you must also supply a value for msort")
+        if (msort is None) and (m2_min_msort is not None):
+            raise ValueError("If m2_min_msort is specified, you must also supply a value for msort")
+        if (m2_min_msort is not None) and (m2_min_msort > msort):
+            raise ValueError("The m2_min_msort you specified is above the minimum"
+                             " primary mass of the high-mass binaries msort")
+
         if (msort is not None) and (qmin_msort is not None):
             (highmassIdx,) = np.where(primary_mass >= msort)
             (lowmassIdx,) = np.where(primary_mass < msort)
@@ -468,18 +485,37 @@ class Sample(object):
             qmin_vals[lowmassIdx] = np.zeros_like(primary_mass[lowmassIdx])
         # --- qmin for high-mass systems, if msort and qmin_msort are specified
         if (msort is not None) and (qmin_msort is not None):
-            if qmin_msort >= 0:
-                qmin_vals[highmassIdx] = qmin_msort
-            elif qmin_msort < 0:
-                qmin_vals_high = np.ones_like(qmin_vals[highmassIdx]) * np.abs(qmin_msort)
-                qmin_m = msort / primary_mass[highmassIdx]
-                (qIdx,) = np.where(qmin_m > np.abs(qmin_msort))
-                qmin_vals_high[qIdx] = qmin_m[qIdx]
-                qmin_vals[highmassIdx] = qmin_vals_high
+            if (qmin_msort > 0.0):
+                qmin_vals[highmassIdx] = qmin_msort * np.ones_like(primary_mass[highmassIdx])
+            elif (qmin_msort < 0.0):
+                # mass-dependent qmin, assume qmin=0.1 for m_primary<5
+                dat = np.array([[5.0, 0.1363522012578616],
+                                [6.999999999999993, 0.1363522012578616],
+                                [12.599999999999994, 0.11874213836477984],
+                                [20.999999999999993, 0.09962264150943395],
+                                [29.39999999999999, 0.0820125786163522],
+                                [41, 0.06490566037735851],
+                                [55, 0.052327044025157254],
+                                [70.19999999999999, 0.04301886792452836],
+                                [87.4, 0.03622641509433966],
+                                [107.40000000000002, 0.030188679245283068],
+                                [133.40000000000003, 0.02515723270440262],
+                                [156.60000000000002, 0.02163522012578628],
+                                [175.40000000000003, 0.01962264150943399],
+                                [200.20000000000005, 0.017358490566037776]])
+                from scipy.interpolate import interp1d
+                qmin_interp = interp1d(dat[:, 0], dat[:, 1])
+                qmin_vals[highmassIdx] = np.ones_like(primary_mass[highmassIdx]) * 0.1
+                ind_5, = np.where(primary_mass[highmassIdx] > 5.0)
+                qmin_vals[highmassIdx][ind_5] = qmin_interp(primary_mass[highmassIdx][ind_5])
+            else:
+                qmin_vals[highmassIdx] = np.zeros_like(primary_mass[highmassIdx])
 
-        # --- apply m2_min, if specified
+        # --- apply m2_min and m2_min_msort, if specified
         if m2_min is not None:
-            qmin_vals = np.maximum(qmin_vals, m2_min/primary_mass)
+            qmin_vals[lowmassIdx] = np.maximum(qmin_vals[lowmassIdx], m2_min/primary_mass[lowmassIdx])
+        if m2_min_msort is not None:
+            qmin_vals[highmassIdx] = np.maximum(qmin_vals[highmassIdx], m2_min_msort/primary_mass[highmassIdx])
 
         # --- now, randomly sample mass ratios and get secondary masses
         secondary_mass = np.random.uniform(qmin_vals, 1) * primary_mass
@@ -503,6 +539,8 @@ class Sample(object):
                 vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
                 float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
                 means every star is in a binary pair
+
+        Optional kwargs are defined in `get_independent_sampler`
 
         Returns
         -------
