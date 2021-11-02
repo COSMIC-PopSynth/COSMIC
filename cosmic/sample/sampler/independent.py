@@ -20,6 +20,7 @@
 """
 
 import numpy as np
+import warnings
 
 from ... import utils
 
@@ -29,7 +30,7 @@ from ... import _evolvebin
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
-__credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
+__credits__ = "Scott Coughlin <scott.coughlin@ligo.org>, Michael Zevin <michael.j.zevin@gmail.com>"
 __all__ = ["get_independent_sampler", "Sample"]
 
 
@@ -71,12 +72,6 @@ def get_independent_sampler(
     porb_model : `str`
         Model to sample orbital period; choices include: log_uniform, sana12
 
-    msort : `float`
-        Stars with M>msort can have different pairing and sampling of companions
-
-    pair : `float`
-        Sets the pairing of stars M>msort only with stars with M>msort
-
     qmin : `float`
         kwarg which sets the minimum mass ratio for sampling the secondary
         where the mass ratio distribution is flat in q
@@ -85,12 +80,28 @@ def get_independent_sampler(
         the pre-MS lifetime of the secondary is not longer than the full
         lifetime of the primary if it were to evolve as a single star
 
+    m_max : `float`
+        kwarg which sets the maximum primary and secondary mass for sampling
+        NOTE: this value changes the range of the IMF and should *not* be used
+            as a means of selecting certain kstar types!
+
+    m1_min : `float`
+        kwarg which sets the minimum primary mass for sampling
+        NOTE: this value changes the range of the IMF and should *not* be used
+            as a means of selecting certain kstar types!
+
     m2_min : `float`
         kwarg which sets the minimum secondary mass for sampling
         the secondary as uniform in mass_2 between m2_min and mass_1
 
+    msort : `float`
+        Stars with M>msort can have different pairing and sampling of companions
+
     qmin_msort : `float`
-        Same as qmin for M>msort; only applies if qmin is supplied
+        Same as qmin for M>msort
+
+    m2_min_msort : `float`
+        Same as m2_min for M>msort
 
     SF_start : `float`
         Time in the past when star formation initiates in Myr
@@ -105,7 +116,7 @@ def get_independent_sampler(
         Same as binfrac_model for M>msort
 
     met : `float`
-        Sets the metallicity of the binary population where solar metallicity is zsun 
+        Sets the metallicity of the binary population where solar metallicity is zsun
 
     size : `int`
         Size of the population to sample
@@ -135,8 +146,7 @@ def get_independent_sampler(
     if type(final_kstar2) in [int, float]:
         final_kstar2 = [final_kstar2]
     primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
-        final_kstar1, final_kstar2
-    )
+        final_kstar1, final_kstar2, **kwargs)
     initconditions = Sample()
 
     # set up multiplier if the mass sampling is inefficient
@@ -154,15 +164,15 @@ def get_independent_sampler(
     n_singles = 0
     n_binaries = 0
 
+    # --- `msort` kwarg can be set to have different binary fraction/qmin above `msort`
+    msort = kwargs["msort"] if "msort" in kwargs.keys() else None
+    if msort is not None:
+        msort = kwargs["msort"] if "msort" in kwargs.keys() else None
+
     while len(mass1_binary) < size:
         mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier, **kwargs 
-        )
-        (
-            mass1_binaries,
-            mass_single,
-            binfrac_binaries,
-            binary_index,
+            primary_model, size=size * multiplier, **kwargs)
+        (mass1_binaries, mass_single, binfrac_binaries, binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
         mass2_binaries = initconditions.sample_secondary(
             mass1_binaries, **kwargs)
@@ -334,6 +344,8 @@ class Sample(object):
             break points separating the power law 'pieces' for primary_model = 'custom'
             Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = 'kroupa01')
 
+            Optional kwargs are defined in `get_independent_sampler`
+
             Returns
             -------
             a_0 : array
@@ -342,18 +354,25 @@ class Sample(object):
             Total amount of mass sampled
             """
 
+        # Read in m1_min and m_max kwargs, if provided
+        m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
+        m_max = kwargs["m_max"] if "m_max" in kwargs.keys() else 150.0
 
-        if primary_model == 'kroupa93': 
-            alphas, mcuts = [-1.3,-2.2,-2.7], [0.08,0.5,1.0,150.]
-        # Since COSMIC/BSE can't handle < 0.08Msun, we will truncate at 0.08 Msun instead of 0.01
-        elif primary_model == 'kroupa01': 
-            alphas, mcuts = [-1.3,-2.3], [0.08,0.5,150.]
-        elif primary_model == 'salpeter55': 
-            alphas, mcuts = [-2.35], [0.08,150.]
-        elif primary_model == 'custom': 
+        # Make sure m1_min value is below 0.5, since otherwise it will not work for Kroupa IMF
+        if m1_min > 0.5:
+            raise ValueError("m1_min must be greater than 0.5 Msun")
+
+        if primary_model == 'kroupa93':
+            alphas, mcuts = [-1.3,-2.2,-2.7], [m1_min,0.5,1.0,m_max]
+        # Since COSMIC/BSE can't handle < 0.08Msun, we by default truncate at 0.08 Msun instead of 0.01
+        elif primary_model == 'kroupa01':
+            alphas, mcuts = [-1.3,-2.3], [m1_min,0.5,m_max]
+        elif primary_model == 'salpeter55':
+            alphas, mcuts = [-2.35], [m1_min,m_max]
+        elif primary_model == 'custom':
             if 'alphas' in kwargs and 'mcuts' in kwargs:
                 alphas = kwargs.pop("alphas", [-1.3,-2.3,-2.3])
-                mcuts = kwargs.pop("mcuts", [0.08,0.5,1.0,150.])
+                mcuts = kwargs.pop("mcuts", [m1_min,0.5,1.0,m_max])
             else:
                 raise ValueError("You must supply both alphas and mcuts to use"
                                  " a custom IMF generator")
@@ -377,8 +396,8 @@ class Sample(object):
             else: idxs[i], = np.where(u > cutoffs[i-1])
         for i in range(len(alphas)):
             if alphas[i] == -1.0:
-                u[idxs[i]] = 10**np.random.uniform(np.log10(mcuts[i]), 
-                                                   np.log10(mcuts[i+1]), 
+                u[idxs[i]] = 10**np.random.uniform(np.log10(mcuts[i]),
+                                                   np.log10(mcuts[i+1]),
                                                    len(idxs[i]))
             else:
                 u[idxs[i]] = utils.rndm(a=mcuts[i], b=mcuts[i+1], g=alphas[i], size=len(idxs[i]))
@@ -398,6 +417,8 @@ class Sample(object):
         primary_mass : `array`
             sets the maximum secondary mass (for a maximum mass ratio of 1)
 
+        Optional kwargs are defined in `get_independent_sampler`
+
         Returns
         -------
         secondary_mass : array
@@ -405,82 +426,69 @@ class Sample(object):
             primary_mass
         """
 
-        flag_msort = kwargs.pop("flag_msort", "no_msort")
-        try:
-            qmin = kwargs.pop("qmin")
-        except:
-            qmin = None
-        try:
-            m2_min = kwargs.pop("m2_min")
-        except:
-            m2_min = None
-
-        if flag_msort == "binfrac_high_mass":
-            msort = kwargs.pop("msort")
-            qmin_msort = kwargs.pop("qmin_msort")
-            pair = kwargs.pop("pair")
-        else:
-            msort, qmin_msort, pair = 10000., 0., 0
-
-        sorting = msort * np.ones(primary_mass.size)
-        (mhighIdx,) = np.where(primary_mass >= sorting)
-        (mlowIdx,) = np.where(primary_mass < sorting)
-        primary_mass_high = primary_mass[mhighIdx]
-        primary_mass_low = primary_mass[mlowIdx]
-
-        
-        if qmin is not None:
-            if (qmin >= 0.0):
-                secondary_mass_low = np.random.uniform(
-                    qmin, 1.0, len(primary_mass_low)
-                ) * primary_mass_low
-            elif (qmin < 0.0):
-                dat = np.array([[5.0, 0.1363522012578616],
-                                [6.999999999999993, 0.1363522012578616],
-                                [12.599999999999994, 0.11874213836477984],
-                                [20.999999999999993, 0.09962264150943395],
-                                [29.39999999999999, 0.0820125786163522],
-                                [41, 0.06490566037735851],
-                                [55, 0.052327044025157254],
-                                [70.19999999999999, 0.04301886792452836],
-                                [87.4, 0.03622641509433966],
-                                [107.40000000000002, 0.030188679245283068],
-                                [133.40000000000003, 0.02515723270440262],
-                                [156.60000000000002, 0.02163522012578628],
-                                [175.40000000000003, 0.01962264150943399],
-                                [200.20000000000005, 0.017358490566037776]])
-                from scipy.interpolate import interp1d
-                qmin_interp = interp1d(dat[:, 0], dat[:, 1])
-                qmin = np.ones_like(primary_mass_low) * 0.1
-                ind_5, = np.where(primary_mass_low > 5.0)
-                qmin[ind_5] = qmin_interp(primary_mass_low[ind_5])
-
-                q = np.random.uniform(qmin, 1.0)
-                secondary_mass_low = q * primary_mass_low
-
-        if m2_min is not None:
-            m2_min = np.ones_like(primary_mass_low) * m2_min
-            ind_m1_lim, = np.where(m2_min > primary_mass_low)
-            m2_min[ind_m1_lim] = primary_mass_low[ind_m1_lim]
-            secondary_mass_low = np.random.uniform(m2_min, primary_mass_low)
-
+        qmin = kwargs["qmin"] if "qmin" in kwargs.keys() else 0.0
+        m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
+        m2_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else None
         if (m2_min is None) & (qmin is None):
-            raise ValueError("You must supply either qmin or m2_min to the"
-                             " independent initial binary sampler")
+            warnings.warn("It is highly recommended that you specify either qmin or m2_min!")
+        if (m2_min is not None) and (m2_min > m1_min):
+            raise ValueError("The m2_min you specified is above the minimum"
+                             " primary mass of the IMF, either lower m2_min or"
+                             " raise the lower value of your sampled primaries")
 
-        if (msort < 10000.0) & (m2_min is None):
-            if qmin_msort > 0.0 and pair == 0:
-                secondary_mass_high = np.random.uniform(
-                    qmin_msort, 1.0, len(primary_mass_high)
-                ) * primary_mass_high
-            elif qmin_msort > 0.0 and pair == 1:
-                qmin_m = msort/primary_mass_high
-                qmin_msort_arr = qmin_msort * np.ones(primary_mass_high.size)
-                (qIdx,) = np.where(qmin_m < qmin_msort_arr)
-                qmin_m[qIdx] = qmin_msort * np.ones(qIdx.size)
-                q_msort = np.random.uniform(qmin_m, 1.0)
-                secondary_mass_high = q_msort * primary_mass_high
-            else:
+        # --- `msort` kwarg can be set to have different qmin above `msort`
+        msort = kwargs["msort"] if "msort" in kwargs.keys() else None
+        qmin_msort = kwargs["qmin_msort"] if "qmin_msort" in kwargs.keys() else None
+        m2_min_msort = kwargs["m2_min_msort"] if "m2_min_msort" in kwargs.keys() else None
+        if (msort is None) and (qmin_msort is not None):
+            raise ValueError("If qmin_msort is specified, you must also supply a value for msort")
+        if (msort is None) and (m2_min_msort is not None):
+            raise ValueError("If m2_min_msort is specified, you must also supply a value for msort")
+        if (m2_min_msort is not None) and (m2_min_msort > msort):
+            raise ValueError("The m2_min_msort you specified is above the minimum"
+                             " primary mass of the high-mass binaries msort")
+
+        if (msort is not None) and (qmin_msort is not None):
+            (highmassIdx,) = np.where(primary_mass >= msort)
+            (lowmassIdx,) = np.where(primary_mass < msort)
+        else:
+            (highmassIdx,) = np.where(primary_mass < 0)
+            (lowmassIdx,) = np.where(primary_mass >= 0)   # all idxs
+
+
+        qmin_vals = -1 * np.ones_like(primary_mass)
+        # --- qmin for low-mass systems (all systems if msort is not specified)
+        if (qmin > 0.0):
+            qmin_vals[lowmassIdx] = qmin * np.ones_like(primary_mass[lowmassIdx])
+        elif (qmin < 0.0):
+            # mass-dependent qmin, assume qmin=0.1 for m_primary<5
+            dat = np.array([[5.0, 0.1363522012578616],
+                            [6.999999999999993, 0.1363522012578616],
+                            [12.599999999999994, 0.11874213836477984],
+                            [20.999999999999993, 0.09962264150943395],
+                            [29.39999999999999, 0.0820125786163522],
+                            [41, 0.06490566037735851],
+                            [55, 0.052327044025157254],
+                            [70.19999999999999, 0.04301886792452836],
+                            [87.4, 0.03622641509433966],
+                            [107.40000000000002, 0.030188679245283068],
+                            [133.40000000000003, 0.02515723270440262],
+                            [156.60000000000002, 0.02163522012578628],
+                            [175.40000000000003, 0.01962264150943399],
+                            [200.20000000000005, 0.017358490566037776]])
+            from scipy.interpolate import interp1d
+            qmin_interp = interp1d(dat[:, 0], dat[:, 1])
+            qmin_vals[lowmassIdx] = np.ones_like(primary_mass[lowmassIdx]) * 0.1
+            ind_5, = np.where(primary_mass[lowmassIdx] > 5.0)
+            qmin_vals[lowmassIdx][ind_5] = qmin_interp(primary_mass[lowmassIdx][ind_5])
+        else:
+            qmin_vals[lowmassIdx] = np.zeros_like(primary_mass[lowmassIdx])
+        # --- qmin for high-mass systems, if msort and qmin_msort are specified
+        if (msort is not None) and (qmin_msort is not None):
+            if (qmin_msort > 0.0):
+                qmin_vals[highmassIdx] = qmin_msort * np.ones_like(primary_mass[highmassIdx])
+            elif (qmin_msort < 0.0):
+                # mass-dependent qmin, assume qmin=0.1 for m_primary<5
                 dat = np.array([[5.0, 0.1363522012578616],
                                 [6.999999999999993, 0.1363522012578616],
                                 [12.599999999999994, 0.11874213836477984],
@@ -497,17 +505,22 @@ class Sample(object):
                                 [200.20000000000005, 0.017358490566037776]])
                 from scipy.interpolate import interp1d
                 qmin_interp = interp1d(dat[:, 0], dat[:, 1])
-                qmin_msort = np.ones_like(primary_mass_high) * 0.1
-                ind_5, = np.where(primary_mass_high > 5.0)
-                qmin_msort[ind_5] = qmin_interp(primary_mass_high[ind_5])
+                qmin_vals[highmassIdx] = np.ones_like(primary_mass[highmassIdx]) * 0.1
+                ind_5, = np.where(primary_mass[highmassIdx] > 5.0)
+                qmin_vals[highmassIdx][ind_5] = qmin_interp(primary_mass[highmassIdx][ind_5])
+            else:
+                qmin_vals[highmassIdx] = np.zeros_like(primary_mass[highmassIdx])
 
-                q_msort = np.random.uniform(qmin_msort, 1.0)
-                secondary_mass_high = q_msort * primary_mass_high
+        # --- apply m2_min and m2_min_msort, if specified
+        if m2_min is not None:
+            qmin_vals[lowmassIdx] = np.maximum(qmin_vals[lowmassIdx], m2_min/primary_mass[lowmassIdx])
+        if m2_min_msort is not None:
+            qmin_vals[highmassIdx] = np.maximum(qmin_vals[highmassIdx], m2_min_msort/primary_mass[highmassIdx])
 
-        secondary_mass = np.ones(primary_mass.size)
-        secondary_mass[mlowIdx] = secondary_mass_low
-        if msort < 10000.0:
-            secondary_mass[mhighIdx] = secondary_mass_high
+        # --- now, randomly sample mass ratios and get secondary masses
+        secondary_mass = np.random.uniform(qmin_vals, 1) * primary_mass
+
+
 
         return secondary_mass
 
@@ -527,6 +540,8 @@ class Sample(object):
                 float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
                 means every star is in a binary pair
 
+        Optional kwargs are defined in `get_independent_sampler`
+
         Returns
         -------
             stars_in_binary : array
@@ -542,26 +557,26 @@ class Sample(object):
                 Idx of stars in binary
         """
 
-        flag_msort = kwargs.pop("flag_msort", "no_msort")
-
-        if flag_msort == "binfrac_high_mass":
-            msort = kwargs.pop("msort")
-            binfrac_model_msort = kwargs.pop("binfrac_model_msort")
+        # --- `msort` kwarg can be set to have different binary fraction above `msort`
+        msort = kwargs["msort"] if "msort" in kwargs.keys() else None
+        binfrac_model_msort = kwargs["binfrac_model_msort"] if "binfrac_model_msort" in kwargs.keys() else None
+        if (msort is None) and (binfrac_model_msort is not None):
+            raise ValueError("If binfrac_model_msort is specified, you must also supply a value for msort")
+        if (msort is not None) and (binfrac_model_msort is not None):
+            (highmassIdx,) = np.where(primary_mass >= msort)
+            (lowmassIdx,) = np.where(primary_mass < msort)
         else:
-            msort, binfrac_model_msort = 10000., 0.
+            (highmassIdx,) = np.where(primary_mass < 0)
+            (lowmassIdx,) = np.where(primary_mass >= 0)   # all idxs
 
-        sorting = msort * np.ones(primary_mass.size)
-        (mhighIdx,) = np.where(primary_mass >= sorting)
-        (mlowIdx,) = np.where(primary_mass < sorting)
-        primary_mass_high = primary_mass[mhighIdx]
-        primary_mass_low = primary_mass[mlowIdx]
 
+        # --- read in binfrac models
         if type(binfrac_model) == str:
             if binfrac_model == "vanHaaften":
                 binary_fraction_low = 1 / 2.0 + 1 / \
-                    4.0 * np.log10(primary_mass_low)
+                    4.0 * np.log10(primary_mass[lowmassIdx])
                 binary_choose_low = np.random.uniform(
-                    0, 1.0, primary_mass_low.size)
+                    0, 1.0, primary_mass[lowmassIdx].size)
 
                 (singleIdx_low,) = np.where(
                     binary_fraction_low < binary_choose_low)
@@ -574,9 +589,9 @@ class Sample(object):
         elif type(binfrac_model) == float:
             if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
                 binary_fraction_low = binfrac_model * \
-                    np.ones(primary_mass_low.size)
+                    np.ones(primary_mass[lowmassIdx].size)
                 binary_choose_low = np.random.uniform(
-                    0, 1.0, primary_mass_low.size)
+                    0, 1.0, primary_mass[lowmassIdx].size)
 
                 (singleIdx_low,) = np.where(
                     binary_choose_low > binary_fraction_low)
@@ -591,12 +606,13 @@ class Sample(object):
                 "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
             )
 
-        if msort < 10000. and type(binfrac_model_msort) == str:
+        # --- if using a different binary fraction for high-mass systems
+        if (binfrac_model_msort is not None) and (type(binfrac_model_msort) == str):
             if binfrac_model_msort == "vanHaaften":
                 binary_fraction_high = 1 / 2.0 + 1 / \
-                    4.0 * np.log10(primary_mass_high)
+                    4.0 * np.log10(primary_mass[highmassIdx])
                 binary_choose_high = np.random.uniform(
-                    0, 1.0, primary_mass_high.size)
+                    0, 1.0, primary_mass[highmassIdx].size)
 
                 (singleIdx_high,) = np.where(
                     binary_fraction_high < binary_choose_high)
@@ -606,12 +622,12 @@ class Sample(object):
                 raise ValueError(
                     "You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float"
                 )
-        elif msort < 10000. and type(binfrac_model_msort) == float:
+        elif (binfrac_model_msort is not None) and (type(binfrac_model_msort) == float):
             if (binfrac_model_msort <= 1.0) & (binfrac_model_msort >= 0.0):
                 binary_fraction_high = binfrac_model_msort * \
-                    np.ones(primary_mass_high.size)
+                    np.ones(primary_mass[highmassIdx].size)
                 binary_choose_high = np.random.uniform(
-                    0, 1.0, primary_mass_high.size)
+                    0, 1.0, primary_mass[highmassIdx].size)
 
                 (singleIdx_high,) = np.where(
                     binary_choose_high > binary_fraction_high)
@@ -621,25 +637,27 @@ class Sample(object):
                 raise ValueError(
                     "You have supplied a fraction outside of 0-1. Please choose a fraction between 0 and 1."
                 )
-        elif msort < 10000.:
+        elif (binfrac_model_msort is not None):
             raise ValueError(
                 "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
             )
 
-        if msort < 10000.:
+
+        # --- get pertinent info
+        if (binfrac_model_msort is not None):
             stars_in_binary = np.append(
-                primary_mass_high[binaryIdx_high], primary_mass_low[binaryIdx_low])
+                primary_mass[highmassIdx][binaryIdx_high], primary_mass[lowmassIdx][binaryIdx_low])
             stars_in_single = np.append(
-                primary_mass_high[singleIdx_high], primary_mass_low[singleIdx_low])
+                primary_mass[highmassIdx][singleIdx_high], primary_mass[lowmassIdx][singleIdx_low])
             binary_fraction = np.append(
                 binary_fraction_high[binaryIdx_high], binary_fraction_low[binaryIdx_low])
             binaryIdx = np.append(
-                mhighIdx[binaryIdx_high], mlowIdx[binaryIdx_low])
+                highmassIdx[binaryIdx_high], lowmassIdx[binaryIdx_low])
         else:
-            stars_in_binary = primary_mass_low[binaryIdx_low]
-            stars_in_single = primary_mass_low[singleIdx_low]
+            stars_in_binary = primary_mass[lowmassIdx][binaryIdx_low]
+            stars_in_single = primary_mass[lowmassIdx][singleIdx_low]
             binary_fraction = binary_fraction_low[binaryIdx_low]
-            binaryIdx = mlowIdx[binaryIdx_low]
+            binaryIdx = lowmassIdx[binaryIdx_low]
 
         return (
             stars_in_binary,
