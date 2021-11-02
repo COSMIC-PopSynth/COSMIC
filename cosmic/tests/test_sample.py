@@ -44,6 +44,13 @@ MOE_TOTAL_MASS = 20.27926225850954
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
+QMIN_LOWMASS = 0.1
+QMIN_HIGHMASS = 0.7
+M2MIN_LOWMASS = 0.08
+M2MIN_HIGHMASS = 12.0
+BINFRAC_LOWMASS = 499139
+BINFRAC_HIGHMASS = 2205
+
 KING_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_king_test.npz"))
 ELSON_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_elson_test.npz"))
 PLUMMER_TEST_DATA = np.load(os.path.join(TEST_DATA_DIR, "cmc_plummer_test.npz"))
@@ -85,7 +92,7 @@ def linear_fit(data):
         for bin_lo, bin_hi in zip(bins[:-1], bins[1:]):
             mid_bin.append(bin_lo + (bin_hi-bin_lo)/2)
         return mid_bin
-    
+
     hist, bins = np.histogram(data, bins=100, density=True)
     bins = center_bins(bins)
     popt, pcov = curve_fit(line, bins, hist)
@@ -148,20 +155,29 @@ class TestSample(unittest.TestCase):
         np.random.seed(2)
         # Check that the sample_secondary function samples secondary mass correctly
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='salpeter55', size=10000000)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
-        ind_massive, = np.where(mass1 > 5.0)
-        q = mass2[ind_massive]/mass1[ind_massive]
+        ind_massive, = np.where(mass1 > 15.0)
+        ind_not_massive, = np.where(mass1 < 15.0)
+
+        np.random.seed(2)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1)
+        q = mass2[ind_massive] / mass1[ind_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
+        np.random.seed(2)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=-1)
-        ind_not_massive, = np.where(mass1 < 5.0)
         q = mass2[ind_not_massive] / mass1[ind_not_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
         np.random.seed(2)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, m2_min=0.1)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, m2_min=0.08)
+        q = mass2[ind_massive] / mass1[ind_massive]
+        slope = linear_fit(q)
+        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
+        np.random.seed(2)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1, m2_min=0.08)
         q = mass2[ind_massive] / mass1[ind_massive]
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
@@ -184,6 +200,26 @@ class TestSample(unittest.TestCase):
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
+
+    def test_msort(self):
+        np.random.seed(2)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
+        # Check that qmin_msort and m2_min_msort are workings as expected
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1, m2_min=0.08, msort=15, qmin_msort=0.7, m2_min_msort=12)
+        ind_light, = np.where(mass1 < 15.0)
+        ind_massive, = np.where(mass1 >= 15.0)
+        m2_light = mass2[ind_light]
+        m2_massive = mass2[ind_massive]
+        q_light = mass2[ind_light]/mass1[ind_light]
+        q_massive = mass2[ind_massive]/mass1[ind_massive]
+        assert m2_light.min() > M2MIN_LOWMASS
+        assert m2_massive.min() > M2MIN_HIGHMASS
+        assert q_light.min() > QMIN_LOWMASS
+        assert q_massive.min() > QMIN_HIGHMASS
+        # Check that the binary fraction tracking is correct when using msort
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=mass1, binfrac_model=0.5, msort=15, binfrac_model_msort=0.8)
+        assert np.sum(binfrac==0.5) == BINFRAC_LOWMASS
+        assert np.sum(binfrac==0.8) == BINFRAC_HIGHMASS
 
 #    def test_sample_ecc(self):
 #        np.random.seed(2)

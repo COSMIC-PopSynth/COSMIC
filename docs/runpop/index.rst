@@ -72,7 +72,7 @@ Using the final kstar inputs above, the initial binary population is sampled as:
 
 .. ipython::
 
-    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    In [6]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, m2_min=0.08, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
 
     In [7]: print(InitialBinaries)
 
@@ -80,8 +80,17 @@ NOTE: the length of the initial binary data set, InitialBinaries, does not alway
 the size parameter provided to InitialBinaryTable.sampler.
 This is because the sampler accounts for a binary fraction specified by the user with the binfrac_model parameter, which is either a fraction between 0 and 1 or mass dependent following the prescription in `van Haaften+2013 <http://adsabs.harvard.edu/abs/2012A%26A...537A.104V>`_.
 
+If you want to have separate binary fractions and mass pairings for low and high mass stars, you can by supplying the `msort` kwarg to the sampler. This sets the mass above which an alternative mass pairing (specified by kwargs `qmin_msort` and `m2_min_msort`) and binary fraction model (specified by kwarg `binfrac_model_msort`) are used. This is handy if you want, for example, a higher binary fraction and more equal mass pairings for high mass stars.
 
-Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types. However, we also keep track of the total mass of the single and binary stars as well as the numbre of binary and single stars so that we can scale our results to larger populations. If you don't want to filter the binaries, you can supply final kstars as
+Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types. However, we also keep track of the total mass of the single and binary stars as well as the number of binary and single stars so that we can scale our results to larger populations. If you don't want to filter the binaries, you can supply final kstars as
+
+.. ipython::
+
+    In [8]: final_kstars = np.linspace(0, 14, 15)
+
+    In [9]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstars, final_kstars, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, m2_min=0.08, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+
+Below we show the effect of different assumptions for the independent initial sampler. The standard assumptions are shown in orange and the results of `Sana et al. 2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>`_ are shown in orange.
 
 .. plot::
    :include-source: False
@@ -92,7 +101,7 @@ Since we are interested in binaries, we only retain the binary systems that are 
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> final_kstar = np.linspace(0,14,15)
-    >>> colors = {'green' : '#1b9e77', 'purple' : '#d95f02', 'orange' : '#7570b3'}
+    >>> colors = {'green' : '#1b9e77', 'orange' : '#d95f02', 'purple' : '#7570b3'}
     >>> initC_logP, m_sin_logP, m_bin_logP, n_sin_logP, n_bin_logP = InitialBinaryTable.sampler('independent',
     >>>                                                                                         final_kstar1=final_kstar,
     >>>                                                                                         final_kstar2=final_kstar,
