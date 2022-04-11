@@ -5,7 +5,7 @@
       integer kw,testflag
       real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
-      real*8 MLalpha, zsun_wind
+      real*8 MLalpha, zsun_wind, V
       external MLalpha
       parameter(lum0=7.0d+04,kap=-0.5d0)
 
@@ -25,7 +25,8 @@
 * Must be one of these values or mlwind will cause problem with code,
 * i.e. mlwind not set (see last line of main if statement...).
 
-      zsun_wind = 0.02
+*     defined solar Z for Vink winds
+      zsun_wind = 0.019
     
       if(windflag.eq.0)then
 * BSE
@@ -183,16 +184,24 @@
          if(teff.ge.12500.and.teff.le.25000)then
             if(eddlimflag.eq.0) alpha = 0.85d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
+*           ratio of terminal velocity to escape velocity
+            V = 1.3d0   !this is for cool side of galactic/solar Z
+            V = V* (z/zsun_wind)**0.13d0    !corrected for Z
+
             dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
-     &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
+     &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(V/2.d0) +
      &            alpha*LOG10(z/zsun_wind) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
             testflag = 2
-         elseif(teff.gt.25000.and.teff.le.50000)then
+         elseif(teff.gt.25000.)then
+*        Although Vink et al. formulae  are only defined until Teff=50000K,
+*        we follow the Dutch prescription of MESA, and extend to higher Teff
+            V = 2.6d0   !this is for hot side of galactic/solar Z,
+            V = V* (z/zsun_wind)**0.13d0    !corrected for Z
             if(eddlimflag.eq.0) alpha = 0.85d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
-     &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
+     &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(V/2.d0) +
      &            alpha*LOG10(z/zsun_wind) +
      &            0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
