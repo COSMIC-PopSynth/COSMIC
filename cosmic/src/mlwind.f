@@ -5,7 +5,7 @@
       integer kw,testflag
       real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
-      real*8 MLalpha
+      real*8 MLalpha, zsun_wind, V
       external MLalpha
       parameter(lum0=7.0d+04,kap=-0.5d0)
 
@@ -24,6 +24,10 @@
 *      stars=3.
 * Must be one of these values or mlwind will cause problem with code,
 * i.e. mlwind not set (see last line of main if statement...).
+
+*     defined solar Z for Vink winds
+      zsun_wind = 0.019
+    
       if(windflag.eq.0)then
 * BSE
 *
@@ -36,7 +40,7 @@
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
-            dms = dms*(z/zsun)**(alpha)
+            dms = dms*(z/zsun_wind)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
@@ -95,7 +99,7 @@
             endif !or is it simply x = Min(1, lum/500)?
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
-            dms = dms*(z/zsun)**(alpha)
+            dms = dms*(z/zsun_wind)**(alpha)
          endif
          if(kw.ge.2.and.kw.le.9)then
 * 'Reimers' mass loss
@@ -154,7 +158,7 @@
             x = MIN(1.d0,(lum-4000.d0)/500.d0)
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
-            dms = dms*(z/zsun)**(alpha)
+            dms = dms*(z/zsun_wind)**(alpha)
             testflag = 1
          endif
          if(kw.ge.2.and.kw.le.6)then
@@ -180,17 +184,26 @@
          if(teff.ge.12500.and.teff.le.25000)then
             if(eddlimflag.eq.0) alpha = 0.85d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
+*           ratio of terminal velocity to escape velocity
+            V = 1.3d0   !this is for cool side of galactic/solar Z
+            V = V* (z/zsun_wind)**0.13d0    !corrected for Z
+
             dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
-     &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
-     &            alpha*LOG10(z/zsun) + 1.07d0*LOG10(teff/2.0d+04)
+     &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(V/2.d0) +
+     &            alpha*LOG10(z/zsun_wind) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
             testflag = 2
-         elseif(teff.gt.25000.and.teff.le.50000)then
+         elseif(teff.gt.25000.)then
+*        Although Vink et al. formulae  are only defined until Teff=50000K,
+*        we follow the Dutch prescription of MESA, and extend to higher Teff
+            V = 2.6d0   !this is for hot side of galactic/solar Z,
+            V = V* (z/zsun_wind)**0.13d0    !corrected for Z
             if(eddlimflag.eq.0) alpha = 0.85d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
-     &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
-     &            alpha*LOG10(z/zsun) +0.933d0*LOG10(teff/4.0d+04) -
+     &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(V/2.d0) +
+     &            alpha*LOG10(z/zsun_wind) +
+     &            0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
             dms = 10.d0**dms
             testflag = 2
@@ -204,7 +217,7 @@
             if(lum.gt.6.0d+05.and.x.gt.1.d0)then
                if(eddlimflag.eq.0) alpha = 0.d0
                if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-               dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
+               dms = 1.5d0*1.0d-04*((z/zsun_wind)**alpha)
                testflag = 3
             endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
@@ -212,7 +225,7 @@
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
             if(eddlimflag.eq.0) alpha = 0.86d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-            dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
+            dms = 1.0d-13*(lum**1.5d0)*((z/zsun_wind)**alpha)
             testflag = 4
          endif
 *

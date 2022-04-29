@@ -305,7 +305,10 @@ sampling
 
 =======================  =====================================================
 ``zsun``                 Sets the metallicity of the Sun which primarily affects
-                         stellar winds.
+                         stellar winds. Note that our wind prescriptions apply a 
+                         fixed zsun parameter: zsun_wind = 0.019 because the wind 
+                         prescriptions are calibrated to this value as described in
+                         `Vink+2001. <https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract>`_
 
                          **zsun = 0.014** following `Asplund 2009 <https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract>`_
 =======================  =====================================================
