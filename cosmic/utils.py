@@ -960,6 +960,13 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "zsun"
     if flag in BSEDict.keys():
+        if BSEDict[flag] != 0.019:
+            warnings.warn(
+                "'{0:s}' is set to a different value than assumed in the mlwind "
+                "prescriptions (you set it to '{1:0.2f}' and in mlwind, zsun_wind=0.019)".format(
+                    flag, BSEDict[flag]
+                )
+            )
         if BSEDict[flag] <= 0:
             raise ValueError(
                 "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
