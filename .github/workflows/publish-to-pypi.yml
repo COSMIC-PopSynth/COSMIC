@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
 
     steps:
     - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
         pip install twine flake8
 
     - name: Build manylinux Python wheels
-      uses: RalfG/python-wheels-manylinux-build@v0.2.2-manylinux2010_x86_64
+      uses: RalfG/python-wheels-manylinux-build@v0.4.2-manylinux2010_x86_64
       with:
         build-requirements: 'numpy'
         system-packages: 'hdf5 gcc-gfortran'
