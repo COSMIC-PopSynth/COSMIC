@@ -165,7 +165,7 @@ def get_independent_sampler(
     n_binaries = 0
 
     # if porb_model = `moe19`, the binary fraction is fixed based on the metallicity 
-    if porb_model == 'moe19':
+    if porb_model == "moe19":
         binfrac_model = utils.get_met_dep_binfrac(met)
         warnings.warn('your supplied binfrac_model has been overwritten to {} match Moe+2019'.format(binfrac_model))
     
@@ -227,9 +227,15 @@ def get_independent_sampler(
     rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
 
     # sample periods and eccentricities
-    porb,aRL_over_a = initconditions.sample_porb(
-        mass1_binary, mass2_binary, rad1, rad2, porb_model, met, size=mass1_binary.size
-    )
+    # if the porb_model is moe19, the metallicity needs to be supplied
+    if porb_model == "moe19":
+        porb,aRL_over_a = initconditions.sample_porb(
+            mass1_binary, mass2_binary, rad1, rad2, porb_model, met=met, size=mass1_binary.size
+        )
+    else:
+        porb,aRL_over_a = initconditions.sample_porb(
+            mass1_binary, mass2_binary, rad1, rad2, porb_model, size=mass1_binary.size
+        )
     ecc = initconditions.sample_ecc(aRL_over_a, ecc_model, size=mass1_binary.size)
 
     tphysf, metallicity = initconditions.sample_SFH(
@@ -671,7 +677,7 @@ class Sample(object):
             binaryIdx,
         )
 
-    def sample_porb(self, mass1, mass2, rad1, rad2, porb_model, met, porb_max=None, size=None, **kwargs):
+    def sample_porb(self, mass1, mass2, rad1, rad2, porb_model, porb_max=None, size=None, **kwargs):
         """Sample the orbital period according to the user-specified model
 
         Parameters
@@ -811,57 +817,44 @@ class Sample(object):
                 ))
 
         elif porb_model == "moe19":
-            def get_logP_dist(nsamp, norm_wide, norm_close):
-                logP_hi_lim = 9
-                logP_lo_lim = 0
-                wide_logP = 6
-                close_logP = 4
-                neval = 5000
-    
-                from scipy.interpolate import interp1d
-                from scipy.integrate import trapz
-                from scipy.stats import norm, truncnorm
-
-                prob_wide = norm.pdf(np.linspace(wide_logP, logP_hi_lim, neval), loc=4.9, scale=2.3)*norm_wide
-                prob_close = norm.pdf(np.linspace(logP_lo_lim, close_logP, neval), loc=4.9, scale=2.3)*norm_close
+            from scipy.interpolate import interp1d
+            from scipy.stats import norm
+            from scipy.integrate import trapz
+            met = kwargs.pop('met')
+            def get_logP_dist(nsamp, norm_wide, norm_close, mu=4.4, sigma=2.1):
+                logP_lo_lim=0
+                logP_hi_lim=9
+                close_logP=4.0
+                wide_logP=6.0
+                neval = 500
+                prob_wide = norm.pdf(np.linspace(wide_logP, logP_hi_lim, neval), loc=mu, scale=sigma)*norm_wide
+                prob_close = norm.pdf(np.linspace(logP_lo_lim, close_logP, neval), loc=mu, scale=sigma)*norm_close
                 slope = -(prob_close[-1] - prob_wide[0]) / (wide_logP - close_logP)
                 prob_intermediate = slope * (np.linspace(close_logP, wide_logP, neval) - close_logP) + prob_close[-1]
                 prob_interp_int = interp1d(np.linspace(close_logP, wide_logP, neval), prob_intermediate)
 
-
                 log_p_success = []
                 n_success = 0
-                breakpoint()
                 while n_success < nsamp:
-                    if porb_max is None:
-                        log10_porb_max = 9.0
-                    else:
-                        log10_porb_max = np.minimum(5.5, np.log10(porb_max))
-         
-                    lower = 0
-                    upper = log10_porb_max
-                    mu = 4.9
-                    sigma = 2.3
-
-                    logP_samp = truncnorm.rvs((lower-mu)/sigma,(upper-mu)/sigma, loc=mu, scale=sigma, size=nsamp * 5)
-                    logP_prob = norm.pdf(logP_samp, loc=4.9, scale=2.3) * 2
-                    
+                    logP_samp = np.random.uniform(logP_lo_lim, logP_hi_lim, nsamp*5)
+                    logP_prob = np.random.uniform(0, 1, nsamp*5)
+        
                     logP_samp_lo = logP_samp[logP_samp<close_logP]
                     logP_prob_lo = logP_prob[logP_samp<close_logP]
-                    log_p_success.extend(logP_samp_lo[np.where(logP_prob_lo < norm.pdf(logP_prob_lo, loc=4.9, scale=2.3)*norm_close)])
-                    
+                    log_p_success.extend(logP_samp_lo[np.where(logP_prob_lo < norm.pdf(logP_samp_lo, loc=mu, scale=sigma)*norm_close)])
+        
                     logP_samp_int = logP_samp[(logP_samp>=close_logP) & (logP_samp<wide_logP)]
                     logP_prob_int = logP_prob[(logP_samp>=close_logP) & (logP_samp<wide_logP)]
                     log_p_success.extend(logP_samp_int[np.where(logP_prob_int < prob_interp_int(logP_samp_int))])
-                
+    
                     logP_samp_hi = logP_samp[(logP_samp>=wide_logP)]
                     logP_prob_hi = logP_prob[(logP_samp>=wide_logP)]
 
-                    log_p_success.extend(logP_samp_hi[np.where(logP_prob_hi < norm.pdf(logP_prob_hi, loc=4.9, scale=2.3)*norm_wide)])
+                    log_p_success.extend(logP_samp_hi[np.where(logP_prob_hi < norm.pdf(logP_samp_hi, loc=mu, scale=sigma)*norm_wide)])
 
-                    n_success = len(log_p_success) 
-                    print(n_success)       
-                return np.array(log_p_success)
+                    n_success = len(log_p_success)
+                log_p_success = np.array(log_p_success)[np.random.randint(0,n_success,nsamp)]    
+                return log_p_success
             norm_wide, norm_close = utils.get_porb_norm(met)
             logP_dist = get_logP_dist(size, norm_wide, norm_close)
             logP_dist = logP_dist[np.random.randint(0, len(logP_dist), size)]
