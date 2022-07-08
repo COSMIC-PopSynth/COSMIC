@@ -133,6 +133,7 @@ def get_cmc_sampler(
     Binaries: `pandas.DataFrame`
         DataFrame of Single objects in the format of the InitialCMCTable
     """
+    
     initconditions = CMCSample()
 
     # if RNG seed is provided, then use it globally
@@ -273,6 +274,7 @@ def get_cmc_point_mass_sampler(
         DataFrame of Single objects in the format of the InitialCMCTable
 
     """
+
     initconditions = CMCSample()
 
     # get radii, radial and transverse velocities
