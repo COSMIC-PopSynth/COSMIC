@@ -767,13 +767,17 @@ class Sample(object):
             # hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
+            
+            elif type(porb_max) != float:
+                log10_porb_max = np.minimum(5.5,np.log10(porb_max))
+                log10_porb_max = log10_porb_max[ind_massive]
             else:
                 log10_porb_max = np.minimum(5.5,np.log10(porb_max))
 
             porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
             porb[ind_massive] = 10 ** utils.rndm(
-                a=0.15, b=log10_porb_max[ind_massive], g=-0.55, size=len(ind_massive)
+                a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
             )
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
         else:
