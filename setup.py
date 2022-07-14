@@ -78,7 +78,7 @@ if 'test' in sys.argv:
     ])
 
 install_requires = [
-    'numpy >= 1.22'
+    'numpy >= 1.22',
     'scipy >= 0.12.1',
     'astropy >= 1.1.1',
     'configparser',
