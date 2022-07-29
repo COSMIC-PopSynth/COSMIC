@@ -802,6 +802,29 @@ def get_FeH_from_Z(Z, Z_sun=0.02):
     return FeH
 
 
+def get_binfrac_of_Z(Z):
+    '''
+    Calculates the theoretical binary fraction as a 
+    function of metallicity.
+    
+    Parameters
+    ----------
+    Z : array
+        metallicity Z values
+    
+    Returns
+    -------
+    binfrac : array
+        binary fraction values
+    '''
+    FeH = get_FeH_from_Z(Z)
+    FeH_low = FeH[np.where(FeH<=-1.0)]
+    FeH_high = FeH[np.where(FeH>-1.0)]
+    binfrac_low = -0.0648 * FeH_low + 0.3356
+    binfrac_high = -0.1977 * FeH_high + 0.2025
+    binfrac = np.append(binfrac_low, binfrac_high)
+    return binfrac
+
 def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_sun=0.02):
     '''Returns normalization constants to produce log normals consistent with Fig 19 of Moe+19
     for the orbital period distribution
@@ -817,8 +840,8 @@ def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_su
     binfrac_tot : float
         integrated total binary fraction at solar metallicity
                 
-    RETURNS
-    ------------------------
+    Returns
+    -------
     norm_wide : float
         normalization factor for kde for wide binaries
     norm_close : float
@@ -839,8 +862,9 @@ def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_su
     norm_wide = binfrac_tot_solar/trapz(logP_pdf, log_P)
     
     # set up the close binary fraction inflection point
-    fclose = np.array([0.53, 0.40, 0.24, 0.1])
-    FeHclose = np.array([-3.0, -1.0, -0.2, 0.5])
+    FeHclose = np.linspace(-3.0, 0.5, 100)
+    fclose = -0.0648 * FeHclose + 0.3356
+    fclose[FeHclose > -1.0] = -0.1977 * FeHclose[FeHclose > -1.0] + 0.2025
     Zclose = get_Z_from_FeH(FeHclose, Z_sun=Z_sun)
     
     fclose_interp = interp1d(Zclose, fclose)
