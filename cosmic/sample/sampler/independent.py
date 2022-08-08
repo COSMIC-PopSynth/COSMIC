@@ -787,7 +787,7 @@ class Sample(object):
             log10_RL_porb = np.log10(RL_porb)
             log10_porb_min[log10_porb_min <  log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
             
-            porb = 10 ** (np.random.uniform(log_porb_min, log10_porb_max, size))
+            porb = 10 ** (np.random.uniform(log10_porb_min, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
             
             if type(log10_porb_max) != float:
