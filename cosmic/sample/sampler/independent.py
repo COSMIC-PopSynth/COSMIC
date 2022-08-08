@@ -762,7 +762,7 @@ class Sample(object):
             # Use the lower limit from the Sana12 distribution, unless this means the binaries are sampled at RL overflow. If so, 
             # change the lower limit to a_min
                          
-            log10_porb_min = np.array([0.15]*len(log10_porb_max)) 
+            log10_porb_min = np.array([0.15]*len(a_min)) 
             RL_porb = utils.p_from_a(a_min,mass1,mass2)
             log10_RL_porb = np.log10(RL_porb)
             log10_porb_min[log10_porb_min <  log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
@@ -782,7 +782,7 @@ class Sample(object):
             # Use the lower limit from the Sana12 distribution, unless this means the binaries are sampled at RL overflow. If so, 
             # change the lower limit to a_min
                          
-            log10_porb_min = np.array([0.15]*len(log10_porb_max)) 
+            log10_porb_min = np.array([0.15]*len(a_min)) 
             RL_porb = utils.p_from_a(a_min,mass1,mass2)
             log10_RL_porb = np.log10(RL_porb)
             log10_porb_min[log10_porb_min <  log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
