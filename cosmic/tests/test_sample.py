@@ -29,8 +29,10 @@ KROUPA_01_LO = -1.3
 SALPETER_55 = -2.35
 SANA12_PORB_POWER_LAW = -0.55
 FLAT_SLOPE = 0.0
-THERMAL_SLOPE = 2.0
+# Since we integrate up to 0.7 in ecc, the slope is 4.0 rounded at the 0th decimal
+THERMAL_SLOPE = 4.0
 SANA12_ECC_POWER_LAW = -0.45
+SANA12_ECC_POWER_LAW_ROUND = -0.5
 
 N_BINARY_SELECT = 85
 VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
@@ -221,29 +223,6 @@ class TestSample(unittest.TestCase):
         assert np.sum(binfrac==0.5) == BINFRAC_LOWMASS
         assert np.sum(binfrac==0.8) == BINFRAC_HIGHMASS
 
-#    def test_sample_ecc(self):
-#        np.random.seed(2)
-#        # Check that the sample_ecc function samples ecc properly
-#        ecc = SAMPLECLASS.sample_ecc(ecc_model='thermal', size=100000)
-#        slope = linear_fit(ecc)
-#        self.assertEqual(np.round(slope, 1), THERMAL_SLOPE)
-#
-#        np.random.seed(2)
-#        # Check that the sample_ecc function samples ecc properly
-#        ecc = SAMPLECLASS.sample_ecc(ecc_model='uniform', size=100000)
-#        slope = linear_fit(ecc)
-#        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
-#
-#        np.random.seed(4)
-#        # Check that the sample_ecc function samples ecc properly
-#        ecc = SAMPLECLASS.sample_ecc(ecc_model='sana12', size=1000000)
-#        power_slope = power_law_fit(ecc)
-#        self.assertEqual(np.round(power_slope, 2), SANA12_ECC_POWER_LAW)
-#
-#        np.random.seed(4)
-#        # Check that the sample_ecc function samples ecc properly
-#        ecc = SAMPLECLASS.sample_ecc(ecc_model='circular', size=1000000)
-#        self.assertEqual(np.mean(ecc), 0.0)
 #
     def test_sample_porb(self):
         # next do Sana12
@@ -258,13 +237,15 @@ class TestSample(unittest.TestCase):
         power_slope = power_law_fit(np.log10(porb))
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
+        np.random.seed(5)
         # next do Renzo+19
         m1_high = mass1+15
         rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
-        power_slope = power_law_fit(np.log10(porb))
+        porb_cut = porb[porb > 2.5]
+        power_slope = power_law_fit(np.log10(porb_cut))
         self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
@@ -301,14 +282,14 @@ class TestSample(unittest.TestCase):
 
         # now we feed aRL_over_a into sample_ecc
         ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='thermal', size=mass1.size)
-        ecc_cut = ecc[ecc < 0.91]
+        ecc_cut = ecc[ecc < 0.7]
         slope = linear_fit(ecc_cut)
-        self.assertEqual(np.round(slope, 1), THERMAL_SLOPE)
+        self.assertEqual(np.round(slope, 0), THERMAL_SLOPE)
 
         ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='sana12', size=mass1.size)
         ecc_cut = ecc[ecc < 0.91]
         power_slope = power_law_fit(ecc_cut)
-        self.assertEqual(np.round(power_slope, 2), SANA12_ECC_POWER_LAW)
+        self.assertEqual(np.round(power_slope, 1), SANA12_ECC_POWER_LAW_ROUND)
 
         ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='circular', size=mass1.size)
         self.assertEqual(np.mean(ecc), 0.0)

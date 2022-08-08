@@ -759,7 +759,15 @@ class Sample(object):
             else:
                 log10_porb_max = np.minimum(5.5,np.log10(porb_max))
 
-            porb = 10 ** utils.rndm(a=0.15, b=log10_porb_max, g=-0.55, size=size)
+            # Use the lower limit from the Sana12 distribution, unless this means the binaries are sampled at RL overflow. If so, 
+            # change the lower limit to a_min
+                         
+            log10_porb_min = np.array([0.15]*len(a_min)) 
+            RL_porb = utils.p_from_a(a_min,mass1,mass2)
+            log10_RL_porb = np.log10(RL_porb)
+            log10_porb_min[log10_porb_min <  log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
+            
+            porb = 10 ** utils.rndm(a=log10_porb_min, b=log10_porb_max, g=-0.55, size=size)
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
 
         elif porb_model == "renzo19":
@@ -767,14 +775,27 @@ class Sample(object):
             # hard/soft boundary or 5.5 (from Sana paper)
             if porb_max is None:
                 log10_porb_max = 5.5
+            
             else:
                 log10_porb_max = np.minimum(5.5,np.log10(porb_max))
-
-            porb = 10 ** (np.random.uniform(0.15, log10_porb_max, size))
+            
+            # Use the lower limit from the Sana12 distribution, unless this means the binaries are sampled at RL overflow. If so, 
+            # change the lower limit to a_min
+            log10_porb_min = np.array([0.15]*len(a_min)) 
+            RL_porb = utils.p_from_a(a_min,mass1,mass2)
+            log10_RL_porb = np.log10(RL_porb)
+            log10_porb_min[log10_porb_min <  log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
+            
+            porb = 10 ** (np.random.uniform(log10_porb_min, log10_porb_max, size))
             (ind_massive,) = np.where(mass1 > 15)
+            
+            if type(log10_porb_max) != float:
+                log10_porb_max = log10_porb_max[ind_massive]
+                log10_porb_min = log10_porb_min[ind_massive]              
+            
+            
             porb[ind_massive] = 10 ** utils.rndm(
-                a=0.15, b=log10_porb_max, g=-0.55, size=len(ind_massive)
-            )
+                a=log10_porb_min[ind_massive], b=log10_porb_max, g=-0.55, size=len(ind_massive))
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
         else:
             raise ValueError(
@@ -823,7 +844,10 @@ class Sample(object):
             return ecc
 
         elif ecc_model == "sana12":
-            ecc = utils.rndm(a=0.001, b=0.9, g=-0.45, size=size)
+            sana_max = np.array([0.9]*len(e_max))
+            max_e = np.minimum(e_max, sana_max)
+            ecc = utils.rndm(a=0.001, b=max_e, g=-0.45, size=size)
+            
             return ecc
 
         elif ecc_model == "circular":
