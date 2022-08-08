@@ -78,8 +78,7 @@ if 'test' in sys.argv:
     ])
 
 install_requires = [
-    'numpy >= 1.16, <=1.18.4 ; python_version == \'3.6\'',
-    'numpy >= 1.16 ; python_version > \'3.6\'',
+    'numpy >= 1.22',
     'scipy >= 0.12.1',
     'astropy >= 1.1.1',
     'configparser',
@@ -157,14 +156,15 @@ setup(name=DISTNAME,
       install_requires=install_requires,
       tests_require=tests_require,
       extras_require=extras_require,
-      python_requires='>3.5, <4',
+      python_requires='>3.6, <4',
       use_2to3=False,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.9',
+          'Programming Language :: Python :: 3.10',
           'Intended Audience :: Science/Research',
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Science/Research',
