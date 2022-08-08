@@ -781,7 +781,6 @@ class Sample(object):
             
             # Use the lower limit from the Sana12 distribution, unless this means the binaries are sampled at RL overflow. If so, 
             # change the lower limit to a_min
-                         
             log10_porb_min = np.array([0.15]*len(a_min)) 
             RL_porb = utils.p_from_a(a_min,mass1,mass2)
             log10_RL_porb = np.log10(RL_porb)
@@ -796,7 +795,7 @@ class Sample(object):
             
             
             porb[ind_massive] = 10 ** utils.rndm(
-                a=log10_porb_min, b=log10_porb_max, g=-0.55, size=len(ind_massive))
+                a=log10_porb_min[ind_massive], b=log10_porb_max, g=-0.55, size=len(ind_massive))
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
         else:
             raise ValueError(
