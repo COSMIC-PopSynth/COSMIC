@@ -24,13 +24,15 @@ jobs:
     - name: Install dependencies
       run: |
         conda install numpy h5py
-        conda install -c anaconda gfortran_osx-64
         python3 -m pip install --upgrade pip
         python3 -m pip install --upgrade setuptools wheel
         python3 -m pip install --upgrade twine
 
     - name: Build a binary wheel and a source tarball
       run: |
+        sudo ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
+        sudo mkdir /usr/local/gfortran
+        sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
         NPY_DISTUTILS_APPEND_FLAGS=1 python3 setup.py sdist bdist_wheel
 
     - name: Upload builds
