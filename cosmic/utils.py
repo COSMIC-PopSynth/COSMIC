@@ -51,9 +51,15 @@ __all__ = [
     "error_check",
     "check_initial_conditions",
     "convert_kstar_evol_type",
+    "parse_inifile",
     "pop_write",
     "a_from_p",
     "p_from_a",
+    "get_Z_from_FeH",
+    "get_FeH_from_Z",
+    "get_binfrac_of_Z",
+    "get_porb_norm",
+    "get_met_dep_binfrac"
 ]
 
 
@@ -805,7 +811,7 @@ def get_FeH_from_Z(Z, Z_sun=0.02):
 def get_binfrac_of_Z(Z):
     '''
     Calculates the theoretical binary fraction as a 
-    function of metallicity.
+    function of metallicity. Following Moe+2019
     
     Parameters
     ----------
@@ -824,6 +830,7 @@ def get_binfrac_of_Z(Z):
     binfrac_high = -0.1977 * FeH_high + 0.2025
     binfrac = np.append(binfrac_low, binfrac_high)
     return binfrac
+
 
 def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_sun=0.02):
     '''Returns normalization constants to produce log normals consistent with Fig 19 of Moe+19

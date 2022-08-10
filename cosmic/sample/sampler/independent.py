@@ -837,11 +837,19 @@ class Sample(object):
                 (lower-mu)/sigma,(upper-mu)/sigma, loc=mu, scale=sigma, size=size
                 ))
 
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2)
+
         elif porb_model == "moe19":
             from scipy.interpolate import interp1d
             from scipy.stats import norm
             from scipy.integrate import trapz
-            met = kwargs.pop('met')
+            try:
+                met = kwargs.pop('met')
+            except:
+                raise ValueError(
+                    "You have chosen moe19 for the orbital period distribution which is a metallicity-dependent distribution. "
+                    "Please specify a metallicity for the population."
+                    )
             def get_logP_dist(nsamp, norm_wide, norm_close, mu=4.4, sigma=2.1):
                 logP_lo_lim=0
                 logP_hi_lim=9

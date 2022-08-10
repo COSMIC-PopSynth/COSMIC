@@ -33,6 +33,9 @@ FLAT_SLOPE = 0.0
 THERMAL_SLOPE = 4.0
 SANA12_ECC_POWER_LAW = -0.45
 SANA12_ECC_POWER_LAW_ROUND = -0.5
+MEAN_RAGHAVAN = 4.9
+SIGMA_RAGHAVAN = 2.3
+
 
 N_BINARY_SELECT = 85
 VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
@@ -256,7 +259,7 @@ class TestSample(unittest.TestCase):
         uniform_slope = linear_fit(np.log10(porb_log_uniform))
         self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
 
-        # finally do the log uniform
+        # next check the log uniform
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'log_uniform', size=mass1.size
         )
@@ -265,6 +268,28 @@ class TestSample(unittest.TestCase):
         sep = sep[sep > 10]
         uniform_slope = linear_fit(np.log10(sep))
         self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+
+        # next check raghavan10
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'raghavan10', size=mass1.size
+        )
+        log_porb_mean = np.mean(np.log10(porb))
+        log_porb_sigma = np.std(np.log10(porb))
+        self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
+        self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
+
+        # next check moe19
+        from ..utils import get_met_dep_binfrac
+        metallicity = 0.005
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'raghavan10', size=mass1.size, met=metallicity
+        )
+        # this is a metallicity dependent population:
+        binfrac = get_met_dep_binfrac(metallicity)
+
+        close_bin = porb[porb < 10000]
+        breakpoint()
+        print(len(close_bin)/len(porb))
 
     def test_sample_ecc(self):
         np.random.seed(2)
