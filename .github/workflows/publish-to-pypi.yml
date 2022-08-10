@@ -20,11 +20,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         conda-channels: anaconda
-        system-packages: 'gfortran11'
 
     - name: Install dependencies
       run: |
         conda install numpy h5py
+        conda install -c anaconda gfortran_osx-64
         python3 -m pip install --upgrade pip
         python3 -m pip install --upgrade setuptools wheel
         python3 -m pip install --upgrade twine
