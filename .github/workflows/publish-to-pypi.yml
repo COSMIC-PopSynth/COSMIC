@@ -33,7 +33,7 @@ jobs:
         NPY_DISTUTILS_APPEND_FLAGS=1 LDFLAGS='-static -static-libgfortran' python3 setup.py sdist bdist_wheel
 
     - name: Upload builds
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: dist
         path: dist
@@ -43,7 +43,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.8
 
@@ -61,7 +61,7 @@ jobs:
         pip-wheel-args: '--no-deps'
 
     - name: Upload builds
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: dist
         path: wheelhouse
@@ -78,7 +78,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -89,7 +89,7 @@ jobs:
         python3 -m pip install --upgrade twine
 
     - name: Download builds
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v3
       with:
           name: dist
 
