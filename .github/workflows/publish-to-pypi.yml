@@ -56,7 +56,7 @@ jobs:
         pip install twine flake8
 
     - name: Build manylinux Python wheels
-      uses: RalfG/python-wheels-manylinux-build@v0.4.2-manylinux2010_x86_64
+      uses: RalfG/python-wheels-manylinux-build@v0.5.0-manylinux2014_x86_64
       with:
         build-requirements: 'numpy'
         system-packages: 'hdf5 gcc-gfortran'
@@ -67,7 +67,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: wheelhouse
+        path: dist
 
   publish:
     needs: [build-code-mac, build-code-linux]
@@ -97,6 +97,6 @@ jobs:
           name: dist
 
     - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.pypi_password }}
