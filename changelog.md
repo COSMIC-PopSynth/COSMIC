@@ -3,6 +3,9 @@
 ## 0.0 - 3.4
 See the discussed changes in our previous releases here: https://github.com/COSMIC-PopSynth/COSMIC/releases
 
+## 3.4.1.1
+ - updated the actions to build properly
+
 ## 3.4.1
  - fixed sampling issues for renzo19 and sana12 so that they work with CMC
  - update to Docker ubuntu image
