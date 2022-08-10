@@ -3,9 +3,6 @@
 ## 0.0 - 3.4
 See the discussed changes in our previous releases here: https://github.com/COSMIC-PopSynth/COSMIC/releases
 
-## 3.4.1.1
- - updated the actions to build properly
-
 ## 3.4.1
  - fixed sampling issues for renzo19 and sana12 so that they work with CMC
  - update to Docker ubuntu image
@@ -16,3 +13,6 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - fixed sampling issues from Plummer profiles in cmc.py
  - fixed Eddington limits such that wind accretion is limited to eddington and thus limits RLO accretion if the wind accretion is already super-Eddington
  - fixed errors in Marchant+ PISN prescription
+
+## 3.4.1.1
+ - updated the actions to build properly
