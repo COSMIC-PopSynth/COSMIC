@@ -20,6 +20,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         conda-channels: anaconda
+        system-packages: 'gfortran11'
 
     - name: Install dependencies
       run: |
