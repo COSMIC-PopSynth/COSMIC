@@ -67,7 +67,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist
+        path: workspace
 
   publish:
     needs: [build-code-mac, build-code-linux]
