@@ -29,3 +29,6 @@ __credits__ = [
     "Michael Zevin <zevin@northwestern.edu>",
 ]
 del get_versions
+
+from . import _version
+__version__ = _version.get_versions()['version']
