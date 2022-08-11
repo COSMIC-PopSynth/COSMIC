@@ -2,11 +2,6 @@ name: Publish Python 🐍 distributions 📦 to PyPI
 
 on: push
 
-env:
-  CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
-  CIBW_SKIP: "*-win32 *musllinux*"
-  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-
 jobs:
   build-wheels:
     name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
