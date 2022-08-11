@@ -1,0 +1,96 @@
+name: Publish Python 🐍 distributions 📦 to PyPI
+
+on: push
+
+env:
+  CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
+  CIBW_SKIP: "*-win32 *musllinux*"
+  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+
+jobs:
+  build-wheels:
+    name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.7, 3.8, 3.9, "3.10"]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Set up Anaconda Python ${{ matrix.python-version }}
+      uses: s-weigand/setup-conda@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        conda-channels: anaconda
+        
+    - name: Setup Mac
+      if: runner.os == 'macOS'
+      run: |
+        conda install numpy h5py versioneer
+        sudo ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
+        sudo mkdir /usr/local/gfortran
+        sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
+        
+    - name: Setup Linux
+      if: runner.os == 'Linux'
+      run: |
+        conda install numpy h5py versioneer
+    - name: Build wheels
+      run: |
+        python -m pip install cibuildwheel
+        python -m cibuildwheel --output-dir wheelhouse
+    - uses: actions/upload-artifact@v3
+      with:
+        path: ./wheelhouse/*.whl
+
+  build-source-dist:
+    name: Build source dist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        name: Install Python
+        with:
+          python-version: "3.7" 
+          
+      - name: Build dist
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine numpy
+          python setup.py sdist
+      - uses: actions/upload-artifact@v3
+        with:
+          path: dist/*.tar.gz
+
+  publish:
+    needs: [build-wheels, build-source-dist]
+    name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Download builds
+      uses: actions/download-artifact@v3
+      with:
+          name: artifact
+          path: dist
+
+    - name: Publish distribution 📦 to PyPI
+      if: github.event_name == 'release' && github.event.action == 'published'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.pypi_password }}
