@@ -37,6 +37,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
+        path: dist
 
   build-code-linux:
     runs-on: ubuntu-latest
@@ -64,6 +65,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
+        path: dist
 
   publish:
     needs: [build-code-mac, build-code-linux]
