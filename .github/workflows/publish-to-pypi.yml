@@ -1,6 +1,8 @@
 name: Publish Python 🐍 distributions 📦 to PyPI
 
-on: push
+on: 
+  release:
+    types: [published]
 
 jobs:
   build-code-mac:
@@ -13,6 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        
     - name: Set up Anaconda Python ${{ matrix.python-version }}
       uses: s-weigand/setup-conda@v1
       with:
@@ -98,5 +103,4 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.pypi_password }}
-        verbose: true
 
