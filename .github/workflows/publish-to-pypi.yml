@@ -18,16 +18,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Anaconda Python ${{ matrix.python-version }}
-      uses: s-weigand/setup-conda@v1
+    - uses: actions/setup-python@v4
+      name: Install Python
       with:
-        python-version: ${{ matrix.python-version }}
-        conda-channels: anaconda
+        python-version: "3.8"
         
     - name: Setup Mac
       if: runner.os == 'macOS'
       run: |
-        conda install numpy h5py
+        python -m pip numpy h5py
         sudo ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
         sudo mkdir /usr/local/gfortran
         sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
@@ -35,12 +34,14 @@ jobs:
     - name: Setup Linux
       if: runner.os == 'Linux'
       run: |
-        conda install numpy
+        python -m pip numpy h5py
 
     - name: Build wheels
       run: |
+        python -m pip numpy
         python -m pip install cibuildwheel
         python -m cibuildwheel --output-dir wheelhouse
+        
     - uses: actions/upload-artifact@v3
       with:
         path: ./wheelhouse/*.whl
