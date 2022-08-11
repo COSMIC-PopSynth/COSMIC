@@ -32,8 +32,6 @@ jobs:
         sudo mkdir /usr/local/gfortran
         sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
         NPY_DISTUTILS_APPEND_FLAGS=1 python3 setup.py sdist bdist_wheel
-        pwd
-        ls dist/
 
     - name: Upload builds
       uses: actions/upload-artifact@v3
@@ -61,12 +59,12 @@ jobs:
         build-requirements: 'numpy'
         system-packages: 'hdf5 gcc-gfortran'
         package-path: './'
-        pip-wheel-args: '--no-deps -w ./'
+        pip-wheel-args: '--no-deps -w ./dist/'
         
     - name : Check wheel path
       run: |
         pwd
-        ls
+        ls dist
 
     - name: Upload builds
       uses: actions/upload-artifact@v3
