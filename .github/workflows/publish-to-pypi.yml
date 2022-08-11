@@ -26,7 +26,7 @@ jobs:
     - name: Setup Mac
       if: runner.os == 'macOS'
       run: |
-        python -m pip numpy h5py
+        python -m pip install numpy h5py
         sudo ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
         sudo mkdir /usr/local/gfortran
         sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
@@ -34,11 +34,10 @@ jobs:
     - name: Setup Linux
       if: runner.os == 'Linux'
       run: |
-        python -m pip numpy h5py
+        python -m pip install numpy h5py
 
     - name: Build wheels
       run: |
-        python -m pip numpy
         python -m pip install cibuildwheel
         python -m cibuildwheel --output-dir wheelhouse
         
