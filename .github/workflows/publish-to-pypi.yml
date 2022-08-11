@@ -1,8 +1,6 @@
 name: Publish Python 🐍 distributions 📦 to PyPI
 
-on:
-  release:
-    types: [published]
+on: push
 
 jobs:
   build-code-mac:
@@ -60,14 +58,14 @@ jobs:
       with:
         build-requirements: 'numpy'
         system-packages: 'hdf5 gcc-gfortran'
-        package-path: ''
+        package-path: './'
         pip-wheel-args: '--no-deps'
 
     - name: Upload builds
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: workspace
+        path: dist
 
   publish:
     needs: [build-code-mac, build-code-linux]
