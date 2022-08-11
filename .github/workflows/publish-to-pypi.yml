@@ -60,11 +60,6 @@ jobs:
         system-packages: 'hdf5 gcc-gfortran'
         package-path: './'
         pip-wheel-args: '--no-deps -w ./dist/'
-        
-    - name : Check wheel path
-      run: |
-        pwd
-        ls dist
 
     - name: Upload builds
       uses: actions/upload-artifact@v3
@@ -98,6 +93,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
           name: dist
+          
+    - name: Check build download
+      run: |
+        pwd
+        ls
 
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
