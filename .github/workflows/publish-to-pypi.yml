@@ -92,7 +92,7 @@ jobs:
     - name: Download builds
       uses: actions/download-artifact@v3
       with:
-          name: dist
+          name: dist/dist
 
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
