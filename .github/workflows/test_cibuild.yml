@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distributions 📦 to PyPI
+name: Build wheel and publish
 
 on: push
 
@@ -20,16 +20,15 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Set up Anaconda Python ${{ matrix.python-version }}
-      uses: s-weigand/setup-conda@v1
+    - uses: actions/setup-python@v4
+      name: Install Python
       with:
-        python-version: ${{ matrix.python-version }}
-        conda-channels: anaconda
+        python-version: "3.7"
         
     - name: Setup Mac
       if: runner.os == 'macOS'
       run: |
-        conda install numpy h5py versioneer
+        python -m pip install numpy h5py versioneer
         sudo ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
         sudo mkdir /usr/local/gfortran
         sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
@@ -37,7 +36,8 @@ jobs:
     - name: Setup Linux
       if: runner.os == 'Linux'
       run: |
-        conda install numpy h5py versioneer
+        python -m pip install numpy h5py versioneer
+        
     - name: Build wheels
       run: |
         python -m pip install cibuildwheel
