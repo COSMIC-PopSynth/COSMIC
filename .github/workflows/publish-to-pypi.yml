@@ -3,62 +3,69 @@ name: Publish Python 🐍 distributions 📦 to PyPI
 on: push
 
 jobs:
-  build-wheels:
-    name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
+  build-code-mac:
+    name: Build code on OSX
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        os: [macos-latest]
+        python-version: [3.7, 3.8, 3.9, 3.10]
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      name: Install Python
+    - uses: actions/checkout@v2
+    - name: Set up Anaconda Python ${{ matrix.python-version }}
+      uses: s-weigand/setup-conda@v1
       with:
-        python-version: "3.8"
-        
-    - name: Setup Mac
-      if: runner.os == 'macOS'
-      run: |
-        sudo ln -s /usr/local/bin/gfortran-10 /usr/local/bin/gfortran
-        sudo mkdir /usr/local/gfortran
-        sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
-        
+        python-version: ${{ matrix.python-version }}
+        conda-channels: anaconda
 
-    - name: Build wheels
+    - name: Install dependencies
       run: |
+        conda install numpy h5py
         python -m pip install --upgrade pip
-        python -m pip install numpy
-        python -m pip install cibuildwheel
-        python -m cibuildwheel --output-dir wheelhouse
-        
-    - uses: actions/upload-artifact@v3
-      with:
-        path: ./wheelhouse/*.whl
+        pip install --upgrade setuptools wheel
+        pip install --upgrade twine
 
-  build-source-dist:
-    name: Build source dist
+    - name: Build a binary wheel and a source tarball
+      run: |
+        NPY_DISTUTILS_APPEND_FLAGS=1 python setup.py sdist bdist_wheel
+
+    - name: Upload builds
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist
+
+  build-code-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        name: Install Python
-        with:
-          python-version: "3.7" 
-          
-      - name: Build dist
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine numpy
-          python setup.py sdist
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
 
-      - uses: actions/upload-artifact@v3
-        with:
-          path: dist/*.tar.gz
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine flake8
 
+    - name: Build manylinux Python wheels
+      uses: RalfG/python-wheels-manylinux-build@v0.4.2-manylinux2010_x86_64
+      with:
+        build-requirements: 'numpy'
+        system-packages: 'hdf5 gcc-gfortran'
+        package-path: ''
+        pip-wheel-args: '--no-deps -w ./wheelhouse'
+
+    - name: Upload builds
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: wheelhouse
+        
   publish:
-    needs: [build-wheels, build-source-dist]
+    needs: [build-code-mac, build-code-linux]
     name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ${{ matrix.os }}
     strategy:
@@ -69,17 +76,23 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade setuptools wheel
+        python3 -m pip install --upgrade twine
+
     - name: Download builds
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v1
       with:
-          name: artifact
-          path: dist
+          name: dist
 
     - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.pypi_password }}
+
