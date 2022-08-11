@@ -37,7 +37,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist
 
   build-code-linux:
     runs-on: ubuntu-latest
@@ -59,13 +58,12 @@ jobs:
         build-requirements: 'numpy'
         system-packages: 'hdf5 gcc-gfortran'
         package-path: './'
-        pip-wheel-args: '--no-deps'
+        pip-wheel-args: '--no-deps -w ./'
 
     - name: Upload builds
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist
 
   publish:
     needs: [build-code-mac, build-code-linux]
@@ -92,7 +90,7 @@ jobs:
     - name: Download builds
       uses: actions/download-artifact@v3
       with:
-          name: dist/dist
+          name: dist
 
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
