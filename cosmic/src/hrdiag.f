@@ -803,7 +803,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Store the initial BH mass for calculating the ISCO later
                      if(BHbirth_ind.eq.0)then
                         Mbh_initial = mt
-                        WRITE(*,*) Mbh_initial
                         BHbirth_ind = 1
                      endif
                   endif
@@ -1185,7 +1184,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Store the initial BH mass for calculating the ISCO later
                      if(BHbirth_ind.eq.0)then
                         Mbh_initial = mt
-                        WRITE(*,*) Mbh_initial
                         BHbirth_ind = 1
                      endif
                      endif
@@ -1285,7 +1283,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Store the initial BH mass for calculating the ISCO later
          if(BHbirth_ind.eq.0)then
             Mbh_initial = mt
-            WRITE(*,*) Mbh_initial
             BHbirth_ind = 1
          endif
          lum = 1.0d-10
