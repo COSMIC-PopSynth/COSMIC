@@ -1417,10 +1417,22 @@ component.
 *
 *
 * Force new NS or BH to have a birth spin peirod and magnetic field.
-* 
+*
          if(kstar(k).eq.13.or.kstar(k).eq.14)then
 * re-calculate the Eddington limit of the newly formed CO
-            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(k)  
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(k)
+* For BHs, follow Marchant et al. 2017
+            if(kstar(k).eq.14)then
+               maxspinBH = 6.d0**(1.d0/2.d0) * Mbh_initial
+               if(mass(k).lt.maxspinBH)then
+                  etaBH = (1 -
+     &       (1 - (mass(k)/(3.d0*Mbh_initial))**(2.d0)))**(1.d0/2.d0)
+               else
+                  etaBH = 0.42
+               endif
+               dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
+     &       *(1.d0/etaBH)*rad(k)*tb
+            endif
             if(tphys-epoch(k).lt.tiny)then
                if(kstar(k).eq.13.and.pulsar.gt.0)then
 *                  write(93,*)'birth start: ',tphys,k,B_0(k),ospin(k)
