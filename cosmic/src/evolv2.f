@@ -1333,7 +1333,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)     
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1413,11 +1413,14 @@ component.
             mass0(k) = m0
             epoch(k) = tphys - age
          endif
+
 *
 *
 * Force new NS or BH to have a birth spin peirod and magnetic field.
-*
+* 
          if(kstar(k).eq.13.or.kstar(k).eq.14)then
+* re-calculate the Eddington limit of the newly formed CO
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(k)  
             if(tphys-epoch(k).lt.tiny)then
                if(kstar(k).eq.13.and.pulsar.gt.0)then
 *                  write(93,*)'birth start: ',tphys,k,B_0(k),ospin(k)
@@ -1930,6 +1933,7 @@ component.
          dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
      &       *(1.d0/etaBH)*rad(j2)*tb
       endif
+
       supedd = .false.
       novae = .false.
       disk = .false.
@@ -2948,6 +2952,7 @@ component.
          dm2 = km*dm2
          dm22 = km*dm22
          dme = km*dme
+
 *
 * Calculate orbital angular momentum change due to system mass loss.
 *
@@ -3686,6 +3691,7 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
       endif
+
 *
 * Test whether the primary still fills its Roche lobe.
 *
