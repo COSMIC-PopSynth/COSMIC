@@ -1432,7 +1432,6 @@ component.
                endif
                dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
      &    *(1.d0/etaBH)*rad(k)
-               WRITE(*,*)'test:',etaBH,dme,Mbh_initial,mass(k)
             endif
             if(tphys-epoch(k).lt.tiny)then
                if(kstar(k).eq.13.and.pulsar.gt.0)then
