@@ -271,7 +271,7 @@ Cf2py intent(out) kick_info_out
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
 
-      BHbirth_ind = 0
+      Mbh_initial = 0.d0
 
 
 * disrupt tracks if system get disrupted by a SN during the common
