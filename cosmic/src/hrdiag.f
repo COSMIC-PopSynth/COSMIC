@@ -800,6 +800,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
                      endif
                      mt = mrem
+* Store the initial BH mass for calculating the ISCO later
+                     if(Mbh_initial.eq.0)then
+                        Mbh_initial = mt
+                     endif
                   endif
                endif
             endif
@@ -1176,7 +1180,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                         endif
                      endif
                      mt = mrem
-
+* Store the initial BH mass for calculating the ISCO later
+                     if(Mbh_initial.eq.0)then
+                        Mbh_initial = mt
+                     endif
                      endif
                   endif
                endif
@@ -1271,6 +1278,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *        Black hole
 *
          mc = mt
+* Store the initial BH mass for calculating the ISCO later
+         if(Mbh_initial.eq.0)then
+            Mbh_initial = mt
+         endif
          lum = 1.0d-10
          r = 4.24d-06*mt
       endif
