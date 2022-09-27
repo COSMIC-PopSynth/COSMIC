@@ -1,5 +1,5 @@
-numpy >= 1.16, <=1.18.4 ; python_version == '3.6'
-numpy >= 1.16 ; python_version > '3.6'
+numpy >= 1.22 
+python_version >= 3.7
 scipy >= 0.12.1
 astropy >= 1.1.1
 configparser

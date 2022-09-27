@@ -24,16 +24,10 @@ from __future__ import print_function
 
 import glob
 import os.path
-import versioneer
 import sys
 
 from setuptools import find_packages
 from distutils.command.sdist import sdist
-
-try:
-    from numpy.distutils.core import setup, Extension
-except ImportError:
-    raise ImportError("Building fortran extensions requires numpy.")
 
 # set basic metadata
 PACKAGENAME = "cosmic"
@@ -45,9 +39,15 @@ LICENSE = "GPLv3"
 cmdclass = {}
 
 # -- versioning ---------------------------------------------------------------
-
-__version__ = versioneer.get_version()
-cmdclass.update(versioneer.get_cmdclass())
+import re
+VERSIONFILE = "cosmic/_version.py"
+verstrline = open(VERSIONFILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+mo = re.search(VSRE, verstrline, re.M)
+if mo:
+    verstr = mo.group(1)
+else:
+    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
 
 # -- documentation ------------------------------------------------------------
 
@@ -104,6 +104,10 @@ extras_require = {
     ],
 }
 
+try:
+    from numpy.distutils.core import setup, Extension
+except ImportError:
+    raise ImportError("Building fortran extensions requires numpy.")
 # fortran compile
 wrapper = Extension(
     "cosmic._evolvebin",
@@ -139,7 +143,7 @@ scripts = glob.glob(os.path.join("bin", "*"))
 
 setup(name=DISTNAME,
       provides=[PACKAGENAME],
-      version=__version__,
+      version=verstr,
       description="Compact Object Synthesis and Monte Carlo Investigation Code",
       long_description=long_description,
       long_description_content_type='text/markdown',
@@ -157,7 +161,6 @@ setup(name=DISTNAME,
       tests_require=tests_require,
       extras_require=extras_require,
       python_requires='>3.6, <4',
-      use_2to3=False,
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python',
