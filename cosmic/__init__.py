@@ -20,12 +20,11 @@
 """COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code)
 """
 
-from ._version import get_versions
+from ._version import __version__
 
-__version__ = get_versions()["version"]
+__version__ = __version__
 __author__ = "Katie Breivik <katie.breivik@gmail.com>"
 __credits__ = [
     "Scott Coughlin <scott.coughlin@ligo.org>",
     "Michael Zevin <zevin@northwestern.edu>",
 ]
-del get_versions

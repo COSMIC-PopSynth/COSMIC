@@ -14,5 +14,9 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - fixed Eddington limits such that wind accretion is limited to eddington and thus limits RLO accretion if the wind accretion is already super-Eddington
  - fixed errors in Marchant+ PISN prescription
 
-## 3.4.1.1
+## 3.4.1-3.4.5
  - updated the actions to build properly
+
+## 3.4.6
+ - added new Eddington limit prescriptions for BH accretion
+ - cleaned up versioning
