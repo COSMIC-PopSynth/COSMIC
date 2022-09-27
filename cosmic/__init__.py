@@ -28,4 +28,3 @@ __credits__ = [
     "Scott Coughlin <scott.coughlin@ligo.org>",
     "Michael Zevin <zevin@northwestern.edu>",
 ]
-del get_versions
