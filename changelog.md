@@ -20,3 +20,6 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.4.6
  - added new Eddington limit prescriptions for BH accretion
  - cleaned up versioning
+
+## 3.4.7
+ - changed scipy and numpy requirements ordering because of scipy limits on numpy
