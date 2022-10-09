@@ -278,9 +278,9 @@ if __name__ == '__main__':
     initC_filter_match = []
 
     # Warn about qmin and m2_min
-    if (hasattr(args,'qmin')) & (hasattr(args,'m2_min')):
-        print("You have specified both qmin and m2_min.")
-        print("COSMIC will use qmin={} to determine the secondary masses in the initial sample.".format(args.qmin))
+    if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
+        warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
+                      "determine the secondary masses in the initial sample.")
 
         log_file.write("You have specified both qmin and m2_min.\n")
         log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
