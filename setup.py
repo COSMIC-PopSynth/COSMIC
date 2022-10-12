@@ -87,7 +87,8 @@ install_requires = [
     'tables > 3.5.0',
     'h5py >= 1.3',
     'schwimmbad >= 0.3.1',
-    'matplotlib >= 2.0.0'
+    'matplotlib >= 2.0.0',
+    'importlib-metadata < 5.0'
 ]
 tests_require = [
     'pytest'
