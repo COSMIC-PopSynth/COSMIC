@@ -222,6 +222,7 @@ the same system that produces a GW150914-like binary, but run over several initi
 periods spaced evenly in log space.
 
 .. ipython::
+    :okwarning:
 
     In [16]: n_grid = 10
 
