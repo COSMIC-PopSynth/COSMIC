@@ -22,4 +22,4 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - cleaned up versioning
 
 ## 3.4.7
- - changed scipy and numpy requirements ordering because of scipy limits on numpy
+ - Exchanged any print statements for `warnings.warn` to allow silencing

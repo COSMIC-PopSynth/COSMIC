@@ -17,6 +17,7 @@ ipython
 sphinx_rtd_theme
 coverage
 cpp-coveralls
-flake8
+importlib-metadata < 5.0
+flake8 < 5
 pytest
 pytest-cov
