@@ -70,6 +70,7 @@ Once the binary is initialized and the BSE model is set, the system is evolved w
 the Evolve class, which calls the evolv2.f subroutine in the BSE source code.
 
 .. ipython::
+    :okwarning:
 
     In [6]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
 
@@ -221,6 +222,7 @@ the same system that produces a GW150914-like binary, but run over several initi
 periods spaced evenly in log space.
 
 .. ipython::
+    :okwarning:
 
     In [16]: n_grid = 10
 
@@ -247,6 +249,7 @@ COSMIC has the ability to set time resolution of the bcm array depending on the 
 First, print all time steps during mass transfer
 
 .. ipython::
+    :okwarning:
 
     In [16]: single_binary = InitialBinaryTable.InitialBinaries(m1=7.806106, m2=5.381412, porb=2858.942021, ecc=0.601408, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.02)
 
@@ -259,6 +262,7 @@ First, print all time steps during mass transfer
 Second, pick a certain resolution for the bcm array until the system mergers or is disrutped and then only print the final state
 
 .. ipython::
+    :okwarning:
 
     In [16]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict, timestep_conditions =[['binstate=0', 'dtp=1.0']])
 
@@ -267,6 +271,7 @@ Second, pick a certain resolution for the bcm array until the system mergers or 
 Finally, we show how to print a fine resolution only during the HMXB stage of the evolution.
 
 .. ipython::
+    :okwarning:
 
     In [3]: single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
 
