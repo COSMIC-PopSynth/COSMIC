@@ -237,6 +237,7 @@ As in :ref:`examples`, once an initial binary population is sampled, it is evolv
 The syntax for the Evolve class is as follows:
 
 .. ipython::
+    :okwarning:
 
     In [1]: from cosmic.evolve import Evolve
 
