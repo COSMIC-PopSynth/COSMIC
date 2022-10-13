@@ -23,3 +23,4 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 
 ## 3.4.7
  - Exchanged any print statements for `warnings.warn` to allow silencing
+ - Fixed up docs to catch warnings
