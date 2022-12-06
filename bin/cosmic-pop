@@ -375,6 +375,19 @@ if __name__ == '__main__':
                                                       dtp=dtp,
                                                       timestep_conditions=filters['timestep_conditions'],)
 
+        # get any nans and pull them out for now
+        nans = np.isnan(bpp.sep)
+        if nans.any():
+            nan_bin_nums = np.unique(bpp[nans]["bin_num"].values)
+            initCond_nan = initCond.loc[initCond.bin_num.isin(nan_bin_nums)]
+            dat_store.append("nan_initC", initCond_nan)
+            log_file.write(f"There are {len(nan_bin_nums)} NaNs stored in the datfile with key: 'nan_initC'")
+
+            bcm = bcm.loc[~bcm.bin_num.isin(nan_bin_nums)]
+            bpp = bpp.loc[~bpp.bin_num.isin(nan_bin_nums)]
+            initCond = initCond.loc[~initCond.bin_num.isin(nan_bin_nums)]
+            kick_info = kick_info.loc[~kick_info.bin_num.isin(nan_bin_nums)]
+
         # Keep track of the index
         idx = int(bcm.bin_num.max()+1)
 
