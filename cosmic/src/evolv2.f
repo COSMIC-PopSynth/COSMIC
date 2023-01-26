@@ -3706,7 +3706,7 @@ component.
 
 *
 * Test whether the primary still fills its Roche lobe.
-*
+*  
       if(rad(j1).gt.rol(j1).and..not.snova)then
 *
 * Test for a contact system
