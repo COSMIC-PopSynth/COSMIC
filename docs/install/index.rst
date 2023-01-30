@@ -4,22 +4,20 @@
 Installation
 ############
 
-=====
-Conda
-=====
-Since COSMIC requires compilation of Fortran code, we strongly recommend the use of virtual environments like Anaconda to mitigate any potential compiling issues with other Fortran code bases.
+===========
+Prequisites
+===========
+Since COSMIC requires compilation of Fortran code, you'll need a gfortran installation. Several options exist for installing gfortran including through `homebrew <https://brew.sh/>`_ or `from source <https://gcc.gnu.org/wiki/GFortran>`_. If you have a gfortran installation that works with other code bases, chances are it will work with COSMIC too!
 
 MacOS
 -----
 .. note::
 
-    IMPORTANT NOTE: On OS X 10.16 (Big Sur), you may need to supply the following extra linker flag 
-
-    ``LDFLAGS="-L /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" pip install cosmic-popsynth``
+    The largest hurdle for installation on MacOS is keeping your gfortran installation up to date with the linking libraries in Mac's commandlinetools. When in doubt, reinstall your gfortran library then try reinstalling COSMIC.
 
 .. code-block:: bash
 
-    conda create -n cosmic gfortran_osx-64 numpy h5py python=3.7
+    conda create -n cosmic numpy h5py python=3.10
     source activate cosmic
     pip install cosmic-popsynth
 
@@ -28,7 +26,7 @@ Unix
 ----
 .. code-block:: bash
 
-    conda create --name cosmic python=3.7 numpy h5py
+    conda create --name cosmic python=3.10 numpy h5py
     source activate cosmic
     pip install cosmic-popsynth
 
