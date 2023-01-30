@@ -507,8 +507,6 @@ component.
 *
  5    kw1 = kstar(1)
       kw2 = kstar(2)
-*      WRITE(*,*)iter,dt,dtm,dtmi
-
 *
       dt = 1.0d+06*dtm
       eqspin = 0.d0
@@ -546,7 +544,6 @@ component.
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z)
-
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
