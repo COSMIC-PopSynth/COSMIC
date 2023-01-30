@@ -1,6 +1,8 @@
 name: Build wheel and publish
 
-on: [push]
+on: 
+  release:
+    types: [published]
   
 
 env:
