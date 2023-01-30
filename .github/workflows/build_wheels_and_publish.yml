@@ -1,8 +1,7 @@
 name: Build wheel and publish
 
-on: 
-  release:
-    types: [published]
+on: [push]
+  
 
 env:
   CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
