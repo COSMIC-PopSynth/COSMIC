@@ -270,7 +270,10 @@ sampling
                          decimal fractions of the time taken in that phase for
                          Main Sequence (MS) stars
 
-                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_
+                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_ for NS/BH progenitors
+                         
+                         **pts1 = 0.05** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_ for WD progenitors
+
 
 ``pts2``                 determines the timesteps chosen in each evolution phase as
                          decimal fractions of the time taken in that phase for
@@ -305,9 +308,8 @@ sampling
 
 =======================  =====================================================
 ``zsun``                 Sets the metallicity of the Sun which primarily affects
-                         stellar winds. Note that our wind prescriptions apply a 
-                         fixed zsun parameter: zsun_wind = 0.019 because the wind 
-                         prescriptions are calibrated to this value as described in
+                         stellar winds. Note that the wind 
+                         prescriptions are calibrated to zsun = 0.019 as described in
                          `Vink+2001. <https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract>`_
 
                          **zsun = 0.014** following `Asplund 2009 <https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract>`_
@@ -319,7 +321,7 @@ sampling
     ;;; METALLICITY FLAGS ;;;
     ;;;;;;;;;;;;;;;;;;;;;;;;;
     ; specify the value for Solar metallicity, which primarily affects
-    ; winds in BSE
+    ; winds in BSE; note that Vink+2001 winds for OB stars are calibrated to zsun = 0.019
     ; default = 0.014 (Asplund 2009)
     zsun = 0.014
 
@@ -627,8 +629,8 @@ common envelope occurs regardless of the choices below:
     ; 3: following binary_c from Claeys+2014 Table 2 but with Hjellming & Webbink, 1987, ApJ, 318, 794 GB/AGB stars
     ; 4: following StarTrack from Belczynski+2008 Section 5.1. WD donors follow standard BSE
     ; 5: following COMPAS from Neijssel+2020 Section 2.3. Stripped stars are always dynamically stable
-    ; default = 1
-    qcflag = 1
+    ; default = 5 for double compact object progenitors, 3 for DWD progenitors
+    qcflag = 5
 
     ; qcrit_array is a 16-length array for user-input values for the critical mass ratios that govern the onset of unstable mass transfer and a common envelope
     ; each item is set individually for its associated kstar, and a value of 0.0 will apply prescription of the qcflag for that kstar

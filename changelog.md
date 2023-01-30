@@ -24,3 +24,7 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.4.7
  - Exchanged any print statements for `warnings.warn` to allow silencing
  - Fixed up docs to catch warnings
+
+## 3.4.8
+ - removed zsun_wind so that we can match stock BSE exactly and added extra documentation surrounding the winds
+ - added a NaN catch in cosmic-pop that throws a warning of NaNs, saves them to a file, and instructs the user to consider changing pts1 since this is the main driver of NaNs so far

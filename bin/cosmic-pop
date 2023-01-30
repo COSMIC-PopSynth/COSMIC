@@ -382,6 +382,7 @@ if __name__ == '__main__':
             initCond_nan = initCond.loc[initCond.bin_num.isin(nan_bin_nums)]
             dat_store.append("nan_initC", initCond_nan)
             log_file.write(f"There are {len(nan_bin_nums)} NaNs stored in the datfile with key: 'nan_initC'")
+            log_file.write(f"These NaNs likely arise because you have pts1 = 0.001, try running with pts1 = 0.01")
 
             bcm = bcm.loc[~bcm.bin_num.isin(nan_bin_nums)]
             bpp = bpp.loc[~bpp.bin_num.isin(nan_bin_nums)]
