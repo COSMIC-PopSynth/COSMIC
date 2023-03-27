@@ -185,6 +185,7 @@
       REAL*8 bhspin(2)
       REAL*8 delet,delet1,dspint(2),djspint(2),djtx(2)
       REAL*8 dtj,djorb,djgr,djmb,djt,djtt,rmin,rdisk
+      REAL*8 etaBH,maxspinBH
 *
       INTEGER pulsar
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
@@ -269,6 +270,8 @@ Cf2py intent(out) kick_info_out
       ngtv = -1.d0
       ngtv2 = -2.d0
       twopi = 2.d0*ACOS(-1.d0)
+
+      Mbh_initial = 0.d0
 
 
 * disrupt tracks if system get disrupted by a SN during the common
@@ -504,8 +507,6 @@ component.
 *
  5    kw1 = kstar(1)
       kw2 = kstar(2)
-*      WRITE(*,*)iter,dt,dtm,dtmi
-
 *
       dt = 1.0d+06*dtm
       eqspin = 0.d0
@@ -523,6 +524,18 @@ component.
 * Just in case the wind mass loss rates are *very* high
 *
             dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)
+* For BHs, follow Marchant et al. 2017
+            if(kstar(3-k).eq.14)then
+               maxspinBH = 6.d0**(1.d0/2.d0) * Mbh_initial
+               if(mass(3-k).lt.maxspinBH)then
+                  etaBH = 1.d0 -
+     &    (1.d0 - (mass(3-k)/(3.d0*Mbh_initial))**(2.d0))**(1.d0/2.d0)
+               else
+                  etaBH = 0.42
+               endif
+               dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
+     &    *(1.d0/etaBH)*rad(3-k)
+            endif
 
 *
 * Calculate wind mass loss from the previous timestep.
@@ -531,7 +544,6 @@ component.
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z)
-
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -1318,7 +1330,7 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2))
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)     
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1398,11 +1410,26 @@ component.
             mass0(k) = m0
             epoch(k) = tphys - age
          endif
+
 *
 *
 * Force new NS or BH to have a birth spin peirod and magnetic field.
 *
          if(kstar(k).eq.13.or.kstar(k).eq.14)then
+* re-calculate the Eddington limit of the newly formed CO
+            dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(k)
+* For BHs, follow Marchant et al. 2017
+            if(kstar(k).eq.14)then
+               maxspinBH = 6.d0**(1.d0/2.d0) * Mbh_initial
+               if(mass(k).lt.maxspinBH)then
+                  etaBH = 1.d0 -
+     &    (1.d0 - (mass(k)/(3.d0*Mbh_initial))**(2.d0))**(1.d0/2.d0)
+               else
+                  etaBH = 0.42
+               endif
+               dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
+     &    *(1.d0/etaBH)*rad(k)
+            endif
             if(tphys-epoch(k).lt.tiny)then
                if(kstar(k).eq.13.and.pulsar.gt.0)then
 *                  write(93,*)'birth start: ',tphys,k,B_0(k),ospin(k)
@@ -1903,6 +1930,19 @@ component.
 * Eddington limit for accretion on to the secondary in one orbit.
 *
  8    dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(j2)*tb
+* For BHs, follow Marchant et al. 2017
+      if(kstar(j2).eq.14)then
+         maxspinBH = 6.d0**(1.d0/2.d0) * Mbh_initial
+         if(mass(j2).lt.maxspinBH)then
+            etaBH = 1.d0 -
+     &    (1.d0 - (mass(j2)/(3.d0*Mbh_initial))**(2.d0))**(1.d0/2.d0)
+         else
+            etaBH = 0.42
+         endif
+         dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
+     &    *(1.d0/etaBH)*rad(j2)*tb
+      endif
+
       supedd = .false.
       novae = .false.
       disk = .false.
@@ -2608,6 +2648,18 @@ component.
 * Just in case the wind mass loss rates are *very* high
 *
             dme = 2.08d-03*eddfac*(1.d0/(1.d0 + zpars(11)))*rad(3-k)*tb
+* For BHs, follow Marchant et al. 2017
+            if(kstar(3-k).eq.14)then
+               maxspinBH = 6.d0**(1.d0/2.d0) * Mbh_initial
+               if(mass(3-k).lt.maxspinBH)then
+                  etaBH = 1.d0 -
+     &    (1.d0 - (mass(3-k)/(3.d0*Mbh_initial))**(2.d0))**(1.d0/2.d0)
+               else
+                  etaBH = 0.42
+               endif
+               dme = 1.04e-3*eddfac*(1.d0/(1.d0 + zpars(11)))
+     &    *(1.d0/etaBH)*rad(3-k)*tb
+            endif
 
             if(neta.gt.tiny)then
                if(beta.lt.0.d0)then !PK. following startrack
@@ -2909,6 +2961,7 @@ component.
          dm2 = km*dm2
          dm22 = km*dm22
          dme = km*dme
+
 *
 * Calculate orbital angular momentum change due to system mass loss.
 *
@@ -3647,9 +3700,10 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2))
       endif
+
 *
 * Test whether the primary still fills its Roche lobe.
-*
+*  
       if(rad(j1).gt.rol(j1).and..not.snova)then
 *
 * Test for a contact system
