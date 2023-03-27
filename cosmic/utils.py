@@ -1253,7 +1253,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
     flag = "gamma"
     if flag in BSEDict.keys():
-        if (BSEDict[flag] <= 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2):
+        if (BSEDict[flag] < 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2):
             raise ValueError(
                 "'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
