@@ -967,7 +967,7 @@ component.
                   djmb = 5.83d-16*menv(k)*(rad(k)*ospin(k))**3/mass(k)
                   djspint(k) = djspint(k) + djmb
                endif
-            else
+            elseif(htpmb.eq.1)then
                if(ST_cr.le.0.and.
      &            mass(k).gt.0.35d0.and.kstar(k).lt.10.and.
      &            menv(k).gt.0.0d0)then
@@ -3087,7 +3087,7 @@ component.
                   djmb = 5.83d-16*menv(k)*(rad(k)*ospin(k))**3/mass(k)
                   djspint(k) = djspint(k) + djmb*dt
                endif
-            else
+            elseif(htpmb.eq.1)then
                if(ST_cr.le.0.and.
      &            (mass(k).gt.0.35d0.and.kstar(k).lt.10.and.
      &            menv(k).gt.0.0d0))then
