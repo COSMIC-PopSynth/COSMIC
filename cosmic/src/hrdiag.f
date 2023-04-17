@@ -1169,7 +1169,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                      else
 * If rembar_massloss >= 0, limit the massloss by rembar_massloss
                         if(rembar_massloss.ge.0d0)then
-                           mrem = mt-rembar_massloss
+                           if(mt.ge.rembar_massloss)then
+                                mrem = mt-rembar_massloss
+                           else
+                                mrem = 0
+                           endif
+
 * If -1 < rembar_massloss < 0, assume this fractional mass loss
                         else
                            mrem = (1.d0+rembar_massloss)*mt
