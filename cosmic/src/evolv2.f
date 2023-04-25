@@ -507,6 +507,12 @@ component.
 *
  5    kw1 = kstar(1)
       kw2 = kstar(2)
+
+      if(xi.eq.0)then
+         ospin(1) = 1.0d-10
+         ospin(2) = 1.0d-10
+      endif
+
 *
       dt = 1.0d+06*dtm
       eqspin = 0.d0
