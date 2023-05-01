@@ -15,7 +15,7 @@ f2py_source = custom_target(
     '_evolvebinmodule.c',
     input : ['src/evolv2.f'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '--build-dir', 'src/cosmic']
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '--build-dir', 'src/cosmic', '--no_compact_unwind']
 )
 
 lib_source = [
@@ -54,6 +54,7 @@ py3.extension_module('_evolvebin',
 py3.install_sources(
     [
         '__init__.py',
+        '_version.py',
         'checkstate.py',
         'evolve.py',
         'filter.py',

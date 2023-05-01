@@ -42,4 +42,4 @@ requires = ["meson-python", "wheel", "oldest-supported-numpy", "setuptools_scm"]
 
 # pyproject.toml
 [tool.setuptools_scm]
-write_to = "cosmic/_version.py"
+write_to = "src/cosmic/_version.py"
