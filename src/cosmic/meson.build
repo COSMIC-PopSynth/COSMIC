@@ -19,6 +19,7 @@ f2py_source = custom_target(
 )
 
 lib_source = [
+    'src/benchmarkevolv2.f',
     'src/corerd.f',
     'src/comenv.f',
     'src/deltat.f',
