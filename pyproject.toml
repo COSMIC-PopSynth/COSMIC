@@ -1,0 +1,45 @@
+[project]
+name = "cosmic"
+distname = "cosmic-popsynth"
+description = "a Python-interfaced binary population synthesis suite"
+authors = [
+    { name="Katelyn Breivik", email="katie.breivik@gmail.com" },
+    { name="Scott Coughlin" },
+    { name="Michael Zevin" },
+    { name="Carl L. Rodriguez" },
+]
+readme = "README.md"
+
+
+requires-python = ">=3.7"
+license = { text = "MIT License" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+]
+dynamic = ["version"]
+dependencies = ["numpy", "scipy", "astropy", "configparser", 
+                "tqdm", "pandas", "tables", "h5py", "schwimmbad", 
+                "matplotlib", "importlib-metadata"]
+
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-xdist", "pytest-cov", "flake8", "coverage"]
+docs = ["sphinx", "numpydoc", "sphinx-bootstrap-theme", 
+        "sphinxcontrib-programoutput", "sphinx-automodapi",
+        "ipython", "sphinx_rtd_theme"]
+
+
+
+[build-system]
+build-backend = 'mesonpy'
+requires = ["meson-python", "wheel", "oldest-supported-numpy", "setuptools_scm"]
+
+
+# pyproject.toml
+[tool.setuptools_scm]
+write_to = "src/cosmic/_version.py"
