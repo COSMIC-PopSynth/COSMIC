@@ -48,7 +48,8 @@ py3.extension_module('_evolvebin',
   incdir_f2py / 'fortranobject.c',
   include_directories: inc_np,
   install : true,
-  subdir : 'cosmic'
+  subdir : 'cosmic',
+  fortran_args : ['-Wall']
 )
 
 # Now the source files
