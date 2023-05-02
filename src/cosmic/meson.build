@@ -12,10 +12,10 @@ incdir_f2py = run_command(py3,
 inc_np = include_directories(incdir_numpy, incdir_f2py)
 
 f2py_source = custom_target(
-    '_evolvebinmodule.c',
+    'evolvebin-target',
     input : ['src/evolv2.f'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '--build-dir', 'src/cosmic', '--no_compact_unwind']
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '--build-dir', 'src/cosmic', '@OUTDIR']
 )
 
 lib_source = [
@@ -42,7 +42,7 @@ lib_source = [
     'src/checkstate.f',
 ]
 py3.extension_module('_evolvebin',
-  'src/evolv2.f',
+  f2py_source,
   lib_source,
   incdir_f2py / 'fortranobject.c',
   include_directories: inc_np,
@@ -61,6 +61,9 @@ py3.install_sources(
         'Match.py',
         'plotting.py',
         'utils.py',
+        'bse_utils/zcnsts.py',
+        'bse_utils/__init__.py',
+        'bse_utils/zdata.py'
     ],
     pure: false,
     subdir: 'cosmic'
