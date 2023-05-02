@@ -61,6 +61,7 @@ The evolutionary changes of the binary are logged in the evol_type column, which
     14          blue straggler
     15          supernova of primary
     16          supernova of secondary
+    100         RLOF interpolation timeout error
     =========   =====================
 
 

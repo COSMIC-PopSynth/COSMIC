@@ -21,6 +21,7 @@
 
 import numpy as np
 import warnings
+import pandas as pd
 
 from ... import utils
 
@@ -263,7 +264,7 @@ def get_independent_sampler(
             np.ones_like(mass1_singles)*0,
             metallicity,
         )
-        binary_table = binary_table.append(singles_table)
+        binary_table = pd.concat([binary_table, singles_table])
     else:
         binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,

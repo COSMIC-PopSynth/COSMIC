@@ -1514,6 +1514,7 @@ def convert_kstar_evol_type(bpp):
         14: "blue straggler",
         15: "supernova of primary",
         16: "supernova of secondary",
+       100: "RLOF interpolation timeout error"
     }
 
     evolve_type_string_to_int_dict = {

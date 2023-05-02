@@ -1286,6 +1286,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          r = 4.24d-06*mt
       endif
 *
+      !added by PA
+      if(kw .eq.15) then
+*
+*         Massless remnant
+*
+          aj = 0.d0
+          mt = 0.d0
+          lum = 1.0d-10
+          r = 1.0d-10
+      endif
+*
 * Calculate the core radius and the luminosity and radius of the
 * remnant that the star will become.
 *

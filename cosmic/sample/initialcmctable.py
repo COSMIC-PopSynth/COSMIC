@@ -308,8 +308,8 @@ class InitialCMCTable(pd.DataFrame):
         singles_bottom = pd.DataFrame(
             np.zeros((1, Singles.shape[1])), index=[0], columns=Singles.columns
         )
-        singles = singles.append(Singles)
-        singles = singles.append(singles_bottom)
+        singles = pd.concat([singles, Singles])
+        singles = pd.concat([singles, singles_bottom])
         singles["r"].iloc[-1] = 1e40
         singles["r"].iloc[0] = 2.2250738585072014e-308
 
@@ -317,7 +317,7 @@ class InitialCMCTable(pd.DataFrame):
         binaries = pd.DataFrame(
             np.zeros((1, Binaries.shape[1])), index=[0], columns=Binaries.columns
         )
-        binaries = binaries.append(Binaries)
+        binaries = pd.concat([binaries, Binaries])
 
         if savehdf5:
             singles.to_hdf(filename, key="CLUS_OBJ_DATA", mode="w")
