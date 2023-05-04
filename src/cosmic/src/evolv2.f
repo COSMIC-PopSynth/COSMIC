@@ -246,6 +246,20 @@ Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
 
+
+      if (using_METISSE) then
+          WRITE(*,*), 'In METISSE'
+          CALL zcnsts_METISSE(z,zpars)
+          WRITE(*,*), 'z in evol2', z, zpars(1)
+      elseif (using_SSE) then
+          WRITE(*,*) 'In SSE'
+          CALL zcnsts(z,zpars)
+          WRITE(*,*), 'z in evol2', z, zpars(1)
+      else
+        print*,'No stellar evolution method specified'
+        print*,'Choose from using_SSE and using_METISSE'
+      endif
+      
       if(using_cmc.eq.0)then
               CALL instar
       endif

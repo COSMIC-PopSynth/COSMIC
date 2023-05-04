@@ -56,4 +56,7 @@
       COMMON /SINGLE/ scm,spp
       REAL*8 bcm(50000,38),bpp(1000,43)
       COMMON /BINARY/ bcm,bpp
+      
+      LOGICAL using_metisse, using_sse
+      COMMON /SE_FLAGS/ using_metisse, using_sse
 *

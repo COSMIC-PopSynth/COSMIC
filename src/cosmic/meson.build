@@ -41,6 +41,9 @@ lib_source = [
     'src/comprad.f',
     'src/bpp_array.f',
     'src/checkstate.f',
+    'METISSE/src/track_support.f90',
+    'METISSE/src/z_support.f90',
+    'METISSE/src/zcnsts_METISSE.f90'
 ]
 py3.extension_module('_evolvebin',
   f2py_source,
