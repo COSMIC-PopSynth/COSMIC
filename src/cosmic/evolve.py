@@ -258,6 +258,16 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
+        for k, v in SSEDict.items():
+            if k in initialbinarytable.keys():
+                warnings.warn("The value for {0} in initial binary table is being "
+                              "overwritten by the value of {0} from either the params "
+                              "file or the SSEDict.".format(k))
+            # assigning values this way work for most of the parameters.
+            kwargs1 = {k: v}
+            initialbinarytable = initialbinarytable.assign(**kwargs1)
+                
+
         for k, v in BSEDict.items():
             if k in initialbinarytable.keys():
                 warnings.warn("The value for {0} in initial binary table is being "
