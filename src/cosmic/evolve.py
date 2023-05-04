@@ -95,9 +95,13 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
+#INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine']
+
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
+#INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMN)
+
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
@@ -460,6 +464,13 @@ def _evolve_single_system(f):
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
+        stellar_engine = 'sse'
+        if stellar_engine == "sse":
+            _evolvebin.se_flags.using_sse = True
+            _evolvebin.se_flags.using_metisse = False
+        elif stellar_engine == "metisse":
+            _evolvebin.se_flags.using_metisse = True
+            _evolvebin.se_flags.using_sse = False
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
