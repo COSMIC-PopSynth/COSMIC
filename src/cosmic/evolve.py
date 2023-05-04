@@ -95,12 +95,12 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
-#INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine']
+INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
-#INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMN)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMN)
 
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
@@ -233,15 +233,16 @@ class Evolve(object):
             if not os.path.isfile(params):
                 raise ValueError("File does not exist, probably supplied incorrect "
                                  "path to the inifile.")
-            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+            BSEDict, SSEDict, _, _, _, _ = utils.parse_inifile(params)
 
         # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
         # then we will temporarily create a dictionary
         # in order to verify that the values in the table
         # are valid
-        utils.error_check(BSEDict)
+        utils.error_check(BSEDict, SSEDict)
 
+        
         # check the initial conditions of the system and warn user if
         # anything is weird about them, such as the star starts
         # in Roche Lobe overflow
@@ -464,11 +465,10 @@ def _evolve_single_system(f):
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
-        stellar_engine = 'sse'
-        if stellar_engine == "sse":
+        if f["stellar_engine"] == "sse":
             _evolvebin.se_flags.using_sse = True
             _evolvebin.se_flags.using_metisse = False
-        elif stellar_engine == "metisse":
+        elif f["stellar_engine"] == "metisse":
             _evolvebin.se_flags.using_metisse = True
             _evolvebin.se_flags.using_sse = False
 

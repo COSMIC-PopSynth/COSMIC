@@ -760,11 +760,14 @@ def knuth_bw_selector(dat_list):
     return np.mean(bw_list)
 
 
-def error_check(BSEDict, filters=None, convergence=None, sampling=None):
+def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None):
     """Checks that values in BSEDict, filters, and convergence are viable"""
     if not isinstance(BSEDict, dict):
         raise ValueError("BSE flags must be supplied via a dictionary")
 
+    if not isinstance(SSEDict, dict):
+        raise ValueError("SSE flags must be supplied via a dictionary")
+    
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError("Filters criteria must be supplied via a dictionary")
@@ -921,6 +924,17 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             raise ValueError(
                 "{0} needs to be greater than or equal to 0 (you set it to {1})".format(
                     flag, sampling[flag]
+                )
+            )
+
+    # SSEDict
+    flag = "stellar_engine"
+    acceptable_stellar_engines = ["sse", "metisse"]
+    if flag in SSEDict.keys():
+        if SSEDict[flag] not in acceptable_stellar_engines:
+            raise ValueError(
+                "{0} needs to be one of 'sse', 'metisse' (you set it to {1})".format(
+                flag, SSEDict[flag]
                 )
             )
 
@@ -1629,6 +1643,8 @@ def parse_inifile(inifile):
                 dictionary["convergence"] = 0
             if "sampling" not in dictionary.keys():
                 dictionary["sampling"] = 0
+            if "sse" not in dictionary.keys():
+                dictionary["sse"] = 0
             continue
         dictionary[section] = {}
         for option in cp.options(section):
@@ -1645,13 +1661,14 @@ def parse_inifile(inifile):
                 if option not in dictionary[section].keys():
                     raise ValueError("We have detected an error in your inifile. The folloiwng parameter failed to be read correctly: {0}".format(option))
 
+    SSEDict = dictionary["sse"]
     BSEDict = dictionary["bse"]
     seed_int = int(dictionary["rand_seed"]["seed"])
     filters = dictionary["filters"]
     convergence = dictionary["convergence"]
     sampling = dictionary["sampling"]
 
-    return BSEDict, seed_int, filters, convergence, sampling
+    return BSEDict, SSEDict, seed_int, filters, convergence, sampling
 
 
 class VariableKey(object):
