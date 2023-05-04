@@ -1,0 +1,117 @@
+!defaults control for METISSE
+!do NOT make any changes to this file
+!use evolve_metisse.in for input
+
+!   NOTE: SSE_input_controls in evolve_metisse.in are read only when METISSE is called directly though its main unit.
+!   otherwise, values provided by the overlying code are used.
+
+
+&SSE_input_controls
+
+    !   EVOLUTION CONTROLS
+   
+    read_mass_from_file = .false.      !for reading input masses for new tracks
+
+    input_mass_file = ''
+
+    number_of_tracks = 1
+
+    max_mass = 1d5
+
+    min_mass = 1.0
+    
+    initial_Z = -1.0
+
+    max_age = 1d4   !max age in Myrs
+
+    ! REMNANT CONTROLS
+
+    !maximum NS mass (1.8, nsflag=0; 3.0, nsflag>1).
+    Max_NS_mass = 3.0
+
+    WD_mass_scheme = 'Modified_mestel'
+
+    !Options - "Mestel","Modified_mestel"
+
+    BHNS_mass_scheme = 'Belczynski2008'
+
+    !Options - "original_SSE", "Belczynski2002", "Belczynski2008","Eldridge_Tout2004"
+
+    Use_Initial_final_mass_relation = .false.       !for White Dwarfs
+    
+ !  TIMESCALE CONTROLS
+
+    pts_1 = 0.05
+    pts_2 = 0.01
+    pts_3 = 0.02
+
+!points_MS =
+!points_HG =
+!points_RGB =
+
+/
+
+&extra_controls
+
+    METISSE_DIR = '..'
+    !information about reading data
+
+    INPUT_FILES_DIR = ''
+
+    read_files_from_Z = .false.
+
+    !list for getting folder names given Z, used only if read_files_from_Z is true
+    !names are appended to INPUT_FILES_DIR
+    Z_folder_list = ''
+
+    !if not using MIST EEP files,
+    !then provide details about the file structure in the format_file (see format_mist.dat)
+
+    format_file = 'defaults/format_mist.dat'
+
+    !columns to be used, irrespective of the order
+    !by default are columns are used
+    key_columns_file = ''
+    
+    !evolve_upto_remnant = .false. -- not implemented
+
+    !max_age_years = 1d10 !max age in years-- not implemented
+
+    ! Z PARAMETERS
+    !in case they are not getting correctly calculated by the code
+
+    Mhook = -1.0
+    Mhef = -1.0
+    Mfgb = -1.0
+    Mup = -1.0
+    Mec = -1.0
+
+    Mextra = -1.0       !if any
+
+    !   INTERPOLATION CONTROLS
+
+    fix_track = .true.
+    
+    !search within this fraction of mass/lookup_index for fixing incomplete track
+    lookup_index = 1.0
+
+    !skip mass interpolation if there is already a track within this difference
+    accuracy_limit = 1d-4
+
+    !   OTHER REMNANT CONTROLS
+    
+    construct_wd_track = .true.
+    allow_electron_capture = .true.       !allow electron capture supernovae
+
+    
+    !OUTPUT CONTROLS
+    verbose = .true.
+    write_track_to_file = .true.        !SSE like output file
+    write_eep_file = .false.
+    !OUTPUT_DIR = ''
+
+/
+
+
+
+

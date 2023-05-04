@@ -1,0 +1,42 @@
+! some general info about the model
+
+star_age ! elapsed simulated time in years since the start of the run
+star_mass ! in Msun units
+star_mdot ! d(star_mass)/dt (in msolar per year)
+
+! information about abundance transitions
+
+he_core_mass ! h1 boundary is outermost location where h1 mass fraction is < 1e-4
+c_core_mass ! he4 boundary is outermost location where h1 mass fraction is < 1e-4
+he_core_radius
+c_core_radius
+
+! conditions near surface
+
+log_L ! log10 luminosity in Lsun units
+log_Teff ! log10 effective temperature
+log_R ! log10 radius in Rsun units
+
+! mass fractions near surface (averaged over the outer 1e−6% of the total stellar mass)
+
+surface h1
+!surface he3
+surface he4
+surface c12
+surface o16
+
+! conditions near center
+
+log_center_T ! temperature
+log_center_Rho ! density
+center_gamma ! plasma interaction parameter
+
+! mass fractions near center (averaged over the inner 1e−6% of the total stellar mass)
+
+center h1
+center he4
+center c12
+center o16
+
+mass_conv_envelope
+envelope_binding_energy
