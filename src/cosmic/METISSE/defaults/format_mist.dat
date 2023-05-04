@@ -1,0 +1,80 @@
+!this file is read by default for format if read_eep_files is true
+!some quantities here are not used as they can be read easily from the .eep files
+!modify a copy of this file, if you are using input files with a different format
+
+&format_controls
+    file_extension = '.eep'
+    read_eep_files = .true.
+
+    header_location = 12
+    total_cols = -1 !number of columns
+    extra_char = '' ! any extra character present in the header line
+
+    !if header is <=0, i.e., no column names
+    !specify column_name_file for determining the name and the order of columns
+    !Note that this is different from the key_columns_file (in evolve_defaults.in) which specifies the subset of these columns to be used
+
+    column_name_file = ''
+
+    !EEPS
+    PreMS_EEP = 1
+    ZAMS_EEP = 202
+    IAMS_EEP = 353
+    TAMS_EEP = 454
+    BGB_EEP = -1
+    cHeIgnition_EEP = 605
+    cHeBurn_EEP = 631
+    TA_cHeB_EEP = 707
+
+    TPAGB_EEP = 808
+    cCBurn_EEP = 808
+    post_AGB_EEP = 1409
+    WD_EEP = 1710
+
+    Initial_EEP = 202       !files will be read from this line number
+    Final_EEP = 1409        !to this line
+    Extra_EEP1 = -1
+    Extra_EEP2= -1
+    Extra_EEP3 = -1
+
+    !used to complete incomplete tracks
+    !when fix_track is true in evolve.in
+
+    !for M<Mec
+    low_mass_final_eep = 1409
+    !for stars M>=Mec
+    high_mass_final_eep = 808
+
+    !name of essential columns
+
+    age_colname = 'star_age'                  !age in units of yrs
+    mass_colname = 'star_mass'             !mass of the star in solar units
+
+    Lum_colname = ''                               !luminosity in solar units OR
+    log_L_colname = 'log_L'                    !log of luminosity
+ 
+    Radius_colname = ''                          !Radius in solar units OR
+    log_R_colname = 'log_R'                  !log of radius
+    
+    he_core_mass = 'he_core_mass'        !mass of He enriched/H depleted core in solar units
+    c_core_mass = 'c_core_mass'             !mass of C enriched/He depleted core in solar units
+
+    mdot_colname = 'star_mdot'                 !d(star_mass)/dt in msolar per year  OR
+    log_mdot_colname = ''                          !log10(abs(star_mdot))
+    
+    Teff_colname = ''                               !Effective/surface temperature in K OR
+    log_T_colname = 'log_Teff'               !log of surface temperature
+
+    !columns required for determining Mup and Mhook
+    
+    he_core_radius = 'he_core_radius'  
+    log_Tc = 'log_center_T'                      !central temperature in log units
+    He4_mass_frac = 'center_he4'
+    c12_mass_frac = 'center_c12'            !c12 mass fraction at centre
+    o16_mass_frac = 'center_o16'            !o16 mass fraction at centre
+
+    !list of columns related to the evolution of core
+    !these are interpolated based on the original age of the star before mass loss
+    number_of_core_columns = 8
+    core_columns = 'star_age,log_L,he_core_mass,c_core_mass,log_center_T,center_he4,center_c12,center_o16'
+/
