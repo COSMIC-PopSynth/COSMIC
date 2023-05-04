@@ -213,6 +213,7 @@ class Evolve(object):
 
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
+        SSEDict = kwargs.pop('SSEDict', {})
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
 
@@ -256,6 +257,16 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed', seed))
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
+
+        for k, v in SSEDict.items():
+            if k in initialbinarytable.keys():
+                warnings.warn("The value for {0} in initial binary table is being "
+                              "overwritten by the value of {0} from either the params "
+                              "file or the SSEDict.".format(k))
+            # assigning values this way work for most of the parameters.
+            kwargs1 = {k: v}
+            initialbinarytable = initialbinarytable.assign(**kwargs1)
+                
 
         for k, v in BSEDict.items():
             if k in initialbinarytable.keys():
