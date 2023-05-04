@@ -214,6 +214,7 @@ class Evolve(object):
 
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
+        SSEDict = kwargs.pop('SSEDict', {})
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
 
