@@ -3,6 +3,7 @@
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,bkick,kick_info,
+     \ path_to_metisse,path_to_tracks,
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -197,6 +198,7 @@
       COMMON /fall/fallback
       REAL ran3
       EXTERNAL ran3
+      CHARACTER*256 path_to_metisse,path_to_tracks
 *
 
 *
@@ -242,22 +244,22 @@ Cf2py intent(in) tphys
 Cf2py intent(in) zpars
 Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
+Cf2py intent(in) path_to_metisse
+Cf2py intent(in) path_to_tracks
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
 
 
       if (using_METISSE) then
-          WRITE(*,*), 'In METISSE'
+          WRITE(*,*) 'In METISSE'
+          CALL assign_paths(path_to_metisse, path_to_tracks)
           CALL zcnsts_METISSE(z,zpars)
-          WRITE(*,*), 'z in evol2', z, zpars(1)
+          WRITE(*,*) 'z in evol2', z, zpars(1)
       elseif (using_SSE) then
           WRITE(*,*) 'In SSE'
           CALL zcnsts(z,zpars)
-          WRITE(*,*), 'z in evol2', z, zpars(1)
-      else
-        print*,'No stellar evolution method specified'
-        print*,'Choose from using_SSE and using_METISSE'
+          WRITE(*,*) 'z in evol2', z, zpars(1)
       endif
       
       if(using_cmc.eq.0)then

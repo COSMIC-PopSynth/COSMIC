@@ -22,11 +22,9 @@ lib_source = [
     'src/benchmarkevolv2.f',
     'src/corerd.f',
     'src/comenv.f',
-    'src/deltat.f',
     'src/dgcore.f',
     'src/evolv2.f',
     'src/gntage.f',
-    'src/hrdiag.f',
     'src/instar.f',
     'src/kick.f',
     'src/mix.f',
@@ -34,27 +32,41 @@ lib_source = [
     'src/mrenv.f',
     'src/ran3.f',
     'src/rl.f',
-    'src/star.f',
-    'src/zcnsts.f',
-    'src/zfuncs.f',
     'src/concatkstars.f',
     'src/comprad.f',
     'src/bpp_array.f',
     'src/checkstate.f',
-    'METISSE/src/track_support.f90',
-    'METISSE/src/z_support.f90',
-    'METISSE/src/zcnsts_METISSE.f90'
+    'src/SSE/deltat_SSE.f',
+    'src/SSE/hrdiag_SSE.f',
+    'src/SSE/star_SSE.f',
+    'src/SSE/zcnsts_SSE.f',
+    'src/SSE/zfuncs_SSE.f',
+    'src/METISSE/src/track_support.f90',
+    'src/METISSE/src/z_support.f90',
+    'src/METISSE/src/zcnsts_METISSE.f90',
+    'src/METISSE/src/assign_paths.f90'
 ]
+
+#    'src/METISSE/src/deltat_METISSE.f90',
+#    'src/METISSE/src/star_METISSE.f90',
+#    'src/METISSE/src/hrdiag_METISSE.f90',
+#    'src/METISSE/src/metisse_mlwind.f90',
+#    'src/METISSE/src/interp_support.f90',
+#    'src/METISSE/src/sse_support.f90',
+#    'src/METISSE/src/remnant_support.f90',
+#    'src/METISSE/src/comenv_lambda.f90',
+#    'src/METISSE/src/alloc_track.f90',
+
 py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
   incdir_f2py / 'fortranobject.c',
   include_directories: inc_np,
   install : true,
-  subdir : 'cosmic',
-  fortran_args : ['-Wall']
+  subdir : 'cosmic'
 )
 
+#fortran_args : ['-Wall']
 # Now the source files
 py3.install_sources(
     [
