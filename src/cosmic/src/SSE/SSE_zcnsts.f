@@ -1,7 +1,7 @@
 ***
       SUBROUTINE zcnsts(z,zpars)
       IMPLICIT NONE
-      INCLUDE 'const_bse.h'
+      INCLUDE '../const_bse.h'
 *
       integer kw
 *
@@ -13,7 +13,7 @@
       external tbgbf,thef,lbagbf,lheif,lhef,lzahbf
       external rgbf,ragbf,rminf,mcgbf
 *
-      include 'zdata.h'
+      include '../zdata.h'
       real*8 msp(200),gbp(200),c(5)
       common /MSCFF/ msp
       common /GBCFF/ gbp

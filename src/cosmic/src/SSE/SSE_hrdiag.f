@@ -3,7 +3,7 @@
      &                  r,lum,kw,mc,rc,menv,renv,k2,
      &                  bhspin,kidx)
       IMPLICIT NONE
-      INCLUDE 'const_bse.h'
+      INCLUDE '../const_bse.h'
 *
 *
 *       H-R diagram for population I stars.

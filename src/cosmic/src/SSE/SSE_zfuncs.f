@@ -1,7 +1,7 @@
 ***
       real*8 FUNCTION lzamsf(m)
       IMPLICIT NONE
-      INCLUDE 'const_bse.h'
+      INCLUDE '../const_bse.h'
       real*8 m,mx,a(200)
       common /MSCFF/ a
 *
