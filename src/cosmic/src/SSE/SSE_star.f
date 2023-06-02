@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+      SUBROUTINE SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
       IMPLICIT NONE
       INCLUDE '../const_bse.h'
 *

@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE zcnsts(z,zpars)
+      SUBROUTINE SSE_zcnsts(z,zpars)
       IMPLICIT NONE
       INCLUDE '../const_bse.h'
 *
@@ -366,7 +366,7 @@
       kw = 0
       tm = 0.d0
       tn = 0.d0
-      CALL star(kw,zpars(2),zpars(2),tm,tn,tscls,lums,GB,zpars)
+      CALL SSE_star(kw,zpars(2),zpars(2),tm,tn,tscls,lums,GB,zpars)
       zpars(9) = mcgbf(lums(3),GB,lums(6))
       zpars(10) = mcgbf(lums(4),GB,lums(6))
 * set the hydrogen and helium abundances

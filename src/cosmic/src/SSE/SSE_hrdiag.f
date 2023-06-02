@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
+      SUBROUTINE SSE_hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,
      &                  bhspin,kidx)
       IMPLICIT NONE
@@ -190,7 +190,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   mc = 0.d0
                   mass = mt
                   kw = 7
-                  CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+                  CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                else
 *
 * Zero-age helium white dwarf.
@@ -252,7 +252,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mc = 0.d0
                mass = mt
                kw = 7
-               CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+               CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             else
 *
 * Zero-age helium white dwarf.
@@ -269,7 +269,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
          if(kw.eq.3.and.mass.le.zpars(2))then
             mass = mt
-            CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+            CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             aj = tscls(2)
          endif
          if(mass.le.zpars(2))then
@@ -379,7 +379,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             kw = 7
             xx = (aj - tscls(2))/tscls(3)
             mass = mt
-            CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+            CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             aj = xx*tm
          else
             kw = 4
@@ -410,7 +410,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mt = mc
                mass = mt
                mc = mcx
-               CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+               CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                if(mc.le.GB(7))then
                   aj = tscls(4) - (1.d0/((GB(5)-1.d0)*GB(8)*GB(4)))*
      &                            (mc**(1.d0-GB(5)))
@@ -1321,23 +1321,23 @@ C      if(mt0.gt.100.d0) mt = 100.d0
       elseif(kw.eq.4)then
          tau = (aj - tscls(2))/tscls(3)
          kwp = 7
-         CALL star(kwp,mc,mc,tm,tn,tscls,lums,GB,zpars)
+         CALL SSE_star(kwp,mc,mc,tm,tn,tscls,lums,GB,zpars)
          am = MAX(0.d0,0.85d0-0.08d0*mc)
          lx = lums(1)*(1.d0+0.45d0*tau+am*tau**2)
          rx = rzhef(mc)
          am = MAX(0.d0,0.4d0-0.22d0*LOG10(mc))
          rx = rx*(1.d0+am*(tau-tau**6))
-         CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
          rc = rx
       elseif(kw.eq.5)then
          kwp = 9
          if(tn.gt.tbagb) tau = 3.d0*(aj-tbagb)/(tn-tbagb)
-         CALL star(kwp,mc,mc,tm,tn,tscls,lums,GB,zpars)
+         CALL SSE_star(kwp,mc,mc,tm,tn,tscls,lums,GB,zpars)
          lx = lmcgbf(mcx,GB)
          if(tau.lt.1.d0) lx = lums(2)*(lx/lums(2))**tau
          rx = rzhef(mc)
          rx = MIN(rhehgf(mc,lx,rx,lums(2)),rhegbf(lx))
-         CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
          rc = rx
       elseif(kw.le.9)then
          if(wdflag.eq.0)then

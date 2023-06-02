@@ -95,7 +95,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
-INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','metisse_path','tracks_path']
+INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','metisse_path']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
@@ -479,12 +479,10 @@ def _evolve_single_system(f):
             _evolvebin.se_flags.using_sse = True
             _evolvebin.se_flags.using_metisse = False
             metisse_path = ""
-            tracks_path = ""
         elif f["stellar_engine"] == "metisse":
             _evolvebin.se_flags.using_metisse = True
             _evolvebin.se_flags.using_sse = False
             metisse_path = f["metisse_path"]
-            tracks_path = f["tracks_path"]
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
@@ -507,8 +505,7 @@ def _evolve_single_system(f):
                                                               np.zeros(20),
                                                               np.zeros(20),
                                                               f["kick_info"],
-                                                              metisse_path,
-                                                              tracks_path)
+                                                              metisse_path)
         bcm = _evolvebin.binary.bcm[:bcm_index].copy()
         bpp = _evolvebin.binary.bpp[:bpp_index].copy()
         _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
