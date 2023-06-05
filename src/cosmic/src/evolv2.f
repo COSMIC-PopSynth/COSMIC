@@ -426,10 +426,8 @@ component.
          rc = radc(k)
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
      &                                                          dtm,k)
-         if (k==1) print*, 'test',mass0(k),tm
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
-         if (k==1) print*, 'hrdiag',kstar(k),age
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
