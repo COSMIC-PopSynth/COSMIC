@@ -134,6 +134,8 @@ wrapper = Extension(
         "cosmic/src/comprad.f",
         "cosmic/src/bpp_array.f",
         "cosmic/src/checkstate.f",
+        "cosmic/src/assign_remnant.f",
+        
 #    ], extra_compile_args = ["-g","-O0"], extra_f77_compile_args=["-O0"], extra_f90_compile_args=["-O0"])
 ])
 # -- run setup ----------------------------------------------------------------
