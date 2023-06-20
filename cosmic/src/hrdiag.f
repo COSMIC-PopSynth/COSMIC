@@ -447,7 +447,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mcmax-mcx.lt.tiny)then
             aj = 0.d0
             mc = mcmax
-            call assign_remnant_phase(zpars,mc,mcbagb,mass,mt,kw,bhspin)
+            call assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin)
          endif
 *
       endif
@@ -495,7 +495,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                aj = 0.d0
                mc = mcmax
                mcbagb = mc
-               call assign_remnant_phase(zpars,mc,mcbagb,mass,
+               call assign_remnant(zpars,mc,mcbagb,mass,
      &          mt,kw,bhspin)
                
                if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
