@@ -3928,8 +3928,8 @@ component.
      &                 epoch(2),bhspin(1),bhspin(2))
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
-     &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
-     &               vk,kick_info,formation(j1),formation(j2),sigmahold,
+     &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j2,j1,
+     &               vk,kick_info,formation(j2),formation(j1),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
