@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin)
+      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
