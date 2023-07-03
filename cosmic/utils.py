@@ -18,7 +18,7 @@
 
 """`utils`
 """
-import scipy.integrate
+import scipy
 import numpy as np
 import pandas as pd
 import scipy.special as ss
@@ -51,9 +51,15 @@ __all__ = [
     "error_check",
     "check_initial_conditions",
     "convert_kstar_evol_type",
+    "parse_inifile",
     "pop_write",
     "a_from_p",
     "p_from_a",
+    "get_Z_from_FeH",
+    "get_FeH_from_Z",
+    "get_binfrac_of_Z",
+    "get_porb_norm",
+    "get_met_dep_binfrac"
 ]
 
 
@@ -759,6 +765,163 @@ def knuth_bw_selector(dat_list):
         bw_list.append(bw)
     return np.mean(bw_list)
 
+
+def get_Z_from_FeH(FeH, Z_sun=0.02):
+    """
+    Converts from FeH to Z under the assumption that
+    all stars have the same abundance as the sun
+    
+    Parameters
+    ----------
+    FeH : array
+        Fe/H values to convert
+    Z_sun : float
+        solar metallicity
+    
+    Returns
+    -------
+    Z : array
+        metallicities corresponding to Fe/H
+    """
+    Z = 10**(FeH + np.log10(Z_sun))
+    return Z
+
+
+def get_FeH_from_Z(Z, Z_sun=0.02):
+    """
+    Converts from Z to FeH under the assumption that
+    all stars have the same abundance as the sun
+    
+    Parameters
+    ----------
+    Z : array
+        metallicities to convert to Fe/H
+    Z_sun : float
+        solar metallicity
+    
+    Returns
+    -------
+    FeH : array
+        Fe/H corresponding to metallicities
+    """
+    FeH = np.log10(Z) - np.log10(Z_sun)
+    return FeH
+
+
+def get_binfrac_of_Z(Z):
+    '''
+    Calculates the theoretical binary fraction as a 
+    function of metallicity. Following Moe+2019
+    
+    Parameters
+    ----------
+    Z : array
+        metallicity Z values
+    
+    Returns
+    -------
+    binfrac : array
+        binary fraction values
+    '''
+    FeH = get_FeH_from_Z(Z)
+    FeH_low = FeH[np.where(FeH<=-1.0)]
+    FeH_high = FeH[np.where(FeH>-1.0)]
+    binfrac_low = -0.0648 * FeH_low + 0.3356
+    binfrac_high = -0.1977 * FeH_high + 0.2025
+    binfrac = np.append(binfrac_low, binfrac_high)
+    return binfrac
+
+
+def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_sun=0.02):
+    '''Returns normalization constants to produce log normals consistent with Fig 19 of Moe+19
+    for the orbital period distribution
+                
+    Parameters
+    ----------
+    Z : array
+        metallicity values
+    close_logP : float
+        divding line beween close and intermediate orbits
+    wide_logP : float
+        dividing line between intermediate and wide orbits
+    binfrac_tot : float
+        integrated total binary fraction at solar metallicity
+                
+    Returns
+    -------
+    norm_wide : float
+        normalization factor for kde for wide binaries
+    norm_close : float
+        normalization factor for kde for wide binaries
+    '''
+    from scipy.stats import norm
+    from scipy.integrate import trapz
+    from scipy.interpolate import interp1d
+    
+    # fix to values used in Moe+19
+    logP_lo_lim=0
+    logP_hi_lim=9
+    log_P = np.linspace(logP_lo_lim, logP_hi_lim, 10000)
+    
+    logP_pdf = norm.pdf(log_P, loc=4.9, scale=2.3)
+    
+    # set up the wide binary fraction inflection point
+    norm_wide = binfrac_tot_solar/trapz(logP_pdf, log_P)
+    
+    # set up the close binary fraction inflection point
+    FeHclose = np.linspace(-3.0, 0.5, 100)
+    fclose = -0.0648 * FeHclose + 0.3356
+    fclose[FeHclose > -1.0] = -0.1977 * FeHclose[FeHclose > -1.0] + 0.2025
+    Zclose = get_Z_from_FeH(FeHclose, Z_sun=Z_sun)
+    
+    fclose_interp = interp1d(Zclose, fclose)
+    
+    fclose_Z = fclose_interp(Z)
+    norm_close = fclose_Z/trapz(logP_pdf[log_P < close_logP], log_P[log_P < close_logP])
+    
+    return norm_wide, norm_close
+
+
+def get_met_dep_binfrac(met):
+    '''Returns a population-wide binary fraction consistent with
+    Moe+19 based on the supplied metallicity
+
+    Parameters
+    ----------
+    met : float
+        metallicity of the population
+
+    Returns
+    -------
+    binfrac : float
+        binary fraction of the population based on metallicity
+
+    '''
+    logP_hi_lim = 9
+    logP_lo_lim = 0
+    wide_logP = 6
+    close_logP = 4
+    neval = 5000
+
+    from scipy.interpolate import interp1d
+    from scipy.integrate import trapz
+    from scipy.stats import norm
+
+    norm_wide, norm_close = get_porb_norm(met)
+    prob_wide = norm.pdf(np.linspace(wide_logP, logP_hi_lim, neval), loc=4.9, scale=2.3)*norm_wide
+    prob_close = norm.pdf(np.linspace(logP_lo_lim, close_logP, neval), loc=4.9, scale=2.3)*norm_close
+    slope = -(prob_close[-1] - prob_wide[0]) / (wide_logP - close_logP)
+    prob_intermediate = slope * (np.linspace(close_logP, wide_logP, neval) - close_logP) + prob_close[-1]
+    prob_interp_int = interp1d(np.linspace(close_logP, wide_logP, neval), prob_intermediate)
+
+    x_dat = np.hstack([np.linspace(logP_lo_lim, close_logP, neval),
+                       np.linspace(close_logP, wide_logP, neval),
+                       np.linspace(wide_logP, logP_hi_lim, neval),])
+    y_dat = np.hstack([prob_close, prob_interp_int(np.linspace(close_logP, wide_logP, neval)), prob_wide])
+
+    binfrac = trapz(y_dat, x_dat)/0.66 * 0.5
+
+    return float(np.round(binfrac, 2))
 
 def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     """Checks that values in BSEDict, filters, and convergence are viable"""
