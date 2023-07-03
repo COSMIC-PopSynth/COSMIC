@@ -71,7 +71,7 @@ def get_independent_sampler(
         Model to sample eccentricity; choices include: thermal, uniform, sana12
 
     porb_model : `str`
-        Model to sample orbital period; choices include: log_uniform, sana12
+        Model to sample orbital period; choices include: log_uniform, sana12, raghavan10, moe19
 
     qmin : `float`
         kwarg which sets the minimum mass ratio for sampling the secondary
@@ -165,6 +165,11 @@ def get_independent_sampler(
     n_singles = 0
     n_binaries = 0
 
+    # if porb_model = `moe19`, the binary fraction is fixed based on the metallicity 
+    if porb_model == "moe19":
+        binfrac_model = utils.get_met_dep_binfrac(met)
+        warnings.warn('your supplied binfrac_model has been overwritten to {} match Moe+2019'.format(binfrac_model))
+    
     # --- `msort` kwarg can be set to have different binary fraction/qmin above `msort`
     msort = kwargs["msort"] if "msort" in kwargs.keys() else None
     if msort is not None:
@@ -223,9 +228,15 @@ def get_independent_sampler(
     rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
 
     # sample periods and eccentricities
-    porb,aRL_over_a = initconditions.sample_porb(
-        mass1_binary, mass2_binary, rad1, rad2, porb_model, size=mass1_binary.size
-    )
+    # if the porb_model is moe19, the metallicity needs to be supplied
+    if porb_model == "moe19":
+        porb,aRL_over_a = initconditions.sample_porb(
+            mass1_binary, mass2_binary, rad1, rad2, porb_model, met=met, size=mass1_binary.size
+        )
+    else:
+        porb,aRL_over_a = initconditions.sample_porb(
+            mass1_binary, mass2_binary, rad1, rad2, porb_model, size=mass1_binary.size
+        )
     ecc = initconditions.sample_ecc(aRL_over_a, ecc_model, size=mass1_binary.size)
 
     tphysf, metallicity = initconditions.sample_SFH(
@@ -667,7 +678,7 @@ class Sample(object):
             binaryIdx,
         )
 
-    def sample_porb(self, mass1, mass2, rad1, rad2, porb_model="sana12", porb_max=None, size=None):
+    def sample_porb(self, mass1, mass2, rad1, rad2, porb_model, porb_max=None, size=None, **kwargs):
         """Sample the orbital period according to the user-specified model
 
         Parameters
@@ -680,7 +691,7 @@ class Sample(object):
             radii of the primaries. 
         rad2 : array
             radii of the secondaries 
-        model : string
+        porb_model : string
             selects which model to sample orbital periods, choices include:
             log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
             `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
@@ -693,6 +704,16 @@ class Sample(object):
             following the implementation of
             `Renzo+2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract>_`
             and flat in log otherwise
+            raghavan10 : log normal orbital periods in days with mean_logP = 4.9 
+            and sigma_logP = 2.3 between 0 < log10(P/day) < 9  following 
+            `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
+            moe19 : log normal orbital periods in days with mean_logP = 4.9 
+            and sigma_logP = 2.3 between 0 < log10(P/day) < 9  following 
+            `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
+            but with different close binary fractions following 
+            `Moe+2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>_`
+        met : float
+            metallicity of the population
 
         Returns
         -------
@@ -798,9 +819,82 @@ class Sample(object):
             porb[ind_massive] = 10 ** utils.rndm(
                 a=log10_porb_min[ind_massive], b=log10_porb_max, g=-0.55, size=len(ind_massive))
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+        
+        elif porb_model == "raghavan10":
+            import scipy
+            # Same here: if using CMC, set the maximum porb to the smaller of either the
+            # hard/soft boundary or 5.5 (from Sana paper)
+            if porb_max is None:
+                log10_porb_max = 9.0
+            else:
+                log10_porb_max = np.minimum(5.5, np.log10(porb_max))
+
+            lower = 0
+            upper = log10_porb_max
+            mu = 4.9
+            sigma = 2.3
+
+            porb = 10 ** (scipy.stats.truncnorm.rvs(
+                (lower-mu)/sigma,(upper-mu)/sigma, loc=mu, scale=sigma, size=size
+                ))
+
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2)
+
+        elif porb_model == "moe19":
+            from scipy.interpolate import interp1d
+            from scipy.stats import norm
+            from scipy.integrate import trapz
+            try:
+                met = kwargs.pop('met')
+            except:
+                raise ValueError(
+                    "You have chosen moe19 for the orbital period distribution which is a metallicity-dependent distribution. "
+                    "Please specify a metallicity for the population."
+                    )
+            def get_logP_dist(nsamp, norm_wide, norm_close, mu=4.4, sigma=2.1):
+                logP_lo_lim=0
+                logP_hi_lim=9
+                close_logP=4.0
+                wide_logP=6.0
+                neval = 500
+                prob_wide = norm.pdf(np.linspace(wide_logP, logP_hi_lim, neval), loc=mu, scale=sigma)*norm_wide
+                prob_close = norm.pdf(np.linspace(logP_lo_lim, close_logP, neval), loc=mu, scale=sigma)*norm_close
+                slope = -(prob_close[-1] - prob_wide[0]) / (wide_logP - close_logP)
+                prob_intermediate = slope * (np.linspace(close_logP, wide_logP, neval) - close_logP) + prob_close[-1]
+                prob_interp_int = interp1d(np.linspace(close_logP, wide_logP, neval), prob_intermediate)
+
+                log_p_success = []
+                n_success = 0
+                while n_success < nsamp:
+                    logP_samp = np.random.uniform(logP_lo_lim, logP_hi_lim, nsamp*5)
+                    logP_prob = np.random.uniform(0, 1, nsamp*5)
+        
+                    logP_samp_lo = logP_samp[logP_samp<close_logP]
+                    logP_prob_lo = logP_prob[logP_samp<close_logP]
+                    log_p_success.extend(logP_samp_lo[np.where(logP_prob_lo < norm.pdf(logP_samp_lo, loc=mu, scale=sigma)*norm_close)])
+        
+                    logP_samp_int = logP_samp[(logP_samp>=close_logP) & (logP_samp<wide_logP)]
+                    logP_prob_int = logP_prob[(logP_samp>=close_logP) & (logP_samp<wide_logP)]
+                    log_p_success.extend(logP_samp_int[np.where(logP_prob_int < prob_interp_int(logP_samp_int))])
+    
+                    logP_samp_hi = logP_samp[(logP_samp>=wide_logP)]
+                    logP_prob_hi = logP_prob[(logP_samp>=wide_logP)]
+
+                    log_p_success.extend(logP_samp_hi[np.where(logP_prob_hi < norm.pdf(logP_samp_hi, loc=mu, scale=sigma)*norm_wide)])
+
+                    n_success = len(log_p_success)
+                log_p_success = np.array(log_p_success)[np.random.randint(0,n_success,nsamp)]    
+                return log_p_success
+            norm_wide, norm_close = utils.get_porb_norm(met)
+            logP_dist = get_logP_dist(size, norm_wide, norm_close)
+            logP_dist = logP_dist[np.random.randint(0, len(logP_dist), size)]
+            porb = 10**logP_dist 
+            aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+            
+
         else:
             raise ValueError(
-                "You have supplied a non-supported model; Please choose either log_flat, sana12, or renzo19"
+                "You have supplied a non-supported model; Please choose either log_flat, sana12, renzo19, raghavan10, or moe19"
             )
         return porb, aRL_over_a 
 
