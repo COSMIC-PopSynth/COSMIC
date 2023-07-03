@@ -35,7 +35,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install -r requirements.txt
-        pip install .
         python setup.py build_ext --inplace
 
     - name: Test with pytest
