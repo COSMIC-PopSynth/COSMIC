@@ -494,7 +494,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             if(mcmax-mc.lt.tiny)then
                aj = 0.d0
                mc = mcmax
-               mcbagb = mc
+               mcbagb = mass
                call assign_remnant(zpars,mc,mcbagb,mass,
      &          mt,kw,bhspin,kidx)
                

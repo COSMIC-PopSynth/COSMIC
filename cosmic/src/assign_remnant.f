@@ -12,7 +12,7 @@
       real*8 avar,bvar
       real*8 mc,mcbagb,mass,mt
       real*8 frac,kappa,sappa,alphap,polyfit
-      real*8 mcx, bhspin,mrem,mch,mcbagb1
+      real*8 mcx, bhspin,mrem,mch
       integer kw,kidx
 
       
@@ -23,12 +23,6 @@
 *  bhspinmag,  Mbh_initial
 
             mch = 1.44d0 !set here owing to AIC ECSN model.
-            if(kw.ge.7.and.kw.le.9)then
-                mcbagb1 = mass
-            elseif(kw.ge.1.and.kw.le.6) then
-                mcbagb1 = mcbagb
-            endif
-
 *
 * Mc,x represents the C core mass and we now test whether it
 * exceeds either the total mass or the maximum allowed core mass.
@@ -53,15 +47,15 @@
                endif
                
                mt = mc
-               if(ecsn.gt.0.d0.and.mcbagb1.lt.ecsn_mlow)then
+               if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
                   kw = 11
-               elseif(ecsn.eq.0.d0.and.mcbagb1.lt.1.6d0)then !double check what this should be. should be ecsn_mlow. Remember need to add option if ecsn = 0 (i.e. no ECSN!!!)
+               elseif(ecsn.eq.0.d0.and.mcbagb.lt.1.6d0)then !double check what this should be. should be ecsn_mlow. Remember need to add option if ecsn = 0 (i.e. no ECSN!!!)
 *
 * Zero-age Carbon/Oxygen White Dwarf
 *
                   kw = 11
-               elseif(ecsn.gt.0.d0.and.mcbagb1.ge.ecsn_mlow.and.
-     &                mcbagb1.le.ecsn.and.mc.lt.1.08d0)then
+               elseif(ecsn.gt.0.d0.and.mcbagb.ge.ecsn_mlow.and.
+     &                mcbagb.le.ecsn.and.mc.lt.1.08d0)then
                   kw = 11
 *               elseif(mcbagb.ge.1.6d0.and.mcbagb.le.2.5d0.and.
 *                      mc.lt.1.08d0)then !can introduce this into code at some point.
@@ -76,13 +70,13 @@
                mass = mt
 *
             else
-               if(ecsn.gt.0.d0.and.mcbagb1.lt.ecsn_mlow)then
+               if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.
 * so no remnant is left after the SN
 *
                   kw = 15
-               elseif(ecsn.eq.0.d0.and.mcbagb1.lt.1.6d0)then
+               elseif(ecsn.eq.0.d0.and.mcbagb.lt.1.6d0)then
 *
 * Star is not massive enough to ignite C burning.
 * so no remnant is left after the SN
