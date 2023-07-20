@@ -2230,18 +2230,17 @@ component.
 
       if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc)then
 *
-* This will be dynamical mass transfer of a similar nature to
-* common-envelope evolution.  The result is always a single
-* star placed in *2.
+* KB 20 jul 23: This will lead to a merger of the two MS stars.
+* The result is always a single star placed in *2.
 *
          CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
          taum = SQRT(tkh(j1)*tdyn)
          dm1 = mass(j1)
          if(kstar(j2).le.1)then
 *
-* Restrict accretion to thermal timescale of secondary.
+* Assume perfect accretion efficiency
 *
-            dm2 = taum/tkh(j2)*dm1
+            dm2 = dm1
             mass(j2) = mass(j2) + dm2
 *
 * Rejuvenate if the star is still on the main sequence.
