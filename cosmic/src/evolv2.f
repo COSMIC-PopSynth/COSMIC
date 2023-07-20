@@ -4099,8 +4099,12 @@ component.
          else
             mass1_bpp = mass(1)
             mass2_bpp = mass(2)
-            if(kstar(1).eq.15) mass1_bpp = mass0(1)
-            if(kstar(2).eq.15) mass2_bpp = mass0(2)
+*
+* KB remove these 20 jul 23: we want the stars to not have mass
+* if they are kstar=15
+*
+*            if(kstar(1).eq.15) mass1_bpp = mass0(1)
+*            if(kstar(2).eq.15) mass2_bpp = mass0(2)
             if(coel)then
                 evolve_type = 6.0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4287,13 +4291,13 @@ component.
      &                  epoch(2),bhspin(1),bhspin(2))
           endif
           
-          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
-              mass1_bpp = mass0(1)
-          endif
+*          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
+*              mass1_bpp = mass0(1)
+*          endif
 
-          if(kstar(2).eq.15.and.bpp(jp,5).lt.15.0)then
-              mass2_bpp = mass0(2)
-          endif
+*          if(kstar(2).eq.15.and.bpp(jp,5).lt.15.0)then
+*              mass2_bpp = mass0(2)
+*          endif
           
           if(coel)then
               evolve_type = 6.0
