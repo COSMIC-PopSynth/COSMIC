@@ -920,7 +920,7 @@
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
-            if(KW1.eq.13.and.ecsn.gt.0.d0)then
+            if(KW.eq.13.and.ecsn.gt.0.d0)then
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
