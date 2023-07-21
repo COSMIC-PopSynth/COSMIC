@@ -35,12 +35,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install -r requirements.txt
-        pip install numpy
-        pip install .
+        python setup.py build_ext --inplace
 
     - name: Make dependencies
-      env:
-        PATH_TO_COSMIC: /home/runner/work/COSMIC/COSMIC/
       run: |
         cd docs && make html; cd ../
         touch docs/_build/html/.nojekyll
