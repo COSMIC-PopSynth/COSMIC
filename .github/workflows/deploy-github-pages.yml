@@ -35,16 +35,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install -r requirements.txt
-        python setup.py build_ext --inplace
-        python -m pip install .
-
-
-    - name: Test with pytest
-      run: |
-        bash ci/compile_benchmark.sh
-        pytest --cov=./cosmic --cov-report=xml
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+        pip install .
 
     - name: Make dependencies
       env:
