@@ -90,6 +90,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -171,6 +172,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -252,6 +254,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -333,6 +336,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -414,6 +418,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -495,6 +500,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -576,6 +582,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -657,6 +664,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -738,6 +746,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -819,6 +828,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -900,6 +910,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -981,6 +992,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1062,6 +1074,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1143,6 +1156,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1224,6 +1238,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1305,6 +1320,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1386,6 +1402,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1467,6 +1484,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1548,6 +1566,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1629,6 +1648,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1710,6 +1730,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1791,6 +1812,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1872,6 +1894,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -1953,6 +1976,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2034,6 +2058,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2115,6 +2140,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2196,6 +2222,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2277,6 +2304,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2358,6 +2386,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2439,6 +2468,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2520,6 +2550,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2601,6 +2632,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2682,6 +2714,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2763,6 +2796,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2844,6 +2878,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -2925,6 +2960,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3006,6 +3042,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3087,6 +3124,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3168,6 +3206,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3249,6 +3288,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3330,6 +3370,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3411,6 +3452,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3492,6 +3534,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3573,6 +3616,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3654,6 +3698,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3735,6 +3780,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3816,6 +3862,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3897,6 +3944,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -3978,6 +4026,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4059,6 +4108,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4140,6 +4190,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4221,6 +4272,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4302,6 +4354,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4383,6 +4436,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4464,6 +4518,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4545,6 +4600,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4626,6 +4682,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4707,6 +4764,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4788,6 +4846,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4869,6 +4928,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -4950,6 +5010,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5031,6 +5092,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5112,6 +5174,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5193,6 +5256,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5274,6 +5338,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5355,6 +5420,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5436,6 +5502,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5517,6 +5584,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5598,6 +5666,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5679,6 +5748,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5760,6 +5830,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5841,6 +5912,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -5922,6 +5994,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6003,6 +6076,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6084,6 +6158,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6165,6 +6240,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6246,6 +6322,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6327,6 +6404,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6408,6 +6486,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6489,6 +6568,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6570,6 +6650,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6651,6 +6732,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6732,6 +6814,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6813,6 +6896,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6894,6 +6978,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -6975,6 +7060,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7056,6 +7142,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7137,6 +7224,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7218,6 +7306,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7299,6 +7388,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7380,6 +7470,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7461,6 +7552,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7542,6 +7634,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7623,6 +7716,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7704,6 +7798,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7785,6 +7880,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7866,6 +7962,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -7947,6 +8044,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8028,6 +8126,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8109,6 +8208,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8190,6 +8290,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8271,6 +8372,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8352,6 +8454,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8433,6 +8536,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8514,6 +8618,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8595,6 +8700,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8676,6 +8782,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8757,6 +8864,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8838,6 +8946,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -8919,6 +9028,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9000,6 +9110,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9081,6 +9192,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9162,6 +9274,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9243,6 +9356,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9324,6 +9438,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9405,6 +9520,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9486,6 +9602,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9567,6 +9684,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9648,6 +9766,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9729,6 +9848,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9810,6 +9930,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9891,6 +10012,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -9972,6 +10094,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10053,6 +10176,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10134,6 +10258,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10215,6 +10340,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10296,6 +10422,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10377,6 +10504,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10458,6 +10586,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10539,6 +10668,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10620,6 +10750,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10701,6 +10832,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10782,6 +10914,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10863,6 +10996,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -10944,6 +11078,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11025,6 +11160,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11106,6 +11242,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11187,6 +11324,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11268,6 +11406,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11349,6 +11488,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11430,6 +11570,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11511,6 +11652,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11592,6 +11734,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11673,6 +11816,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11754,6 +11898,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11835,6 +11980,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11916,6 +12062,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -11997,6 +12144,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12078,6 +12226,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12159,6 +12308,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12240,6 +12390,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12321,6 +12472,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12402,6 +12554,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12483,6 +12636,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12564,6 +12718,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12645,6 +12800,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12726,6 +12882,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12807,6 +12964,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12888,6 +13046,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -12969,6 +13128,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13050,6 +13210,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13131,6 +13292,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13212,6 +13374,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13293,6 +13456,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13374,6 +13538,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13455,6 +13620,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13536,6 +13702,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13617,6 +13784,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13698,6 +13866,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13779,6 +13948,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13860,6 +14030,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -13941,6 +14112,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14022,6 +14194,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14103,6 +14276,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14184,6 +14358,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14265,6 +14440,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14346,6 +14522,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14427,6 +14604,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14508,6 +14686,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14589,6 +14768,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14670,6 +14850,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14751,6 +14932,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14832,6 +15014,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14913,6 +15096,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -14994,6 +15178,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15075,6 +15260,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15156,6 +15342,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15237,6 +15424,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15318,6 +15506,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15399,6 +15588,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15480,6 +15670,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15561,6 +15752,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15642,6 +15834,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15723,6 +15916,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15804,6 +15998,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15885,6 +16080,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -15966,6 +16162,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16047,6 +16244,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16128,6 +16326,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16209,6 +16408,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16290,6 +16490,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16371,6 +16572,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16452,6 +16654,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16533,6 +16736,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16614,6 +16818,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16695,6 +16900,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16776,6 +16982,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16857,6 +17064,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -16938,6 +17146,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17019,6 +17228,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17100,6 +17310,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17181,6 +17392,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17262,6 +17474,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17343,6 +17556,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17424,6 +17638,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17505,6 +17720,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17586,6 +17802,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17667,6 +17884,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17748,6 +17966,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17829,6 +18048,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17910,6 +18130,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -17991,6 +18212,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18072,6 +18294,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18153,6 +18376,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18234,6 +18458,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18315,6 +18540,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18396,6 +18622,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18477,6 +18704,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18558,6 +18786,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18639,6 +18868,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18720,6 +18950,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18801,6 +19032,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18882,6 +19114,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -18963,6 +19196,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19044,6 +19278,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19125,6 +19360,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19206,6 +19442,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19287,6 +19524,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19368,6 +19606,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19449,6 +19688,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19530,6 +19770,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19611,6 +19852,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19692,6 +19934,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
@@ -19773,6 +20016,7 @@
         bhms_coll_flag = 0
         don_lim = -1
         acc_lim = -1
+        rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
