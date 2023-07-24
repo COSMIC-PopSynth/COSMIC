@@ -25,7 +25,7 @@
 *
       integer kw,kwp,kidx
 *
-      real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20)
+      real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20),met
       real*8 bhspin
       real*8 r,lum,mc,rc,menv,renv,k2
       real*8 mch,mlp,tiny
@@ -94,7 +94,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
       thg = tscls(1) - tm
 *
       rzams = rzamsf(mass)
-      rtms = rtmsf(mass)
+* calculate metallicity using the zpars(14) parameter.
+      met = 10**(LOG10(zpars(14))/0.4)
+      rtms = rtmsf(mass, met)
 *
       if(aj.lt.tscls(1))then
 *
