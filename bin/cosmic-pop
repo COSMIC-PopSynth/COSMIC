@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/u77526sm/anaconda3/envs/cosmic_test/bin/python3.10
 
 # Code: cosmic-pop.py
 # Version: 1
@@ -443,7 +443,10 @@ if __name__ == '__main__':
             conv_filter_match = conv_filter_match.append(conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)])
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
-            conv_save = conv_save.append(conv_filter_match)
+            if pd.__version__<="2.0.0":
+                conv_save = conv_save.append(conv_filter_match)
+            else:
+                conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
 
             # perform the convergence
             if len(conv_save) == len(conv_filter_match):
