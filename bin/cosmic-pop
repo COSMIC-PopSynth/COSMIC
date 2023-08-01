@@ -1,5 +1,4 @@
-#!/home/u77526sm/anaconda3/envs/cosmic_test/bin/python3.10
-
+#!/usr/bin/env python
 # Code: cosmic-pop.py
 # Version: 1
 # Version changes: SAMPLE FIXED POPULATION OF BINARIES AND EVOLVE WITH BSE;
