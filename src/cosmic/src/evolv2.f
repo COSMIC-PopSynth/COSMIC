@@ -1145,12 +1145,14 @@ component.
                CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,
      &                   lums,GB,zpars,dtm,k)
                if(kstar(k).eq.2)then
+                  if (using_SSE) then
                   if(GB(9).lt.massc(k).or.m0.gt.zpars(3))then
                      mass0(k) = m0
                   else
                      epoch(k) = tm + (tscls(1) - tm)*(aj(k)-tms(k))/
      &                               (tbgb(k) - tms(k))
                      epoch(k) = tphys - epoch(k)
+                  endif
                   endif
                else
                   epoch(k) = tphys - aj(k)*tm/tms(k)
@@ -2283,8 +2285,10 @@ component.
                mass0(j2) = mass(j2)
                CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
      &                   lums,GB,zpars,dtm,j2)
+               if (using_SSE) then
                aj(j2) = tmsnew + tscls(1)*(aj(j2)-tms(j2))/tbgb(j2)
                epoch(j2) = tphys - aj(j2)
+               endif
             endif
          elseif(kstar(j2).le.12)then
 *
@@ -3425,8 +3429,10 @@ component.
          CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
      &             lums,GB,zpars,dtm,j1)
          if(kstar(j1).eq.2)then
+            if (using_SSE) then
             aj(j1) = tmsnew + (tscls(1) - tmsnew)*(aj(j1)-tms(j1))/
      &                        (tbgb(j1) - tms(j1))
+            endif
          else
             aj(j1) = tmsnew/tms(j1)*aj(j1)
          endif
@@ -3437,8 +3443,10 @@ component.
          CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
      &             lums,GB,zpars,dtm,j2)
          if(kstar(j2).eq.2)then
+            if (using_SSE) then
             aj(j2) = tmsnew + (tscls(1) - tmsnew)*(aj(j2)-tms(j2))/
      &                        (tbgb(j2) - tms(j2))
+            endif
          elseif((mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0).
      &           and.kstar(j2).ne.7)then
             aj(j2) = tmsnew/tms(j2)*aj(j2)*(mass(j2) - dm22)/mass(j2)
