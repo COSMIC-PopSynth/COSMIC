@@ -16,7 +16,7 @@
      &                  r,lum,kw,mc,rc,menv,renv,k2,
      &                  mcx,id)
            ! get_bhspin is defined in assign_commons_cosmic.f90
-           CALL get_bhspin(bhspin,id)
+           if (kw==14) CALL get_bhspin(bhspin,id)
           
       elseif (using_SSE) then
           !WRITE(*,*) 'Calling SSE_hrdiag'
