@@ -15,6 +15,8 @@
           CALL METISSE_hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,
      &                  mcx,id)
+           ! get_bhspin is defined in assign_commons_cosmic.f90
+           CALL get_bhspin(bhspin,id)
           
       elseif (using_SSE) then
           !WRITE(*,*) 'Calling SSE_hrdiag'
