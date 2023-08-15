@@ -84,6 +84,9 @@
       COEL = .FALSE.
       snp = 0
       output = .false.
+      if (output) print*, 'comenv begin',kw1,kw2,star1,star2
+
+
 *
 * Obtain the core masses and radii.
 *
@@ -926,7 +929,7 @@
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,
-     &               bhspin1,1)
+     &               bhspin1,star1)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
@@ -1069,7 +1072,7 @@
       ENDIF
    30 SEP = SEPF
       if(output) write(*,*)'end of CE1:',KW1,M1,M01,R1,MENV,RENV
-      if(output) write(*,*)'end of CE1:',KW2,M2,M02,R2,MENV,RENV
+      if(output) write(*,*)'end of CE2:',KW2,M2,M02,R2,MENV,RENV
       sigma = sigmahold
       RETURN
       END

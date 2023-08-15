@@ -8,7 +8,7 @@
       
       if (using_METISSE) then
           !WRITE(*,*) 'Calling METISSE_deltat'
-          CALL METISSE_deltat(kw,age,tm,tn,tscls,dt,dtr,id)
+          CALL METISSE_deltat(id,age,dt,dtr)
           
       elseif (using_SSE) then
           !WRITE(*,*) 'Calling SSE_deltat'
