@@ -1,6 +1,6 @@
 ***
 * New flag introduced (Sept 2022)
-* rtmsflag > 0 uses rtms from simulation data (1=[Boost], 2=[Bpass], 3=[Mesa])
+* rtmsflag > 0 uses rtms from simulation data (1=[Boost], 2=[Bpass])
 * rtms = 0 uses the sse rtms and extrapolation for z < 0.0008.
 ***
       real*8 FUNCTION lzamsf(m)
@@ -243,7 +243,7 @@
       implicit none
       INCLUDE 'const_bse.h'
       real*8 m,met,Rtms200,Rtms199,slope
-      real*8 rtmssse, rtmsBoost, rtmsBpass, rtmsMESA
+      real*8 rtmssse, rtmsBoost, rtmsBpass
       external rtmssse
 *      integer rtmsflag, bhflag, wdflag
 *      COMMON /FLAGS/ rtmsflag, bhflag, wdflag
@@ -278,10 +278,6 @@
       elseif (rtmsflag .eq. 2) then
 *         print*,'inside BPASS conditional'
          rtmsf = rtmsBpass(m, met)
-
-      elseif (rtmsflag .eq. 3) then
-*         print*,'inside MESA conditional'
-*         rtmsf = rtmsMESA(m, met)
 
       else
          print*,'Specify a valid value of rtmsflag'
@@ -447,7 +443,7 @@
       return
       end function rtmsBpass
 
-*** NEW CODE BETWEEN THESE LINES
+*** NEW CODE BETWEEN THESE LINES (END)
 ***
       real*8 FUNCTION ralphf(m)
       implicit none
