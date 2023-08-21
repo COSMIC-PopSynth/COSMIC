@@ -40,6 +40,8 @@ lib_source = [
     'src/hrdiag.f',
     'src/star.f',
     'src/zcnsts.f',
+    'src/assign_remnant.f',
+    'src/hrdiag_remnant.f',
     'src/SSE/SSE_deltat.f',
     'src/SSE/SSE_mlwind.f',
     'src/SSE/SSE_hrdiag.f',
@@ -58,7 +60,8 @@ lib_source = [
     'src/METISSE/src/interp_support.f90',
     'src/METISSE/src/alloc_track.f90',
     'src/METISSE/src/dealloc_track.f90',
-    'src/METISSE/src/assign_commons.f90',
+    'src/METISSE/src/assign_commons_main.f90',
+    'src/METISSE/src/assign_commons_COSMIC.f90',
     'src/METISSE/src/comenv_lambda.f90',
     'src/METISSE/src/initialize_front_end.f90']
 

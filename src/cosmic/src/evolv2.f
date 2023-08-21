@@ -1521,7 +1521,7 @@ component.
          dt = dtmi(k)
          CALL deltat(kw,age,tm,tn,tscls,dt,dtr,k)
          if(output) write(*,*)'post deltat:',tphys,dt,dtr,kw,
-     & age,intpol,iter,k,kmin,kmax
+     & age,intpol,iter,k,kmin,kmax,mt
 *
 * Choose minimum of time-scale and remaining interval.
 *
@@ -1542,6 +1542,7 @@ component.
          k2str(k) = k2
          tms(k) = tm
          tbgb(k) = tscls(1)
+         if(using_METISSE .and. kw==6) mass(k) = mt
 *
  6    continue
 *
