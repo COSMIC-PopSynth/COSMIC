@@ -1,6 +1,18 @@
 ***
 * New flag introduced (Sept 2022)
-* rtmsflag > 0 uses rtms from simulation data (1=[Boost], 2=[Bpass], 3=[Mesa])
+* rtmsflag > 0 uses rtms from simulation data (1=[BoOST], 2=[BPASS])
+* Only common metallicity cases between BoOST & BPASS are coded.
+*
+* BoOST metallicities = [1.1e-4, 2.1e-4, 1e-3, 2e-3] corresponding
+* to [dwarfD, IZw18, dwarfA, SMC] models (Szecsi et al. (2022))
+*
+* BPASS metallicities = [1e-4, *2e-4*, 1e-3, 2e-3]. 
+* NOTE : For BPASS, we used a power law to fit the rtms v/s mzams 
+* values for each metallicity. We have coded the best fit power-laws
+* for the above BPASS metallicities here.Since, Z = 2e-4 model is 
+* not available in the BPASS tracks, we assume the same rtms v/s 
+* mzams power law as Z=1e-4 for Z=2e-4.
+*
 * rtms = 0 uses the sse rtms and extrapolation for z < 0.0008.
 ***
       real*8 FUNCTION lzamsf(m)
@@ -243,7 +255,7 @@
       implicit none
       INCLUDE 'const_bse.h'
       real*8 m,met,Rtms200,Rtms199,slope
-      real*8 rtmssse, rtmsBoost, rtmsBpass, rtmsMESA
+      real*8 rtmssse, rtmsBoost, rtmsBpass
       external rtmssse
 *      integer rtmsflag, bhflag, wdflag
 *      COMMON /FLAGS/ rtmsflag, bhflag, wdflag
@@ -278,10 +290,6 @@
       elseif (rtmsflag .eq. 2) then
 *         print*,'inside BPASS conditional'
          rtmsf = rtmsBpass(m, met)
-
-      elseif (rtmsflag .eq. 3) then
-*         print*,'inside MESA conditional'
-*         rtmsf = rtmsMESA(m, met)
 
       else
          print*,'Specify a valid value of rtmsflag'
@@ -384,7 +392,7 @@
 *         print*,'inside else if 3'
       else
          print*,'mass and Rtms data for the given metallicity is not
-     &      available for the Boost models.'
+     &      coded for the Boost models.'
       endif
 *      print*,'mBoost is ', mBoost
 *      print*,'RZBoost is ', RZBoost
@@ -422,21 +430,14 @@
       elseif ((1.0d-3 .ge. met_cut1) .and. (1.0d-3 .le. met_cut2)) then
           a = 8.1088547d-1
           alpha = 8.2732973d-1
+
       elseif ((2.0d-3 .ge. met_cut1) .and. (2.0d-3 .le. met_cut2)) then
           a = 4.8850513d-1
           alpha = 9.7369477d-1
 
-      elseif ((3.0d-3 .ge. met_cut1) .and. (3.0d-3 .le. met_cut2)) then
-          a = 3.143195d-1
-          alpha = 1.10470853d0
-
-      elseif ((4.0d-3 .ge. met_cut1) .and. (4.0d-3 .le. met_cut2)) then
-          a = 3.306082d-1
-          alpha = 1.11766343d0
-
       else
          print*,'mass and Rtms data for the given metallicity is not
-     &      available for the BPASS models.'
+     &      coded for the BPASS models.'
          a = 0.0
          alpha = 0.0
 
@@ -447,7 +448,7 @@
       return
       end function rtmsBpass
 
-*** NEW CODE BETWEEN THESE LINES
+*** NEW CODE BETWEEN THESE LINES (END)
 ***
       real*8 FUNCTION ralphf(m)
       implicit none
