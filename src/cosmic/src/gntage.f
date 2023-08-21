@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE gntage(mc,mt,kw,zpars,m0,aj)
+      SUBROUTINE gntage(mc,mt,kw,zpars,m0,aj,dtm,k)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -14,11 +14,11 @@
 *                  types.
 *
 *
-      integer kw
+      integer kw, k
       integer j,jmax
       parameter(jmax=30)
 *
-      real*8 mc,mt,m0,aj,tm,tn
+      real*8 mc,mt,m0,aj,tm,tn,dtm
       real*8 tscls(20),lums(10),GB(10),zpars(20)
       real*8 mmin,mmax,mmid,dm,f,fmid,dell,derl,lum
       real*8 macc,lacc,tiny
@@ -32,6 +32,8 @@
 *
 * First we check that we don't have a CheB star
 * with too small a core mass.
+*      print*, 'in gntage',kw
+      
       if(kw.eq.4)then
 * Set the minimum CHeB core mass using M = Mflash
          mcy = mcheif(zpars(2),zpars(2),zpars(10))
@@ -76,7 +78,7 @@
             kw = 14
 *           WRITE(66,*)' GNTAGE6: changed to 4'
          else
-            CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+            CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
             aj = tscls(13) + 2.d0*tiny
          endif
       endif
@@ -91,7 +93,7 @@
             kw = 14
 *           WRITE(66,*)' GNTAGE5: changed to 4'
          else
-            CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+            CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
             aj = tscls(2) + tscls(3) + 2.d0*tiny
          endif
       endif
@@ -157,7 +159,7 @@
  10      continue
  20      continue
 *
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          aj = tscls(2) + aj*tscls(3)
 *
       endif
@@ -182,7 +184,7 @@
          else
 * Use Newton-Raphson to find m0 from Lbgb
             m0 = zpars(2)
-            CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+            CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
             lum = lmcgbf(mc,GB)
             j = 0
  30         continue
@@ -203,7 +205,7 @@
             goto 30
  40         continue
          endif
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          aj = tscls(1) + 1.0d-06*(tscls(2) - tscls(1))
 *
       endif
@@ -216,7 +218,7 @@
 *
          kw = 8
          mmin = mc
-         CALL star(kw,mmin,mc,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,mmin,mc,tm,tn,tscls,lums,GB,zpars,dtm,k)
          mcx = mcgbf(lums(2),GB,lums(6))
          if(mcx.ge.mc)then
 *           WRITE(99,*)' FATAL ERROR! GNTAGE9: mmin too big '
@@ -229,7 +231,7 @@
          f = mcx - mc
          mmax = mt
          do 50 , j = 1,jmax
-            CALL star(kw,mmax,mc,tm,tn,tscls,lums,GB,zpars)
+            CALL star(kw,mmax,mc,tm,tn,tscls,lums,GB,zpars,dtm,k)
             mcy = mcgbf(lums(2),GB,lums(6))
             if(mcy.gt.mc) goto 60
             mmax = 2.d0*mmax
@@ -258,7 +260,7 @@
          do 70 , j = 1,jmax
             dm = 0.5d0*dm
             mmid = m0 + dm
-            CALL star(kw,mmid,mc,tm,tn,tscls,lums,GB,zpars)
+            CALL star(kw,mmid,mc,tm,tn,tscls,lums,GB,zpars,dtm,k)
             mcy = mcgbf(lums(2),GB,lums(6))
             fmid = mcy - mc
             if(fmid.lt.0.d0) m0 = mmid
@@ -274,7 +276,7 @@
  70      continue
  80      continue
 *
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          aj = tm + 1.0d-10*tm
 *
       endif
@@ -285,7 +287,7 @@
          m0 = mt
          mcy = mcagbf(m0)
          aj = mc/mcy
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          if(m0.le.zpars(2))then
             mcx = mcgbf(lums(4),GB,lums(6))
          else
@@ -295,6 +297,7 @@
          aj = tscls(2) + aj*tscls(3)
       endif
 *
+*      print*, 'out of gntage',kw
       RETURN
       END
 ***

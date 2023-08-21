@@ -3,6 +3,7 @@
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,bkick,kick_info,
+     \ path_to_metisse,
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -197,8 +198,8 @@
       COMMON /fall/fallback
       REAL ran3
       EXTERNAL ran3
+      CHARACTER*256 path_to_metisse
 *
-
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -216,6 +217,9 @@
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
+      
+      INTEGER irecord
+      COMMON /REC/ irecord
 
 Cf2py intent(in) kstar
 Cf2py intent(in) mass
@@ -242,24 +246,21 @@ Cf2py intent(in) tphys
 Cf2py intent(in) zpars
 Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
+Cf2py intent(in) path_to_metisse
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
-
-
-      if (using_METISSE) then
-          WRITE(*,*), 'In METISSE'
-          CALL zcnsts_METISSE(z,zpars)
-          WRITE(*,*), 'z in evol2', z, zpars(1)
-      elseif (using_SSE) then
-          WRITE(*,*) 'In SSE'
-          CALL zcnsts(z,zpars)
-          WRITE(*,*), 'z in evol2', z, zpars(1)
-      else
-        print*,'No stellar evolution method specified'
-        print*,'Choose from using_SSE and using_METISSE'
-      endif
       
+      
+      
+      if(using_METISSE) CALL initialize_front_end('cosmic',
+     &                                     path_to_metisse)
+      CALL zcnsts(z,zpars)
+
+      if(using_METISSE) call allocate_track(2,mass0)
+      irecord = 1
+* irecord is useful for evolv1.f but serves no purpose here
+          
       if(using_cmc.eq.0)then
               CALL instar
       endif
@@ -423,7 +424,8 @@ component.
          age = tphys - epoch(k)
          mc = massc(k)
          rc = radc(k)
-         CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
+         CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
+     &                                                          dtm,k)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
          aj(k) = age
@@ -558,7 +560,7 @@ component.
             if(neta.gt.tiny .and. kstar(k)<15)then
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z)
+     &                         massc(k),rlperi,z,k)
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -924,7 +926,7 @@ component.
             if(neta.gt.tiny .and. kstar(k)<15)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z)
+     &                         massc(k),rlperi,z,k)
             else
                dmr(k) = 0.d0
             endif
@@ -1141,14 +1143,16 @@ component.
                m0 = mass0(k)
                mass0(k) = mass(k)
                CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,
-     &                   lums,GB,zpars)
+     &                   lums,GB,zpars,dtm,k)
                if(kstar(k).eq.2)then
+                  if (using_SSE) then
                   if(GB(9).lt.massc(k).or.m0.gt.zpars(3))then
                      mass0(k) = m0
                   else
                      epoch(k) = tm + (tscls(1) - tm)*(aj(k)-tms(k))/
      &                               (tbgb(k) - tms(k))
                      epoch(k) = tphys - epoch(k)
+                  endif
                   endif
                else
                   epoch(k) = tphys - aj(k)*tm/tms(k)
@@ -1221,7 +1225,7 @@ component.
 *            goto 140
          endif
 *
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
@@ -1515,7 +1519,7 @@ component.
 *     Base new time scale for changes in radius & mass on stellar type.
 *
          dt = dtmi(k)
-         CALL deltat(kw,age,tm,tn,tscls,dt,dtr)
+         CALL deltat(kw,age,tm,tn,tscls,dt,dtr,k)
          if(output) write(*,*)'post deltat:',tphys,dt,dtr,kw,
      & age,intpol,iter,k,kmin,kmax
 *
@@ -2262,7 +2266,7 @@ component.
 *
             mass0(j2) = mass(j2)
             CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,
-     &                tscls,lums,GB,zpars)
+     &                tscls,lums,GB,zpars,dtm,j2)
 * If the star has no convective core then the effective age decreases,
 * otherwise it will become younger still.
             if(mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0)then
@@ -2280,9 +2284,11 @@ component.
             if(kstar(j2).eq.2)then
                mass0(j2) = mass(j2)
                CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &                   lums,GB,zpars)
+     &                   lums,GB,zpars,dtm,j2)
+               if (using_SSE) then
                aj(j2) = tmsnew + tscls(1)*(aj(j2)-tms(j2))/tbgb(j2)
                epoch(j2) = tphys - aj(j2)
+               endif
             endif
          elseif(kstar(j2).le.12)then
 *
@@ -2306,7 +2312,7 @@ component.
             else
                mass(j2) = mass(j2) + dm2
                CALL gntage(massc(j2),mass(j2),kst,zpars,
-     &                     mass0(j2),aj(j2))
+     &                     mass0(j2),aj(j2),dtm,j2)
                epoch(j2) = tphys - aj(j2)
             endif
             kstar(j2) = kst
@@ -2381,13 +2387,14 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
 
+         if (output) print*, 'calling comenv normally'
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,dtm)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
@@ -2506,7 +2513,8 @@ component.
 *
             kst = 9
             if(kstar(j2).eq.10) massc(j2) = dm2
-            CALL gntage(massc(j2),mass(j2),kst,zpars,mass0(j2),aj(j2))
+            CALL gntage(massc(j2),mass(j2),kst,zpars,mass0(j2),aj(j2),
+     &                   dtm,j2)
             kstar(j2) = kst
             epoch(j2) = tphys - aj(j2)
          elseif(kstar(j2).le.12)then
@@ -2640,7 +2648,7 @@ component.
                formation(1) = 11
                formation(2) = 11
             endif
-            CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+            CALL mix(mass0,mass,aj,kstar,zpars,bhspin,dtm)
             dm1 = m1ce - mass(j1)
             dm2 = mass(j2) - m2ce
 *
@@ -2705,7 +2713,7 @@ component.
                endif
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z)
+     &                         mass(k),massc(k),rlperi,z,k)
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
@@ -2810,7 +2818,7 @@ component.
                      mcx = massc(j2)
                   endif
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
-                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
+                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2),dtm,j2)
                   epoch(j2) = tphys + dtm - aj(j2)
                endif
             endif
@@ -2861,7 +2869,8 @@ component.
                else
                   kst = MIN(6,3*kstar(j2)-27)
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
-                  CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
+                  CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2),
+     &                        dtm,j2)
                   epoch(j2) = tphys + dtm - aj(j2)
 *
                endif
@@ -3376,7 +3385,7 @@ component.
             m0 = mass0(j1)
             mass0(j1) = mass(j1)
             CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
-     &                lums,GB,zpars)
+     &                lums,GB,zpars,dtm,j1)
             if(GB(9).lt.massc(j1))then
                mass0(j1) = m0
             endif
@@ -3385,7 +3394,7 @@ component.
             m0 = mass0(j2)
             mass0(j2) = mass(j2)
             CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &                lums,GB,zpars)
+     &                lums,GB,zpars,dtm,j2)
             if(GB(9).lt.massc(j2))then
                mass0(j2) = m0
             endif
@@ -3419,10 +3428,12 @@ component.
 *
       if(kstar(j1).le.2.or.kstar(j1).eq.7)then
          CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
-     &             lums,GB,zpars)
+     &             lums,GB,zpars,dtm,j1)
          if(kstar(j1).eq.2)then
+            if (using_SSE) then
             aj(j1) = tmsnew + (tscls(1) - tmsnew)*(aj(j1)-tms(j1))/
      &                        (tbgb(j1) - tms(j1))
+            endif
          else
             aj(j1) = tmsnew/tms(j1)*aj(j1)
          endif
@@ -3431,10 +3442,12 @@ component.
 *
       if(kstar(j2).le.2.or.kstar(j2).eq.7)then
          CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &             lums,GB,zpars)
+     &             lums,GB,zpars,dtm,j2)
          if(kstar(j2).eq.2)then
+            if (using_SSE) then
             aj(j2) = tmsnew + (tscls(1) - tmsnew)*(aj(j2)-tms(j2))/
      &                        (tbgb(j2) - tms(j2))
+            endif
          elseif((mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0).
      &           and.kstar(j2).ne.7)then
             aj(j2) = tmsnew/tms(j2)*aj(j2)*(mass(j2) - dm22)/mass(j2)
@@ -3462,7 +3475,7 @@ component.
 *            goto 140
          endif
          kw = kstar(k)
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
@@ -3582,7 +3595,7 @@ component.
 *     Determine stellar evolution timescale for nuclear burning types.
 *
          if(kw.le.9)then
-            CALL deltat(kw,age,tm,tn,tscls,dt,dtr)
+            CALL deltat(kw,age,tm,tn,tscls,dt,dtr,k)
             dtmi(k) = MIN(dt,dtr)
 *           dtmi(k) = dtr
             dtmi(k) = MAX(1.0d-07,dtmi(k))
@@ -3865,7 +3878,7 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,dtm)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3940,13 +3953,14 @@ component.
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
+
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
-     &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j1,j2,
+     &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j2,j1,
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,dtm)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3984,7 +3998,7 @@ component.
              tb = -1.d0
          endif
       else
-         CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+         CALL mix(mass0,mass,aj,kstar,zpars,bhspin,dtm)
       endif
 
       if(com)then
@@ -4382,6 +4396,11 @@ component.
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
               if(iter.ge.loop) evolve_type = 100.0
+              if (using_METISSE) then
+                !check for t% ierr
+                !evolve_type = 101.0
+              endif
+                
               rrl1 = rad(1)/rol(1)
               rrl2 = rad(2)/rol(2)
               teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4517,6 +4536,7 @@ component.
           kick_info_out = kick_info
       endif
 *
-
+      if (using_METISSE) call dealloc_track()
+      
       END SUBROUTINE evolv2
 ***

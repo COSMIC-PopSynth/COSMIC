@@ -6,7 +6,7 @@
      &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &                  lumin,B_0,bacc,tacc,epoch,menv_bpp,renv_bpp,
-     &                  bkick)
+     &                  bkick,dtm)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -38,7 +38,7 @@
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 kick_info(2,17),fallback,M1i,M2i
       REAL*8 bkick(20)
-      REAL*8 bhspin1,bhspin2
+      REAL*8 bhspin1,bhspin2,dtm
       common /fall/fallback
       INTEGER formation1,formation2
       REAL*8 sigmahold
@@ -84,27 +84,34 @@
       COEL = .FALSE.
       snp = 0
       output = .false.
+      if (output) print*, 'comenv begin',kw1,kw2,star1,star2
+
+
 *
 * Obtain the core masses and radii.
 *
       KW = KW1
-      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &            bhspin1,1)
+     &            bhspin1,star1)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
-      RZAMS = RZAMSF(M01)
 *
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      IF (using_METISSE) THEN
+        CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,LAMB1)
+      ELSEIF (using_SSE) THEN
+        RZAMS = RZAMSF(M01)
+        LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      ENDIF
       KW = KW2
-      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
-     &            bhspin2,2)
+     &            bhspin2,star2)
       OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
@@ -116,8 +123,13 @@
 *
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
-         RZAMS = RZAMSF(M02)
-         LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+         IF (using_METISSE) THEN
+            CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,LAMB2)
+         ELSEIF (using_SSE) THEN
+            RZAMS = RZAMSF(M02)
+            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+         ENDIF
+             
          EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
 * Calculate the initial orbital energy
@@ -213,10 +225,10 @@
                M_postCE=MC1
             ENDIF
 
-            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &                  bhspin1,1)
+     &                  bhspin1,star1)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -515,10 +527,10 @@
                 endif
             ENDIF
 
-            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &                  bhspin1,1)
+     &                  bhspin1,star1)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -678,10 +690,10 @@
                M_postCE=MC2
             ENDIF
 
-            CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+            CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
-     &                  bhspin2,2)
+     &                  bhspin2,star2)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 1
                if(KW2.eq.13.and.ecsn.gt.0.d0)then
@@ -884,17 +896,18 @@
          if(output) write(*,*)'coel 2 1:',KW,KW1,KW2,M1,M2,MF,MC22,
      & TB,OORB
          IF(KW.EQ.2)THEN
-            CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+            CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star1)
             IF(GB(9).GE.MC1)THEN
                M01 = M1
                AJ1 = TM2 + (TSCLS2(1) - TM2)*(AJ1-TM1)/(TSCLS1(1) - TM1)
-               CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+               CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+     &          dtm,star1)
             ENDIF
             if(output) write(*,*)'coel 2 2:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
          ELSEIF(KW.EQ.7)THEN
             M01 = M1
-            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             AJ1 = TM1*(FAGE1*MC1 + FAGE2*MC22)/(MC1 + MC22)
             if(output) write(*,*)'coel 2 3:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
@@ -905,8 +918,8 @@
 *
 * Obtain a new age for the giant.
 *
-            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1)
-            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1,dtm,star1)
+            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             if(output) write(*,*)'coel 2 4:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
          ENDIF
@@ -916,7 +929,7 @@
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,
-     &               bhspin1,1)
+     &               bhspin1,star1)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
@@ -1059,7 +1072,7 @@
       ENDIF
    30 SEP = SEPF
       if(output) write(*,*)'end of CE1:',KW1,M1,M01,R1,MENV,RENV
-      if(output) write(*,*)'end of CE1:',KW2,M2,M02,R2,MENV,RENV
+      if(output) write(*,*)'end of CE2:',KW2,M2,M02,R2,MENV,RENV
       sigma = sigmahold
       RETURN
       END
