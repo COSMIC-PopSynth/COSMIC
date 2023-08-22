@@ -482,7 +482,7 @@ def _evolve_single_system(f):
         elif f["stellar_engine"] == "metisse":
             _evolvebin.se_flags.using_metisse = True
             _evolvebin.se_flags.using_sse = False
-            metisse_path = f["metisse_path"]
+            metisse_path = f["tracks_path"]
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],

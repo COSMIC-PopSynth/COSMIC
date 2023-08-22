@@ -19,6 +19,8 @@ f2py_source = custom_target(
 )
 
 lib_source = [
+    'src/hrdiag_remnant.f',
+    'src/assign_remnant.f',
     'src/benchmarkevolv2.f',
     'src/corerd.f',
     'src/comenv.f',
@@ -58,7 +60,8 @@ lib_source = [
     'src/METISSE/src/interp_support.f90',
     'src/METISSE/src/alloc_track.f90',
     'src/METISSE/src/dealloc_track.f90',
-    'src/METISSE/src/assign_commons.f90',
+    'src/METISSE/src/assign_commons_main.f90',
+    'src/METISSE/src/assign_commons_COSMIC.f90',
     'src/METISSE/src/comenv_lambda.f90',
     'src/METISSE/src/initialize_front_end.f90']
 
