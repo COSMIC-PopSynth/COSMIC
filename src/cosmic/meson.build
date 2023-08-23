@@ -19,6 +19,8 @@ f2py_source = custom_target(
 )
 
 lib_source = [
+    'src/hrdiag_remnant.f',
+    'src/assign_remnant.f',
     'src/benchmarkevolv2.f',
     'src/corerd.f',
     'src/comenv.f',
