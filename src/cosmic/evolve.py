@@ -95,7 +95,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
-INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','metisse_path']
+INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','tracks_path']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
