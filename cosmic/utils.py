@@ -1143,6 +1143,14 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                     flag, BSEDict[flag]
                 )
             )
+    flag = "rtmsflag"
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0, 1, 2]:
+            raise ValueError(
+                "'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
     flag = "eddlimflag"
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0, 1]:
