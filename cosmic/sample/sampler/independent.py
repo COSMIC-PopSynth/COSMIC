@@ -227,9 +227,11 @@ def get_independent_sampler(
             n_binary_delete = (sb_delete == 1).sum()
 
             # delete em!
-            mass_single = mass_single[:-n_single_delete]
-            mass1_binaries = mass1_binaries[:-n_binary_delete]
-            mass2_binaries = mass2_binaries[:-n_binary_delete]
+            if n_single_delete > 0:
+                mass_single = mass_single[:-n_single_delete]
+            if n_binary_delete > 0:
+                mass1_binaries = mass1_binaries[:-n_binary_delete]
+                mass2_binaries = mass2_binaries[:-n_binary_delete]
 
             # ensure we don't loop again after this
             target = lambda mass1_binary, size, m_sampled_singles, m_sampled_binaries, total_mass: False
