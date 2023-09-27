@@ -46,6 +46,9 @@ def get_independent_sampler(
     binfrac_model,
     met,
     size,
+    total_mass=None,
+    sampling_target="size",
+    trim_extra_samples=False,
     **kwargs
 ):
     """Generates an initial binary sample according to user specified models
@@ -142,6 +145,8 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
+    if sampling_target == "total_mass" and total_mass is None:
+        raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
     if type(final_kstar1) in [int, float]:
         final_kstar1 = [final_kstar1]
     if type(final_kstar2) in [int, float]:
@@ -161,6 +166,10 @@ def get_independent_sampler(
     mass_singles = 0.0
     mass_binaries = 0.0
 
+    mass_1_binaries_all = []
+    mass_2_binaries_all = []
+    mass_singles_all = []
+
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
@@ -175,7 +184,10 @@ def get_independent_sampler(
     if msort is not None:
         msort = kwargs["msort"] if "msort" in kwargs.keys() else None
 
-    while len(mass1_binary) < size:
+    target = lambda mass1_binary, size, mass_singles, mass_binaries, total_mass:\
+        len(mass1_binary) < size if sampling_target == "size" else mass_singles + mass_binaries < total_mass
+
+    while target(mass1_binary, size, mass_singles, mass_binaries, total_mass):
         mass1, total_mass1 = initconditions.sample_primary(
             primary_model, size=size * multiplier, **kwargs)
         (mass1_binaries, mass_single, binfrac_binaries, binary_index,
@@ -184,9 +196,13 @@ def get_independent_sampler(
             mass1_binaries, **kwargs)
 
         # track the mass sampled
-        mass_singles += np.sum(mass_single)
-        mass_binaries += np.sum(mass1_binaries)
-        mass_binaries += np.sum(mass2_binaries)
+        mass_singles += sum(mass_single)
+        mass_binaries += sum(mass1_binaries)
+        mass_binaries += sum(mass2_binaries)
+        
+        mass_singles_all.extend(mass_single)
+        mass_1_binaries_all.extend(mass1_binaries)
+        mass_2_binaries_all.extend(mass2_binaries)
 
         # track the total number sampled
         n_singles += len(mass_single)
