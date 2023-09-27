@@ -125,6 +125,20 @@ def get_independent_sampler(
     size : `int`
         Size of the population to sample
 
+    total_mass : `float`
+        Total mass to use as a target for sampling
+
+    sampling_target : `str`
+        Which type of target to use for sampling (either "size" or "total_mass"), by default "size".
+        Note that `total_mass` must not be None when `sampling_target=="total_mass"`.
+
+    trim_extra_samples : `str`
+        Whether to trim the sampled population so that the total mass sampled is as close as possible to
+        `total_mass`. Ignored when `sampling_target==size`.
+        Note that given the discrete mass of stars, this could mean your sample is off by 300
+        solar masses in the worst case scenario (of a 150+150 binary being sampled). In reality the majority
+        of cases track the target total mass to within a solar mass.        
+
     zsun : `float`
         optional kwarg for setting effective radii, default is 0.02
 
