@@ -171,10 +171,6 @@ def get_independent_sampler(
     mass_singles = 0.0
     mass_binaries = 0.0
 
-    # mass_1_binaries_all = []
-    # mass_2_binaries_all = []
-    # mass_singles_all = []
-
     # track the total number of stars sampled
     n_singles = 0
     n_binaries = 0
@@ -193,21 +189,51 @@ def get_independent_sampler(
         len(mass1_binary) < size if sampling_target == "size" else mass_singles + mass_binaries < total_mass
 
     while target(mass1_binary, size, mass_singles, mass_binaries, total_mass):
-        mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=int(size * multiplier), **kwargs)
+        mass1, total_mass1 = initconditions.sample_primary(primary_model,
+                                                           size=int(size * multiplier),
+                                                           **kwargs)
         (mass1_binaries, mass_single, binfrac_binaries, binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
-        mass2_binaries = initconditions.sample_secondary(
-            mass1_binaries, **kwargs)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, **kwargs)
+
+        # check if this sample will take us over the limit
+        if not target(mass1_binary, size,
+                      mass_singles + np.sum(mass_single),
+                      mass_binaries + np.sum(mass1_binaries) + np.sum(mass2_binaries),
+                      total_mass) and trim_extra_samples:
+            if sampling_target == "total_mass":
+                # get the cumulative total mass of the current batch of samples
+                total_mass_list = np.copy(mass1)
+                total_mass_list[binary_index] += mass2_binaries
+                sampled_so_far = mass_singles + mass_binaries
+                cumulative_total_mass = sampled_so_far + np.cumsum(total_mass_list)
+
+                # find the boundary for reaching the right total mass
+                threshold_index = np.where(cumulative_total_mass > total_mass)[0][0]
+
+                keep_offset = abs(cumulative_total_mass[threshold_index] - total_mass)
+                drop_offset = abs(cumulative_total_mass[threshold_index - 1] - total_mass)
+                lim = threshold_index - 1 if (keep_offset > drop_offset) else threshold_index
+                
+                # work out how many singles vs. binaries to delete
+                one_if_binary = np.zeros(len(mass1))
+                one_if_binary[binary_index] = 1
+                sb_delete = one_if_binary[lim + 1:]
+                n_single_delete = (sb_delete == 0).sum()
+                n_binary_delete = (sb_delete == 1).sum()
+
+                # delete em!
+                mass_single = mass_single[:-n_single_delete]
+                mass1_binaries = mass1_binaries[:-n_binary_delete]
+                mass2_binaries = mass2_binaries[:-n_binary_delete]
+
+                # ensure we don't loop again after this
+                target = lambda mass1_binary, size, mass_singles, mass_binaries, total_mass: False
 
         # track the mass sampled
         mass_singles += sum(mass_single)
         mass_binaries += sum(mass1_binaries)
         mass_binaries += sum(mass2_binaries)
-        
-        # mass_singles_all.extend(mass_single)
-        # mass_1_binaries_all.extend(mass1_binaries)
-        # mass_2_binaries_all.extend(mass2_binaries)
 
         # track the total number sampled
         n_singles += len(mass_single)
@@ -233,8 +259,8 @@ def get_independent_sampler(
         mass1_singles.extend(mass_single[ind_select_single])
 
         # check to see if we should increase the multiplier factor to sample the population more quickly
-        if len(mass1_binary) < size / 100:
-            # well this size clearly is not working time to increase
+        if target(mass1_binary, size / 100, mass_singles, mass_binaries, total_mass / 100):
+            # well this sampling rate is clearly not working time to increase
             # the multiplier by an order of magnitude
             multiplier *= 10
 
