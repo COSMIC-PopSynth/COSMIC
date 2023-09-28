@@ -46,7 +46,7 @@ def get_independent_sampler(
     binfrac_model,
     met,
     size=None,
-    total_mass=None,
+    total_mass=np.inf,
     sampling_target="size",
     trim_extra_samples=False,
     **kwargs
@@ -159,7 +159,7 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
-    if sampling_target == "total_mass" and total_mass is None:
+    if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
         raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
     if size is None and total_mass is None:
         raise ValueError("Either a sample `size` or `total_mass` must be supplied")
