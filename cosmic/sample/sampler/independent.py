@@ -255,23 +255,16 @@ def get_independent_sampler(
         n_binaries += len(mass1_binaries)
 
         # select out the primaries and secondaries that will produce the final kstars
-        (ind_select_primary,) = np.where(
-            (mass1_binaries > primary_min) & (mass1_binaries < primary_max)
-        )
-        (ind_select_secondary,) = np.where(
-            (mass2_binaries > secondary_min) & (mass2_binaries < secondary_max)
-        )
-        ind_select = list(
-            set(ind_select_primary).intersection(ind_select_secondary))
+        ind_select = (  (mass1_binaries > primary_min)
+                      & (mass1_binaries < primary_max)
+                      & (mass2_binaries > secondary_min)
+                      & (mass2_binaries < secondary_max))
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
         binfrac.extend(binfrac_binaries[ind_select])
 
         # select out the single stars that will produce the final kstar
-        (ind_select_single,) = np.where(
-            (mass_single > primary_min) & (mass_single < primary_max)
-        )
-        mass1_singles.extend(mass_single[ind_select_single])
+        mass1_singles.extend(mass_single[(mass_single > primary_min) & (mass_single < primary_max)])
 
         # check to see if we should increase the multiplier factor to sample the population more quickly
         if target(mass1_binary, size / 100, m_sampled_singles, m_sampled_binaries, total_mass / 100):
