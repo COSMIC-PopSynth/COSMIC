@@ -415,6 +415,41 @@ class TestSample(unittest.TestCase):
             it_fails = True
         self.assertTrue(it_fails)
 
+    def test_sampling_targets_bad_input(self):
+        # check that you get an error if you don't supply a size or total_mass
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       sampling_target="total_mass")
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+    
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       total_mass=None, sampling_target="total_mass")
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+    
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=None, total_mass=None, sampling_target="size")
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+
     def test_sampling_targets_size(self):
         # check that you can sample based on size
         for size in np.random.randint(100, 1000, size=100):

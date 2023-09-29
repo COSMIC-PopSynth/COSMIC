@@ -161,7 +161,7 @@ def get_independent_sampler(
     """
     if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
         raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
-    if size is None and total_mass is None:
+    if size is None and (total_mass is None or total_mass == np.inf):
         raise ValueError("Either a sample `size` or `total_mass` must be supplied")
     elif size is None:
         size = int(total_mass)
