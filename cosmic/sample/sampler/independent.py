@@ -193,11 +193,6 @@ def get_independent_sampler(
     if porb_model == "moe19":
         binfrac_model = utils.get_met_dep_binfrac(met)
         warnings.warn('your supplied binfrac_model has been overwritten to {} match Moe+2019'.format(binfrac_model))
-    
-    # --- `msort` kwarg can be set to have different binary fraction/qmin above `msort`
-    msort = kwargs["msort"] if "msort" in kwargs.keys() else None
-    if msort is not None:
-        msort = kwargs["msort"] if "msort" in kwargs.keys() else None
 
     # define a function that evaluates whether you've reached your sampling target
     target = lambda mass1_binary, size, m_sampled_singles, m_sampled_binaries, total_mass:\
