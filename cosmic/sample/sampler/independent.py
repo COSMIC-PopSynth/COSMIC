@@ -31,7 +31,8 @@ from ... import _evolvebin
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
-__credits__ = "Scott Coughlin <scott.coughlin@ligo.org>, Michael Zevin <michael.j.zevin@gmail.com>"
+__credits__ = ("Scott Coughlin <scott.coughlin@ligo.org>, Michael Zevin <michael.j.zevin@gmail.com>, "
+               "Tom Wagg <tomjwagg@gmail.com>")
 __all__ = ["get_independent_sampler", "Sample"]
 
 
