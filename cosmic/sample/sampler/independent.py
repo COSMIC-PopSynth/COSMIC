@@ -166,6 +166,10 @@ def get_independent_sampler(
     elif size is None:
         size = int(total_mass)
 
+    if binfrac_model == 0.0 and sampling_target == "size":
+        raise ValueError(("If `binfrac_model == 0.0` then `sampling_target` must be 'total_mass'. Otherwise "
+                          "you are targetting a population of `size` binaries but will never select any."))
+
     final_kstar1 = [final_kstar1] if isinstance(final_kstar1, (int, float)) else final_kstar1
     final_kstar2 = [final_kstar2] if isinstance(final_kstar2, (int, float)) else final_kstar2
     primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
@@ -241,6 +245,7 @@ def get_independent_sampler(
             if n_binary_delete > 0:
                 mass1_binaries = mass1_binaries[:-n_binary_delete]
                 mass2_binaries = mass2_binaries[:-n_binary_delete]
+                binfrac_binaries = binfrac_binaries[:-n_binary_delete]
 
             # ensure we don't loop again after this
             target = lambda mass1_binary, size, m_sampled_singles, m_sampled_binaries, total_mass: False
