@@ -314,21 +314,21 @@ def get_independent_sampler(
             metallicity,
             binfrac=binfrac,
         )
-        tphysf, metallicity = initconditions.sample_SFH(
+        tphysf_singles, metallicity_singles = initconditions.sample_SFH(
             SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
         )
-        metallicity[metallicity < 1e-4] = 1e-4
-        metallicity[metallicity > 0.03] = 0.03
-        kstar1 = initconditions.set_kstar(mass1_singles)
+        metallicity_singles[metallicity_singles < 1e-4] = 1e-4
+        metallicity_singles[metallicity_singles > 0.03] = 0.03
+        kstar1_singles = initconditions.set_kstar(mass1_singles)
         singles_table = InitialBinaryTable.InitialBinaries(
-            mass1_singles,
-            np.ones_like(mass1_singles)*0,
-            np.ones_like(mass1_singles)*-1,
-            np.ones_like(mass1_singles)*-1,
-            tphysf,
-            kstar1,
-            np.ones_like(mass1_singles)*0,
-            metallicity,
+            mass1_singles,                          # mass1
+            np.ones_like(mass1_singles) * 0,        # mass2 (all massless remnants)
+            np.ones_like(mass1_singles) * -1,       # porb (single not binary)
+            np.ones_like(mass1_singles) * -1,       # ecc (single not binary)
+            tphysf_singles,                         # tphysf
+            kstar1_singles,                         # kstar1
+            np.ones_like(mass1_singles) * 15,       # kstar2 (all massless remnants)
+            metallicity_singles,                    # metallicity
         )
         binary_table = pd.concat([binary_table, singles_table])
     else:
