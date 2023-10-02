@@ -372,8 +372,7 @@ if __name__ == '__main__':
                                                       BSEDict=BSEDict,
                                                       idx=idx,
                                                       dtp=dtp,
-                                                      timestep_conditions=filters['timestep_conditions'],
-                                                      n_per_block=Nstep)
+                                                      timestep_conditions=filters['timestep_conditions'])
 
         # get any nans and pull them out for now
         nans = np.isnan(bpp.sep)
