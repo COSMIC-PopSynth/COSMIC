@@ -141,7 +141,7 @@ Mass dependent binary fractions and mass pairings
 
 If you want to have separate binary fractions and mass pairings for low and high mass stars, you can by supplying the ``msort`` kwarg to the sampler. This sets the mass above which an alternative mass pairing (specified by kwargs ``qmin_msort`` and ``m2_min_msort``) and binary fraction model (specified by kwarg ``binfrac_model_msort``) are used. This is handy if you want, for example, a higher binary fraction and more equal mass pairings for high mass stars.
 
-Below we show the effect of different assumptions for the independent initial sampler. The standard assumptions are shown in blue, the assumptions of `Sana et al. 2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>`_ are shown in orange, and the assumptions of `Moe et al. 2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>`_.
+Below we show the effect of different assumptions for the independent initial sampler. The standard assumptions are shown in purple, the assumptions of `Sana et al. 2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>`_ are shown in orange, and the assumptions of `Moe et al. 2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>`_ are shown in green.
 
 .. plot::
    :include-source: False
