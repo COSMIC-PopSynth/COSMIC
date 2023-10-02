@@ -372,17 +372,15 @@ if __name__ == '__main__':
                                                       BSEDict=BSEDict,
                                                       idx=idx,
                                                       dtp=dtp,
-                                                      timestep_conditions=filters['timestep_conditions'],)
+                                                      timestep_conditions=filters['timestep_conditions'],
+                                                      n_per_block=Nstep)
 
         # get any nans and pull them out for now
         nans = np.isnan(bpp.sep)
         if nans.any():
             nan_bin_nums = np.unique(bpp[nans]["bin_num"].values)
             initCond_nan = initCond.loc[initCond.bin_num.isin(nan_bin_nums)]
-            if pd.__version__<="2.0.0":
-                dat_store.append("nan_initC", initCond_nan)
-            else:
-                dat_store["nan_initC"] = initCond_nan
+            dat_store.append("nan_initC", initCond_nan)
             log_file.write(f"There are {len(nan_bin_nums)} NaNs stored in the datfile with key: 'nan_initC'")
             log_file.write(f"These NaNs likely arise because you have pts1 = 0.001, try running with pts1 = 0.01")
 
@@ -438,25 +436,15 @@ if __name__ == '__main__':
             conv_filter_match = conv_filter.copy()
             kick_info_filter_match = kick_info_filter.copy()
         else:
-            if pd.__version__<="2.0.0":
-                bcm_filter_match = bcm_filter_match.append(bcm_filter)
-                bpp_filter_match = bpp_filter_match.append(bpp_filter)
-                initC_filter_match = initC_filter_match.append(initC_filter)
-                kick_info_filter_match = kick_info_filter_match.append(kick_info_filter)
-                conv_filter_match = conv_filter_match.append(conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)])
-            else:
-                bcm_filter_match = pd.concat([bcm_filter_match,bcm_filter], ignore_index=True)
-                bpp_filter_match = pd.concat([bpp_filter_match,bpp_filter], ignore_index=True)
-                initC_filter_match = pd.concat([initC_filter_match,initC_filter], ignore_index=True)
-                kick_info_filter_match = pd.concat([kick_info_filter_match,kick_info_filter], ignore_index=True)
-                conv_filter_match = pd.concat([conv_filter_match,conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)]], ignore_index=True)
+            bcm_filter_match = pd.concat([bcm_filter_match,bcm_filter], ignore_index=True)
+            bpp_filter_match = pd.concat([bpp_filter_match,bpp_filter], ignore_index=True)
+            initC_filter_match = pd.concat([initC_filter_match,initC_filter], ignore_index=True)
+            kick_info_filter_match = pd.concat([kick_info_filter_match,kick_info_filter], ignore_index=True)
+            conv_filter_match = pd.concat([conv_filter_match,conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)]], ignore_index=True)
                 
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
-            if pd.__version__<="2.0.0":
-                conv_save = conv_save.append(conv_filter_match)
-            else:
-                conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
+            conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
 
             # perform the convergence
             if len(conv_save) == len(conv_filter_match):
