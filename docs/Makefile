@@ -51,6 +51,7 @@ help:
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR)/*
+	rm -rf api/*
 
 .PHONY: html
 html: apidoc
