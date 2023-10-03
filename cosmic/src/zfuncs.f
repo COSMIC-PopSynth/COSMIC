@@ -1,7 +1,26 @@
 ***
-* New flag introduced (Sept 2022)
-* rtmsflag > 0 uses rtms from simulation data (1=[Boost], 2=[Bpass], 3=[Mesa])
-* rtms = 0 uses the sse rtms and extrapolation for z < 0.0008.
+* New flag introduced (August 2023)
+* rtmsflag = 0 uses the SSE rtms for stars EXCEPT if M>200Msun 
+* and Z<0.0008(~0.04Zsun). For the exception, an extrapolation
+* is used (check the code in function rtmsf for details). This 
+* ad hoc extrapolation works well for stars with M < 4000Msun 
+* for Z >= 0.01Zsun. For lower metallicities, you may still run
+* into issues of rtms<0 for very massive stars (i.e. for Z<0.01Zsun
+* use at your own risk)
+*
+* rtmsflag > 0 uses rtms from simulation data (1=[BoOST], 2=[BPASS])
+* Only common metallicity cases between BoOST & BPASS are coded.
+*
+* BoOST metallicities = [1.1e-4, 2.1e-4, 1e-3, 2e-3] corresponding
+* to [dwarfD, IZw18, dwarfA, SMC] models (Szecsi et al. (2022))
+*
+* BPASS metallicities = [1e-4, *2e-4*, 1e-3, 2e-3]. 
+* NOTE : For BPASS, we used a power law to fit the rtms v/s mzams 
+* values for each metallicity. We have coded the best fit power-laws
+* for the above BPASS metallicities here.Since, Z = 2e-4 model is 
+* not available in the BPASS tracks, we assume the same rtms v/s 
+* mzams power law as Z=1e-4 for Z=2e-4.
+*
 ***
       real*8 FUNCTION lzamsf(m)
       IMPLICIT NONE
@@ -243,25 +262,19 @@
       implicit none
       INCLUDE 'const_bse.h'
       real*8 m,met,Rtms200,Rtms199,slope
-      real*8 rtmssse, rtmsBoost, rtmsBpass, rtmsMESA
+      real*8 rtmssse, rtmsBoost, rtmsBpass
       external rtmssse
-*      integer rtmsflag, bhflag, wdflag
-*      COMMON /FLAGS/ rtmsflag, bhflag, wdflag
-*      print*,'inside rtmsf, Z=',met,' rtmsflag=',rtmsflag,
-*     & 'bhflag=',bhflag, 'wdflag=', wdflag
 *
 * For Z < 0.04 Z_sun (i.e. Z < 0.0008) the polynomial fitting extrapolation of
 * Hurley et al. leads to negative stellar radii at the end of the main sequence.
 * This fix calculates the slope of the Rtms-M curve for a given Z at M=200 and
-* extrapolates the Rtms linearly for M>200 assuming the same slope. The fix is
-* only applied to stars with Z < 0.0008
+* extrapolates the Rtms linearly for M>200Msun assuming the same slope. The fix
+* is only applied to stars with Z < 0.0008 and M > 200Msun
+*
       if (rtmsflag .eq. 0) then
 *         print*,'inside cosmic conditional'
-         if( (m .le. 200.0) .OR. (met .ge. 0.01) )then
+         if( (m .le. 200.0) .OR. (met .ge. 0.0008) )then
             rtmsf = rtmssse(m)
-            Rtms200 = rtmssse(DFLOAT(200))
-            Rtms199 =  rtmssse(DFLOAT(199))
-*            print*,met,m,Rtms200, Rtms199, rtmsf
          else
             Rtms200 = rtmssse(DFLOAT(200))
             Rtms199 =  rtmssse(DFLOAT(199))
@@ -279,15 +292,11 @@
 *         print*,'inside BPASS conditional'
          rtmsf = rtmsBpass(m, met)
 
-      elseif (rtmsflag .eq. 3) then
-*         print*,'inside MESA conditional'
-*         rtmsf = rtmsMESA(m, met)
-
       else
          print*,'Specify a valid value of rtmsflag'
 
       endif
-*      print*,'met, m, rtmsf', met, m, rtmsf
+*      print*,'met, m, rtmsf, rtmsflag', met, m, rtmsf, rtmsflag
       return
       end
 *
@@ -384,7 +393,7 @@
 *         print*,'inside else if 3'
       else
          print*,'mass and Rtms data for the given metallicity is not
-     &      available for the Boost models.'
+     &      coded for the Boost models.'
       endif
 *      print*,'mBoost is ', mBoost
 *      print*,'RZBoost is ', RZBoost
@@ -406,48 +415,41 @@
       end
       real*8 function rtmsBpass(m, met)
       implicit none
-      real*8 m, met, a, alpha, met_cut1, met_cut2
+      real*8 m, met, r0, alpha, met_cut1, met_cut2
 
       met_cut1 = 0.9*met
       met_cut2 = 1.1*met
 
       if ( (1.0d-4 .ge. met_cut1) .and. (1.0d-4 .le. met_cut2) ) then
-          a = 1.43077288d0
+          r0 = 1.43077288d0
           alpha = 6.2151019d-1
 
       elseif ((2.0d-4 .ge. met_cut1) .and. (2.0d-4 .le. met_cut2)) then
-          a = 1.43077288d0
+          r0 = 1.43077288d0
           alpha = 6.2151019d-1
 
       elseif ((1.0d-3 .ge. met_cut1) .and. (1.0d-3 .le. met_cut2)) then
-          a = 8.1088547d-1
+          r0 = 8.1088547d-1
           alpha = 8.2732973d-1
+
       elseif ((2.0d-3 .ge. met_cut1) .and. (2.0d-3 .le. met_cut2)) then
-          a = 4.8850513d-1
+          r0 = 4.8850513d-1
           alpha = 9.7369477d-1
-
-      elseif ((3.0d-3 .ge. met_cut1) .and. (3.0d-3 .le. met_cut2)) then
-          a = 3.143195d-1
-          alpha = 1.10470853d0
-
-      elseif ((4.0d-3 .ge. met_cut1) .and. (4.0d-3 .le. met_cut2)) then
-          a = 3.306082d-1
-          alpha = 1.11766343d0
 
       else
          print*,'mass and Rtms data for the given metallicity is not
-     &      available for the BPASS models.'
-         a = 0.0
+     &      coded for the BPASS models.'
+         r0 = 0.0
          alpha = 0.0
 
       endif
 
-      rtmsBpass = a*m**alpha
+      rtmsBpass = r0*m**alpha
 
       return
       end function rtmsBpass
 
-*** NEW CODE BETWEEN THESE LINES
+*** NEW CODE BETWEEN THESE LINES (END)
 ***
       real*8 FUNCTION ralphf(m)
       implicit none

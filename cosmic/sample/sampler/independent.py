@@ -31,7 +31,8 @@ from ... import _evolvebin
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
-__credits__ = "Scott Coughlin <scott.coughlin@ligo.org>, Michael Zevin <michael.j.zevin@gmail.com>"
+__credits__ = ("Scott Coughlin <scott.coughlin@ligo.org>, Michael Zevin <michael.j.zevin@gmail.com>, "
+               "Tom Wagg <tomjwagg@gmail.com>")
 __all__ = ["get_independent_sampler", "Sample"]
 
 
@@ -45,7 +46,10 @@ def get_independent_sampler(
     SF_duration,
     binfrac_model,
     met,
-    size,
+    size=None,
+    total_mass=np.inf,
+    sampling_target="size",
+    trim_extra_samples=False,
     **kwargs
 ):
     """Generates an initial binary sample according to user specified models
@@ -122,6 +126,20 @@ def get_independent_sampler(
     size : `int`
         Size of the population to sample
 
+    total_mass : `float`
+        Total mass to use as a target for sampling
+
+    sampling_target : `str`
+        Which type of target to use for sampling (either "size" or "total_mass"), by default "size".
+        Note that `total_mass` must not be None when `sampling_target=="total_mass"`.
+
+    trim_extra_samples : `str`
+        Whether to trim the sampled population so that the total mass sampled is as close as possible to
+        `total_mass`. Ignored when `sampling_target==size`.
+        Note that given the discrete mass of stars, this could mean your sample is off by 300
+        solar masses in the worst case scenario (of a 150+150 binary being sampled). In reality the majority
+        of cases track the target total mass to within a solar mass.        
+
     zsun : `float`
         optional kwarg for setting effective radii, default is 0.02
 
@@ -142,24 +160,35 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
-    if type(final_kstar1) in [int, float]:
-        final_kstar1 = [final_kstar1]
-    if type(final_kstar2) in [int, float]:
-        final_kstar2 = [final_kstar2]
+    if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
+        raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
+    if size is None and (total_mass is None or total_mass == np.inf):
+        raise ValueError("Either a sample `size` or `total_mass` must be supplied")
+    elif size is None:
+        size = int(total_mass)
+
+    if binfrac_model == 0.0 and sampling_target == "size":
+        raise ValueError(("If `binfrac_model == 0.0` then `sampling_target` must be 'total_mass'. Otherwise "
+                          "you are targetting a population of `size` binaries but will never select any."))
+
+    final_kstar1 = [final_kstar1] if isinstance(final_kstar1, (int, float)) else final_kstar1
+    final_kstar2 = [final_kstar2] if isinstance(final_kstar2, (int, float)) else final_kstar2
     primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
         final_kstar1, final_kstar2, **kwargs)
     initconditions = Sample()
 
     # set up multiplier if the mass sampling is inefficient
     multiplier = 1
+
+    # track samples to actually return (after masks)
     mass1_singles = []
     mass1_binary = []
     mass2_binary = []
     binfrac = []
 
-    # track the mass in singles and the mass in binaries
-    mass_singles = 0.0
-    mass_binaries = 0.0
+    # track the total mass of singles and binaries sampled
+    m_sampled_singles = 0.0
+    m_sampled_binaries = 0.0
 
     # track the total number of stars sampled
     n_singles = 0
@@ -169,51 +198,83 @@ def get_independent_sampler(
     if porb_model == "moe19":
         binfrac_model = utils.get_met_dep_binfrac(met)
         warnings.warn('your supplied binfrac_model has been overwritten to {} match Moe+2019'.format(binfrac_model))
-    
-    # --- `msort` kwarg can be set to have different binary fraction/qmin above `msort`
-    msort = kwargs["msort"] if "msort" in kwargs.keys() else None
-    if msort is not None:
-        msort = kwargs["msort"] if "msort" in kwargs.keys() else None
 
-    while len(mass1_binary) < size:
-        mass1, total_mass1 = initconditions.sample_primary(
-            primary_model, size=size * multiplier, **kwargs)
+    # define a function that evaluates whether you've reached your sampling target
+    target = lambda mass1_binary, size, m_sampled_singles, m_sampled_binaries, total_mass:\
+        len(mass1_binary) < size if sampling_target == "size" else m_sampled_singles + m_sampled_binaries < total_mass
+
+    # sample until you've reached your target
+    while target(mass1_binary, size, m_sampled_singles, m_sampled_binaries, total_mass):
+        # sample primary masses
+        mass1, _ = initconditions.sample_primary(primary_model, size=int(size * multiplier), **kwargs)
+
+        # split them into binaries or single stars
         (mass1_binaries, mass_single, binfrac_binaries, binary_index,
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
-        mass2_binaries = initconditions.sample_secondary(
-            mass1_binaries, **kwargs)
+
+        # sample secondary masses for the single stars
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, **kwargs)
+
+        # check if this batch of samples will take us over our sampling target
+        if not target(mass1_binary, size,
+                      m_sampled_singles + np.sum(mass_single),
+                      m_sampled_binaries + np.sum(mass1_binaries) + np.sum(mass2_binaries),
+                      total_mass) and trim_extra_samples and sampling_target == "total_mass":
+            # get the cumulative total mass of the samples
+            total_mass_list = np.copy(mass1)
+            total_mass_list[binary_index] += mass2_binaries
+            sampled_so_far = m_sampled_singles + m_sampled_binaries
+            cumulative_total_mass = sampled_so_far + np.cumsum(total_mass_list)
+
+            # find the boundary for reaching the right total mass
+            threshold_index = np.where(cumulative_total_mass > total_mass)[0][0]
+
+            keep_offset = abs(cumulative_total_mass[threshold_index] - total_mass)
+            drop_offset = abs(cumulative_total_mass[threshold_index - 1] - total_mass)
+            lim = threshold_index - 1 if (keep_offset > drop_offset) else threshold_index
+            
+            # work out how many singles vs. binaries to delete
+            one_if_binary = np.zeros(len(mass1))
+            one_if_binary[binary_index] = 1
+            sb_delete = one_if_binary[lim + 1:]
+            n_single_delete = (sb_delete == 0).sum()
+            n_binary_delete = (sb_delete == 1).sum()
+
+            # delete em!
+            if n_single_delete > 0:
+                mass_single = mass_single[:-n_single_delete]
+            if n_binary_delete > 0:
+                mass1_binaries = mass1_binaries[:-n_binary_delete]
+                mass2_binaries = mass2_binaries[:-n_binary_delete]
+                binfrac_binaries = binfrac_binaries[:-n_binary_delete]
+
+            # ensure we don't loop again after this
+            target = lambda mass1_binary, size, m_sampled_singles, m_sampled_binaries, total_mass: False
 
         # track the mass sampled
-        mass_singles += np.sum(mass_single)
-        mass_binaries += np.sum(mass1_binaries)
-        mass_binaries += np.sum(mass2_binaries)
+        m_sampled_singles += sum(mass_single)
+        m_sampled_binaries += sum(mass1_binaries)
+        m_sampled_binaries += sum(mass2_binaries)
 
         # track the total number sampled
         n_singles += len(mass_single)
         n_binaries += len(mass1_binaries)
 
         # select out the primaries and secondaries that will produce the final kstars
-        (ind_select_primary,) = np.where(
-            (mass1_binaries > primary_min) & (mass1_binaries < primary_max)
-        )
-        (ind_select_secondary,) = np.where(
-            (mass2_binaries > secondary_min) & (mass2_binaries < secondary_max)
-        )
-        ind_select = list(
-            set(ind_select_primary).intersection(ind_select_secondary))
+        ind_select = (  (mass1_binaries > primary_min)
+                      & (mass1_binaries < primary_max)
+                      & (mass2_binaries > secondary_min)
+                      & (mass2_binaries < secondary_max))
         mass1_binary.extend(mass1_binaries[ind_select])
         mass2_binary.extend(mass2_binaries[ind_select])
         binfrac.extend(binfrac_binaries[ind_select])
 
         # select out the single stars that will produce the final kstar
-        (ind_select_single,) = np.where(
-            (mass_single > primary_min) & (mass_single < primary_max)
-        )
-        mass1_singles.extend(mass_single[ind_select_single])
+        mass1_singles.extend(mass_single[(mass_single > primary_min) & (mass_single < primary_max)])
 
         # check to see if we should increase the multiplier factor to sample the population more quickly
-        if len(mass1_binary) < size / 100:
-            # well this size clearly is not working time to increase
+        if target(mass1_binary, size / 100, m_sampled_singles, m_sampled_binaries, total_mass / 100):
+            # well this sampling rate is clearly not working time to increase
             # the multiplier by an order of magnitude
             multiplier *= 10
 
@@ -259,21 +320,21 @@ def get_independent_sampler(
             metallicity,
             binfrac=binfrac,
         )
-        tphysf, metallicity = initconditions.sample_SFH(
+        tphysf_singles, metallicity_singles = initconditions.sample_SFH(
             SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
         )
-        metallicity[metallicity < 1e-4] = 1e-4
-        metallicity[metallicity > 0.03] = 0.03
-        kstar1 = initconditions.set_kstar(mass1_singles)
+        metallicity_singles[metallicity_singles < 1e-4] = 1e-4
+        metallicity_singles[metallicity_singles > 0.03] = 0.03
+        kstar1_singles = initconditions.set_kstar(mass1_singles)
         singles_table = InitialBinaryTable.InitialBinaries(
-            mass1_singles,
-            np.ones_like(mass1_singles)*0,
-            np.ones_like(mass1_singles)*-1,
-            np.ones_like(mass1_singles)*-1,
-            tphysf,
-            kstar1,
-            np.ones_like(mass1_singles)*0,
-            metallicity,
+            mass1_singles,                          # mass1
+            np.ones_like(mass1_singles) * 0,        # mass2 (all massless remnants)
+            np.ones_like(mass1_singles) * -1,       # porb (single not binary)
+            np.ones_like(mass1_singles) * -1,       # ecc (single not binary)
+            tphysf_singles,                         # tphysf
+            kstar1_singles,                         # kstar1
+            np.ones_like(mass1_singles) * 15,       # kstar2 (all massless remnants)
+            metallicity_singles,                    # metallicity
         )
         binary_table = pd.concat([binary_table, singles_table])
     else:
@@ -291,8 +352,8 @@ def get_independent_sampler(
 
     return (
         binary_table,
-        mass_singles,
-        mass_binaries,
+        m_sampled_singles,
+        m_sampled_binaries,
         n_singles,
         n_binaries,
     )
