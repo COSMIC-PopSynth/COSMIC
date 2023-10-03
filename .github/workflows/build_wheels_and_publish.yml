@@ -3,6 +3,7 @@ name: Build wheel and publish
 on: 
   release:
     types: [published]
+  workflow_dispatch:
   
 
 env:
