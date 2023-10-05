@@ -1579,7 +1579,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     return
 
 
-def check_initial_conditions(initial_binary_table):
+def check_initial_conditions(full_initial_binary_table):
     """Checks initial conditions and reports warnings
 
     Only warning provided right now is if star begins in Roche lobe
@@ -1598,6 +1598,11 @@ def check_initial_conditions(initial_binary_table):
         ) / (a[12] + a[13] * m ** 2 + (a[14] * m ** 8 + m ** 18 + a[15] * m ** 19) * mx)
 
         return rzams
+
+    no_singles = ((full_initial_binary_table["mass_1"] > 0.0)
+                  & (full_initial_binary_table["mass_2"] > 0.0)
+                  & (full_initial_binary_table["porb"] > 0.0))
+    initial_binary_table = full_initial_binary_table[no_singles]
 
     z = np.asarray(initial_binary_table["metallicity"])
     zpars, a = zcnsts(z)
