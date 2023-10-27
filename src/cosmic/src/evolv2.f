@@ -1542,7 +1542,6 @@ component.
          k2str(k) = k2
          tms(k) = tm
          tbgb(k) = tscls(1)
-         if(using_METISSE .and. kw==6) mass(k) = mt
 *
  6    continue
 *
