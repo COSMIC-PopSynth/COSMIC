@@ -169,7 +169,7 @@
 * https://en.wikipedia.org/wiki/Eccentric_anomaly
              em = mm
 
-             if(mm.eq.0.d0) goto 3
+             if(mm.eq.0.d0 .or. mm .lt. 1.d-16) goto 3
 
   4          dif = em - ecc*SIN(em) - mm
              if(ABS(dif/mm).le.1.0d-04) goto 3
