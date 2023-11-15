@@ -35,7 +35,7 @@
       INTEGER kstar1,kstar2
       LOGICAL pass_condition,pass_condition_any
       LOGICAL isave,iplot
-      ! number of columns that can be used as timestep conditions => current_state_array length
+*  current_state_array length set by number of columns that can be used as timestep conditions
       REAL*8 current_state_array(43)
       REAL*8 dtp,dtp_original,tsave,tphys,tphysf,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
@@ -109,7 +109,7 @@
 * i.e. EQUAL (0), GT (1), GE (2), LT (3), LE (4) and then piece wise together the whole statement
 * Moreover we need to keep track of which parameter in the current_state_array we are checking
           param_index = 0
-! Loop stop value here is (number of condition columns - 1) * 3
+* Loop stop value here is (number of condition columns - 1) * 3
           DO ii = 2, 126, 3
               param_index = param_index + 1
 * This part of the checkstate array had no conditional set (we know because the default has not changed)
