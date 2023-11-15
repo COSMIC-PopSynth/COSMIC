@@ -11,10 +11,22 @@
      &                      tacc1,tacc2,epoch1,epoch2,bhspin1,bhspin2,
      &                      teff1,teff2)
 *
-* Concatenate Strings.
+* Check timestep conditions for bcm array
 *
 *     Author : Scott Coughlin
 *     Date :   7th April 2020
+*
+*     Edited : Tom Wagg
+*     Date : 15th November 2023
+*
+* How to add new timestep_conditions variables:
+*
+* 1. Adjust array size of checkstate_array in checkstate.h (15, x) -> (15, x + 3 * n_new_vars)
+* 2. Adjust current_state_array size below
+* 3. Add new variable to subroutine definition and current_state_array
+* 4. Change DO loop conditions to (2, x, 3) -> (2, x + 3 * n_new_vars, 3)
+* 5. In evolv2.f add new vars to every call of checkstate
+* 6. In checkstate.py add new vars to CHECKSTATE_COLUMNS
 *
       IMPLICIT NONE
       INCLUDE 'checkstate.h'
