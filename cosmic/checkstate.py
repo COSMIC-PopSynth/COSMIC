@@ -46,6 +46,8 @@ CHECKSTATE_COLUMNS = numpy.array(
         "epoch_2",
         "bhspin_1",
         "bhspin_2",
+        "teff_1",
+        "teff_2",
     ]
 )
 
