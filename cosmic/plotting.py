@@ -120,7 +120,8 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     return bcm
 
 
-def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
+def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out,
+                k_type_colors=None, k_type_labels=None):
     """Plots the stellar types as a function of time
 
     Parameters
@@ -142,6 +143,12 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
 
     k2_out : `pandas.Series`
         Series of kstar 2 type at each binary evolution time step in Myr
+
+    k_type_colors : `list`
+        List of colors for each ktype
+
+    k_type_labels : `list`
+        List of labels for each ktype
 
     Returns
     -------
@@ -165,7 +172,7 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
         "navy",
         "tan",
         "black",
-    ]
+    ] if k_type_colors is None else k_type_colors
     k_type = [
         "MS conv",
         "MS",
@@ -183,7 +190,7 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
         "NS",
         "BH",
         "no remnant",
-    ]
+    ] if k_type_labels is None else k_type_labels
 
     # k-type plots
     for a in [ax_1, ax_2]:
@@ -525,7 +532,7 @@ def plot_HR_diagram(ax, L1_out, L2_out, Teff1_out, Teff2_out):
     ax.set_xticks([2000, 5000, 10000, 20000, 40000])
 
 
-def plot_binary_evol(bcm, sys_obs={}):
+def plot_binary_evol(bcm, sys_obs={}, ktype_kwargs={}, t_min=None, t_max=None):
     """Plots the full set of plots and kstar bar plots
 
     Parameters
@@ -543,26 +550,31 @@ def plot_binary_evol(bcm, sys_obs={}):
         Figure containing all the plots!
     """
 
-    fig, ax = plt.subplots(5, 1, figsize=(10, 10))
+    fig = plt.figure(figsize=(10, 10), layout="tight")
 
-    gs = gridspec.GridSpec(4, 2, width_ratios=[2, 2], height_ratios=[1, 2, 2, 2])
+    gs = fig.add_gridspec(2, 1, height_ratios=[1.3, 6], hspace=0.0)
+    gs_top = gs[0].subgridspec(2, 2, width_ratios=[1, 1], height_ratios=[1, 1.3], hspace=0.15)
+    gs_bottom = gs[1].subgridspec(3, 2, width_ratios=[1, 1], height_ratios=[2, 2, 2], hspace=0.15)
 
-    ax = np.array([plt.subplot(x) for x in gs])
+    if t_min is not None:
+        bcm = bcm.loc[bcm.tphys >= t_min]
+    if t_max is not None:
+        bcm = bcm.loc[bcm.tphys <= t_max]
 
     # k-type panels
-    ax_k_type_list = fig.add_axes([0.08, 0.75, 0.9, 0.1])
     plot_k_type(
-        ax[0],
-        ax[1],
-        ax_k_type_list,
+        fig.add_subplot(gs_top[0, 0]),
+        fig.add_subplot(gs_top[0, 1]),
+        fig.add_subplot(gs_top[1, :]),
         bcm.tphys,
         bcm.kstar_1.astype(int),
         bcm.kstar_2.astype(int),
+        **ktype_kwargs
     )
 
     # Radius panel
     plot_radius(
-        ax[2],
+        fig.add_subplot(gs_bottom[0, 0]),
         bcm.tphys,
         bcm.rad_1,
         bcm.rad_2,
@@ -574,17 +586,17 @@ def plot_binary_evol(bcm, sys_obs={}):
     )
 
     # Mass panel
-    plot_mass(ax[4], bcm.tphys, bcm.mass_1, bcm.mass_2, sys_obs)
+    plot_mass(fig.add_subplot(gs_bottom[1, 0]), bcm.tphys, bcm.mass_1, bcm.mass_2, sys_obs)
 
     # Teff panel
-    plot_Teff(ax[6], bcm.tphys, bcm.teff_1, bcm.teff_2, sys_obs)
+    plot_Teff(fig.add_subplot(gs_bottom[2, 0]), bcm.tphys, bcm.teff_1, bcm.teff_2, sys_obs)
 
     # Mass accretion rate panel
-    plot_Mdot(ax[3], bcm.tphys, bcm.deltam_1, bcm.deltam_2)
+    plot_Mdot(fig.add_subplot(gs_bottom[0, 1]), bcm.tphys, bcm.deltam_1, bcm.deltam_2)
 
     # Orbital period panel
     plot_P_orb(
-        ax[5],
+        fig.add_subplot(gs_bottom[1, 1]),
         bcm.loc[bcm.kstar_2 < 15].tphys,
         bcm.loc[bcm.kstar_2 < 15].porb,
         np.max(bcm.tphys),
@@ -593,7 +605,7 @@ def plot_binary_evol(bcm, sys_obs={}):
 
     # Plot eccentricity panel
     plot_ecc(
-        ax[7],
+        fig.add_subplot(gs_bottom[2, 1]),
         bcm.loc[bcm.kstar_2 < 15].tphys,
         bcm.loc[bcm.kstar_2 < 15].ecc,
         np.max(bcm.tphys),
@@ -604,9 +616,6 @@ def plot_binary_evol(bcm, sys_obs={}):
     # idx_1 = np.where(k1_out < 10)[0]
     # idx_2 = np.where(k2_out < 10)[0]
     # plot_HR_diagram(ax[7], L1_out[k1_out<10], L2_out[k2_out<10], Teff1_out[k1_out<10], Teff2_out[k2_out<10])
-
-    # make the labels look nice
-    gs.tight_layout(fig)
 
     return fig
 
