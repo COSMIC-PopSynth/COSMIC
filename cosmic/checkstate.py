@@ -46,6 +46,8 @@ CHECKSTATE_COLUMNS = numpy.array(
         "epoch_2",
         "bhspin_1",
         "bhspin_2",
+        "teff_1",
+        "teff_2",
     ]
 )
 
@@ -82,11 +84,22 @@ def set_checkstates(timestep_conditions=[]):
     dtp_state = getattr(_evolvebin.checkstate_params, "dtp_state")
     dtp_state[:] = DEFAULT_DTP_STATE
 
+    # avoid array overflow
+    if len(timestep_conditions) > 15:
+        raise ValueError("You can only set up to 15 different timestep_conditions")
+
     for index, condition in enumerate(timestep_conditions):
         # we are checking for conditions
         _evolvebin.check_dtp.check_dtp = 1
         conditions = parse_column_filters(condition)
         for param in conditions:
+            # ensure that the param is in the checkstate_array
+            if param[0].lower() != "dtp" and param[0].lower() not in CHECKSTATE_COLUMNS:
+                raise ValueError(
+                    f"`{param[0]}` is not a valid column for timestep_conditions - "\
+                     + "valid columns are listed in `cosmic.checkstate.CHECKSTATE_COLUMNS`"
+                )
+
             # find where in the checkstate_array this param is
             param_index = numpy.argwhere(param[0].lower() == CHECKSTATE_COLUMNS)
             if param[0] == "dtp":

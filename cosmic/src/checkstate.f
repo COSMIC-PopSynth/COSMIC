@@ -8,12 +8,25 @@
      &                      mass0_1,mass0_2,lumin1,lumin2,
      &                      radc1,radc2,menv1,menv2,renv1,renv2,
      &                      ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
-     &                      tacc1,tacc2,epoch1,epoch2,bhspin1,bhspin2)
+     &                      tacc1,tacc2,epoch1,epoch2,bhspin1,bhspin2,
+     &                      teff1,teff2)
 *
-* Concatenate Strings.
+* Check timestep conditions for bcm array
 *
 *     Author : Scott Coughlin
 *     Date :   7th April 2020
+*
+*     Edited : Tom Wagg
+*     Date : 15th November 2023
+*
+* How to add new timestep_conditions variables:
+*
+* 1. Adjust array size of checkstate_array in checkstate.h (15, x) -> (15, x + 3 * n_new_vars)
+* 2. Adjust current_state_array size below
+* 3. Add new variable to subroutine definition and current_state_array
+* 4. Change DO loop conditions to (2, x, 3) -> (2, x + 3 * n_new_vars, 3)
+* 5. In evolv2.f add new vars to every call of checkstate
+* 6. In checkstate.py add new vars to CHECKSTATE_COLUMNS
 *
       IMPLICIT NONE
       INCLUDE 'checkstate.h'
@@ -22,14 +35,15 @@
       INTEGER kstar1,kstar2
       LOGICAL pass_condition,pass_condition_any
       LOGICAL isave,iplot
-      REAL*8 current_state_array(41)
+*  current_state_array length set by number of columns that can be used as timestep conditions
+      REAL*8 current_state_array(43)
       REAL*8 dtp,dtp_original,tsave,tphys,tphysf,mass1,mass2
       REAL*8 evolve_type,sep,tb,ecc,rrl1,rrl2
       REAL*8 aj1,aj2,tms1,tms2,massc1,massc2,rad1,rad2
       REAL*8 mass0_1,mass0_2,lumin1,lumin2,radc1,radc2
       REAL*8 menv1,menv2,renv1,renv2,ospin1,ospin2
       REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
-      REAL*8 bhspin1,bhspin2
+      REAL*8 bhspin1,bhspin2,teff1,teff2
       current_state_array(1) = binstate
       current_state_array(2) = evolve_type
       current_state_array(3) = mass1
@@ -71,6 +85,8 @@
       current_state_array(39) = epoch2
       current_state_array(40) = bhspin1
       current_state_array(41) = bhspin2
+      current_state_array(42) = teff1
+      current_state_array(43) = teff2
 
 * tsave should never be bigger than tphysf
       IF(tsave.ge.tphysf)THEN
@@ -93,7 +109,8 @@
 * i.e. EQUAL (0), GT (1), GE (2), LT (3), LE (4) and then piece wise together the whole statement
 * Moreover we need to keep track of which parameter in the current_state_array we are checking
           param_index = 0
-          DO ii = 2, 120, 3
+* Loop stop value here is (number of condition columns - 1) * 3
+          DO ii = 2, 126, 3
               param_index = param_index + 1
 * This part of the checkstate array had no conditional set (we know because the default has not changed)
               IF(checkstate_array(jj,ii-1).eq.-10E30.and.

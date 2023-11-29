@@ -1604,7 +1604,7 @@ component.
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
-     &                      bhspin(1),bhspin(2))
+     &                      bhspin(1),bhspin(2),teff1,teff2)
       endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
@@ -1889,7 +1889,7 @@ component.
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
-     &                      bhspin(1),bhspin(2))
+     &                      bhspin(1),bhspin(2),teff1,teff2)
       endif
 
       if(iplot.and.tphys.gt.tiny)then
@@ -3618,7 +3618,7 @@ component.
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),
      &                      tacc(1),tacc(2),epoch(1),epoch(2),
-     &                      bhspin(1),bhspin(2))
+     &                      bhspin(1),bhspin(2),teff1,teff2)
       endif
 *
       if((isave.and.tphys.ge.tsave).or.iplot)then
