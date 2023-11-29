@@ -7,13 +7,14 @@ import os
 import unittest
 import numpy as np
 import pandas as pd
+from ..sample import InitialBinaryTable
 from ..sample.sampler.independent import Sample
 from ..sample.sampler.multidim import MultiDim
 from ..sample.sampler.cmc import CMCSample
 from ..sample.cmc import elson
 from ..sample.initialcmctable import InitialCMCTable
 from scipy.optimize import curve_fit
-from ..utils import a_from_p
+from ..utils import a_from_p, get_porb_norm
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
@@ -33,6 +34,10 @@ FLAT_SLOPE = 0.0
 THERMAL_SLOPE = 4.0
 SANA12_ECC_POWER_LAW = -0.45
 SANA12_ECC_POWER_LAW_ROUND = -0.5
+MEAN_RAGHAVAN = 4.9
+SIGMA_RAGHAVAN = 2.3
+CLOSE_BINARY_FRAC = 0.42
+
 
 N_BINARY_SELECT = 85
 VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
@@ -256,7 +261,7 @@ class TestSample(unittest.TestCase):
         uniform_slope = linear_fit(np.log10(porb_log_uniform))
         self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
 
-        # finally do the log uniform
+        # next check the log uniform
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'log_uniform', size=mass1.size
         )
@@ -265,6 +270,43 @@ class TestSample(unittest.TestCase):
         sep = sep[sep > 10]
         uniform_slope = linear_fit(np.log10(sep))
         self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
+
+        # next check raghavan10
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'raghavan10', size=mass1.size
+        )
+        log_porb_mean = np.mean(np.log10(porb))
+        log_porb_sigma = np.std(np.log10(porb))
+        self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
+        self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
+
+        # next check moe19
+        from ..utils import get_met_dep_binfrac
+        from scipy.interpolate import interp1d
+        from scipy.stats import kstest
+        metallicity = 0.001
+        # this is a metallicity dependent population:
+        binfrac = get_met_dep_binfrac(metallicity)
+        print(binfrac)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
+        (mass1_binaries, mass_single, binfrac_binaries, binary_index,) = SAMPLECLASS.binary_select(
+            mass1, binfrac_model=binfrac,
+            )
+        mass2_binaries = SAMPLECLASS.sample_secondary(
+            primary_mass=mass1_binaries, qmin=0.1
+            )
+        rad1 = SAMPLECLASS.set_reff(mass=mass1_binaries, metallicity=metallicity)
+        rad2 = SAMPLECLASS.set_reff(mass=mass2_binaries, metallicity=metallicity)
+        
+        
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1_binaries, mass2_binaries, rad1, rad2, 'moe19', size=mass1_binaries.size, met=metallicity
+        )
+        
+        binary_frac = len(porb) / (len(mass1))
+        self.assertAlmostEqual(np.round(binary_frac, 2), binfrac)
+        
+                
 
     def test_sample_ecc(self):
         np.random.seed(2)
@@ -359,6 +401,85 @@ class TestSample(unittest.TestCase):
         # Check that the kstar is selected properly
         kstar = MULTIDIMSAMPLECLASS.set_kstar(pd.DataFrame([1.0, 1.0, 1.0, 1.0, 1.0]))
         self.assertEqual(np.mean(kstar), KSTAR_SOLAR)
+
+    def test_sampling_binfrac_zero(self):
+        # check that you can't sample based on size with a binary fraction of 0.0
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.0,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000)
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+
+    def test_sampling_targets_bad_input(self):
+        # check that you get an error if you don't supply a size or total_mass
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       sampling_target="total_mass")
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+    
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       total_mass=None, sampling_target="total_mass")
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+    
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=None, total_mass=None, sampling_target="size")
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+
+    def test_sampling_targets_size(self):
+        # check that you can sample based on size
+        for size in np.random.randint(100, 1000, size=100):
+            samples = InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                                primary_model='kroupa01', ecc_model='thermal',
+                                                porb_model='sana12', binfrac_model=0.5,
+                                                SF_start=10.0, SF_duration=0.0, met=0.02,
+                                                size=size)
+            self.assertGreaterEqual(len(samples[0]), size)
+
+    def test_sampling_targets_mass(self):
+        # check that you can sample based on total mass
+        for mass in np.random.randint(100, 1000, size=100):
+            samples = InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                                primary_model='kroupa01', ecc_model='thermal',
+                                                porb_model='sana12', binfrac_model=0.5,
+                                                SF_start=10.0, SF_duration=0.0, met=0.02,
+                                                size=None, total_mass=mass, sampling_target="total_mass")
+            self.assertGreaterEqual(samples[1] + samples[2], mass)
+
+    def test_sampling_targets_mass_trimmed(self):
+        # check that you can sample based on total mass and that the samples are trimmed properly
+        for mass in np.random.randint(100, 1000, size=100):
+            samples = InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                                primary_model='kroupa01', ecc_model='thermal',
+                                                porb_model='sana12', binfrac_model=0.5,
+                                                SF_start=10.0, SF_duration=0.0, met=0.02,
+                                                size=None, total_mass=mass, sampling_target="total_mass",
+                                                trim_extra_samples=True)
+            self.assertLessEqual(abs(samples[1] + samples[2] - mass), 300)
 
 class TestCMCSample(unittest.TestCase):
     def test_plummer_profile(self):

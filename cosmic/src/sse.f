@@ -68,6 +68,7 @@ c-------------------------------------------------------------c
 * ifflag > 0 uses WD IFMR of HPE, 1995, MNRAS, 272, 800 (0). 
 * wdflag > 0 uses modified-Mestel cooling for WDs (0). 
 * bhflag > 0 allows velocity kick at BH formation (0). 
+* rtmsflag > 0 uses rtms from simulation data (1=[Boost], 2=[Bpass]) (0)
 * remnantflag > 0 takes NS/BH mass from Belczynski et al. 2002, ApJ, 572, 407 (1). 
 * mxns is the maximum NS mass (1.8, remnantflag=0; 3.0, remnantflag=1). 
 * idum is the random number seed used in the kick routine. 
@@ -87,7 +88,7 @@ c-------------------------------------------------------------c
       OPEN(22,file='evolve.in',status='old')
       READ(22,*)mass,z,tphysf
       READ(22,*)neta,bwind,hewind,sigma,windflag
-      READ(22,*)ifflag,wdflag,bhflag,remnantflag,mxns,idum
+      READ(22,*)ifflag,wdflag,bhflag,rtmsflag,remnantflag,mxns,idum
       READ(22,*)pts1,pts2,pts3
 *
 ************************************************************************

@@ -83,7 +83,7 @@ install_requires = [
     'astropy >= 1.1.1',
     'configparser',
     'tqdm >= 4.0',
-    'pandas >= 0.24',
+    'pandas >= 2.0.0',
     'tables > 3.5.0',
     'h5py >= 1.3',
     'schwimmbad >= 0.3.1',
@@ -134,6 +134,9 @@ wrapper = Extension(
         "cosmic/src/comprad.f",
         "cosmic/src/bpp_array.f",
         "cosmic/src/checkstate.f",
+        "cosmic/src/assign_remnant.f",
+        "cosmic/src/hrdiag_remnant.f",
+
 #    ], extra_compile_args = ["-g","-O0"], extra_f77_compile_args=["-O0"], extra_f90_compile_args=["-O0"])
 ])
 # -- run setup ----------------------------------------------------------------

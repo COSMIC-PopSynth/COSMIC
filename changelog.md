@@ -28,3 +28,12 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.4.8
  - removed zsun_wind so that we can match stock BSE exactly and added extra documentation surrounding the winds
  - added a NaN catch in cosmic-pop that throws a warning of NaNs, saves them to a file, and instructs the user to consider changing pts1 since this is the main driver of NaNs so far
+
+## 3.4.9
+ - Added `sampling_target == "total_mass"` option to independent sampler so you can target a specific total mass instead of number of binaries
+ - Added `trim_extra_samples` parameter to the same function - which trims your samples to get as close as possible to the target total mass
+ - Bug fixes: secondaries of single stars are now marked as massless remnants instead of main sequence stars, binfrac=0.0 no longer leads to an infinite loop in sampling
+
+## 3.4.10
+ - Bug fixes: `timestep_conditions` for `bcm` arrays now raise errors for invalid columns instead of failing silently
+ - Add `teff_1` and `teff_2` as variables that can be used to set `timestep_conditions`
