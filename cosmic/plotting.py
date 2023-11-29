@@ -120,7 +120,8 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
     return bcm
 
 
-def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
+def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out,
+                k_type_colors=None, k_type_labels=None):
     """Plots the stellar types as a function of time
 
     Parameters
@@ -142,6 +143,12 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
 
     k2_out : `pandas.Series`
         Series of kstar 2 type at each binary evolution time step in Myr
+
+    k_type_colors : `list`
+        List of colors for each ktype
+
+    k_type_labels : `list`
+        List of labels for each ktype
 
     Returns
     -------
@@ -165,7 +172,7 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
         "navy",
         "tan",
         "black",
-    ]
+    ] if k_type_colors is None else k_type_colors
     k_type = [
         "MS conv",
         "MS",
@@ -183,7 +190,7 @@ def plot_k_type(ax_1, ax_2, ax_k_type_list, times, k1_out, k2_out):
         "NS",
         "BH",
         "no remnant",
-    ]
+    ] if k_type_labels is None else k_type_labels
 
     # k-type plots
     for a in [ax_1, ax_2]:
@@ -525,7 +532,7 @@ def plot_HR_diagram(ax, L1_out, L2_out, Teff1_out, Teff2_out):
     ax.set_xticks([2000, 5000, 10000, 20000, 40000])
 
 
-def plot_binary_evol(bcm, sys_obs={}):
+def plot_binary_evol(bcm, sys_obs={}, ktype_kwargs={}, t_min=None, t_max=None):
     """Plots the full set of plots and kstar bar plots
 
     Parameters
@@ -549,6 +556,11 @@ def plot_binary_evol(bcm, sys_obs={}):
     gs_top = gs[0].subgridspec(2, 2, width_ratios=[1, 1], height_ratios=[1, 1.3], hspace=0.15)
     gs_bottom = gs[1].subgridspec(3, 2, width_ratios=[1, 1], height_ratios=[2, 2, 2], hspace=0.15)
 
+    if t_min is not None:
+        bcm = bcm.loc[bcm.tphys >= t_min]
+    if t_max is not None:
+        bcm = bcm.loc[bcm.tphys <= t_max]
+
     # k-type panels
     plot_k_type(
         fig.add_subplot(gs_top[0, 0]),
@@ -557,6 +569,7 @@ def plot_binary_evol(bcm, sys_obs={}):
         bcm.tphys,
         bcm.kstar_1.astype(int),
         bcm.kstar_2.astype(int),
+        **ktype_kwargs
     )
 
     # Radius panel
