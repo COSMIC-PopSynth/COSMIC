@@ -123,7 +123,7 @@
          endif
 *
          mlwind = dms
-      elseif(windflag.ge.2)then
+      elseif(windflag.eq.2.or.windflag.eq.3)then
 * Vink winds etc according to as implemented following
 * Belczynski, Bulik, Fryer, Ruiter, Valsecchi, Vink & Hurley 2010.
 *
@@ -207,6 +207,41 @@
          endif
 *
          mlwind = dms
+      elseif(windflag.eq.4)then
+*
+* Calculate stellar wind mass loss following MIST as closely as possible
+*
+         dms = 0.d0
+         if(kw.ge.0.and.kw.le.9)then
+* 'Reimers' mass loss over the whole HRD
+            dml = 0.1*4.0d-13*r*lum/mt
+            if(rl.gt.0.d0) dml =
+     &         dml*(1.d0 + bwind*(MIN(0.5d0,(r/rl)))**6)
+* Apply mass loss of Blocker 1995 for AGB.
+            if(kw.eq.5.or.kw.eq.6)then
+               dml = 4.83d-9*0.2*dml/0.1*((lum)**2.7)/((mt)**2.1)
+            endif
+            if(kw.gt.6)then
+               dms = MAX(dml,1.0d-13*hewind*lum**(3.d0/2.d0))
+            else
+               dms = MAX(dml,dms)
+               mew = ((mt-mc)/mt)*MIN(5.d0,MAX(1.2d0,(lum/lum0)**kap))
+* reduced WR-like mass loss for small H-envelope mass
+               if(mew.lt.1.d0)then
+                  dml = 1.0d-13*lum**(3.d0/2.d0)*(1.d0 - mew)
+                  dms = MAX(dml,dms)
+               endif
+* LBV-like mass loss beyond the Humphreys-Davidson limit.
+               x = 1.0d-5*r*sqrt(lum)
+               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
+                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
+                  dms = dms + dml
+               endif
+            endif
+         endif
+*
+         mlwind = dms
+      
       endif
 
       return

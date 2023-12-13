@@ -1345,6 +1345,8 @@ common envelope occurs regardless of the choices below:
 =======================  =====================================================
 ``htpmb``                Activates different models for magnetic braking
 
+                            ``-1`` : no magnetic braking
+
                             ``0`` : no modifications to BSE
 
                             ``1`` : follows `Ivanona and Taam 2003 <https://ui.adsabs.harvard.edu/abs/2003ApJ...599..516I/abstract>`_
@@ -1361,6 +1363,7 @@ common envelope occurs regardless of the choices below:
     ; htpmb allows for different magnetic braking models.
     ; 0=follows BSE paper Section 2.4
     ; 1=follows Ivanova & Taam 2003 method which kicks in later than the standard
+    ; -1=turns off magnetic braking
     ; default = 1
     htpmb = 1
 

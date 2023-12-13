@@ -37,3 +37,4 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.4.10
  - Bug fixes: `timestep_conditions` for `bcm` arrays now raise errors for invalid columns instead of failing silently
  - Add `teff_1` and `teff_2` as variables that can be used to set `timestep_conditions`
+ - Add in `-1` option to turn off Magnetic Braking in htmb 

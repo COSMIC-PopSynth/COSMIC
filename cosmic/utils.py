@@ -1137,9 +1137,9 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "windflag"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3]:
+        if BSEDict[flag] not in [0, 1, 2, 3, 4]:
             raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(
+                "'{0:s}' needs to be set to either 0, 1, 2, or 3, 4 (you set it to '{1:d}')".format(
                     flag, BSEDict[flag]
                 )
             )
@@ -1424,7 +1424,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
     flag = "gamma"
     if flag in BSEDict.keys():
-        if (BSEDict[flag] <= 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2):
+        if (BSEDict[flag] < 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2):
             raise ValueError(
                 "'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
@@ -1528,9 +1528,9 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
     flag = "htpmb"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
+        if BSEDict[flag] not in [-1, 0, 1]:
             raise ValueError(
-                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
+                "'{0:s}' needs to be set to -1, 0 or 1 (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
                 )
             )
