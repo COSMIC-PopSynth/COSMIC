@@ -334,6 +334,7 @@ class InitialCMCTable(pd.DataFrame):
         singles = pd.concat([singles, singles_bottom])
         singles["r"].iloc[-1] = 1e40
         singles["r"].iloc[0] = 2.2250738585072014e-308
+        singles["m"].iloc[0] = Singles.central_bh
 
         # Add a special row to the end of Bianries table
         binaries = pd.DataFrame(
