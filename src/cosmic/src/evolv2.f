@@ -1199,6 +1199,7 @@ component.
       endif
       tphys = tphys + dtm
 
+
       if(output) write(*,*)'time upd:',tsave, tphys,dtm,
      &                      kstar(1),kstar(2),ecc
 *
@@ -1558,8 +1559,10 @@ component.
          do 507 , k = 1,2
             rol(k) = rl(q(k))*sep*(1.d0-ecc)
             if(ABS(dtm).gt.tiny)then
+*               if(k==1)print*, 'r var',rdot(k),rad(k),rol(k),tphys
                rdot(k) = rdot(k) + (rol(k) - rol0(k))/dtm
                rol0(k) = rol(k)
+
             endif
  507     continue
       else
@@ -1700,6 +1703,7 @@ component.
 *
 * Interpolate back until the primary is just filling its Roche lobe.
 *
+*         if (output)print*, 'RLOF:',rad(j1),rol(j1),j1
          if(rad(j1).ge.1.002d0*rol(j1))then
             if(intpol.eq.0) tphys00 = tphys
             intpol = intpol + 1
@@ -1823,6 +1827,7 @@ component.
 *
  7    km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
+      if (output) print*,'Entered RLOF'
 *
 * Force co-rotation of primary and orbit to ensure that the tides do not
 * lead to unstable Roche (not currently used).
@@ -2312,7 +2317,7 @@ component.
             else
                mass(j2) = mass(j2) + dm2
                CALL gntage(massc(j2),mass(j2),kst,zpars,
-     &                     mass0(j2),aj(j2),dtm,j2)
+     &                     mass0(j2),aj(j2),j2)
                epoch(j2) = tphys - aj(j2)
             endif
             kstar(j2) = kst
@@ -2514,7 +2519,7 @@ component.
             kst = 9
             if(kstar(j2).eq.10) massc(j2) = dm2
             CALL gntage(massc(j2),mass(j2),kst,zpars,mass0(j2),aj(j2),
-     &                   dtm,j2)
+     &                   j2)
             kstar(j2) = kst
             epoch(j2) = tphys - aj(j2)
          elseif(kstar(j2).le.12)then
@@ -2818,7 +2823,7 @@ component.
                      mcx = massc(j2)
                   endif
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
-                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2),dtm,j2)
+                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2),j2)
                   epoch(j2) = tphys + dtm - aj(j2)
                endif
             endif
@@ -2870,7 +2875,7 @@ component.
                   kst = MIN(6,3*kstar(j2)-27)
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
                   CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2),
-     &                        dtm,j2)
+     &                        j2)
                   epoch(j2) = tphys + dtm - aj(j2)
 *
                endif
@@ -3779,6 +3784,7 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2))
          dtm = 0.d0
+         if (output)print*, 'EXIT RLOF'
          goto 4
       endif
 *
@@ -4101,7 +4107,7 @@ component.
 *
          tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
          oorb = twopi/tb
-
+         if (output) print*, 'EXIT RLOF'
          goto 4
       endif
 *

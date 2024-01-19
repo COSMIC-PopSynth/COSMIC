@@ -918,7 +918,7 @@
 *
 * Obtain a new age for the giant.
 *
-            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1,dtm,star1)
+            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1,star1)
             CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             if(output) write(*,*)'coel 2 4:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB

@@ -50,6 +50,8 @@ lib_source = [
     'src/SSE/SSE_star.f',
     'src/SSE/SSE_zcnsts.f',
     'src/SSE/SSE_zfuncs.f',
+    'src/SSE/SSE_gntage.f',
+    'src/METISSE/src/METISSE_gntage.f90',
     'src/METISSE/src/METISSE_deltat.f90',
     'src/METISSE/src/METISSE_mlwind.f90',
     'src/METISSE/src/METISSE_hrdiag.f90',

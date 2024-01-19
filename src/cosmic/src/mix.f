@@ -19,6 +19,8 @@
 *
 *
 *       Define global indices with body #I1 being most evolved.
+*      print*, 'in mix',kw,aj
+
       IF(KS(1).GE.KS(2))THEN
           I1 = 1
           I2 = 2
@@ -100,11 +102,11 @@ C      ENDIF
          ENDIF
       ELSEIF(ICASE.EQ.3.OR.ICASE.EQ.6.OR.ICASE.EQ.9)THEN
          MC3 = M1
-         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,dtm,1)
+         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,1)
       ELSEIF(ICASE.EQ.4)THEN
          MC3 = M1
          AGE3 = AGE1/TMS1
-         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,dtm,1)
+         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,1)
       ELSEIF(ICASE.EQ.7)THEN
          CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS,dtm,1)
          AGE3 = TMS3*(AGE2*M2/TMS2)/M3
@@ -171,6 +173,8 @@ C      ENDIF
       M0(1) = M03
       AJ(1) = AGE3
 *
+*      print*, 'out mix',kw,aj
+
       RETURN
       END
 ***
