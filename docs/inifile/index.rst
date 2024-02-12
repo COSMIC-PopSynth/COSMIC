@@ -924,6 +924,11 @@ common envelope occurs regardless of the choices below:
                             ``-1 < *rembar_massloss* < 0`` : assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., *rembar_massloss* = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)
 
                      **rembar_massloss = 0.5**
+
+``wd_mass_lim``      Determines if the maximum white dwarf mass is limited to
+                     the chandraekhar mass during mic. 1 implements the limit.
+                     
+                     **wd_mass_lim = 1**
 ===================  =====================================================
 
 .. code-block:: ini
@@ -952,6 +957,11 @@ common envelope occurs regardless of the choices below:
     ; assuming for BHs Mrem = (1+rembar_massloss)*Mrem,bar for negative rembar_massloss
     ; default = 0.5
     rembar_massloss = 0.5
+
+    ; wd_mass_lim determines if the maximum white dwarf mass is limited to
+    ; the chandraekhar mass during mic. 1 implements the limit.
+    ; default = 1
+    wd_mass_lim = 1 
 
 .. note::
 

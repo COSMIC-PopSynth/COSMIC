@@ -2475,7 +2475,12 @@ component.
          taum = SQRT(tkh(j1)*tdyn)
          dm1 = mass(j1)
          if(eddfac.lt.10.d0)then
-            dm2 = MIN(dme*taum/tb,dm1)
+*           dm2 = MIN(dme*taum/tb,dm1)
+            if(wd_mass_lim.eq.1)then
+               dm2 = MIN(dme*taum/tb,dm1)
+            else
+               dm2 = dm1
+            endi
             if(dm2.lt.dm1) supedd = .true.
          else
             dm2 = dm1
@@ -2489,7 +2494,7 @@ component.
 *
             kstar(j2) = 15
             mass(j2) = 0.d0
-         elseif(kstar(j1).eq.10.or.kstar(j2).gt.10)then
+         elseif(kstar(j1).eq.10.and.kstar(j2).gt.10)then
 *
 * Should be helium overflowing onto a CO or ONe core in which case the
 * helium swells up to form a giant envelope so a HeGB star is formed.

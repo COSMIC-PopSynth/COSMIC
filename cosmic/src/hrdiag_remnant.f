@@ -39,7 +39,12 @@
                aj = 0.d0
                mt = 1.3d0
                if(ecsn.gt.0.d0)then
-                  mt = 1.38d0
+*                  mt = 1.38d0
+                  if(wd_mass_lim.eq.1)then
+                      mt = 1.38d0
+                  else
+                      mt = mc
+                  endif
                   mt = 0.9d0*mt !in ST this is a quadratic, will add in later.
                endif
             else
