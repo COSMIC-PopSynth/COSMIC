@@ -1513,6 +1513,7 @@ component.
 *
          if(ABS(dtm).gt.tiny)then
             rdot(k) = ABS(rm - rad(k))/dtm
+*            if (k==1)print*, 'rdotk',rdot(k), rm, rad(k),dtm
          else
             rdot(k) = 0.d0
          endif
@@ -1562,6 +1563,7 @@ component.
 *               if(k==1)print*, 'r var',rdot(k),rad(k),rol(k),tphys
                rdot(k) = rdot(k) + (rol(k) - rol0(k))/dtm
                rol0(k) = rol(k)
+*               if(k==1)print*, 'r var',rdot(k),rad(k),rol(k),tphys
 
             endif
  507     continue
@@ -1703,7 +1705,7 @@ component.
 *
 * Interpolate back until the primary is just filling its Roche lobe.
 *
-*         if (output)print*, 'RLOF:',rad(j1),rol(j1),j1
+         if (output)print*, 'RLOF:',rad(j1),rol(j1),j1,aj(j1)
          if(rad(j1).ge.1.002d0*rol(j1))then
             if(intpol.eq.0) tphys00 = tphys
             intpol = intpol + 1
@@ -1718,7 +1720,9 @@ component.
                goto 7
             endif
             dtm = -dr/ABS(rdot(j1))
+*            print*, 'dtm at rlof', dtm, dr, rdot(j1),j1
             if(ABS(tphys0-tphys).gt.tiny) dtm = MAX(dtm,tphys0-tphys)
+*            if (dtm<0) print*, 'rev dtm', dtm, tphys0,tphys
             if(kstar(1).ne.kw1)then
                kstar(1) = kw1
                mass0(1) = mass00(1)
