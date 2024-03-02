@@ -2480,7 +2480,7 @@ component.
                dm2 = MIN(dme*taum/tb,dm1)
             else
                dm2 = dm1
-            endi
+            endif
             if(dm2.lt.dm1) supedd = .true.
          else
             dm2 = dm1
