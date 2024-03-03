@@ -3,7 +3,7 @@
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,bkick,kick_info,
-     \ path_to_metisse,
+     \ path_to_tracks,path_to_he_tracks,
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -198,7 +198,7 @@
       COMMON /fall/fallback
       REAL ran3
       EXTERNAL ran3
-      CHARACTER*256 path_to_metisse
+      CHARACTER*256 path_to_tracks,path_to_he_tracks
 *
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
@@ -246,7 +246,8 @@ Cf2py intent(in) tphys
 Cf2py intent(in) zpars
 Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
-Cf2py intent(in) path_to_metisse
+Cf2py intent(in) path_to_tracks
+Cf2py intent(in) path_to_he_tracks
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
@@ -254,7 +255,7 @@ Cf2py intent(out) kick_info_out
       
       
       if(using_METISSE) CALL initialize_front_end('cosmic',
-     &                                     path_to_metisse)
+     &                     path_to_tracks,path_to_he_tracks)
       CALL zcnsts(z,zpars)
 
       if(using_METISSE) call allocate_track(2,mass0)
