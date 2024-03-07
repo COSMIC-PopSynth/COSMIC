@@ -1,0 +1,32 @@
+cosmic package
+==============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cosmic.bse_utils
+   cosmic.sample
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cosmic.Match
+   cosmic.checkstate
+   cosmic.evolve
+   cosmic.filter
+   cosmic.plotting
+   cosmic.utils
+
+Module contents
+---------------
+
+.. automodule:: cosmic
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.cmc.elson
+   :members:
+   :undoc-members:
+   :show-inheritance:

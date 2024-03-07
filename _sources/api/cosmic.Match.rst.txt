@@ -1,0 +1,4 @@
+.. automodule:: cosmic.Match
+   :members:
+   :undoc-members:
+   :show-inheritance:
