@@ -2478,7 +2478,7 @@ component.
 *           dm2 = MIN(dme*taum/tb,dm1)
             if(wd_mass_lim.eq.1)then
                dm2 = MIN(dme*taum/tb,dm1)
-            else
+            elseif(wd_mass_lim.eq.1)then
                dm2 = dm1
             endif
             if(dm2.lt.dm1) supedd = .true.
