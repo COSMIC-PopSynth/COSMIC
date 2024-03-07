@@ -178,7 +178,7 @@ class TestUtils(unittest.TestCase):
                    'bhspinflag': 0, 'bhspinmag': 0.0, 'rejuv_fac': 1.0, 'rejuvflag': 0, 'htpmb': 1,
                    'ST_cr': 1, 'ST_tide': 1, 'bdecayfac': 1, 'rembar_massloss': 0.5, 'kickflag': 0,
                    'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': -1,
-                   'rtmsflag': 0}
+                   'rtmsflag': 0, 'wd_mass_lim': 1}
 
         initial_binaries = InitialBinaryTable.sampler('independent', np.linspace(0, 15, 16), np.linspace(0, 15, 16),
                                                     binfrac_model=0.5, SF_start=10.0,
