@@ -88,6 +88,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -170,6 +171,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -252,6 +254,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -334,6 +337,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -416,6 +420,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -498,6 +503,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -580,6 +586,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -662,6 +669,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -744,6 +752,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -826,6 +835,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -908,6 +918,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -990,6 +1001,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1072,6 +1084,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1154,6 +1167,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1236,6 +1250,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1318,6 +1333,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1400,6 +1416,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1482,6 +1499,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1564,6 +1582,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1646,6 +1665,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1728,6 +1748,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1810,6 +1831,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1892,6 +1914,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -1974,6 +1997,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2056,6 +2080,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2138,6 +2163,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2220,6 +2246,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2302,6 +2329,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2384,6 +2412,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2466,6 +2495,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2548,6 +2578,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2630,6 +2661,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2712,6 +2744,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2794,6 +2827,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2876,6 +2910,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -2958,6 +2993,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3040,6 +3076,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3122,6 +3159,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3204,6 +3242,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3286,6 +3325,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3368,6 +3408,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3450,6 +3491,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3532,6 +3574,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3614,6 +3657,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3696,6 +3740,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3778,6 +3823,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3860,6 +3906,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -3942,6 +3989,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4024,6 +4072,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4106,6 +4155,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4188,6 +4238,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4270,6 +4321,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4352,6 +4404,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4434,6 +4487,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4516,6 +4570,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4598,6 +4653,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4680,6 +4736,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4762,6 +4819,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4844,6 +4902,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -4926,6 +4985,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5008,6 +5068,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5090,6 +5151,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5172,6 +5234,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5254,6 +5317,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5336,6 +5400,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5418,6 +5483,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5500,6 +5566,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5582,6 +5649,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5664,6 +5732,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5746,6 +5815,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5828,6 +5898,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5910,6 +5981,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -5992,6 +6064,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6074,6 +6147,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6156,6 +6230,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6238,6 +6313,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6320,6 +6396,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6402,6 +6479,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6484,6 +6562,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6566,6 +6645,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6648,6 +6728,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6730,6 +6811,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6812,6 +6894,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6894,6 +6977,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -6976,6 +7060,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7058,6 +7143,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7140,6 +7226,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7222,6 +7309,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7304,6 +7392,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7386,6 +7475,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7468,6 +7558,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7550,6 +7641,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7632,6 +7724,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7714,6 +7807,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7796,6 +7890,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7878,6 +7973,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -7960,6 +8056,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8042,6 +8139,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8124,6 +8222,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8206,6 +8305,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8288,6 +8388,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8370,6 +8471,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8452,6 +8554,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8534,6 +8637,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8616,6 +8720,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8698,6 +8803,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8780,6 +8886,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8862,6 +8969,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -8944,6 +9052,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9026,6 +9135,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9108,6 +9218,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9190,6 +9301,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9272,6 +9384,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9354,6 +9467,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9436,6 +9550,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9518,6 +9633,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9600,6 +9716,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9682,6 +9799,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9764,6 +9882,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9846,6 +9965,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -9928,6 +10048,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10010,6 +10131,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10092,6 +10214,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10174,6 +10297,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10256,6 +10380,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10338,6 +10463,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10420,6 +10546,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10502,6 +10629,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10584,6 +10712,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10666,6 +10795,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10748,6 +10878,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10830,6 +10961,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10912,6 +11044,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -10994,6 +11127,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11076,6 +11210,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11158,6 +11293,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11240,6 +11376,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11322,6 +11459,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11404,6 +11542,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11486,6 +11625,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11568,6 +11708,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11650,6 +11791,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11732,6 +11874,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11814,6 +11957,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11896,6 +12040,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -11978,6 +12123,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12060,6 +12206,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12142,6 +12289,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12224,6 +12372,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12306,6 +12455,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12388,6 +12538,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12470,6 +12621,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12552,6 +12704,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12634,6 +12787,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12716,6 +12870,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12798,6 +12953,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12880,6 +13036,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -12962,6 +13119,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13044,6 +13202,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13126,6 +13285,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13208,6 +13368,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13290,6 +13451,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13372,6 +13534,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13454,6 +13617,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13536,6 +13700,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13618,6 +13783,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13700,6 +13866,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13782,6 +13949,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13864,6 +14032,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -13946,6 +14115,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14028,6 +14198,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14110,6 +14281,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14192,6 +14364,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14274,6 +14447,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14356,6 +14530,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14438,6 +14613,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14520,6 +14696,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14602,6 +14779,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14684,6 +14862,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14766,6 +14945,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14848,6 +15028,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -14930,6 +15111,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15012,6 +15194,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15094,6 +15277,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15176,6 +15360,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15258,6 +15443,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15340,6 +15526,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15422,6 +15609,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15504,6 +15692,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15586,6 +15775,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15668,6 +15858,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15750,6 +15941,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15832,6 +16024,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15914,6 +16107,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -15996,6 +16190,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16078,6 +16273,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16160,6 +16356,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16242,6 +16439,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16324,6 +16522,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16406,6 +16605,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16488,6 +16688,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16570,6 +16771,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16652,6 +16854,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16734,6 +16937,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16816,6 +17020,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16898,6 +17103,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -16980,6 +17186,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17062,6 +17269,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17144,6 +17352,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17226,6 +17435,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17308,6 +17518,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17390,6 +17601,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17472,6 +17684,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17554,6 +17767,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17636,6 +17850,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17718,6 +17933,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17800,6 +18016,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17882,6 +18099,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -17964,6 +18182,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18046,6 +18265,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18128,6 +18348,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18210,6 +18431,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18292,6 +18514,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18374,6 +18597,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18456,6 +18680,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18538,6 +18763,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18620,6 +18846,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18702,6 +18929,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18784,6 +19012,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18866,6 +19095,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -18948,6 +19178,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19030,6 +19261,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19112,6 +19344,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19194,6 +19427,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19276,6 +19510,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19358,6 +19593,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19440,6 +19676,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19522,6 +19759,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19604,6 +19842,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19686,6 +19925,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19768,6 +20008,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19850,6 +20091,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -19932,6 +20174,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0
@@ -20014,6 +20257,7 @@
         kickflag = 0
         zsun = 0.014
         bhms_coll_flag = 0
+        wd_mass_lim = 1
         don_lim = -1
         acc_lim = -1
         rtmsflag = 0

@@ -1575,6 +1575,15 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         flag, BSEDict[flag]
                     )
                 )
+            
+    flag = "wd_mass_lim"
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0, 1]:
+            raise ValueError(
+                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
 
     return
 
