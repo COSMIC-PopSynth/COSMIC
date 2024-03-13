@@ -113,7 +113,6 @@
         PARAMETER(yeardy=365.24d0,aursun=214.95d0)
 
         rsunau = 1/aursun
-
         ip = ip + 1
         bcm(ip,1) = tphys
         bcm(ip,2) = float(kstar_1)

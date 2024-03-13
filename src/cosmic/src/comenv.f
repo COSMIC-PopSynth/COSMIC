@@ -896,6 +896,7 @@
          if(output) write(*,*)'coel 2 1:',KW,KW1,KW2,M1,M2,MF,MC22,
      & TB,OORB
          IF(KW.EQ.2)THEN
+            if (using_METISSE) call set_star_type(star1)
             CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star1)
             IF(GB(9).GE.MC1)THEN
                M01 = M1
@@ -907,6 +908,7 @@
      & TB,OORB
          ELSEIF(KW.EQ.7)THEN
             M01 = M1
+            if (using_METISSE) call set_star_type(star1)
             CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             AJ1 = TM1*(FAGE1*MC1 + FAGE2*MC22)/(MC1 + MC22)
             if(output) write(*,*)'coel 2 3:',KW,KW1,KW2,M1,M01,MC22,
