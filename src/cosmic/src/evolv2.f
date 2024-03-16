@@ -529,7 +529,7 @@ component.
       eqspin = 0.d0
       djtt = 0.d0
 *
-      if(output) write(*,*)'1st in 5: ',tphys,dt,kw1,kw2,
+      if(output) write(*,*)'1st in 5: ',tphys,dtm,kw1,kw2,
      & mass(1),mass(2),intpol,iter
 *
       if(intpol.eq.0.and.ABS(dtm).gt.tiny.and..not.sgl)then
@@ -1209,6 +1209,7 @@ component.
 * Acquire stellar parameters (M, R, L, Mc & K*) at apparent evolution age.
 *
          age = tphys - epoch(k)
+*         print*, 'ages',age,tphys,epoch(k)
          aj0(k) = age
          kw = kstar(k)
          m0 = mass0(k)
@@ -2293,12 +2294,12 @@ component.
             mass(j2) = mass(j2) + dm2
             if(kstar(j2).eq.2)then
                mass0(j2) = mass(j2)
+               if (using_METISSE) call set_star_type(j2)
                CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
      &                   lums,GB,zpars,dtm,j2)
-               if (using_SSE) then
+               
                aj(j2) = tmsnew + tscls(1)*(aj(j2)-tms(j2))/tbgb(j2)
                epoch(j2) = tphys - aj(j2)
-               endif
             endif
          elseif(kstar(j2).le.12)then
 *
