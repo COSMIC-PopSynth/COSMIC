@@ -61,4 +61,6 @@
       
       LOGICAL using_metisse, using_sse
       COMMON /SE_FLAGS/ using_metisse, using_sse
+      LOGICAL bcm_err
+      COMMON/ ER_FLAGS/ bcm_err
 *

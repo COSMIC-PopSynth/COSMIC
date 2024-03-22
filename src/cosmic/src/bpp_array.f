@@ -111,7 +111,13 @@
         INTEGER ip
         REAL*8 yeardy,aursun,rsunau
         PARAMETER(yeardy=365.24d0,aursun=214.95d0)
-
+        
+        bcm_err = .false.
+        if (ip+2>size(bcm,1)) then
+            bcm_err = .true.
+            return
+        endif
+        
         rsunau = 1/aursun
         ip = ip + 1
         bcm(ip,1) = tphys

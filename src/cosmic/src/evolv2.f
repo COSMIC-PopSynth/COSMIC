@@ -1669,6 +1669,7 @@ component.
      &                    radc(2),menv(2),renv(2),epoch(2),ospin(2),
      &                    deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
      &                    formation(1),formation(2),binstate,mergertype)
+            if (bcm_err) goto 150
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1955,6 +1956,7 @@ component.
      &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
      &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
      &                  formation(1),formation(2),binstate,mergertype)
+         if (bcm_err) goto 150
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
@@ -3700,6 +3702,7 @@ component.
      &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
      &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
      &                  formation(1),formation(2),binstate,mergertype)
+         if (bcm_err) goto 150
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -4501,6 +4504,7 @@ component.
      &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
      &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
      &                  formation(1),formation(2),binstate,mergertype)
+         if (bcm_err) goto 150
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
@@ -4518,6 +4522,8 @@ component.
          evolve_type = 10.0
          goto 135
       endif
+150   continue
+      if (bcm_err) WRITE(99,*)'IP>SIZE(BCM)',IP, size(bcm,1)
       tphysfhold = tphysf
       tphysf = tphys
       if(sgl)then
@@ -4549,6 +4555,5 @@ component.
       endif
 *
       if (using_METISSE) call dealloc_track()
-      
       END SUBROUTINE evolv2
 ***
