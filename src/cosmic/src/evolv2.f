@@ -1749,6 +1749,8 @@ component.
 * Check if already interpolating.
 *
          if(intpol.gt.0)then
+         if(output)print*,'RLOF fail:',rad(j1),rol(j1),j1,aj(j1)
+
             intpol = intpol + 1
             if(intpol.ge.80)then
                inttry = .true.
@@ -4523,7 +4525,6 @@ component.
          goto 135
       endif
 150   continue
-      if (bcm_err) WRITE(99,*)'IP>SIZE(BCM)',IP, size(bcm,1)
       tphysfhold = tphysf
       tphysf = tphys
       if(sgl)then
@@ -4538,6 +4539,8 @@ component.
 *         STOP
       elseif(jp.ge.40)then
          WRITE(99,*)' EVOLV2 ARRAY WARNING ',mass1i,mass2i,tbi,ecci,jp
+      elseif (IP+1>SIZE(BCM,1)) then
+         WRITE(99,*)'IP>SIZE(BCM)',IP, size(bcm,1)
       endif
       if(iter.ge.loop)then
          WRITE(99,*)'ITER>=LOOP:',jp,tphys,tphysfhold,dtp,kstar,age,kst,
