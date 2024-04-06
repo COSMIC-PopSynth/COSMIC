@@ -1769,9 +1769,14 @@ component.
 * discontinuity in the radius as a function of time and HRDIAG
 * needs to be checked!
 *
-               dtm = 0.5d0*(tphys00 - tphys0)
-               dtm = MAX(dtm,1.0d-10)
-               prec = .true.
+                if (using_METISSE) then
+                    dtm = max(dtm, dtmi(j1))
+                    intpol = 0
+                else
+                   dtm = 0.5d0*(tphys00 - tphys0)
+                   dtm = MAX(dtm,1.0d-10)
+                   prec = .true.
+                endif
             endif
             tphys0 = tphys
          endif
