@@ -119,6 +119,10 @@ def parse_commandline():
     parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
                         help="Run in Verbose Mode")
+    parser.add_argument("--complib",type=str,default="zlib",
+        help="HDFStore compression library")
+    parser.add_argument("--complevel",type=int,default=0,
+        help="HDFStore compression level")
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-n", "--nproc",
@@ -232,7 +236,7 @@ if __name__ == '__main__':
 
     # Open the hdf5 file to store the fixed population data
     try:
-        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
+        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']),complib=args.complib,complevel=args.complevel)
         conv_save = pd.read_hdf(dat_store, 'conv')
         log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
@@ -246,7 +250,7 @@ if __name__ == '__main__':
         idx = int(np.max(pd.read_hdf(dat_store, 'idx'))[0])
     except:
         conv_save = pd.DataFrame()
-        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']))
+        dat_store = pd.HDFStore('dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']),complib=args.complib,complevel=args.complevel)
         total_mass_singles = 0  
         total_mass_binaries = 0
         total_mass_stars = 0
