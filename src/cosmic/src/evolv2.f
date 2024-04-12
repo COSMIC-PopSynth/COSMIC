@@ -1709,6 +1709,13 @@ component.
 * Interpolate back until the primary is just filling its Roche lobe.
 *
          if (output)print*, 'RLOF:',rad(j1),rol(j1),j1,aj(j1)
+         
+         if (using_METISSE .and. (rad(j1).lt.1.05d0*rol(j1))) then
+*           print*, 'rad ok',rad(j1),rol(j1),j1,aj(j1),tphys
+            if(tphys.ge.tphysf) goto 140
+            goto 7
+         endif
+         
          if(rad(j1).ge.1.002d0*rol(j1))then
             if(intpol.eq.0) tphys00 = tphys
             intpol = intpol + 1
@@ -1769,16 +1776,12 @@ component.
 * discontinuity in the radius as a function of time and HRDIAG
 * needs to be checked!
 *
-                if (using_METISSE) then
-                    dtm = max(dtm, dtmi(j1))
-                    intpol = 0
-                else
-                   dtm = 0.5d0*(tphys00 - tphys0)
-                   dtm = MAX(dtm,1.0d-10)
-                   prec = .true.
-                endif
+               dtm = 0.5d0*(tphys00 - tphys0)
+               dtm = MAX(dtm,1.0d-10)
+               prec = .true.
             endif
             tphys0 = tphys
+            if (using_METISSE) dtm = max(ABS(dtm),dtmi(j1))
          endif
       endif
 *
