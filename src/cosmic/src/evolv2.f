@@ -1781,7 +1781,8 @@ component.
                prec = .true.
             endif
             tphys0 = tphys
-            if (using_METISSE) dtm = max(ABS(dtm),dtmi(j1))
+            if(using_METISSE .and. (dtm.le.1.0d-10))
+     &       dtm=max(ABS(dtm),dtmi(j1))
          endif
       endif
 *
