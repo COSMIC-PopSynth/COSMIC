@@ -254,17 +254,13 @@ Cf2py intent(out) kick_info_out
       
       
       
-      if(using_METISSE) CALL initialize_front_end('cosmic',
-     &                     path_to_tracks,path_to_he_tracks)
-      CALL zcnsts(z,zpars)
+      if(using_METISSE) CALL initialize_front_end('cosmic')
+*      for SSE path_to_tracks and path_to_he_tracks are empty ('')
+      CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
 
       if(using_METISSE) call allocate_track(2,mass0)
       irecord = 1
-* irecord is useful for evolv1.f but serves no purpose here
-          
-      if(using_cmc.eq.0)then
-              CALL instar
-      endif
+*     irecord is useful for evolv1.f but serves no purpose here
 
 *
 * Save the initial state.
@@ -350,7 +346,7 @@ component.
 * Set the collision matrix.
 *
       if(using_cmc.eq.0)then
-          CALL zcnsts(z,zpars)
+            CALL instar
       endif
 
       kmin = 1
