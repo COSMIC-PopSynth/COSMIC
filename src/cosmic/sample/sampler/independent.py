@@ -23,11 +23,10 @@ import numpy as np
 import warnings
 import pandas as pd
 
-from ... import utils
+from cosmic import utils
 
 from .sampler import register_sampler
 from .. import InitialBinaryTable
-from ... import _evolvebin
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
@@ -1083,6 +1082,9 @@ class Sample(object):
         of length 10^5.  If your masses are more than that, you'll
         need to divide it into chunks
         """
+
+        from .. import _evolvebin
+
 
         max_array_size = 100000
         total_length = len(mass)
