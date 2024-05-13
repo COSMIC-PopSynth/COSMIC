@@ -16,7 +16,7 @@ import pandas as pd
 import scipy.special as special
 import pytest
 
-from cosmic. import utils
+from cosmic import utils
 
 f  = np.linspace(0,1,10)
 x = np.linspace(0,1,10)
