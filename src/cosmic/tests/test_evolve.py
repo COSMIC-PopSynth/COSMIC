@@ -8,10 +8,10 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from ..evolve import Evolve
-from ..sample.initialbinarytable import InitialBinaryTable
-from ..sample import initialbinarytable
-from .. import evolve
+from cosmic.evolve import Evolve
+from cosmic.sample.initialbinarytable import InitialBinaryTable
+from cosmic.sample import initialbinarytable
+from cosmic import evolve
 
 import warnings
 warnings.filterwarnings("ignore")
