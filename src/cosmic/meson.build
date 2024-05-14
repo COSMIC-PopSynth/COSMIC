@@ -1,20 +1,7 @@
-numpy = dependency('numpy', required: true)
+numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
+f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
 
-#Include directories
-if not numpy.found()
-  error('numpy is required but was not found')
-endif
-
-incdir_numpy = run_command(py3,
-  ['-c', 'import os; import numpy; print(numpy.get_include())'],
-  check: true
-).stdout().strip()
-
-incdir_f2py = run_command(py3,
-  ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'],
-  check: true
-).stdout().strip()
-inc_np = include_directories(incdir_numpy, incdir_f2py)
+inc_np = include_directories(numpy_include_dir, f2py_include_dir)
 
 f2py_source = custom_target(
     'evolvebin-target',
@@ -66,7 +53,7 @@ endif
 py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
-  incdir_f2py / 'fortranobject.c',
+  f2py_include_dir / 'fortranobject.c',
   include_directories: inc_np,
   link_args: ldflags,
   install : true,
