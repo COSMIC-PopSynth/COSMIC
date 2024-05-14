@@ -14,6 +14,8 @@ add_project_arguments(f_args, language: 'fortran')
 py_mod = import('python')
 py3 = py_mod.find_installation(pure: false)
 py3_dep = py3.dependency()
+numpy = dependency('numpy', required: false)
+
 
 subdir('./src/cosmic')
 

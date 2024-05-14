@@ -1,14 +1,20 @@
+numpy = dependency('numpy', required: false)
+
+
 #Include directories
+if not numpy.found()
+  error('numpy is required but was not found')
+endif
+
 incdir_numpy = run_command(py3,
-  ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
-  check : true
+  ['-c', 'import os; import numpy; print(numpy.get_include())'],
+  check: true
 ).stdout().strip()
 
 incdir_f2py = run_command(py3,
-    ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'],
-    check : true
+  ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'],
+  check: true
 ).stdout().strip()
-
 inc_np = include_directories(incdir_numpy, incdir_f2py)
 
 f2py_source = custom_target(
@@ -51,6 +57,7 @@ lib_source = [
 
 # Detect operating system and set appropriate linker flags
 host_system = host_machine.system()
+
 if host_system == 'darwin'
   ldflags = ['-Wl,-no_compact_unwind']
 else
