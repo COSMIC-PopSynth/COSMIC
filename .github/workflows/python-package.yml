@@ -45,6 +45,7 @@ jobs:
     - name: Test with pytest
       run: |
         bash ci/compile_benchmark.sh
+        export PYTHONPATH=$(meson introspect --install-dir)
         pytest --cov=./cosmic --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
