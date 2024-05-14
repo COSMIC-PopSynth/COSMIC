@@ -49,7 +49,13 @@ lib_source = [
     'src/zcnsts.f',
     'src/zfuncs.f',]
 
-ldflags = ['-Wl,--no_compact_unwind']
+# Detect operating system and set appropriate linker flags
+host_system = host_machine.system()
+if host_system == 'darwin'
+  ldflags = ['-Wl,-no_compact_unwind']
+else
+  ldflags = []  # No special flags for other systems
+endif
 
 py3.extension_module('_evolvebin',
   f2py_source,
