@@ -1,5 +1,4 @@
-numpy = dependency('numpy', required: false)
-
+numpy = dependency('numpy', required: true)
 
 #Include directories
 if not numpy.found()
