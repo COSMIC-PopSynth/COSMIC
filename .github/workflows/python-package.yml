@@ -40,6 +40,9 @@ jobs:
     - name: Print installed packages
       run: |
         python -m pip list
+    - name: Print PYTHONPATH
+      run: |
+        echo "PYTHONPATH: $PYTHONPATH"
 
     - name: install package
       run: |
