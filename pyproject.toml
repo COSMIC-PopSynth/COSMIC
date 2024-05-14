@@ -31,7 +31,7 @@ dependencies = ["numpy", "scipy", "astropy", "configparser",
 test = ["pytest", "pytest-xdist", "pytest-cov", "flake8", "coverage"]
 docs = ["sphinx", "numpydoc", "sphinx-bootstrap-theme", 
         "sphinxcontrib-programoutput", "sphinx-automodapi",
-        "ipython", "sphinx_rtd_theme"]
+        "ipython", "sphinx_rtd_theme", "pickleshare"]
 
 
 
