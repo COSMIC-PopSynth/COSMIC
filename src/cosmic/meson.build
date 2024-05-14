@@ -49,7 +49,7 @@ lib_source = [
     'src/zcnsts.f',
     'src/zfuncs.f',]
 
-ldflags = ['-Wl,-no_compact_unwind']
+ldflags = ['-Wl,--no_compact_unwind']
 
 py3.extension_module('_evolvebin',
   f2py_source,
