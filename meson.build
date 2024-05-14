@@ -27,3 +27,7 @@ foreach mod_dir: module_dirs
     install_subdir(mod_dir,
                   install_dir: py3.get_install_dir())
 endforeach
+
+python_script = 'bin/cosmic-pop'
+
+install_data(python_script, install_dir: get_option('bindir'))
