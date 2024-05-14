@@ -36,7 +36,15 @@ jobs:
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install numpy
         pip install -r requirements.txt
+
+    - name: Print installed packages
+      run: |
+        python -m pip list
+
+    - name: install package
+      run: |
         pip install .
+        
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
