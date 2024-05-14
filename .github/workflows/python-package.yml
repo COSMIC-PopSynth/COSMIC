@@ -33,8 +33,8 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gfortran swig libhdf5-serial-dev
-        pip install numpy
+        sudo apt-get install gfortran swig libhdf5-serial-dev meson
+        pip install numpy ninja
         pip install -r requirements.txt
 
     - name: Print installed packages
