@@ -281,7 +281,7 @@ class TestSample(unittest.TestCase):
         self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
 
         # next check moe19
-        from ..utils import get_met_dep_binfrac
+        from cosmic.utils import get_met_dep_binfrac
         from scipy.interpolate import interp1d
         from scipy.stats import kstest
         metallicity = 0.001

@@ -13,7 +13,7 @@ inc_np = include_directories(incdir_numpy, incdir_f2py)
 
 f2py_source = custom_target(
     'evolvebin-target',
-    input : ['src/evolv2.f'],
+    input : ['src/evolv2.f', 'src/comprad.f'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
     command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '--build-dir', 'src/cosmic']
 )
