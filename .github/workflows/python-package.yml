@@ -3,7 +3,7 @@
 
 name: Unit Test COSMIC
 
-on: [pull_request]
+on: [commit]
 
 jobs:
   build:
