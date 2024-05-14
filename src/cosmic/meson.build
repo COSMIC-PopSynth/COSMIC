@@ -49,12 +49,15 @@ lib_source = [
     'src/zcnsts.f',
     'src/zfuncs.f',]
 
+ldflags = ['-Wl,-no_compact_unwind']
+
 py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
   incdir_f2py / 'fortranobject.c',
   include_directories: inc_np,
+  link_args: ldflags,
   install : true,
-  subdir : 'cosmic'
+  install_dir: py3.get_install_dir() / 'cosmic'
 )
 

@@ -1083,7 +1083,7 @@ class Sample(object):
         need to divide it into chunks
         """
 
-        from .. import _evolvebin
+        from cosmic import _evolvebin
 
 
         max_array_size = 100000
