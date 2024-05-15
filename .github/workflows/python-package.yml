@@ -69,7 +69,9 @@ jobs:
     - name: Test with pytest
       run: |
         bash ci/compile_benchmark.sh
-        PYTHONPATH=$(meson introspect builddir --installed | jq -r '.[].destination' | tr '\n' ':')$PYTHONPATH
+        INSTALL_DIRS=$(meson introspect builddir --installed | grep -oP '\".*?\": \"\K[^\"]+')
+        PYTHONPATH=$(echo $INSTALL_DIRS | tr ' ' ':'):$PYTHONPATH
+        echo "PYTHONPATH: $PYTHONPATH"
         pytest --cov=./cosmic --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
