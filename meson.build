@@ -16,6 +16,7 @@ py3 = py_mod.find_installation('python3')
 
 numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
 f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
+message('numpy', numpy_include_dir)
 message('f2py', f2py_include_dir)
 inc_np = include_directories(numpy_include_dir, f2py_include_dir)
 
