@@ -34,7 +34,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev meson python3-dev
-        pip install numpy ninja
+        pip install numpy ninja pytests
         pip install -r requirements.txt
 
     - name: Print installed packages
@@ -61,17 +61,11 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude docs
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude docs,versioneer.py,cosmic/_version.py,cosmic/tests,cosmic/*/__init__.py
-    
-    - name: Debug Meson Introspect Output
-      run: |
-        meson introspect build --installed
 
     - name: Test with pytest
       run: |
         bash ci/compile_benchmark.sh
-        INSTALL_DIRS=$(meson introspect builddir --installed | grep -oP '\".*?\": \"\K[^\"]+')
-        PYTHONPATH=$(echo $INSTALL_DIRS | tr ' ' ':'):$PYTHONPATH
-        echo "PYTHONPATH: $PYTHONPATH"
         pytest --cov=./cosmic --cov-report=xml
+        
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
