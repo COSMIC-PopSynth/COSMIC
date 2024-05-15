@@ -12,12 +12,13 @@ f_args = ff.get_supported_arguments('-fPIC')
 add_project_arguments(f_args, language: 'fortran')
 
 py_mod = import('python')
-py3 = py_mod.find_python()
+py3 = py_mod.find_installation('python3')
 
-subdir('./src/cosmic')
 
-module_dirs = ['./src/cosmic', './src/cosmic/bse_utils', 
-               './src/cosmic/sample']
+subdir('src/cosmic')
+
+module_dirs = ['src/cosmic', 'src/cosmic/bse_utils', 
+               'src/cosmic/sample']
 
 # Install modules
 foreach mod_dir: module_dirs
