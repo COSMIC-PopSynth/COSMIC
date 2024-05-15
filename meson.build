@@ -24,7 +24,7 @@ f2py_source = custom_target(
     'evolvebin-target',
     input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '--build-dir', 'src/cosmic']
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower']
 )
 
 lib_source = [
