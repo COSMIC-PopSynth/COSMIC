@@ -46,7 +46,7 @@ jobs:
 
     - name: install package
       run: |
-        meson setup --wipe build
+        meson setup build
         meson compile -C build
         meson install -C build
         
