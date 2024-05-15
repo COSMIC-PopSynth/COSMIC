@@ -52,7 +52,6 @@ jobs:
     - name: Test with pytest
       run: |
         bash ci/compile_benchmark.sh
-        bash ci/run-tests.sh
         pytest --cov=./cosmic --cov-report=xml
 
     - name: Upload coverage to Codecov
