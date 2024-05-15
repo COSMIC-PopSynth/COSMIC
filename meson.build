@@ -73,7 +73,8 @@ py3.extension_module('_evolvebin',
   f2py_include_dir / 'fortranobject.c',
   include_directories: inc_np,
   link_args: ldflags,
-  install : true
+  install : true,
+  subdir : 'src/cosmic/'
 )
 
 
