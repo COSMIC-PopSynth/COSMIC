@@ -64,7 +64,7 @@ jobs:
     
     - name: Debug Meson Introspect Output
       run: |
-        meson introspect builddir --installed
+        meson introspect build --installed
 
     - name: Test with pytest
       run: |
