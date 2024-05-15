@@ -46,7 +46,9 @@ jobs:
 
     - name: install package
       run: |
-        pip install .
+        meson setup --wipe build
+        meson compile -C build
+        meson install -C build
         
     - name: Lint with flake8
       run: |
