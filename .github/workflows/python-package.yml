@@ -52,8 +52,8 @@ jobs:
         CFLAGS="-I${PYTHON_INCLUDE_PATH}" \
         LDFLAGS="-L${PYTHON_LIB_PATH}" \
         meson setup build
-        meson compile -C build
-        meson install -C build
+        sudo meson compile -C build
+        sudo meson install -C build
         
     - name: Lint with flake8
       run: |
