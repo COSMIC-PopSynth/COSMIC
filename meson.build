@@ -11,20 +11,18 @@ ff = meson.get_compiler('fortran')
 f_args = ff.get_supported_arguments('-fPIC')
 add_project_arguments(f_args, language: 'fortran')
 
-py_mod = import('python')
-py3 = py_mod.find_installation('python3')
+py3 = import('python').find_installation('python3')
+
 
 numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
 f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
-message('numpy', numpy_include_dir)
-message('f2py', f2py_include_dir)
 inc_np = include_directories(numpy_include_dir, f2py_include_dir)
 
 f2py_source = custom_target(
     'evolvebin-target',
     input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower']
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '@OUTDIR']
 )
 
 lib_source = [
@@ -67,6 +65,8 @@ else
   ldflags = []  # No special flags for other systems
 endif
 
+message('python',py3.get_install_dir())
+
 py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
@@ -74,7 +74,7 @@ py3.extension_module('_evolvebin',
   include_directories: inc_np,
   link_args: ldflags,
   install : true,
-  subdir : 'src/cosmic/'
+  install_dir : meson.is_subproject() ? 'src/cosmic' : py3.get_install_dir() / 'src/cosmic'
 )
 
 
