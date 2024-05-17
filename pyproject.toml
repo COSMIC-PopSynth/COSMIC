@@ -39,6 +39,7 @@ docs = ["sphinx", "numpydoc", "sphinx-bootstrap-theme",
 requires = ["meson", "meson-python", "wheel", "numpy", "setuptools"]
 build-backend = 'mesonpy'
 
+
 # pyproject.toml
 [tool.setuptools]
 write_to = "src/cosmic/_version.py"
