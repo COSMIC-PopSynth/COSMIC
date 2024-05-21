@@ -40,7 +40,7 @@ jobs:
 
     - name: install package
       run: |
-        pip install .
+        python -m pip install .
         
     - name: Lint with flake8
       run: |
@@ -51,6 +51,7 @@ jobs:
 
     - name: Test with pytest
       run: |
+        echo $GITHUB_ACTION_PATH
         bash ci/compile_benchmark.sh
         pytest --cov=./src/cosmic --cov-report=xml
 
