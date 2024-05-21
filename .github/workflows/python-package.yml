@@ -40,7 +40,9 @@ jobs:
 
     - name: install package
       run: |
-        python -m pip install .
+        meson setup build
+        meson compile -C build
+        meson install -C build
         
     - name: Lint with flake8
       run: |
