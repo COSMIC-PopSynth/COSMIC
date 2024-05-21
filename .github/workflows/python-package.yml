@@ -52,6 +52,7 @@ jobs:
     - name: Test with pytest
       run: |
         echo $GITHUB_PATH
+        ls
         bash ci/compile_benchmark.sh
         pytest --cov=./src/cosmic --cov-report=xml
 
