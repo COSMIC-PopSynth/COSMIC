@@ -11,8 +11,8 @@ ff = meson.get_compiler('fortran')
 f_args = ff.get_supported_arguments('-fPIC')
 add_project_arguments(f_args, language: 'fortran')
 
-py3 = import('python').find_installation('/Users/kbreivik/miniconda3/envs/cosmic/bin/python')
-message(py3.get_install_dir() / 'src/cosmic')
+py3 = import('python').find_installation()
+message(py3.path())
 
 
 numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
@@ -73,7 +73,7 @@ py3.extension_module('_evolvebin',
   include_directories: inc_np,
   link_args: ldflags,
   install : true,
-  install_dir : py3.get_install_dir() / 'src/cosmic'
+  install_dir : py3.get_install_dir() / 'cosmic'
 )
 
 
