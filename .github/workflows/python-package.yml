@@ -60,7 +60,7 @@ jobs:
         echo $GITHUB_PATH
         ls
         bash ci/compile_benchmark.sh
-        pytest --cov=./src/cosmic --cov-report=xml
+        pytest --cov=site.getsitepackages() / cosmic --cov-report=xml
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1

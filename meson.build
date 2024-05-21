@@ -78,7 +78,7 @@ py3.extension_module('_evolvebin',
 
 
 module_dirs = ['src/cosmic', 'src/cosmic/bse_utils', 
-               'src/cosmic/sample']
+               'src/cosmic/sample', src/cosmic/tests]
 
 # Install modules
 foreach mod_dir: module_dirs
