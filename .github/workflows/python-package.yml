@@ -7,7 +7,7 @@ on: [pull_request]
 
 jobs:
   build:
-
+  
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -49,6 +49,6 @@ jobs:
       run: |
         bash ci/compile_benchmark.sh
         pytest --cov=./src/cosmic --cov-report=xml
-
-   - name: Upload coverage to Codecov
+        
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
