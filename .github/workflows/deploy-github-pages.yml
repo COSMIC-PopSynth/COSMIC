@@ -41,8 +41,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install -r requirements.txt
-        pip install . --no-build-isolation
-        python setup.py build_ext --inplace
+        pip install meson numpy
+        python -m pip install .
 
     - name: Make dependencies
       run: |
