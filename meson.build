@@ -86,6 +86,11 @@ foreach mod_dir: module_dirs
                   install_dir: py3.get_install_dir())
 endforeach
 
-message('bin', get_option('bindir'))
 python_script = 'bin/cosmic-pop'
 install_data(python_script, install_dir: get_option('bindir'))
+
+# Copy the extension to the src/cosmic directory
+install_data(
+  evolvebin_module.full_path(),
+  install_dir: meson.current_source_dir() / 'src/cosmic'
+)
