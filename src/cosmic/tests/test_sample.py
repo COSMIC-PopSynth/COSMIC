@@ -7,14 +7,14 @@ import os
 import unittest
 import numpy as np
 import pandas as pd
-from ..sample import InitialBinaryTable
-from ..sample.sampler.independent import Sample
-from ..sample.sampler.multidim import MultiDim
-from ..sample.sampler.cmc import CMCSample
-from ..sample.cmc import elson
-from ..sample.initialcmctable import InitialCMCTable
+from cosmic.sample import InitialBinaryTable
+from cosmic.sample.sampler.independent import Sample
+from cosmic.sample.sampler.multidim import MultiDim
+from cosmic.sample.sampler.cmc import CMCSample
+from cosmic.sample.cmc import elson
+from cosmic.sample.initialcmctable import InitialCMCTable
 from scipy.optimize import curve_fit
-from ..utils import a_from_p, get_porb_norm
+from cosmic.utils import a_from_p, get_porb_norm
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
@@ -281,7 +281,7 @@ class TestSample(unittest.TestCase):
         self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
 
         # next check moe19
-        from ..utils import get_met_dep_binfrac
+        from cosmic.utils import get_met_dep_binfrac
         from scipy.interpolate import interp1d
         from scipy.stats import kstest
         metallicity = 0.001
