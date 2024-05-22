@@ -12,8 +12,6 @@ f_args = ff.get_supported_arguments('-fPIC')
 add_project_arguments(f_args, language: 'fortran')
 
 py3 = import('python').find_installation()
-message(py3.path())
-
 
 numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
 f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
@@ -66,7 +64,7 @@ else
   ldflags = []  # No special flags for other systems
 endif
 
-py3.extension_module('_evolvebin',
+evolvebin_module = py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
   f2py_include_dir / 'fortranobject.c',
@@ -86,11 +84,6 @@ foreach mod_dir: module_dirs
                   install_dir: py3.get_install_dir())
 endforeach
 
+
 python_script = 'bin/cosmic-pop'
 install_data(python_script, install_dir: get_option('bindir'))
-
-# Copy the extension to the src/cosmic directory
-install_data(
-  evolvebin_module.full_path(),
-  install_dir: meson.current_source_dir() / 'src/cosmic'
-)
