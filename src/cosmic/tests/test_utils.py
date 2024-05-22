@@ -3,8 +3,8 @@
 
 __author__ = 'Katie Breivik <katie.breivik@gmail.com>'
 
-from ..sample import InitialBinaryTable
-from ..evolve import Evolve
+from cosmic.sample import InitialBinaryTable
+from cosmic.evolve import Evolve
 
 import warnings
 
@@ -16,7 +16,7 @@ import pandas as pd
 import scipy.special as special
 import pytest
 
-from .. import utils
+from cosmic import utils
 
 f  = np.linspace(0,1,10)
 x = np.linspace(0,1,10)

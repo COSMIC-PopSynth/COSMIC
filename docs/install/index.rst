@@ -45,15 +45,3 @@ Installation Notes/FAQ
 
     ``pip install jupyter ipython``
 
-.. note::
-
-    USING COMSIC WHEN BUILT FROM SOURCE
-
-    If you want import the fortran wrapped library
-    from the GITHUB folder itself, i.e.
-
-    ``from cosmic import _evolvebin``
-
-    then you must build the extension locally
-
-    ``python setup.py build_ext --inplace``

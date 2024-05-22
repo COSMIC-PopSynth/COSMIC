@@ -21,7 +21,7 @@
 
 import numpy as np
 from numpy.random import uniform, normal
-from scipy.integrate import RK45, quad, simps, cumtrapz
+from scipy.integrate import RK45, quad, simpson, cumulative_trapezoid
 from scipy.interpolate import interp1d
 from scipy.special import erf
 
@@ -100,7 +100,7 @@ def integrate_king_profile(w0,tidal_boundary=1e-6):
     rho_r = np.array(rho_r)
     
     ## Finally compute the cumulative mass enclosed
-    M_enclosed = cumtrapz(4*np.pi*r**2*rho_r, r, initial=0)
+    M_enclosed = cumulative_trapezoid(4*np.pi*r**2*rho_r, r, initial=0)
     
     return r, rho_r, phi_r, M_enclosed
 
@@ -110,7 +110,7 @@ def virial_radius_numerical(r, rho_r, M_enclosed):
     Virial radius is best calculated directly.  Directly integrate 
     4*pi*r*rho*m_enclosed over the samples binding energy, then just divide 0.5 by that.
     """
-    integral = simps(rho_r * r * 4 * np.pi * M_enclosed,r)
+    integral = simpson(y=rho_r * r * 4 * np.pi * M_enclosed,x=r)
 
     return 1 / 2.0 / integral
 

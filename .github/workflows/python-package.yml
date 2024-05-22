@@ -3,11 +3,11 @@
 
 name: Unit Test COSMIC
 
-on: [pull_request, push]
+on: [pull_request]
 
 jobs:
   build:
-
+  
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -30,23 +30,25 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
-    - name: Install dependencies
+    - name: Install dependencies and package
       run: |
         sudo apt-get update
-        sudo apt-get install gfortran swig libhdf5-serial-dev
-        pip install numpy
+        sudo apt-get install gfortran swig libhdf5-serial-dev meson python3-dev
+        pip install numpy ninja pytest
         pip install -r requirements.txt
-        pip install .
+        python -m pip install .
+        
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude docs
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude docs,versioneer.py,cosmic/_version.py,cosmic/tests,cosmic/*/__init__.py
+
     - name: Test with pytest
       run: |
         bash ci/compile_benchmark.sh
-        export PYTHONPATH=$(meson introspect --install-dir)
-        pytest --cov=./cosmic --cov-report=xml
+        pytest --cov=./src/cosmic --cov-report=xml
+        
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
