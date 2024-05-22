@@ -60,5 +60,5 @@ jobs:
         bash ci/compile_benchmark.sh
         pytest --cov=./src/cosmic --cov-report=xml
 
-    - name: Upload coverage to Codecov
+   - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
