@@ -30,23 +30,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
-    - name: Install dependencies
+    - name: Install dependencies and package
       run: |
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev meson python3-dev
         pip install numpy ninja pytest
         pip install -r requirements.txt
-
-
-    - name: install package
-      run: |
         python -m pip install .
-        
-    - name: Print Python paths
-      run: |
-        python -c "import site; print('site-packages:', site.getsitepackages())"
-        python -c "import sys; print('sys.path:', sys.path)"
-        python -c "import os; print('PATH:', os.environ['PATH'])"
         
     - name: Lint with flake8
       run: |
