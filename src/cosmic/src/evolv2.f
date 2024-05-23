@@ -246,6 +246,8 @@ Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
 
+      using_METISSE = .false.
+      using_SSE = .true.
       if(using_cmc.eq.0)then
               CALL instar
       endif
@@ -409,7 +411,8 @@ component.
          age = tphys - epoch(k)
          mc = massc(k)
          rc = radc(k)
-         CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
+         CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
+     &                                                          dtm,k)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
          aj(k) = age
@@ -1133,7 +1136,7 @@ component.
                m0 = mass0(k)
                mass0(k) = mass(k)
                CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,
-     &                   lums,GB,zpars)
+     &                   lums,GB,zpars,dtm,k)
                if(kstar(k).eq.2)then
                   if(GB(9).lt.massc(k).or.m0.gt.zpars(3))then
                      mass0(k) = m0
@@ -1213,7 +1216,7 @@ component.
 *            goto 140
          endif
 *
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
@@ -2253,7 +2256,7 @@ component.
 *
             mass0(j2) = mass(j2)
             CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,
-     &                tscls,lums,GB,zpars)
+     &                tscls,lums,GB,zpars,dtm,k)
 * If the star has no convective core then the effective age decreases,
 * otherwise it will become younger still.
             if(mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0)then
@@ -2271,7 +2274,7 @@ component.
             if(kstar(j2).eq.2)then
                mass0(j2) = mass(j2)
                CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &                   lums,GB,zpars)
+     &                   lums,GB,zpars,dtm,j2)
                aj(j2) = tmsnew + tscls(1)*(aj(j2)-tms(j2))/tbgb(j2)
                epoch(j2) = tphys - aj(j2)
             endif
@@ -2378,7 +2381,7 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,dtm)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
@@ -2636,7 +2639,7 @@ component.
                formation(1) = 11
                formation(2) = 11
             endif
-            CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+            CALL mix(mass0,mass,aj,kstar,zpars,bhspin,dtm)
             dm1 = m1ce - mass(j1)
             dm2 = mass(j2) - m2ce
 *
@@ -3372,7 +3375,7 @@ component.
             m0 = mass0(j1)
             mass0(j1) = mass(j1)
             CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
-     &                lums,GB,zpars)
+     &                lums,GB,zpars,dtm,j1)
             if(GB(9).lt.massc(j1))then
                mass0(j1) = m0
             endif
@@ -3381,7 +3384,7 @@ component.
             m0 = mass0(j2)
             mass0(j2) = mass(j2)
             CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &                lums,GB,zpars)
+     &                lums,GB,zpars,dtm,j2)
             if(GB(9).lt.massc(j2))then
                mass0(j2) = m0
             endif
@@ -3415,7 +3418,7 @@ component.
 *
       if(kstar(j1).le.2.or.kstar(j1).eq.7)then
          CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
-     &             lums,GB,zpars)
+     &             lums,GB,zpars,dtm,j1)
          if(kstar(j1).eq.2)then
             aj(j1) = tmsnew + (tscls(1) - tmsnew)*(aj(j1)-tms(j1))/
      &                        (tbgb(j1) - tms(j1))
@@ -3427,7 +3430,7 @@ component.
 *
       if(kstar(j2).le.2.or.kstar(j2).eq.7)then
          CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &             lums,GB,zpars)
+     &             lums,GB,zpars,dtm,j2)
          if(kstar(j2).eq.2)then
             aj(j2) = tmsnew + (tscls(1) - tmsnew)*(aj(j2)-tms(j2))/
      &                        (tbgb(j2) - tms(j2))
@@ -3458,7 +3461,7 @@ component.
 *            goto 140
          endif
          kw = kstar(k)
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
@@ -3861,7 +3864,7 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,dtm)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3942,7 +3945,7 @@ component.
      &               vk,kick_info,formation(j2),formation(j1),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,dtm)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -3980,7 +3983,7 @@ component.
              tb = -1.d0
          endif
       else
-         CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+         CALL mix(mass0,mass,aj,kstar,zpars,bhspin,dtm)
       endif
 
       if(com)then
