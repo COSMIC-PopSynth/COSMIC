@@ -95,9 +95,12 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
+INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','path_to_tracks','path_to_he_tracks']
+
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMN)
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
@@ -210,6 +213,8 @@ class Evolve(object):
 
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
+        SSEDict = kwargs.pop('SSEDict', {})
+
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
 
@@ -229,14 +234,14 @@ class Evolve(object):
             if not os.path.isfile(params):
                 raise ValueError("File does not exist, probably supplied incorrect "
                                  "path to the inifile.")
-            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+            BSEDict, SSEDict, _, _, _, _ = utils.parse_inifile(params)
 
         # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
         # then we will temporarily create a dictionary
         # in order to verify that the values in the table
         # are valid
-        utils.error_check(BSEDict)
+        utils.error_check(BSEDict, SSEDict)
 
         # check the initial conditions of the system and warn user if
         # anything is weird about them, such as the star starts
@@ -252,7 +257,16 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed', seed))
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
-
+            
+        for k, v in SSEDict.items():
+            if k in initialbinarytable.keys():
+                warnings.warn("The value for {0} in initial binary table is being "
+                              "overwritten by the value of {0} from either the params "
+                              "file or the SSEDict.".format(k))
+            # assigning values this way work for most of the parameters.
+            kwargs1 = {k: v}
+            initialbinarytable = initialbinarytable.assign(**kwargs1)
+            
         for k, v in BSEDict.items():
             if k in initialbinarytable.keys():
                 warnings.warn("The value for {0} in initial binary table is being "
@@ -462,6 +476,16 @@ def _evolve_single_system(f):
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
+        if f["stellar_engine"] == "sse":
+            _evolvebin.se_flags.using_sse = True
+            _evolvebin.se_flags.using_metisse = False
+            path_to_tracks = ""
+            path_to_he_tracks = ""
+        elif f["stellar_engine"] == "metisse":
+            _evolvebin.se_flags.using_metisse = True
+            _evolvebin.se_flags.using_sse = False
+            path_to_tracks = f["path_to_tracks"]
+            path_to_he_tracks = f["path_to_he_tracks"]
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
@@ -483,7 +507,9 @@ def _evolve_single_system(f):
                                                               f["tphys"],
                                                               np.zeros(20),
                                                               np.zeros(20),
-                                                              f["kick_info"])
+                                                              f["kick_info"],
+                                                              path_to_tracks,
+                                                              path_to_he_tracks)
         bcm = _evolvebin.binary.bcm[:bcm_index].copy()
         bpp = _evolvebin.binary.bpp[:bpp_index].copy()
         _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)

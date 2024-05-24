@@ -71,12 +71,9 @@ lib_source = [
     'src/cosmic/src/METISSE/src/sse_support.f90', 
     'src/cosmic/src/METISSE/src/remnant_support.f90',
     'src/cosmic/src/METISSE/src/interp_support.f90',
-    'src/cosmic/src/METISSE/src/alloc_track.f90',
-    'src/cosmic/src/METISSE/src/dealloc_track.f90',
-    'src/cosmic/src/METISSE/src/assign_commons_main.f90',
     'src/cosmic/src/METISSE/src/assign_commons_COSMIC.f90',
     'src/cosmic/src/METISSE/src/comenv_lambda.f90',
-    'src/cosmic/src/METISSE/src/initialize_front_end.f90']
+    'src/cosmic/src/METISSE/src/METISSE_miscellaneous.f90']
 
 # Detect operating system and set appropriate linker flags
 host_system = host_machine.system()
