@@ -923,11 +923,14 @@ def get_met_dep_binfrac(met):
 
     return float(np.round(binfrac, 2))
 
-def error_check(BSEDict, filters=None, convergence=None, sampling=None):
-    """Checks that values in BSEDict, filters, and convergence are viable"""
+def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None):
+    """Checks that values in BSEDict, SSEDict,filters, and convergence are viable"""
     if not isinstance(BSEDict, dict):
         raise ValueError("BSE flags must be supplied via a dictionary")
 
+    if not isinstance(SSEDict, dict):
+        raise ValueError("SSE flags must be supplied via a dictionary")
+        
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError("Filters criteria must be supplied via a dictionary")
@@ -1087,6 +1090,17 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 )
             )
 
+    # SSEDict
+    flag = "stellar_engine"
+    acceptable_stellar_engines = ["sse", "metisse"]
+    if flag in SSEDict.keys():
+        if SSEDict[flag] not in acceptable_stellar_engines:
+            raise ValueError(
+                "{0} needs to be one of 'sse', 'metisse' (you set it to {1})".format(
+                flag, SSEDict[flag]
+                )
+            )
+            
     # BSEDict
     flag = "dtp"
     if flag in BSEDict.keys():
@@ -1814,6 +1828,8 @@ def parse_inifile(inifile):
                 dictionary["convergence"] = 0
             if "sampling" not in dictionary.keys():
                 dictionary["sampling"] = 0
+            if "sse" not in dictionary.keys():
+                dictionary["sse"] = 0
             continue
         dictionary[section] = {}
         for option in cp.options(section):
@@ -1829,14 +1845,15 @@ def parse_inifile(inifile):
             finally:
                 if option not in dictionary[section].keys():
                     raise ValueError("We have detected an error in your inifile. The folloiwng parameter failed to be read correctly: {0}".format(option))
-
+                    
+    SSEDict = dictionary["sse"]
     BSEDict = dictionary["bse"]
     seed_int = int(dictionary["rand_seed"]["seed"])
     filters = dictionary["filters"]
     convergence = dictionary["convergence"]
     sampling = dictionary["sampling"]
 
-    return BSEDict, seed_int, filters, convergence, sampling
+    return BSEDict,  SSEDict, seed_int, filters, convergence, sampling
 
 
 class VariableKey(object):

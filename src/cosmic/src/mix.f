@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,bhspin)
+      SUBROUTINE MIX(M0,M,AJ,KS,ZPARS,bhspin,dtm)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -11,7 +11,7 @@
 *
 *
       INTEGER KS(2),I1,I2,K1,K2,KW,ICASE
-      REAL*8 M0(2),M(2),AJ(2),ZPARS(20),bhspin(2)
+      REAL*8 M0(2),M(2),AJ(2),ZPARS(20),bhspin(2),dtm
       REAL*8 TSCLS(20),LUMS(10),GB(10),TMS1,TMS2,TMS3,TN
       REAL*8 M01,M02,M03,M1,M2,M3,AGE1,AGE2,AGE3,MC3,MCH
       REAL*8 M_CORE_BGB_1,M_CORE_BGB_2,M_CORE_BGB_3,HE_3_current
@@ -37,7 +37,7 @@
       M01 = M0(I1)
       M1 = M(I1)
       AGE1 = AJ(I1)
-      CALL star(K1,M01,M1,TMS1,TN,TSCLS,LUMS,GB,ZPARS)
+      CALL star(K1,M01,M1,TMS1,TN,TSCLS,LUMS,GB,ZPARS,dtm,I1)
       IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
           M_CORE_BGB_1 = GB(9)
       ENDIF
@@ -46,7 +46,7 @@
       M02 = M0(I2)
       M2 = M(I2)
       AGE2 = AJ(I2)
-      CALL star(K2,M02,M2,TMS2,TN,TSCLS,LUMS,GB,ZPARS)
+      CALL star(K2,M02,M2,TMS2,TN,TSCLS,LUMS,GB,ZPARS,dtm,I2)
       IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
           M_CORE_BGB_2 = GB(9)
       ENDIF
@@ -90,7 +90,8 @@ C      ENDIF
 *       mixing. We will now make it a parameter so that it can
 *       be partial mixing.
          IF(K1.EQ.7) KW = 7
-         CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS)
+         if (using_METISSE) call set_star_type(1)
+         CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS,dtm,1)
          IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
              M_CORE_BGB_3 = GB(9)
              HE_3_current =AGE1*M_CORE_BGB_1/TMS1+AGE2*M_CORE_BGB_2/TMS2
@@ -100,13 +101,14 @@ C      ENDIF
          ENDIF
       ELSEIF(ICASE.EQ.3.OR.ICASE.EQ.6.OR.ICASE.EQ.9)THEN
          MC3 = M1
-         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3)
+         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,1)
       ELSEIF(ICASE.EQ.4)THEN
          MC3 = M1
          AGE3 = AGE1/TMS1
-         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3)
+         CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,1)
       ELSEIF(ICASE.EQ.7)THEN
-         CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS)
+         if (using_METISSE) call set_star_type(1)
+         CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS,dtm,1)
          AGE3 = TMS3*(AGE2*M2/TMS2)/M3
       ELSEIF(ICASE.LE.12)THEN
 *       Ensure that a new WD has the initial mass set correctly.

@@ -53,7 +53,27 @@ lib_source = [
     'src/cosmic/src/hrdiag.f',
     'src/cosmic/src/star.f',
     'src/cosmic/src/zcnsts.f',
-    'src/cosmic/src/zfuncs.f',]
+    'src/cosmic/src/SSE/SSE_deltat.f',
+    'src/cosmic/src/SSE/SSE_mlwind.f',
+    'src/cosmic/src/SSE/SSE_hrdiag.f',
+    'src/cosmic/src/SSE/SSE_star.f',
+    'src/cosmic/src/SSE/SSE_zcnsts.f',
+    'src/cosmic/src/SSE/SSE_zfuncs.f',
+    'src/cosmic/src/SSE/SSE_gntage.f',
+    'src/cosmic/src/METISSE/src/METISSE_gntage.f90',
+    'src/cosmic/src/METISSE/src/METISSE_deltat.f90',
+    'src/cosmic/src/METISSE/src/METISSE_mlwind.f90',
+    'src/cosmic/src/METISSE/src/METISSE_hrdiag.f90',
+    'src/cosmic/src/METISSE/src/METISSE_star.f90',
+    'src/cosmic/src/METISSE/src/METISSE_zcnsts.f90',
+    'src/cosmic/src/METISSE/src/track_support.f90',
+    'src/cosmic/src/METISSE/src/z_support.f90',
+    'src/cosmic/src/METISSE/src/sse_support.f90', 
+    'src/cosmic/src/METISSE/src/remnant_support.f90',
+    'src/cosmic/src/METISSE/src/interp_support.f90',
+    'src/cosmic/src/METISSE/src/comenv_lambda.f90',
+    'src/cosmic/src/METISSE/src/METISSE_miscellaneous.f90',
+    'src/cosmic/src/assign_commons_COSMIC.f90']
 
 # Detect operating system and set appropriate linker flags
 host_system = host_machine.system()
