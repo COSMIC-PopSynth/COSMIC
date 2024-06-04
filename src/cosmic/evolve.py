@@ -107,7 +107,7 @@ if sys.version_info.major == 2 and sys.version_info.minor == 7:
 else:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS.copy()
 
-for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array']:
+for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array', 'alpha1', 'acc_lim']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
 NATAL_KICK_COLUMNS = ['natal_kick',
@@ -123,10 +123,14 @@ for sn_idx in range(2):
 
 QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0, 16)]
 FPRIMC_COLUMNS = ['fprimc_{0}'.format(kstar) for kstar in range(0, 16)]
+ALPHA_COLUMNS = ['alpha1_{0}'.format(star) for star in range(0, 2)]
+ACCLIM_COLUMNS = ['acc_lim_{0}'.format(star) for star in range(0, 2)]
 
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FPRIMC_COLUMNS)
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(ALPHA_COLUMNS)
+INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(ACCLIM_COLUMNS)
 
 # BSE doesn't need the binary fraction, so just add to columns for saving
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.insert(7, 'binfrac')
@@ -264,6 +268,9 @@ class Evolve(object):
                               "overwritten by the value of {0} from either the params "
                               "file or the SSEDict.".format(k))
             # assigning values this way work for most of the parameters.
+
+            ## add in filter on paths if engine is sse
+
             kwargs1 = {k: v}
             initialbinarytable = initialbinarytable.assign(**kwargs1)
             
@@ -299,6 +306,22 @@ class Evolve(object):
                                                index=initialbinarytable.index,
                                                name='fprimc_{0}'.format(kstar))
                     initialbinarytable.loc[:, 'fprimc_{0}'.format(kstar)] = columns_values
+            elif k == 'alpha1':
+                columns_values = [BSEDict['alpha1']] * len(initialbinarytable)
+                initialbinarytable = initialbinarytable.assign(alpha1=columns_values)
+                for kstar in range(0, 2):
+                    columns_values = pd.Series([BSEDict['alpha1'][kstar]] * len(initialbinarytable),
+                                               index=initialbinarytable.index,
+                                               name='alpha1_{0}'.format(kstar))
+                    initialbinarytable.loc[:, 'alpha1_{0}'.format(kstar)] = columns_values
+            elif k == 'acc_lim':
+                columns_values = [BSEDict['acc_lim']] * len(initialbinarytable)
+                initialbinarytable = initialbinarytable.assign(acc_lim=columns_values)
+                for kstar in range(0,2):
+                    columns_values = pd.Series([BSEDict['acc_lim'][kstar]] * len(initialbinarytable),
+                                               index=initialbinarytable.index,
+                                               name='acc_lim_{0}'.format(kstar))
+                    initialbinarytable.loc[:, 'acc_lim_{0}'.format(kstar)] = columns_values
             else:
                 # assigning values this way work for most of the parameters.
                 kwargs1 = {k: v}
@@ -333,6 +356,12 @@ class Evolve(object):
         if (pd.Series(FPRIMC_COLUMNS).isin(initialbinarytable.keys()).all()) and ('fprimc_array' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
 
+        if (pd.Series(ALPHA_COLUMNS).isin(initialbinarytable.keys()).all()) and ('alpha1' not in BSEDict):
+            initialbinarytable = initialbinarytable.assign(alpha=initialbinarytable[ALPHA_COLUMNS].values.tolist())
+     
+        if (pd.Series(ACCLIM_COLUMNS).isin(initialbinarytable.keys()).all()) and ('acc_lim' not in BSEDict):
+            initialbinarytable = initialbinarytable.assign(acc_lim=initialbinarytable[ACCLIM_COLUMNS].values.tolist())
+              
         # need to ensure that the order of parameters that we pass to BSE
         # is correct
         initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].to_dict('records')

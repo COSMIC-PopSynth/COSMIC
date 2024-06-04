@@ -59,6 +59,7 @@
       REAL*8 KW1_TEMP, KW2_TEMP
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
+      REAL*8 ALPHA_CE
 *
 * Initialize
 *
@@ -144,7 +145,12 @@
 *
 * Calculate the final orbital energy without coalescence.
 *
-      EORBF = EORBI + EBINDI/ALPHA1
+      IF(switchedCE)THEN 
+         ALPHA_CE = ALPHA1(2)
+      ELSE
+         ALPHA_CE = ALPHA1(1)
+      ENDIF
+      EORBF = EORBI + EBINDI/ALPHA_CE
 *
 * If the secondary is on the main sequence see if it fills its Roche lobe.
 *
@@ -195,7 +201,12 @@
 * Coalescence - calculate final binding energy.
 *
             EORBF = MAX(MC1*M2/(2.D0*SEPL),EORBI)
-            EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            IF(switchedCE)THEN 
+               ALPHA_CE = ALPHA1(2)
+            ELSE
+               ALPHA_CE = ALPHA1(1)
+            ENDIF
+            EBINDF = EBINDI - ALPHA_CE*(EORBF - EORBI)
             KW1_TEMP = KW
             KW2_TEMP = 15
          ELSE
@@ -423,7 +434,12 @@
 * Calculate the final envelope binding energy.
 *
             EORBF = MAX(MC1*MC2/(2.D0*SEPL),EORBI)
-            EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            IF(switchedCE)THEN 
+               ALPHA_CE = ALPHA1(2)
+            ELSE
+               ALPHA_CE = ALPHA1(1)
+            ENDIF
+            EBINDF = EBINDI - ALPHA_CE*(EORBF - EORBI)
             if(output) write(*,*)'In dg or giant 1:',M01,M1,R1,M02,M2,
      & R2,MC1,MC2,MC3,KW1,KW2,KW,EORBF,EBINDF
 *
