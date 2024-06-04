@@ -36,6 +36,8 @@ BSEDict['grflag'] = 1
 BSEDict['don_lim'] = -1
 BSEDict['acc_lim'] = -1
 BSEDict['wd_mass_lim'] = 0
+SSEDict = {'stellar_engine': 'sse'}
+
 
 class TestEvolve(unittest.TestCase):
     """`TestCase` for the cosmic
@@ -44,7 +46,7 @@ class TestEvolve(unittest.TestCase):
 
         # Check that the sample_primary function samples mass correctly
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=INIT_CONDITIONS, randomseed=523574)
+            initialbinarytable=INIT_CONDITIONS, randomseed=523574, SSEDict=SSEDict)
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
