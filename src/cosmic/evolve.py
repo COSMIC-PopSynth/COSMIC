@@ -262,17 +262,23 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
             
-        for k, v in SSEDict.items():
-            if k in initialbinarytable.keys():
-                warnings.warn("The value for {0} in initial binary table is being "
-                              "overwritten by the value of {0} from either the params "
-                              "file or the SSEDict.".format(k))
-            # assigning values this way work for most of the parameters.
+        if SSEDict['stellar_engine'] == 'metisse':
+            for k, v in SSEDict.items():
+                if k in initialbinarytable.keys():
+                    warnings.warn("The value for {0} in initial binary table is being "
+                                "overwritten by the value of {0} from either the params "
+                                "file or the SSEDict.".format(k))
+                # assigning values this way work for most of the parameters.:
 
-            ## add in filter on paths if engine is sse
-
-            kwargs1 = {k: v}
+                kwargs1 = {k: v}
+                initialbinarytable = initialbinarytable.assign(**kwargs1)
+        elif SSEDict['stellar_engine'] == 'sse':
+            kwargs1 = {'stellar_engine': 'sse'}
             initialbinarytable = initialbinarytable.assign(**kwargs1)
+            for col in ['path_to_tracks', 'path_to_he_tracks']:
+                INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
+                INITIAL_CONDITIONS_PASS_COLUMNS.remove(col)
+
             
         for k, v in BSEDict.items():
             if k in initialbinarytable.keys():
@@ -333,6 +339,15 @@ class Evolve(object):
         # then we need to raise an ValueError and tell the user to provide
         # either a dictionary or an inifile or add more columns
         if not BSEDict:
+            if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
+               (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
+                raise ValueError("You are passing BSE parameters as columns in the "
+                                 "initial binary table but not all BSE parameters are defined. "
+                                 "Please pass a BSEDict or a params file or make sure "
+                                 "you have all BSE parameters as columns {0} or {1}.".format(
+                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
+            
+        if not SSEDict:
             if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
                (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
                 raise ValueError("You are passing BSE parameters as columns in the "
