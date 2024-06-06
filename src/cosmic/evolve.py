@@ -246,11 +246,11 @@ class Evolve(object):
         # in order to verify that the values in the table
         # are valid
         utils.error_check(BSEDict, SSEDict)
-
+        
         # check the initial conditions of the system and warn user if
         # anything is weird about them, such as the star starts
         # in Roche Lobe overflow
-        utils.check_initial_conditions(initialbinarytable,SSEDict)
+        utils.check_initial_conditions(initialbinarytable)
 
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
@@ -372,6 +372,7 @@ class Evolve(object):
      
         if (pd.Series(ACCLIM_COLUMNS).isin(initialbinarytable.keys()).all()) and ('acc_lim' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(acc_lim=initialbinarytable[ACCLIM_COLUMNS].values.tolist())
+
               
         # need to ensure that the order of parameters that we pass to BSE
         # is correct
