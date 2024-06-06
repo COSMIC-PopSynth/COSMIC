@@ -261,24 +261,24 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed', seed))
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
-            
-        if SSEDict['stellar_engine'] == 'metisse':
-            for k, v in SSEDict.items():
-                if k in initialbinarytable.keys():
-                    warnings.warn("The value for {0} in initial binary table is being "
-                                "overwritten by the value of {0} from either the params "
-                                "file or the SSEDict.".format(k))
-                # assigning values this way work for most of the parameters.:
 
-                kwargs1 = {k: v}
+        if SSEDict:
+            if SSEDict['stellar_engine'] == 'metisse':
+                for k, v in SSEDict.items():
+                    if k in initialbinarytable.keys():
+                        warnings.warn("The value for {0} in initial binary table is being "
+                                    "overwritten by the value of {0} from either the params "
+                                    "file or the SSEDict.".format(k))
+                    # assigning values this way work for most of the parameters.:
+
+                    kwargs1 = {k: v}
+                    initialbinarytable = initialbinarytable.assign(**kwargs1)
+            elif SSEDict['stellar_engine'] == 'sse':
+                kwargs1 = {'stellar_engine': 'sse'}
                 initialbinarytable = initialbinarytable.assign(**kwargs1)
-        elif SSEDict['stellar_engine'] == 'sse':
-            kwargs1 = {'stellar_engine': 'sse'}
-            initialbinarytable = initialbinarytable.assign(**kwargs1)
-            for col in ['path_to_tracks', 'path_to_he_tracks']:
-                INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
-                INITIAL_CONDITIONS_PASS_COLUMNS.remove(col)
-
+                for col in ['path_to_tracks', 'path_to_he_tracks']:
+                    kwargs1 = {col: ''}
+                    initialbinarytable = initialbinarytable.assign(**kwargs1)
             
         for k, v in BSEDict.items():
             if k in initialbinarytable.keys():
@@ -338,7 +338,7 @@ class Evolve(object):
         # and either a dictionary or an inifile was not provided
         # then we need to raise an ValueError and tell the user to provide
         # either a dictionary or an inifile or add more columns
-        if not BSEDict:
+        if BSEDict and SSEDict is None:
             if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
                (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
                 raise ValueError("You are passing BSE parameters as columns in the "
@@ -347,14 +347,10 @@ class Evolve(object):
                                  "you have all BSE parameters as columns {0} or {1}.".format(
                                   INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
             
-        if not SSEDict:
-            if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
-               (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
-                raise ValueError("You are passing BSE parameters as columns in the "
-                                 "initial binary table but not all BSE parameters are defined. "
-                                 "Please pass a BSEDict or a params file or make sure "
-                                 "you have all BSE parameters as columns {0} or {1}.".format(
-                                  INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
+        if (BSEDict and not SSEDict) or (SSEDict and not BSEDict):
+            raise ValueError("If you are passing BSE parameters as columns in the "
+                             "initial binary table you must also pass SSE parameters "
+                             "in the initial binary table.")
 
         # If you did not supply the natal kick or qcrit_array or fprimc_array in the BSEdict then we construct
         # it from the initial conditions table
@@ -372,7 +368,7 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
 
         if (pd.Series(ALPHA_COLUMNS).isin(initialbinarytable.keys()).all()) and ('alpha1' not in BSEDict):
-            initialbinarytable = initialbinarytable.assign(alpha=initialbinarytable[ALPHA_COLUMNS].values.tolist())
+            initialbinarytable = initialbinarytable.assign(alpha1=initialbinarytable[ALPHA_COLUMNS].values.tolist())
      
         if (pd.Series(ACCLIM_COLUMNS).isin(initialbinarytable.keys()).all()) and ('acc_lim' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(acc_lim=initialbinarytable[ACCLIM_COLUMNS].values.tolist())
