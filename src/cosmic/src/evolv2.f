@@ -4561,7 +4561,6 @@ component.
       endif
       if (using_METISSE) call dealloc_track()
       
-      print*, 'bpp_index',bpp_index_out
 *
 
       END SUBROUTINE evolv2
