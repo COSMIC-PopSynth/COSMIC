@@ -123,6 +123,9 @@ def get_independent_sampler(
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is zsun
 
+    SSEDict: `Dict`
+        Sets the engine to use for individual stellar evolution
+
     size : `int`
         Size of the population to sample
 
@@ -287,8 +290,8 @@ def get_independent_sampler(
 
     zsun = kwargs.pop("zsun", 0.02)
 
-    rad1 = initconditions.set_reff(SSEDict, mass1_binary, metallicity=met, zsun=zsun)
-    rad2 = initconditions.set_reff(SSEDict, mass2_binary, metallicity=met, zsun=zsun)
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
@@ -1075,7 +1078,7 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self, SSEDict ,mass, metallicity, zsun=0.02):
+    def set_reff(self ,mass, metallicity, zsun=0.02, SSEDict=None):
         """
         Better way to set the radii from BSE, by calling it directly
 
