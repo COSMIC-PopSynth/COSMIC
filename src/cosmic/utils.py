@@ -930,7 +930,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
 
     if not isinstance(SSEDict, dict):
         raise ValueError("SSE flags must be supplied via a dictionary")
-        
+    
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError("Filters criteria must be supplied via a dictionary")
@@ -1218,12 +1218,13 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
 
     flag = "alpha1"
     if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
+        for f in BSEDict[flag]:
+            if f <= 0:
+                raise ValueError(
+                    "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
+                        flag, BSEDict[flag]
+                    )
                 )
-            )
     flag = "lambdaf"
     # --- all numbers are valid
     flag = "ceflag"
@@ -1582,13 +1583,14 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
             )
     flag = "acc_lim"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [-1, -2, -3, -4]:
-            if BSEDict[flag] < 0.0:
-                raise ValueError(
-                    "'{0:s}' needs to be set to -1, -2, -3, -4 or be >=0 (you set it to '{1:0.2f}')".format(
-                        flag, BSEDict[flag]
+        for f in BSEDict[flag]:
+            if f not in [-1, -2, -3, -4]:
+                if BSEDict[flag] < 0.0:
+                    raise ValueError(
+                        "'{0:s}' needs to be set to -1, -2, -3, -4 or be >=0 (you set it to '{1:0.2f}')".format(
+                            flag, BSEDict[flag]
+                        )
                     )
-                )
             
     flag = "wd_mass_lim"
     if flag in BSEDict.keys():
@@ -1602,13 +1604,13 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
     return
 
 
-def check_initial_conditions(full_initial_binary_table, SSEDict):
+def check_initial_conditions(full_initial_binary_table):
     """Checks initial conditions and reports warnings
 
     Only warning provided right now is if star begins in Roche lobe
     overflow
     """
-    from cosmic import _evolvebin
+    #from cosmic import _evolvebin
     
     def rzamsf(m):
         """A function to evaluate Rzams
@@ -1636,19 +1638,9 @@ def check_initial_conditions(full_initial_binary_table, SSEDict):
 
     if np.all(mass2 == 0.0):
         return
-    elif (SSEDict["stellar_engine"] == "sse"):
+    else:
         rzams1 = rzamsf(mass1)
         rzams2 = rzamsf(mass2)
-        
-#        TODO: the following section with METISSE is incomplete
-#    elif (SSEDict["stellar_engine"] == "metisse"):
-#        _evolvebin.se_flags.using_sse = False
-#        _evolvebin.se_flags.using_metisse = True
-#        path_to_tracks = SSEDict["path_to_tracks"]
-#        path_to_he_tracks = SSEDict["path_to_he_tracks"]
-        
-#        rzams1 = _evolvebin.compute_r(mass1,z,len(mass1),path_to_tracks,path_to_he_tracks)
-#        rzams1 = _evolvebin.compute_r(mass2,z,len(mass2),path_to_tracks,path_to_he_tracks)
         
         # assume some time step in order to calculate sep
         yeardy = 365.24
@@ -1865,7 +1857,7 @@ def parse_inifile(inifile):
     convergence = dictionary["convergence"]
     sampling = dictionary["sampling"]
 
-    return BSEDict,  SSEDict, seed_int, filters, convergence, sampling
+    return BSEDict, SSEDict, seed_int, filters, convergence, sampling
 
 
 class VariableKey(object):

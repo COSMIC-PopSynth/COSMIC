@@ -21,7 +21,6 @@ PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
 
 init_conds_columns = initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL
-
 INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
 BCM_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bcm')
@@ -34,7 +33,7 @@ BSEDict['fprimc_array'] = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
 BSEDict['grflag'] = 1
 BSEDict['don_lim'] = -1
-BSEDict['acc_lim'] = -1
+BSEDict['acc_lim'] = [-1, -1]
 BSEDict['wd_mass_lim'] = 0
 SSEDict = {'stellar_engine': 'sse'}
 
@@ -46,14 +45,14 @@ class TestEvolve(unittest.TestCase):
 
         # Check that the sample_primary function samples mass correctly
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=INIT_CONDITIONS, randomseed=523574, SSEDict=SSEDict)
+            initialbinarytable=INIT_CONDITIONS, randomseed=523574)
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
 
     def test_single_evolve_with_dict(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS, BSEDict=BSEDict, randomseed=523574)
+            initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS, BSEDict=BSEDict, SSEDict=SSEDict, randomseed=523574)
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
@@ -67,7 +66,7 @@ class TestEvolve(unittest.TestCase):
 
     def test_single_evolve_with_dict_and_table(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict, randomseed=523574)
+            initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict, SSEDict=SSEDict, randomseed=523574)
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
@@ -82,7 +81,7 @@ class TestEvolve(unittest.TestCase):
 
     def test_multi_evolve_with_dict(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS, BSEDict=BSEDict, randomseed=523574, n_per_block=100)
+            initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS, BSEDict=BSEDict, SSEDict=SSEDict, randomseed=523574, n_per_block=100)
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
@@ -96,7 +95,7 @@ class TestEvolve(unittest.TestCase):
 
     def test_multi_evolve_with_dict_and_table(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict, randomseed=523574, n_per_block=100)
+            initialbinarytable=INIT_CONDITIONS, BSEDict=BSEDict, SSEDict=SSEDict, randomseed=523574, n_per_block=100)
 
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)

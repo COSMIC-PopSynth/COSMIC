@@ -236,6 +236,7 @@ class TestSample(unittest.TestCase):
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
         rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
+        print(rad1,rad2)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )

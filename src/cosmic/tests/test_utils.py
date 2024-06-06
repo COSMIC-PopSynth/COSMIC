@@ -144,14 +144,15 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(bw.round(3) == BW_KNUTH)
 
     def test_error_check(self):
-        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'rtmsflag' : 0, 'wdflag': 0, 'alpha1': 1.0, 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.5, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0,-100.0,-100.0,0.0]], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'rembar_massloss' : 0.5, 'zsun' : 0.02, 'kickflag' : 0, 'grflag' : 1, 'acc_lim' : -1, 'don_lim' : -1}
+        BSEDict = {'xi': 0.5, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'rtmsflag' : 0, 'wdflag': 0, 'alpha1': [1.0, 1.0], 'pts1': 0.05, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 1.0, 'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.5, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'nsflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' :[[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0,-100.0,-100.0,0.0]], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 3, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'rembar_massloss' : 0.5, 'zsun' : 0.02, 'kickflag' : 0, 'grflag' : 1, 'acc_lim' : [-1, -1], 'don_lim' : -1}
+        SSEDict = {'stellar_engine': 'sse'}
         filters = {'binary_state': [0], 'timestep_conditions' : 'dtp=None'}
         convergence = {'convergence_params': ['mass_1', 'mass_2', 'sep', 'ecc'], 'pop_select': 'formation',\
                        'match': -5.0, 'convergence_limits' : {"sep" : [0,1000]}, 'match' : -3.0,\
                        'apply_convergence_limits' : True}
         sampling = {'sampling_method': 'multidim', 'SF_start': '13700.0', 'SF_duration' : 0.0, 'metallicity': 0.02, 'keep_singles': False}
-        utils.error_check(BSEDict,filters,convergence,sampling)
-        utils.error_check(BSEDict)
+        utils.error_check(BSEDict,SSEDict,filters,convergence,sampling)
+        utils.error_check(BSEDict,SSEDict)
         assert 1==1
 
     def test_warning_check(self):
@@ -160,7 +161,7 @@ class TestUtils(unittest.TestCase):
 
     def test_no_RL_check_for_singles(self):
         """Make sure you don't get a divide by zero error when checking for Roche Lobe Overflow"""
-        BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': 1.0,
+        BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': [1.0,1.0],
                    'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 0.5,
                    'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1,
                    'acc2': 1.5, 'grflag': 1, 'remnantflag': 4, 'ceflag': 0, 'eddfac': 1.0,
@@ -177,8 +178,10 @@ class TestUtils(unittest.TestCase):
                                                      2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0],
                    'bhspinflag': 0, 'bhspinmag': 0.0, 'rejuv_fac': 1.0, 'rejuvflag': 0, 'htpmb': 1,
                    'ST_cr': 1, 'ST_tide': 1, 'bdecayfac': 1, 'rembar_massloss': 0.5, 'kickflag': 0,
-                   'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': -1,
+                   'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': [-1,-1],
                    'rtmsflag': 0, 'wd_mass_lim': 1}
+        
+        SSEDict = {'stellar_engine': 'sse'}
 
         initial_binaries = InitialBinaryTable.sampler('independent', np.linspace(0, 15, 16), np.linspace(0, 15, 16),
                                                     binfrac_model=0.5, SF_start=10.0,
@@ -188,7 +191,7 @@ class TestUtils(unittest.TestCase):
 
         with warnings.catch_warnings():
             warnings.simplefilter("error")
-            Evolve.evolve(initialbinarytable=initial_binaries, BSEDict=BSEDict)
+            Evolve.evolve(initialbinarytable=initial_binaries, BSEDict=BSEDict, SSEDict=SSEDict)
 
     def test_convert_kstar_evol_type(self):
         # convert to string
