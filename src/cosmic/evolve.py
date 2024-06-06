@@ -250,7 +250,7 @@ class Evolve(object):
         # check the initial conditions of the system and warn user if
         # anything is weird about them, such as the star starts
         # in Roche Lobe overflow
-        utils.check_initial_conditions(initialbinarytable)
+        utils.check_initial_conditions(initialbinarytable,SSEDict)
 
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
@@ -526,6 +526,8 @@ def _evolve_single_system(f):
             _evolvebin.se_flags.using_sse = False
             path_to_tracks = f["path_to_tracks"]
             path_to_he_tracks = f["path_to_he_tracks"]
+        else:
+            raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
