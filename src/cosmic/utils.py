@@ -1602,13 +1602,14 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
     return
 
 
-def check_initial_conditions(full_initial_binary_table):
+def check_initial_conditions(full_initial_binary_table, SSEDict):
     """Checks initial conditions and reports warnings
 
     Only warning provided right now is if star begins in Roche lobe
     overflow
     """
-
+    from cosmic import _evolvebin
+    
     def rzamsf(m):
         """A function to evaluate Rzams
         ( from Tout et al., 1996, MNRAS, 281, 257 ).
@@ -1635,10 +1636,20 @@ def check_initial_conditions(full_initial_binary_table):
 
     if np.all(mass2 == 0.0):
         return
-    else:
+    elif (SSEDict["stellar_engine"] == "sse"):
         rzams1 = rzamsf(mass1)
         rzams2 = rzamsf(mass2)
-
+        
+#        TODO: the following section with METISSE is incomplete
+#    elif (SSEDict["stellar_engine"] == "metisse"):
+#        _evolvebin.se_flags.using_sse = False
+#        _evolvebin.se_flags.using_metisse = True
+#        path_to_tracks = SSEDict["path_to_tracks"]
+#        path_to_he_tracks = SSEDict["path_to_he_tracks"]
+        
+#        rzams1 = _evolvebin.compute_r(mass1,z,len(mass1),path_to_tracks,path_to_he_tracks)
+#        rzams1 = _evolvebin.compute_r(mass2,z,len(mass2),path_to_tracks,path_to_he_tracks)
+        
         # assume some time step in order to calculate sep
         yeardy = 365.24
         aursun = 214.95

@@ -45,6 +45,7 @@ def get_independent_sampler(
     SF_duration,
     binfrac_model,
     met,
+    SSEDict=None,
     size=None,
     total_mass=np.inf,
     sampling_target="size",
@@ -159,6 +160,8 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
+    
+    
     if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
         raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
     if size is None and (total_mass is None or total_mass == np.inf):
@@ -284,8 +287,8 @@ def get_independent_sampler(
 
     zsun = kwargs.pop("zsun", 0.02)
 
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
+    rad1 = initconditions.set_reff(SSEDict, mass1_binary, metallicity=met, zsun=zsun)
+    rad2 = initconditions.set_reff(SSEDict, mass2_binary, metallicity=met, zsun=zsun)
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
@@ -1072,7 +1075,7 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self, mass, metallicity, zsun=0.02):
+    def set_reff(self, SSEDict ,mass, metallicity, zsun=0.02):
         """
         Better way to set the radii from BSE, by calling it directly
 
@@ -1092,12 +1095,25 @@ class Sample(object):
 
         _evolvebin.metvars.zsun = zsun
 
+        if (SSEDict == None) or (SSEDict["stellar_engine"] == "sse"):
+            _evolvebin.se_flags.using_sse = True
+            _evolvebin.se_flags.using_metisse = False
+            path_to_tracks = ""
+            path_to_he_tracks = ""
+        elif SSEDict["stellar_engine"] == "metisse":
+            _evolvebin.se_flags.using_metisse = True
+            _evolvebin.se_flags.using_sse = False
+            path_to_tracks = SSEDict["path_to_tracks"]
+            path_to_he_tracks = SSEDict["path_to_he_tracks"]
+        else:
+            raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
+            
         idx = 0
         while total_length > max_array_size:
             ## cycle through the masses max_array_size number at a time
             temp_mass = mass[idx*max_array_size:(idx+1)*max_array_size]
 
-            temp_radii = _evolvebin.compute_r(temp_mass,metallicity,max_array_size)
+            temp_radii = _evolvebin.compute_r(temp_mass,metallicity,max_array_size,path_to_tracks,path_to_he_tracks)
 
             ## put these in the radii array
             radii[idx*max_array_size:(idx+1)*max_array_size] = temp_radii
@@ -1111,7 +1127,7 @@ class Sample(object):
         temp_mass = np.zeros(max_array_size)
         temp_mass[:length_remaining] = mass[-length_remaining:]
 
-        temp_radii = _evolvebin.compute_r(temp_mass,metallicity,length_remaining)
+        temp_radii = _evolvebin.compute_r(temp_mass,metallicity,length_remaining,path_to_tracks,path_to_he_tracks)
 
         #finish up the array
         radii[-length_remaining:] = temp_radii[:length_remaining]
