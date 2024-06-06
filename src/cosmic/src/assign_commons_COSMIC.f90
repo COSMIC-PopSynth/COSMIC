@@ -9,7 +9,6 @@
          
         real(dp) :: d
         
-        
         if(front_end == COSMIC) then
         ! use inputs from COSMIC
         
@@ -25,11 +24,25 @@
     end subroutine
 
     subroutine get_bhspin(bhspin,id)
-        use track_support
+        use track_support, only: tarr,dp
         implicit none
         integer, intent(in) :: id
         real(dp), intent(out) :: bhspin
 
         bhspin = tarr(id)% pars% bhspin
     end subroutine
+    
+    subroutine check_error(err)
+        use track_support, only: code_error
+        integer, intent(out) :: err
+        err = 0
+        if(code_error) err = 1
+    end subroutine
+    
+    
+    subroutine assign_error()
+        use track_support, only: code_error
+        code_error = .true.
+    end subroutine
+      
 

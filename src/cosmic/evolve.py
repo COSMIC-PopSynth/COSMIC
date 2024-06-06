@@ -553,14 +553,18 @@ def _evolve_single_system(f):
                                                               f["kick_info"],
                                                               path_to_tracks,
                                                               path_to_he_tracks)
-        bcm = _evolvebin.binary.bcm[:bcm_index].copy()
-        bpp = _evolvebin.binary.bpp[:bpp_index].copy()
-        _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
-        _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
+                                                              
+        if bpp_index<0:
+            raise ValueError("Failed in METISSE_zcnsts")
+        else:
+            bcm = _evolvebin.binary.bcm[:bcm_index].copy()
+            bpp = _evolvebin.binary.bpp[:bpp_index].copy()
+            _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
+            _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
 
-        bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
-        bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
-        kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
+            bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
+            bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
+            kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
 
         return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy()
 

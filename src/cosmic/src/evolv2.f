@@ -218,6 +218,7 @@
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
+      integer err
 
 Cf2py intent(in) kstar
 Cf2py intent(in) mass
@@ -255,8 +256,6 @@ Cf2py intent(out) kick_info_out
       endif
     
       if(using_METISSE) CALL initialize_front_end('cosmic')
-      if(using_METISSE) call allocate_track(2,mass0)
-
 *
 * Save the initial state.
 *
@@ -340,10 +339,20 @@ component.
 *
 * Set the collision matrix.
 *
+      err = 0
       if(using_cmc.eq.0)then
 *      for SSE path_to_tracks and path_to_he_tracks are empty ('')
             CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
+            if(using_METISSE) then
+                call check_error(err)
+                if (err>0) then
+                    bpp_index_out = -1
+                    return
+                endif
+            endif
       endif
+        
+      if(using_METISSE) call allocate_track(2,mass0)
 
       kmin = 1
       kmax = 2
@@ -4405,6 +4414,10 @@ component.
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
               if(iter.ge.loop) evolve_type = 100.0
+              if (using_METISSE) then
+                call check_error(err)
+                if (err>0) evolve_type = 101.0
+              end if
               rrl1 = rad(1)/rol(1)
               rrl2 = rad(2)/rol(2)
               teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4537,6 +4550,7 @@ component.
 *         CALL exit(0)
 *         STOP
       endif
+      
       bcm(ip+1,1) = -1.0
       bpp(jp+1,1) = -1.0
 
@@ -4546,6 +4560,7 @@ component.
           kick_info_out = kick_info
       endif
       if (using_METISSE) call dealloc_track()
+      
 *
 
       END SUBROUTINE evolv2
