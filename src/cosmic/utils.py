@@ -29,6 +29,7 @@ import operator
 import json
 import itertools
 import os.path
+import glob
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -1101,6 +1102,40 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                 )
             )
             
+    flag = "path_to_tracks"
+    if SSEDict["stellar_engine"] == "metisse":
+        if SSEDict[flag] == '':
+            raise ValueError(
+                "If you want to use METISSE as the stellar engine, {0} needs to be a non-empty string".format (
+                 flag
+                )
+            )
+        else:
+            metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
+            if metallicity_file == []:
+                raise ValueError(
+                    "No metallicity file found in {0}. Make sure that {1} is valid".format (
+                    SSEDict[flag], flag
+                    )
+                )
+        
+    flag = "path_to_he_tracks"
+    if SSEDict["stellar_engine"] == "metisse":
+        if SSEDict[flag] == '':
+            raise Warning(
+                "If you want to use METISSE as the stellar engine,{0} needs to be a non-empty string, otheriwse SSE formulae will be used for helium stars".format (
+                 flag
+                )
+            )
+        else:
+            metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
+            if metallicity_file == []:
+                raise Warning(
+                    "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid or SSE formulae will be used for helium stars".format (
+                    SSEDict[flag], flag
+                    )
+                )
+                
     # BSEDict
     flag = "dtp"
     if flag in BSEDict.keys():
