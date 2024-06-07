@@ -52,7 +52,7 @@ primary_color = "C0"
 secondary_color = "C1"
 
 
-def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
+def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}, SSEDict={}):
     """
     Evolves a single binary with all timesteps written
     to the bcm array for plotting
@@ -70,6 +70,9 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
 
     BSEDict : `Dict`
         Dictionary containing all BSE flags needed
+
+    SSEDict : `Dict`
+        Dictionary containing all SSE flags needed
 
     Returns
     -------
@@ -100,7 +103,7 @@ def evolve_binary(initC, t_min=None, t_max=None, BSEDict={}):
 
     # Call evolution scripts
     bpp, bcm, initC, kick_info = Evolve.evolve(
-        initialbinarytable=initC, BSEDict=BSEDict
+        initialbinarytable=initC, BSEDict=BSEDict, SSEDict=SSEDict
     )
 
     # In case minimum and maximum times are not supplied by user
@@ -620,7 +623,7 @@ def plot_binary_evol(bcm, sys_obs={}, ktype_kwargs={}, t_min=None, t_max=None):
     return fig
 
 
-def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
+def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, SSEDict=None, sys_obs={}):
     """
     Evolve and plot binaries as a function of time
 
@@ -637,6 +640,9 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
 
     BSEDict : `Dict`
         Dictionary containing all BSE flags needed
+
+    SSEDict : `Dict`
+        Dictionary containing all SSE flags needed
 
     sys_obs : `Dict`
         Dictionary containing keys for binary parameters with values to plot
@@ -670,7 +676,7 @@ def evolve_and_plot(initC, t_min=None, t_max=None, BSEDict=None, sys_obs={}):
 
         # Evolve binary
         bcm = evolve_binary(
-            initC.iloc[i: i + 1], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict
+            initC.iloc[i: i + 1], t_min=t_min_tmp, t_max=t_max_tmp, BSEDict=BSEDict, SSEDict=SSEDict
         )
 
         # Plot binary
