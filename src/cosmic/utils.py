@@ -1124,17 +1124,25 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
     if "stellar_engine" in SSEDict.keys():
         if SSEDict["stellar_engine"] == "metisse":
             if SSEDict[flag] == '':
-                raise Warning(
+                warnings.warn(
                     "If you want to use METISSE as the stellar engine,{0} needs to be a non-empty string, otheriwse SSE formulae will be used for helium stars".format (
                     flag
-                    )
                 )
+            )
             else:
                 metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
                 if metallicity_file == []:
-                    raise Warning(
+                    warnings.warn(
                         "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid or SSE formulae will be used for helium stars".format (
                         SSEDict[flag], flag
+                    )
+                )
+                else:
+                    metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
+                    if metallicity_file == []:
+                        raise Warning(
+                            "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid or SSE formulae will be used for helium stars".format (
+                            SSEDict[flag], flag
                         )
                     )
                 
