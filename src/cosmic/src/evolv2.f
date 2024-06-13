@@ -4258,10 +4258,18 @@ component.
             kmax = 1
             rol(2) = -1.d0*rad(2)
             dtmi(2) = tphysf
+            CALL hrdiag(mass0(2),aj(2),mass(2),tms(2),tn,tscls,lums,GB,
+     &               zpars,rad(2),lumin(2),kstar(2),massc(2),radc(2),
+     &              menv(2),renv(2),k2str(2),bhspin(2),2)
+
+         
          elseif(kstar(1).eq.15)then
             kmin = 2
             rol(1) = -1.d0*rad(1)
             dtmi(1) = tphysf
+            CALL hrdiag(mass0(1),aj(1),mass(1),tms(1),tn,tscls,lums,GB,
+     &               zpars,rad(1),lumin(1),kstar(1),massc(1),radc(1),
+     &              menv(1),renv(1),k2str(1),bhspin(1),1)
          endif
 * Makes sure coalesced NSs are reset. PK.
          if(kstar(1).eq.13.and.ecc.le.1.d0.and.pulsar.gt.0.and.
