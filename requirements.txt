@@ -1,5 +1,5 @@
 scipy >= 0.12.1
-numpy == 1.26.4
+numpy == 1.21.6
 astropy >= 1.1.1
 configparser
 tqdm >= 4.0
