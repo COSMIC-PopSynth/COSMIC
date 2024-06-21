@@ -42,6 +42,9 @@ CLOSE_BINARY_FRAC = 0.42
 N_BINARY_SELECT = 85
 VANHAAFTEN_BINFRAC_MAX = 0.9989087986493874
 VANHAAFTEN_BINFRAC_MIN = 0.6192803136799157
+OFFNER_MASS_RANGES = [(0.075,0.15), (0.15,0.30), (0.3,0.6), (0.75,1.00), (0.85,1.25), (1.00,1.25), (1.6,2.4), (3,5), (5,8), (8,17), (17,50)]
+OFFNER_DATA = [0.19, 0.23, 0.30, 0.42, 0.47, 0.50, 0.68, 0.81, 0.89, 0.93, 0.96]
+OFFNER_ERRORS = [0.03, 0.02, 0.02, 0.03, 0.03, 0.04, 0.07, 0.06, 0.05, 0.04, 0.04]
 MULTIDIM_BINFRAC_MAX = 0.6146916774140262
 MULTIDIM_BINFRAC_MIN = 0.13786300908773025
 CONST_SFR_SUM = 460028.2453521937
@@ -207,6 +210,20 @@ class TestSample(unittest.TestCase):
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
+        test_fracs = []
+        test_errs = []
+        primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner22')
+        for i in range(len(OFFNER_MASS_RANGES)):
+            low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
+            offner_value = OFFNER_DATA[i]
+            offner_error = OFFNER_ERRORS[i]
+            bins_count = len(m1_b[(m1_b >= low) & (m1_b <= high)])
+            singles_count = len(m1_s[(m1_s >= low) & (m1_s <= high)])
+            bin_frac = bins_count / (bins_count + singles_count)
+            error = abs(offner_value - bin_frac)
+            self.assertLess(error, offner_error)
+        
 
     def test_msort(self):
         np.random.seed(2)
