@@ -2323,6 +2323,7 @@ component.
                kst = kstar(j1)
                mass(j1) = mass(j2) + dm2
                mass(j2) = 0.d0
+               if (using_METISSE) call set_star_type(j1)
             else
                mass(j2) = mass(j2) + dm2
                CALL gntage(massc(j2),mass(j2),kst,zpars,
@@ -2884,6 +2885,7 @@ component.
                if((kstar(j2).eq.10.and.mass(j2).lt.0.05d0).or.
      &            (kstar(j2).ge.11.and.mass(j2).lt.0.5d0))then
                   kst = kstar(j2)
+                  if (using_METISSE) call set_star_type(j2)
                else
                   kst = MIN(6,3*kstar(j2)-27)
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
