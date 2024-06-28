@@ -143,7 +143,11 @@
          bhspin(2) = 0.d0
          tms(1) = 0.d0
          tms(2) = 0.d0
-
+*
+* NOTE: The following parameters are set to current default values (v3.4.10).
+* They should really be included in binary.in and copied from an initC
+* file. This is a temporary measure until the input file is updated.
+*
          pisn = 45.d0
          cekickflag = 2
          cehestarflag = 0
