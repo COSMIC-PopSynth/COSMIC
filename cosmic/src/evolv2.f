@@ -2739,7 +2739,7 @@ component.
 * be overly restrictive for long lived phases.
 *
 * NOTE: This can cause NaN values! If you get NaNs, check what happens
-*       when you increase `loop` (see PR #646) - TW
+*       when you increase `loop` (see PR #647) - TW
 *
          if(iter.le.loop) dtm = MIN(dtm,dtmi(1),dtmi(2))
          dtm = MIN(dtm,tsave-tphys)
