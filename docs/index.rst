@@ -19,11 +19,10 @@ Table of Contents
 *****************
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
     
     pages/install
-    pages/inifile
-    pages/output_info
+    pages/reference_material
     pages/examples
     pages/runpop
     pages/fixedpop
