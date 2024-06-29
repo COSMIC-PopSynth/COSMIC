@@ -57,6 +57,7 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'numpydoc',
+    'sphinx_design'
 ]
 
 # -- Extensions ---------------------------------------------------------------
@@ -184,13 +185,14 @@ html_theme_options = {
     "light_css_variables": {
         "color-brand-primary": "#3f95e1",
         "color-brand-content": "#3f95e1",
+        "color-brand-visited": "#3f95e1",
     },
     "dark_css_variables": {
         "color-brand-primary": "#f08c33",
         "color-brand-content": "#f08c33",
-        "color-brand-visited": "#d05732"
+        "color-brand-visited": "#f08c33"
     },
-    "sidebar_hide_name": False,
+    "sidebar_hide_name": True,
     "footer_icons": [
         {
             "name": "GitHub",
