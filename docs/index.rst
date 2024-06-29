@@ -10,8 +10,8 @@ COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code) is a rapid 
     <div class="toms-nav-container" style="margin-bottom:50px;">
         <div class="box" data-href="pages/install.html">Install COSMIC</div>
         <div class="box" data-href="pages/reference_material.html">Configurations and outputs</div>
-        <div class="box" data-href="pages/fixedpop.html">Adaptive sampling</div>
         <div class="box" data-href="pages/examples.html">Evolving binaries</div>
+        <div class="box" data-href="pages/fixedpop.html">Adaptive sampling</div>
     </div>
 
 .. toctree::
