@@ -46,7 +46,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.imgmath',
+    'sphinx.ext.mathjax',
     'sphinx.ext.autosummary',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.linkcode',
@@ -198,7 +198,7 @@ html_theme_options = {
         "color-brand-content": "#f08c33",
         "color-brand-visited": "#f08c33"
     },
-    "sidebar_hide_name": True,
+    "sidebar_hide_name": False,
     "footer_icons": [
         {
             "name": "GitHub",
@@ -214,7 +214,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-# html_title = u'cosmic v0.1'
+html_title = f"v{cosmic_version}"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
@@ -237,6 +237,7 @@ html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css",
+    "cosmic-docs.css"
 ]
 
 # Add any extra paths that contain custom files (such as robots.txt or
