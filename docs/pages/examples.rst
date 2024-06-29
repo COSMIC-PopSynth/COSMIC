@@ -1,8 +1,8 @@
 .. _examples:
 
-#######################
-COSMIC binary evolution
-#######################
+#################
+Evolving binaries
+#################
 
 COSMIC can evolve binaries for several different use cases. Go through the examples below to learn more about these capabilities.
 
