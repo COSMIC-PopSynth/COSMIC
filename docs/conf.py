@@ -172,12 +172,34 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+html_theme_options = {
+    "source_repository": "https://github.com/COSMIC-popsynth/COSMIC",
+    "source_branch": "develop",
+    "source_directory": "docs/",
+    "light_css_variables": {
+        "color-brand-primary": "#3f95e1",
+        "color-brand-content": "#3f95e1",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#f08c33",
+        "color-brand-content": "#f08c33",
+        "color-brand-visited": "#d05732"
+    },
+    "sidebar_hide_name": False,
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/COSMIC-PopSynth/COSMIC",
+            "html": "",
+            "class": "fa-brands fa-solid fa-github fa-2x",
+        },
+    ],
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -191,7 +213,7 @@ html_theme = 'sphinx_rtd_theme'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = None
+html_logo = "https://cosmic-popsynth.github.io/images/cosmic-popsynth_1200.png"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16
@@ -202,6 +224,12 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css",
+]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
