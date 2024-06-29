@@ -207,7 +207,11 @@ html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css",
-    "cosmic-docs.css"
+    "cosmic-docs.css",
+]
+
+html_js_files = [
+    "custom.js"
 ]
 
 # Add any extra paths that contain custom files (such as robots.txt or

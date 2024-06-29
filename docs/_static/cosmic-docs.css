@@ -45,3 +45,37 @@ html[data-theme="dark"] .sd-card {
 .hide-me {
     display: none;
 }
+
+
+/* Create grid of blocks for navigation */
+.toms-nav-container {
+    margin: 20px auto;
+    width: 600px;
+    height: 180px;
+    /* background-color: #fff; */
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-template-rows: 90px 90px;
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+}
+
+.toms-nav-container .box, .toms-nav-box {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    text-align: center;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+/* shrink on hover */
+.toms-nav-container .box:hover, .toms-nav-box:hover {
+    transform: scale(0.9);
+    background-color: var(--color-brand-primary);
+}
