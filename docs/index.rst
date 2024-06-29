@@ -19,14 +19,14 @@ Table of Contents
 *****************
 
 .. toctree::
-   :maxdepth: 1
-
-   install/index
-   inifile/index
-   output_info/index
-   examples/index
-   runpop/index
-   fixedpop/index
+    :maxdepth: 1
+    
+    pages/install
+    pages/inifile
+    pages/output_info
+    pages/examples
+    pages/runpop
+    pages/fixedpop
 
 *********************
 Package documentation

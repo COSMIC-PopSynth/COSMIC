@@ -555,7 +555,7 @@ common envelope occurs regardless of the choices below:
                          **qcflag = 1**
 
                          .. csv-table:: Comparison of qcrit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options
-                            :file: qcrit_table.csv
+                            :file: ../data/qcrit_table.csv
                             :header-rows: 1
 
 
