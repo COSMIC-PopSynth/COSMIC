@@ -57,10 +57,16 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'numpydoc',
-    'sphinx_design'
+    'sphinx_design',
+    'sphinx_copybutton',
 ]
 
 # -- Extensions ---------------------------------------------------------------
+
+# -- copybutton ---------------------------------
+
+copybutton_exclude = '.linenos, .gp, .go, .gh'
+copybutton_copy_empty_lines = False
 
 # -- autodoc ------------------------------------
 
@@ -157,7 +163,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "*tests*"]
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'monokai'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []

@@ -24,3 +24,4 @@ pytest-cov
 wheel
 furo
 sphinx-design
+sphinx-copybutton
