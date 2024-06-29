@@ -2,7 +2,7 @@
 Dynamic time resolution
 ***********************
 
-COSMIC has the ability to set time resolution of the bcm array depending on the current state of the evolution. Below we demonstrate three scenarios, setting dtp only during mass transfer, setting dtp to the same resolution for all of the evolution except for after the system merges or is disrupted, and finally an example of setting dtp only during the HMXB stage of the evolution.
+COSMIC has the ability to set time resolution of the bcm array depending on the current state of the evolution.
 
 .. ipython::
 
@@ -10,8 +10,29 @@ COSMIC has the ability to set time resolution of the bcm array depending on the 
 
     In [2]: from cosmic.evolve import Evolve
 
+General syntax
+==============
+
+The timestep resolution for the bcm array can be set using ``timestep_conditions`` parameter. The format of
+this parameter is a list of lists, where each sublist contains zero or more conditions followed by the desired
+resolution. The conditions are in the form of a string with the format ``'column_name=condition'``. The resolution
+is in the form of a string with the format ``'dtp=resolution'``.
+
+The conditions are evaluated at each time step and if the condition is met, the resolution is set to the desired value.
+
+.. note::
+    TODO TODO TODO: What happens if multiple conditions are met? Is the last one the one that is used? Or the smallest resolution?
+
+The resolution can be any positive float value given in units of Myr. If the resolution is set to 0.0, every time step
+will be outputted in the bcm array.
+
+Examples
+========
+
+Below we demonstrate three scenarios, setting dtp only during mass transfer, setting dtp to the same resolution for all of the evolution except for after the system merges or is disrupted, and finally an example of setting dtp only during the HMXB stage of the evolution.
+
 All steps during mass transfer
-==============================
+------------------------------
 
 First, print all time steps during mass transfer
 
@@ -33,7 +54,7 @@ First, print all time steps during mass transfer
 
 
 Condition on binary state
-=========================
+-------------------------
 Second, pick a certain resolution for the bcm array until the system merges or is disrupted and then only print the final state
 
 .. ipython::
@@ -48,7 +69,7 @@ Second, pick a certain resolution for the bcm array until the system merges or i
 
 
 Condition on evolutionary state
-===============================
+-------------------------------
 Finally, we show how to print a fine resolution only during the HMXB stage of the evolution.
 
 .. ipython::

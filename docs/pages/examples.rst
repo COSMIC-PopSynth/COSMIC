@@ -4,12 +4,10 @@
 COSMIC binary evolution
 #######################
 
-COSMIC can evolve binaries for several different use cases. Below
-you'll find examples to run a single binary system, multiple binary
-systems or a grid of binaries.
+COSMIC can evolve binaries for several different use cases. Go through the examples below to learn more about these capabilities.
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
 
     evolve/single
     evolve/multiple
