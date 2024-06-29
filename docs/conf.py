@@ -184,7 +184,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-html_title = f"v{cosmic_version}"
+html_title = f"<span class='hide-me'>COSMIC </span>v{cosmic_version}"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None

@@ -41,3 +41,7 @@ html[data-theme="dark"] .sd-card {
     font-size: 0px;
     content: '';
 }
+
+.hide-me {
+    display: none;
+}
