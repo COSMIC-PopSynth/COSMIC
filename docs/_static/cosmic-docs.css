@@ -79,3 +79,11 @@ html[data-theme="dark"] .sd-card {
     transform: scale(0.9);
     background-color: var(--color-brand-primary);
 }
+
+#installation h2 {
+    font-size: 1.2rem;
+}
+
+#installation h3 {
+    font-size: 1.1rem;
+}
