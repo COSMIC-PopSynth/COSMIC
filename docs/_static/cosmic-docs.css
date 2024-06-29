@@ -17,3 +17,27 @@
     text-align: center!important;
     font-size: 1rem!important;
 }
+
+.sd-card {
+    border-radius: 1rem;
+    padding: 0.5rem;
+}
+
+html[data-theme="dark"] .sd-card {
+    border: 2px solid #333;
+}
+
+#configuration-and-output h1 {
+    opacity: 0;
+}
+#configuration-and-output .sd-card-body a {
+    font-size: 2rem!important;
+}
+.sd-card .toctree-wrapper ul {
+    padding: 0px;
+}
+
+.sd-card ::marker {
+    font-size: 0px;
+    content: '';
+}

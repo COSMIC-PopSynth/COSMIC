@@ -1,8 +1,8 @@
 .. _output_info:
 
-###############################################################
-Describing the output of COSMIC/BSE: Columns names/Values/Units
-###############################################################
+############################
+Understanding COSMIC outputs
+############################
 
 Evolutionary states of stars/binaries
 -------------------------------------

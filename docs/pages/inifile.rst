@@ -1,8 +1,8 @@
 .. _inifile:
 
-##############################
-Configuration files for COSMIC
-##############################
+###################
+Configuration files
+###################
 
 How to write a configuration file
 =================================
