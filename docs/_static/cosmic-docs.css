@@ -11,3 +11,9 @@
     max-width: 100%;
     overflow: visible;
 }
+
+/* Make the version text smaller and centred */
+.sidebar-brand-text {
+    text-align: center!important;
+    font-size: 1rem!important;
+}
