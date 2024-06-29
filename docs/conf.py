@@ -109,9 +109,6 @@ source_suffix = '.rst'
 fortran_ext = ['f']
 fortran_src = '../cosmic/src/'
 
-# The encoding of source files.
-# source_encoding = 'utf-8-sig'
-
 # The master toctree document.
 master_doc = 'index'
 
@@ -136,40 +133,13 @@ release = cosmic_version
 # Usually you set "language" from the command line for these cases.
 language = 'en'
 
-# There are two options for replacing |today|: either, you set today to some
-# non-false value, then it is used:
-# today = ''
-# Else, today_fmt is used as the format for a strftime call.
-# today_fmt = '%B %d, %Y'
-
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "*tests*"]
 
-# The reST default role (used for this markup: `text`) to use for all
-# documents.
-# default_role = None
-
-# If true, '()' will be appended to :func: etc. cross-reference text.
-# add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-# add_module_names = True
-
-# If true, sectionauthor and moduleauthor directives will be shown in the
-# output. They are ignored by default.
-# show_authors = False
-
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'monokai'
-
-# A list of ignored prefixes for module index sorting.
-# modindex_common_prefix = []
-
-# If true, keep warnings as "system message" paragraphs in the built documents.
-# keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -249,13 +219,6 @@ html_css_files = [
 # bottom, using the given strftime format.
 # The empty string is equivalent to '%b %d, %Y'.
 # html_last_updated_fmt = None
-
-# If true, SmartyPants will be used to convert quotes and dashes to
-# typographically correct entities.
-# html_use_smartypants = True
-
-# Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -359,9 +322,6 @@ man_pages = [
      [author], 1)
 ]
 
-# If true, show URL addresses after external links.
-# man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -374,17 +334,8 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
 # If false, no module index is generated.
 # texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-# texinfo_no_detailmenu = False
 
 # -- Extensions -----------------------------------------------------------
 
