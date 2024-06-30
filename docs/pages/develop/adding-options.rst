@@ -7,8 +7,8 @@ This is a little simpler than adding a new setting, you can read more about how 
 
 As an example, we will add a new option for how to handle black hole supernova kicks.
 
-Quick checklist
----------------
+Summary checklist
+-----------------
 
 Been here before and just making sure you're not missing anything? Here's a quick checklist:
 
@@ -21,11 +21,11 @@ Code changes
 ------------
 
 First, we need to actually change the underlying COSMIC code to allow for this new option. Given that we're
-going to change how mass transfer works, this will happen in the ``cosmic/src/kick.f`` file.
+going to change black hole kicks work, this will happen in the ``cosmic/src/kick.f`` file.
 
 .. warning ::
     The exact file that you need to change may differ depending on what option you change!
-    For example, if you're changing how mass transfer works, you'll need to change the ``cosmic/src/evolv2.f`` file instead.
+    For example, if you were changing how mass transfer works, you'd need to change the ``cosmic/src/evolv2.f`` file instead.
 
     If you're not
     familiar with the codebase, you may want to search the ``cosmic/src`` directory for any mention of the
@@ -99,7 +99,8 @@ We'll add a new section to the ``bhflag`` setting that describes the new option.
 ``cosmic/docs/pages/inifile.rst``
 
 .. code-block:: rst
-    :emphasize-lines: 18
+    :linenos:
+    :emphasize-lines: 17-18
 
         ....
     ``bhflag``               Sets the model for how SN kicks are applied to BHs,
@@ -117,9 +118,30 @@ We'll add a new section to the ``bhflag`` setting that describes the new option.
                             and are drawn from the same Maxwellian distribution with
                             dispersion = *sigma* set above
 
-                            ``4``: A silly option that sets BH kicks to double the value for NSs
+                            ``4``: A silly option that sets BH kicks
+                            to double the value for NSs
 
                          **bhflag = 1**
         ....
     
 
+And lastly now we just need to update the default inifiles to include a comment explaining the new option.
+Here's what that would look like for the ``Params.ini`` file:
+
+``examples/Params.ini``
+
+.. code-block:: ini
+    :linenos:
+    :emphasize-lines: 5
+
+        ....
+        ; bhflag != 0 allows velocity kick at BH formation
+        ; bhflag=0: no BH kicks; bhflag=1: fallback-modulated kicks
+        ; bhflag=2: mass-weighted (proportional) kicks; bhflag=3: full NS kicks
+        ; bhflag=4: double NS kicks
+        ; default = 1
+        bhflag = 1
+        ....
+
+
+And that's it! You've successfully added a new option to an existing setting in COSMIC, nice job!
