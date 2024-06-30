@@ -12,8 +12,8 @@ Summary checklist
 
 Been here before and just making sure you're not missing anything? Here's a quick checklist:
 
-- ``cosmic/src``: Add the new option to the relevant COSMIC code file and **test your changes**!
-- ``cosmic/docs/pages/inifile.rst``: Add the new option to the configuration docs page
+- ``src/cosmic/src``: Add the new option to the relevant COSMIC code file and **test your changes**!
+- ``docs/pages/inifile.rst``: Add the new option to the configuration docs page
 - ``examples/Params.ini``: Add comment with explanation to the default inifile
 - ``examples/CMCParams.ini``: Add comment with explanation to the default CMC inifile
 
@@ -21,20 +21,20 @@ Code changes
 ------------
 
 First, we need to actually change the underlying COSMIC code to allow for this new option. Given that we're
-going to change black hole kicks work, this will happen in the ``cosmic/src/kick.f`` file.
+going to change black hole kicks work, this will happen in the ``src/cosmic/src/kick.f`` file.
 
 .. warning ::
     The exact file that you need to change may differ depending on what option you change!
-    For example, if you were changing how mass transfer works, you'd need to change the ``cosmic/src/evolv2.f`` file instead.
+    For example, if you were changing how mass transfer works, you'd need to change the ``src/cosmic/src/evolv2.f`` file instead.
 
     If you're not
-    familiar with the codebase, you may want to search the ``cosmic/src`` directory for any mention of the
+    familiar with the codebase, you may want to search the ``src/cosmic/src`` directory for any mention of the
     setting to which you're adding an option.
 
 In our case, we want to add to the ``bhflag`` setting, which is used to determine how black hole supernova kicks are handled.
 At the time of writing, this setting is used as follows:
 
-``cosmic/src/kick.f``
+``src/cosmic/src/kick.f``
 
 .. code-block:: fortranfixed
     :linenos:
@@ -63,7 +63,7 @@ this is a black hole) and then set the kick velocity according to the ``bhflag``
 Let's add a 5th option, which sets the black hole kick to **double** the value for neutron stars (this is
 of course a rather contrived example, but it serves to illustrate the process).
 
-``cosmic/src/kick.f``
+``src/cosmic/src/kick.f``
 
 .. code-block:: fortranfixed
     :linenos:
@@ -93,10 +93,10 @@ Documentation changes
 
 Now we need to actual let COSMIC users that this new option exists. We'll need to update this in 3 places.
 
-First, we need to update the docs page that describes the settings. This is the ``cosmic/docs/pages/inifile.rst`` file.
+First, we need to update the docs page that describes the settings. This is the ``docs/pages/inifile.rst`` file.
 We'll add a new section to the ``bhflag`` setting that describes the new option.
 
-``cosmic/docs/pages/inifile.rst``
+``docs/pages/inifile.rst``
 
 .. code-block:: rst
     :linenos:
