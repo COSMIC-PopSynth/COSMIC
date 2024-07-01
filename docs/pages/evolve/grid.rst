@@ -1,8 +1,8 @@
-***************************
-Evolving a grid of binaries
-***************************
+*********************************
+Evolving a fixed grid of binaries
+*********************************
 
-Sometimes it is helpful to run a grid of initial binaries to explore how
+Sometimes it is helpful to run a fixed grid of initial binaries to explore how
 changing a single parameter affects the evolved binary. Let's start by importing the necessary modules:
 
 .. ipython::

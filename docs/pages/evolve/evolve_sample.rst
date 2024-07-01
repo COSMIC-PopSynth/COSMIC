@@ -1,7 +1,11 @@
 *****************************
 Evolving a sampled population
 *****************************
-As in :ref:`examples`, once an initial binary population is sampled, it is evolved using the Evolve class. Note that the same process used in :ref:`examples` applies here as well: the BSEDict must be supplied, but only need be resupplied if the flags in the dictionary change.
+Once an initial binary population is sampled, it can be evolved using the ``Evolve`` class just as we've done so far.
+You can read more about sampling initial binary populations in the :ref:`runpop` page.
+
+Note that the same process used other examples applies here as well: the ``BSEDict`` must be supplied,
+if the flags in the dictionary change from their defaults.
 
 First, let's import the necessary modules from COSMIC:
 

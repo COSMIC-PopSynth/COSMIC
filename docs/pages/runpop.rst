@@ -38,3 +38,9 @@ Check out the guide below for more information.
     :maxdepth: 1
 
     sample/cluster
+
+.. tip::
+
+    The initial binary population that is generated with these sampling methods can be quickly and 
+    easily evolved using the :class:`~cosmic.evolve.Evolve` class.
+    This is demonstrated in `this guide <evolve/evolve_sample.html>`_.
