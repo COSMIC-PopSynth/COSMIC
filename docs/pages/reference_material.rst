@@ -8,6 +8,8 @@ Configuration and output
     :gutter: 3
 
     .. grid-item-card::
+        :link: inifile
+        :link-type: ref
 
         .. toctree::
             :maxdepth: 1
@@ -17,6 +19,8 @@ Configuration and output
         Instructions for creating configurations files and explanations of each option.
 
     .. grid-item-card::
+        :link: output_info
+        :link-type: ref
 
         .. toctree::
             :maxdepth: 1
