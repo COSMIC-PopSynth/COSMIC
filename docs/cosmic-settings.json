@@ -1,0 +1,122 @@
+[
+    {
+        "category": "filters",
+        "category_label": "Filters",
+        "category_description": "Settings that filter the data returned by COSMIC simulations",
+        "docs-colour": "cadetblue",
+        "settings": [
+            {
+                "name": "binary_state",
+                "description": "Filter for the final state of the binaries you wish to retain",
+                "type": "checkbox",
+                "options-preface": "Each binary system will end its evolution in one of three states. Use these options to retain only certain endstates.",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Retain only binaries still alive today",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Retains binaries that merged",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "Retains binaries that were disrupted"
+                    }
+                ]
+            },
+            {
+                "name": "timestep_conditions",
+                "description": "Pick specific time resolutions to print at targeted stages of the binary evolution.",
+                "type": "string",
+                "options-preface": "This is used in conjunction with the [bse] section value dtp to determine the timestep resolution for printing to the bcm array. See the <a href='evolve/resolution.html'>related guide</a> for more information.",
+                "options": [
+                    {
+                        "name": "dtp=None",
+                        "description": "Only the final time step is printed to the bcm array",
+                        "default": true
+                    },
+                    {
+                        "name": "dtp=1.0",
+                        "description": "Use 1 Myr timesteps for all evolutionary stages"
+                    },
+                    {
+                        "name": "[['binstate==0', 'dtp=1.0']]",
+                        "description": "Use 1 Myr timesteps for binaries until they merge or disrupt"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "sampling",
+        "category_label": "Sampling",
+        "category_description": "Settings that change how the initial binary population is sampled",
+        "docs-colour": "darkseagreen",
+        "settings": [
+            {
+                "name": "sampling_method",
+                "description": "Select which models to use to generate an initial sample of binary parameters at Zero Age Main Sequence",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "independent",
+                        "description": "Initialize binaries with independent parameter distributions for the primary mass, mass ratio, eccentricity, separation, and binary fraction"
+                    },
+                    {
+                        "name": "multidim",
+                        "description": "Initialize binaries with multidimensional parameter distributions according to <a href='http://adsabs.harvard.edu/abs/2017ApJS..230...15M'>Moe & Di Stefano 2017</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "SF_start",
+                "description": "Sets the time in the past when star formation initiates in Myr.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 13700.0,
+                        "description": "For example, this specifies a start time at the beginning of a Hubble time",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "SF_duration",
+                "description": "Sets the duration of constant star formation from ``SF_start`` in Myr.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0.0,
+                        "description": "A single burst of star formation",
+                        "default": true
+                    },
+                    {
+                        "name": 13700.0,
+                        "description": "For example, this specifies a constant star formation rate over a Hubble time"
+                    }
+                ]
+
+            },
+            {
+                "name": "metallicity",
+                "description": "Sets the metallicity of the stellar population.",
+                "type": "number",
+                "options-preface": "COSMIC expects an <b>absolute</b> metallicity (i.e., <b>NOT</b> units of <i>zsun</i>)",
+                "options": [
+                    {
+                        "name": 0.02,
+                        "description": "For example, this sets the metallicity to approximately solar metallicity",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    }
+]

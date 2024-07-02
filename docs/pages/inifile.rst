@@ -4,6 +4,11 @@
 Configuration files
 ###################
 
+
+.. raw:: html
+    :file: config_insert.html
+
+
 How to write a configuration file
 =================================
 
