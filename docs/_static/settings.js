@@ -22,4 +22,19 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     });
+
+    const lis = document.querySelectorAll(".toc-drawer li");
+    const bse_subheadings = document.querySelectorAll(".settings-section h2");
+    for (let li of lis) {
+        if (li.innerText.toLowerCase() == "binary physics") {
+            new_ul = document.createElement("ul");
+            for (let subheading of bse_subheadings) {
+                new_li = document.createElement("li");
+                new_li.innerHTML = `<a class="reference internal" href="#${subheading.id}">${subheading.innerText}</a>`;
+                new_ul.appendChild(new_li);
+            }
+            li.appendChild(new_ul);
+            console.log(li)
+        }
+    }
 });

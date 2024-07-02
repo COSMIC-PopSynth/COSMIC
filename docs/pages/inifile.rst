@@ -12,18 +12,26 @@ The `cosmic-pop` command-line executable cannot run without a configuration file
 Each of the sections below lists inputs for COSMIC's modified version of BSE. Each input has a description of the allowed values and an example of what that section might look like in the INI format; recommended  default settings for many parameters are 
 given after their description in boldface.
 
-Here is a link to the most recent stable release version of the default
-inifile for COSMIC: `Stable Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini>`_
+The buttons below link to the most recent stable and unstable default inifiles for COSMIC.
 
-Here is a link to the unstable development version of the default inifile for COSMIC: `Development Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini>`_
+.. raw:: html
+
+    <div class="toms-nav-container" style="margin-bottom: 3rem; height: 90px; grid-template-rows: 90px">
+        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini">Latest stable INIFILE</div>
+        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini">Latest development INIFILE</div>
+    </div>
+
 
 
 How to use this page
 --------------------
 
-This page has two purposes: firstly, it offers a reference for every setting available in COSMIC and explains each of the options.
-Secondly, it can be used interactively to generate you very own configuration file or BSE settings dictionary for use in running COSMIC.
+**Reference guide** - this page is a great reference for *every* setting available in COSMIC and explains each of the options.
+
+**Interactive config generator** - it can also be used interactively to generate your very own configuration file or BSE settings dictionary for use in running COSMIC.
 In each of the following sections you can edit the values of the parameter and the files at the end of the page will update in turn for you to copy. Enjoy configuring COSMIC!
+
+|
 
 Filters
 =======
@@ -64,195 +72,6 @@ Binary physics
 
     <script src="../_static/settings.js"></script>
 
-
-[bse]
------
-
-.. note::
-
-    Although this is all one section, we have grouped the
-    flags/parameters which get passed to the binary stellar evolution
-    code into types. Each group will start with a note to indicate
-    the type of parameter or flag.
-
-.. note::
-
-    SAMPLING FLAGS
-
-=======================  =====================================================
-``pts1``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for
-                         Main Sequence (MS) stars
-
-                         **pts1 = 0.001** following `Bannerjee+2019 <https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract>`_ for NS/BH progenitors
-                         
-                         **pts1 = 0.05** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_ for WD progenitors
-
-
-``pts2``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for
-                         Giant Branch (GB, CHeB, AGB, HeGB) stars
-
-                         **pts2 = 0.01** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
-
-``pts3``                 determines the timesteps chosen in each evolution phase as
-                         decimal fractions of the time taken in that phase for
-                         HG, HeMS stars
-
-                         **pts3 = 0.02** following `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
-=======================  =====================================================
-
-.. code-block:: ini
-
-    ;;;;;;;;;;;;;;;;;;;;;;
-    ;;; SAMPLING FLAGS ;;;
-    ;;;;;;;;;;;;;;;;;;;;;;
-
-    ; pts1,pts2,pts3 determine the timesteps chosen in each
-    ;                 pts1 - MS                  (default = 0.001, see Banerjee+ 2019)
-    pts1 = 0.001
-    ;                 pts2 - GB, CHeB, AGB, HeGB (default = 0.01)
-    pts2 = 0.01
-    ;                 pts3 - HG, HeMS            (default = 0.02)
-    pts3 = 0.02
-
-.. note::
-
-    METALLICITY FLAGS
-
-=======================  =====================================================
-``zsun``                 Sets the metallicity of the Sun which primarily affects
-                         stellar winds. Note that the wind 
-                         prescriptions are calibrated to zsun = 0.019 as described in
-                         `Vink+2001. <https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract>`_
-
-                         **zsun = 0.014** following `Asplund 2009 <https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract>`_
-=======================  =====================================================
-
-.. code-block:: ini
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;;; METALLICITY FLAGS ;;;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;
-    ; specify the value for Solar metallicity, which primarily affects
-    ; winds in BSE; note that Vink+2001 winds for OB stars are calibrated to zsun = 0.019
-    ; default = 0.014 (Asplund 2009)
-    zsun = 0.014
-
-
-.. note::
-
-    WIND FLAGS
-
-=======================  =====================================================
-``windflag``             Selects the model for wind mass loss for each star
-
-                            ``0`` : Standard SSE/BSE (`Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_)
-
-                            ``1`` : StarTrack (`Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_)
-
-                            ``2`` : Metallicity dependence for O/B stars and Wolf Rayet stars (`Vink+2001 <http://adsabs.harvard.edu/abs/2001A&amp;A...369..574V>`_, `Vink+2005 <https://ui.adsabs.harvard.edu/abs/2005A%26A...442..587V/abstract>`_)
-
-                            ``3`` : Same as 2, but LBV-like mass loss for giants
-                            and non-degenerate stars beyond the
-                            Humphreys-Davidson limit
-
-                         **windflag = 3**
-
-``eddlimflag``           Adjusts the dependence of mass loss on metallicity for stars near
-                         the Eddington limit
-                         (see `Grafener+2011 <https://ui.adsabs.harvard.edu/abs/2011A%26A...535A..56G/abstract>`_, `Giacobbo+2018 <https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract>`_).
-
-                            ``0`` : does not adjust metallicity dependence for stars near the Eddington limit
-
-                            ``1`` : adjusts metallicity dependence for stars near the Eddington limit as in `Giacobbo+2018 <https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract>`_.  
-
-                         **eddlimflag = 0**
-
-``neta``                 Reimers mass-loss coefficient (`Equation 106 of SSE <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_).
-                         Note: this equation has a typo. There is an extra
-                         :math:`{\eta}` out front; the correct rate is directly proportional
-                         to :math:`{\eta}`.
-                         See also `Kurdritzki+1978, Section Vb <https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract>`_ for discussion.
-
-                            ``positive value`` : supplies :math:`{\eta}` to `Equation 106 of SSE paper <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
-
-                         **neta = 0.5**
-
-``bwind``                Binary enhanced mass loss parameter.
-                         See `Equation 12 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
-
-                            ``positive value`` : supplies B\ :sub:`w` to `Equation 12 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
-
-                         **bwind = 0, inactive for single**
-
-``hewind``               Helium star mass loss parameter: 10\ :sup:`-13` *hewind* L\ :sup:`2/3` gives He star mass-loss. Equivalent to 1 - :math:`{\mu}` in the last equation on `page 19 of SSE <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_.
-
-                         **hewind = 0.5**
-
-``beta``                 Wind velocity factor: v\ :sub:`wind` :sup:`2` goes like *beta*. See `Equation 9 of BSE paper <http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2002MNRAS.329..897H&link_type=ARTICLE&db_key=AST&high=#page=3>`_.
-
-                            ``negative value`` : StarTrack (`Belczynski+2008 <https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract>`_)
-
-                            ``positive value`` : supplies :math:`{\beta}`\ :sub:`w` to `Equation 9 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
-
-                         **beta = -1**
-
-``xi``                   Wind accretion efficiency factor, which gives the fraction
-                         of angular momentum lost via winds from the primary that
-                         transfers to the spin angular momentum of the companion.
-                         Corresponds to :math:`{\mu}`\ :sub:`w` in `Equation 11 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
-
-                            ``positive value`` : supplies :math:`{\mu}`\ :sub:`w` in `Equation 11 of BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
-
-                         **xi = 0.5**
-
-``acc2``                 Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to *acc2*. See `Equation 6 in BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_.
-
-                            ``positive value`` : supplies :math:`{\alpha}`\ :sub:`w` in `Equation 6 in BSE paper <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_
-
-                         **acc2 = 1.5**
-=======================  =====================================================
-
-.. code-block:: ini
-
-    ;;;;;;;;;;;;;;;;;;
-    ;;; WIND FLAGS ;;;
-    ;;;;;;;;;;;;;;;;;;
-
-    ; windflag sets the wind prescription
-    ; windflag=0: stock BSE; windflag=1: StarTrack 2008
-    ; windflag=2: Vink+2001; windflag=3: Vink+2005 (Vink plus LBV winds)
-    ; default = 3
-    windflag = 3
-
-    ; neta is the Reimers mass-loss coefficent
-    ; for more information, see Kudritzki & Reimers 1978, A&A 70, 227
-    ; default = 0.5
-    neta = 0.5
-
-    ; bwind is the binary enhanced mass loss parameter
-    ; bwind it is always inactive for single stars
-    ; default = 0.0
-    bwind = 0.0
-
-    ; hewind is a helium star mass loss factor, between 0 and 1
-    ; only applies if windflag=0, otherwise it is overwritten
-    ; default = 0.5
-    hewind = 0.5
-
-    ; beta is wind velocity factor: proportional to vwind^2
-    ; beta<0: follows StarTrack 2008; beta=0.125: stock BSE
-    ; default = -1
-    beta = -1
-
-    ; xi is the wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion
-    ; default = 1.0
-    xi = 1.0
-
-    ; acc2 sets the Bondi-Hoyle wind accretion factor onto companion
-    ; default = 1.5
-    acc2 = 1.5
 
 .. note::
 

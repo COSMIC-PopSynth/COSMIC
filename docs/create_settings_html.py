@@ -52,6 +52,7 @@ for group in settings:
             settings_section["class"] = "settings-section"
 
             header = new_group.new_tag("h2")
+            header["id"] = setting["settings-section"].lower().replace(" ", "-")
             header.string = setting["settings-section"]
 
             settings_section.append(header)
@@ -104,7 +105,7 @@ for group in settings:
             new_select["class"] = "form-control"
             for i, option in enumerate(setting["options"]):
                 new_option = new_setting.new_tag("option", value=option["name"])
-                new_option.string = option["name"]
+                new_option.string = str(option["name"])
                 if "default" in option and option["default"]:
                     new_option["selected"] = "true"
                     default = option["name"]
