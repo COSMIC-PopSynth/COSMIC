@@ -4,7 +4,7 @@
 <h2 class="setting-group-title">Binary physics</h2>
 <p class="setting-group-description">Settings that control the binary physics in the simulation</p>
 </div>
-<div class="card-body"><div class="settings-section"><h2>Timesteps</h2><hr/></div><div class="setting">
+<div class="card-body"><div class="settings-section"><h2 id="timesteps">Timesteps</h2><hr/></div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
 <h3 class="name"><code>pts1</code></h3>
@@ -46,7 +46,7 @@
 <p class="options-preface"></p>
 <ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.02</span></code>: <span class="opt-desc">Recommended value from <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000</a></span></li></ul>
 </div>
-</div><div class="settings-section"><h2>Metallicity</h2><hr/></div><div class="setting">
+</div><div class="settings-section"><h2 id="metallicity">Metallicity</h2><hr/></div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
 <h3 class="name"><code>zsun</code></h3>
@@ -59,6 +59,118 @@
 <div class="row options hide">
 <p class="options-preface">Note that the wind prescriptions for OB stars are calibrated to zsun = 0.019 as described in <a href="https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract">Vink+2001.</a></p>
 <ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.014</span></code>: <span class="opt-desc">Following <a href="https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract">Asplund+2009</a></span></li></ul>
+</div>
+</div><div class="settings-section"><h2 id="stellar-winds">Stellar Winds</h2><hr/></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>windflag</code></h3>
+<p class="description">Selects the model for wind mass loss for each star</p>
+<p class="default">Default: 3</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option selected="true" value="3">3</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Standard SSE/BSE (<a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">StarTrack (<a href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">Metallicity dependence for O/B stars and Wolf Rayet stars (<a href="https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract">Vink+2001</a>, <a href="https://ui.adsabs.harvard.edu/abs/2005A%26A...442..587V/abstract">Vink+2005</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">3</span></code>: <span class="opt-desc">Same as 2, but LBV-like mass loss for giants and non-degenerate stars beyond the Humphreys-Davidson limit</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>eddlimflag</code></h3>
+<p class="description">Adjusts the dependence of mass loss on metallicity for stars near the Eddington limit (see <a href="https://ui.adsabs.harvard.edu/abs/2011A%26A...535A..56G/abstract">Grafener+2011</a>, <a href="https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract">Giacobbo+2018</a>).</p>
+<p class="default">Default: 0</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="0">0</option><option value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">does not adjust metallicity dependence for stars near the Eddington limit</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">adjusts metallicity dependence for stars near the Eddington limit as in <a href="https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract">Giacobbo+2018</a>.</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>neta</code></h3>
+<p class="description">Reimers mass-loss coefficient (<a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Equation 106 of SSE</a>).</p>
+<p class="default">Default: 0.5</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.5"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">Note: this equation has a typo. There is an extra \(\eta\) out front; the correct rate is directly proportional to \(\eta\). See also <a href="https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract">Kurdritzki+1978, Section Vb</a> for discussion.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Sets \(\eta\) for Reimers mass loss to 0.5</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>bwind</code></h3>
+<p class="description">Binary enhanced mass loss parameter</p>
+<p class="default">Default: 0.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.0"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">This parameter is used to enhance mass loss in binaries. See <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, Eq. 12</a> for more information.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.0</span></code>: <span class="opt-desc">Sets the binary enhanced mass loss parameter, \(B_w\), from <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, Eq. 12</a> to 0.0 (no effect on single stars)</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>hewind</code></h3>
+<p class="description">Helium star mass loss parameter</p>
+<p class="default">Default: 0.5</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.5"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">\( 10^{-13} {\rm \ \texttt{hewind} \ } L^{2/3}\) gives He star mass-loss. Equivalent to \(1 - \mu\) in the last equation on <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, page 19</a>.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Sets the helium star mass loss parameter to 0.5</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>beta</code></h3>
+<p class="description">Wind velocity factor. \( v_{\rm wind}^2 \propto \beta\), see <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 9</a>.</p>
+<p class="default">Default: -1</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="-1"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">Follow StarTrack prescription for wind velocity factor, \(\beta_w\), from <a href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.125</span></code>: <span class="opt-desc">Sets the wind velocity factor, \(\beta_w\), to 0.125</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>xi</code></h3>
+<p class="description">Wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion.</p>
+<p class="default">Default: 0.5</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.5"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">Corresponds to \(\mu_w\) in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 11</a></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Sets the wind accretion efficiency factor, \(\xi_w\), to 0.5</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>acc2</code></h3>
+<p class="description">Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to <code>acc2</code>. See <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 6</a>.</p>
+<p class="default">Default: 1.5</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="1.5"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">This value is equivalent to \(\alpha_w\) in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 6</a>.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">1.5</span></code>: <span class="opt-desc">Sets the Bondi-Hoyle wind accretion factor, \(\alpha_w\), to 1.5</span></li></ul>
 </div>
 </div></div>
 </section></div>

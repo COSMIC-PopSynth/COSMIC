@@ -339,6 +339,131 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "name": "windflag",
+                "description": "Selects the model for wind mass loss for each star",
+                "type": "dropdown",
+                "settings-section": "Stellar Winds",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Standard SSE/BSE (<a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "StarTrack (<a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
+                    },
+                    {
+                        "name": 2,
+                        "description": "Metallicity dependence for O/B stars and Wolf Rayet stars (<a href='https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract'>Vink+2001</a>, <a href='https://ui.adsabs.harvard.edu/abs/2005A%26A...442..587V/abstract'>Vink+2005</a>)"
+                    },
+                    {
+                        "name": 3,
+                        "description": "Same as 2, but LBV-like mass loss for giants and non-degenerate stars beyond the Humphreys-Davidson limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "eddlimflag",
+                "description": "Adjusts the dependence of mass loss on metallicity for stars near the Eddington limit (see <a href='https://ui.adsabs.harvard.edu/abs/2011A%26A...535A..56G/abstract'>Grafener+2011</a>, <a href='https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract'>Giacobbo+2018</a>).",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "does not adjust metallicity dependence for stars near the Eddington limit",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "adjusts metallicity dependence for stars near the Eddington limit as in <a href='https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract'>Giacobbo+2018</a>."
+                    }
+                ]
+            },
+            {
+                "name": "neta",
+                "description": "Reimers mass-loss coefficient (<a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Equation 106 of SSE</a>).",
+                "type": "number",
+                "options-preface": "Note: this equation has a typo. There is an extra \\(\\eta\\) out front; the correct rate is directly proportional to \\(\\eta\\). See also <a href='https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract'>Kurdritzki+1978, Section Vb</a> for discussion.",
+                "options": [
+                    {
+                        "name": 0.5,
+                        "description": "Sets \\(\\eta\\) for Reimers mass loss to 0.5",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "bwind",
+                "description": "Binary enhanced mass loss parameter",
+                "type": "number",
+                "options-preface": "This parameter is used to enhance mass loss in binaries. See <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a> for more information.",
+                "options": [
+                    {
+                        "name": 0.0,
+                        "description": "Sets the binary enhanced mass loss parameter, \\(B_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a> to 0.0 (no effect on single stars)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "hewind",
+                "description": "Helium star mass loss parameter",
+                "type": "number",
+                "options-preface": "\\( 10^{-13} {\\rm \\ \\texttt{hewind} \\ } L^{2/3}\\) gives He star mass-loss. Equivalent to \\(1 - \\mu\\) in the last equation on <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, page 19</a>.",
+                "options": [
+                    {
+                        "name": 0.5,
+                        "description": "Sets the helium star mass loss parameter to 0.5",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "beta",
+                "description": "Wind velocity factor. \\( v_{\\rm wind}^2 \\propto \\beta\\), see <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 9</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "Follow StarTrack prescription for wind velocity factor, \\(\\beta_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 0.125,
+                        "description": "Sets the wind velocity factor, \\(\\beta_w\\), to 0.125"
+                    }
+                ]
+            },
+            {
+                "name": "xi",
+                "description": "Wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion.",
+                "type": "number",
+                "options-preface": "Corresponds to \\(\\mu_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 11</a>",
+                "options": [
+                    {
+                        "name": 0.5,
+                        "description": "Sets the wind accretion efficiency factor, \\(\\xi_w\\), to 0.5",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "acc2",
+                "description": "Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to <code>acc2</code>. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 6</a>.",
+                "type": "number",
+                "options-preface": "This value is equivalent to \\(\\alpha_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 6</a>.",
+                "options": [
+                    {
+                        "name": 1.5,
+                        "description": "Sets the Bondi-Hoyle wind accretion factor, \\(\\alpha_w\\), to 1.5",
+                        "default": true
+                    }
+                ]
             }
         ]
     }
