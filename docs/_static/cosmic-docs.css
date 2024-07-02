@@ -167,10 +167,12 @@ html[data-theme="dark"] .sd-card {
     background-color: var(--color-sidebar-background);
     background-clip: padding-box;
     border: 2px solid rgba(0, 0, 0, 0.1);
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
     border-radius: 0.375rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     outline: none;
+}
+
+select.form-control {
+    padding: 0.5rem;
+    width: 100%;
 }

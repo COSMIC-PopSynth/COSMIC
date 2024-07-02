@@ -118,5 +118,145 @@
                 ]
             }
         ]
+    },
+    {
+        "category": "convergence",
+        "category_label": "Convergence",
+        "category_description": "Settings that control the convergence of the simulation run with cosmic-pop",
+        "docs-colour": "#a873dd",
+        "settings": [
+            {
+                "name": "convergence_params",
+                "description": "A list of parameters you would like to verify have converged to a single distribution shape when running cosmic-pop from the command line.",
+                "type": "checkbox",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "mass_1",
+                        "description": "Primary mass",
+                        "default": true
+                    },
+                    {
+                        "name": "mass_2",
+                        "description": "Secondary mass",
+                        "default": true
+                    },
+                    {
+                        "name": "sep",
+                        "description": "Separation"
+                    },
+                    {
+                        "name": "porb",
+                        "description": "Orbital period",
+                        "default": true
+                    },
+                    {
+                        "name": "ecc",
+                        "description": "Eccentricity",
+                        "default": true
+                    },
+                    {
+                        "name": "massc_1",
+                        "description": "Primary core mass"
+                    },
+                    {
+                        "name": "massc_2",
+                        "description": "Secondary core mass"
+                    },
+                    {
+                        "name": "rad_1",
+                        "description": "Primary radius"
+                    },
+                    {
+                        "name": "rad_2",
+                        "description": "Secondary radius"
+                    }
+                ]
+            },
+            {
+                "name": "convergence_limits",
+                "description": "Specifies limits for parameters included in the <code>convergence_params</code> list.",
+                "type": "string",
+                "options-preface": "For each parameter specified  <code>convergence_limits</code>, the lower and upper limit must be included.",
+                "options": [
+                    {
+                        "name": "{}",
+                        "description": "No limits specified",
+                        "default": true
+                    },
+                    {
+                        "name": "{'mass_1' : [5, 10], 'sep' : [0, 10]}",
+                        "description": "For example, this specifies that the primary mass must be between 5 and 10 solar masses, and the separation must be between 0 and 10 Rsun."
+                    }
+                ]
+            },
+            {
+                "name": "pop_select",
+                "description": "Selects the stage of the evolution at which you would like to check for convergence.",
+                "type": "dropdown",
+                "options-preface": "This will filter for systems that satisfy the <code>final_kstar1</code> and <code>final_kstar2</code> selections from the command line call of cosmic-pop at the following states:",
+                "options": [
+                    {
+                        "name": "formation",
+                        "description": "At binary formation",
+                        "default": true
+                    },
+                    {
+                        "name": "1_SN",
+                        "description": "Just before the first supernova"
+                    },
+                    {
+                        "name": "2_SN",
+                        "description": "Just before the second supernova"
+                    },
+                    {
+                        "name": "disruption",
+                        "description": "Just before binary disruption"
+                    },
+                    {
+                        "name": "final_state",
+                        "description": "After the full evolution specified by the user-supplied evolution time"
+                    },
+                    {
+                        "name": "XRB_form",
+                        "description": "At the start of RLOF following the first supernova"
+                    }
+                ]
+            },
+            {
+                "name": "match",
+                "description": "Provides the tolerance for the convergence calculation and is calculated as \\({\\rm match} = \\log_{\\rm 10} (1 - {\\rm convergence})\\)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -5.0,
+                        "description": "For example, this specifies a tolerance of \\(10^{-5}\\) for convergence",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "rand_seed",
+        "category_label": "Random Seed",
+        "category_description": "Settings that control the random number generation used",
+        "docs-colour": "lightcoral",
+        "settings": [
+            {
+                "name": "seed",
+                "description": "Sets the seed for the random number generator (for <code>numpy.random.seed()</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 42,
+                        "description": "For example, this sets the seed to 42",
+                        "default": true
+                    }
+                ]
+            }
+        ]
     }
 ]

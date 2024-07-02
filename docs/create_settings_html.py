@@ -52,7 +52,8 @@ for group in settings:
         print(f"Creating setting {setting['name']}")
         new_setting = bs4.BeautifulSoup(settings_template, 'html.parser')
         new_setting.select_one(".name").code.string = setting["name"]
-        new_setting.select_one(".description").string = setting["description"]
+        new_setting.select_one(".description").string = ""
+        new_setting.select_one(".description").append(bs4.BeautifulSoup(setting["description"], 'html.parser'))
         new_setting.select_one(".options-expander")["style"] = "color: " + group["docs-colour"] + ";"
 
         default = []
@@ -88,6 +89,18 @@ for group in settings:
                     new_setting.select_one(".col-3").append(new_option)
                     break
 
+        elif setting["type"] == "dropdown":
+            new_select = new_setting.new_tag("select")
+            new_select["class"] = "form-control"
+            for i, option in enumerate(setting["options"]):
+                new_option = new_setting.new_tag("option", value=option["name"])
+                new_option.string = option["name"]
+                if "default" in option and option["default"]:
+                    new_option["selected"] = "true"
+                    default = option["name"]
+                new_select.append(new_option)
+            new_setting.select_one(".col-3").append(new_select)
+
         new_setting.select_one(".options-preface").string = ""
         new_setting.select_one(".options-preface").append(bs4.BeautifulSoup(setting["options-preface"], 'html.parser'))
 
@@ -107,5 +120,5 @@ for group in settings:
     soup.select_one(".container-fluid").append(new_group)
 
 with open("pages/config_insert.html", "w") as f:
-    f.write(soup.prettify())
+    f.write(str(soup))#.prettify())
 
