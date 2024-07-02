@@ -70,8 +70,12 @@ for group in settings:
                 new_option["name"] = f"{setting['name']}_opt{i}"
                 new_label = new_setting.new_tag("label", for_=f"{setting['name']}_opt{i}")
                 new_label.string = f" {option['name']}"
-                insert_here.append(new_option)
-                insert_here.append(new_label)
+
+                new_container = new_setting.new_tag("div")
+                new_container.append(new_option)
+                new_container.append(new_label)
+
+                insert_here.append(new_container)
 
         elif setting["type"] in ["string", "number"]:
             for option in setting["options"]:
@@ -103,6 +107,3 @@ for group in settings:
 with open("pages/config_insert.html", "w") as f:
     f.write(soup.prettify())
 
-# # def create_setting
-# soup.select_one(".setting-chooser .name").string = "TEST"
-# # setting_name.replace_with(setting_name)

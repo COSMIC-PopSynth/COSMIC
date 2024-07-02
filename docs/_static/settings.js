@@ -6,4 +6,10 @@ document.addEventListener("DOMContentLoaded", function() {
             expander.querySelector(".fa").classList.toggle("fa-chevron-up");
         });
     });
+
+    document.querySelectorAll(".col-3 label").forEach(label => {
+        label.addEventListener("click", function() {
+            label.parentElement.querySelector("input").click();
+        });
+    });
 });

@@ -152,6 +152,10 @@ html[data-theme="dark"] .sd-card {
     color: var(--color-brand-primary);
 }
 
+.setting .col-3 label {
+    cursor: pointer;
+}
+
 .form-control {
     display: block;
     width: calc(100% - 24px);
