@@ -98,7 +98,9 @@ for group in settings:
             new_option_expl.select_one(".opt-desc").append(bs4.BeautifulSoup(option["description"], 'html.parser'))
             new_setting.select_one(".options").ul.append(new_option_expl)
 
-        new_setting.select_one(".default").string = f"Default: {default}"
+        default_string = str(default)
+        default_string = default_string.replace("'", "")
+        new_setting.select_one(".default").string = f"Default: {default_string}"
 
         new_group.select_one(".card-body").append(new_setting)
 
