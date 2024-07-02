@@ -5,8 +5,48 @@ Configuration files
 ###################
 
 
+Introduction
+============
+
+
+Filters
+=======
+
 .. raw:: html
-    :file: config_insert.html
+    :file: config/config_insert_filters.html
+
+
+Population Sampling
+===================
+
+.. raw:: html
+    :file: config/config_insert_sampling.html
+
+
+Convergence
+===========
+
+.. raw:: html
+    :file: config/config_insert_convergence.html
+
+
+Random Seed
+===========
+
+.. raw:: html
+    :file: config/config_insert_rand_seed.html
+
+
+Binary physics
+==============
+
+.. raw:: html
+    :file: config/config_insert_bse.html
+
+
+.. raw:: html
+
+    <script src="../_static/settings.js"></script>
 
 
 How to write a configuration file
@@ -131,70 +171,6 @@ sampling
 
     ; Metallicity of the population of initial binaries
     metallicity = 0.02
-
-[convergence]
--------------
-
-============================  ===================================================================================
-``convergence_params``        A list of parameters you would like to verify have converged
-                              to a single distribution shape when running cosmic-pop from the command line.
-                              Options include: ``mass_1``, ``mass_2``, ``sep``, ``porb``,
-                              ``ecc``, ``massc_1``, ``massc_2``, ``rad_1``, ``rad_2``
-
-``convergence_limits``        Specifies limits for parameters included in the ``convergence_params``
-                              list. For each parameter specified in ``convergence_limits``, the lower
-                              and upper limit must be included. 
-
-                                 ``convergence_limits = {'mass_1' : [5, 10], 'sep' : [0, 10]}``
-
-``pop_select``                Selects the stage of the evolution at which you would like
-                              to check for convergence. This will filter for systems that
-                              satisfy the final_kstar1 and final_kstar2 selections from
-                              the command line call of cosmic-pop at the following states:
-
-                                 ``formation``: computes convergence on binary properties
-                                 at formation with user-specified final kstars
-
-                                 ``1_SN``: computes convergence on binary properties
-                                 just before the first supernova for the population with
-                                 user-specified final kstars
-
-                                 ``2_SN``: computes convergence on binary properties
-                                 just before the second supernova for the population with
-                                 user-specified final kstars
-
-                                 ``disruption``: computes convergence on binary properties
-                                 just before disruption of the population with
-                                 user-specified final kstars
-
-                                 ``final_state``: computes convergence on binary properties
-                                 after the full evolution specified by the user-supplied evolution time
-                                 and with the user specified final kstars
-
-                                 ``XRB_form``: computes convergence on binary properties
-                                 at the start of RLO following the first supernova on the population with
-                                 user-specified final kstars
-
-``match``                     ``match`` provides the tolerance for the convergence calculation
-                              and is calculated as match = Log\ :sub:`10` (1-convergence)
-
-                              **match = -5.0**
-
-``apply_convergence_limits``  ``apply_convergence_limits`` will filter the binary population,
-                              including the bcm, bpp, initCond, and kick_info
-                              DataFrames to only contain the binaries that satisfy the constraints
-                              from ``convergence_limits``
-
-                                 ``True``: bcm, bpp, initCond, kick_info will contain only the binaries which
-                                 are in the population that was used to check for convergence
-
-                                 ``False``: bcm, bpp, initCond, kick_info will contain all systems which satisfy the
-                                 final kstar and pop_select selection and will **not** be filtered based on the
-                                 convergence limits
-
-                              **apply_convergence_limits = False**
-
-============================  ===================================================================================
 
 .. code-block:: ini
 

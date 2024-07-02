@@ -1,0 +1,64 @@
+<!-- This file should be created using create_settings_html.py -->
+<div class="container-fluid"><section class="card setting-card" data-category="sampling" id="sampling" style="border-color: darkseagreen;">
+<div class="card-header" style="background-color: darkseagreen;">
+<h2 class="setting-group-title">Sampling</h2>
+<p class="setting-group-description">Settings that change how the initial binary population is sampled</p>
+</div>
+<div class="card-body"><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>sampling_method</code></h3>
+<p class="description">Select which models to use to generate an initial sample of binary parameters at Zero Age Main Sequence</p>
+<p class="default">Default: multidim</p>
+</div>
+<div class="col-3"><input class="form-control" type="text" value="multidim"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">independent</span></code>: <span class="opt-desc">Initialize binaries with independent parameter distributions for the primary mass, mass ratio, eccentricity, separation, and binary fraction</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">multidim</span></code>: <span class="opt-desc">Initialize binaries with multidimensional parameter distributions according to <a href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a></span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>SF_start</code></h3>
+<p class="description">Sets the time in the past when star formation initiates in Myr.</p>
+<p class="default">Default: 13700.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="13700.0"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">13700.0</span></code>: <span class="opt-desc">For example, this specifies a start time at the beginning of a Hubble time</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>SF_duration</code></h3>
+<p class="description">Sets the duration of constant star formation from ``SF_start`` in Myr.</p>
+<p class="default">Default: 0.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.0"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.0</span></code>: <span class="opt-desc">A single burst of star formation</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">13700.0</span></code>: <span class="opt-desc">For example, this specifies a constant star formation rate over a Hubble time</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>metallicity</code></h3>
+<p class="description">Sets the metallicity of the stellar population.</p>
+<p class="default">Default: 0.02</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.02"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">COSMIC expects an <b>absolute</b> metallicity (i.e., <b>NOT</b> units of <i>zsun</i>)</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.02</span></code>: <span class="opt-desc">For example, this sets the metallicity to approximately solar metallicity</span></li></ul>
+</div>
+</div></div>
+</section></div>

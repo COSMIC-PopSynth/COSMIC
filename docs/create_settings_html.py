@@ -3,16 +3,15 @@ import json
 
 main_soup = """<!-- This file should be created using create_settings_html.py -->
 <div class="container-fluid"></div>
-<script src="../_static/settings.js"></script>
 """
 
-group_template = """<div class="card setting-card">
+group_template = """<section class="card setting-card">
         <div class="card-header">
             <h2 class="setting-group-title"></h2>
             <p class="setting-group-description"></p>
         </div>
         <div class="card-body"></div>
-    </div>"""
+    </section>"""
 
 settings_template = """<div class="setting">
                 <div class="row align-items-center setting-chooser">
@@ -35,15 +34,15 @@ option_template = """<li><code class="docutils literal notranslate"><span class=
 with open("cosmic-settings.json") as f:
     settings = json.load(f)
 
-soup = bs4.BeautifulSoup(main_soup, 'html.parser')
-
 for group in settings:
+    soup = bs4.BeautifulSoup(main_soup, 'html.parser')
+    
     print(f"Creating group {group['category']}")
     new_group = bs4.BeautifulSoup(group_template, 'html.parser')
-    new_group.div["data-category"] = group["category"]
+    new_group.section["data-category"] = group["category"]
+    new_group.section["id"] = group["category"]
     title = new_group.select_one(".setting-group-title")
     title.string = group["category_label"]
-    title["id"] = group["category"]
     new_group.select_one(".setting-group-description").string = group["category_description"]
     new_group.select_one(".setting-card")["style"] = "border-color: " + group["docs-colour"] + ";"
     new_group.select_one(".card-header")["style"] = "background-color: " + group["docs-colour"] + ";"
@@ -119,6 +118,6 @@ for group in settings:
 
     soup.select_one(".container-fluid").append(new_group)
 
-with open("pages/config_insert.html", "w") as f:
-    f.write(str(soup))#.prettify())
+    with open(f"pages/config/config_insert_{group['category']}.html", "w") as f:
+        f.write(str(soup))
 

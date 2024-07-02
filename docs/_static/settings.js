@@ -12,4 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
             label.parentElement.querySelector("input").click();
         });
     });
+
+    document.querySelectorAll("h2:not(.setting-group-title)").forEach(h2 => {
+        h2.style = "height: 0; margin: 0; overflow: hidden;";
+    });
 });

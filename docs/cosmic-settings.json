@@ -235,6 +235,23 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "name": "apply_convergence_limits",
+                "description": "Whether to filter the binary population (including the bcm, bpp, initC, and kick_info DataFrames) to only contain the binaries that satisfy the constraints from convergence_limits.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Filter the binary population to only contain the binaries that satisfy the constraints from convergence_limits"
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not filter the binary population",
+                        "default": true
+                    }
+                ]
             }
         ]
     },
@@ -242,7 +259,7 @@
         "category": "rand_seed",
         "category_label": "Random Seed",
         "category_description": "Settings that control the random number generation used",
-        "docs-colour": "lightcoral",
+        "docs-colour": "#f0ba80",
         "settings": [
             {
                 "name": "seed",
@@ -253,6 +270,57 @@
                     {
                         "name": 42,
                         "description": "For example, this sets the seed to 42",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "bse",
+        "category_label": "Binary physics",
+        "category_description": "Settings that control the binary physics in the simulation",
+        "docs-colour": "lightcoral",
+        "settings": [
+            {
+                "name": "pts1",
+                "description": "Sets the timestep modifier for main sequence stars (<code>dtp *= pts1</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0.001,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract'>Bannerjee+2019</a> for NS/BH progenitors",
+                        "default": true
+                    },
+                    {
+                        "name": 0.05,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>"
+                    }
+                ]
+            },
+            {
+                "name": "pts2",
+                "description": "Sets the timestep modifier for Giant Branch (GB, CHeB, AGB, HeGB) stars (<code>dtp *= pts2</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0.01,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "pts2",
+                "description": "Sets the timestep modifier for HG, HeMS stars (<code>dtp *= pts3</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0.02,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
                         "default": true
                     }
                 ]
