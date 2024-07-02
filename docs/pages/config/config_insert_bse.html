@@ -1,10 +1,10 @@
 <!-- This file should be created using create_settings_html.py -->
-<div class="container-fluid"><section class="card setting-card" data-category="bse" id="bse" style="border-color: lightcoral;">
+<div class="container-fluid"><section class="card setting-card" data-category="bse" style="border-color: lightcoral;">
 <div class="card-header" style="background-color: lightcoral;">
 <h2 class="setting-group-title">Binary physics</h2>
 <p class="setting-group-description">Settings that control the binary physics in the simulation</p>
 </div>
-<div class="card-body"><div class="setting">
+<div class="card-body"><div class="settings-section"><h2>Timesteps</h2><hr/></div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
 <h3 class="name"><code>pts1</code></h3>
@@ -45,6 +45,20 @@
 <div class="row options hide">
 <p class="options-preface"></p>
 <ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.02</span></code>: <span class="opt-desc">Recommended value from <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000</a></span></li></ul>
+</div>
+</div><div class="settings-section"><h2>Metallicity</h2><hr/></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>zsun</code></h3>
+<p class="description">Sets the metallicity of the Sun which primarily affects stellar winds.</p>
+<p class="default">Default: 0.014</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.014"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">Note that the wind prescriptions for OB stars are calibrated to zsun = 0.019 as described in <a href="https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract">Vink+2001.</a></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.014</span></code>: <span class="opt-desc">Following <a href="https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract">Asplund+2009</a></span></li></ul>
 </div>
 </div></div>
 </section></div>

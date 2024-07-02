@@ -176,3 +176,12 @@ select.form-control {
     padding: 0.5rem;
     width: 100%;
 }
+
+.settings-section:first-child h2 {
+    margin-top: 0.5rem;
+}
+
+.settings-section h2 {
+    font-size: 1.75rem;
+    margin-top: 3rem;
+}

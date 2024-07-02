@@ -36,11 +36,10 @@ with open("cosmic-settings.json") as f:
 
 for group in settings:
     soup = bs4.BeautifulSoup(main_soup, 'html.parser')
-    
+
     print(f"Creating group {group['category']}")
     new_group = bs4.BeautifulSoup(group_template, 'html.parser')
     new_group.section["data-category"] = group["category"]
-    new_group.section["id"] = group["category"]
     title = new_group.select_one(".setting-group-title")
     title.string = group["category_label"]
     new_group.select_one(".setting-group-description").string = group["category_description"]
@@ -48,6 +47,18 @@ for group in settings:
     new_group.select_one(".card-header")["style"] = "background-color: " + group["docs-colour"] + ";"
 
     for setting in group["settings"]:
+        if "settings-section" in setting:
+            settings_section = new_group.new_tag("div")
+            settings_section["class"] = "settings-section"
+
+            header = new_group.new_tag("h2")
+            header.string = setting["settings-section"]
+
+            settings_section.append(header)
+            settings_section.append(new_group.new_tag("hr"))
+
+            new_group.select_one(".card-body").append(settings_section)
+
         print(f"Creating setting {setting['name']}")
         new_setting = bs4.BeautifulSoup(settings_template, 'html.parser')
         new_setting.select_one(".name").code.string = setting["name"]

@@ -286,6 +286,7 @@
                 "name": "pts1",
                 "description": "Sets the timestep modifier for main sequence stars (<code>dtp *= pts1</code>)",
                 "type": "number",
+                "settings-section": "Timesteps",
                 "options-preface": "",
                 "options": [
                     {
@@ -321,6 +322,20 @@
                     {
                         "name": 0.02,
                         "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "zsun",
+                "description": "Sets the metallicity of the Sun which primarily affects stellar winds.",
+                "type": "number",
+                "settings-section": "Metallicity",
+                "options-preface": "Note that the wind prescriptions for OB stars are calibrated to zsun = 0.019 as described in <a href='https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract'>Vink+2001.</a>",
+                "options": [
+                    {
+                        "name": 0.014,
+                        "description": "Following <a href='https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract'>Asplund+2009</a>",
                         "default": true
                     }
                 ]

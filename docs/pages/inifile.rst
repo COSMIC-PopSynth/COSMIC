@@ -8,6 +8,22 @@ Configuration files
 Introduction
 ============
 
+The `cosmic-pop` command-line executable cannot run without a configuration file.
+Each of the sections below lists inputs for COSMIC's modified version of BSE. Each input has a description of the allowed values and an example of what that section might look like in the INI format; recommended  default settings for many parameters are 
+given after their description in boldface.
+
+Here is a link to the most recent stable release version of the default
+inifile for COSMIC: `Stable Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini>`_
+
+Here is a link to the unstable development version of the default inifile for COSMIC: `Development Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini>`_
+
+
+How to use this page
+--------------------
+
+This page has two purposes: firstly, it offers a reference for every setting available in COSMIC and explains each of the options.
+Secondly, it can be used interactively to generate you very own configuration file or BSE settings dictionary for use in running COSMIC.
+In each of the following sections you can edit the values of the parameter and the files at the end of the page will update in turn for you to copy. Enjoy configuring COSMIC!
 
 Filters
 =======
@@ -48,189 +64,6 @@ Binary physics
 
     <script src="../_static/settings.js"></script>
 
-
-How to write a configuration file
-=================================
-
-The `cosmic-pop` command-line executable cannot run without a configuration file.
-Each of the sections below lists inputs for COSMIC's modified version of BSE. Each input has a description of the allowed values and an example of what that section might look like in the INI format; recommended  default settings for many parameters are 
-given after their description in boldface.
-
-Here is a link to the most recent stable release version of the default
-inifile for COSMIC: `Stable Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini>`_
-
-Here is a link to the unstable development version of the default inifile for COSMIC: `Development Version INIFILE <https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini>`_
-
-filters
--------
-
-=======================  ===============================================================
-``binary_state``         Each binary system will end its evolution in one of
-                         three states
-
-                            ``0`` : the system is still a binary at the end its
-                            evolution
-
-                            ``1`` : the system merged before the end of its
-                            evolution
-
-                            ``2`` : the system was disrupted before the end of
-                            its evolution
-
-``timestep_conditions``  timestep_conditions allow a user to pick specific time resolutions
-                         to print at targeted stages of the binary evolution.
-                         This is used in conjunction with the [bse] section value dtp to determine the
-                         timestep resolution for printing to the bcm array.
-
-
-                         As an example, if you only want to print to the bcm array with
-                         1.0 Myr timesteps while a binary has not merged or been disrupted
-                         you would specify this as:
-
-                            ``timestep_conditions =[['binstate==0', 'dtp=1.0']]``
-
-                         Special examples include
-
-                            ``timestep_conditions = 'dtp=None'`` : only the final time step is printed to the bcm array
-
-                            ``timestep_conditions = 'dtp=1.0'`` : a single timestep applied to all evolutionary stages of the binary
-
-=======================  ===============================================================
-
-.. code-block:: ini
-
-    [filters]
-    ; binary_state determines which types of binaries endstates to retain
-    ; 0 alive today, 1 merged, 2 disrupted
-    ; default = [0,1]
-    binary_state = [0,1]
-
-    ; timestep_conditions allow a user to pick specific time resolutions
-    ; to print at targeted stages of the binary evolution
-    ; This is used in conjunction with the [bse] section value dtp to determine the resolution
-    ; at which thing are printed into the so called bcm array
-    ; For example, if you only want dtp set to a value while the system is
-    ; intact i.e. has not merged or been disrupted you could do so with the following
-    ; timestep_conditions =[['binstate==0', 'dtp=1.0']]
-    ; Special examples include
-    ; timestep_conditions = 'dtp=None', only the final time step is printed to the bcm array
-    ; timestep_conditions = 'dtp=1.0', a single timestep applied to all evolutionary stages of the binary
-    timestep_conditions = 'dtp=None'
-
-sampling
---------
-
-=======================  ===================================================================================
-``sampling_method``      Select which models to use to generate an initial
-                         sample of binary parameters at Zero Age Main Sequence
-
-                            ``independent`` : initialize binaries with
-                            independent parameter distributions for the primary
-                            mass, mass ratio, eccentricity, separation, and
-                            binary fraction
-
-                            ``multidim`` : initialize binaries with
-                            multidimensional parameter distributions according to
-                            `Moe & Di Stefano 2017 <http://adsabs.harvard.edu/abs/2017ApJS..230...15M>`_
-
-``SF_start``             Sets the time in the past when star formation initiates in Myr.
-                         For a start time at the beginning of a Hubble time, specify:
-
-                            ``SF_start`` : 13700.0
-
-``SF_duration``          Sets the duration of constant star formation from ``SF_start``
-                         in Myr. For a single burst specify:
-
-                            ``SF_duration`` : 0.0
-
-                         For a constant star formation over a Hubble time, specify:
-
-                            ``SF_duration`` : 13700.0
-
-``metallicity``          Single value for the metallicity of the population. 
-                         COSMIC expects an **absolute** metallicity (i.e., not units of
-                         *zsun*). For example, if you would like to run a population at
-                         Solar metallicity and specify *zsun=0.02*, you would want to
-                         set *metallicity=0.02*. 
-
-=======================  ===================================================================================
-
-.. code-block:: ini
-
-    [sampling]
-    ; Specify if you would like to sample initial conditions via
-    ; the independent method (independent) or would like to sample
-    ; initial conditions follow Moe & Di Stefano (2017) (multidim)
-    sampling_method = multidim
-
-    ; Sets the time in the past when star formation initiates in Myr
-    SF_start = 13700.0
-
-    ; Sets the duration of constant star formation in Myr
-    SF_duration = 0.0
-
-    ; Metallicity of the population of initial binaries
-    metallicity = 0.02
-
-.. code-block:: ini
-
-    [convergence]
-    ; A list of parameters you would like to verify have converged
-    ; to a single distribution shape.
-    ; Options include mass_1, mass_2, sep, porb, ecc, massc_1, massc_2
-    ; rad_1, rad_2
-    convergence_params = [mass_1,mass_2,porb,ecc]
-
-    ; convergence_limits is a dictionary that can contain limits for convergence params
-    ; convergence_limits = {"mass_1" : [0, 20], "sep" : [0,5000]}
-    convergence_limits = {}
-
-    ; formation computes convergence on binary properties
-    ; at formation with user-specified final kstars
-
-    ; 1_SN computes convergence on binary properties
-    ; just before the first supernova for the population with
-    ; user-specified final kstars
-
-    ; 2_SN computes convergence on binary properties
-    ; just before the second supernova for the population with
-    ; user-specified final kstars
-
-    ; disruption computes convergence on binary properties
-    ; just before disruption of the population with
-    ; user-specified final kstars
-
-    ; final_state computes convergence on binary properties
-    ; after the full evolution specified by the user-supplied evolution time
-    ; and with the user specified final kstars
-
-    ; XRB_form computes convergence on binary properties
-    ; at the start of RLO following the first supernova on the population with
-    ; user-specified final kstars
-    pop_select = formation
-
-    ; apply_convergence_limits filters the evolved binary population
-    ; to only the binaries that satisfy the convergence limits
-    ; selection criteria if True
-    apply_convergence_limits = False
-
-    ; match provides the tolerance for the convergence calculation
-    ; and is calculated as match = log10(1-convergence)
-    ; default = -5.0
-    match = -5.0
-
-[rand_seed]
------------
-
-====================  ========================================================
-``rand_seed``         Seed used to for numpy.random.seed
-====================  ========================================================
-
-.. code-block:: ini
-
-    [rand_seed]
-    ; random seed int
-    seed = 42
 
 [bse]
 -----
