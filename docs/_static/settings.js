@@ -13,11 +13,11 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    document.querySelectorAll("h2:not(.setting-group-title)").forEach(h2 => {
+    document.querySelectorAll("h3:not(.setting-group-title)").forEach(h3 => {
         let my_headings = document.querySelectorAll("h2.setting-group-title");
         for (let heading of my_headings) {
-            if (heading.innerText == h2.innerText) {
-                h2.style = "height: 0; margin: 0; overflow: hidden;";
+            if (heading.innerText == h3.innerText) {
+                h3.style = "height: 0; margin: 0; overflow: hidden;";
                 break;
             }
         }
@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 new_ul.appendChild(new_li);
             }
             li.appendChild(new_ul);
-            console.log(li)
         }
     }
 });
