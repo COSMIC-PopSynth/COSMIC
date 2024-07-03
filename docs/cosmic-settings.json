@@ -34,12 +34,12 @@
                 "options-preface": "This is used in conjunction with the [bse] section value dtp to determine the timestep resolution for printing to the bcm array. See the <a href='evolve/resolution.html'>related guide</a> for more information.",
                 "options": [
                     {
-                        "name": "dtp=None",
+                        "name": "'dtp=None'",
                         "description": "Only the final time step is printed to the bcm array",
                         "default": true
                     },
                     {
-                        "name": "dtp=1.0",
+                        "name": "'dtp=1.0'",
                         "description": "Use 1 Myr timesteps for all evolutionary stages"
                     },
                     {

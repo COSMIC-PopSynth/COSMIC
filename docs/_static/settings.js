@@ -36,4 +36,30 @@ document.addEventListener("DOMContentLoaded", function() {
             li.appendChild(new_ul);
         }
     }
+
+    construct_files()
 });
+
+
+function construct_files() {
+    let ini_file = "<span class='c1'>; COSMIC INI file\n</span>"
+    let BSE_dict = {}
+
+    const els = document.querySelectorAll(".setting-card, .settings-section, .form-control");
+    for (let el of els) {
+        if (el.classList.contains("setting-card")) {
+            ini_file += `<span class='k'>\n[${el.getAttribute("data-category")}]\n</span>`;
+        } else if (el.classList.contains("settings-section")) {
+            subheading = el.querySelector("h2").innerText;
+            ini_file += '<span class="c1">\n;;;;' + ';'.repeat(subheading.length) + ';;;;\n</span>';
+            ini_file += `<span class="c1">;;; ${subheading} ;;;\n</span>`;
+            ini_file += '<span class="c1">;;;;' + ';'.repeat(subheading.length) + ';;;;\n</span>';
+        } else if (el.classList.contains("form-control")) {
+            label = el.parentElement.parentElement.querySelector(".name").innerText;
+            value = el.value;
+            ini_file += `<span class="na">${label}</span><span class="na"> = </span><span class="s">${value}\n</span>`;
+        }
+    }
+
+    document.querySelector("#ini-file .highlight-ini pre").innerHTML = ini_file;
+}
