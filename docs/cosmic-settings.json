@@ -987,6 +987,95 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "settings-section": "Mass transfer",
+                "name": "eddfac",
+                "description": "Eddington limit factor for mass transfer.",
+                "options-preface": "",
+                "type": "number",
+                "options": [
+                    {
+                        "name": "1",
+                        "description": "mass transfer rate is limited by the Eddington rate following Equation 67 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                        "default": true
+                    },
+                    {
+                        "name": "values > 1",
+                        "description": "permit super-Eddington accretion up to value <code>eddfac</code>"
+                    },
+                    {
+                        "name": "values in [0, 1]",
+                        "description": "restrict accretion limit to fraction of Eddington (sub-Eddington accretion)"
+                    }
+                ]
+            },
+            {
+                "name": "gamma",
+                "description": "Angular momentum prescriptions for mass lost during Roche-lobe overflow at super-Eddington mass transfer rates",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "assumes the lost material carries away the specific angular momentum of the primary"
+                    },
+                    {
+                        "name": -2,
+                        "description": "assumes material is lost from the system as if it is a wind from the secondary",
+                        "default": true
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "assumes that the lost material takes away a fraction <code>gamma</code> of the orbital angular momentum"
+                    }
+                ]
+            },
+            {
+                "name": "don_lim",
+                "description": "Determines the rate of mass loss through Roche-lobe overflow mass transfer from the donor star",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "donor mass loss rate is calculated following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                        "default": true
+                    },
+                    {
+                        "name": -2,
+                        "description": "donor mass loss rate is calculated following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract'>Claeys+2014</a>"
+                    }
+                ]
+            },
+            {
+                "name": "acc_lim",
+                "description": "Limits the amount of mass accreted during Roche-lobe overflow",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars",
+                        "default": true
+                    },
+                    {
+                        "name": -2,
+                        "description": "limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
+                    },
+                    {
+                        "name": -3,
+                        "description": "limited to 10x the thermal rate of the accretor for all stars"   
+                    },
+                    {
+                        "name": -4,
+                        "description": "limited to 1x the thermal rate of the accretor for all stars"
+                    },
+                    {
+                        "name": ">= 0",
+                        "description": "sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
+                    }
+                ]
             }
         ]
     }
