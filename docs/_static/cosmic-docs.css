@@ -446,7 +446,27 @@ select.form-control {
     }
   }
 
-
+/* Make sure you can see the full BSE dict */
 #python-bse-settings-dictionary .highlight-python pre {
     white-space: preserve-breaks;
+}
+
+.btn {
+    padding: 1rem;
+    margin: auto;
+    background: var(--color-brand-primary);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    cursor: pointer;
+    transition: 300ms;
+}
+
+.btn:hover {
+    filter: brightness(0.8);
+}
+
+.btn-toggle.active {
+    filter: brightness(1.1);
+    font-weight: bold;
 }

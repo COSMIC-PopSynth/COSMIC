@@ -54,7 +54,19 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    construct_files()
+    document.querySelectorAll(".form-control").forEach(input => {
+        input.addEventListener("change", function() {
+            construct_files()
+        });
+    });
+
+    document.getElementById("ini-file-comments").addEventListener("click", function() {
+        this.classList.toggle("active");
+        this.innerText = this.classList.contains("active") ? "Hide Comments" : "Show Comments";
+        construct_files();
+    });
+
+    construct_files();
 
 });
 
@@ -65,6 +77,8 @@ function construct_files() {
     let BSE_dict_string = "<span class='p'>BSE_settings </span><span class='o'> = </span><span class='p'>{</span>"
 
     reached_bse = false;
+
+    const include_comments = document.getElementById("ini-file-comments").classList.contains("active");
 
     const els = document.querySelectorAll(".setting-card, .settings-section, .form-control");
     for (let el of els) {
@@ -79,7 +93,35 @@ function construct_files() {
             ini_file += `<span class="c1">;;; ${subheading} ;;;\n</span>`;
             ini_file += '<span class="c1">;;;;' + ';'.repeat(subheading.length) + ';;;;\n</span>';
         } else if (el.classList.contains("form-control")) {
-            label = el.parentElement.parentElement.querySelector(".name").innerText;
+            const full_setting = el.parentElement.parentElement.parentElement;
+            if (include_comments) {
+                ini_file += `<span class="c1">\n; ${full_setting.querySelector(".name").innerText}\n</span>`;
+                
+                // include the description as a comment
+                description = full_setting.querySelector(".description").innerText;
+                ini_file += `<span class="c1">; ${description}\n</span>`;
+
+                // include the options-preface as a comment
+                options_preface = full_setting.querySelector(".options-preface");
+                if (options_preface && options_preface.innerText != "") {
+                    ini_file += `<span class='c1'>; ${options_preface.innerText}\n</span>`;
+                }
+
+                // include the options as a comment
+                options = full_setting.querySelectorAll("li");
+                if (options.length > 0) {
+                    ini_file += "<span class='c1'>; Options: \n";
+                    for (let option of options) {
+                        ini_file += `<span class='c1'>;    ${option.innerText}\n`;
+                    }
+                    ini_file += "</span>";
+                }
+
+                // include the default value as a comment
+                default_value = full_setting.querySelector(".default").innerText;
+                ini_file += `<span class="c1">; ${default_value}\n</span>`;
+            }
+            label = full_setting.querySelector(".name").innerText;
             value = el.value;
             ini_file += `<span class="na">${label}</span><span class="na"> = </span><span class="s">${value}\n</span>`;
             if (reached_bse) {
@@ -90,5 +132,5 @@ function construct_files() {
     }
 
     document.querySelector("#ini-file .highlight-ini pre").innerHTML = ini_file;
-    document.querySelector("#python-bse-settings-dictionary .highlight-python pre").innerHTML = BSE_dict_string + "<span class='p'>}</span>";
+    document.querySelector("#python-bse-settings-dictionary .highlight-python pre").innerHTML = BSE_dict_string.slice(0, -9) + "</span><span class='p'>}</span>";
 }
