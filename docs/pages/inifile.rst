@@ -83,7 +83,7 @@ TODO
 Python BSE settings dictionary
 ------------------------------
 
-TODO
+:math:`x = y`
 
 .. raw:: html
 

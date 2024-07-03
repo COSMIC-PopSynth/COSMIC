@@ -49,20 +49,6 @@
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
-<h3 class="name"><code>match</code></h3>
-<p class="description">Provides the tolerance for the convergence calculation and is calculated as \({\rm match} = \log_{\rm 10} (1 - {\rm convergence})\)</p>
-<p class="default">Default: -5.0</p>
-</div>
-<div class="col-3"><input class="form-control" type="number" value="-5.0"/></div>
-</div>
-<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
-<div class="row options hide">
-<p class="options-preface"></p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">-5.0</span></code>: <span class="opt-desc">For example, this specifies a tolerance of \(10^{-5}\) for convergence</span></li></ul>
-</div>
-</div><div class="setting">
-<div class="row align-items-center setting-chooser">
-<div class="col-9">
 <h3 class="name"><code>apply_convergence_limits</code></h3>
 <p class="description">Whether to filter the binary population (including the bcm, bpp, initC, and kick_info DataFrames) to only contain the binaries that satisfy the constraints from convergence_limits.</p>
 <p class="default">Default: False</p>
@@ -73,6 +59,20 @@
 <div class="row options hide">
 <p class="options-preface"></p>
 <ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">True</span></code>: <span class="opt-desc">Filter the binary population to only contain the binaries that satisfy the constraints from convergence_limits</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">False</span></code>: <span class="opt-desc">Do not filter the binary population</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>match</code></h3>
+<p class="description">Provides the tolerance for the convergence calculation and is calculated as \({\rm match} = \log_{\rm 10} (1 - {\rm convergence})\)</p>
+<p class="default">Default: -5.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="-5.0"/></div>
+</div>
+<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">-5.0</span></code>: <span class="opt-desc">For example, this specifies a tolerance of \(10^{-5}\) for convergence</span></li></ul>
 </div>
 </div></div>
 </section></div>

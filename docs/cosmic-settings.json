@@ -224,19 +224,6 @@
                 ]
             },
             {
-                "name": "match",
-                "description": "Provides the tolerance for the convergence calculation and is calculated as \\({\\rm match} = \\log_{\\rm 10} (1 - {\\rm convergence})\\)",
-                "type": "number",
-                "options-preface": "",
-                "options": [
-                    {
-                        "name": -5.0,
-                        "description": "For example, this specifies a tolerance of \\(10^{-5}\\) for convergence",
-                        "default": true
-                    }
-                ]
-            },
-            {
                 "name": "apply_convergence_limits",
                 "description": "Whether to filter the binary population (including the bcm, bpp, initC, and kick_info DataFrames) to only contain the binaries that satisfy the constraints from convergence_limits.",
                 "type": "dropdown",
@@ -249,6 +236,19 @@
                     {
                         "name": "False",
                         "description": "Do not filter the binary population",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "match",
+                "description": "Provides the tolerance for the convergence calculation and is calculated as \\({\\rm match} = \\log_{\\rm 10} (1 - {\\rm convergence})\\)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -5.0,
+                        "description": "For example, this specifies a tolerance of \\(10^{-5}\\) for convergence",
                         "default": true
                     }
                 ]
@@ -447,7 +447,7 @@
                 "options": [
                     {
                         "name": 0.5,
-                        "description": "Sets the wind accretion efficiency factor, \\(\\xi_w\\), to 0.5",
+                        "description": "Sets the wind accretion efficiency factor",
                         "default": true
                     }
                 ]
@@ -519,6 +519,27 @@
                 ]
             },
             {
+                "name": "cekickflag",
+                "description": "Selects which mass and separation values to use when a supernova occurs during the CE and a kick needs to be applied.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "uses pre-CE mass and post-CE sep (BSE default)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "uses pre-CE mass and sep values"
+                    },
+                    {
+                        "name": 2,
+                        "description": "uses post-CE mass and sep",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "name": "cemergeflag",
                 "description": "Determines whether stars that begin a CE without a distinct core-envelope boundary automatically lead to merger in a CE. These systems include: kstars = [0,1,2,7,8,10,11,12].",
                 "type": "dropdown",
@@ -557,10 +578,10 @@
                 ]
             },
             {
-                "name": "qcrit",
+                "name": "qcflag",
                 "description": "Selects model to determine critical mass ratios for the onset of unstable mass transfer and/or a common envelope during RLO. NOTE: this is overridden by <code>qcrit_array</code> if any of its values are non-zero.",
                 "type": "dropdown",
-                "options-preface": "The table below shows the values for <code>qcrit</code> across the choices of this flag and the kstar type. The equations in the table correspond to:<br>  - Eq.1: <code class='docutils literal notranslate'><span class='pre'>qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))</span></code> (from Hjellming & Webbink 1983)<br>  - Eq 2: <code class='docutils literal notranslate'><span class='pre'>qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0</span></code> (from Claeys+ 2014)",
+                "options-preface": "The table below shows the values for <code>qcflag</code> across the choices of this flag and the kstar type. The equations in the table correspond to:<br>  - Eq.1: <code class='docutils literal notranslate'><span class='pre'>qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))</span></code> (from Hjellming & Webbink 1983)<br>  - Eq 2: <code class='docutils literal notranslate'><span class='pre'>qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0</span></code> (from Claeys+ 2014)",
                 "options": [
                     {
                         "name": 0,
@@ -724,6 +745,23 @@
                     },
                     {
                         "name": 2.25,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ecsn_low",
+                "description": "Sets the low end of the ECSN mass range",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> uses ecsn_mlow = 1.6, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> uses ecsn_mlow = 1.85, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can decrease this to ecsn_mlow = 1.4"
+                    },
+                    {
+                        "name": 1.6,
                         "description": "Default choice",
                         "default": true
                     }
