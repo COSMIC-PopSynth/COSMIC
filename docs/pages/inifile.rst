@@ -80,14 +80,14 @@ INI file
 
 .. code-block:: ini
 
-    [header]
-    ;comment
-    regular = x
-
     INIFILE HERE
 
 Python BSE settings dictionary
 ------------------------------
+
+.. code-block:: python
+
+    BSE dictionary HERE
 
 :math:`x = y`
 

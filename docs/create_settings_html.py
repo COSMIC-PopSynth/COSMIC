@@ -93,6 +93,11 @@ for group in settings:
 
                 insert_here.append(new_container)
 
+            secret_input = new_setting.new_tag("input", type="string", value="")
+            secret_input["class"] = "form-control hide-me"
+            secret_input["value"] = str(default).replace("'", "")
+            insert_here.append(secret_input)
+
         elif setting["type"] in ["string", "number"]:
             for option in setting["options"]:
                 if "default" in option and option["default"]:

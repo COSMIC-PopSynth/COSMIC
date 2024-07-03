@@ -37,17 +37,41 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    document.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
+        checkbox.addEventListener("change", function() {
+            const checked = checkbox.parentElement.parentElement.querySelectorAll("input[type='checkbox']");
+            value = "[]";
+            if (checked.length > 0) {
+                value = "[";
+                for (let check of checked) {
+                    if (check.checked) {
+                        value += `${check.value}, `;
+                    }
+                }
+                value = value == "[" ? "[]" : value.slice(0, -2) + "]";
+            }
+            checkbox.parentElement.parentElement.querySelector("input.hide-me").value = value;
+        });
+    });
+
     construct_files()
+
 });
 
 
 function construct_files() {
     let ini_file = "<span class='c1'>; COSMIC INI file\n</span>"
-    let BSE_dict = {}
+    let BSE_dict = ""
+    let BSE_dict_string = "<span class='p'>BSE_settings </span><span class='o'> = </span><span class='p'>{</span>"
+
+    reached_bse = false;
 
     const els = document.querySelectorAll(".setting-card, .settings-section, .form-control");
     for (let el of els) {
         if (el.classList.contains("setting-card")) {
+            if (el.getAttribute("data-category") == "bse") {
+                reached_bse = true;
+            }
             ini_file += `<span class='k'>\n[${el.getAttribute("data-category")}]\n</span>`;
         } else if (el.classList.contains("settings-section")) {
             subheading = el.querySelector("h2").innerText;
@@ -58,8 +82,13 @@ function construct_files() {
             label = el.parentElement.parentElement.querySelector(".name").innerText;
             value = el.value;
             ini_file += `<span class="na">${label}</span><span class="na"> = </span><span class="s">${value}\n</span>`;
+            if (reached_bse) {
+                BSE_dict[label] = value;
+                BSE_dict_string += `<span class="s1">'${label}'</span><span class="p">: </span><span class="mf">${value}</span><span class="p">, </span>`
+            }
         }
     }
 
     document.querySelector("#ini-file .highlight-ini pre").innerHTML = ini_file;
+    document.querySelector("#python-bse-settings-dictionary .highlight-python pre").innerHTML = BSE_dict_string + "<span class='p'>}</span>";
 }

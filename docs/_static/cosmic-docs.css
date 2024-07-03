@@ -43,7 +43,7 @@ html[data-theme="dark"] .sd-card {
 }
 
 .hide-me {
-    display: none;
+    display: none!important;
 }
 
 
@@ -445,3 +445,8 @@ select.form-control {
       -webkit-overflow-scrolling: touch;
     }
   }
+
+
+#python-bse-settings-dictionary .highlight-python pre {
+    white-space: preserve-breaks;
+}
