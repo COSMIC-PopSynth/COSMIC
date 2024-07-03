@@ -588,6 +588,19 @@
                         "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable"
                     }
                 ]
+            },
+            {
+                "name": "qcrit_array",
+                "description": "User-defined values for critical mass ratios for the onset of unstable mass transfer and a common envelope during RLOF.",
+                "type": "string",
+                "options-preface": "Array of dimensions (1,16) specifying user-input values for the critical mass ratios that govern the onset of unstable mass transfer and a common envelope. Each item is set individually for its associated kstar, and a value of 0.0 will apply the prescription specified qcflag for that kstar.<br>NOTE: Recall from the start of this section that there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer.",
+                "options": [
+                    {
+                        "name": "[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]",
+                        "description": "Default value, which applies the prescription specified by <code>qcrit</code> for each kstar type",
+                        "default": true
+                    }
+                ]
             }
         ]
     }

@@ -369,5 +369,19 @@
 </tr>
 </tbody>
 <caption>Comparison of qcrit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options</caption></table></div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>qcrit_array</code></h3>
+<p class="description">User-defined values for critical mass ratios for the onset of unstable mass transfer and a common envelope during RLOF.</p>
+<p class="default">Default: [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]</p>
+</div>
+<div class="col-3"><input class="form-control" type="text" value="[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">Array of dimensions (1,16) specifying user-input values for the critical mass ratios that govern the onset of unstable mass transfer and a common envelope. Each item is set individually for its associated kstar, and a value of 0.0 will apply the prescription specified qcflag for that kstar.<br/>NOTE: Recall from the start of this section that there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]</span></code>: <span class="opt-desc">Default value, which applies the prescription specified by <code>qcrit</code> for each kstar type</span></li></ul>
+</div>
 </div></div>
 </section></div>
