@@ -1,5 +1,6 @@
 import bs4
 import json
+import pandas as pd
 
 main_soup = """<!-- This file should be created using create_settings_html.py -->
 <div class="container-fluid"></div>
@@ -128,6 +129,19 @@ for group in settings:
         default_string = str(default)
         default_string = default_string.replace("'", "")
         new_setting.select_one(".default").string = f"Default: {default_string}"
+
+        if setting["name"] == "qcrit":
+            qcrit_table_string = pd.read_csv("data/qcrit_table.csv").to_html(index=False, justify="center")
+            qcrit_table = bs4.BeautifulSoup(qcrit_table_string, 'html.parser')
+            qcrit_table.table["class"] = "table table-striped-columns table-hover table-responsive"
+            qcrit_table.table["border"] = "0"
+            qcrit_table.table["style"] = "text-align:center!important;"
+
+            caption = new_setting.new_tag("caption")
+            caption.string = "Comparison of qcrit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options"
+
+            qcrit_table.table.append(caption)
+            new_setting.select_one(".options").append(qcrit_table)
 
         new_group.select_one(".card-body").append(new_setting)
 

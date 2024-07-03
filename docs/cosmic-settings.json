@@ -500,7 +500,8 @@
                         "description": "Uses a fixed value (i.e. fixes \\( \\lambda \\) to a value of -lambdaf)"
                     }
                 ]
-            }, {
+            }, 
+            {
                 "name": "ceflag",
                 "description": "Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)",
                 "type": "dropdown",
@@ -514,6 +515,77 @@
                         "name": 1,
                         "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)",
                         "default": true
+                    }
+                ]
+            },
+            {
+                "name": "cemergeflag",
+                "description": "Determines whether stars that begin a CE without a distinct core-envelope boundary automatically lead to merger in a CE. These systems include: kstars = [0,1,2,7,8,10,11,12].",
+                "type": "dropdown",
+                "options-preface": "Note that while the optimal choice is <code>cemergeflag=1</code> according to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>, <code>cemergeflag=0</code> allows for both options to be explored, since it is trivial to remove these systems from a population in post processing.",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "allows the CE to proceed (optimistic CE)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "forces the stars to merge in the CE (pessimistic CE)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "cehestarflag",
+                "description": "Uses fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a> for evolving RLO systems with a helium star donor and compact object accretor. NOTE: this flag will override <code>cekickflag</code> if set",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not use the fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a> for final period only"
+                    },
+                    {
+                        "name": 2,
+                        "description": "Use the fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a> for both final mass and final period"
+                    }
+                ]
+            },
+            {
+                "name": "qcrit",
+                "description": "Selects model to determine critical mass ratios for the onset of unstable mass transfer and/or a common envelope during RLO. NOTE: this is overridden by <code>qcrit_array</code> if any of its values are non-zero.",
+                "type": "dropdown",
+                "options-preface": "The table below shows the values for <code>qcrit</code> across the choices of this flag and the kstar type. The equations in the table correspond to:<br>  - Eq.1: <code class='docutils literal notranslate'><span class='pre'>qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))</span></code> (from Hjellming & Webbink 1983)<br>  - Eq 2: <code class='docutils literal notranslate'><span class='pre'>qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0</span></code> (from Claeys+ 2014)",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Section 2.6 of Hurley+2002</a> (Default BSE)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "same as 0 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract'>Table 2 of Claeys+2014</a>"
+                    },
+                    {
+                        "name": 3,
+                        "description": "same as 2 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars"
+                    },
+                    {
+                        "name": 4,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Section 5.1 of Belcyznski+2008</a> except for WD donors which follow BSE"
+                    },
+                    {
+                        "name": 5,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable"
                     }
                 ]
             }

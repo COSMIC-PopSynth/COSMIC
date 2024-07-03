@@ -214,5 +214,160 @@
 <p class="options-preface"></p>
 <ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Use the core masses of the stars to set the initial orbital energy (as in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002 Eq. 70</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Use the total mass of the stars to set the initial orbital energy (as in <a href="https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract">de Kool 1990</a>)</span></li></ul>
 </div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>cemergeflag</code></h3>
+<p class="description">Determines whether stars that begin a CE without a distinct core-envelope boundary automatically lead to merger in a CE. These systems include: kstars = [0,1,2,7,8,10,11,12].</p>
+<p class="default">Default: 1</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="0">0</option><option selected="true" value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">Note that while the optimal choice is <code>cemergeflag=1</code> according to <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a>, <code>cemergeflag=0</code> allows for both options to be explored, since it is trivial to remove these systems from a population in post processing.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">allows the CE to proceed (optimistic CE)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">forces the stars to merge in the CE (pessimistic CE)</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>cehestarflag</code></h3>
+<p class="description">Uses fitting formulae from <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract">Tauris+2015</a> for evolving RLO systems with a helium star donor and compact object accretor. NOTE: this flag will override <code>cekickflag</code> if set</p>
+<p class="default">Default: 0</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="0">0</option><option value="1">1</option><option value="2">2</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Do not use the fitting formulae from <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract">Tauris+2015</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Use the fitting formulae from <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract">Tauris+2015</a> for final period only</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">Use the fitting formulae from <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract">Tauris+2015</a> for both final mass and final period</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>qcrit</code></h3>
+<p class="description">Selects model to determine critical mass ratios for the onset of unstable mass transfer and/or a common envelope during RLO. NOTE: this is overridden by <code>qcrit_array</code> if any of its values are non-zero.</p>
+<p class="default">Default: 1</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="0">0</option><option selected="true" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">The table below shows the values for <code>qcrit</code> across the choices of this flag and the kstar type. The equations in the table correspond to:<br/>  - Eq.1: <code class="docutils literal notranslate"><span class="pre">qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))</span></code> (from Hjellming &amp; Webbink 1983)<br/>  - Eq 2: <code class="docutils literal notranslate"><span class="pre">qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0</span></code> (from Claeys+ 2014)</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Section 2.6 of Hurley+2002</a> (Default BSE)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">same as 0 but with <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract">Hjellming &amp; Webbink 1987</a> for GB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract">Table 2 of Claeys+2014</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">3</span></code>: <span class="opt-desc">same as 2 but with <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract">Hjellming &amp; Webbink 1987</a> for GB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">4</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Section 5.1 of Belcyznski+2008</a> except for WD donors which follow BSE</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">5</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract">Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable</span></li></ul>
+<table border="0" class="table table-striped-columns table-hover table-responsive" style="text-align:center!important;">
+<thead>
+<tr style="text-align: center;">
+<th>kstar</th>
+<th>qc=0</th>
+<th>qc=1</th>
+<th>qc=2</th>
+<th>qc=3</th>
+<th>qc=4</th>
+<th>qc=5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0.695</td>
+<td>0.695</td>
+<td>0.695 / 1.0</td>
+<td>0.695 / 1.0</td>
+<td>3.000</td>
+<td>1.717</td>
+</tr>
+<tr>
+<td>1</td>
+<td>3</td>
+<td>3</td>
+<td>1.6 / 1.0</td>
+<td>1.6 / 1.0</td>
+<td>3.000</td>
+<td>1.717</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4</td>
+<td>4</td>
+<td>4.0 / 4.7619</td>
+<td>4.0 / 4.7619</td>
+<td>3.000</td>
+<td>3.825</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Eq.2</td>
+<td>Eq.1</td>
+<td>Eq.2 / 1.15</td>
+<td>Eq.1 / 1.15</td>
+<td>3.000</td>
+<td>Eq.1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>3.0 / 3.0</td>
+<td>3.0 / 3.0</td>
+<td>3.000</td>
+<td>3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Eq.2</td>
+<td>Eq.1</td>
+<td>Eq.2 / 1.15</td>
+<td>Eq.1 / 1.15</td>
+<td>3.000</td>
+<td>Eq.1</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Eq.2</td>
+<td>Eq.1</td>
+<td>Eq.2 / 1.15</td>
+<td>Eq.1 / 1.15</td>
+<td>3.000</td>
+<td>Eq.1</td>
+</tr>
+<tr>
+<td>7</td>
+<td>3</td>
+<td>3</td>
+<td>3.0 / 3.0</td>
+<td>3.0 / 3.0</td>
+<td>1.700</td>
+<td>inf</td>
+</tr>
+<tr>
+<td>8</td>
+<td>0.784</td>
+<td>0.784</td>
+<td>4.0 / 4.7619</td>
+<td>4.0 / 4.7619</td>
+<td>3.500</td>
+<td>inf</td>
+</tr>
+<tr>
+<td>9</td>
+<td>0.784</td>
+<td>0.784</td>
+<td>0.784 / 1.15</td>
+<td>0.784 / 1.15</td>
+<td>3.500</td>
+<td>inf</td>
+</tr>
+<tr>
+<td>10-14</td>
+<td>0.628</td>
+<td>0.628</td>
+<td>3.0 / 0.625</td>
+<td>3.0 / 0.625</td>
+<td>0.628</td>
+<td>0.628</td>
+</tr>
+</tbody>
+<caption>Comparison of qcrit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options</caption></table></div>
 </div></div>
 </section></div>
