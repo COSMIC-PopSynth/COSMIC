@@ -26,7 +26,7 @@ settings_template = """<div class="setting">
                 <div class="options-expander">Option details <i class="fa fa-chevron-down"></i></div>
                 <div class="row options hide">
                     <p class="options-preface"></p>
-                    <ul style="margin-left: 2rem"></ul>
+                    <ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"></ul>
                 </div>
             </div>"""
 

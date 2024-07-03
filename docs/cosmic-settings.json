@@ -845,6 +845,148 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "settings-section": "Remnant mass",
+                "name": "remnantflag",
+                "description": "Determines the remnant mass prescription used for NSs and BHs.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Section 6 of Hurley+2000</a> (default BSE)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002ApJ...572..407B/abstract'>Belczynski+2002</a>"
+                    },
+                    {
+                        "name": 2,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>"
+                    },
+                    {
+                        "name": 3,
+                        "description": "follows the rapid prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>, with updated proto-core mass from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a>. This leads to a mass gap between neutron stars and black holes."
+                    },
+                    {
+                        "name": 4,
+                        "description": "follows the delayed prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>. This fills the mass gap between neutron stars and black holes.",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "mxns",
+                "description": "Sets the boundary between the maximum NS mass and the minimum BH mass",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the boundary between the maximum NS mass and the minimum BH mass"
+                    },
+                    {
+                        "name": 3.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "rembar_massloss",
+                "description": "Determines the prescriptions for mass conversion due to neutrino emission during the collapse of the proto-compact object",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\\({\\sim 5 \\mathrm{M}_\\odot}\\) Fryer, private communication)"
+                    },
+                    {
+                        "name": "values in [-1, 0]",
+                        "description": "assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "wd_mass_lim",
+                "description": "Determines if the maximum white dwarf mass is limited to the chandraekhar mass during mic",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not apply the limit"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Apply the limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Remnant spin",
+                "name": "bhspinflag",
+                "description": "Uses different prescriptions for BH spin after formation",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "sets all BH spins to bhspinmag",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "draws a random BH spin between 0 and bhspinmag for every BH"
+                    },
+                    {
+                        "name": 2,
+                        "description": "core-mass dependent BH spin (based on <a class='reference external' href='https://arxiv.org/abs/1706.07053v1'>Belczynski+2017 v1</a>)"
+                    }
+                ]
+            },
+            {
+                "name": "bhspinmag",
+                "description": "Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins (see bhspinflag)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins (see bhspinflag)"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "GR Orbital Decay",
+                "name": "grflag",
+                "description": "Turns on or off orbital decay due to gravitational wave emission",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No orbital decay due to gravitational wave emission"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Orbital decay due to gravitational wave emission is turned on",
+                        "default": true
+                    }
+                ]
             }
         ]
     }
