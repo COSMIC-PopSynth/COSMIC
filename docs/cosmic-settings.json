@@ -601,6 +601,250 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "settings-section": "Natal kicks",
+                "name": "kickflag",
+                "description": "Sets the particular natal kick prescription to use. Note that <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code>, and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>, which are described below, are only used when <code class='docutils literal notranslate'><span class='pre'>kickflag=0</span></code>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and ECSN/USSN are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>. This setting has additional possible options for <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code> and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>.",
+                        "default": true
+                    },
+                    {
+                        "name": -1,
+                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a></p>"
+                    },
+                    {
+                        "name": -2,
+                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a>"
+                    },
+                    {
+                        "name": -3,
+                        "description": "Natal kicks are drawn according to Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract'>Bray &amp; Eldridge 2016</a>"
+                    }
+                ]
+            },
+            {
+                "name": "sigma",
+                "description": "Sets the dispersion in the Maxwellian for the SN kick velocity in km/s",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the dispersion in the Maxwellian for the SN kick velocity in km/s"
+                    },
+                    {
+                        "name": 265.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "bhflag",
+                "description": "Sets the model for how SN kicks are applied to BHs, where bhflag != 0 allows for velocity kick at BH formation",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No BH kick"
+                    },
+                    {
+                        "name": 1,
+                        "description": "fallback-modulated kicks following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "kicks decreased by ratio of BH mass to NS mass (1.44 Msun); conserves linear momentum"
+                    },
+                    {
+                        "name": 3,
+                        "description": "BH natal kicks are not decreased compared to NS kicks and are drawn from the same Maxwellian distribution with dispersion = <code>sigma</code> set above"
+                    }
+                ]
+            },
+            {
+                "name": "bhsigmafrac",
+                "description": "Sets a fractional modification which scales down sigma for BHs. This works in addition to whatever is chosen for bhflag, and is applied to sigma before the bhflag prescriptions are applied",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values between [0, 1]",
+                        "description": "reduces sigma by bhsigmafrac for BHs"
+                    },
+                    {
+                        "name": 1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "sigmadiv",
+                "description": "Sets the modified ECSN kick strength",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "divide sigma (defined above) by sigmadiv"
+                    },
+                    {
+                        "name": "negative values",
+                        "description": "    sets ECSN kicks to be drawn from a Maxwellian distribution with dispersion given by sigmadiv"
+                    },
+                    {
+                        "name": -20.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ecsn",
+                "description": "Allows for electron capture SNe and sets the maximum He-star mass (at core helium depletion) that will result in an ECSN",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "turns off ECSN"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> and <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> use ecsn = 2.25, while <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can increase this to ecsn = 2.5"
+                    },
+                    {
+                        "name": 2.25,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "aic",
+                "description": "Sets the model for accretion induced collapse SN natal kicks",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "AIC SN receive kicks drawn from Maxwellian with dispersion = sigma defined above"
+                    },
+                    {
+                        "name": 1,
+                        "description": "sets AIC SN kick strength according to sigmadiv; NOTE that this will apply even if ecsn = 0.0",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ussn",
+                "description": "Reduces kicks according to the sigmadiv selection for ultra-stripped supernovae, assumed to happen if a He-star undergoes a CE with a compact companion",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "USSN receive kicks drawn from Maxwellian with dispersion = sigma defined above"
+                    },
+                    {
+                        "name": 1,
+                        "description": "sets USSN kick strength according to sigmadiv",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "pisn",
+                "description": "Allows for (pulsational) pair instability supernovae and sets either the model to use or the maximum mass of the remnant.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "no pulsational pair instability SN"
+                    },
+                    {
+                        "name": -1,
+                        "description": " uses the formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4739S/abstract'>Spera &amp; Mapelli 2017</a>"
+                    },
+                    {
+                        "name": -2,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2018arXiv181013412M/abstract'>Table 1 in Marchant+2018</a>",
+                        "default": true
+                    },
+                    {
+                        "name": -3,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract'>Table 5 in Woosley 2019</a>"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "turns on pulsational pair instability and pair instability SNe, and sets the maximum mass of the allowed remnant (i.e., the bottom of the pair instability mass gap). He core masses between pisn and 65 Msun are assumed to go through pulsational pair instability and limit the He core mass to pisn, while He core masses from 65-135 Msun are assumed have a pair instability SN and leave no remnant."
+                    }
+                ]
+            },
+            {
+                "name": "polar_kick_angle",
+                "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values between [0, 90]",
+                        "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Strictly polar kicks"
+                    },
+                    {
+                        "name": 90.0,
+                        "description": "Fully isotropic kicks (default choice)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "natal_kick_array",
+                "description": "Array of dimensions (2,5) which takes user input values for the SN natal kick, where the first row corresponds to the first star and the second row corresponds to the second star and columns are: [vk, phi, theta, mean_anomaly, rand_seed].",
+                "type": "string",
+                "options-preface": "NOTE: any numbers outside the ranges below will be sampled in the standard ways detailed above.",
+                "options": [
+                    {
+                        "name": "vk",
+                        "description": "SN kick velocity in km/s, valid on the range [0, inf]"
+                    },
+                    {
+                        "name": "phi",
+                        "description": "SN kick co-lateral polar angle in degrees, valid on the range [-90, 90]"
+                    },
+                    {
+                        "name": "theta",
+                        "description": "SN kick azimuthal angle in degrees, valid on the range [0, 360]"
+                    },
+                    {
+                        "name": "mean_anomaly",
+                        "description": "SN kick mean anomaly in degrees, valid on the range [0, 360]"
+                    },
+                    {
+                        "name": "rand_seed",
+                        "description": "supplied if restarting evolution after a supernova has already occurred"
+                    },
+                    {
+                        "name": "[[-100.0, -100.0, -100.0, -100.0, 0.0], [-100.0, -100.0, -100.0, -100.0, 0.0]]",
+                        "description": "Default choice, which applies the standard natal kick prescription",
+                        "default": true
+                    }
+                ]
             }
         ]
     }
