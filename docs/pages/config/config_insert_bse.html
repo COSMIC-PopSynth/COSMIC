@@ -775,5 +775,117 @@
 <p class="options-preface"></p>
 <ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Retains epsnov fraction of accreted matter</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.001</span></code>: <span class="opt-desc">Default choice</span></li></ul>
 </div>
+</div><div class="settings-section"><h2 id="pulsars">Pulsars</h2><hr/></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>bdecayfac</code></h3>
+<p class="description">Activates different models for accretion induced field decay; see <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract">Kiel+2008</a>.</p>
+<p class="default">Default: 1</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="0">0</option><option selected="true" value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">uses an exponential decay</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">uses an inverse decay</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>bconst</code></h3>
+<p class="description">Sets the magnetic field decay timescale for pulsars following Section 3 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract">Kiel+2008</a>.</p>
+<p class="default">Default: 3000</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="3000"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">sets \(k\) in Myr from Equation 8 to <code>bconst</code></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">3000</span></code>: <span class="opt-desc">Default choice</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>ck</code></h3>
+<p class="description">Sets the magnetic field decay timescale for pulsars following Section 3 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract">Kiel+2008</a>.</p>
+<p class="default">Default: 1000</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="1000"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">sets \(\tau_b\) in Myr from Equation 2 to <code>ck</code></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1000</span></code>: <span class="opt-desc">Default choice</span></li></ul>
+</div>
+</div><div class="settings-section"><h2 id="mixing-variables">Mixing variables</h2><hr/></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>rejuv_fac</code></h3>
+<p class="description">Sets the mixing factor in main sequence star collisions. This is hard coded to 0.1 in the original BSE release and in Equation 80 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002</a> but can lead to extended main sequence lifetimes in some cases.</p>
+<p class="default">Default: 1.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="1.0"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">sets the mixing factor in main sequence star collisions</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1.0</span></code>: <span class="opt-desc">Default choice</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>rejuvflag</code></h3>
+<p class="description">Sets whether to use the orginal prescription for mixing of main-sequence stars (based on equation 80 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002</a>) or whether to use the ratio of the pre-merger He core mass at the base of the giant branch to the merger product's He core mass at the base of the giant branch</p>
+<p class="default">Default: 0</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="0">0</option><option value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">No modifications to BSE</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">modified mixing times</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>bhms_coll_flag</code></h3>
+<p class="description">If set to 1, then the star is not destroyed in a BH+star collision  if \(M_{\rm star} &gt; M_{\rm BH}\)</p>
+<p class="default">Default: 0</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="0">0</option><option value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Star is destroyed in a BH+star collision even if \(M_{\rm star} &gt; M_{\rm BH}\)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Star is not destroyed in a BH+star collision if \(M_{\rm star} &gt; M_{\rm BH}\)</span></li></ul>
+</div>
+</div><div class="settings-section"><h2 id="magnetic-braking">Magnetic Braking</h2><hr/></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>htpmb</code></h3>
+<p class="description">Activates different models for magnetic braking</p>
+<p class="default">Default: 1</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="-1">-1</option><option value="0">0</option><option selected="true" value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">No magnetic braking</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">No modifications to BSE</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2003ApJ...599..516I/abstract">Ivanona and Taam 2003</a></span></li></ul>
+</div>
+</div><div class="settings-section"><h2 id="miscellaneous">Miscellaneous</h2><hr/></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>ST_cr</code></h3>
+<p class="description">Activates different convective vs radiative boundaries</p>
+<p class="default">Default: 1</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="0">0</option><option selected="true" value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Follows BSE (<a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Follow StarTrack (<a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a>)</span></li></ul>
+</div>
 </div></div>
 </section></div>

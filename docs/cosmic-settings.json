@@ -1180,6 +1180,150 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "settings-section": "Pulsars",
+                "name": "bdecayfac",
+                "description": "Activates different models for accretion induced field decay; see <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract'>Kiel+2008</a>.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "uses an exponential decay"
+                    },
+                    {
+                        "name": 1,
+                        "description": "uses an inverse decay",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "bconst",
+                "description": "Sets the magnetic field decay timescale for pulsars following Section 3 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract'>Kiel+2008</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets \\(k\\) in Myr from Equation 8 to <code>bconst</code>"
+                    },
+                    {
+                        "name": 3000,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ck",
+                "description": "Sets the magnetic field decay timescale for pulsars following Section 3 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract'>Kiel+2008</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets \\(\\tau_b\\) in Myr from Equation 2 to <code>ck</code>"
+                    },
+                    {
+                        "name": 1000,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Mixing variables",
+                "name": "rejuv_fac",
+                "description": "Sets the mixing factor in main sequence star collisions. This is hard coded to 0.1 in the original BSE release and in Equation 80 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a> but can lead to extended main sequence lifetimes in some cases.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets the mixing factor in main sequence star collisions"
+                    },
+                    {
+                        "name": 1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "rejuvflag",
+                "description": "Sets whether to use the orginal prescription for mixing of main-sequence stars (based on equation 80 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>) or whether to use the ratio of the pre-merger He core mass at the base of the giant branch to the merger product's He core mass at the base of the giant branch",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "modified mixing times"
+                    }
+                ]
+            },
+            {
+                "name": "bhms_coll_flag",
+                "description": "If set to 1, then the star is not destroyed in a BH+star collision  if \\(M_{\\rm star} > M_{\\rm BH}\\)",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Star is destroyed in a BH+star collision even if \\(M_{\\rm star} > M_{\\rm BH}\\)",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Star is not destroyed in a BH+star collision if \\(M_{\\rm star} > M_{\\rm BH}\\)"
+                    }
+                ]
+            },
+            {
+                "settings-section": "Magnetic Braking",
+                "name": "htpmb",
+                "description": "Activates different models for magnetic braking",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "No magnetic braking"
+                    },
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE"
+                    },
+                    {
+                        "name": 1,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2003ApJ...599..516I/abstract'>Ivanona and Taam 2003</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Miscellaneous",
+                "name": "ST_cr",
+                "description": "Activates different convective vs radiative boundaries",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Follows BSE (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Follow StarTrack (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)",
+                        "default": true
+                    }
+                ]
             }
         ]
     }
