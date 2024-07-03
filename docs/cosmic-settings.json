@@ -464,6 +464,58 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "settings-section": "Common-envelope",
+                "settings-section-description": "Note: there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer. In the following cases, a common envelope occurs regardless of the choices below:<ul><li><b>contact</b>: the stellar radii go into contact (common for similar ZAMS systems)</li><li><b>periapse contact</b>: the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)</li><li><b>core Roche overflow</b>: either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)</li></ul>",
+                "name": "alpha1",
+                "description": "Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "type": "number",
+                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "options": [
+                    {
+                        "name": 1.0,
+                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\), to 1.0",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "lambdaf",
+                "description": "Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \\(1 / \\lambda\\). See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 69</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "uses variable lambda prescription detailed in appendix of <a href='https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract'>Claeys+2014</a> where lambdaf is the fraction of the ionization energy that can go into ejecting the envelope; to use this prescription without extra ionization energy, set lambdaf = 0"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "As above, this is the default choice",
+                        "default": true
+                    },
+                    {
+                        "name": -1.0,
+                        "description": "Uses a fixed value (i.e. fixes \\( \\lambda \\) to a value of -lambdaf)"
+                    }
+                ]
+            }, {
+                "name": "ceflag",
+                "description": "Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the core masses of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 70</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)",
+                        "default": true
+                    }
+                ]
             }
         ]
     }

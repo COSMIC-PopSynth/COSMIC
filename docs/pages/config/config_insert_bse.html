@@ -172,5 +172,47 @@
 <p class="options-preface">This value is equivalent to \(\alpha_w\) in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 6</a>.</p>
 <ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">1.5</span></code>: <span class="opt-desc">Sets the Bondi-Hoyle wind accretion factor, \(\alpha_w\), to 1.5</span></li></ul>
 </div>
+</div><div class="settings-section"><h2 id="common-envelope">Common-envelope</h2><hr/>Note: there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer. In the following cases, a common envelope occurs regardless of the choices below:<ul><li><b>contact</b>: the stellar radii go into contact (common for similar ZAMS systems)</li><li><b>periapse contact</b>: the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)</li><li><b>core Roche overflow</b>: either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)</li></ul></div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>alpha1</code></h3>
+<p class="description">Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 71</a>.</p>
+<p class="default">Default: 1.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="1.0"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">This value is equivalent to \(\alpha\) in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 71</a>.</p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">1.0</span></code>: <span class="opt-desc">Sets the common-envelope efficiency parameter, \(\alpha\), to 1.0</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>lambdaf</code></h3>
+<p class="description">Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \(1 / \lambda\). See <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 69</a>.</p>
+<p class="default">Default: 0.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.0"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">uses variable lambda prescription detailed in appendix of <a href="https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract">Claeys+2014</a> where lambdaf is the fraction of the ionization energy that can go into ejecting the envelope; to use this prescription without extra ionization energy, set lambdaf = 0</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.0</span></code>: <span class="opt-desc">As above, this is the default choice</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-1.0</span></code>: <span class="opt-desc">Uses a fixed value (i.e. fixes \( \lambda \) to a value of -lambdaf)</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>ceflag</code></h3>
+<p class="description">Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)</p>
+<p class="default">Default: 1</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="0">0</option><option selected="true" value="1">1</option></select></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Use the core masses of the stars to set the initial orbital energy (as in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002 Eq. 70</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Use the total mass of the stars to set the initial orbital energy (as in <a href="https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract">de Kool 1990</a>)</span></li></ul>
+</div>
 </div></div>
 </section></div>

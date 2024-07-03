@@ -58,6 +58,9 @@ for group in settings:
             settings_section.append(header)
             settings_section.append(new_group.new_tag("hr"))
 
+            if "settings-section-description" in setting:
+                settings_section.append(bs4.BeautifulSoup(setting["settings-section-description"], 'html.parser'))
+
             new_group.select_one(".card-body").append(settings_section)
 
         print(f"Creating setting {setting['name']}")
