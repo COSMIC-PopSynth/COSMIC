@@ -1076,6 +1076,110 @@
                         "description": "sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
                     }
                 ]
+            },
+            {
+                "settings-section": "Tides",
+                "name": "tflag",
+                "description": "Activates tidal circularization following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No tidal circularization"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Tidal circularization is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ST_tide",
+                "description": "Activates StarTrack setup for tides following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Follows BSE (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Follow StarTrack (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>). Note StarTrack method does not use a better integration scheme (yet) but simply ; follows similar set up to startrack (including initial vrot, using roche-lobe check ; at periastron, and circularisation and synchronisation at start of MT).",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fprimc_array",
+                "description": "Controls the scaling factor for convective tides. Each value in the array is set individually for its associated kstar. The relevant equation is <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 21</a>.",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets scaling factor of Equation 21 referenced above"
+                    },
+                    {
+                        "name": "[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]",
+                        "description": "Default choice, which applies the standard scaling factor",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "White dwarfs",
+                "name": "ifflag",
+                "description": "Activates the initial-final white dwarf mass relation from Han+1995 <a class='reference external' href='http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&amp;link_type=ARTICLE&amp;db_key=AST&amp;high=#page=4'>Equations 3, 4, and 5</a>.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Initial-final white dwarf mass relation is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "wdflag",
+                "description": "Activates an alternate cooling law found in the description immediately following <a class='reference external' href='http://iopscience.iop.org/article/10.1086/374637/pdf#page=3'>Equation 1</a> in Hurley &amp; Shara 2003. Equation 1 gives the BSE default Mestel cooling law.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Alternate cooling law is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "epsnov",
+                "description": "Fraction of accreted matter retained in a nova eruption. This is relevant for accretion onto degenerate objects; see Section 2.6.6.2 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Retains epsnov fraction of accreted matter"
+                    },
+                    {
+                        "name": 0.001,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
             }
         ]
     }
