@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("hide-this-maths").classList.add("hide-me");
+
     document.querySelectorAll(".options-expander").forEach(expander => {
         expander.addEventListener("click", function() {
             expander.parentElement.querySelector(".options").classList.toggle("hide");
@@ -96,15 +98,15 @@ function construct_files() {
             const full_setting = el.parentElement.parentElement.parentElement;
             if (include_comments) {
                 ini_file += `<span class="c1">\n; ${full_setting.querySelector(".name").innerText}\n</span>`;
-                
+
                 // include the description as a comment
-                description = full_setting.querySelector(".description").innerText;
+                description = full_setting.querySelector(".description").innerText.replaceAll('\n', '');
                 ini_file += `<span class="c1">; ${description}\n</span>`;
 
                 // include the options-preface as a comment
                 options_preface = full_setting.querySelector(".options-preface");
                 if (options_preface && options_preface.innerText != "") {
-                    ini_file += `<span class='c1'>; ${options_preface.innerText}\n</span>`;
+                    ini_file += `<span class='c1'>; ${options_preface.innerText.replaceAll('\n', '')}\n</span>`;
                 }
 
                 // include the options as a comment
@@ -112,7 +114,7 @@ function construct_files() {
                 if (options.length > 0) {
                     ini_file += "<span class='c1'>; Options: \n";
                     for (let option of options) {
-                        ini_file += `<span class='c1'>;    ${option.innerText}\n`;
+                        ini_file += `<span class='c1'>;    ${option.innerText.replaceAll('\n', '')}\n`;
                     }
                     ini_file += "</span>";
                 }

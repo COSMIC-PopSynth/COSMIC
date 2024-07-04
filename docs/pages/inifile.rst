@@ -95,7 +95,13 @@ Python BSE settings dictionary
 
     BSE dictionary HERE
 
-:math:`x = y`
+.. this is a dummy line to make sure sphinx imports mathjax
+.. math::
+    :name: hide-this-maths
+
+    x = y
+
+
 
 .. raw:: html
 
