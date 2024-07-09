@@ -269,7 +269,120 @@
 <div class="row options hide">
 <p class="options-preface">The table below shows the values for <code>qcflag</code> across the choices of this flag and the kstar type. The equations in the table correspond to:<br/>  - Eq.1: <code class="docutils literal notranslate"><span class="pre">qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))</span></code> (from Hjellming &amp; Webbink 1983)<br/>  - Eq 2: <code class="docutils literal notranslate"><span class="pre">qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0</span></code> (from Claeys+ 2014)</p>
 <ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Section 2.6 of Hurley+2002</a> (Default BSE)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">same as 0 but with <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract">Hjellming &amp; Webbink 1987</a> for GB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract">Table 2 of Claeys+2014</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">3</span></code>: <span class="opt-desc">same as 2 but with <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract">Hjellming &amp; Webbink 1987</a> for GB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">4</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Section 5.1 of Belcyznski+2008</a> except for WD donors which follow BSE</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">5</span></code>: <span class="opt-desc">follows <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract">Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable</span></li></ul>
-</div>
+<table border="0" class="table table-striped-columns table-hover table-responsive" style="text-align:center!important;">
+<thead>
+<tr style="text-align: center;">
+<th>kstar</th>
+<th>qc=0</th>
+<th>qc=1</th>
+<th>qc=2</th>
+<th>qc=3</th>
+<th>qc=4</th>
+<th>qc=5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0.695</td>
+<td>0.695</td>
+<td>0.695 / 1.0</td>
+<td>0.695 / 1.0</td>
+<td>3.000</td>
+<td>1.717</td>
+</tr>
+<tr>
+<td>1</td>
+<td>3</td>
+<td>3</td>
+<td>1.6 / 1.0</td>
+<td>1.6 / 1.0</td>
+<td>3.000</td>
+<td>1.717</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4</td>
+<td>4</td>
+<td>4.0 / 4.7619</td>
+<td>4.0 / 4.7619</td>
+<td>3.000</td>
+<td>3.825</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Eq.2</td>
+<td>Eq.1</td>
+<td>Eq.2 / 1.15</td>
+<td>Eq.1 / 1.15</td>
+<td>3.000</td>
+<td>Eq.1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>3.0 / 3.0</td>
+<td>3.0 / 3.0</td>
+<td>3.000</td>
+<td>3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Eq.2</td>
+<td>Eq.1</td>
+<td>Eq.2 / 1.15</td>
+<td>Eq.1 / 1.15</td>
+<td>3.000</td>
+<td>Eq.1</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Eq.2</td>
+<td>Eq.1</td>
+<td>Eq.2 / 1.15</td>
+<td>Eq.1 / 1.15</td>
+<td>3.000</td>
+<td>Eq.1</td>
+</tr>
+<tr>
+<td>7</td>
+<td>3</td>
+<td>3</td>
+<td>3.0 / 3.0</td>
+<td>3.0 / 3.0</td>
+<td>1.700</td>
+<td>inf</td>
+</tr>
+<tr>
+<td>8</td>
+<td>0.784</td>
+<td>0.784</td>
+<td>4.0 / 4.7619</td>
+<td>4.0 / 4.7619</td>
+<td>3.500</td>
+<td>inf</td>
+</tr>
+<tr>
+<td>9</td>
+<td>0.784</td>
+<td>0.784</td>
+<td>0.784 / 1.15</td>
+<td>0.784 / 1.15</td>
+<td>3.500</td>
+<td>inf</td>
+</tr>
+<tr>
+<td>10-14</td>
+<td>0.628</td>
+<td>0.628</td>
+<td>3.0 / 0.625</td>
+<td>3.0 / 0.625</td>
+<td>0.628</td>
+<td>0.628</td>
+</tr>
+</tbody>
+<caption>Comparison of qcrit Values (Donor Mass/Accretor Mass) For Each Donor Kstar Type Across Flag Options</caption></table></div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
