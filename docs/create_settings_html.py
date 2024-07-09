@@ -135,7 +135,7 @@ for group in settings:
         default_string = default_string.replace("'", "")
         new_setting.select_one(".default").string = f"Default: {default_string}"
 
-        if setting["name"] == "qcrit":
+        if setting["name"] == "qcflag":
             qcrit_table_string = pd.read_csv("data/qcrit_table.csv").to_html(index=False, justify="center")
             qcrit_table = bs4.BeautifulSoup(qcrit_table_string, 'html.parser')
             qcrit_table.table["class"] = "table table-striped-columns table-hover table-responsive"
