@@ -75,7 +75,7 @@
             },
             {
                 "name": "primary_model",
-                "description": "Model for sampling primary masses <br><i>[Only used when <code>sampling_method = independent</code>] </i>",
+                "description": "Model for sampling primary masses <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
@@ -96,7 +96,7 @@
             },
             {
                 "name": "porb_model",
-                "description": "Model for sampling orbital periods <br><i>[Only used when <code>sampling_method = independent</code>] </i>",
+                "description": "Model for sampling orbital periods <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
@@ -125,13 +125,13 @@
             },
             {
                 "name": "ecc_model",
-                "description": "Model for sampling eccentricity <br><i>[Only used when <code>sampling_method = independent</code>] </i>",
+                "description": "Model for sampling eccentricity <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
                     {
                         "name": "thermal",
-                        "description": "Samples from a  thermal eccentricity distribution following <a href='http://adsabs.harvard.edu/abs/1975MNRAS.173..729H'>Heggie (1975)</a>"
+                        "description": "Samples from a thermal eccentricity distribution following <a href='http://adsabs.harvard.edu/abs/1975MNRAS.173..729H'>Heggie (1975)</a>"
                     },
                     {
                         "name": "uniform",
@@ -177,6 +177,31 @@
                     },
                     {
                         "name": 0.1,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "binfrac_model",
+                "description": "Model for sampling binary fraction <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values between [0, 1]",
+                        "description": "Fixed binary fraction"
+                    },
+                    {
+                        "name": "vanHaaften",
+                        "description": "Primary mass dependent binary fraction following van Haaften+05"
+                    },
+                    {
+                        "name": "offner22",
+                        "description": "Primary mass dependent binary fraction following Offner+22"
+                    },
+                    {
+                        "name": 0.5,
                         "description": "Default value",
                         "default": true
                     }
@@ -806,15 +831,15 @@
                     },
                     {
                         "name": -1,
-                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a></p>"
+                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a></p> with their default parameters (\\(m_{\\rm NS = 1.2 {\\rm M_\\odot}\\), \\(m_{\\rm ej = 9 {\\rm M_\\odot}\\))"
                     },
                     {
                         "name": -2,
-                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a>"
+                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a>, which does not scale the kick by (\\(m_{\\rm NS\\)"
                     },
                     {
                         "name": -3,
-                        "description": "Natal kicks are drawn according to Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract'>Bray &amp; Eldridge 2016</a>"
+                        "description": "Natal kicks are drawn according to Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract'>Bray &amp; Eldridge 2016</a>, with their default parameters (\\(\\alpha=70 \\, {\\rm km/s}, \\beta = 120 \\, {\\rm km/s)}"
                     }
                 ]
             },
@@ -940,7 +965,7 @@
                 "name": "aic",
                 "description": "Sets the model for accretion induced collapse SN natal kicks",
                 "type": "dropdown",
-                "options-preface": "",
+                "options-preface": "Applies even if <code>ecsn = 0<.code>",
                 "options": [
                     {
                         "name": 0,
@@ -1111,8 +1136,8 @@
                         "description": "sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\\({\\sim 5 \\mathrm{M}_\\odot}\\) Fryer, private communication)"
                     },
                     {
-                        "name": "values in [-1, 0]",
-                        "description": "assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)"
+                        "name": "values in [-1, 0)",
+                        "description": "assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole, such that \\(M_{\\rm rem} = (1 + \\texttt{rembar\\_massloss}) M_{\\rm rem}\\) (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)"
                     },
                     {
                         "name": 0.5,
@@ -1123,7 +1148,7 @@
             },
             {
                 "name": "wd_mass_lim",
-                "description": "Determines if the maximum white dwarf mass is limited to the chandraekhar mass during mic",
+                "description": "Determines if the maximum white dwarf mass is limited to the chandraekhar mass during merger induced collapse",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
@@ -1529,6 +1554,27 @@
                         "name": 1,
                         "description": "Follow StarTrack (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)",
                         "default": true
+                    }
+                ]
+            },
+            {
+                "name": "rtmsflag",
+                "description": "Flag for calculating the radius at the end of the main sequence.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the original SSE calculation <b>except</b> if M>200Msun and Z<0.0008 (~0.04 Zsun). For the exception, an extrapolation is used. This ad hoc extrapolation works well for stars with M < 4000 Msun for Z >= 0.01 Zsun. For lower metallicities, you may still run into issues of negative radii for very massive stars - use at your own risk.",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Calculate using BoOST simulation data. BoOST metallicities = [1.1e-4, 2.1e-4, 1e-3, 2e-3] corresponding to [dwarfD, IZw18, dwarfA, SMC] models (Szecsi et al. (2022))"
+                    },
+                    {
+                        "name": 2,
+                        "description": "Calculating using BPASS simulation data. BPASS metallicities = [1e-4, *2e-4*, 1e-3, 2e-3]. NOTE : For BPASS, we used a power law to fit the rtms v/s mzams values for each metallicity. We have coded the best fit power-laws for the above BPASS metallicities here. Since, Z = 2e-4 model is not available in the BPASS tracks, we assume the same rtms v/s mzams power law as Z=1e-4 for Z=2e-4."
                     }
                 ]
             }

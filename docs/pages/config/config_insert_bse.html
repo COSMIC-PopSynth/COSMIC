@@ -114,7 +114,7 @@
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
 <p class="options-preface">This parameter is used to enhance mass loss in binaries. See <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, Eq. 12</a> for more information.</p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.0</span></code>: <span class="opt-desc">Sets the binary enhanced mass loss parameter, \(B_w\), from <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, Eq. 12</a> to 0.0 (no effect on single stars)</span></li></ul>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Sets the binary enhanced mass loss parameter, \(B_w\), from <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, Eq. 12</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.0</span></code>: <span class="opt-desc">Default value (no effect on single stars)</span></li></ul>
 </div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
@@ -128,7 +128,7 @@
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
 <p class="options-preface">\( 10^{-13} {\rm \ \texttt{hewind} \ } L^{2/3}\) gives He star mass-loss. Equivalent to \(1 - \mu\) in the last equation on <a href="https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract">Hurley+2000, page 19</a>.</p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Sets the helium star mass loss parameter to 0.5</span></li></ul>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Sets the helium star mass loss parameter</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Default value</span></li></ul>
 </div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
@@ -409,7 +409,7 @@
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
 <p class="options-preface"></p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and ECSN/USSN are drawn according to <code class="docutils literal notranslate"><span class="pre">sigmadiv</span></code>. This setting has additional possible options for <code class="docutils literal notranslate"><span class="pre">bhflag</span></code>, <code class="docutils literal notranslate"><span class="pre">bhsigmafrac</span></code>, <code class="docutils literal notranslate"><span class="pre">aic</span></code> and <code class="docutils literal notranslate"><span class="pre">ussn</span></code>.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-2</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-3</span></code>: <span class="opt-desc">Natal kicks are drawn according to Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract">Bray &amp; Eldridge 2016</a></span></li></ul>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and ECSN/USSN are drawn according to <code class="docutils literal notranslate"><span class="pre">sigmadiv</span></code>. This setting has additional possible options for <code class="docutils literal notranslate"><span class="pre">bhflag</span></code>, <code class="docutils literal notranslate"><span class="pre">bhsigmafrac</span></code>, <code class="docutils literal notranslate"><span class="pre">aic</span></code> and <code class="docutils literal notranslate"><span class="pre">ussn</span></code>.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a> with their default parameters (\(m_{\rm NS = 1.2 {\rm M_\odot}\), \(m_{\rm ej = 9 {\rm M_\odot}\))</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-2</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a>, which does not scale the kick by (\(m_{\rm NS\)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-3</span></code>: <span class="opt-desc">Natal kicks are drawn according to Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract">Bray &amp; Eldridge 2016</a>, with their default parameters (\(\alpha=70 \, {\rm km/s}, \beta = 120 \, {\rm km/s)}</span></li></ul>
 </div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
@@ -506,7 +506,7 @@
 </div>
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
-<p class="options-preface"></p>
+<p class="options-preface">Applies even if <code>ecsn = 0&lt;.code&gt;</code></p>
 <ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">AIC SN receive kicks drawn from Maxwellian with dispersion = sigma defined above</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">sets AIC SN kick strength according to sigmadiv; NOTE that this will apply even if ecsn = 0.0</span></li></ul>
 </div>
 </div><div class="setting">
@@ -605,13 +605,13 @@
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
 <p class="options-preface"></p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\({\sim 5 \mathrm{M}_\odot}\) Fryer, private communication)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">values in [-1, 0]</span></code>: <span class="opt-desc">assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Default choice</span></li></ul>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\({\sim 5 \mathrm{M}_\odot}\) Fryer, private communication)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">values in [-1, 0)</span></code>: <span class="opt-desc">assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole, such that \(M_{\rm rem} = (1 + \texttt{rembar\_massloss}) M_{\rm rem}\) (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Default choice</span></li></ul>
 </div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
 <h3 class="name"><code>wd_mass_lim</code></h3>
-<p class="description">Determines if the maximum white dwarf mass is limited to the chandraekhar mass during mic</p>
+<p class="description">Determines if the maximum white dwarf mass is limited to the chandraekhar mass during merger induced collapse</p>
 <p class="default">Default: 1</p>
 </div>
 <div class="col-3"><select class="form-control"><option value="0">0</option><option selected="true" value="1">1</option></select></div>
@@ -914,6 +914,20 @@
 <div class="row options hide">
 <p class="options-preface"></p>
 <ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Follows BSE (<a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Follow StarTrack (<a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a>)</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>rtmsflag</code></h3>
+<p class="description">Flag for calculating the radius at the end of the main sequence.</p>
+<p class="default">Default: 0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0"/></div>
+</div>
+<div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Use the original SSE calculation <b>except</b> if M&gt;200Msun and Z&lt;0.0008 (~0.04 Zsun). For the exception, an extrapolation is used. This ad hoc extrapolation works well for stars with M &lt; 4000 Msun for Z &gt;= 0.01 Zsun. For lower metallicities, you may still run into issues of negative radii for very massive stars - use at your own risk.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Calculate using BoOST simulation data. BoOST metallicities = [1.1e-4, 2.1e-4, 1e-3, 2e-3] corresponding to [dwarfD, IZw18, dwarfA, SMC] models (Szecsi et al. (2022))</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">Calculating using BPASS simulation data. BPASS metallicities = [1e-4, *2e-4*, 1e-3, 2e-3]. NOTE : For BPASS, we used a power law to fit the rtms v/s mzams values for each metallicity. We have coded the best fit power-laws for the above BPASS metallicities here. Since, Z = 2e-4 model is not available in the BPASS tracks, we assume the same rtms v/s mzams power law as Z=1e-4 for Z=2e-4.</span></li></ul>
 </div>
 </div></div>
 </section></div>
