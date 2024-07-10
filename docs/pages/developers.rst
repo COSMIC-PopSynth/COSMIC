@@ -11,3 +11,4 @@ This page is intended for developers who wish to contribute to the COSMIC codeba
     develop/new-settings
     develop/adding-options
     develop/debugging-vscode
+    develop/settings-json-file
