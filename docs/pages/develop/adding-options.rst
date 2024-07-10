@@ -13,9 +13,7 @@ Summary checklist
 Been here before and just making sure you're not missing anything? Here's a quick checklist:
 
 - ``src/cosmic/src``: Add the new option to the relevant COSMIC code file and **test your changes**!
-- ``docs/pages/inifile.rst``: Add the new option to the configuration docs page
-- ``examples/Params.ini``: Add comment with explanation to the default inifile
-- ``examples/CMCParams.ini``: Add comment with explanation to the default CMC inifile
+- ``docs/cosmic-settings.json``: Add the new option to the JSON file
 
 Code changes
 ------------
@@ -91,57 +89,53 @@ of course a rather contrived example, but it serves to illustrate the process).
 Documentation changes
 ---------------------
 
-Now we need to actual let COSMIC users that this new option exists. We'll need to update this in 3 places.
+Now we need to actual let COSMIC users that this new option exists. We'll need to update this in
+a single place and this will propagate into the INI files and docs pages too (hurrah for structured data!)
 
-First, we need to update the docs page that describes the settings. This is the ``docs/pages/inifile.rst`` file.
-We'll add a new section to the ``bhflag`` setting that describes the new option.
+Head over to the ``docs/cosmic-settings.json`` file and let's add a new option to ``bhflag``
 
 ``docs/pages/inifile.rst``
 
-.. code-block:: rst
+.. code-block:: json
     :linenos:
-    :emphasize-lines: 17-18
+    :emphasize-lines: 25-28
 
         ....
-    ``bhflag``               Sets the model for how SN kicks are applied to BHs,
-                         where bhflag != 0 allows for velocity kick at BH formation
-
-                            ``0`` : no BH kicks
-
-                            ``1`` : fallback-modulated kicks following
-                            `Fryer+2012 <https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract>`_
-
-                            ``2`` : kicks decreased by ratio of BH mass to NS mass
-                            (1.44 Msun); conserves linear momentum
-
-                            ``3`` : BH natal kicks are not decreased compared to NS kicks
-                            and are drawn from the same Maxwellian distribution with
-                            dispersion = *sigma* set above
-
-                            ``4``: A silly option that sets BH kicks
-                            to double the value for NSs
-
-                         **bhflag = 1**
-        ....
-    
-
-And lastly now we just need to update the default inifiles to include a comment explaining the new option.
-Here's what that would look like for the ``Params.ini`` file:
-
-``examples/Params.ini``
-
-.. code-block:: ini
-    :linenos:
-    :emphasize-lines: 5
-
-        ....
-        ; bhflag != 0 allows velocity kick at BH formation
-        ; bhflag=0: no BH kicks; bhflag=1: fallback-modulated kicks
-        ; bhflag=2: mass-weighted (proportional) kicks; bhflag=3: full NS kicks
-        ; bhflag=4: double NS kicks
-        ; default = 1
-        bhflag = 1
+            {
+                "name": "bhflag",
+                "description": "Sets the model for how SN kicks are applied to BHs, where bhflag != 0 allows for velocity kick at BH formation",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No BH kick"
+                    },
+                    {
+                        "name": 1,
+                        "description": "fallback-modulated kicks following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "kicks decreased by ratio of BH mass to NS mass (1.44 Msun); conserves linear momentum"
+                    },
+                    {
+                        "name": 3,
+                        "description": "BH natal kicks are not decreased compared to NS kicks and are drawn from the same Maxwellian distribution with dispersion = <code>sigma</code> set above"
+                    },
+                    {
+                        "name": 4,
+                        "description": "A silly option that sets BH kicks to double the value for NSs"
+                    }
+                ]
+            },
         ....
 
+.. tip::
+
+    If you're confused about how to format your addition to the JSON file, check out :ref:`json` to better understand this file.
+
+This addition to the JSON file will then be used to update the Params.ini file and the config docs page with the new option.
 
 And that's it! You've successfully added a new option to an existing setting in COSMIC, nice job!
