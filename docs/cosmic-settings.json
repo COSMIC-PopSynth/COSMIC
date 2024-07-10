@@ -107,15 +107,15 @@
                     },
                     {
                         "name": "log_uniform",
-                        "description": "Sample semi-major axis flat in log space from RRLO < 0.5 up to \\(10^{5} R_{\\rm \\odot}\\) according to <a href='http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A'>Abt (1983)</a> and consistent with Dominik+2012,2013 - then convert to orbital period in days using Kepler's third law."
+                        "description": "Sample semi-major axis flat in log space from RRLO < 0.5 up to \\(10^{5} {\\rm R_{\\odot}}\\) according to <a href='http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A'>Abt (1983)</a> and consistent with Dominik+2012,2013 - then convert to orbital period in days using Kepler's third law."
                     },
                     {
                         "name": "renzo19",
-                        "description": "Uses <code>sana12</code> for massive binaries (\\(m_1 > 15 M_{\\rm \\odot}\\)) and flat in log otherwise (following <a href='https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract'>Renzo+19</a>)."
+                        "description": "Uses <code>sana12</code> for massive binaries (\\(m_1 > 15 {\\rm M_{\\odot}}\\)) and flat in log otherwise (following <a href='https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract'>Renzo+19</a>)."
                     },
                     {
                         "name": "raghavan10",
-                        "description": "Sample log normal orbital periods in days with mean_logP = 4.9 and sigma_logP = 2.3 between 0 < log10(P/day) < 9  following <a href='https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract'>Raghavan+2010 </a>"
+                        "description": "Sample log normal orbital periods in days with mean_logP = 4.9 and sigma_logP = 2.3 between \\(0 < \\log_{10}(P / {\\rm day}) < 9\\) following <a href='https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract'>Raghavan+2010 </a>"
                     },
                     {
                         "name": "moe19",
