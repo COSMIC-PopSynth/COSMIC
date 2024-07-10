@@ -74,6 +74,56 @@
                 ]
             },
             {
+                "name": "primary_model",
+                "description": "Model for sampling primary masses <br><i>[Only used when <code>sampling_method = independent</code>] </i>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "salpeter55",
+                        "description": "Use the Salpeter 1955 IMF"
+                    },
+                    {
+                        "name": "kroupa93",
+                        "description": "Use the Kroupa 1993 IMF"
+                    },
+                    {
+                        "name": "kroupa01",
+                        "description": "Use the Kroupa 2001 IMF",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "porb_model",
+                "description": "Model for sampling orbital periods <br><i>[Only used when <code>sampling_method = independent</code>] </i>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "sana12",
+                        "description": "Sample from power law orbital period between 0.15 < log(P/day) < 5.5 following <a href='https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract'>Sana+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": "log_uniform",
+                        "description": "Sample semi-major axis flat in log space from RRLO < 0.5 up to \\(10^{5} R_{\\rm \\odot}\\) according to <a href='http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A'>Abt (1983)</a> and consistent with Dominik+2012,2013 - then convert to orbital period in days using Kepler's third law."
+                    },
+                    {
+                        "name": "renzo19",
+                        "description": "Uses <code>sana12</code> for massive binaries (\\(m_1 > 15 M_{\\rm \\odot}\\)) and flat in log otherwise (following <a href='https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract'>Renzo+19</a>)."
+                    },
+                    {
+                        "name": "raghavan10",
+                        "description": "Sample log normal orbital periods in days with mean_logP = 4.9 and sigma_logP = 2.3 between 0 < log10(P/day) < 9  following <a href='https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract'>Raghavan+2010 </a>"
+                    },
+                    {
+                        "name": "moe19",
+                        "description": "As <code>raghavan10</code> but with different close binary fractions following <a href='https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract'>Moe+2019</a>"
+                    }
+                ]
+            },
+            {
                 "name": "SF_start",
                 "description": "Sets the time in the past when star formation initiates in Myr.",
                 "type": "number",
