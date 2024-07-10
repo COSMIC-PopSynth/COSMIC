@@ -49,6 +49,48 @@
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
+<h3 class="name"><code>ecc_model</code></h3>
+<p class="description">Model for sampling eccentricity <br/><i>[Only used when <code>sampling_method = independent</code>] </i></p>
+<p class="default">Default: sana12</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="thermal">thermal</option><option value="uniform">uniform</option><option selected="true" value="sana12">sana12</option><option value="circular">circular</option></select></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">thermal</span></code>: <span class="opt-desc">Samples from a  thermal eccentricity distribution following <a href="http://adsabs.harvard.edu/abs/1975MNRAS.173..729H">Heggie (1975)</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">uniform</span></code>: <span class="opt-desc">Samples from a uniform eccentricity distribution</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">sana12</span></code>: <span class="opt-desc">Samples from the eccentricity distribution from <a href="https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract">Sana+2012</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">circular</span></code>: <span class="opt-desc">Assumes zero eccentricity for all systems</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>qmin</code></h3>
+<p class="description">Minimum mass ratio for sampling the secondary mass <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: -1</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="-1"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">The assumed mass ratio distribution is flat in \(q \equiv m_2 / m_1\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">values in [0, 1]</span></code>: <span class="opt-desc">Sets the minimum mass ratio</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">Set the minimum mass ratio such that the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>m2_min</code></h3>
+<p class="description">Minimum secondary mass for sampling <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: 0.1</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.1"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Sample the secondary mass uniformly between <code>m2_min</code> and <code>mass_1</code></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.1</span></code>: <span class="opt-desc">Default value</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
 <h3 class="name"><code>SF_start</code></h3>
 <p class="description">Sets the time in the past when star formation initiates in Myr.</p>
 <p class="default">Default: 13700.0</p>

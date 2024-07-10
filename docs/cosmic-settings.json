@@ -124,6 +124,65 @@
                 ]
             },
             {
+                "name": "ecc_model",
+                "description": "Model for sampling eccentricity <br><i>[Only used when <code>sampling_method = independent</code>] </i>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "thermal",
+                        "description": "Samples from a  thermal eccentricity distribution following <a href='http://adsabs.harvard.edu/abs/1975MNRAS.173..729H'>Heggie (1975)</a>"
+                    },
+                    {
+                        "name": "uniform",
+                        "description": "Samples from a uniform eccentricity distribution"
+                    },
+                    {
+                        "name": "sana12",
+                        "description": "Samples from the eccentricity distribution from <a href='https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract'>Sana+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": "circular",
+                        "description": "Assumes zero eccentricity for all systems"
+                    }
+                ]
+            },
+            {
+                "name": "qmin",
+                "description": "Minimum mass ratio for sampling the secondary mass <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "number",
+                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options": [
+                    {
+                        "name": "values in [0, 1]",
+                        "description": "Sets the minimum mass ratio"
+                    },
+                    {
+                        "name": -1,
+                        "description": "Set the minimum mass ratio such that the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "m2_min",
+                "description": "Minimum secondary mass for sampling <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "number",
+                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sample the secondary mass uniformly between <code>m2_min</code> and <code>mass_1</code>"
+                    },
+                    {
+                        "name": 0.1,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "name": "SF_start",
                 "description": "Sets the time in the past when star formation initiates in Myr.",
                 "type": "number",
