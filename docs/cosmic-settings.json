@@ -189,6 +189,10 @@
                 "options-preface": "",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Start time of star formation in Myr"
+                    },
+                    {
                         "name": 13700.0,
                         "description": "For example, this specifies a start time at the beginning of a Hubble time",
                         "default": true
@@ -201,6 +205,10 @@
                 "type": "number",
                 "options-preface": "",
                 "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Duration of star formation in Myr"
+                    },
                     {
                         "name": 0.0,
                         "description": "A single burst of star formation",
@@ -219,6 +227,10 @@
                 "type": "number",
                 "options-preface": "COSMIC expects an <b>absolute</b> metallicity (i.e., <b>NOT</b> units of <i>zsun</i>)",
                 "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Absolute metallicity"
+                    },
                     {
                         "name": 0.02,
                         "description": "For example, this sets the metallicity to approximately solar metallicity",
@@ -377,6 +389,10 @@
                 "options-preface": "",
                 "options": [
                     {
+                        "name": "integer values",
+                        "description": "Random seed"
+                    },
+                    {
                         "name": 42,
                         "description": "For example, this sets the seed to 42",
                         "default": true
@@ -399,6 +415,10 @@
                 "options-preface": "",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Timestep modifier"
+                    },
+                    {
                         "name": 0.001,
                         "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract'>Bannerjee+2019</a> for NS/BH progenitors",
                         "default": true
@@ -416,6 +436,10 @@
                 "options-preface": "",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Timestep modifier"
+                    },
+                    {
                         "name": 0.01,
                         "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
                         "default": true
@@ -428,6 +452,10 @@
                 "type": "number",
                 "options-preface": "",
                 "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Timestep modifier"
+                    },
                     {
                         "name": 0.02,
                         "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
@@ -442,6 +470,10 @@
                 "settings-section": "Metallicity",
                 "options-preface": "Note that the wind prescriptions for OB stars are calibrated to zsun = 0.019 as described in <a href='https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract'>Vink+2001.</a>",
                 "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Set the solar metallicity"
+                    },
                     {
                         "name": 0.014,
                         "description": "Following <a href='https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract'>Asplund+2009</a>",
@@ -499,6 +531,10 @@
                 "options-preface": "Note: this equation has a typo. There is an extra \\(\\eta\\) out front; the correct rate is directly proportional to \\(\\eta\\). See also <a href='https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract'>Kurdritzki+1978, Section Vb</a> for discussion.",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Set \\(\\eta\\) value"
+                    },
+                    {
                         "name": 0.5,
                         "description": "Sets \\(\\eta\\) for Reimers mass loss to 0.5",
                         "default": true
@@ -512,8 +548,12 @@
                 "options-preface": "This parameter is used to enhance mass loss in binaries. See <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a> for more information.",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Sets the binary enhanced mass loss parameter, \\(B_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a>"
+                    },
+                    {
                         "name": 0.0,
-                        "description": "Sets the binary enhanced mass loss parameter, \\(B_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a> to 0.0 (no effect on single stars)",
+                        "description": "Default value (no effect on single stars)",
                         "default": true
                     }
                 ]
@@ -525,8 +565,12 @@
                 "options-preface": "\\( 10^{-13} {\\rm \\ \\texttt{hewind} \\ } L^{2/3}\\) gives He star mass-loss. Equivalent to \\(1 - \\mu\\) in the last equation on <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, page 19</a>.",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Sets the helium star mass loss parameter"
+                    },
+                    {
                         "name": 0.5,
-                        "description": "Sets the helium star mass loss parameter to 0.5",
+                        "description": "Default value",
                         "default": true
                     }
                 ]
@@ -543,8 +587,12 @@
                         "default": true
                     },
                     {
+                        "name": "positive values",
+                        "description": "Sets the wind velocity factor, \\(\\beta_w\\)"
+                    },
+                    {
                         "name": 0.125,
-                        "description": "Sets the wind velocity factor, \\(\\beta_w\\), to 0.125"
+                        "description": "Default value"
                     }
                 ]
             },
@@ -555,8 +603,12 @@
                 "options-preface": "Corresponds to \\(\\mu_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 11</a>",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Sets the wind accretion efficiency factor"
+                    },
+                    {
                         "name": 0.5,
-                        "description": "Sets the wind accretion efficiency factor",
+                        "description": "Default value",
                         "default": true
                     }
                 ]
@@ -568,8 +620,12 @@
                 "options-preface": "This value is equivalent to \\(\\alpha_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 6</a>.",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Sets the Bondi-Hoyle wind accretion factor, \\(\\alpha_w\\)"
+                    },
+                    {
                         "name": 1.5,
-                        "description": "Sets the Bondi-Hoyle wind accretion factor, \\(\\alpha_w\\), to 1.5",
+                        "description": "Default value",
                         "default": true
                     }
                 ]
@@ -583,8 +639,12 @@
                 "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
                 "options": [
                     {
+                        "name": "positive values",
+                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\)"
+                    },
+                    {
                         "name": 1.0,
-                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\), to 1.0",
+                        "description": "Default value",
                         "default": true
                     }
                 ]
