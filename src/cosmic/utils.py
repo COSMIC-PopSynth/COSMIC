@@ -866,7 +866,7 @@ def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_su
     logP_pdf = norm.pdf(log_P, loc=4.9, scale=2.3)
     
     # set up the wide binary fraction inflection point
-    norm_wide = binfrac_tot_solar/trapz(logP_pdf, log_P)
+    norm_wide = binfrac_tot_solar/trapezoid(logP_pdf, log_P)
     
     # set up the close binary fraction inflection point
     FeHclose = np.linspace(-3.0, 0.5, 100)
