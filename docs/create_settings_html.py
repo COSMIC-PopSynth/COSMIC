@@ -161,7 +161,6 @@ for group in settings:
 
         # add each of the options and its explanation to the list
         for i, option in enumerate(setting["options"]):
-            print(f"Creating option {option['name']}")
             new_option_expl = bs4.BeautifulSoup(option_template, 'html.parser')
             new_option_expl.select_one(".opt-val").string = str(option["name"])
             new_option_expl.select_one(".opt-desc").append(bs4.BeautifulSoup(option["description"], 'html.parser'))
