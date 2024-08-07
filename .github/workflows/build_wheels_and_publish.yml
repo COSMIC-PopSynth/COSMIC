@@ -41,9 +41,6 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         python -m pip install numpy h5py versioneer
-        sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
-        sudo mkdir /usr/local/gfortran
-        sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
         
     - name: Setup Linux
       if: runner.os == 'Linux'
