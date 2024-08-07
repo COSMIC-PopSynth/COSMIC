@@ -43,9 +43,9 @@ jobs:
     - name: Build wheels
       run: |
         sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran || true
-        python -m pip install meson ninja 
-        meson setup build
-        meson compile -C build
+        python -m pip install meson ninja build
+        meson setup builddir
+        meson compile -C builddir
         python -m build --wheel --output-dir wheelhouse 
     - uses: actions/upload-artifact@v3
       with:
