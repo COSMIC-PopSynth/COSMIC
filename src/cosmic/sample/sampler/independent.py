@@ -74,8 +74,10 @@ def get_independent_sampler(
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
 
-    porb_model : `str`
+    porb_model : `str` or `dict`
         Model to sample orbital period; choices include: log_uniform, sana12, raghavan10, moe19
+        or a custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
+        (e.g. {"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the Sana+2012 distribution
 
     qmin : `float`
         kwarg which sets the minimum mass ratio for sampling the secondary
@@ -801,7 +803,7 @@ class Sample(object):
             radii of the primaries. 
         rad2 : array
             radii of the secondaries 
-        porb_model : string
+        porb_model : `str` or `dict`
             selects which model to sample orbital periods, choices include:
             log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
             `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
@@ -822,6 +824,9 @@ class Sample(object):
             `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
             but with different close binary fractions following 
             `Moe+2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>_`
+            Custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
+            (e.g. porb_model={"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the
+            Sana+2012 distribution.
         met : float
             metallicity of the population
 
@@ -901,6 +906,23 @@ class Sample(object):
             
             porb = 10 ** utils.rndm(a=log10_porb_min, b=log10_porb_max, g=-0.55, size=size)
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+
+        elif isinstance(porb_model, dict):
+            # use a power law distribution for the orbital periods
+            params = {
+                "min": 0.15,
+                "max": 5.5,
+                "slope": -0.55,
+            }
+            # update the default parameters with the user-supplied ones
+            params.update(porb_model)
+
+            # same calculations as sana12 case (sample from a power law distribution but avoid RLOF)
+            log10_RL_porb = np.log10(utils.p_from_a(a_min, mass1, mass2))
+            params["min"] = np.full(len(a_min), params["min"])
+            params["min"][params["min"] < log10_RL_porb] = log10_RL_porb[params["min"] < log10_RL_porb]
+            porb = 10**utils.rndm(a=params["min"], b=params["max"], g=params["slope"], size=size)
+            aRL_over_a = a_min / utils.a_from_p(porb, mass1, mass2)
 
         elif porb_model == "renzo19":
             # Same here: if using CMC, set the maximum porb to the smaller of either the
