@@ -192,6 +192,16 @@ class TestSample(unittest.TestCase):
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
+    def test_sample_q(self):
+        """Test you can sample different mass ratio distributions"""
+        np.random.seed(2)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=10000000)
+        for slope in [0, 1, 2]:
+            mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, q_power_law=slope, qmin=0.0)
+            q = mass2 / mass1
+            fit_slope = power_law_fit(q)
+            self.assertEqual(np.round(fit_slope, 1), slope)
+
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
