@@ -68,10 +68,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel twine numpy meson ninja
           meson setup build
-          meson dist -C build
+          meson dist -C build --formats=gztar
       - uses: actions/upload-artifact@v3
         with:
-          path: ./build/meson-dist/*.tar.xz
+          path: ./build/meson-dist/*.tar.gz
 
   publish:
     needs: [build-wheels, build-source-dist]
