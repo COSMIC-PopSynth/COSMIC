@@ -29,6 +29,14 @@ jobs:
       with:
         python-version: "3.10"
         
+    - name: Install Fortran compiler (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get install -y gfortran
+
+    - name: Install Fortran compiler (Mac)
+      if: runner.os == 'macOS'
+      run: brew install gcc   
+      
     - name: Setup Mac
       if: runner.os == 'macOS'
       run: |
