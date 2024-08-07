@@ -2,7 +2,7 @@ name: Build wheel and publish
 
 on: 
   release:
-    types: [push, published]
+    types: [published]
   workflow_dispatch:
   
 
