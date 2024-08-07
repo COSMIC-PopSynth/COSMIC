@@ -49,6 +49,7 @@ def get_independent_sampler(
     total_mass=np.inf,
     sampling_target="size",
     trim_extra_samples=False,
+    q_power_law=0,
     **kwargs
 ):
     """Generates an initial binary sample according to user specified models
@@ -142,6 +143,10 @@ def get_independent_sampler(
     zsun : `float`
         optional kwarg for setting effective radii, default is 0.02
 
+    q_power_law : `float`
+        Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that
+        q_power_law cannot be exactly -1, as this would result in a divergent distribution.
+
     Returns
     -------
     InitialBinaryTable : `pandas.DataFrame`
@@ -212,7 +217,7 @@ def get_independent_sampler(
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
 
         # sample secondary masses for the single stars
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries, **kwargs)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, q_power_law=q_power_law, **kwargs)
 
         # check if this batch of samples will take us over our sampling target
         if not target(mass1_binary, size,
@@ -477,7 +482,7 @@ class Sample(object):
         return u, np.sum(u)
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass, **kwargs):
+    def sample_secondary(self, primary_mass, q_power_law=0, **kwargs):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
@@ -590,10 +595,7 @@ class Sample(object):
             qmin_vals[highmassIdx] = np.maximum(qmin_vals[highmassIdx], m2_min_msort/primary_mass[highmassIdx])
 
         # --- now, randomly sample mass ratios and get secondary masses
-        secondary_mass = np.random.uniform(qmin_vals, 1) * primary_mass
-
-
-
+        secondary_mass = utils.rndm(qmin_vals, 1, q_power_law, size=len(primary_mass)) * primary_mass
         return secondary_mass
 
     def binary_select(self, primary_mass, binfrac_model=0.5, **kwargs):
