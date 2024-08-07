@@ -46,7 +46,7 @@ jobs:
         python -m pip install meson ninja build
         meson setup builddir
         meson compile -C builddir
-        python -m build --wheel --output-dir wheelhouse 
+        python -m build --wheel --outdir wheelhouse 
     - uses: actions/upload-artifact@v3
       with:
         path: ./wheelhouse/*.whl
