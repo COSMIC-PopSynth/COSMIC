@@ -269,6 +269,16 @@ class TestSample(unittest.TestCase):
         power_slope = power_law_fit(np.log10(porb))
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
+        # now some custom power laws
+        for slope in [-0.5, 0.5, 1]:
+            porb,aRL_over_a = SAMPLECLASS.sample_porb(
+                mass1, mass2, rad1, rad2, porb_model={
+                    "min": 0.15, "max": 5, "slope": slope
+                }, size=mass1.size
+            )
+            power_slope = power_law_fit(np.log10(porb))
+            self.assertEqual(np.round(power_slope, 1), slope)
+
         np.random.seed(5)
         # next do Renzo+19
         m1_high = mass1+15
