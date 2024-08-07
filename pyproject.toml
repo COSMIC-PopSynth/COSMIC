@@ -1,6 +1,6 @@
 [project]
-name = "cosmic"
-distname = "cosmic-popsynth"
+name = "cosmic-popsynth"
+distname = "cosmic"
 description = "a Python-interfaced binary population synthesis suite"
 authors = [
     { name="Katelyn Breivik", email="katie.breivik@gmail.com" },
