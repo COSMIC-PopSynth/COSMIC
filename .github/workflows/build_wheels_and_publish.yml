@@ -38,6 +38,7 @@ jobs:
       run: |
         brew install gcc   
         sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran || true
+        which gfortran
         
     - name: Setup Mac
       if: runner.os == 'macOS'
