@@ -7,10 +7,11 @@ on:
   
 
 env:
-  CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-*"
+  CIBW_BUILD: "cp39-* cp310-*"
   CIBW_SKIP: "*-win32 *musllinux*"
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
   CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
+  CIBW_BUILD_VERBOSITY: "1"
 
 jobs:
   build-wheels:
@@ -29,16 +30,6 @@ jobs:
       with:
         python-version: "3.10"
         
-    - name: Install Fortran compiler (Linux)
-      if: runner.os == 'Linux'
-      run: sudo apt-get install -y gfortran
-
-    - name: Install Fortran compiler (Mac)
-      if: runner.os == 'macOS'
-      run: |
-        brew install gcc   
-        sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran || true
-        
     - name: Setup Mac
       if: runner.os == 'macOS'
       run: |
@@ -51,14 +42,11 @@ jobs:
         
     - name: Build wheels
       run: |
-        sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran || true
-        sudo mkdir /usr/local/gfortran || true
-        sudo ln -s /usr/local/Cellar/gcc/$(brew list --versions gcc | cut -d ' ' -f 2)/lib/gcc/$(brew list --versions gcc | cut -d ' ' -f 2 | cut -d. -f1-2) /usr/local/gfortran/lib || true
-        gfortran --version
-        python -m pip install cibuildwheel meson ninja
+        sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran || true
+        python -m pip install meson ninja build
         meson setup build
         meson compile -C build
-        python -m cibuildwheel --output-dir wheelhouse
+        python -m build --wheel --outdir wheelhouse 
     - uses: actions/upload-artifact@v3
       with:
         path: ./wheelhouse/*.whl
@@ -78,12 +66,12 @@ jobs:
       - name: Build dist
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel twine numpy meson
-          meson setup build
-          meson dist -C build
+          pip install setuptools wheel twine numpy build meson ninja
+          pip install .
+          python -m build
       - uses: actions/upload-artifact@v3
         with:
-          path: build/meson-dist/*.tar.gz
+          path: ./dist/*.tar.gz
 
   publish:
     needs: [build-wheels, build-source-dist]
@@ -92,7 +80,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.10]
+        python-version: ["3.10"]
 
     steps:
     - uses: actions/checkout@v2
