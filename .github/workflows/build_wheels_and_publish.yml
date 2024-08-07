@@ -44,8 +44,8 @@ jobs:
       run: |
         sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran || true
         python -m pip install meson ninja build
-        meson setup builddir
-        meson compile -C builddir
+        meson setup build
+        meson compile -C build
         python -m build --wheel --outdir wheelhouse 
     - uses: actions/upload-artifact@v3
       with:
@@ -69,9 +69,10 @@ jobs:
           pip install setuptools wheel twine numpy meson ninja
           meson setup build
           meson dist -C build
+          ls build
       - uses: actions/upload-artifact@v3
         with:
-          path: build/meson-dist/*.tar.gz
+          path: ./build/meson-dist/*.tar.gz
 
   publish:
     needs: [build-wheels, build-source-dist]
