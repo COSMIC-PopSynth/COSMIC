@@ -29,17 +29,6 @@ jobs:
       with:
         python-version: "3.10"
         
-    - name: Install Fortran compiler (Linux)
-      if: runner.os == 'Linux'
-      run: sudo apt-get install -y gfortran
-
-    - name: Install Fortran compiler (Mac)
-      if: runner.os == 'macOS'
-      run: |
-        brew install gcc   
-        sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran || true
-        which gfortran
-        
     - name: Setup Mac
       if: runner.os == 'macOS'
       run: |
@@ -52,6 +41,7 @@ jobs:
         
     - name: Build wheels
       run: |
+        which gcc
         sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran || true
         sudo mkdir /usr/local/gfortran || true
         sudo ln -s /usr/local/Cellar/gcc/$(brew list --versions gcc | cut -d ' ' -f 2)/lib/gcc/$(brew list --versions gcc | cut -d ' ' -f 2 | cut -d. -f1-2) /usr/local/gfortran/lib || true
