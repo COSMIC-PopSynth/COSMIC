@@ -41,10 +41,7 @@ jobs:
         
     - name: Build wheels
       run: |
-        which gfortran-11
-        sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran || true
-        sudo mkdir /usr/local/gfortran || true
-        sudo ln -s /usr/local/Cellar/gcc/$(brew list --versions gcc | cut -d ' ' -f 2)/lib/gcc/$(brew list --versions gcc | cut -d ' ' -f 2 | cut -d. -f1-2) /usr/local/gfortran/lib || true
+        sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran-11 || true
         gfortran --version
         python -m pip install cibuildwheel meson ninja
         meson setup build
