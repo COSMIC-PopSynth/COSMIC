@@ -69,7 +69,7 @@ jobs:
           pip install setuptools wheel twine numpy meson ninja
           meson setup build
           meson dist -C build
-          ls build
+          ls build/meson-dist/
       - uses: actions/upload-artifact@v3
         with:
           path: ./build/meson-dist/*.tar.gz
