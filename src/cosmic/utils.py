@@ -856,7 +856,7 @@ def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_su
         normalization factor for kde for wide binaries
     '''
     from scipy.stats import norm
-    from scipy.integrate import trapz
+    from scipy.integrate import trapezoid
     from scipy.interpolate import interp1d
     
     # fix to values used in Moe+19
@@ -867,7 +867,7 @@ def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_su
     logP_pdf = norm.pdf(log_P, loc=4.9, scale=2.3)
     
     # set up the wide binary fraction inflection point
-    norm_wide = binfrac_tot_solar/trapz(logP_pdf, log_P)
+    norm_wide = binfrac_tot_solar/trapezoid(logP_pdf, log_P)
     
     # set up the close binary fraction inflection point
     FeHclose = np.linspace(-3.0, 0.5, 100)
@@ -878,7 +878,7 @@ def get_porb_norm(Z, close_logP=4.0, wide_logP=6.0, binfrac_tot_solar=0.66, Z_su
     fclose_interp = interp1d(Zclose, fclose)
     
     fclose_Z = fclose_interp(Z)
-    norm_close = fclose_Z/trapz(logP_pdf[log_P < close_logP], log_P[log_P < close_logP])
+    norm_close = fclose_Z/trapezoid(logP_pdf[log_P < close_logP], log_P[log_P < close_logP])
     
     return norm_wide, norm_close
 
@@ -905,7 +905,7 @@ def get_met_dep_binfrac(met):
     neval = 5000
 
     from scipy.interpolate import interp1d
-    from scipy.integrate import trapz
+    from scipy.integrate import trapezoid
     from scipy.stats import norm
 
     norm_wide, norm_close = get_porb_norm(met)
@@ -920,7 +920,7 @@ def get_met_dep_binfrac(met):
                        np.linspace(wide_logP, logP_hi_lim, neval),])
     y_dat = np.hstack([prob_close, prob_interp_int(np.linspace(close_logP, wide_logP, neval)), prob_wide])
 
-    binfrac = trapz(y_dat, x_dat)/0.66 * 0.5
+    binfrac = trapezoid(y_dat, x_dat)/0.66 * 0.5
 
     return float(np.round(binfrac, 2))
 

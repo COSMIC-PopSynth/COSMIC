@@ -115,7 +115,7 @@ def get_independent_sampler(
         Duration of constant star formation beginning from SF_Start in Myr
 
     binfrac_model : `str or float`
-        Model for binary fraction; choices include: vanHaaften or a fraction where 1.0 is 100% binaries
+        Model for binary fraction; choices include: vanHaaften, offner22, or a fraction where 1.0 is 100% binaries
 
     binfrac_model_msort : `str or float`
         Same as binfrac_model for M>msort
@@ -607,6 +607,7 @@ class Sample(object):
         either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
+        or `Offner et al.(2022) <https://arxiv.org/abs/2203.10066>`_ in fig 1
 
         Parameters
         ----------
@@ -615,6 +616,9 @@ class Sample(object):
 
             binfrac_model : str or float
                 vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
+                
+                offner22 - primary mass dependent
+                
                 float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
                 means every star is in a binary pair
 
@@ -660,9 +664,31 @@ class Sample(object):
                     binary_fraction_low < binary_choose_low)
                 (binaryIdx_low,) = np.where(
                     binary_fraction_low >= binary_choose_low)
+            elif binfrac_model == "offner22":
+                from scipy.interpolate import BSpline
+                t = [0.0331963853, 0.0331963853, 0.0331963853, 0.0331963853, 0.106066017,
+                     0.212132034, 0.424264069, 0.866025404, 1.03077641, 1.11803399,
+                     1.95959179, 3.87298335, 6.32455532, 11.6619038, 29.1547595,
+                     40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 150, 150, 150, 150]
+                c = [0.08, 0.15812003, 0.20314101, 0.23842953, 0.33154153, 0.39131739,
+                     0.46020725, 0.59009569, 0.75306454, 0.81652502, 0.93518422, 0.92030594,
+                     0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96]
+                k = 3
+                def offner_curve(x):
+                    a = -0.16465041
+                    b = -0.11616329
+                    return np.piecewise(x, [x < 6.4, x >= 6.4], [BSpline(t,c,k), lambda x : a * np.exp(b * x) + 0.97])
+                binary_fraction_low = offner_curve(primary_mass[lowmassIdx])
+                binary_choose_low = np.random.uniform(
+                    0, 1.0, primary_mass[lowmassIdx].size)
+
+                (singleIdx_low,) = np.where(
+                    binary_fraction_low < binary_choose_low)
+                (binaryIdx_low,) = np.where(
+                    binary_fraction_low >= binary_choose_low)
             else:
                 raise ValueError(
-                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float"
+                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften, offner22, or a float"
                 )
         elif type(binfrac_model) == float:
             if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
@@ -681,7 +707,7 @@ class Sample(object):
                 )
         else:
             raise ValueError(
-                "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
+                "You have not supplied a model or a fraction. Please choose either vanHaaften, offner22, or a float"
             )
 
         # --- if using a different binary fraction for high-mass systems
@@ -696,9 +722,31 @@ class Sample(object):
                     binary_fraction_high < binary_choose_high)
                 (binaryIdx_high,) = np.where(
                     binary_fraction_high >= binary_choose_high)
+            elif binfrac_model_msort == "offner22":
+                from scipy.interpolate import BSpline
+                t = [0.0331963853, 0.0331963853, 0.0331963853, 0.0331963853, 0.106066017,
+                     0.212132034, 0.424264069, 0.866025404, 1.03077641, 1.11803399,
+                     1.95959179, 3.87298335, 6.32455532, 11.6619038, 29.1547595,
+                     40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 150, 150, 150, 150]
+                c = [0.08, 0.15812003, 0.20314101, 0.23842953, 0.33154153, 0.39131739,
+                     0.46020725, 0.59009569, 0.75306454, 0.81652502, 0.93518422, 0.92030594,
+                     0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96, 0.96]
+                k = 3
+                def offner_curve(x):
+                    a = -0.16465041
+                    b = -0.11616329
+                    return np.piecewise(x, [x < 6.4, x >= 6.4], [BSpline(t,c,k), lambda x : a * np.exp(b * x) + 0.97])
+                binary_fraction_high = offner_curve(primary_mass[highmassIdx])
+                binary_choose_high = np.random.uniform(
+                    0, 1.0, primary_mass[highmassIdx].size)
+
+                (singleIdx_high,) = np.where(
+                    binary_fraction_high < binary_choose_high)
+                (binaryIdx_high,) = np.where(
+                    binary_fraction_high >= binary_choose_high)
             else:
                 raise ValueError(
-                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften or a float"
+                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften, offner22, or a float"
                 )
         elif (binfrac_model_msort is not None) and (type(binfrac_model_msort) == float):
             if (binfrac_model_msort <= 1.0) & (binfrac_model_msort >= 0.0):
@@ -717,7 +765,7 @@ class Sample(object):
                 )
         elif (binfrac_model_msort is not None):
             raise ValueError(
-                "You have not supplied a model or a fraction. Please choose either vanHaaften or a float"
+                "You have not supplied a model or a fraction. Please choose either vanHaaften, offner22, or a float"
             )
 
 
@@ -909,7 +957,7 @@ class Sample(object):
         elif porb_model == "moe19":
             from scipy.interpolate import interp1d
             from scipy.stats import norm
-            from scipy.integrate import trapz
+            from scipy.integrate import trapezoid
             try:
                 met = kwargs.pop('met')
             except:
