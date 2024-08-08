@@ -1112,7 +1112,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                     )
                 )
             else:
-                metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
+                metallicity_file = glob.glob(SSEDict[flag]+'/*_metallicity.in')
                 if metallicity_file == []:
                     raise ValueError(
                         "No metallicity file found in {0}. Make sure that {1} is valid".format (
@@ -1130,21 +1130,13 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                 )
             )
             else:
-                metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
+                metallicity_file = glob.glob(SSEDict[flag]+'/*_metallicity.in')
                 if metallicity_file == []:
-                    warnings.warn(
-                        "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid or SSE formulae will be used for helium stars".format (
+                    raise ValueError(
+                        "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid".format (
                         SSEDict[flag], flag
                     )
                 )
-                else:
-                    metallicity_file = glob.glob(SSEDict[flag]+'*_metallicity.in')
-                    if metallicity_file == []:
-                        raise Warning(
-                            "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid or SSE formulae will be used for helium stars".format (
-                            SSEDict[flag], flag
-                        )
-                    )
                 
     # BSEDict
     flag = "dtp"
