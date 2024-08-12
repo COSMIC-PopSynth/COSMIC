@@ -9,7 +9,7 @@ import numpy as np
 import scipy.integrate
 import pandas as pd
 
-from .. import Match
+from cosmic import Match
 
 np.random.seed(2)
 sample = np.random.uniform(0,1,500)
