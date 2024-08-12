@@ -975,7 +975,7 @@ class Sample(object):
         elif porb_model == "moe19":
             from scipy.interpolate import interp1d
             from scipy.stats import norm
-            from scipy.integrate import trapz
+            from scipy.integrate import trapezoid
             try:
                 met = kwargs.pop('met')
             except:
