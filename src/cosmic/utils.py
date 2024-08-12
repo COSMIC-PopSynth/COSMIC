@@ -652,6 +652,7 @@ def rndm(a, b, g, size):
         Array of data sampled from power law distribution with params
         fixed by inputs
     """
+
     if g == -1:
         raise ValueError("Power law index cannot be exactly -1")
     r = np.random.random(size=size)
