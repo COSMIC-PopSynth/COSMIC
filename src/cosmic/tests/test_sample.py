@@ -192,6 +192,16 @@ class TestSample(unittest.TestCase):
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
+    def test_sample_q(self):
+        """Test you can sample different mass ratio distributions"""
+        np.random.seed(2)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=10000000)
+        for slope in [0, 1, 2]:
+            mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, q_power_law=slope, qmin=0.0)
+            q = mass2 / mass1
+            fit_slope = power_law_fit(q)
+            self.assertEqual(np.round(fit_slope, 1), slope)
+
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
@@ -210,6 +220,7 @@ class TestSample(unittest.TestCase):
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
+
         test_fracs = []
         test_errs = []
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
@@ -223,7 +234,6 @@ class TestSample(unittest.TestCase):
             bin_frac = bins_count / (bins_count + singles_count)
             error = abs(offner_value - bin_frac)
             self.assertLess(error, offner_error)
-        
 
     def test_msort(self):
         np.random.seed(2)
@@ -258,6 +268,16 @@ class TestSample(unittest.TestCase):
         )
         power_slope = power_law_fit(np.log10(porb))
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+
+        # now some custom power laws
+        for slope in [-0.5, 0.5, 1]:
+            porb,aRL_over_a = SAMPLECLASS.sample_porb(
+                mass1, mass2, rad1, rad2, porb_model={
+                    "min": 0.15, "max": 5, "slope": slope
+                }, size=mass1.size
+            )
+            power_slope = power_law_fit(np.log10(porb))
+            self.assertEqual(np.round(power_slope, 1), slope)
 
         np.random.seed(5)
         # next do Renzo+19
