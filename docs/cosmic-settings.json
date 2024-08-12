@@ -120,6 +120,10 @@
                     {
                         "name": "moe19",
                         "description": "As <code>raghavan10</code> but with different close binary fractions following <a href='https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract'>Moe+2019</a>"
+                    },
+                    {
+                        "name": "custom",
+                        "description": "Sample from a custom power law. The user provides a dictionary of min, max and slope values for the power law."
                     }
                 ]
             },
@@ -1256,6 +1260,10 @@
                         "name": -2,
                         "description": "assumes material is lost from the system as if it is a wind from the secondary",
                         "default": true
+                    },
+                    {
+                        "name": -3,
+                        "description": "assumes mass is lost through the outer Lagrangian point, forming a circumbinary disk. See Zapartas+17 Eq. 9 and Artymowicz & Lubow (1994)."
                     },
                     {
                         "name": "positive values",
