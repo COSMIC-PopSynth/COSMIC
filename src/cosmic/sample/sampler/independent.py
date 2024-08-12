@@ -149,6 +149,7 @@ def get_independent_sampler(
         Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that
         q_power_law cannot be exactly -1, as this would result in a divergent distribution.
 
+
     Returns
     -------
     InitialBinaryTable : `pandas.DataFrame`
@@ -976,6 +977,7 @@ class Sample(object):
             from scipy.interpolate import interp1d
             from scipy.stats import norm
             from scipy.integrate import trapezoid
+
             try:
                 met = kwargs.pop('met')
             except:

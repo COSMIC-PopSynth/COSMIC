@@ -2738,7 +2738,12 @@ component.
 * Take the stellar evolution timestep into account but don't let it
 * be overly restrictive for long lived phases.
 *
-         if(iter.le.1000) dtm = MIN(dtm,dtmi(1),dtmi(2))
+
+* NOTE: This can cause NaN values! If you get NaNs, check what happens
+*       when you increase `loop` (see PR #647) - TW
+*
+         if(iter.le.loop) dtm = MIN(dtm,dtmi(1),dtmi(2))
+
          dtm = MIN(dtm,tsave-tphys)
          dt = dtm*1.0d+06
          km = dt/tb

@@ -220,6 +220,7 @@ class TestSample(unittest.TestCase):
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
+
         test_fracs = []
         test_errs = []
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
@@ -233,7 +234,6 @@ class TestSample(unittest.TestCase):
             bin_frac = bins_count / (bins_count + singles_count)
             error = abs(offner_value - bin_frac)
             self.assertLess(error, offner_error)
-        
 
     def test_msort(self):
         np.random.seed(2)
