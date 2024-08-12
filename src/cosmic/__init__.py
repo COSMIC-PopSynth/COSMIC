@@ -21,8 +21,10 @@
 """
 
 from ._version import __version__
+from ._commit_hash import COMMIT_HASH
 
 __version__ = __version__
+__commithash__ = COMMIT_HASH
 __author__ = "Katie Breivik <katie.breivik@gmail.com>"
 __credits__ = [
     "Scott Coughlin <scott.coughlin@ligo.org>",
