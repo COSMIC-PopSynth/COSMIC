@@ -98,6 +98,8 @@ def parse_commandline():
                         help="Number of binaries to try before checking for "
                         "convergence, it will check ever Nstep binaries until "
                         "it reach Niter binaries", type=int, default=10000)
+    parser.add_argument("--max-wall-time", type=int, default=3155760,
+                        help="Maximum wall time (seconds) for sampling binaries")
     parser.add_argument("--binary_state", nargs='+', type=int)
     parser.add_argument("--sampling_method")
     parser.add_argument("--primary_model", help="Chooses the initial primary mass function from: salpeter55, kroupa93, kroupa01", type=str)
@@ -288,7 +290,7 @@ if __name__ == '__main__':
         log_file.write("You have specified both qmin and m2_min.\n")
         log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
 
-    while (Nstep < args.Niter) & (np.max(match) > convergence['match']):
+    while (Nstep < args.Niter) & (np.max(match) > convergence['match']) & ((time.time() - start_time) < args.max_wall_time):
         # Set random seed such that each iteration gets a unique, determinable seed
         rand_seed = seed_int + Nstep
         np.random.seed(rand_seed)
