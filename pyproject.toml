@@ -7,6 +7,7 @@ authors = [
     { name="Scott Coughlin" },
     { name="Michael Zevin" },
     { name="Carl L. Rodriguez" },
+    { name="Tom Wagg" },
 ]
 readme = "README.md"
 
