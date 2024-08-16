@@ -2,7 +2,7 @@ name: Build wheel and publish
 
 on: 
   release:
-    types: [published]
+    types: [pull_request, published]
   workflow_dispatch:
   
 
@@ -44,8 +44,7 @@ jobs:
       run: |
         sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran || true
         python -m pip install meson ninja build
-        meson setup build
-        meson compile -C build
+        pip install .
         python -m build --wheel --outdir wheelhouse 
     - uses: actions/upload-artifact@v3
       with:
@@ -95,7 +94,7 @@ jobs:
           name: artifact
           path: dist
 
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.pypi_password }}
+    #- name: Publish distribution 📦 to PyPI
+    #  uses: pypa/gh-action-pypi-publish@release/v1
+    #  with:
+    #    password: ${{ secrets.pypi_password }}
