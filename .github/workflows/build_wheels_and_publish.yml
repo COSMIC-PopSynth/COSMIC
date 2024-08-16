@@ -37,7 +37,6 @@ jobs:
         
     - name: Build source dist and wheels
       run: |
-        sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran || true
         python -m pip install setuptools wheel twine numpy build meson ninja
         pip install .
         python -m build
