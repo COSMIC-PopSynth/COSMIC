@@ -33,7 +33,7 @@ jobs:
     - name: Install gfortran
       if: runner.os == 'macOS'
       run: |
-        brew install gcc
+        ls /usr/local/Cellar/
         sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
         sudo mkdir /usr/local/gfortran
         sudo ln -s /usr/local/Cellar/gcc@11/*/lib/gcc/11 /usr/local/gfortran/lib
