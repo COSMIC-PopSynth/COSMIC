@@ -34,9 +34,10 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         which gfortran-14
-        sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
-        sudo mkdir /usr/local/gfortran
-        sudo ln -s /usr/local/Cellar/gcc@11/*/lib/gcc/11 /usr/local/gfortran/lib
+        sudo ln -s /opt/homebrew/bin/gfortran-14 /usr/local/bin/gfortran
+        echo $PATH
+        #sudo mkdir /usr/local/gfortran
+        #sudo ln -s /usr/local/Cellar/gcc@11/*/lib/gcc/11 /usr/local/gfortran/lib
         gfortran --version
     
     - name: Install numpy
