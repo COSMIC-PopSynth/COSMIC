@@ -52,10 +52,8 @@ jobs:
 
     - name: Build wheels using cibuildwheel
       run: |
-        meson setup builddir
-        meson compile -C builddir
-        cp builddir/_evolvebin.cpython*.so ./src/cosmic
-        cibuildwheel --output-dir dist
+        pip wheel -w DEST_DIR dist
+        ls dist
         
     - uses: actions/upload-artifact@v3
       with:
