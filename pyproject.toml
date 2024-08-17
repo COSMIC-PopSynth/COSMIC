@@ -44,3 +44,4 @@ build-backend = 'mesonpy'
 # pyproject.toml
 [tool.setuptools]
 write_to = "src/cosmic/_version.py"
+py-modules = ["_evolvebin"]
