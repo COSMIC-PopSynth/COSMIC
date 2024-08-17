@@ -53,7 +53,7 @@ jobs:
     - name: Build wheels using cibuildwheel
       run: |
         python -m build --outdir dist
-        ls dist
+        unzip -l ./dist/*.whl
         
     - uses: actions/upload-artifact@v3
       with:
