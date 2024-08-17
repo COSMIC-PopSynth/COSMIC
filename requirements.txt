@@ -22,3 +22,4 @@ flake8 < 5
 pytest
 pytest-cov
 wheel
+meson
