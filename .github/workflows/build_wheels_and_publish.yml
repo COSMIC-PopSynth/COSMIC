@@ -52,7 +52,7 @@ jobs:
 
     - name: Build wheels using cibuildwheel
       run: |
-        pip wheel -w DEST_DIR dist
+        python -m build --outdir dist
         ls dist
         
     - uses: actions/upload-artifact@v3
