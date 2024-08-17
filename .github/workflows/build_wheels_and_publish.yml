@@ -41,10 +41,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install numpy h5py versioneer 
 
-    - name: Install COSMIC
+    - name: Install dependencies
       run: |
         python -m pip install cibuildwheel setuptools wheel twine numpy build meson ninja
-        pip install .
 
     - name: Build source distribution (sdist)
       run: |
