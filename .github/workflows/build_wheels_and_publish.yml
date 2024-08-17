@@ -32,6 +32,7 @@ jobs:
         
     - name: Install numpy
       run: |
+        ls /usr/local/bin/
         sudo ln -s /usr/local/bin/gfortran-11 /usr/local/bin/gfortran
         sudo mkdir /usr/local/gfortran
         sudo ln -s /usr/local/Cellar/gcc@11/*/lib/gcc/11 /usr/local/gfortran/lib
@@ -73,7 +74,7 @@ jobs:
           name: artifact
           path: dist
 
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.pypi_password }}
+    #- name: Publish distribution 📦 to PyPI
+    #  uses: pypa/gh-action-pypi-publish@release/v1
+    #  with:
+    #    password: ${{ secrets.pypi_password }}
