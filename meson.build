@@ -71,7 +71,6 @@ evolvebin_module = py3.extension_module('_evolvebin',
   include_directories: inc_np,
   link_args: ldflags,
   install : true,
-  install_dir : py3.get_install_dir() / 'cosmic'
 )
 
 
