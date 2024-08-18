@@ -44,7 +44,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install cibuildwheel setuptools wheel twine numpy build meson ninja
+        python -m pip install cibuildwheel==2.17.0 setuptools wheel twine numpy build meson ninja
 
     - name: Build source distribution (sdist)
       run: |
@@ -52,7 +52,7 @@ jobs:
 
     - name: Build wheels using cibuildwheel
       run: |
-        python -m build --outdir dist
+        cibuildwheel --outdir dist
         unzip -l ./dist/*.whl
         
     - uses: actions/upload-artifact@v3
