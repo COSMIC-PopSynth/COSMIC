@@ -25,3 +25,4 @@ wheel
 furo
 sphinx-design
 sphinx-copybutton
+meson
