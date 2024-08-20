@@ -36,6 +36,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         sudo ln -s /opt/homebrew/bin/gfortran-11 /usr/local/bin/gfortran
+        ls /usr/local/bin/gfortran
         
     - name: Install numpy
       run: |
@@ -44,7 +45,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install cibuildwheel setuptools wheel build
+        python -m pip install cibuildwheel setuptools wheel build meson-python ninja meson
 
     - name: Build source distribution (sdist)
       run: |
@@ -52,7 +53,6 @@ jobs:
 
     - name: Build wheels using cibuildwheel
       run: |
-        python -m pip install cibuildwheel
         python -m cibuildwheel --output-dir dist
         
     - uses: actions/upload-artifact@v3
