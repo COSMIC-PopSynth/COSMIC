@@ -9,8 +9,7 @@ authors = [
     { name="Carl L. Rodriguez" },
 ]
 readme = "README.md"
-
-
+version = "3.4.14"
 requires-python = ">=3.9"
 license = { text = "MIT License" }
 classifiers = [
@@ -21,25 +20,13 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
 ]
-dynamic = ["version"]
-dependencies = ["numpy", "scipy", "astropy", "configparser", 
-                "tqdm", "pandas", "tables", "h5py", "schwimmbad", 
+dependencies = ["numpy", "scipy", "astropy", "configparser",
+                "tqdm", "pandas", "tables", "h5py", "schwimmbad",
                 "matplotlib", "importlib-metadata"]
 
 
-[project.optional-dependencies]
-test = ["pytest", "pytest-xdist", "pytest-cov", "flake8", "coverage"]
-docs = ["sphinx", "numpydoc", "sphinx-bootstrap-theme", 
-        "sphinxcontrib-programoutput", "sphinx-automodapi",
-        "ipython", "sphinx_rtd_theme", "pickleshare"]
-
-
-
 [build-system]
-requires = ["meson", "meson-python", "wheel", "numpy", "setuptools"]
 build-backend = 'mesonpy'
+requires = ['meson-python', 'numpy']
 
 
-# pyproject.toml
-[tool.setuptools]
-write_to = "src/cosmic/_version.py"
