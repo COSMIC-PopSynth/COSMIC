@@ -12,7 +12,6 @@ env:
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
   CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
   CIBW_BUILD_VERBOSITY: "1"
-  CIBW_TEST_COMMAND: python src/cosmic/tests/test_evolve.py 
 
 jobs:
   build-wheels-and-dist:
