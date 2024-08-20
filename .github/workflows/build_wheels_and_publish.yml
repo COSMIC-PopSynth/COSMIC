@@ -33,9 +33,9 @@ jobs:
         python-version: "3.10"
 
     - name: link gfortran
+      if: runner.os == 'macOS'
       run: |
         sudo ln -s /opt/homebrew/bin/gfortran-12 /usr/local/bin/gfortran
-        ls /opt/homebrew/bin/
         
     - name: Install numpy
       run: |
