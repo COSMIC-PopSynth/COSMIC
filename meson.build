@@ -11,23 +11,21 @@ ff = meson.get_compiler('fortran')
 f_args = ff.get_supported_arguments('-fPIC')
 add_project_arguments(f_args, language: 'fortran')
 
-py3 = import('python').find_installation()
+
+py3 = import('python').find_installation(pure: false)
 
 numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
 f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
 inc_np = include_directories(numpy_include_dir, f2py_include_dir)
+
 get_hash = run_command('python', './src/cosmic/get_commit_hash.py', check: true).stdout().strip()
-f2py_source = custom_target(
-    'evolvebin-target',
-    input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f'],
-    output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '@OUTDIR@']
-)
+
 
 lib_source = [
     'src/cosmic/src/hrdiag_remnant.f',
     'src/cosmic/src/assign_remnant.f',
     'src/cosmic/src/benchmarkevolv2.f',
+    'src/cosmic/src/int64.f',
     'src/cosmic/src/corerd.f',
     'src/cosmic/src/comenv.f',
     'src/cosmic/src/dgcore.f',
@@ -53,7 +51,7 @@ lib_source = [
     'src/cosmic/src/hrdiag.f',
     'src/cosmic/src/star.f',
     'src/cosmic/src/zcnsts.f',
-    'src/cosmic/src/zfuncs.f',]
+    'src/cosmic/src/zfuncs.f']
 
 # Detect operating system and set appropriate linker flags
 host_system = host_machine.system()
@@ -64,6 +62,15 @@ else
   ldflags = []  # No special flags for other systems
 endif
 
+
+f2py_source = custom_target(
+    'evolvebin-target',
+    input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f'],
+    output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower']
+)
+
+
 evolvebin_module = py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
@@ -71,19 +78,10 @@ evolvebin_module = py3.extension_module('_evolvebin',
   include_directories: inc_np,
   link_args: ldflags,
   install : true,
-  install_dir : py3.get_install_dir() / 'cosmic'
+  subdir : 'cosmic'
 )
-
-
-module_dirs = ['src/cosmic', 'src/cosmic/bse_utils', 
-               'src/cosmic/sample', 'src/cosmic/tests']
-
-# Install modules
-foreach mod_dir: module_dirs
-    install_subdir(mod_dir,
-                  install_dir: py3.get_install_dir())
-endforeach
-
 
 python_script = 'bin/cosmic-pop'
 install_data(python_script, install_dir: get_option('bindir'))
+
+subdir('src/cosmic')
