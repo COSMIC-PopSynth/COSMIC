@@ -44,7 +44,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install cibuildwheel
+        python -m pip install cibuildwheel setuptools
 
     - name: Build source distribution (sdist)
       run: |
