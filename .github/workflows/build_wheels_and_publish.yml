@@ -52,8 +52,8 @@ jobs:
 
     - name: Build wheels using cibuildwheel
       run: |
-        python -m build --outdir dist
-        unzip -l ./dist/*.whl
+        python -m pip install cibuildwheel
+        python -m cibuildwheel --output-dir dist
         
     - uses: actions/upload-artifact@v3
       with:
