@@ -35,7 +35,7 @@ jobs:
     - name: Install gfortran
       if: runner.os == 'macOS'
       run: |
-        sudo ln -s /opt/homebrew/bin/gfortran-14 /usr/local/bin/gfortran
+        sudo ln -s /opt/homebrew/bin/gfortran-13 /usr/local/bin/gfortran
         
     - name: Install numpy
       run: |
@@ -85,7 +85,7 @@ jobs:
           name: artifact
           path: dist
 
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.pypi_password }}
+    #- name: Publish distribution 📦 to PyPI
+    #  uses: pypa/gh-action-pypi-publish@release/v1
+    #  with:
+    #    password: ${{ secrets.pypi_password }}
