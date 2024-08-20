@@ -7,6 +7,7 @@ authors = [
     { name="Scott Coughlin" },
     { name="Michael Zevin" },
     { name="Carl L. Rodriguez" },
+    { name="Tom Wagg" },
 ]
 readme = "README.md"
 version = "3.4.14"
@@ -28,5 +29,4 @@ dependencies = ["numpy", "scipy", "astropy", "configparser",
 [build-system]
 build-backend = 'mesonpy'
 requires = ['meson-python', 'numpy']
-
 

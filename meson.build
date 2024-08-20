@@ -1,8 +1,9 @@
 project('cosmic', 
     'c',
     'fortran',
-    version : '3.4.13',
-    default_options: ['warning_level=0', 'optimization=3'],)
+    version : '3.4.14',
+    default_options: ['warning_level=0', 'optimization=3'],
+)
 
 # Enable fortran and check arguments
 # add_languages('fortran', native: false)
@@ -18,6 +19,7 @@ f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.
 inc_np = include_directories(numpy_include_dir, f2py_include_dir)
 
 get_hash = run_command('python', './src/cosmic/get_commit_hash.py', check: true).stdout().strip()
+
 
 lib_source = [
     'src/cosmic/src/hrdiag_remnant.f',
