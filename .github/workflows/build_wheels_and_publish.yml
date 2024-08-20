@@ -34,7 +34,7 @@ jobs:
 
     - name: link gfortran
       run: |
-        sudo ln -s /opt/homebrew/bin/gfortran-11 /usr/local/bin/gfortran
+        sudo ln -s /opt/homebrew/bin/gfortran-12 /usr/local/bin/gfortran
         ls /opt/homebrew/bin/
         
     - name: Install numpy
