@@ -360,8 +360,9 @@ class Evolve(object):
         col_inds_bpp[:len(bpp_columns)] = [ALL_COLUMNS.index(col) + 1 for col in bpp_columns]
 
         # save bpp column information in the initial conditions
-        initial_conditions[0]["n_col_bpp"] = len(bpp_columns)
-        initial_conditions[0]["col_inds_bpp"] = col_inds_bpp
+        for i in range(len(initial_conditions)):
+            initial_conditions[i]["n_col_bpp"] = len(bpp_columns)
+            initial_conditions[i]["col_inds_bpp"] = col_inds_bpp
 
         # check if a pool was passed
         if pool is None:
