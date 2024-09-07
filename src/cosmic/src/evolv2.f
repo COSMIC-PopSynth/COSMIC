@@ -1338,7 +1338,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype)
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
 
@@ -1376,7 +1378,9 @@ component.
      &                       menv(1),menv(2),renv(1),renv(2),
      &                       ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                       epoch(2),bhspin(1),bhspin(2))
+     &                       epoch(2),bhspin(1),bhspin(2),
+     &                       deltam1_bcm,deltam2_bcm,formation(1),
+     &                       formation(2),binstate,mergertype)
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
@@ -1590,7 +1594,9 @@ component.
      &                  menv(1),menv(2),renv(1),renv(2),
      &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                  epoch(2),bhspin(1),bhspin(2))
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype)
          if(snova)then
             bpp(jp,11) = 2.0
             dtm = 0.d0
@@ -1795,7 +1801,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
       endif
 *
       iter = iter + 1
@@ -1880,7 +1888,9 @@ component.
      &              menv(1),menv(2),renv(1),renv(2),
      &              ospin(1),ospin(2),b01_bcm,b02_bcm,
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &              epoch(2),bhspin(1),bhspin(2))
+     &              epoch(2),bhspin(1),bhspin(2),
+     &              deltam1_bcm,deltam2_bcm,formation(1),
+     &              formation(2),binstate,mergertype)
 *
       if(check_dtp.eq.1)then
           CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
@@ -2370,7 +2380,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
 
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
@@ -2435,7 +2447,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
 *
          epoch(j1) = tphys - aj(j1)
          if(coel)then
@@ -3548,7 +3562,9 @@ component.
      &                    menv(1),menv(2),renv(1),renv(2),
      &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                    epoch(2),bhspin(1),bhspin(2))
+     &                    epoch(2),bhspin(1),bhspin(2),
+     &                    deltam1_bcm,deltam2_bcm,formation(1),
+     &                    formation(2),binstate,mergertype)
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -3727,7 +3743,9 @@ component.
      &                    menv(1),menv(2),renv(1),renv(2),
      &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                    epoch(2),bhspin(1),bhspin(2))
+     &                    epoch(2),bhspin(1),bhspin(2),
+     &                    deltam1_bcm,deltam2_bcm,formation(1),
+     &                    formation(2),binstate,mergertype)
       endif
 
 *
@@ -3773,7 +3791,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
          dtm = 0.d0
          goto 4
       endif
@@ -3822,7 +3842,9 @@ component.
      &              menv(1),menv(2),renv(1),renv(2),
      &              ospin(1),ospin(2),b01_bcm,b02_bcm,
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &              epoch(2),bhspin(1),bhspin(2))
+     &              epoch(2),bhspin(1),bhspin(2),
+     &              deltam1_bcm,deltam2_bcm,formation(1),
+     &              formation(2),binstate,mergertype)
 *
       kcomp1 = kstar(j1)
       kcomp2 = kstar(j2)
@@ -3867,7 +3889,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
@@ -3948,7 +3972,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j2,j1,
@@ -4034,7 +4060,9 @@ component.
      &                  menv(1),menv(2),renv(1),renv(2),
      &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                  epoch(2),bhspin(1),bhspin(2))
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype)
       endif
       epoch(1) = tphys - aj(1)
       epoch(2) = tphys - aj(2)
@@ -4089,7 +4117,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype)
          dtm = 0.d0
 *
 * Reset orbital parameters as separation may have changed.
@@ -4160,7 +4190,9 @@ component.
      &                        menv(1),menv(2),renv(1),renv(2),
      &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                        epoch(2),bhspin(1),bhspin(2))
+     &                        epoch(2),bhspin(1),bhspin(2),
+     &                        deltam1_bcm,deltam2_bcm,formation(1),
+     &                        formation(2),binstate,mergertype)
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -4200,7 +4232,9 @@ component.
      &                        menv(1),menv(2),renv(1),renv(2),
      &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                        epoch(2),bhspin(1),bhspin(2))
+     &                        epoch(2),bhspin(1),bhspin(2),
+     &                        deltam1_bcm,deltam2_bcm,formation(1),
+     &                        formation(2),binstate,mergertype)
             else
                 evolve_type = 9.0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4232,7 +4266,9 @@ component.
      &                        menv(1),menv(2),renv(1),renv(2),
      &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                        epoch(2),bhspin(1),bhspin(2))
+     &                        epoch(2),bhspin(1),bhspin(2),
+     &                        deltam1_bcm,deltam2_bcm,formation(1),
+     &                        formation(2),binstate,mergertype)
             endif
          endif
          if(kstar(2).eq.15)then
@@ -4312,7 +4348,9 @@ component.
      &                  menv(1),menv(2),renv(1),renv(2),
      &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                  epoch(2),bhspin(1),bhspin(2))
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype)
           endif
           
 *          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
@@ -4354,7 +4392,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype)
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -4390,7 +4430,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype)
           else
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
@@ -4426,7 +4468,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype)
           endif
       endif
 *
