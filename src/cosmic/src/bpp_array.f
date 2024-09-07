@@ -8,14 +8,18 @@
      &                      teff1,teff2,radc1,radc2,menv1,
      &                      menv2,renv1,renv2,ospin1,ospin2,
      &                      b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,
-     &                      epoch1,epoch2,bhspin1,bhspin2)
+     &                      epoch1,epoch2,bhspin1,bhspin2,
+     &                      deltam_1,deltam_2,SN_1,SN_2,
+     &                      bin_state,merger_type)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
+
+        ! deltam1_bcm,deltam2_bcm,formation(1),formation(2),binstate,mergertype
 *
 * Write results to bpp array.
 *
-*     Author : Scott Coughlin
-*     Date :   12th March 2019
+*     Author : Scott Coughlin, Tom Wagg
+*     Date :   12th March 2019, September 2024
 *
         REAL*8 mass1,mass2
         REAL*8 evolve_type,sep,tb,ecc,tphys,rrl1,rrl2
@@ -24,64 +28,79 @@
         REAL*8 menv1,menv2,renv1,renv2,ospin1,ospin2
         REAL*8 b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,epoch1,epoch2
         REAL*8 bhspin1,bhspin2,teff1,teff2
+        REAL*8 deltam_1,deltam_2
+        INTEGER SN_1,SN_2,bin_state,merger_type
         REAL*8 tb_write,sep_cubed
-        INTEGER jp
+        INTEGER jp, col_ind
         INTEGER kstar1,kstar2
         REAL*8 yeardy,aursun,rsunau
+        REAL*8 all_cols(49)
         PARAMETER(yeardy=365.24d0,aursun=214.95d0)
 
-        rsunau = 1/aursun
-        jp = MIN(900,jp + 1)
-        bpp(jp,1) = tphys
-        bpp(jp,2) = mass1
-        bpp(jp,3) = mass2
-        bpp(jp,4) = float(kstar1)
-        bpp(jp,5) = float(kstar2)
-        bpp(jp,6) = sep
+        all_cols(1) = tphys
+        all_cols(2) = mass1
+        all_cols(3) = mass2
+        all_cols(4) = float(kstar1)
+        all_cols(5) = float(kstar2)
+        all_cols(6) = sep
         if(tb.le.0.d0)then
 * system was disrupted and tb=-1 and should stay that way
-            bpp(jp,7) = tb
+            all_cols(7) = tb
         else
             sep_cubed = (sep*rsunau)*(sep*rsunau)*(sep*rsunau)
             tb_write = sqrt(sep_cubed/(mass1+mass2))
-            bpp(jp,7) = tb_write*yeardy
+            all_cols(7) = tb_write*yeardy
         endif
-        bpp(jp,8) = ecc
-        bpp(jp,9) = rrl1
-        bpp(jp,10) = rrl2
-        bpp(jp,11) = evolve_type
-        bpp(jp,12) = aj1
-        bpp(jp,13) = aj2
-        bpp(jp,14) = tms1
-        bpp(jp,15) = tms2
-        bpp(jp,16) = massc1
-        bpp(jp,17) = massc2
-        bpp(jp,18) = rad1
-        bpp(jp,19) = rad2
-        bpp(jp,20) = mass0_1
-        bpp(jp,21) = mass0_2
-        bpp(jp,22) = lumin1
-        bpp(jp,23) = lumin2
-        bpp(jp,24) = teff1
-        bpp(jp,25) = teff2
-        bpp(jp,26) = radc1
-        bpp(jp,27) = radc2
-        bpp(jp,28) = menv1
-        bpp(jp,29) = menv2
-        bpp(jp,30) = renv1
-        bpp(jp,31) = renv2
-        bpp(jp,32) = ospin1
-        bpp(jp,33) = ospin2
-        bpp(jp,34) = b_0_1
-        bpp(jp,35) = b_0_2
-        bpp(jp,36) = bacc1
-        bpp(jp,37) = bacc2
-        bpp(jp,38) = tacc1
-        bpp(jp,39) = tacc2
-        bpp(jp,40) = epoch1
-        bpp(jp,41) = epoch2
-        bpp(jp,42) = bhspin1
-        bpp(jp,43) = bhspin2
+        all_cols(8) = ecc
+        all_cols(9) = rrl1
+        all_cols(10) = rrl2
+        all_cols(11) = evolve_type
+        all_cols(12) = aj1
+        all_cols(13) = aj2
+        all_cols(14) = tms1
+        all_cols(15) = tms2
+        all_cols(16) = massc1
+        all_cols(17) = massc2
+        all_cols(18) = rad1
+        all_cols(19) = rad2
+        all_cols(20) = mass0_1
+        all_cols(21) = mass0_2
+        all_cols(22) = lumin1
+        all_cols(23) = lumin2
+        all_cols(24) = teff1
+        all_cols(25) = teff2
+        all_cols(26) = radc1
+        all_cols(27) = radc2
+        all_cols(28) = menv1
+        all_cols(29) = menv2
+        all_cols(30) = renv1
+        all_cols(31) = renv2
+        all_cols(32) = ospin1
+        all_cols(33) = ospin2
+        all_cols(34) = b_0_1
+        all_cols(35) = b_0_2
+        all_cols(36) = bacc1
+        all_cols(37) = bacc2
+        all_cols(38) = tacc1
+        all_cols(39) = tacc2
+        all_cols(40) = epoch1
+        all_cols(41) = epoch2
+        all_cols(42) = bhspin1
+        all_cols(43) = bhspin2
+        all_cols(44) = deltam_1
+        all_cols(45) = deltam_2
+        all_cols(46) = float(SN_1)
+        all_cols(47) = float(SN_2)
+        all_cols(48) = bin_state
+        all_cols(49) = merger_type
+
+
+        rsunau = 1/aursun
+        jp = MIN(900,jp + 1)
+
+        do 117, col_ind = 1, n_col_bpp
+            bpp(jp,col_ind) = all_cols(col_inds_bpp(col_ind))
+117     continue
         END
 
 ***
