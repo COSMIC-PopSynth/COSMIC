@@ -45,23 +45,23 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
 __all__ = ['Evolve']
 
 
-# BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
-#                'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
-#                'aj_1', 'aj_2', 'tms_1', 'tms_2',
-#                'massc_1', 'massc_2', 'rad_1', 'rad_2',
-#                'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
-#                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-#                'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
-#                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
-#                'bhspin_1', 'bhspin_2', 'bin_num']
+BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
+               'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
+               'aj_1', 'aj_2', 'tms_1', 'tms_2',
+               'massc_1', 'massc_2', 'rad_1', 'rad_2',
+               'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
+               'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
+               'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
+               'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
+               'bhspin_1', 'bhspin_2', 'bin_num']
 
-# BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
-#                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
-#                'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
-#                'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
-#                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
-#                'porb', 'sep', 'ecc', 'B_1', 'B_2',
-#                'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
+BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
+               'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
+               'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
+               'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
+               'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
+               'porb', 'sep', 'ecc', 'B_1', 'B_2',
+               'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
 
 ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
@@ -145,13 +145,22 @@ class Evolve(object):
         '''
 
     @classmethod
-    def evolve(cls, initialbinarytable, pool=None, **kwargs):
+    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None, **kwargs):
         """After setting a number of initial conditions we evolve the system.
 
         Parameters
         ----------
         initialbinarytable : DataFrame
             Initial conditions of the binary
+
+        pool : Multiprocessing pool
+            Pool of workers to use to evolve systems in parallel
+
+        bpp_columns : list, optional, default: None
+            Columns to save in the bpp table (key evolutionary stage table)
+
+        bcm_columns : list, optional, default: None
+            Columns to save in the bcm table (detailed evolution table)
 
         **kwargs:
             There are three ways to tell evolve and thus the fortran
@@ -200,11 +209,11 @@ class Evolve(object):
 
         Returns
         -------
-        output_bpp : DataFrame
-            Evolutionary history of each binary
+        output_bpp : :class:`pandas.DataFrame`
+            Table of key evolutionary stages for each binary
 
-        output_bcm : DataFrame
-            Final state of each binary
+        output_bcm : :class:`pandas.DataFrame`
+            Table of detailed evolution for each binary
 
         initialbinarytable : DataFrame
             Initial conditions for each binary
@@ -212,6 +221,11 @@ class Evolve(object):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
         n_per_block = kwargs.pop('n_per_block', -1)
+
+        if bpp_columns is None:
+            bpp_columns = BPP_COLUMNS
+        if bcm_columns is None:
+            bcm_columns = BCM_COLUMNS
 
         # There are three ways to tell evolve and thus the fortran
         # what you want all the flags and other BSE specific
@@ -340,6 +354,9 @@ class Evolve(object):
         # Allow a user to specify a custom time step sampling for certain parts of the evolution
         timestep_conditions = kwargs.pop('timestep_conditions', [])
         set_checkstates(timestep_conditions=timestep_conditions)
+
+        initial_conditions["n_col_bpp"] = len(bpp_columns)
+        initial_conditions["col_inds_bpp"] = [ALL_COLUMNS.index(col) for col in bpp_columns]
 
         # check if a pool was passed
         if pool is None:
@@ -472,9 +489,13 @@ def _evolve_single_system(f):
         _evolvebin.snvars.kickflag = f["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
 
+        _evolvebin.col.n_col_bpp = f["n_col_bpp"]
+        _evolvebin.col.col_inds = f["col_inds_bpp"]
+
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
-                                                              f["porb"], f["ecc"], f["metallicity"], f["tphysf"], f["dtp"],
+                                                              f["porb"], f["ecc"], f["metallicity"], 
+                                                              f["tphysf"], f["dtp"],
                                                               [f["mass0_1"], f["mass0_2"]],
                                                               [f["rad_1"], f["rad_2"]],
                                                               [f["lum_1"], f["lum_2"]],
