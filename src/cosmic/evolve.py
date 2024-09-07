@@ -53,7 +53,7 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
                'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
-               'bhspin_1', 'bhspin_2', 'bin_num']
+               'bhspin_1', 'bhspin_2']
 
 BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
@@ -61,7 +61,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
                'porb', 'sep', 'ecc', 'B_1', 'B_2',
-               'SN_1', 'SN_2', 'bin_state', 'merger_type', 'bin_num']
+               'SN_1', 'SN_2', 'bin_state', 'merger_type']
 
 ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
@@ -69,7 +69,7 @@ ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2', 'radc_1',
                'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
                'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2', 'tacc_1',
-               'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2', 'bin_num',
+               'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2',
                'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type']
 
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
@@ -355,8 +355,13 @@ class Evolve(object):
         timestep_conditions = kwargs.pop('timestep_conditions', [])
         set_checkstates(timestep_conditions=timestep_conditions)
 
-        initial_conditions["n_col_bpp"] = len(bpp_columns)
-        initial_conditions["col_inds_bpp"] = [ALL_COLUMNS.index(col) for col in bpp_columns]
+        # set the indices of the columns to include in bpp table (+1 because fortran is 1-indexed)
+        col_inds_bpp = np.zeros(len(ALL_COLUMNS), dtype=int)
+        col_inds_bpp[:len(bpp_columns)] = [ALL_COLUMNS.index(col) + 1 for col in bpp_columns]
+
+        # save bpp column information in the initial conditions
+        initial_conditions[0]["n_col_bpp"] = len(bpp_columns)
+        initial_conditions[0]["col_inds_bpp"] = col_inds_bpp
 
         # check if a pool was passed
         if pool is None:
@@ -406,11 +411,11 @@ class Evolve(object):
                                  index=kick_info_arrays[:, -1].astype(int))
 
         bpp = pd.DataFrame(bpp_arrays,
-                           columns=BPP_COLUMNS,
+                           columns=bpp_columns + ["bin_num"],
                            index=bpp_arrays[:, -1].astype(int))
 
         bcm = pd.DataFrame(bcm_arrays,
-                           columns=BCM_COLUMNS,
+                           columns=bcm_columns + ["bin_num"],
                            index=bcm_arrays[:, -1].astype(int))
 
         bcm.merger_type = bcm.merger_type.astype(int).astype(str).apply(lambda x: x.zfill(4))
@@ -490,7 +495,7 @@ def _evolve_single_system(f):
         _evolvebin.cmcpass.using_cmc = 0
 
         _evolvebin.col.n_col_bpp = f["n_col_bpp"]
-        _evolvebin.col.col_inds = f["col_inds_bpp"]
+        _evolvebin.col.col_inds_bpp = f["col_inds_bpp"]
 
         [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
@@ -515,8 +520,8 @@ def _evolve_single_system(f):
                                                               np.zeros(20),
                                                               f["kick_info"])
         bcm = _evolvebin.binary.bcm[:bcm_index].copy()
-        bpp = _evolvebin.binary.bpp[:bpp_index].copy()
-        _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
+        bpp = _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]].copy()
+        _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]] = np.zeros(bpp.shape)
         _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
 
         bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
