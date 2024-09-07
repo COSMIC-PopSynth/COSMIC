@@ -1,5 +1,5 @@
 ***
-        SUBROUTINE WRITEBPP(jp,tphys,evolve_type,
+        SUBROUTINE WRITETAB(jp,tphys,evolve_type,
      &                      mass1,mass2,kstar1,kstar2,sep,
      &                      tb,ecc,rrl1,rrl2,
      &                      aj1,aj2,tms1,tms2,
@@ -10,13 +10,12 @@
      &                      b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,
      &                      epoch1,epoch2,bhspin1,bhspin2,
      &                      deltam_1,deltam_2,SN_1,SN_2,
-     &                      bin_state,merger_type)
+     &                      bin_state,merger_type,tabname)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
 
-        ! deltam1_bcm,deltam2_bcm,formation(1),formation(2),binstate,mergertype
 *
-* Write results to bpp array.
+* Write results to bpp or bcm array.
 *
 *     Author : Scott Coughlin, Tom Wagg
 *     Date :   12th March 2019, September 2024
@@ -35,6 +34,7 @@
         INTEGER kstar1,kstar2
         REAL*8 yeardy,aursun,rsunau
         REAL*8 all_cols(49)
+        CHARACTER*3 tabname
         PARAMETER(yeardy=365.24d0,aursun=214.95d0)
 
         all_cols(1) = tphys
@@ -94,90 +94,18 @@
         all_cols(48) = bin_state
         all_cols(49) = merger_type
 
-
-        rsunau = 1/aursun
-        jp = MIN(900,jp + 1)
-
-        do 117, col_ind = 1, n_col_bpp
-            bpp(jp,col_ind) = all_cols(col_inds_bpp(col_ind))
-117     continue
-        END
-
-***
-        SUBROUTINE WRITEBCM(ip,tphys,kstar_1,mass0_1,mass_1,
-     &                      lumin_1,rad_1,teff_1,massc_1,
-     &                      radc_1,menv_1,renv_1,epoch_1,
-     &                      ospin_1,deltam_1,RRLO_1,kstar_2,mass0_2,
-     &                      mass_2,lumin_2,rad_2,teff_2,massc_2,radc_2,
-     &                      menv_2,renv_2,epoch_2,ospin_2,deltam_2,
-     &                      RRLO_2,porb,sep,ecc,B_0_1,B_0_2,
-     &                      SN_1,SN_2,bin_state,merger_type)
-        IMPLICIT NONE
-        INCLUDE 'const_bse.h'
-*
-* Write results to bcm array.
-*
-*     Author : Scott Coughlin
-*     Date :   12th March 2019
-*
-        REAL*8 tphys,mass0_1,mass_1,lumin_1,rad_1,teff_1
-        REAL*8 massc_1,radc_1,menv_1,renv_1,epoch_1
-        REAL*8 ospin_1,deltam_1,RRLO_1,porb_write,sep_cubed
-        REAL*8 mass0_2,mass_2,lumin_2,rad_2,teff_2,massc_2
-        REAL*8 radc_2,menv_2,renv_2,epoch_2,ospin_2,deltam_2
-        REAL*8 RRLO_2,porb,sep,ecc,B_0_1,B_0_2
-        INTEGER kstar_1,kstar_2,SN_1,SN_2,bin_state,merger_type
-        INTEGER ip
-        REAL*8 yeardy,aursun,rsunau
-        PARAMETER(yeardy=365.24d0,aursun=214.95d0)
-
         rsunau = 1/aursun
 
-        ip = ip + 1
-        bcm(ip,1) = tphys
-        bcm(ip,2) = float(kstar_1)
-        bcm(ip,3) = mass0_1
-        bcm(ip,4) = mass_1
-        bcm(ip,5) = lumin_1
-        bcm(ip,6) = rad_1
-        bcm(ip,7) = teff_1
-        bcm(ip,8) = massc_1
-        bcm(ip,9) = radc_1
-        bcm(ip,10) = menv_1
-        bcm(ip,11) = renv_1
-        bcm(ip,12) = epoch_1
-        bcm(ip,13) = ospin_1
-        bcm(ip,14) = deltam_1
-        bcm(ip,15) = RRLO_1
-        bcm(ip,16) = float(kstar_2)
-        bcm(ip,17) = mass0_2
-        bcm(ip,18) = mass_2
-        bcm(ip,19) = lumin_2
-        bcm(ip,20) = rad_2
-        bcm(ip,21) = teff_2
-        bcm(ip,22) = massc_2
-        bcm(ip,23) = radc_2
-        bcm(ip,24) = menv_2
-        bcm(ip,25) = renv_2
-        bcm(ip,26) = epoch_2
-        bcm(ip,27) = ospin_2
-        bcm(ip,28) = deltam_2
-        bcm(ip,29) = RRLO_2
-        if(porb.le.0.d0)then
-* system was disrupted and porb=-1 and should stay that way
-            bcm(ip,30) = porb
-        else
-            sep_cubed = (sep*rsunau)*(sep*rsunau)*(sep*rsunau)
-            porb_write = sqrt(sep_cubed/(mass_1+mass_2))
-            bcm(ip,30) = porb_write*yeardy
-        endif
-        bcm(ip,31) = sep
-        bcm(ip,32) = ecc
-        bcm(ip,33) = B_0_1
-        bcm(ip,34) = B_0_2
-        bcm(ip,35) = float(SN_1)
-        bcm(ip,36) = float(SN_2)
-        bcm(ip,37) = bin_state
-        bcm(ip,38) = merger_type
-
+* check which table we are writing to and write the appropriate columns
+        if (tabname .eq. 'bpp') then
+            jp = MIN(900,jp + 1)        ! Why is the 900 limit here??
+            do 117, col_ind = 1, n_col_bpp
+                bpp(jp,col_ind) = all_cols(col_inds_bpp(col_ind))
+117         continue
+        else if (tabname .eq. 'bcm') then
+            jp = jp + 1
+            do 118, col_ind = 1, n_col_bcm
+                bcm(jp,col_ind) = all_cols(col_inds_bcm(col_ind))
+118         continue
+        end if
         END
