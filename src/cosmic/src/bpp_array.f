@@ -47,6 +47,7 @@
 * system was disrupted and tb=-1 and should stay that way
             all_cols(7) = tb
         else
+            rsunau = 1/aursun
             sep_cubed = (sep*rsunau)*(sep*rsunau)*(sep*rsunau)
             tb_write = sqrt(sep_cubed/(mass1+mass2))
             all_cols(7) = tb_write*yeardy
@@ -93,8 +94,6 @@
         all_cols(47) = float(SN_2)
         all_cols(48) = bin_state
         all_cols(49) = merger_type
-
-        rsunau = 1/aursun
 
 * check which table we are writing to and write the appropriate columns
         if (tabname .eq. 'bpp') then
