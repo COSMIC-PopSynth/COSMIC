@@ -1648,7 +1648,7 @@ component.
             if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
             if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
-            CALL writetab(jp,tphys,evolve_type,
+            CALL writetab(ip,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
@@ -1939,7 +1939,7 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writetab(jp,tphys,evolve_type,
+          CALL writetab(ip,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),
      &                  sep,tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -3704,7 +3704,7 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writetab(jp,tphys,evolve_type,
+          CALL writetab(ip,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),
      &                  sep,tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -4537,7 +4537,7 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writetab(jp,tphys,evolve_type,
+          CALL writetab(ip,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),
      &                  sep,tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
