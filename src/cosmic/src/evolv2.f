@@ -2400,7 +2400,8 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
+     &               deltam1_bcm,deltam2_bcm)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
@@ -3913,7 +3914,8 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
+     &               deltam1_bcm,deltam2_bcm)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3996,7 +3998,8 @@ component.
      &               vk,kick_info,formation(j2),formation(j1),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
+     &               deltam1_bcm,deltam2_bcm)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
