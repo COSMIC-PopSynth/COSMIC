@@ -179,7 +179,7 @@
       REAL*8 acc1,tiny
       PARAMETER(acc1=3.920659d+08,tiny=1.0d-14)
       REAL*8 ecc,ecc1,tc,tcirc,ttid,ecc2,omecc2,sqome2,sqome3,sqome5
-      REAL*8 f1,f2,f3,f4,f5,f,raa2,raa6,eqspin,rg2,tcqr
+      REAL*8 f1,f2,f3,f4,f5,f,raa2,raa6,eqspin,rg2,tcqr,gammadisc
       REAL*8 k3,mr23yr,twopi
       PARAMETER(k3=0.21d0,mr23yr=0.4311d0)
       REAL*8 jspin(2),ospin(2),jorb,oorb,jspbru,ospbru
@@ -2769,7 +2769,12 @@ component.
 * Take the stellar evolution timestep into account but don't let it
 * be overly restrictive for long lived phases.
 *
-         if(iter.le.1000) dtm = MIN(dtm,dtmi(1),dtmi(2))
+
+* NOTE: This can cause NaN values! If you get NaNs, check what happens
+*       when you increase `loop` (see PR #647) - TW
+*
+         if(iter.le.loop) dtm = MIN(dtm,dtmi(1),dtmi(2))
+
          dtm = MIN(dtm,tsave-tphys)
          dt = dtm*1.0d+06
          km = dt/tb
@@ -3018,22 +3023,30 @@ component.
      &           (mass(1)+mass(2))**2
          djorb = djorb*dt
 *
-* For super-Eddington mass transfer rates, for gamma = -2.0,
+* For super-Eddington mass transfer rates, for gamma == -2,
 * and for novae systems, assume that material is lost from
 * the system as if a wind from the secondary.
-* If gamma = -1.0 then assume the lost material carries with it
-* the specific angular momentum of the primary and for all
-* gamma > 0.0 assume that it takes away a fraction gamma of
-* the orbital angular momentum.
 *
-         if(supedd.or.novae.or.gamma.lt.-1.5d0)then
+         if(supedd.or.novae.or.int(gamma).eq.-2)then
             djorb = djorb + (dm1 - dm22)*mass(j1)*mass(j1)/
      &              (mass(1)+mass(2))**2
-         elseif(gamma.ge.0.d0)then
-            djorb = djorb + gamma*(dm1 - dm2)
-         else
+* If gamma == -3: Assume mass is lost through the outer 
+* Lagrangian point, forming a circumbinary disk. See
+* Zapartas+17 Eq. 9 and Artymowicz & Lubow (1994).
+* Set rmin=2a, which is consistent with A&L94 simulations.
+         elseif(int(gamma).eq.-3)then
+            gammadisc = (mass(1) + mass(2))**2
+     &                / (mass(1) * mass(2)) * sqrt(2.d0)
+            djorb = djorb + gammadisc * (dm1 - dm2)
+* If gamma == -1 then assume the lost material carries with it
+* the specific angular momentum of the primary and for all
+         elseif(int(gamma).eq.-1) then
             djorb = djorb + (dm1 - dm2)*mass(j2)*mass(j2)/
      &              (mass(1)+mass(2))**2
+* gamma > 0.0 assume that it takes away a fraction gamma of
+* the orbital angular momentum.
+         elseif(gamma.ge.0.d0)then
+            djorb = djorb + gamma*(dm1 - dm2)
          endif
 *
          ecc2 = ecc*ecc

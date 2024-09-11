@@ -50,6 +50,7 @@ def get_independent_sampler(
     total_mass=np.inf,
     sampling_target="size",
     trim_extra_samples=False,
+    q_power_law=0,
     **kwargs
 ):
     """Generates an initial binary sample according to user specified models
@@ -74,8 +75,10 @@ def get_independent_sampler(
     ecc_model : `str`
         Model to sample eccentricity; choices include: thermal, uniform, sana12
 
-    porb_model : `str`
+    porb_model : `str` or `dict`
         Model to sample orbital period; choices include: log_uniform, sana12, raghavan10, moe19
+        or a custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
+        (e.g. {"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the Sana+2012 distribution
 
     qmin : `float`
         kwarg which sets the minimum mass ratio for sampling the secondary
@@ -145,6 +148,11 @@ def get_independent_sampler(
 
     zsun : `float`
         optional kwarg for setting effective radii, default is 0.02
+
+    q_power_law : `float`
+        Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that
+        q_power_law cannot be exactly -1, as this would result in a divergent distribution.
+
 
     Returns
     -------
@@ -218,7 +226,7 @@ def get_independent_sampler(
         ) = initconditions.binary_select(mass1, binfrac_model=binfrac_model, **kwargs)
 
         # sample secondary masses for the single stars
-        mass2_binaries = initconditions.sample_secondary(mass1_binaries, **kwargs)
+        mass2_binaries = initconditions.sample_secondary(mass1_binaries, q_power_law=q_power_law, **kwargs)
 
         # check if this batch of samples will take us over our sampling target
         if not target(mass1_binary, size,
@@ -483,7 +491,7 @@ class Sample(object):
         return u, np.sum(u)
 
     # sample secondary mass
-    def sample_secondary(self, primary_mass, **kwargs):
+    def sample_secondary(self, primary_mass, q_power_law=0, **kwargs):
         """Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
         `Mazeh et al. (1992) <http://adsabs.harvard.edu/abs/1992ApJ...401..265M>`_
         and `Goldberg & Mazeh (1994) <http://adsabs.harvard.edu/abs/1994ApJ...429..362G>`_
@@ -596,10 +604,7 @@ class Sample(object):
             qmin_vals[highmassIdx] = np.maximum(qmin_vals[highmassIdx], m2_min_msort/primary_mass[highmassIdx])
 
         # --- now, randomly sample mass ratios and get secondary masses
-        secondary_mass = np.random.uniform(qmin_vals, 1) * primary_mass
-
-
-
+        secondary_mass = utils.rndm(qmin_vals, 1, q_power_law, size=len(primary_mass)) * primary_mass
         return secondary_mass
 
     def binary_select(self, primary_mass, binfrac_model=0.5, **kwargs):
@@ -805,7 +810,7 @@ class Sample(object):
             radii of the primaries. 
         rad2 : array
             radii of the secondaries 
-        porb_model : string
+        porb_model : `str` or `dict`
             selects which model to sample orbital periods, choices include:
             log_uniform : semi-major axis flat in log space from RRLO < 0.5 up to 1e5 Rsun according to
             `Abt (1983) <http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A>`_
@@ -826,6 +831,9 @@ class Sample(object):
             `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
             but with different close binary fractions following 
             `Moe+2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>_`
+            Custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
+            (e.g. porb_model={"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the
+            Sana+2012 distribution.
         met : float
             metallicity of the population
 
@@ -905,6 +913,23 @@ class Sample(object):
             
             porb = 10 ** utils.rndm(a=log10_porb_min, b=log10_porb_max, g=-0.55, size=size)
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
+
+        elif isinstance(porb_model, dict):
+            # use a power law distribution for the orbital periods
+            params = {
+                "min": 0.15,
+                "max": 5.5,
+                "slope": -0.55,
+            }
+            # update the default parameters with the user-supplied ones
+            params.update(porb_model)
+
+            # same calculations as sana12 case (sample from a power law distribution but avoid RLOF)
+            log10_RL_porb = np.log10(utils.p_from_a(a_min, mass1, mass2))
+            params["min"] = np.full(len(a_min), params["min"])
+            params["min"][params["min"] < log10_RL_porb] = log10_RL_porb[params["min"] < log10_RL_porb]
+            porb = 10**utils.rndm(a=params["min"], b=params["max"], g=params["slope"], size=size)
+            aRL_over_a = a_min / utils.a_from_p(porb, mass1, mass2)
 
         elif porb_model == "renzo19":
             # Same here: if using CMC, set the maximum porb to the smaller of either the

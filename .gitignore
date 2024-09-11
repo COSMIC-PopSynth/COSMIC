@@ -1,3 +1,10 @@
+# ignore files without extensions
+*
+!/**/
+!*.*
+
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -102,3 +109,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+*.o
+binary.in
+binary.dat
+*.h5
+fort.99
