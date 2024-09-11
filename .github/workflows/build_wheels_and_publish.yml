@@ -10,16 +10,19 @@ env:
   CIBW_BUILD: "cp39-* cp310-*"
   CIBW_SKIP: "*-win32 *musllinux*"
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+  CIBW_ARCHS_MACOS: "x86_64 arm64"
   CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
   CIBW_BUILD_VERBOSITY: "1"
+  CIBW_ENVIRONMENT_MACOS: "FC=gfortran"
 
 jobs:
-  build-wheels:
+  build-wheels-and-dist:
     name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        python-version: [3.9, "3.10"]
 
     steps:
     - uses: actions/checkout@v3
@@ -30,51 +33,39 @@ jobs:
       with:
         python-version: "3.10"
         
-    - name: Setup Mac
+    - name: link gfortran and hdf5
       if: runner.os == 'macOS'
       run: |
-        python -m pip install numpy h5py versioneer
+        sudo ln -s /opt/homebrew/bin/gfortran-12 /usr/local/bin/gfortran
+        brew reinstall hdf5
         
-    - name: Setup Linux
-      if: runner.os == 'Linux'
+    - name: Install numpy
       run: |
-        python -m pip install numpy h5py versioneer
+        python -m pip install --upgrade pip
+        python -m pip install numpy h5py versioneer 
+
+    - name: Install dependencies
+      run: |
+        python -m pip install cibuildwheel==2.17.0 setuptools wheel build meson-python ninja meson
+
+    - name: Build source distribution (sdist)
+      run: |
+        python -m build --sdist --outdir dist
+
+    - name: Build wheels using cibuildwheel
+      run: |
+        python -m cibuildwheel --output-dir dist
         
-    - name: Build wheels
-      run: |
-        sudo ln -s /opt/homebrew/bin/gfortran-11 /opt/homebrew/bin/gfortran || true
-        python -m pip install meson ninja build
-        meson setup build
-        meson compile -C build
-        python -m build --wheel --outdir wheelhouse 
     - uses: actions/upload-artifact@v3
       with:
-        path: ./wheelhouse/*.whl
-
-  build-source-dist:
-    name: Build source dist
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v4
-        name: Install Python
-        with:
-          python-version: "3.10" 
-          
-      - name: Build dist
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine numpy build meson ninja
-          pip install .
-          python -m build
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./dist/*.tar.gz
+        path: ./dist/*.tar.gz
+        
+    - uses: actions/upload-artifact@v3
+      with:
+        path: ./dist/*.whl
 
   publish:
-    needs: [build-wheels, build-source-dist]
+    needs: [build-wheels-and-dist]
     name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ${{ matrix.os }}
     strategy:
@@ -90,7 +81,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Download builds
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
           name: artifact
           path: dist

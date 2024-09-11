@@ -654,6 +654,8 @@ def rndm(a, b, g, size):
         fixed by inputs
     """
 
+    if g == -1:
+        raise ValueError("Power law index cannot be exactly -1")
     r = np.random.random(size=size)
     ag, bg = a ** (g + 1), b ** (g + 1)
     return (ag + (bg - ag) * r) ** (1.0 / (g + 1))
@@ -1476,9 +1478,9 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
             )
     flag = "gamma"
     if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2):
+        if (BSEDict[flag] < 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2) and (BSEDict[flag] != -3):
             raise ValueError(
-                "'{0:s}' needs to either be set to -2, -1, or a positive number (you set it to '{1:0.2f}')".format(
+                "'{0:s}' needs to either be set to -3, -2, -1, or a positive number (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
                 )
             )
