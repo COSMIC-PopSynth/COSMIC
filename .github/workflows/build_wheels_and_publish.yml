@@ -14,6 +14,7 @@ env:
   CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
   CIBW_BUILD_VERBOSITY: "1"
   CIBW_ENVIRONMENT_MACOS: "FC=gfortran"
+  CIBW_TEST_COMMAND: pytest src/cosmic
 
 jobs:
   build-wheels-and-dist:

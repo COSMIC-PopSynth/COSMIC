@@ -30,3 +30,7 @@ dependencies = ["numpy", "scipy", "astropy", "configparser",
 build-backend = 'mesonpy'
 requires = ['meson-python', 'numpy']
 
+
+[tool.cibuildwheel]
+# Run the package tests using `pytest`
+test-command = "pytest src/cosmic"
