@@ -47,7 +47,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install setuptools wheel build meson-python ninja meson
+        python -m pip install setuptools wheel build meson-python ninja meson pytest
 
     - name: Build source and wheels distribution
       run: |
