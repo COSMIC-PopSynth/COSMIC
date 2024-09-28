@@ -5,6 +5,13 @@ on:
     types: [published]
   workflow_dispatch:
 
+env:
+  CIBW_BUILD: "cp39-* cp310-*"
+  CIBW_ARCHS_LINUX: "x86_64"
+  CIBW_SKIP: "*-win32 *musllinux*"
+  CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+  CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
+  CIBW_BUILD_VERBOSITY: "1"
 
 jobs:
   build-wheels-and-dist:
@@ -37,17 +44,20 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install setuptools wheel build meson-python ninja meson pytest auditwheel
+        python -m pip install setuptools wheel build meson-python ninja meson pytest cibuildwheel
 
-    - name: Build source and wheels distribution
+    - name: Build source and wheels distribution on MacOS
+      if: runner.os == 'macOS'
       run: |
         python -m build --outdir dist
-        auditwheel repair ./dist/*.whl
-
-    - name: test distribution
-      run: |
         find ./dist/*.whl | xargs pip install
         pytest src/cosmic
+        
+    - name: Build source and wheels distribution on Linux
+      if: runner.os == 'Linux'
+      run: |
+        python -m build --sdist --outdir dist
+        python -m cibuildwheel --output-dir dist
         
     - uses: actions/upload-artifact@v3
       with:
