@@ -42,9 +42,13 @@ jobs:
     - name: Build source and wheels distribution
       run: |
         python -m build --outdir dist
+        
+    - name: Repair linux wheels
+      if: runner.os == 'Linux'
+      run: |
         auditwheel repair ./dist/*.whl
 
-    - name: test distribution
+    - name: Test distribution
       run: |
         find ./dist/*.whl | xargs pip install
         pytest src/cosmic
