@@ -56,6 +56,7 @@ jobs:
       run: |
         python -m build --sdist --outdir dist
         python -m cibuildwheel --output-dir dist
+        auditwheel show dist/cosmic_popsynth-*.whl
 
     - name: Test distribution
       run: |
