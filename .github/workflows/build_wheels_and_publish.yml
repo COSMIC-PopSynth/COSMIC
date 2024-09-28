@@ -50,18 +50,14 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         python -m build --outdir dist
+        find ./dist/*.whl | xargs pip install
+        pytest src/cosmic
         
     - name: Build source and wheels distribution on Linux
       if: runner.os == 'Linux'
       run: |
         python -m build --sdist --outdir dist
         python -m cibuildwheel --output-dir dist
-        auditwheel show dist/cosmic_popsynth-*.whl
-
-    - name: Test distribution
-      run: |
-        find ./dist/*.whl | xargs pip install
-        pytest src/cosmic
         
     - uses: actions/upload-artifact@v3
       with:
