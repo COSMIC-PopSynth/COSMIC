@@ -37,16 +37,18 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install setuptools wheel build meson-python ninja meson pytest auditwheel
+        python -m pip install setuptools wheel build meson-python ninja meson pytest cibuildwheel
 
-    - name: Build source and wheels distribution
+    - name: Build source and wheels distribution on MacOS
+      if: runner.os == 'macOS'
       run: |
         python -m build --outdir dist
         
-    - name: Repair linux wheels
+    - name: Build source and wheels distribution on Linux
       if: runner.os == 'Linux'
       run: |
-        auditwheel repair ./dist/*.whl
+        python -m build --sdist --outdir dist
+        python -m cibuildwheel --output-dir dist
 
     - name: Test distribution
       run: |
