@@ -52,7 +52,7 @@
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mean_anom,ecc_anom,dif,der,del,r
       real*8 u1,u2,vk,v(4),s,theta,phi
-      real*8 sphi,cphi,stheta,ctheta,salpha,calpha
+      real*8 sin_phi,cos_phi,sin_theta,cos_theta,salpha,calpha
       real*8 x_tilt,y_tilt,z_tilt
       real*8 mu,cmu,smu,omega,comega,somega
       real*8 cmu1,smu1,comega1,somega1
@@ -225,7 +225,7 @@
 * -------------------------------------------------------------------------
 
 * Find the initial separation by randomly choosing a mean anomaly.
-      if(sep.gt.0.d0.and.ecc.ge.0.d0)then
+      if(sep_prev.gt.0.d0.and.ecc_prev.ge.0.d0)then
 
 * check is user supplied mean anomaly
          if((natal_kick_array(snstar,4).ge.(0.d0)).and.
@@ -241,43 +241,82 @@
 
              if(mean_anom.eq.0.d0) goto 3
 
-  4          dif = ecc_anom - ecc * SIN(em) - mm
-             if(ABS(dif/mm).le.1.0d-04) goto 3
-             der = 1.d0 - ecc*COS(em)
+  4          dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
+             if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+             der = 1.d0 - ecc * COS(ecc_anom)
              del = dif/der
-             em = em - del
+             ecc_anom = ecc_anom - del
              goto 4
 
          endif
 
+* TODO: this code seems redundant, why can't we just set the mean anomaly?
          xx = RAN3(idum1)
-         mm = xx*twopi
-         em = mm
- 2       dif = em - ecc*SIN(em) - mm
-         if(ABS(dif/mm).le.1.0d-04) goto 3
-         der = 1.d0 - ecc*COS(em)
+         mean_anom = xx*twopi
+         ecc_anom = mean_anom
+ 2       dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
+         if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+         der = 1.d0 - ecc*COS(ecc_anom)
          del = dif/der
-         em = em - del
+         ecc_anom = ecc_anom - del
          goto 2
  3       continue
-         r = sep*(1.d0 - ecc*COS(em))
-*
-* Find the initial relative velocity vector.
-* With a randomly selected quadrant of the orbit.
-         salpha = SQRT((sep*sep*(1.d0-ecc*ecc))/(r*(2.d0*sep-r)))
-         calpha = (-1.d0*ecc*SIN(em))/SQRT(1.d0-ecc*ecc*COS(em)*COS(em))
-         vr2 = gmrkm*(m1+m2)*(2.d0/r - 1.d0/sep)
-         vr = SQRT(vr2)
+
       else
          vr = 0.d0
          vr2 = 0.d0
          salpha = 0.d0
          calpha = 0.d0
       endif
+* Before we randomly draw a phi and theta for the natal kick,
+* see if a pre-supplied set of phi/theta is passed
+      if((natal_kick_array(snstar,2).ge.(-90.d0)).and.
+     &       (natal_kick_array(snstar,2).le.(90.d0)))then
+          phi = natal_kick_array(snstar,2)*pi/180.d0
+          sin_phi = SIN(phi)
+* per supplied kick value we mimic a call to random number generator
+          xx = RAN3(idum1)
+          xx = RAN3(idum1)
+      else
+* CLR - Allow for a restricted opening angle for SN kicks
+*       Only relevant for binaries, obviously
+*       Default value for polar_kick_angle = 90.0
+          bound = SIN((90.d0 - polar_kick_angle)*pi/180.d0)
+          sin_phi = (1.d0-bound)*ran3(idum1) + bound
+          phi = ASIN(sin_phi)
+* MJZ - The constrained kick will hit at either the north
+*       or south pole, so randomly choose the hemisphere
+          if(RAN3(idum1).ge.0.5)then
+            phi = -phi
+            sin_phi = SIN(phi)
+          endif
+      endif
+      cos_phi = COS(phi)
 
-      phi = 1
+      if((natal_kick_array(snstar,3).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar,3).le.(360.d0)))then
+          theta = natal_kick_array(snstar,3)*pi/180.d0
+* per supplied kick value we mimic a call to random number generator
+           xx = RAN3(idum1)
+      else
+          theta = twopi*ran3(idum1)
+      endif
+      sin_theta = SIN(theta)
+      cos_theta = COS(theta)
 
-      natal_kick(1) = vk * 1
+*     save theta and phi (exploding star frame) in the kick_info and
+*     natal_kick_array
+      kick_info(sn,4) = phi*180/pi
+      kick_info(sn,5) = theta*180/pi
+      if(using_cmc.eq.0)then
+          natal_kick_array(snstar,2) = phi*180/pi
+          natal_kick_array(snstar,3) = theta*180/pi
+      endif
+
+      natal_kick(1) = vk * cos_phi * cos_theta
+      natal_kick(2) = vk * cos_phi * sin_theta
+      natal_kick(3) = vk * sin_phi
+
       
       RETURN
       END
