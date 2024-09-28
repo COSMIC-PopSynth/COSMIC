@@ -51,11 +51,11 @@ jobs:
 
     - name: Build source distribution (sdist)
       run: |
-        python -m build --sdist --outdir dist
+        python -m build --outdir dist
 
-    - name: Build wheels using cibuildwheel
-      run: |
-        python -m cibuildwheel --output-dir dist
+    #- name: Build wheels using cibuildwheel
+    #  run: |
+    #    python -m cibuildwheel --output-dir dist
         
     - uses: actions/upload-artifact@v3
       with:
