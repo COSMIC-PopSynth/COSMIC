@@ -47,27 +47,22 @@
       integer kw,k,snstar,sn,safety
 
       real*8 m1,m2,m1n,mbi,mbf,mdif
-      real*8 ecc,sep,sepn,jorb,ecc2
+      real*8 ecc,sep
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mean_anom,ecc_anom,dif,der,del,r
-      real*8 u1,u2,vk,v(4),s,theta,phi
-      real*8 sin_phi,cos_phi,sin_theta,cos_theta,salpha,calpha
-      real*8 x_tilt,y_tilt,z_tilt
-      real*8 mu,cmu,smu,omega,comega,somega
-      real*8 cmu1,smu1,comega1,somega1
-      real*8 vr,vr2,vk2,vn2,hn2
-      real*8 vs(3),v1,v2,v3
-      real*8 mx1,mx2,r2
-      real*8 sigmah,RotInvX
-      real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
-      real*8 csigns
+      real*8 u1,u2,vk,vk2,v(4),s,sigmah
+      real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
-      real*8 bkick(20)
-      real*8 ecc_prev, sep_prev, mtot_prev, mred_prev
-      real*8 natal_kick(3)
+      real*8 bkick(20),r2,jorb
+      real*8 ecc_prev, a_prev, mtot_prev, mred_prev
+      real*8 natal_kick(3), sep_vec(3), v_rel_vec(3)
+      real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
+      real*8 sqrt_1me2, sep_prev, prefactor, omega
+      real*8 h_prev(3), LRL_vec(3)
+      integer i
 * Output
       logical output,disrupt
 *
@@ -80,7 +75,7 @@
 
 * Setup previous values from before the SN
       ecc_prev = ecc
-      sep_prev = sep
+      a_prev = sep
 
       mtot_prev = m1 + m2
       mred_prev = m1 * m2 / mtot_prev
@@ -275,9 +270,9 @@
       natal_kick(2) = vk * cos_phi * sin_theta
       natal_kick(3) = vk * sin_phi
 
-* Check if the system is disrupted
-      if(sep_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
-* if the system is disrupted then we only apply the kick to the current star
+* Check if the system is already disrupted
+      if(a_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
+* if the system already disrupted, only apply kick to the current star
         if(snstar.eq.1)then
             kick_info(sn,7) = natal_kick(1)
             kick_info(sn,8) = natal_kick(2)
@@ -325,6 +320,39 @@
          goto 2
  3       continue
       endif
+
+* Find the initial separation and relative velocity vectors
+      a_prev_2 = a_prev * a_prev
+      a_prev_3 = a_prev_2 * a_prev
+      cos_ecc_anom = COS(ecc_anom)
+      sin_ecc_anom = SIN(ecc_anom)
+
+      omega = SQRT(gmrkm * mtot_prev / a_prev_3)
+
+      sqrt_1me2 = SQRT(1.d0 - ecc_prev * ecc_prev)
+
+      sep_vec(1) = a_prev * (cos_ecc_anom - ecc_prev)
+      sep_vec(2) = a_prev * sin_ecc_anom * sqrt_1me2
+      sep_vec(3) = 0.d0
+
+      call VectorMagnitude(sep_vec, sep_prev)
+
+      prefactor = omega * a_prev_2 / sep_prev
+
+      v_rel_vec(1) = -prefactor * sin_ecc_anom
+      v_rel_vec(2) = prefactor * cos_ecc_anom * sqrt_1me2
+      v_rel_vec(3) = 0.d0
+
+* Calculate the specific angular momentum vector
+      call CrossProduct(sep_vec, v_rel_vec, h_prev)
+
+* Calculate the Laplace-Runge-Lenz vector
+      call CrossProduct(v_rel_vec, h_prev, LRL_vec)
+      DO i = 1, 3
+         LRL_vec(i) = LRL_vec(i) / (gmrkm * mtot_prev) - sep_vec(i) / sep_prev
+      END DO
+
+      call VectorMagnitude(LRL_vec, ecc)
 
 * For systems that were distrupted in the first SN, skip to here
  73   continue
@@ -408,7 +436,7 @@
       END
 
 
-      FUNCTION CrossProduct(A, B, C)
+      SUBROUTINE CrossProduct(A, B, C)
 * This function computes the cross product of two vectors A and B
 * A, B are input vectors of dimension 3
 * C is the resulting vector, also of dimension 3
@@ -419,6 +447,21 @@
       C(1) = A(2) * B(3) - A(3) * B(2)
       C(2) = A(3) * B(1) - A(1) * B(3)
       C(3) = A(1) * B(2) - A(2) * B(1)
+
+      RETURN
+      END
+
+
+
+      SUBROUTINE VectorMagnitude(A, magnitude)
+* This function computes the magnitude of a vector A
+* A is the input vector of dimension 3
+
+      real*8 A(3)
+      real*8 magnitude
+
+* Calculate the magnitude of the vector
+      magnitude = SQRT(A(1) * A(1) + A(2) * A(2) + A(3) * A(3))
 
       RETURN
       END
