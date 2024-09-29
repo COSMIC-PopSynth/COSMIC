@@ -67,6 +67,7 @@
       real*8 mean_mns,mean_mej,alphakick,betakick
       real*8 bkick(20)
       real*8 ecc_prev, sep_prev, mtot_prev, mred_prev
+      real*8 natal_kick(3)
 * Output
       logical output,disrupt
 *
@@ -220,54 +221,10 @@
           natal_kick_array(snstar,1) = vk
       endif
 
-* -------------------------------------------------------------------------
-* ----- Done scaling kick magnitudes at this point, now for anomolies -----
-* -------------------------------------------------------------------------
+* ----------------------------------------------------------------------
+* ----- Done scaling kick magnitudes at this point, now for angles -----
+* ----------------------------------------------------------------------
 
-* Find the initial separation by randomly choosing a mean anomaly.
-      if(sep_prev.gt.0.d0.and.ecc_prev.ge.0.d0)then
-
-* check is user supplied mean anomaly
-         if((natal_kick_array(snstar,4).ge.(0.d0)).and.
-     &       (natal_kick_array(snstar,4).le.(360.d0)))then
-
-             mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
-* per supplied kick value we mimic a call to random number generator
-             xx = RAN3(idum1)
-
-* Solve for the eccentric anomaly from the mean anomaly
-* https://en.wikipedia.org/wiki/Eccentric_anomaly
-             ecc_anom = mean_anom
-
-             if(mean_anom.eq.0.d0) goto 3
-
-  4          dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
-             if(ABS(dif / mean_anom).le.1.0d-04) goto 3
-             der = 1.d0 - ecc * COS(ecc_anom)
-             del = dif/der
-             ecc_anom = ecc_anom - del
-             goto 4
-
-         endif
-
-* TODO: this code seems redundant, why can't we just set the mean anomaly?
-         xx = RAN3(idum1)
-         mean_anom = xx*twopi
-         ecc_anom = mean_anom
- 2       dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
-         if(ABS(dif / mean_anom).le.1.0d-04) goto 3
-         der = 1.d0 - ecc*COS(ecc_anom)
-         del = dif/der
-         ecc_anom = ecc_anom - del
-         goto 2
- 3       continue
-
-      else
-         vr = 0.d0
-         vr2 = 0.d0
-         salpha = 0.d0
-         calpha = 0.d0
-      endif
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
       if((natal_kick_array(snstar,2).ge.(-90.d0)).and.
@@ -313,10 +270,92 @@
           natal_kick_array(snstar,3) = theta*180/pi
       endif
 
+* create a vector for the natal kick
       natal_kick(1) = vk * cos_phi * cos_theta
       natal_kick(2) = vk * cos_phi * sin_theta
       natal_kick(3) = vk * sin_phi
 
+* Check if the system is disrupted
+      if(sep_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
+* if the system is disrupted then we only apply the kick to the current star
+        if(snstar.eq.1)then
+            kick_info(sn,7) = natal_kick(1)
+            kick_info(sn,8) = natal_kick(2)
+            kick_info(sn,9) = natal_kick(3)
+         elseif(snstar.eq.2)then
+            kick_info(sn,11) = natal_kick(1)
+            kick_info(sn,12) = natal_kick(2)
+            kick_info(sn,13) = natal_kick(3)
+         endif
+         GOTO 73
+      else
+* Find the initial separation by randomly choosing a mean anomaly.
+* check is user supplied mean anomaly
+         if((natal_kick_array(snstar,4).ge.(0.d0)).and.
+     &       (natal_kick_array(snstar,4).le.(360.d0)))then
+
+             mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
+* per supplied kick value we mimic a call to random number generator
+             xx = RAN3(idum1)
+
+* Solve Kepler's equation for the eccentric anomaly from mean anomaly
+* https://en.wikipedia.org/wiki/Eccentric_anomaly
+             ecc_anom = mean_anom
+
+             if(mean_anom.eq.0.d0) goto 3
+
+  4          dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
+             if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+             der = 1.d0 - ecc * COS(ecc_anom)
+             del = dif/der
+             ecc_anom = ecc_anom - del
+             goto 4
+
+         endif
+
+* TODO: this code seems redundant, why can't we just set the mean anomaly?
+         xx = RAN3(idum1)
+         mean_anom = xx*twopi
+         ecc_anom = mean_anom
+ 2       dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
+         if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+         der = 1.d0 - ecc*COS(ecc_anom)
+         del = dif/der
+         ecc_anom = ecc_anom - del
+         goto 2
+ 3       continue
+      endif
+
+* For systems that were distrupted in the first SN, skip to here
+ 73   continue
+*
+* Set systemic velocity magnitudes in the kick_info array
+* For first SN, this should be identical to the magnitude
+* of the three component vectors. For the second SN, this
+* will be the systemic velocity relative to the initial frame.
+      if(sn.eq.1)then
+         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) +
+     &              kick_info(sn,8)*kick_info(sn,8) +
+     &              kick_info(sn,9)*kick_info(sn,9))
+         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) +
+     &              kick_info(sn,12)*kick_info(sn,12) +
+     &              kick_info(sn,13)*kick_info(sn,13))
+      elseif(sn.eq.2)then
+         kick_info(sn,10) = SQRT(
+     &      (kick_info(1,7)+kick_info(2,7))*
+     &      (kick_info(1,7)+kick_info(2,7)) +
+     &      (kick_info(1,8)+kick_info(2,8))*
+     &      (kick_info(1,8)+kick_info(2,8)) +
+     &      (kick_info(1,9)+kick_info(2,9))*
+     &      (kick_info(1,9)+kick_info(2,9)))
+         kick_info(sn,14) = SQRT(
+     &      (kick_info(1,11)+kick_info(2,11))*
+     &      (kick_info(1,11)+kick_info(2,11)) +
+     &      (kick_info(1,12)+kick_info(2,12))*
+     &      (kick_info(1,12)+kick_info(2,12)) +
+     &      (kick_info(1,13)+kick_info(2,13))*
+     &      (kick_info(1,13)+kick_info(2,13)))
+      endif
       
       RETURN
       END
