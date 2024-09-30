@@ -77,7 +77,7 @@
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,17)
+      real*8 kick_info(2,18)
       real ran3,xx
       external ran3
 *
