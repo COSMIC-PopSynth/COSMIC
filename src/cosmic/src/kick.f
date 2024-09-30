@@ -1,28 +1,20 @@
-***
       SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
      &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
-* Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
-*
-* Here theta is the \omega angle within the HTP02 paper (thus phi is phi).
-* Also, mu is the \nu angle in the HTP02 paper and omega its azimuth
-*
-* Produces a random SN kick.
-* Evolution was added for binaries in which the kick creates
-* an eccentricity of greater than unity (i.e. hyperbolic orbit).
-*
-* Specific kick magnitudes, angles, eccentric anomaly, and random seeds
-* can be supplied in the initialization file with natal_kick_array, a
-* (2,5) array with the first row being for snstar=1 and second for snstar=2
+* TODO: Add documentation of new function
+* TODO
+* TODO
+* TODO                  TODO
+* TODO
 *
 * SBC (September 2020)
 * put bkick array back in for compatibility with CMC. bkick array is not used
 * for COSMIC BSE in anyway
 *
 * MJZ/SBC (April 2020)
-* kick_info is a (2,17) array that tracks information about the supernova
+* kick_info is a (2,18) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
@@ -46,48 +38,55 @@
 *       is disrupted
 * kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted,
 *       accounting for both SNe
-* kick_info[i,15]: (total) tilt of the orbital plane after each SN
-*       w.r.t. the original angular momentum axis after each SN
-* kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
-* kick_info[i,17]: random seed at the start of call to kick.f
+* kick_info[i,15]: thetaE TODO
+* kick_info[i,16]: phiE TODO
+* kick_info[i,17]: psiE TODO
+* kick_info[i,18]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
       integer kw,k,snstar,sn,safety
 
-      real*8 m1,m2,m1n,mbi,mbf,mdif
-      real*8 ecc,sep,sepn,jorb,ecc2
+      real*8 m1,m2,m1n
+      real*8 ecc,ecc_2,sep
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
-      real*8 mm,em,dif,der,del,r
-      real*8 u1,u2,vk,v(4),s,theta,phi
-      real*8 sphi,cphi,stheta,ctheta,salpha,calpha
-      real*8 x_tilt,y_tilt,z_tilt
-      real*8 mu,cmu,smu,omega,comega,somega
-      real*8 cmu1,smu1,comega1,somega1
-      real*8 vr,vr2,vk2,vn2,hn2
-      real*8 vs(3),v1,v2,v3
-      real*8 mx1,mx2,r2
-      real*8 sigmah,RotInvX
-      real*8 signs,sigc,psins,psic,cpsins,spsins,cpsic,spsic
-      real*8 csigns
+      real*8 mean_anom,ecc_anom,dif,der,del,r
+      real*8 u1,u2,vk,vk2,v(4),s,sigmah
+      real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
-      real*8 bkick(20)
+      real*8 bkick(20),r2,jorb
+      real*8 ecc_prev,a_prev,mtot,mtot_prev
+      real*8 natal_kick(3), sep_vec(3), v_rel_vec(3)
+      real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
+      real*8 sqrt_1me2, sep_prev, prefactor, omega
+      real*8 h(3), h_hat(3), h_mag, LRL_vec(3), e_hat(3), e_mag
+      real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
+      real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
+      real*8 h_cross_e_hat(3)
+      real*8 thetaE, phiE, psiE
+      integer i
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,17)
+      real*8 kick_info(2,18)
       real ran3,xx
       external ran3
 *
       output = .false. !useful for debugging...
       safety = 0
 
+* Setup previous values from before the SN
+      ecc_prev = ecc
+      a_prev = sep
+      mtot_prev = m1 + m2
+
+* ----------------------------------------------------------------------
+* -------------- Initialise variables and constants --------------------
+* ----------------------------------------------------------------------
+
 * Set up empty arrays and constants
-      do k = 1,3
-         vs(k) = 0.d0
-      enddo
       u1 = 0.d0
       u2 = 0.d0
       vk = 0.d0
@@ -105,6 +104,7 @@
       betakick = 120.0d0
 
 * find whether this is the first or second supernova
+* TODO: Is this not redundant? snstar is already passed as an argument
       if(using_cmc.eq.0)then
           if(kick_info(1,1).eq.0) sn=1
           if(kick_info(1,1).gt.0) sn=2
@@ -129,7 +129,7 @@
       endif
 * save the current idum1
       natal_kick_array(snstar,5) = idum1
-      kick_info(sn,17) = idum1
+      kick_info(sn,18) = idum1
 
 * set the SNstar of the exploding object in the kick_info array
       kick_info(sn,1) = snstar
@@ -153,57 +153,11 @@
          endif
       endif
 
-*
-* Find the initial separation by randomly choosing a mean anomaly.
-      if(sep.gt.0.d0.and.ecc.ge.0.d0)then
 
-* check is user supplied mean anomaly
-         if((natal_kick_array(snstar,4).ge.(0.d0)).and.
-     &       (natal_kick_array(snstar,4).le.(360.d0)))then
+* ----------------------------------------------------------------------
+* ----- Draw and scale a natal kick magnitude based on input dists -----
+* ----------------------------------------------------------------------
 
-             mm = natal_kick_array(snstar,4)*pi/180.d0
-* per supplied kick value we mimic a call to random number generator
-             xx = RAN3(idum1)
-
-* Solve for the eccentric anomaly from the mean anomaly
-* https://en.wikipedia.org/wiki/Eccentric_anomaly
-             em = mm
-
-             if(mm.eq.0.d0) goto 3
-
-  4          dif = em - ecc*SIN(em) - mm
-             if(ABS(dif/mm).le.1.0d-04) goto 3
-             der = 1.d0 - ecc*COS(em)
-             del = dif/der
-             em = em - del
-             goto 4
-
-         endif
-
-         xx = RAN3(idum1)
-         mm = xx*twopi
-         em = mm
- 2       dif = em - ecc*SIN(em) - mm
-         if(ABS(dif/mm).le.1.0d-04) goto 3
-         der = 1.d0 - ecc*COS(em)
-         del = dif/der
-         em = em - del
-         goto 2
- 3       continue
-         r = sep*(1.d0 - ecc*COS(em))
-*
-* Find the initial relative velocity vector.
-* With a randomly selected quadrant of the orbit.
-         salpha = SQRT((sep*sep*(1.d0-ecc*ecc))/(r*(2.d0*sep-r)))
-         calpha = (-1.d0*ecc*SIN(em))/SQRT(1.d0-ecc*ecc*COS(em)*COS(em))
-         vr2 = gmrkm*(m1+m2)*(2.d0/r - 1.d0/sep)
-         vr = SQRT(vr2)
-      else
-         vr = 0.d0
-         vr2 = 0.d0
-         salpha = 0.d0
-         calpha = 0.d0
-      endif
 * Before we draw the kick from the maxwellian and then scale it
 * as desired, let us see if a pre-supplied natal kick maganitude
 * was passed.
@@ -268,12 +222,17 @@
       if(using_cmc.eq.0)then
           natal_kick_array(snstar,1) = vk
       endif
+
+* ----------------------------------------------------------------------
+* --------- Now input or draw supernova natal kick angles --------------
+* ----------------------------------------------------------------------
+
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
       if((natal_kick_array(snstar,2).ge.(-90.d0)).and.
      &       (natal_kick_array(snstar,2).le.(90.d0)))then
           phi = natal_kick_array(snstar,2)*pi/180.d0
-          sphi = SIN(phi)
+          sin_phi = SIN(phi)
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
           xx = RAN3(idum1)
@@ -282,16 +241,16 @@
 *       Only relevant for binaries, obviously
 *       Default value for polar_kick_angle = 90.0
           bound = SIN((90.d0 - polar_kick_angle)*pi/180.d0)
-          sphi = (1.d0-bound)*ran3(idum1) + bound
-          phi = ASIN(sphi)
+          sin_phi = (1.d0-bound)*ran3(idum1) + bound
+          phi = ASIN(sin_phi)
 * MJZ - The constrained kick will hit at either the north
 *       or south pole, so randomly choose the hemisphere
           if(RAN3(idum1).ge.0.5)then
             phi = -phi
-            sphi = SIN(phi)
+            sin_phi = SIN(phi)
           endif
       endif
-      cphi = COS(phi)
+      cos_phi = COS(phi)
 
       if((natal_kick_array(snstar,3).ge.(0.d0)).and.
      &       (natal_kick_array(snstar,3).le.(360.d0)))then
@@ -301,8 +260,8 @@
       else
           theta = twopi*ran3(idum1)
       endif
-      stheta = SIN(theta)
-      ctheta = COS(theta)
+      sin_theta = SIN(theta)
+      cos_theta = COS(theta)
 
 *     save theta and phi (exploding star frame) in the kick_info and
 *     natal_kick_array
@@ -313,361 +272,205 @@
           natal_kick_array(snstar,3) = theta*180/pi
       endif
 
-* If the system is already disrupted, apply this kick only to the
-* exploding star, and skip ahead.
-      if(sn.eq.2.and.kick_info(1,2).eq.1)then
+* create a vector for the natal kick
+      natal_kick(1) = vk * cos_phi * cos_theta
+      natal_kick(2) = vk * cos_phi * sin_theta
+      natal_kick(3) = vk * sin_phi
+
+* ----------------------------------------------------------------------
+* ----- Natal kick all done, check for pre-disruption as quick exit ----
+* ----------------------------------------------------------------------
+
+* Check if the system is already disrupted
+      if(a_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
+* if the system already disrupted, only apply kick to the current star
+         disrupt = .true.
+* Set that it is disrupted in the kick_info array
+         kick_info(snstar,2) = 1
          if(snstar.eq.1)then
-            kick_info(sn,7) = vk*COS(theta)*SIN(phi)
-            kick_info(sn,8) = vk*SIN(theta)*SIN(phi)
-            kick_info(sn,9) = vk*COS(phi)
+            kick_info(sn,7) = natal_kick(1)
+            kick_info(sn,8) = natal_kick(2)
+            kick_info(sn,9) = natal_kick(3)
          elseif(snstar.eq.2)then
-            kick_info(sn,11) = vk*COS(theta)*SIN(phi)
-            kick_info(sn,12) = vk*SIN(theta)*SIN(phi)
-            kick_info(sn,13) = vk*COS(phi)
+            kick_info(sn,11) = natal_kick(1)
+            kick_info(sn,12) = natal_kick(2)
+            kick_info(sn,13) = natal_kick(3)
          endif
          GOTO 73
       endif
 
-* CLR - if the orbit has already been kicked, then any polar kick
-*       needs to be tilted as well (since L_hat and S_hat are no longer
-*       aligned).
-* MJZ - to track the total angular change in the binary's orbital plane,
-*       we use both the value of \mu and \omega from the first SN.
-*       We first rotate by \mu about the x-axis, then by \omega
-*       about the z-axis.
-*       We do this when the system has already had one SN (sn=2)
-*  NOTE: This prescription does not account for realignment between SNe!
-      if(sn.eq.2)then
-        cmu = COS(kick_info(1,15)*pi/180)
-        smu = SIN(kick_info(1,15)*pi/180)
-        comega = COS(kick_info(1,16)*pi/180)
-        somega = SIN(kick_info(1,16)*pi/180)
+* ----------------------------------------------------------------------
+* ------ Draw or input mean anomaly, solve for eccentric anomaly -------
+* ----------------------------------------------------------------------
 
-        x_tilt = ctheta*cphi*comega + smu*sphi*somega -
-     &                   cmu*cphi*stheta*somega
-        y_tilt = cmu*cphi*comega*stheta + ctheta*cphi*somega -
-     &                   comega*smu*sphi
-        z_tilt = cmu*sphi + cphi*smu*stheta
+* Find the initial separation by randomly choosing a mean anomaly.
+* check is user supplied mean anomaly
+      if((natal_kick_array(snstar,4).ge.(0.d0)).and.
+     &   (natal_kick_array(snstar,4).le.(360.d0)))then
 
-        phi = ASIN(z_tilt)
-        sphi = z_tilt
-        cphi = COS(phi)
-        theta = ATAN(y_tilt/x_tilt)
-        stheta = SIN(theta)
-        ctheta = COS(theta)
-      endif
+          mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
+* per supplied kick value we mimic a call to random number generator
+          xx = RAN3(idum1)
 
-      if(sep.le.0.d0.or.ecc.lt.0.d0) goto 90
+* Solve Kepler's equation for the eccentric anomaly from mean anomaly
+* https://en.wikipedia.org/wiki/Eccentric_anomaly
+          ecc_anom = mean_anom
 
-*
-* Determine the magnitude of the new relative velocity.
-* CLR - fixed a spurious minus sign in the parenthesis here; only
-*       relevant for eccentric orbits
-      vn2 = vk2+vr2-2.d0*vk*vr*(ctheta*cphi*salpha+stheta*cphi*calpha)
-* Calculate the new semi-major axis.
-      sep = 2.d0/r - vn2/(gmrkm*(m1n+m2))
-      sep = 1.d0/sep
-* Determine the magnitude of the cross product of the separation vector
-* and the new relative velocity.
-      v1 = vk2*sphi*sphi
-      v2 = (vk*ctheta*cphi-vr*salpha)**2
-      v3 = vk2*stheta*stheta*cphi*cphi
-      hn2 = r*r*(v1 + v2)
-* Calculate the new eccentricity.
-      ecc2 = 1.d0 - hn2/(gmrkm*sep*(m1n+m2))
-      ecc2 = MAX(0.d0,ecc2)
-      ecc = SQRT(ecc2)
-* Calculate the new orbital angular momentum taking care to convert
-* hn to units of Rsun^2/yr.
-      jorb = (m1n*m2/(m1n+m2))*SQRT(hn2)*(yearsc/rsunkm)
-* Determine the polar angle (mu) and azimuthal angle (omega)
-* between the new and old orbital angular momentum vectors
-      cmu = (vr*salpha-vk*ctheta*cphi)/SQRT(v1 + v2)
-      mu = ACOS(cmu)
-      smu = SIN(mu)
+          if(mean_anom.eq.0.d0) goto 3
 
-      comega = (vr*salpha-vk*ctheta*cphi)/SQRT(v3 + v2)
-      omega = ACOS(comega)
-      somega = SIN(omega)
-
-* Write angle between initial and current orbital angular momentum vectors
-* and mean anomaly if system is still bound
-      if(sn.eq.1.and.ecc.le.1)then
-        kick_info(sn,15) = mu*180/pi
-        kick_info(sn,16) = omega*180/pi
-        kick_info(sn,6) = mm*180/pi
-        if(using_cmc.eq.0)then
-            natal_kick_array(snstar,4) = mm*180/pi
-        endif
-      elseif(sn.eq.2)then
-* MJZ - Here we calculate the total change in the orbital plane
-*       from both SN. Note that these angles mu and omega are in
-*       typical spherical coordinates rather than colateral coordinates,
-*       so the rotations are slightly different than above.
-*       We rotate about z-axis by omega1 then y-axis by mu1
-        cmu1 = COS(kick_info(1,15)*pi/180)
-        smu1 = SIN(kick_info(1,15)*pi/180)
-        comega1 = COS(kick_info(1,16)*pi/180)
-        somega1 = SIN(kick_info(1,16)*pi/180)
-
-        x_tilt = cmu1*comega*comega1*smu + cmu*smu1
-     &                - cmu1*smu*somega*somega1
-        y_tilt = comega1*smu*somega + comega*smu*somega1
-        z_tilt = cmu*cmu1 + smu*smu1*somega*somega1
-     &               - comega*comega1*smu*smu1
-
-        kick_info(sn,15) = ACOS(z_tilt)*180/pi
-* If both kicks were 0 then x_tilt for SN2 will be 0 since smu=0
-        if(x_tilt.eq.0)then
-          kick_info(sn,16) = 0
-        else
-          kick_info(sn,16) = ATAN(y_tilt/x_tilt)*180/pi
-        endif
-        kick_info(sn,6) = mm*180/pi
-        if(using_cmc.eq.0)then
-            natal_kick_array(snstar,4) = mm*180/pi
-        endif
+  4       dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
+          if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+          der = 1.d0 - ecc * COS(ecc_anom)
+          del = dif/der
+          ecc_anom = ecc_anom - del
+          goto 4
 
       endif
 
-* Determine if orbit becomes hyperbolic.
- 90   continue
+* TODO: this code seems redundant, why can't we just set the mean anomaly?
+      xx = RAN3(idum1)
+      mean_anom = xx*twopi
+      ecc_anom = mean_anom
+ 2    dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
+      if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+      der = 1.d0 - ecc*COS(ecc_anom)
+      del = dif/der
+      ecc_anom = ecc_anom - del
+      goto 2
+ 3    continue
 
-* Calculate systemic velocity
-      mx1 = vk*m1n/(m1n+m2)
-      mx2 = vr*(m1-m1n)*m2/((m1n+m2)*(m1+m2))
-      vs(1) = mx1*ctheta*cphi + mx2*salpha
-      vs(2) = mx1*stheta*cphi + mx2*calpha
-      vs(3) = mx1*sphi
-*
-* See if system was disrupted
+* ----------------------------------------------------------------------
+* ------ Calculate whether system disrupts and CM velocity change ------
+* ----------------------------------------------------------------------
+
+* Some helper variables for calculations below
+      a_prev_2 = a_prev * a_prev
+      a_prev_3 = a_prev_2 * a_prev
+      cos_ecc_anom = COS(ecc_anom)
+      sin_ecc_anom = SIN(ecc_anom)
+      sqrt_1me2 = SQRT(1.d0 - ecc_prev * ecc_prev)
+      mtot = m1n + m2
+      ecc_2 = ecc * ecc
+
+* Orbital frequency pre-SN
+      omega = SQRT(gmrkm * mtot_prev / a_prev_3)
+
+* Separation vector before the supernova
+      sep_vec(1) = a_prev * (cos_ecc_anom - ecc_prev)
+      sep_vec(2) = a_prev * sin_ecc_anom * sqrt_1me2
+      sep_vec(3) = 0.d0
+      call VectorMagnitude(sep_vec, sep_prev)
+
+* Relative velocity vector before the supernova
+      prefactor = omega * a_prev_2 / sep_prev
+      v_rel_vec_prev(1) = -prefactor * sin_ecc_anom
+      v_rel_vec_prev(2) = prefactor * cos_ecc_anom * sqrt_1me2
+      v_rel_vec_prev(3) = 0.d0
+
+* Specific angular momentum vector pre-SN
+      call CrossProduct(sep_vec, v_rel_vec_prev, h_prev)
+
+* Laplace-Runge-Lenz vector pre-SN
+      call CrossProduct(v_rel_vec_prev, h_prev, LRL_vec_prev)
+      DO i = 1, 3
+        LRL_vec_prev(i) /= (gmrkm * mtot_prev)
+        LRL_vec_prev(i) -= sep_vec(i) / sep_prev
+      END DO
+
+* Calculate the new systemic velocity of the center of mass
+      do i = 1, 3
+         v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
+         v_cm(i) *= v_rel_vec_prev(i)
+         v_cm(i) += (m1n / mtot * natal_kick(i))
+      end do
+
+* New vectors after SN
+      v_rel_vec(1) = v_rel_vec_prev(1) + natal_kick(1)
+      v_rel_vec(2) = v_rel_vec_prev(2) + natal_kick(2)
+      v_rel_vec(3) = v_rel_vec_prev(3) + natal_kick(3)
+
+      call CrossProduct(sep_vec, v_rel_vec, h)
+      call CrossProduct(v_rel_vec, h, LRL_vec)
+      DO i = 1, 3
+        LRL_vec(i) /= (gmrkm * mtot_prev)
+        LRL_vec(i) -= sep_vec(i) / sep_prev
+      END DO
+
+* Get the Euler angles from previous kick for the rotation matrix
+      thetaE = kick_info(1,15) * pi / 180.d0
+      phiE = kick_info(1,16) * pi / 180.d0
+      psiE = kick_info(1,17) * pi / 180.d0
+
+* Get the new eccentricity
+      call VectorMagnitude(LRL_vec, ecc)
+
+* ----------------------------------------------------------------------
+* -------- Split based on whether this kick disrupts the system --------
+* ----------------------------------------------------------------------
+
       if(ecc.gt.1.d0)then
+* System is now disrupted
          disrupt = .true.
 * Set that it is disrupted in the kick_info array
          kick_info(sn,2) = 1
-*
-*************************
-* Kiel & Hurley method: * Similar to Belczynski et al. (2008) method.
-*************************
-* Find the semimajor axis and semiminor axis.
-*         sepn = hn2/(gmrkm*(m1n+m2)*(ecc*ecc - 1.d0))
-         sepn = -sep
-*         bb = sqrt(ecc*ecc-1.d0)*sepn
-* Direction for hyperbolic velocity in x (csig) and y (ssig).
-         csigns = 1.d0/ecc
-* Calculate the velocity magnitude at infinity for hyperbolic orbit.
-         v1 = SQRT((gmrkm*(m1n+m2))/sepn)
-         signs = ACOS(MIN(1.d0,csigns))
-         sigc = signs
-* Calculating position of NS compared to companion for
-* rotation calculation around the z-axis.
-         semilatrec = gmrkm*(m1n+m2)
-         semilatrec = hn2/semilatrec
-         cangleofdeath = (1.d0/ecc)*((semilatrec/r) - 1.d0)
-         angleofdeath = ACOS(MIN(1.d0,cangleofdeath))
-* Find which hemisphere (in x) the NS/companion originated in...
-         psins = angleofdeath
-         if((stheta*cphi - calpha).gt.0.d0) psins = -psins
-         psic = psins
-* Accounting for rotation in x-y plane due to SN event.
-         cpsins = COS(signs-psins)
-         spsins = SIN(signs-psins)
-         cpsic = COS(sigc-psic)
-         spsic = SIN(sigc-psic)
-* Inverse rotation matrix accounting for our assumed alignment of
-* the post-SN orbital angular mometum with the z-axis.
-*         RotInvX = vr*salpha + vk*(sphi - ctheta*cphi)
-*         mbi = RotInvX
-*         RotInvZ = vr*salpha - vk*(ctheta*cphi+sphi)
-*         RotInvX = RotInvX/SQRT(RotInvX*RotInvX + RotInvZ*RotInvZ)
-*         RotInvZ = RotInvZ/SQRT(mbi*mbi + RotInvZ*RotInvZ)
-         RotInvX = cmu
-*
-         mbi = m1+m2
-         mbf = m1n+m2
-         mdif = m1 - m1n
-* Energy calculation, for interest - should be positive for unbound system.
-         energy = vn2/2.d0 - gmrkm*(m1n+m2)/r
-*
-* Set values in the kick_info array for this disrupted system
-* First specify that the system was disrupted from this SN
-         kick_info(sn,2) = 1
-* Now save the velocity of each star. Note that kick_info[4-6] is for snstar=1.
-         if(snstar.eq.1)then
-            kick_info(sn,7) = ((m1n/mbf)*vk*ctheta*cphi +
-     &           (mdif*m2)/(mbi*mbf)*vr*salpha) -
-     &           v1*(spsins)*RotInvX*(m2/mbf)
-*
-            kick_info(sn,8) = (m1n/mbf)*vk*stheta*cphi +
-     &           (mdif*m2)/(mbi*mbf)*vr*calpha -
-     &           v1*(cpsins)*(m2/mbf)
-*
-            kick_info(sn,9) = (m1n/mbf)*vk*sphi
-*
-            kick_info(sn,11) = ((mdif*m2)/(mbi*mbf)*vr*salpha +
-     &           (m1n/mbf)*vk*ctheta*cphi) +
-     &           v1*(spsic)*(m1n/mbf)*RotInvX
-*
-            kick_info(sn,12) = (mdif*m2)/(mbi*mbf)*vr*calpha +
-     &           (m1n/mbf)*vk*stheta*cphi +
-     &           v1*(cpsic)*(m1n/mbf)
-*
-            kick_info(sn,13) = (m1n/mbf)*vk*sphi
+         call VectorHat(LRL_vec, e_mag, e_hat)
+         call VectorMagnitude(h, h_mag)
+         call VectorHat(h, h_mag, h_hat)
+         call CrossProduct(h_hat, e_hat, h_cross_e_hat)
 
-            bkick(1) = float(snstar)
-            bkick(2) = kick_info(sn,7)
-            bkick(3) = kick_info(sn,8)
-            bkick(4) = kick_info(sn,9)
-            bkick(5) = float(snstar)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
+* Velocity at infinity
+         v_inf = gmrkm * mtot / h_mag * sqrt(ecc_2 - 1.d0)
+         do i = 1, 3
+            v_inf_vec(i) = 0
+            v_inf_vec(i) += (-1.d0 * e_hat(i) / ecc)
+            v_inf_vec(i) += SQRT(1 - 1.d0 / ecc_2) * h_cross_e_hat(i)
+            v_inf_vec(i) *= v_inf
+         end do
 
-            if(psins.lt.0.d0)then
-               if(r2.gt.sepn*(ecc - 1.d0))then
-                  kick_info(sn,7) = vs(1)
-                  kick_info(sn,8) = vs(2)
-                  kick_info(sn,9) = vs(3)
-                  kick_info(sn,11) = 0.d0
-                  kick_info(sn,12) = 0.d0
-                  kick_info(sn,13) = 0.d0
-                  bkick(2) = vs(1)
-                  bkick(3) = vs(2)
-                  bkick(4) = vs(3)
-                  bkick(6) = 0.d0
-                  bkick(7) = 0.d0
-                  bkick(8) = 0.d0
-                  m2 = -1.d0*m2
-               endif
-            endif
-*
-         elseif(snstar.eq.2)then
-            kick_info(sn,11) = ((m1n/mbf)*vk*ctheta*cphi +
-     &           (mdif*m2)/(mbi*mbf)*vr*salpha) -
-     &           v1*(spsins)*RotInvX*(m2/mbf)
-*
-            kick_info(sn,12) = (m1n/mbf)*vk*stheta*cphi +
-     &           (mdif*m2)/(mbi*mbf)*vr*calpha -
-     &           v1*(cpsins)*(m2/mbf)
-*
-            kick_info(sn,13) = (m1n/mbf)*vk*sphi
-*
-            kick_info(sn,7) = ((mdif*m2)/(mbi*mbf)*vr*salpha +
-     &           (m1n/mbf)*vk*ctheta*cphi) +
-     &           v1*(spsic)*(m1n/mbf)*RotInvX
-*
-            kick_info(sn,8) = (mdif*m2)/(mbi*mbf)*vr*calpha +
-     &           (m1n/mbf)*vk*stheta*cphi +
-     &           v1*(cpsic)*(m1n/mbf)
-*
-            kick_info(sn,9) = (m1n/mbf)*vk*sphi
+* Velocity of the star going supernova post-SN
+         do i = 1, 3
+            v_sn(i) = (m2 / mtot) * v_inf_vec(i) + v_CM(i)
+         end do
 
-            bkick(5) = float(snstar)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-            bkick(9) = float(snstar)
-            bkick(10) = kick_info(sn,7)
-            bkick(11) = kick_info(sn,8)
-            bkick(12) = kick_info(sn,9)
+* Velocity of the companion star post-SN
+         do i = 1, 3
+            v_comp(i) = -(m1n / mtot) * v_inf_vec(i) + v_CM(i)
+         end do
 
-            if(psins.lt.0.d0)then
-               if(r2.gt.sepn*(ecc - 1.d0))then
-                  kick_info(sn,7) = vs(1)
-                  kick_info(sn,8) = vs(2)
-                  kick_info(sn,9) = vs(3)
-                  kick_info(sn,11) = 0.d0
-                  kick_info(sn,12) = 0.d0
-                  kick_info(sn,13) = 0.d0
-                  bkick(6) = vs(1)
-                  bkick(7) = vs(2)
-                  bkick(8) = vs(3)
-                  bkick(10) = 0.d0
-                  bkick(11) = 0.d0
-                  bkick(12) = 0.d0
-                  m2 = -1.d0*m2
-               endif
-            endif
-*
+* if second supernova, need to change basis to the original orbital plane
+         if(sn.eq.2)then
+            call ChangeBasis(v_sn, thetaE, phiE, psiE, v_sn_rot)
+            call ChangeBasis(v_comp, thetaE, phiE, psiE, v_comp_rot)
+         else
+            v_sn_rot = v_sn
+            v_comp_rot = v_comp
          endif
-         ecc = MIN(ecc,99.99d0)
-      endif
-*
-* If system survives the SN, save the components of the change in
-* centre-of-mass velocity
-      if(ecc.lt.1.d0)then
-         kick_info(sn,7) = vs(1)
-         kick_info(sn,8) = vs(2)
-         kick_info(sn,9) = vs(3)
-         kick_info(sn,11) = 0
-         kick_info(sn,12) = 0
-         kick_info(sn,13) = 0
-      endif
 
-      if(ecc.lt.1.d0)then
-*         if(ecc.eq.1.d0.or.ecc.lt.0.d0) m2 = -1.d0 * m2
-* 1st time with kick.
-         if(bkick(1).le.0.d0)then
-            bkick(1) = float(snstar)
-            bkick(2) = vs(1)
-            bkick(3) = vs(2)
-            bkick(4) = vs(3)
-* 2nd time with kick.
-         elseif(bkick(5).le.0.d0)then
-            bkick(5) = float(snstar)
-            bkick(6) = vs(1)
-            bkick(7) = vs(2)
-            bkick(8) = vs(3)
-* 2nd time with kick if already disrupted.
-* MJZ - would this if statement ever be hit?
-         elseif(bkick(5).gt.0.d0)then
-            bkick(9) = float(snstar)
-            bkick(10) = vs(1)
-            bkick(11) = vs(2)
-            bkick(12) = vs(3)
+* save the velocities to the kick_info table
+
+
+         call AngleBetweenVectors(h, h_prev, thetaE)
+         phiE = ran3(idum1) * twopi
+         psiE = ran3(idum1) * twopi
+
+         ecc = -1.d0
+         sep = -1.d0
+      else
+
+         if (sn.eq.2) then
+            call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
+         else
+            v_cm_rot = v_cm
          endif
+
+         call AngleBetweenVectors(h, h_prev, thetaE)
+
       endif
 
-* In the impossible chance that the system is exactly parabolic...
-      if(ecc.eq.1.d0.and.snstar.eq.1)then
-         kick_info(sn,7) = vs(1)
-         kick_info(sn,8) = vs(2)
-         kick_info(sn,9) = vs(3)
-         kick_info(sn,11) = -vs(1)
-         kick_info(sn,12) = -vs(2)
-         kick_info(sn,13) = -vs(3)
-         bkick(1) = float(snstar)
-         bkick(2) = vs(1)
-         bkick(3) = vs(2)
-         bkick(4) = vs(3)
-         bkick(5) = float(snstar)
-         bkick(6) = -vs(1)
-         bkick(7) = -vs(2)
-         bkick(8) = -vs(3)
-      elseif(ecc.eq.1.d0.and.snstar.eq.2)then
-         kick_info(sn,7) = -vs(1)
-         kick_info(sn,8) = -vs(2)
-         kick_info(sn,9) = -vs(3)
-         kick_info(sn,11) = vs(1)
-         kick_info(sn,12) = vs(2)
-         kick_info(sn,13) = vs(3)
-         bkick(5) = float(snstar)
-         bkick(6) = vs(1)
-         bkick(7) = vs(2)
-         bkick(8) = vs(3)
-         bkick(9) = float(snstar)
-         bkick(10) = -vs(1)
-         bkick(11) = -vs(2)
-         bkick(12) = -vs(3)
-      endif
-
-* Uncomment to randomly rotate system velocities
-      CALL randomness3(idum1,
-     &            kick_info(sn,7),kick_info(sn,8),kick_info(sn,9),
-     &            kick_info(sn,11),kick_info(sn,12),kick_info(sn,13))
-*
-* Put a cap on the eccentricity
-      if(ecc.gt.99.9d0) ecc = 99.9d0
+* Set Euler angles in the kick_info array
+      kick_info(sn,15) = thetaE * 180 / pi
+      kick_info(sn,16) = phiE * 180 / pi
+      kick_info(sn,17) = psiE * 180 / pi
 
 * For systems that were distrupted in the first SN, skip to here
  73   continue
@@ -699,72 +502,138 @@
      &      (kick_info(1,13)+kick_info(2,13))*
      &      (kick_info(1,13)+kick_info(2,13)))
       endif
+      
+      RETURN
+      END
 
-* Write some output information
-*
+
+* ======================================================================
+* ================== Vector helper functions follow ====================
+* ======================================================================
+
+      SUBROUTINE ChangeBasis(Vector, ThetaE, PhiE, PsiE, Result)
+* Redefine a vector from one coordinate basis to another using Euler Angles
+* Vector is the input vector in the new basis (X', Y', Z')
+* Result is the transformed vector in the original basis (X, Y, Z)
+* ThetaE, PhiE, PsiE are the Euler angles
+  
+      real*8 Vector(3), Result(3)
+      real*8 ThetaE, PhiE, PsiE
+      real*8 cTheta, cPhi, cPsi, sTheta, sPhi, sPsi
+      real*8 rotationMatrix(3,3)
+      integer i, j
+    
+* define trigonometric values
+      cTheta = COS(ThetaE)
+      sTheta = SIN(ThetaE)
+      cPhi   = COS(PhiE)
+      sPhi   = SIN(PhiE)
+      cPsi   = COS(PsiE)
+      sPsi   = SIN(PsiE)
+    
+* define the Rotation Matrix
+      rotationMatrix(1,1) = cPhi * cPsi - sPhi * cTheta * sPsi
+      rotationMatrix(1,2) = -cPhi * sPsi - sPhi * cTheta * cPsi
+      rotationMatrix(1,3) = sTheta * sPhi
+      rotationMatrix(2,1) = sPhi * cPsi + cPhi * cTheta * sPsi
+      rotationMatrix(2,2) = -sPhi * sPsi + cPhi * cTheta * cPsi
+      rotationMatrix(2,3) = -sTheta * cPhi
+      rotationMatrix(3,1) = sTheta * sPsi
+      rotationMatrix(3,2) = sTheta * cPsi
+      rotationMatrix(3,3) = cTheta
+    
+* initialize the result to zero
+      DO i = 1, 3
+         Result(i) = 0.0D0
+      END DO
+    
+* apply rotation to the vector
+      DO i = 1, 3
+         DO j = 1, 3
+            Result(i) = Result(i) + Vector(j) * rotationMatrix(i, j)
+         END DO
+      END DO
+    
       RETURN
       END
-***
-      SUBROUTINE randomness3(idum,vx1,vy1,vz1,vx2,vy2,vz2)
-*
-      implicit none
-*
-      INTEGER idum
-      real ran3
-      external ran3
-      REAL*8 vx1,vy1,vz1,alpha,gamma,beta,pi,twopi,vx2,vy2,vz2
-      REAL*8 cg,sg,ca,sa,cb,sb,vx1s,vy1s,vz1s,vx2s,vy2s,vz2s
-*
-* Introduce random orientation of binary system to the Galaxy/GC... u bastard.
-*
-      pi = ACOS(-1.d0)
-      twopi = 2.d0*pi
-      alpha = twopi*ran3(idum) - pi
-      gamma = twopi*ran3(idum) - pi
-      beta = pi*ran3(idum) - (pi/2.d0)
-*      write(80,*)alpha,gamma,beta
-      cg = COS(gamma)
-      sg = SIN(gamma)
-      ca = COS(alpha)
-      sa = SIN(alpha)
-      cb = COS(beta)
-      sb = SIN(beta)
-*
-* Randomized orientation
-*
-      vx1s = vx1
-      vy1s = vy1
-      vz1s = vz1
-      vx2s = vx2
-      vy2s = vy2
-      vz2s = vz2
-* theta = b, phi = a, g = psi; pitch-roll-yaw; z-y-x axis rotations
-      vx1 = vx1s*(cb*ca)
-      vx1 = vx1 + vy1s*(cb*sa)
-      vx1 = vx1 - vz1s*sb
-*
-      vy1 = vx1s*(sg*sb*ca - cg*sa)
-      vy1 = vy1 + vy1s*(sg*sb*sa + cg*ca)
-      vy1 = vy1 + vz1s*(cb*sg)
-*
-      vz1 = vx1s*(cg*sb*ca + sg*sa)
-      vz1 = vz1 + vy1s*(cg*sb*sa - sg*ca)
-      vz1 = vz1 + vz1s*(cb*cg)
-**
-**
-      vx2 = vx2s*(cb*ca)
-      vx2 = vx2 + vy2s*(cb*sa)
-      vx2 = vx2 - vz2s*sb
-*
-      vy2 = vx2s*(sg*sb*ca - cg*sa)
-      vy2 = vy2 + vy2s*(sg*sb*sa + cg*ca)
-      vy2 = vy2 + vz2s*(cb*sg)
-*
-      vz2 = vx2s*(cg*sb*ca + sg*sa)
-      vz2 = vz2 + vy2s*(cg*sb*sa - sg*ca)
-      vz2 = vz2 + vz2s*(cb*cg)
-**
-*
+
+
+      SUBROUTINE CrossProduct(A, B, C)
+* This function computes the cross product of two vectors A and B
+* A, B are input vectors of dimension 3
+* C is the resulting vector, also of dimension 3
+
+      real*8 A(3), B(3), C(3)
+
+* Calculate each component of the cross product
+      C(1) = A(2) * B(3) - A(3) * B(2)
+      C(2) = A(3) * B(1) - A(1) * B(3)
+      C(3) = A(1) * B(2) - A(2) * B(1)
+
       RETURN
       END
-*
+
+
+
+      SUBROUTINE VectorMagnitude(A, magnitude)
+* This function computes the magnitude of a vector A
+* A is the input vector of dimension 3
+
+      real*8 A(3)
+      real*8 magnitude
+
+* Calculate the magnitude of the vector
+      magnitude = SQRT(A(1) * A(1) + A(2) * A(2) + A(3) * A(3))
+
+      RETURN
+      END
+
+      SUBROUTINE VectorHat(A, A_mag, A_hat)
+* This function computes the unit vector of a vector A
+* A is the input vector of dimension 3
+* A_mag is the magnitude of the vector A
+* A_hat is the resulting unit vector, also of dimension 3
+
+      real*8 A(3), A_hat(3), A_mag
+
+* Calculate the unit vector
+      A_hat(1) = A(1) / A_mag
+      A_hat(2) = A(2) / A_mag
+      A_hat(3) = A(3) / A_mag
+    
+      RETURN
+      END
+
+      SUBROUTINE DotProduct(A, B, dot)
+* This function computes the dot product of two vectors A and B
+* A, B are input vectors of dimension 3
+* dot is the resulting scalar
+
+      real*8 A(3), B(3), dot
+
+* Calculate the dot product
+      dot = A(1) * B(1) + A(2) * B(2) + A(3) * B(3)
+
+      RETURN
+      END
+
+      SUBROUTINE AngleBetweenVectors(A, B, angle)
+* This function computes the angle between two vectors A and B
+* A, B are input vectors of dimension 3
+* angle is the resulting angle in radians
+
+      real*8 A(3), B(3), angle
+      real*8 dot, magA, magB
+
+* Calculate the dot product of the two vectors
+      call DotProduct(A, B, dot)
+
+* Calculate the magnitudes of the two vectors
+      call VectorMagnitude(A, magA)
+      call VectorMagnitude(B, magB)
+
+* Calculate the angle between the two vectors
+      angle = ACOS(dot / (magA * magB))
+
+      RETURN
+      END
