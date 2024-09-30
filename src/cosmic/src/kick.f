@@ -353,15 +353,15 @@
 * Laplace-Runge-Lenz vector pre-SN
       call CrossProduct(v_rel_prev, h_prev, LRL_prev)
       DO i = 1, 3
-         LRL_prev(i) /= (gmrkm * mtot_prev)
-         LRL_prev(i) -= sep_vec(i) / sep_prev
+         LRL_prev(i) = LRL_prev(i) / (gmrkm * mtot_prev)
+     &               - sep_vec(i) / sep_prev
       END DO
 
 * Calculate the new systemic velocity of the center of mass
       do i = 1, 3
          v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
-         v_cm(i) *= v_rel_prev(i)
-         v_cm(i) += (m1n / mtot * natal_kick(i))
+     &           * v_rel_prev(i)
+     &           + (m1n / mtot * natal_kick(i))
       end do
 
 * New vectors after SN
@@ -372,8 +372,7 @@
       call CrossProduct(sep_vec, v_rel, h)
       call CrossProduct(v_rel, h, LRL)
       DO i = 1, 3
-         LRL(i) /= (gmrkm * mtot_prev)
-         LRL(i) -= sep_vec(i) / sep_prev
+         LRL(i) = LRL(i) / (gmrkm * mtot_prev) - sep_vec(i) / sep_prev
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
@@ -401,10 +400,8 @@
 * Velocity at infinity
          v_inf = gmrkm * mtot / h_mag * sqrt(ecc_2 - 1.d0)
          do i = 1, 3
-            v_inf_vec(i) = 0
-            v_inf_vec(i) += (-1.d0 * e_hat(i) / ecc)
-            v_inf_vec(i) += SQRT(1 - 1.d0 / ecc_2) * h_cross_e_hat(i)
-            v_inf_vec(i) *= v_inf
+            v_inf_vec(i) = v_inf * ((-1.d0 * e_hat(i) / ecc)
+     &          + SQRT(1 - 1.d0 / ecc_2) * h_cross_e_hat(i))
          end do
 
 * Velocity of the star going supernova post-SN
