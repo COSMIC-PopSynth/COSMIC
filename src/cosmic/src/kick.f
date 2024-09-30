@@ -1,4 +1,4 @@
-      SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,
+      SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
      &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -24,19 +24,19 @@
 * effect of the first SN (e.g., kick_info[2,10] is the total systemic
 * velocity after both supernovae).
 *
-* kick_info[i,1]: snstar of exploding star
+* kick_info[i,1]: sn of exploding star
 * kick_info[i,2]: disrupted (0=no, 1=yes)
 * kick_info[i,3]: magnitude of the natal kick
 * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
 * kick_info[i,6]: eccentric anamoly
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
-*       change in 3D velocity of snstar=1 if the system is disrupted
+*       change in 3D velocity of sn=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
-*       or magnitude of total velocity of snstar=1 if disrupted,
+*       or magnitude of total velocity of sn=1 if disrupted,
 *       accounting for both SNe
-* kick_info[i,11-13]: change in 3D velocity of the snstar=2 if system
+* kick_info[i,11-13]: change in 3D velocity of the sn=2 if system
 *       is disrupted
-* kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted,
+* kick_info[i,14]: magnitude of velocity of sn=2 if disrupted,
 *       accounting for both SNe
 * kick_info[i,15]: thetaE TODO
 * kick_info[i,16]: phiE TODO
@@ -44,7 +44,7 @@
 * kick_info[i,18]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
-      integer kw,k,snstar,sn,safety
+      integer kw,k,sn,safety
 
       real*8 m1,m2,m1n
       real*8 ecc,ecc_2,sep
@@ -104,24 +104,14 @@
       alphakick = 70.0d0
       betakick = 120.0d0
 
-* find whether this is the first or second supernova
-* TODO: Is this not redundant? snstar is already passed as an argument
-      if(using_cmc.eq.0)then
-          if(kick_info(1,1).eq.0) sn=1
-          if(kick_info(1,1).gt.0) sn=2
-      else
-          if(bkick(1).eq.0) sn=1
-          if(bkick(1).gt.0) sn=2
-      endif
-
       if(using_cmc.eq.0)then
 * check if we have supplied a randomseed for this SN from kick_info
 * already
-          if(natal_kick_array(snstar,5).gt.0.d0)then
+          if(natal_kick_array(sn,5).gt.0.d0)then
 * if we have we need to run ran3 enough times until
 * we are at the same state of the random number generator
 * as we were before
-              do while (natal_kick_array(snstar,5).ne.idum1
+              do while (natal_kick_array(sn,5).ne.idum1
      &                          .and.safety.le.20)
                   xx = RAN3(idum1)
                   safety = safety + 1
@@ -129,11 +119,11 @@
           endif
       endif
 * save the current idum1
-      natal_kick_array(snstar,5) = idum1
+      natal_kick_array(sn,5) = idum1
       kick_info(sn,18) = idum1
 
-* set the SNstar of the exploding object in the kick_info array
-      kick_info(sn,1) = snstar
+* set the sn of the exploding object in the kick_info array
+      kick_info(sn,1) = sn
 
 * if the system was disrupted from the first supernova, marked as disrupted
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
@@ -162,8 +152,8 @@
 * Before we draw the kick from the maxwellian and then scale it
 * as desired, let us see if a pre-supplied natal kick maganitude
 * was passed.
-      if(natal_kick_array(snstar,1).ge.0.d0)then
-          vk = natal_kick_array(snstar,1)
+      if(natal_kick_array(sn,1).ge.0.d0)then
+          vk = natal_kick_array(sn,1)
           vk2 = vk*vk
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
@@ -221,7 +211,7 @@
 * save natal kick velocity in the kick_info array and natal_kick_array
       kick_info(sn,3) = vk
       if(using_cmc.eq.0)then
-          natal_kick_array(snstar,1) = vk
+          natal_kick_array(sn,1) = vk
       endif
 
 * ----------------------------------------------------------------------
@@ -230,9 +220,9 @@
 
 * Before we randomly draw a phi and theta for the natal kick,
 * see if a pre-supplied set of phi/theta is passed
-      if((natal_kick_array(snstar,2).ge.(-90.d0)).and.
-     &       (natal_kick_array(snstar,2).le.(90.d0)))then
-          phi = natal_kick_array(snstar,2)*pi/180.d0
+      if((natal_kick_array(sn,2).ge.(-90.d0)).and.
+     &       (natal_kick_array(sn,2).le.(90.d0)))then
+          phi = natal_kick_array(sn,2)*pi/180.d0
           sin_phi = SIN(phi)
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
@@ -253,9 +243,9 @@
       endif
       cos_phi = COS(phi)
 
-      if((natal_kick_array(snstar,3).ge.(0.d0)).and.
-     &       (natal_kick_array(snstar,3).le.(360.d0)))then
-          theta = natal_kick_array(snstar,3)*pi/180.d0
+      if((natal_kick_array(sn,3).ge.(0.d0)).and.
+     &       (natal_kick_array(sn,3).le.(360.d0)))then
+          theta = natal_kick_array(sn,3)*pi/180.d0
 * per supplied kick value we mimic a call to random number generator
            xx = RAN3(idum1)
       else
@@ -269,8 +259,8 @@
       kick_info(sn,4) = phi*180/pi
       kick_info(sn,5) = theta*180/pi
       if(using_cmc.eq.0)then
-          natal_kick_array(snstar,2) = phi*180/pi
-          natal_kick_array(snstar,3) = theta*180/pi
+          natal_kick_array(sn,2) = phi*180/pi
+          natal_kick_array(sn,3) = theta*180/pi
       endif
 
 * create a vector for the natal kick
@@ -287,12 +277,12 @@
 * if the system already disrupted, only apply kick to the current star
          disrupt = .true.
 * Set that it is disrupted in the kick_info array
-         kick_info(snstar,2) = 1
-         if(snstar.eq.1)then
+         kick_info(sn,2) = 1
+         if(sn.eq.1)then
             kick_info(sn,7) = natal_kick(1)
             kick_info(sn,8) = natal_kick(2)
             kick_info(sn,9) = natal_kick(3)
-         elseif(snstar.eq.2)then
+         elseif(sn.eq.2)then
             kick_info(sn,11) = natal_kick(1)
             kick_info(sn,12) = natal_kick(2)
             kick_info(sn,13) = natal_kick(3)
@@ -307,10 +297,10 @@
 * Find the initial separation by randomly choosing a mean anomaly.
 * check is user supplied mean anomaly
       xx = RAN3(idum1)
-      if((natal_kick_array(snstar,4).ge.(0.d0)).and.
-     &   (natal_kick_array(snstar,4).le.(360.d0)))then
+      if((natal_kick_array(sn,4).ge.(0.d0)).and.
+     &   (natal_kick_array(sn,4).le.(360.d0)))then
 
-         mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
+         mean_anom = natal_kick_array(sn,4) * pi / 180.d0
       else
          mean_anom = xx * twopi
       endif
@@ -363,8 +353,8 @@
 * Laplace-Runge-Lenz vector pre-SN
       call CrossProduct(v_rel_prev, h_prev, LRL_prev)
       DO i = 1, 3
-        LRL_prev(i) /= (gmrkm * mtot_prev)
-        LRL_prev(i) -= sep_vec(i) / sep_prev
+         LRL_prev(i) /= (gmrkm * mtot_prev)
+         LRL_prev(i) -= sep_vec(i) / sep_prev
       END DO
 
 * Calculate the new systemic velocity of the center of mass
@@ -382,8 +372,8 @@
       call CrossProduct(sep_vec, v_rel, h)
       call CrossProduct(v_rel, h, LRL)
       DO i = 1, 3
-        LRL(i) /= (gmrkm * mtot_prev)
-        LRL(i) -= sep_vec(i) / sep_prev
+         LRL(i) /= (gmrkm * mtot_prev)
+         LRL(i) -= sep_vec(i) / sep_prev
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
@@ -437,7 +427,40 @@
          endif
 
 * save the velocities to the kick_info table
+         if(sn.eq.1)then
+            kick_info(sn,7) = v_sn_rot(1)
+            kick_info(sn,8) = v_sn_rot(2)
+            kick_info(sn,9) = v_sn_rot(3)
+            kick_info(sn,11) = v_comp_rot(1)
+            kick_info(sn,12) = v_comp_rot(2)
+            kick_info(sn,13) = v_comp_rot(3)
 
+            bkick(1) = float(sn)
+            bkick(2) = kick_info(sn,7)
+            bkick(3) = kick_info(sn,8)
+            bkick(4) = kick_info(sn,9)
+            bkick(5) = float(sn)
+            bkick(6) = kick_info(sn,11)
+            bkick(7) = kick_info(sn,12)
+            bkick(8) = kick_info(sn,13)
+*
+         elseif(sn.eq.2)then
+            kick_info(sn,11) = v_sn_rot(1)
+            kick_info(sn,12) = v_sn_rot(2)
+            kick_info(sn,13) = v_sn_rot(3)
+            kick_info(sn,7) = v_comp_rot(1)
+            kick_info(sn,8) = v_comp_rot(2)
+            kick_info(sn,9) = v_comp_rot(3)
+
+            bkick(5) = float(sn)
+            bkick(6) = kick_info(sn,11)
+            bkick(7) = kick_info(sn,12)
+            bkick(8) = kick_info(sn,13)
+            bkick(9) = float(sn)
+            bkick(10) = kick_info(sn,7)
+            bkick(11) = kick_info(sn,8)
+            bkick(12) = kick_info(sn,9)
+         endif
 
          call AngleBetweenVectors(h, h_prev, thetaE)
          phiE = ran3(idum1) * twopi
@@ -446,6 +469,15 @@
          ecc = -1.d0
          sep = -1.d0
       else
+* The system is still bound
+* Record the mean anomaly in the arrays
+         kick_info(sn,6) = mean_anom * 180 / pi
+         if (using_cmc.eq.0) then
+            natal_kick_array(sn,4) = mean_anom * 180 / pi
+         endif
+
+* Update the total orbital angular momentum
+         jorb = m1n * m2 / mtot * h_mag
 
          if (sn.eq.2) then
             call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
