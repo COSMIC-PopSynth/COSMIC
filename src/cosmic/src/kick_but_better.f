@@ -14,7 +14,7 @@
 * for COSMIC BSE in anyway
 *
 * MJZ/SBC (April 2020)
-* kick_info is a (2,17) array that tracks information about the supernova
+* kick_info is a (2,18) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
@@ -38,10 +38,10 @@
 *       is disrupted
 * kick_info[i,14]: magnitude of velocity of snstar=2 if disrupted,
 *       accounting for both SNe
-* kick_info[i,15]: (total) tilt of the orbital plane after each SN
-*       w.r.t. the original angular momentum axis after each SN
-* kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
-* kick_info[i,17]: random seed at the start of call to kick.f
+* kick_info[i,15]: thetaE TODO
+* kick_info[i,16]: phiE TODO
+* kick_info[i,17]: psiE TODO
+* kick_info[i,18]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
       integer kw,k,snstar,sn,safety
@@ -63,12 +63,14 @@
       real*8 sqrt_1me2, sep_prev, prefactor, omega
       real*8 h(3), h_hat(3), h_mag, LRL_vec(3), e_hat(3), e_mag
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
+      real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
       real*8 h_cross_e_hat(3)
+      real*8 thetaE, phiE, psiE
       integer i
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,17)
+      real*8 kick_info(2,18)
       real ran3,xx
       external ran3
 *
@@ -127,7 +129,7 @@
       endif
 * save the current idum1
       natal_kick_array(snstar,5) = idum1
-      kick_info(sn,17) = idum1
+      kick_info(sn,18) = idum1
 
 * set the SNstar of the exploding object in the kick_info array
       kick_info(sn,1) = snstar
@@ -361,24 +363,43 @@
 
 * Relative velocity vector before the supernova
       prefactor = omega * a_prev_2 / sep_prev
-      v_rel_vec(1) = -prefactor * sin_ecc_anom
-      v_rel_vec(2) = prefactor * cos_ecc_anom * sqrt_1me2
-      v_rel_vec(3) = 0.d0
+      v_rel_vec_prev(1) = -prefactor * sin_ecc_anom
+      v_rel_vec_prev(2) = prefactor * cos_ecc_anom * sqrt_1me2
+      v_rel_vec_prev(3) = 0.d0
 
-* Specific angular momentum vector
-      call CrossProduct(sep_vec, v_rel_vec, h)
+* Specific angular momentum vector pre-SN
+      call CrossProduct(sep_vec, v_rel_vec_prev, h_prev)
 
-* Laplace-Runge-Lenz vector
-      call CrossProduct(v_rel_vec, h, LRL_vec)
+* Laplace-Runge-Lenz vector pre-SN
+      call CrossProduct(v_rel_vec_prev, h_prev, LRL_vec_prev)
       DO i = 1, 3
-         LRL_vec(i) = LRL_vec(i) / (gmrkm * mtot_prev) - sep_vec(i) / sep_prev
+        LRL_vec_prev(i) /= (gmrkm * mtot_prev)
+        LRL_vec_prev(i) -= sep_vec(i) / sep_prev
       END DO
 
 * Calculate the new systemic velocity of the center of mass
       do i = 1, 3
-         v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot) * v_rel_vec(i)
+         v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
+         v_cm(i) *= v_rel_vec_prev(i)
          v_cm(i) += (m1n / mtot * natal_kick(i))
       end do
+
+* New vectors after SN
+      v_rel_vec(1) = v_rel_vec_prev(1) + natal_kick(1)
+      v_rel_vec(2) = v_rel_vec_prev(2) + natal_kick(2)
+      v_rel_vec(3) = v_rel_vec_prev(3) + natal_kick(3)
+
+      call CrossProduct(sep_vec, v_rel_vec, h)
+      call CrossProduct(v_rel_vec, h, LRL_vec)
+      DO i = 1, 3
+        LRL_vec(i) /= (gmrkm * mtot_prev)
+        LRL_vec(i) -= sep_vec(i) / sep_prev
+      END DO
+
+* Get the Euler angles from previous kick for the rotation matrix
+      thetaE = kick_info(1,15) * pi / 180.d0
+      phiE = kick_info(1,16) * pi / 180.d0
+      psiE = kick_info(1,17) * pi / 180.d0
 
 * Get the new eccentricity
       call VectorMagnitude(LRL_vec, ecc)
@@ -427,14 +448,29 @@
 
 * save the velocities to the kick_info table
 
+
+         call AngleBetweenVectors(h, h_prev, thetaE)
+         phiE = ran3(idum1) * twopi
+         psiE = ran3(idum1) * twopi
+
          ecc = -1.d0
          sep = -1.d0
       else
 
-         call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
-        
+         if (sn.eq.2) then
+            call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
+         else
+            v_cm_rot = v_cm
+         endif
+
+         call AngleBetweenVectors(h, h_prev, thetaE)
 
       endif
+
+* Set Euler angles in the kick_info array
+      kick_info(sn,15) = thetaE * 180 / pi
+      kick_info(sn,16) = phiE * 180 / pi
+      kick_info(sn,17) = psiE * 180 / pi
 
 * For systems that were distrupted in the first SN, skip to here
  73   continue
