@@ -58,10 +58,11 @@
       real*8 mean_mns,mean_mej,alphakick,betakick
       real*8 bkick(20),r2,jorb
       real*8 ecc_prev,a_prev,mtot,mtot_prev
-      real*8 natal_kick(3), sep_vec(3), v_rel_vec(3)
+      real*8 natal_kick(3), sep_vec(3), v_rel(3), v_rel_prev(3)
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
       real*8 sqrt_1me2, sep_prev, prefactor, omega
-      real*8 h(3), h_hat(3), h_mag, LRL_vec(3), e_hat(3), e_mag
+      real*8 h_prev(3),h(3), h_hat(3), h_mag
+      real*8 LRL_prev(3), LRL(3), e_hat(3), e_mag
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
       real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
       real*8 h_cross_e_hat(3)
@@ -263,7 +264,7 @@
       sin_theta = SIN(theta)
       cos_theta = COS(theta)
 
-*     save theta and phi (exploding star frame) in the kick_info and
+*     save theta and phi in the kick_info and
 *     natal_kick_array
       kick_info(sn,4) = phi*180/pi
       kick_info(sn,5) = theta*180/pi
@@ -363,37 +364,37 @@
 
 * Relative velocity vector before the supernova
       prefactor = omega * a_prev_2 / sep_prev
-      v_rel_vec_prev(1) = -prefactor * sin_ecc_anom
-      v_rel_vec_prev(2) = prefactor * cos_ecc_anom * sqrt_1me2
-      v_rel_vec_prev(3) = 0.d0
+      v_rel_prev(1) = -prefactor * sin_ecc_anom
+      v_rel_prev(2) = prefactor * cos_ecc_anom * sqrt_1me2
+      v_rel_prev(3) = 0.d0
 
 * Specific angular momentum vector pre-SN
-      call CrossProduct(sep_vec, v_rel_vec_prev, h_prev)
+      call CrossProduct(sep_vec, v_rel_prev, h_prev)
 
 * Laplace-Runge-Lenz vector pre-SN
-      call CrossProduct(v_rel_vec_prev, h_prev, LRL_vec_prev)
+      call CrossProduct(v_rel_prev, h_prev, LRL_prev)
       DO i = 1, 3
-        LRL_vec_prev(i) /= (gmrkm * mtot_prev)
-        LRL_vec_prev(i) -= sep_vec(i) / sep_prev
+        LRL_prev(i) /= (gmrkm * mtot_prev)
+        LRL_prev(i) -= sep_vec(i) / sep_prev
       END DO
 
 * Calculate the new systemic velocity of the center of mass
       do i = 1, 3
          v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
-         v_cm(i) *= v_rel_vec_prev(i)
+         v_cm(i) *= v_rel_prev(i)
          v_cm(i) += (m1n / mtot * natal_kick(i))
       end do
 
 * New vectors after SN
-      v_rel_vec(1) = v_rel_vec_prev(1) + natal_kick(1)
-      v_rel_vec(2) = v_rel_vec_prev(2) + natal_kick(2)
-      v_rel_vec(3) = v_rel_vec_prev(3) + natal_kick(3)
+      v_rel(1) = v_rel_prev(1) + natal_kick(1)
+      v_rel(2) = v_rel_prev(2) + natal_kick(2)
+      v_rel(3) = v_rel_prev(3) + natal_kick(3)
 
-      call CrossProduct(sep_vec, v_rel_vec, h)
-      call CrossProduct(v_rel_vec, h, LRL_vec)
+      call CrossProduct(sep_vec, v_rel, h)
+      call CrossProduct(v_rel, h, LRL)
       DO i = 1, 3
-        LRL_vec(i) /= (gmrkm * mtot_prev)
-        LRL_vec(i) -= sep_vec(i) / sep_prev
+        LRL(i) /= (gmrkm * mtot_prev)
+        LRL(i) -= sep_vec(i) / sep_prev
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
@@ -402,7 +403,7 @@
       psiE = kick_info(1,17) * pi / 180.d0
 
 * Get the new eccentricity
-      call VectorMagnitude(LRL_vec, ecc)
+      call VectorMagnitude(LRL, ecc)
 
 * ----------------------------------------------------------------------
 * -------- Split based on whether this kick disrupts the system --------
@@ -413,7 +414,7 @@
          disrupt = .true.
 * Set that it is disrupted in the kick_info array
          kick_info(sn,2) = 1
-         call VectorHat(LRL_vec, e_mag, e_hat)
+         call VectorHat(LRL, e_mag, e_hat)
          call VectorMagnitude(h, h_mag)
          call VectorHat(h, h_mag, h_hat)
          call CrossProduct(h_hat, e_hat, h_cross_e_hat)
