@@ -282,7 +282,10 @@
 * Check if the system is already disrupted
       if(a_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
 * if the system already disrupted, only apply kick to the current star
-        if(snstar.eq.1)then
+         disrupt = .true.
+* Set that it is disrupted in the kick_info array
+         kick_info(snstar,2) = 1
+         if(snstar.eq.1)then
             kick_info(sn,7) = natal_kick(1)
             kick_info(sn,8) = natal_kick(2)
             kick_info(sn,9) = natal_kick(3)
@@ -385,47 +388,50 @@
 * ----------------------------------------------------------------------
 
       if(ecc.gt.1.d0)then
-* System is now unbound, start by prepping some vector variables
-        call VectorHat(LRL_vec, e_mag, e_hat)
-        call VectorMagnitude(h, h_mag)
-        call VectorHat(h, h_mag, h_hat)
-        call CrossProduct(h_hat, e_hat, h_cross_e_hat)
+* System is now disrupted
+         disrupt = .true.
+* Set that it is disrupted in the kick_info array
+         kick_info(sn,2) = 1
+         call VectorHat(LRL_vec, e_mag, e_hat)
+         call VectorMagnitude(h, h_mag)
+         call VectorHat(h, h_mag, h_hat)
+         call CrossProduct(h_hat, e_hat, h_cross_e_hat)
 
 * Velocity at infinity
-        v_inf = gmrkm * mtot / h_mag * sqrt(ecc_2 - 1.d0)
-        do i = 1, 3
+         v_inf = gmrkm * mtot / h_mag * sqrt(ecc_2 - 1.d0)
+         do i = 1, 3
             v_inf_vec(i) = 0
             v_inf_vec(i) += (-1.d0 * e_hat(i) / ecc)
             v_inf_vec(i) += SQRT(1 - 1.d0 / ecc_2) * h_cross_e_hat(i)
             v_inf_vec(i) *= v_inf
-        end do
+         end do
 
 * Velocity of the star going supernova post-SN
-        do i = 1, 3
+         do i = 1, 3
             v_sn(i) = (m2 / mtot) * v_inf_vec(i) + v_CM(i)
-        end do
+         end do
 
 * Velocity of the companion star post-SN
-        do i = 1, 3
+         do i = 1, 3
             v_comp(i) = -(m1n / mtot) * v_inf_vec(i) + v_CM(i)
-        end do
+         end do
 
 * if second supernova, need to change basis to the original orbital plane
-        if(sn.eq.2)then
+         if(sn.eq.2)then
             call ChangeBasis(v_sn, thetaE, phiE, psiE, v_sn_rot)
             call ChangeBasis(v_comp, thetaE, phiE, psiE, v_comp_rot)
-        else
+         else
             v_sn_rot = v_sn
             v_comp_rot = v_comp
-        endif
+         endif
 
 * save the velocities to the kick_info table
 
-        ecc = -1.d0
-        sep = -1.d0
+         ecc = -1.d0
+         sep = -1.d0
       else
 
-        call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
+         call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
         
 
       endif
