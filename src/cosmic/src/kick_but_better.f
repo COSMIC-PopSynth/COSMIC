@@ -561,3 +561,37 @@
     
       RETURN
       END
+
+      SUBROUTINE DotProduct(A, B, dot)
+* This function computes the dot product of two vectors A and B
+* A, B are input vectors of dimension 3
+* dot is the resulting scalar
+
+      real*8 A(3), B(3), dot
+
+* Calculate the dot product
+      dot = A(1) * B(1) + A(2) * B(2) + A(3) * B(3)
+
+      RETURN
+      END
+
+      SUBROUTINE AngleBetweenVectors(A, B, angle)
+* This function computes the angle between two vectors A and B
+* A, B are input vectors of dimension 3
+* angle is the resulting angle in radians
+
+      real*8 A(3), B(3), angle
+      real*8 dot, magA, magB
+
+* Calculate the dot product of the two vectors
+      call DotProduct(A, B, dot)
+
+* Calculate the magnitudes of the two vectors
+      call VectorMagnitude(A, magA)
+      call VectorMagnitude(B, magB)
+
+* Calculate the angle between the two vectors
+      angle = ACOS(dot / (magA * magB))
+
+      RETURN
+      END
