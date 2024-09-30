@@ -46,8 +46,8 @@
 * For cmc kick_info array is zero, not negative.
       integer kw,k,snstar,sn,safety
 
-      real*8 m1,m2,m1n,mbi,mbf,mdif
-      real*8 ecc,sep
+      real*8 m1,m2,m1n
+      real*8 ecc,ecc_2,sep
       real*8 pi,twopi,gmrkm,yearsc,rsunkm
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
       real*8 mean_anom,ecc_anom,dif,der,del,r
@@ -57,11 +57,13 @@
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
       real*8 bkick(20),r2,jorb
-      real*8 ecc_prev, a_prev, mtot_prev, mred_prev
+      real*8 ecc_prev,a_prev,mtot,mtot_prev
       real*8 natal_kick(3), sep_vec(3), v_rel_vec(3)
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
       real*8 sqrt_1me2, sep_prev, prefactor, omega
-      real*8 h_prev(3), LRL_vec(3)
+      real*8 h(3), h_hat(3), h_mag, LRL_vec(3), e_hat(3), e_mag
+      real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
+      real*8 h_cross_e_hat(3)
       integer i
 * Output
       logical output,disrupt
@@ -76,14 +78,13 @@
 * Setup previous values from before the SN
       ecc_prev = ecc
       a_prev = sep
-
       mtot_prev = m1 + m2
-      mred_prev = m1 * m2 / mtot_prev
+
+* ----------------------------------------------------------------------
+* -------------- Initialise variables and constants --------------------
+* ----------------------------------------------------------------------
 
 * Set up empty arrays and constants
-      do k = 1,3
-         vs(k) = 0.d0
-      enddo
       u1 = 0.d0
       u2 = 0.d0
       vk = 0.d0
@@ -150,7 +151,11 @@
          endif
       endif
 
-*
+
+* ----------------------------------------------------------------------
+* ----- Draw and scale a natal kick magnitude based on input dists -----
+* ----------------------------------------------------------------------
+
 * Before we draw the kick from the maxwellian and then scale it
 * as desired, let us see if a pre-supplied natal kick maganitude
 * was passed.
@@ -217,7 +222,7 @@
       endif
 
 * ----------------------------------------------------------------------
-* ----- Done scaling kick magnitudes at this point, now for angles -----
+* --------- Now input or draw supernova natal kick angles --------------
 * ----------------------------------------------------------------------
 
 * Before we randomly draw a phi and theta for the natal kick,
@@ -270,6 +275,10 @@
       natal_kick(2) = vk * cos_phi * sin_theta
       natal_kick(3) = vk * sin_phi
 
+* ----------------------------------------------------------------------
+* ----- Natal kick all done, check for pre-disruption as quick exit ----
+* ----------------------------------------------------------------------
+
 * Check if the system is already disrupted
       if(a_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
 * if the system already disrupted, only apply kick to the current star
@@ -283,76 +292,143 @@
             kick_info(sn,13) = natal_kick(3)
          endif
          GOTO 73
-      else
+      endif
+
+* ----------------------------------------------------------------------
+* ------ Draw or input mean anomaly, solve for eccentric anomaly -------
+* ----------------------------------------------------------------------
+
 * Find the initial separation by randomly choosing a mean anomaly.
 * check is user supplied mean anomaly
-         if((natal_kick_array(snstar,4).ge.(0.d0)).and.
-     &       (natal_kick_array(snstar,4).le.(360.d0)))then
+      if((natal_kick_array(snstar,4).ge.(0.d0)).and.
+     &   (natal_kick_array(snstar,4).le.(360.d0)))then
 
-             mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
+          mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
 * per supplied kick value we mimic a call to random number generator
-             xx = RAN3(idum1)
+          xx = RAN3(idum1)
 
 * Solve Kepler's equation for the eccentric anomaly from mean anomaly
 * https://en.wikipedia.org/wiki/Eccentric_anomaly
-             ecc_anom = mean_anom
+          ecc_anom = mean_anom
 
-             if(mean_anom.eq.0.d0) goto 3
+          if(mean_anom.eq.0.d0) goto 3
 
-  4          dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
-             if(ABS(dif / mean_anom).le.1.0d-04) goto 3
-             der = 1.d0 - ecc * COS(ecc_anom)
-             del = dif/der
-             ecc_anom = ecc_anom - del
-             goto 4
+  4       dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
+          if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+          der = 1.d0 - ecc * COS(ecc_anom)
+          del = dif/der
+          ecc_anom = ecc_anom - del
+          goto 4
 
-         endif
-
-* TODO: this code seems redundant, why can't we just set the mean anomaly?
-         xx = RAN3(idum1)
-         mean_anom = xx*twopi
-         ecc_anom = mean_anom
- 2       dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
-         if(ABS(dif / mean_anom).le.1.0d-04) goto 3
-         der = 1.d0 - ecc*COS(ecc_anom)
-         del = dif/der
-         ecc_anom = ecc_anom - del
-         goto 2
- 3       continue
       endif
 
-* Find the initial separation and relative velocity vectors
+* TODO: this code seems redundant, why can't we just set the mean anomaly?
+      xx = RAN3(idum1)
+      mean_anom = xx*twopi
+      ecc_anom = mean_anom
+ 2    dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
+      if(ABS(dif / mean_anom).le.1.0d-04) goto 3
+      der = 1.d0 - ecc*COS(ecc_anom)
+      del = dif/der
+      ecc_anom = ecc_anom - del
+      goto 2
+ 3    continue
+
+* ----------------------------------------------------------------------
+* ------ Calculate whether system disrupts and CM velocity change ------
+* ----------------------------------------------------------------------
+
+* Some helper variables for calculations below
       a_prev_2 = a_prev * a_prev
       a_prev_3 = a_prev_2 * a_prev
       cos_ecc_anom = COS(ecc_anom)
       sin_ecc_anom = SIN(ecc_anom)
+      sqrt_1me2 = SQRT(1.d0 - ecc_prev * ecc_prev)
+      mtot = m1n + m2
+      ecc_2 = ecc * ecc
 
+* Orbital frequency pre-SN
       omega = SQRT(gmrkm * mtot_prev / a_prev_3)
 
-      sqrt_1me2 = SQRT(1.d0 - ecc_prev * ecc_prev)
-
+* Separation vector before the supernova
       sep_vec(1) = a_prev * (cos_ecc_anom - ecc_prev)
       sep_vec(2) = a_prev * sin_ecc_anom * sqrt_1me2
       sep_vec(3) = 0.d0
-
       call VectorMagnitude(sep_vec, sep_prev)
 
+* Relative velocity vector before the supernova
       prefactor = omega * a_prev_2 / sep_prev
-
       v_rel_vec(1) = -prefactor * sin_ecc_anom
       v_rel_vec(2) = prefactor * cos_ecc_anom * sqrt_1me2
       v_rel_vec(3) = 0.d0
 
-* Calculate the specific angular momentum vector
-      call CrossProduct(sep_vec, v_rel_vec, h_prev)
+* Specific angular momentum vector
+      call CrossProduct(sep_vec, v_rel_vec, h)
 
-* Calculate the Laplace-Runge-Lenz vector
-      call CrossProduct(v_rel_vec, h_prev, LRL_vec)
+* Laplace-Runge-Lenz vector
+      call CrossProduct(v_rel_vec, h, LRL_vec)
       DO i = 1, 3
          LRL_vec(i) = LRL_vec(i) / (gmrkm * mtot_prev) - sep_vec(i) / sep_prev
       END DO
 
+* Calculate the new systemic velocity of the center of mass
+      do i = 1, 3
+         v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot) * v_rel_vec(i)
+         v_cm(i) += (m1n / mtot * natal_kick(i))
+      end do
+
+* Get the new eccentricity
       call VectorMagnitude(LRL_vec, ecc)
+
+* ----------------------------------------------------------------------
+* -------- Split based on whether this kick disrupts the system --------
+* ----------------------------------------------------------------------
+
+      if(ecc.gt.1.d0)then
+* System is now unbound, start by prepping some vector variables
+        call VectorHat(LRL_vec, e_mag, e_hat)
+        call VectorMagnitude(h, h_mag)
+        call VectorHat(h, h_mag, h_hat)
+        call CrossProduct(h_hat, e_hat, h_cross_e_hat)
+
+* Velocity at infinity
+        v_inf = gmrkm * mtot / h_mag * sqrt(ecc_2 - 1.d0)
+        do i = 1, 3
+            v_inf_vec(i) = 0
+            v_inf_vec(i) += (-1.d0 * e_hat(i) / ecc)
+            v_inf_vec(i) += SQRT(1 - 1.d0 / ecc_2) * h_cross_e_hat(i)
+            v_inf_vec(i) *= v_inf
+        end do
+
+* Velocity of the star going supernova post-SN
+        do i = 1, 3
+            v_sn(i) = (m2 / mtot) * v_inf_vec(i) + v_CM(i)
+        end do
+
+* Velocity of the companion star post-SN
+        do i = 1, 3
+            v_comp(i) = -(m1n / mtot) * v_inf_vec(i) + v_CM(i)
+        end do
+
+* if second supernova, need to change basis to the original orbital plane
+        if(sn.eq.2)then
+            call ChangeBasis(v_sn, thetaE, phiE, psiE, v_sn_rot)
+            call ChangeBasis(v_comp, thetaE, phiE, psiE, v_comp_rot)
+        else
+            v_sn_rot = v_sn
+            v_comp_rot = v_comp
+        endif
+
+* save the velocities to the kick_info table
+
+        ecc = -1.d0
+        sep = -1.d0
+      else
+
+        call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
+        
+
+      endif
 
 * For systems that were distrupted in the first SN, skip to here
  73   continue
@@ -387,7 +463,11 @@
       
       RETURN
       END
-      
+
+
+* ======================================================================
+* ================== Vector helper functions follow ====================
+* ======================================================================
 
       SUBROUTINE ChangeBasis(Vector, ThetaE, PhiE, PsiE, Result)
 * Redefine a vector from one coordinate basis to another using Euler Angles
@@ -463,5 +543,21 @@
 * Calculate the magnitude of the vector
       magnitude = SQRT(A(1) * A(1) + A(2) * A(2) + A(3) * A(3))
 
+      RETURN
+      END
+
+      SUBROUTINE VectorHat(A, A_mag, A_hat)
+* This function computes the unit vector of a vector A
+* A is the input vector of dimension 3
+* A_mag is the magnitude of the vector A
+* A_hat is the resulting unit vector, also of dimension 3
+
+      real*8 A(3), A_hat(3), A_mag
+
+* Calculate the unit vector
+      A_hat(1) = A(1) / A_mag
+      A_hat(2) = A(2) / A_mag
+      A_hat(3) = A(3) / A_mag
+    
       RETURN
       END
