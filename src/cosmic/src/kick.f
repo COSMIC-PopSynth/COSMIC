@@ -9,12 +9,36 @@
 * TODO                  TODO
 * TODO
 *
+*
+*
+*
+* TW (September 2024)
+* Complete overhaul of the kick routine to use Pfahl et al. 2002
+* instead of K&H 2009. The earlier version did not correct handle
+* ejection of secondary stars properly and had some coordinate transformation
+* errors. This version changes the kick info table to now save all
+* three angles for rotation of the orbital plane after each kick.
+*
+* ---------------------------------------------------------------------
+* Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
+*
+* Here theta is the \omega angle within the HTP02 paper (thus phi is phi).
+* Also, mu is the \nu angle in the HTP02 paper and omega its azimuth
+*
+* Produces a random SN kick.
+* Evolution was added for binaries in which the kick creates
+* an eccentricity of greater than unity (i.e. hyperbolic orbit).
+*
+* Specific kick magnitudes, angles, eccentric anomaly, and random seeds
+* can be supplied in the initialization file with natal_kick_array, a
+* (2,5) array with the first row being for sn=1 and second for sn=2
+*
 * SBC (September 2020)
 * put bkick array back in for compatibility with CMC. bkick array is not used
 * for COSMIC BSE in anyway
 *
 * MJZ/SBC (April 2020)
-* kick_info is a (2,18) array that tracks information about the supernova
+* kick_info is a (2,17) array that tracks information about the supernova
 * kicks. This allows us to track the total change to the systemic
 * velocity and the total change in the orbital plane tilt after both
 * supernovae, as well as reproduce systems.
@@ -38,10 +62,10 @@
 *       is disrupted
 * kick_info[i,14]: magnitude of velocity of sn=2 if disrupted,
 *       accounting for both SNe
-* kick_info[i,15]: thetaE TODO
-* kick_info[i,16]: phiE TODO
-* kick_info[i,17]: psiE TODO
-* kick_info[i,18]: random seed at the start of call to kick.f
+* kick_info[i,15]: (total) tilt of the orbital plane after each SN
+*       w.r.t. the original angular momentum axis after each SN
+* kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
+* kick_info[i,17]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
       integer kw,k,sn,safety
@@ -53,16 +77,15 @@
       real*8 mean_anom,ecc_anom,dif,der,del,r
       real*8 u1,u2,vk,vk2,v(4),s,sigmah
       real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
-      real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
       real*8 bkick(20),r2,jorb
       real*8 ecc_prev,a_prev,mtot,mtot_prev
       real*8 natal_kick(3), sep_vec(3), v_rel(3), v_rel_prev(3)
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
-      real*8 sqrt_1me2, sep_prev, prefactor, omega
+      real*8 sqrt_1m_ecc_prev_2, sep_prev, prefactor, omega
       real*8 h_prev(3),h(3), h_hat(3), h_mag
-      real*8 LRL_prev(3), LRL(3), e_hat(3), e_mag
+      real*8 LRL_prev(3), LRL(3), e_hat(3)
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
       real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
       real*8 h_cross_e_hat(3)
@@ -272,11 +295,11 @@
 * ----- Natal kick all done, check for pre-disruption as quick exit ----
 * ----------------------------------------------------------------------
 
-* Check if the system is already disrupted
-      if(a_prev.le.0.d0.and.ecc_prev.lt.0.d0)then
-* if the system already disrupted, only apply kick to the current star
+* Check if the system is already not a bound binary
+      if((sn.eq.2.and.kick_info(1,2).eq.1)
+     &   .or.a_prev.le.0.or.ecc_prev.lt.0)then
+* if so, only apply kick to the current star
          disrupt = .true.
-* Set that it is disrupted in the kick_info array
          kick_info(sn,2) = 1
          if(sn.eq.1)then
             kick_info(sn,7) = natal_kick(1)
@@ -287,7 +310,7 @@
             kick_info(sn,12) = natal_kick(2)
             kick_info(sn,13) = natal_kick(3)
          endif
-         GOTO 73
+         goto 73
       endif
 
 * ----------------------------------------------------------------------
@@ -328,23 +351,22 @@
       a_prev_3 = a_prev_2 * a_prev
       cos_ecc_anom = COS(ecc_anom)
       sin_ecc_anom = SIN(ecc_anom)
-      sqrt_1me2 = SQRT(1.d0 - ecc_prev * ecc_prev)
+      sqrt_1m_ecc_prev_2 = SQRT(1.d0 - ecc_prev * ecc_prev)
       mtot = m1n + m2
-      ecc_2 = ecc * ecc
 
 * Orbital frequency pre-SN
       omega = SQRT(gmrkm * mtot_prev / a_prev_3)
 
 * Separation vector before the supernova
       sep_vec(1) = a_prev * (cos_ecc_anom - ecc_prev)
-      sep_vec(2) = a_prev * sin_ecc_anom * sqrt_1me2
+      sep_vec(2) = a_prev * sin_ecc_anom * sqrt_1m_ecc_prev_2
       sep_vec(3) = 0.d0
       call VectorMagnitude(sep_vec, sep_prev)
 
 * Relative velocity vector before the supernova
       prefactor = omega * a_prev_2 / sep_prev
       v_rel_prev(1) = -prefactor * sin_ecc_anom
-      v_rel_prev(2) = prefactor * cos_ecc_anom * sqrt_1me2
+      v_rel_prev(2) = prefactor * cos_ecc_anom * sqrt_1m_ecc_prev_2
       v_rel_prev(3) = 0.d0
 
 * Specific angular momentum vector pre-SN
@@ -352,10 +374,10 @@
 
 * Laplace-Runge-Lenz vector pre-SN
       call CrossProduct(v_rel_prev, h_prev, LRL_prev)
-      DO i = 1, 3
+      do i = 1, 3
          LRL_prev(i) = LRL_prev(i) / (gmrkm * mtot_prev)
      &               - sep_vec(i) / sep_prev
-      END DO
+      end do
 
 * Calculate the new systemic velocity of the center of mass
       do i = 1, 3
@@ -382,6 +404,7 @@
 
 * Get the new eccentricity
       call VectorMagnitude(LRL, ecc)
+      ecc_2 = ecc * ecc
 
 * ----------------------------------------------------------------------
 * -------- Split based on whether this kick disrupts the system --------
@@ -392,7 +415,7 @@
          disrupt = .true.
 * Set that it is disrupted in the kick_info array
          kick_info(sn,2) = 1
-         call VectorHat(LRL, e_mag, e_hat)
+         call VectorHat(LRL, ecc, e_hat)
          call VectorMagnitude(h, h_mag)
          call VectorHat(h, h_mag, h_hat)
          call CrossProduct(h_hat, e_hat, h_cross_e_hat)
@@ -406,12 +429,12 @@
 
 * Velocity of the star going supernova post-SN
          do i = 1, 3
-            v_sn(i) = (m2 / mtot) * v_inf_vec(i) + v_CM(i)
+            v_sn(i) = (m2 / mtot) * v_inf_vec(i) + v_cm(i)
          end do
 
 * Velocity of the companion star post-SN
          do i = 1, 3
-            v_comp(i) = -(m1n / mtot) * v_inf_vec(i) + v_CM(i)
+            v_comp(i) = -(m1n / mtot) * v_inf_vec(i) + v_cm(i)
          end do
 
 * if second supernova, need to change basis to the original orbital plane
@@ -462,9 +485,6 @@
          call AngleBetweenVectors(h, h_prev, thetaE)
          phiE = ran3(idum1) * twopi
          psiE = ran3(idum1) * twopi
-
-         ecc = -1.d0
-         sep = -1.d0
       else
 * The system is still bound
 * Record the mean anomaly in the arrays
@@ -480,6 +500,69 @@
             call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
          else
             v_cm_rot = v_cm
+         endif
+
+*
+* If system survives the SN, save the components of the change in
+* centre-of-mass velocity
+         kick_info(sn,7) = v_cm_rot(1)
+         kick_info(sn,8) = v_cm_rot(2)
+         kick_info(sn,9) = v_cm_rot(3)
+         kick_info(sn,11) = 0
+         kick_info(sn,12) = 0
+         kick_info(sn,13) = 0
+
+* 1st time with kick.
+         if(bkick(1).le.0.d0)then
+            bkick(1) = float(sn)
+            bkick(2) = v_cm_rot(1)
+            bkick(3) = v_cm_rot(2)
+            bkick(4) = v_cm_rot(3)
+* 2nd time with kick.
+         elseif(bkick(5).le.0.d0)then
+            bkick(5) = float(sn)
+            bkick(6) = v_cm_rot(1)
+            bkick(7) = v_cm_rot(2)
+            bkick(8) = v_cm_rot(3)
+* 2nd time with kick if already disrupted.
+* MJZ - would this if statement ever be hit?
+         elseif(bkick(5).gt.0.d0)then
+            bkick(9) = float(sn)
+            bkick(10) = v_cm_rot(1)
+            bkick(11) = v_cm_rot(2)
+            bkick(12) = v_cm_rot(3)
+         endif
+* In the impossible chance that the system is exactly parabolic...
+         if(ecc.eq.1.d0.and.sn.eq.1)then
+            kick_info(sn,7) = v_cm_rot(1)
+            kick_info(sn,8) = v_cm_rot(2)
+            kick_info(sn,9) = v_cm_rot(3)
+            kick_info(sn,11) = -v_cm_rot(1)
+            kick_info(sn,12) = -v_cm_rot(2)
+            kick_info(sn,13) = -v_cm_rot(3)
+            bkick(1) = float(sn)
+            bkick(2) = v_cm_rot(1)
+            bkick(3) = v_cm_rot(2)
+            bkick(4) = v_cm_rot(3)
+            bkick(5) = float(sn)
+            bkick(6) = -v_cm_rot(1)
+            bkick(7) = -v_cm_rot(2)
+            bkick(8) = -v_cm_rot(3)
+         elseif(ecc.eq.1.d0.and.sn.eq.2)then
+            kick_info(sn,7) = -v_cm_rot(1)
+            kick_info(sn,8) = -v_cm_rot(2)
+            kick_info(sn,9) = -v_cm_rot(3)
+            kick_info(sn,11) = v_cm_rot(1)
+            kick_info(sn,12) = v_cm_rot(2)
+            kick_info(sn,13) = v_cm_rot(3)
+            bkick(5) = float(sn)
+            bkick(6) = v_cm_rot(1)
+            bkick(7) = v_cm_rot(2)
+            bkick(8) = v_cm_rot(3)
+            bkick(9) = float(sn)
+            bkick(10) = -v_cm_rot(1)
+            bkick(11) = -v_cm_rot(2)
+            bkick(12) = -v_cm_rot(3)
          endif
 
          call AngleBetweenVectors(h, h_prev, thetaE)
