@@ -306,38 +306,27 @@
 
 * Find the initial separation by randomly choosing a mean anomaly.
 * check is user supplied mean anomaly
+      xx = RAN3(idum1)
       if((natal_kick_array(snstar,4).ge.(0.d0)).and.
      &   (natal_kick_array(snstar,4).le.(360.d0)))then
 
-          mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
-* per supplied kick value we mimic a call to random number generator
-          xx = RAN3(idum1)
-
+         mean_anom = natal_kick_array(snstar,4) * pi / 180.d0
+      else
+         mean_anom = xx * twopi
+      endif
 * Solve Kepler's equation for the eccentric anomaly from mean anomaly
 * https://en.wikipedia.org/wiki/Eccentric_anomaly
-          ecc_anom = mean_anom
-
-          if(mean_anom.eq.0.d0) goto 3
-
-  4       dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
-          if(ABS(dif / mean_anom).le.1.0d-04) goto 3
-          der = 1.d0 - ecc * COS(ecc_anom)
-          del = dif/der
-          ecc_anom = ecc_anom - del
-          goto 4
-
-      endif
-
-* TODO: this code seems redundant, why can't we just set the mean anomaly?
-      xx = RAN3(idum1)
-      mean_anom = xx*twopi
       ecc_anom = mean_anom
- 2    dif = ecc_anom - ecc*SIN(ecc_anom) - mean_anom
+
+      if(mean_anom.eq.0.d0) goto 3
+
+  4   dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
       if(ABS(dif / mean_anom).le.1.0d-04) goto 3
-      der = 1.d0 - ecc*COS(ecc_anom)
+      der = 1.d0 - ecc * COS(ecc_anom)
       del = dif/der
       ecc_anom = ecc_anom - del
-      goto 2
+      goto 4
+
  3    continue
 
 * ----------------------------------------------------------------------
