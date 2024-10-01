@@ -101,11 +101,6 @@
       output = .false. !useful for debugging...
       safety = 0
 
-* Setup previous values from before the SN
-      ecc_prev = ecc
-      a_prev = sep
-      mtot_prev = m1 + m2
-
 * ----------------------------------------------------------------------
 * -------------- Initialise variables and constants --------------------
 * ----------------------------------------------------------------------
@@ -297,7 +292,7 @@
 
 * Check if the system is already not a bound binary
       if((sn.eq.2.and.kick_info(1,2).eq.1)
-     &   .or.a_prev.le.0.or.ecc_prev.lt.0)then
+     &   .or.sep.le.0.or.ecc.lt.0)then
 * if so, only apply kick to the current star
          disrupt = .true.
          kick_info(sn,2) = 1
@@ -347,26 +342,29 @@
 * ----------------------------------------------------------------------
 
 * Some helper variables for calculations below
+      mtot_prev = m1 + m2
+      mtot = m1n + m2
+      ecc_prev = ecc
+      a_prev = sep
       a_prev_2 = a_prev * a_prev
       a_prev_3 = a_prev_2 * a_prev
       cos_ecc_anom = COS(ecc_anom)
       sin_ecc_anom = SIN(ecc_anom)
       sqrt_1m_ecc_prev_2 = SQRT(1.d0 - ecc_prev * ecc_prev)
-      mtot = m1n + m2
 
 * Orbital frequency pre-SN
       omega = SQRT(gmrkm * mtot_prev / a_prev_3)
 
 * Separation vector before the supernova
       sep_vec(1) = a_prev * (cos_ecc_anom - ecc_prev)
-      sep_vec(2) = a_prev * sin_ecc_anom * sqrt_1m_ecc_prev_2
+      sep_vec(2) = a_prev * sqrt_1m_ecc_prev_2 * sin_ecc_anom
       sep_vec(3) = 0.d0
       call VectorMagnitude(sep_vec, sep_prev)
 
 * Relative velocity vector before the supernova
       prefactor = omega * a_prev_2 / sep_prev
       v_rel_prev(1) = -prefactor * sin_ecc_anom
-      v_rel_prev(2) = prefactor * cos_ecc_anom * sqrt_1m_ecc_prev_2
+      v_rel_prev(2) = prefactor * sqrt_1m_ecc_prev_2 * cos_ecc_anom
       v_rel_prev(3) = 0.d0
 
 * Specific angular momentum vector pre-SN
@@ -394,7 +392,7 @@
       call CrossProduct(sep_vec, v_rel, h)
       call CrossProduct(v_rel, h, LRL)
       DO i = 1, 3
-         LRL(i) = LRL(i) / (gmrkm * mtot_prev) - sep_vec(i) / sep_prev
+         LRL(i) = LRL(i) / (gmrkm * mtot) - sep_vec(i) / sep_prev
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
@@ -405,6 +403,7 @@
 * Get the new eccentricity
       call VectorMagnitude(LRL, ecc)
       ecc_2 = ecc * ecc
+      sep = h_mag * h_mag / (gmrkm * mtot * (1 - ecc_2))
 
 * ----------------------------------------------------------------------
 * -------- Split based on whether this kick disrupts the system --------
@@ -485,8 +484,10 @@
          call AngleBetweenVectors(h, h_prev, thetaE)
          phiE = ran3(idum1) * twopi
          psiE = ran3(idum1) * twopi
-      else
+
+* ======================================================================
 * The system is still bound
+      else
 * Record the mean anomaly in the arrays
          kick_info(sn,6) = mean_anom * 180 / pi
          if (using_cmc.eq.0) then
