@@ -44,19 +44,19 @@
 * Use one of the two kick prescriptions based on the kickflag
       if(kickflag.lt.0)then
 * Original Kiel & Hurley 2009 prescription
-         call kick_KH09(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
+         call kick_kiel(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
      &                  r2,fallback,sigmahold,kick_info,disrupt,bkick)
       else
 * New Pfahl et al. 2002 prescription
-         call kick_P02(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                 r2,fallback,sigmahold,kick_info,disrupt,bkick)
+         call kick_pfahl(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
+     &                   r2,fallback,sigmahold,kick_info,disrupt,bkick)
       end if
       RETURN
       END
 
 
-      SUBROUTINE kick_P02(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                    r2,fallback,sigmahold,kick_info,disrupt,bkick)
+      SUBROUTINE kick_pfahl(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,r2,
+     &                      fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -93,7 +93,7 @@
 * kick_info[i,18]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
-      integer kw,k,sn,safety
+      integer kw,k,sn,safety,abskickflag
 
       real*8 m1,m2,m1n
       real*8 ecc,ecc_2,sep
@@ -128,6 +128,7 @@
       output = .false. !useful for debugging...
       collide = .false.
       safety = 0
+      abskickflag = ABS(kickflag)
 
 * ----------------------------------------------------------------------
 * -------------- Initialise variables and constants --------------------
@@ -174,16 +175,16 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if((sigma.lt.0.d0).and.(kickflag.eq.0))then
+      if((sigma.lt.0.d0).and.(abskickflag.eq.1))then
          sigma = -1.d0*sigma
 * for kick prescriptions other than default, revert to original sigma
-      elseif((sigma.lt.0.d0).and.(kickflag.lt.0))then
+      elseif((sigma.lt.0.d0).and.(abskickflag.gt.1))then
          sigma = sigmahold
       endif
       sigmah = sigma
 
 * scale down BH kicks if bhsigmafrac is specified
-      if(kickflag.eq.0)then
+      if(abskickflag.eq.1)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
          endif
@@ -223,7 +224,7 @@
           vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
           vk = SQRT(vk2)
 
-          if(kickflag.eq.0)then
+          if(abskickflag.eq.1)then
 * Limit BH kick with fallback mass fraction.
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
@@ -236,15 +237,15 @@
                 vk = vk * mxns / m1n
                 vk2 = vk*vk
              endif
-          elseif(kickflag.eq.-1)then
+          elseif(abskickflag.eq.2)then
 * Use kick scaling from Giacobbo & Mapelli 2020, Eq. 1
              vk = vk * ((m1-m1n)/mean_mej) * (mean_mns/m1n)
              vk2 = vk*vk
-          elseif(kickflag.eq.-2)then
+          elseif(abskickflag.eq.3)then
 * Use kick scaling from Giacobbo & Mapelli 2020, Eq. 2
              vk = vk * ((m1-m1n)/mean_mej)
              vk2 = vk*vk
-          elseif(kickflag.eq.-3)then
+          elseif(abskickflag.eq.4)then
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
              vk = alphakick * ((m1-m1n)/m1n) + betakick
              vk2 = vk*vk
@@ -716,17 +717,18 @@
 * ================== Old kick routine follows ==========================
 * ======================================================================
 ***
-      SUBROUTINE kick_PH09(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,r2,
+      SUBROUTINE kick_kiel(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,r2,
      &                     fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
 * WARNINGS (from Tom Wagg)
 * ------------------------
-* This prescription seems to have some issues.
+* Here there be dragons...this prescription seems to have some issues.
 *     1. Natal kick strongly affects ejection velocity of secondaries
 *     2. Some coordinate transformations seem to be incorrect
-* I recommend that the kick_P02 routine be used instead
+*     3. Criteria for collisions are a little peculiar
+* I recommend that the kick_pfahl routine be used instead
 * ----------------------------------------------------------------------
 *
 * Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
@@ -774,10 +776,10 @@
 * kick_info[i,15]: (total) tilt of the orbital plane after each SN
 *       w.r.t. the original angular momentum axis after each SN
 * kick_info[i,16]: azimuthal angle of the orbital plane w.r.t. spins
-* kick_info[i,17]: random seed at the start of call to kick.f
+* kick_info[i,18]: random seed at the start of call to kick.f
 *
 * For cmc kick_info array is zero, not negative.
-      integer kw,k,snstar,sn,safety
+      integer kw,k,snstar,sn,safety,abskickflag
 
       real*8 m1,m2,m1n,mbi,mbf,mdif
       real*8 ecc,sep,sepn,jorb,ecc2
@@ -808,6 +810,7 @@
 *
       output = .false. !useful for debugging...
       safety = 0
+      abskickflag = ABS(kickflag)
 
 * Set up empty arrays and constants
       do k = 1,3
@@ -854,7 +857,9 @@
       endif
 * save the current idum1
       natal_kick_array(snstar,5) = idum1
-      kick_info(sn,17) = idum1
+      kick_info(sn,18) = idum1
+* add a blank column (not used in this prescription)
+      kick_info(sn,17) = 0.d0
 
 * set the SNstar of the exploding object in the kick_info array
       kick_info(sn,1) = snstar
@@ -863,16 +868,16 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if((sigma.lt.0.d0).and.(kickflag.eq.0))then
+      if((sigma.lt.0.d0).and.(abskickflag.eq.1))then
          sigma = -1.d0*sigma
 * for kick prescriptions other than default, revert to original sigma
-      elseif((sigma.lt.0.d0).and.(kickflag.lt.0))then
+      elseif((sigma.lt.0.d0).and.(abskickflag.gt.1))then
          sigma = sigmahold
       endif
       sigmah = sigma
 
 * scale down BH kicks if bhsigmafrac is specified
-      if(kickflag.eq.0)then
+      if(abskickflag.eq.1)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
          endif
@@ -958,7 +963,7 @@
           vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
           vk = SQRT(vk2)
 
-          if(kickflag.eq.0)then
+          if(abskickflag.eq.1)then
 * Limit BH kick with fallback mass fraction.
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
@@ -971,15 +976,15 @@
                 vk = vk * mxns / m1n
                 vk2 = vk*vk
              endif
-          elseif(kickflag.eq.-1)then
+          elseif(abskickflag.eq.2)then
 * Use kick scaling from Giacobbo & Mapelli 2020, Eq. 1
              vk = vk * ((m1-m1n)/mean_mej) * (mean_mns/m1n)
              vk2 = vk*vk
-          elseif(kickflag.eq.-2)then
+          elseif(abskickflag.eq.3)then
 * Use kick scaling from Giacobbo & Mapelli 2020, Eq. 2
              vk = vk * ((m1-m1n)/mean_mej)
              vk2 = vk*vk
-          elseif(kickflag.eq.-3)then
+          elseif(abskickflag.eq.4)then
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
              vk = alphakick * ((m1-m1n)/m1n) + betakick
              vk2 = vk*vk

@@ -190,7 +190,7 @@
         st_tide = 1
         rembar_massloss = 0.5
         zsun = 0.014
-        kickflag = 0
+        kickflag = -1
         using_cmc = 0
 
 
