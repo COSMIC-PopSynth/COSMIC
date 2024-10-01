@@ -122,13 +122,14 @@
       real*8 thetaE, phiE, psiE
       integer i
 * Output
-      logical output,disrupt
+      logical output,disrupt,collide
 *
       real*8 kick_info(2,18)
       real ran3,xx
       external ran3
 *
       output = .false. !useful for debugging...
+      collide = .false.
       safety = 0
 
 * ----------------------------------------------------------------------
@@ -511,6 +512,26 @@
             bkick(12) = kick_info(sn,9)
          endif
 
+* lastly, check if this supernova results in a collision between stars
+         call CollisionCheck(sep_vec, v_sn_rot, v_comp_rot, r2, collide)
+* if it does, assume the supernova star plows right through the
+* companion and obliterates it
+         if(collide)then
+            kick_info(sn,7) = v_sn_rot(1)
+            kick_info(sn,8) = v_sn_rot(2)
+            kick_info(sn,9) = v_sn_rot(3)
+            kick_info(sn,11) = 0.d0
+            kick_info(sn,12) = 0.d0
+            kick_info(sn,13) = 0.d0
+            bkick(6) = v_sn_rot(1)
+            bkick(7) = v_sn_rot(2)
+            bkick(8) = v_sn_rot(3)
+            bkick(10) = 0.d0
+            bkick(11) = 0.d0
+            bkick(12) = 0.d0
+            m2 = -1.d0*m2
+         endif
+
          call AngleBetweenVectors(h, h_prev, thetaE)
          phiE = ran3(idum1) * twopi
          psiE = ran3(idum1) * twopi
@@ -767,6 +788,62 @@
 
 * Calculate the angle between the two vectors
       angle = ACOS(dot / (magA * magB))
+
+      RETURN
+      END
+
+
+      SUBROUTINE CollisionCheck(sep_vec, v1, v2, r2, collide)
+* This function checks if two stars collide
+* It assumes that the compact object is a point mass, that the
+* velocities are constant and the secondary star is a sphere, radius r2
+*
+* Method
+* ------
+* This result comes from constructing two vectors:
+*    r1 = v1 * t, the position of the primary star
+*    r2 = sep_vec + v2 * t, the position of the secondary star
+* The difference between these vectors is
+*    d = sep_vec + (v2 - v1) * t
+* If the magnitude of d is less than r2, the stars collide.
+* So to find the time of collision, we solve for t when minimising d^2
+* (squared because then we can use the quadratic formula) and just plug
+* it in.
+*
+* Variables
+* ---------
+* sep_vec is the separation vector between the two stars
+* v1 is the velocity of the primary star
+* v2 is the velocity of the secondary star
+* r2 is the radius of the secondary star
+* collide is whether the stars collide (logical)
+
+      real*8 sep_vec(3), v1(3), v2(3), v_dif(3), r2
+      real*8 r_dot_v_dif, v_dif_dot, t_min, d_min, d_min_vec(3)
+      logical collide
+      integer i
+
+      do i = 1, 3
+         v_dif(i) = v2(i) - v1(i)
+      end do
+
+      call DotProduct(sep_vec, v_dif, r_dot_v_dif)
+      call DotProduct(v_dif, v_dif, v_dif_dot)
+      t_min = -r_dot_v_dif / v_dif_dot
+
+      if (t_min.lt.0) then
+         collide = .false.
+      else
+         do i = 1, 3
+            d_min_vec(i) = sep_vec(i) + v_dif(i) * t_min
+         end do
+         call VectorMagnitude(d_min_vec, d_min)
+         if (d_min.lt.r2) then
+            collide = .true.
+         else
+            collide = .false.
+         end if
+      end if 
 
       RETURN
       END
