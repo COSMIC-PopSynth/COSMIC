@@ -120,6 +120,8 @@
       real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
       real*8 h_cross_e_hat(3)
       real*8 thetaE, phiE, psiE
+      real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
+      real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       integer i
 * Output
       logical output,disrupt,collide
