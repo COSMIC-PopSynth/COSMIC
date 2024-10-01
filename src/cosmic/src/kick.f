@@ -102,9 +102,9 @@
 
       real*8 m1,m2,m1n
       real*8 ecc,ecc_2,sep
-      real*8 pi,twopi,gmrkm,yearsc,rsunkm
+      real*8 pi,twopi,yearsc,rsunkm,G_const
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
-      real*8 mean_anom,ecc_anom,dif,der,del,r
+      real*8 mean_anom,ecc_anom,dif,der,del
       real*8 u1,u2,vk,vk2,v(4),s,sigmah
       real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 fallback,sigmahold,bound
@@ -142,9 +142,8 @@
       vk = 0.d0
       pi = ACOS(-1.d0)
       twopi = 2.d0*pi
-* Conversion factor to ensure velocities are in km/s using mass and
-* radius in solar units.
-      gmrkm = 1.906125d+05
+* Gravitational constant in units of km^3 / (Msun * s^2)
+      G_const = 1.3271244d+11
 
 * Set values for mean NS mass and mean ejecta as in Giacobbo & Mapelli 2020
       mean_mns = 1.2d0
@@ -372,50 +371,50 @@
 * ------ Calculate whether system disrupts and CM velocity change ------
 * ----------------------------------------------------------------------
 
-* Some helper variables for calculations below
+* Some helper variables for calculations below (change seps to km)
       mtot_prev = m1 + m2
       mtot = m1n + m2
       ecc_prev = ecc
-      a_prev = sep
+      a_prev = sep * rsunkm
       a_prev_2 = a_prev * a_prev
       a_prev_3 = a_prev_2 * a_prev
       cos_ecc_anom = COS(ecc_anom)
       sin_ecc_anom = SIN(ecc_anom)
       sqrt_1m_ecc_prev_2 = SQRT(1.d0 - ecc_prev * ecc_prev)
 
-* Orbital frequency pre-SN
-      omega = SQRT(gmrkm * mtot_prev / a_prev_3)
+* Orbital frequency pre-SN (in 1/s)
+      omega = SQRT(G_const * mtot_prev / a_prev_3)
 
-* Separation vector before the supernova
+* Separation vector before the supernova (in km)
       sep_vec(1) = a_prev * (cos_ecc_anom - ecc_prev)
       sep_vec(2) = a_prev * sqrt_1m_ecc_prev_2 * sin_ecc_anom
       sep_vec(3) = 0.d0
       call VectorMagnitude(sep_vec, sep_prev)
 
-* Relative velocity vector before the supernova
+* Relative velocity vector before the supernova (in km/s)
       prefactor = omega * a_prev_2 / sep_prev
       v_rel_prev(1) = -prefactor * sin_ecc_anom
       v_rel_prev(2) = prefactor * sqrt_1m_ecc_prev_2 * cos_ecc_anom
       v_rel_prev(3) = 0.d0
 
-* Specific angular momentum vector pre-SN
+* Specific angular momentum vector pre-SN (in km^2/s)
       call CrossProduct(sep_vec, v_rel_prev, h_prev)
 
-* Laplace-Runge-Lenz vector pre-SN
+* Laplace-Runge-Lenz vector pre-SN (unitless)
       call CrossProduct(v_rel_prev, h_prev, LRL_prev)
       do i = 1, 3
-         LRL_prev(i) = LRL_prev(i) / (gmrkm * mtot_prev)
+         LRL_prev(i) = LRL_prev(i) / (G_const * mtot_prev)
      &               - sep_vec(i) / sep_prev
       end do
 
-* Calculate the new systemic velocity of the center of mass
+* Calculate the new systemic velocity of the center of mass (in km/s)
       do i = 1, 3
          v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
      &           * v_rel_prev(i)
      &           + (m1n / mtot * natal_kick(i))
       end do
 
-* New vectors after SN
+* New vectors after SN (in km/s)
       v_rel(1) = v_rel_prev(1) + natal_kick(1)
       v_rel(2) = v_rel_prev(2) + natal_kick(2)
       v_rel(3) = v_rel_prev(3) + natal_kick(3)
@@ -423,7 +422,8 @@
       call CrossProduct(sep_vec, v_rel, h)
       call CrossProduct(v_rel, h, LRL)
       DO i = 1, 3
-         LRL(i) = LRL(i) / (gmrkm * mtot) - sep_vec(i) / sep_prev
+         LRL(i) = LRL(i) / (G_const * mtot)
+     &          - sep_vec(i) / sep_prev
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
@@ -434,7 +434,9 @@
 * Get the new eccentricity
       call VectorMagnitude(LRL, ecc)
       ecc_2 = ecc * ecc
-      sep = h_mag * h_mag / (gmrkm * mtot * (1 - ecc_2))
+
+* Set the new separation (back in Rsun now)
+      sep = h_mag * h_mag / (G_const * mtot * (1 - ecc_2)) / rsunkm
 
 * ----------------------------------------------------------------------
 * -------- Split based on whether this kick disrupts the system --------
@@ -450,19 +452,19 @@
          call VectorHat(h, h_mag, h_hat)
          call CrossProduct(h_hat, e_hat, h_cross_e_hat)
 
-* Velocity at infinity
-         v_inf = gmrkm * mtot / h_mag * sqrt(ecc_2 - 1.d0)
+* Velocity at infinity (in km/s)
+         v_inf = G_const * mtot / h_mag * sqrt(ecc_2 - 1.d0)
          do i = 1, 3
             v_inf_vec(i) = v_inf * ((-1.d0 * e_hat(i) / ecc)
      &          + SQRT(1 - 1.d0 / ecc_2) * h_cross_e_hat(i))
          end do
 
-* Velocity of the star going supernova post-SN
+* Velocity of the star going supernova post-SN (in km/s)
          do i = 1, 3
             v_sn(i) = (m2 / mtot) * v_inf_vec(i) + v_cm(i)
          end do
 
-* Velocity of the companion star post-SN
+* Velocity of the companion star post-SN (in km/s)
          do i = 1, 3
             v_comp(i) = -(m1n / mtot) * v_inf_vec(i) + v_cm(i)
          end do
@@ -812,13 +814,13 @@
 *
 * Variables
 * ---------
-* sep_vec is the separation vector between the two stars
-* v1 is the velocity of the primary star
-* v2 is the velocity of the secondary star
-* r2 is the radius of the secondary star
+* sep_vec is the separation vector between the two stars (in km)
+* v1 is the velocity of the primary star (in km/s)
+* v2 is the velocity of the secondary star (in km/s)
+* r2 is the radius of the secondary star (in rsun)
 * collide is whether the stars collide (logical)
 
-      real*8 sep_vec(3), v1(3), v2(3), v_dif(3), r2
+      real*8 sep_vec(3), v1(3), v2(3), v_dif(3), r2, r2km
       real*8 r_dot_v_dif, v_dif_dot, t_min, d_min, d_min_vec(3)
       logical collide
       integer i
@@ -838,7 +840,8 @@
             d_min_vec(i) = sep_vec(i) + v_dif(i) * t_min
          end do
          call VectorMagnitude(d_min_vec, d_min)
-         if (d_min.lt.r2) then
+         r2km = r2 * rsunkm
+         if (d_min.lt.r2km) then
             collide = .true.
          else
             collide = .false.
