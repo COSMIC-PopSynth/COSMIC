@@ -3,35 +3,50 @@
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
-* TODO: Add documentation of new function
-* TODO
-* TODO
-* TODO                  TODO
-* TODO
+* Variables
+* ---------
+* kw: integer
+*    Stellar type of the exploding star
+* m1: real*8
+*    Mass of the exploding star
+* m1n: real*8
+*    Mass of the compact remnant post-SN
+* m2: real*8
+*    Mass of the companion star
+* ecc: real*8
+*    Eccentricity of the binary pre-SN
+* sep: real*8
+*    Semi-major axis of the binary pre-SN
+* sn: integer
+*    Which star is going supernova (1 or 2)
+* r2: real*8
+*    Radius of the companion star
+* fallback: real*8
+*    Fallback mass fraction
+* sigmahold: real*8
+*    Original sigma value for the kick
+* kick_info: real*8
+*    Array with information about the supernova kicks (details below)
+* bkick: real*8
+*    Array with information about the kicks for CMC (details below)
+* jorb: real*8, output
+*    Total orbital angular momentum of the binary
+* vk: real*8, output
+*    Magnitude of the natal kick
+* disrupt: logical, output
+*    Whether the system is disrupted by the supernova
 *
 *
-*
+* Changelog
+* ---------
 *
 * TW (September 2024)
-* Complete overhaul of the kick routine to use Pfahl et al. 2002
-* instead of K&H 2009. The earlier version did not correct handle
-* ejection of secondary stars properly and had some coordinate transformation
-* errors. This version changes the kick info table to now save all
-* three angles for rotation of the orbital plane after each kick.
-*
-* ---------------------------------------------------------------------
-* Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
-*
-* Here theta is the \omega angle within the HTP02 paper (thus phi is phi).
-* Also, mu is the \nu angle in the HTP02 paper and omega its azimuth
-*
-* Produces a random SN kick.
-* Evolution was added for binaries in which the kick creates
-* an eccentricity of greater than unity (i.e. hyperbolic orbit).
-*
-* Specific kick magnitudes, angles, eccentric anomaly, and random seeds
-* can be supplied in the initialization file with natal_kick_array, a
-* (2,5) array with the first row being for sn=1 and second for sn=2
+* Overhaul of the kick routine to use Pfahl et al. 2002 by default
+* instead of K&H 2009. The earlier version did not correctly handle
+* ejection of secondary stars properly and had some coordinate
+* transformation errors. This version changes the kick info table to
+* now save all three angles for rotation of the orbital plane after
+* each kick. Added docstring. Better criterion for collisions.
 *
 * SBC (September 2020)
 * put bkick array back in for compatibility with CMC. bkick array is not used
@@ -47,6 +62,21 @@
 * Note that some values the second row will take into account the
 * effect of the first SN (e.g., kick_info[2,10] is the total systemic
 * velocity after both supernovae).
+*
+* Original docstring follows
+* ---------------------------------------------------------------------
+* Updated JRH kick routine by PDK (see Kiel & Hurley 2009).
+*
+* Here theta is the \omega angle within the HTP02 paper (thus phi is phi).
+* Also, mu is the \nu angle in the HTP02 paper and omega its azimuth
+*
+* Produces a random SN kick.
+* Evolution was added for binaries in which the kick creates
+* an eccentricity of greater than unity (i.e. hyperbolic orbit).
+*
+* Specific kick magnitudes, angles, eccentric anomaly, and random seeds
+* can be supplied in the initialization file with natal_kick_array, a
+* (2,5) array with the first row being for sn=1 and second for sn=2
 *
 * kick_info[i,1]: sn of exploding star
 * kick_info[i,2]: disrupted (0=no, 1=yes)
