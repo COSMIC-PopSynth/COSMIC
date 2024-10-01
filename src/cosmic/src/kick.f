@@ -548,6 +548,7 @@
          endif
 
 * Update the total orbital angular momentum
+* TODO: What units should this be in??
          jorb = m1n * m2 / mtot * h_mag
 
          if (sn.eq.2) then
@@ -619,11 +620,63 @@
             bkick(12) = -v_cm_rot(3)
          endif
 
+* Update the Euler angles for the orbital plane rotation
          call AngleBetweenVectors(h, h_prev, thetaE)
 
+* first two special cases for orbital A.M. remaining unchanged in angle
+* since the cross product is not well defined in this case
+         if(thetaE.eq.0.d0.and.ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
+            xx = ran3(idum1)
+            xx = ran3(idum1)
+            call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
+            phiE = twopi * xx
+            psiE = psiPlusPhi - phiE
+         else if(thetaE.eq.pi.and.ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
+            xx = ran3(idum1)
+            xx = ran3(idum1)
+            call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
+            phiE = twopi * xx
+            psiE = phiE + psiPlusPhi
+* now we can actually use the cross product to get the pivot axis
+         else
+            call CrossProduct(h_prev, h, orbital_pivot_axis)
+
+* first handled phiE, need to check ecc_prev is nonzero
+* since otherwise LRL_prev is not well-defined
+            xx = ran3(idum1)
+            if(ecc_prev.eq.0.d0)then
+               phiE = twopi * xx
+            else
+               call DotProduct(LRL_prev, h, LRL_prev_dot_h)
+               call AngleBetweenVectors(LRL_prev, orbital_pivot_axis,
+     &                                  unsigned_phi)
+               if (LRL_prev_dot_h.ge.0.d0) then
+                  phiE = unsigned_phi
+               else
+                  phiE = -unsigned_phi
+               endif
+            endif
+
+* repeat for psi, now focusing on ecc instead of ecc_prev
+            xx = ran3(idum1)
+            if(ecc.eq.0.d0)then
+               psiE = twopi * xx
+            else
+               call DotProduct(LRL, h_prev, LRL_dot_h_prev)
+               call AngleBetweenVectors(LRL, orbital_pivot_axis,
+     &                                  unsigned_psi)
+               if (LRL_dot_h_prev.ge.0.d0) then
+                  psiE = unsigned_psi
+               else
+                  psiE = -unsigned_psi
+               endif
+            endif
+         endif
       endif
 
-* Set Euler angles in the kick_info array
+* TODO: Does Katie want to randomise the Psi angle same as COMPAS?
+
+* save Euler angles in the kick_info array
       kick_info(sn,15) = thetaE * 180 / pi
       kick_info(sn,16) = phiE * 180 / pi
       kick_info(sn,17) = psiE * 180 / pi
