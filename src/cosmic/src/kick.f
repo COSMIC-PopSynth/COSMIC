@@ -369,10 +369,11 @@
 * ------ Calculate whether system disrupts and CM velocity change ------
 * ----------------------------------------------------------------------
 
-* Some helper variables for calculations below (change seps to km)
+* Some helper variables for calculations below
       mtot_prev = m1 + m2
       mtot = m1n + m2
       ecc_prev = ecc
+* Convert the separation to km
       a_prev = sep * rsunkm
       a_prev_2 = a_prev * a_prev
       a_prev_3 = a_prev_2 * a_prev
@@ -412,12 +413,15 @@
      &           + (m1n / mtot * natal_kick(i))
       end do
 
-* New vectors after SN (in km/s)
+* New velocity vectors after SN (in km/s)
       v_rel(1) = v_rel_prev(1) + natal_kick(1)
       v_rel(2) = v_rel_prev(2) + natal_kick(2)
       v_rel(3) = v_rel_prev(3) + natal_kick(3)
 
+* Updated specific orbital angular momentum vector (in km^2/s)
       call CrossProduct(sep_vec, v_rel, h)
+
+* Updated Laplace-Runge-Lenz vector (unitless)
       call CrossProduct(v_rel, h, LRL)
       DO i = 1, 3
          LRL(i) = LRL(i) / (G_const * mtot)
@@ -433,7 +437,8 @@
       call VectorMagnitude(LRL, ecc)
       ecc_2 = ecc * ecc
 
-* Set the new separation (back in Rsun now)
+* Set the new semi-major axis (back in Rsun now)
+      call VectorMagnitude(h, h_mag)
       sep = h_mag * h_mag / (G_const * mtot * (1 - ecc_2)) / rsunkm
 
 * ----------------------------------------------------------------------
@@ -446,7 +451,6 @@
 * Set that it is disrupted in the kick_info array
          kick_info(sn,2) = 1
          call VectorHat(LRL, ecc, e_hat)
-         call VectorMagnitude(h, h_mag)
          call VectorHat(h, h_mag, h_hat)
          call CrossProduct(h_hat, e_hat, h_cross_e_hat)
 
@@ -545,9 +549,8 @@
             natal_kick_array(sn,4) = mean_anom * 180 / pi
          endif
 
-* Update the total orbital angular momentum
-* TODO: What units should this be in??
-         jorb = m1n * m2 / mtot * h_mag
+* Update the total orbital angular momentum (in Msun Rsun^2/yr)
+         jorb = m1n * m2 / mtot * h_mag / rsunkm / rsunkm * yearsc
 
          if (sn.eq.2) then
             call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
