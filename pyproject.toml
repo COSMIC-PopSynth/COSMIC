@@ -10,7 +10,7 @@ authors = [
     { name="Tom Wagg" },
 ]
 readme = "README.md"
-version = "3.4.17"
+version = "3.5.0"
 requires-python = ">=3.9"
 license = { text = "MIT License" }
 classifiers = [
