@@ -36,6 +36,7 @@ BSEDict['grflag'] = 1
 BSEDict['don_lim'] = -1
 BSEDict['acc_lim'] = -1
 BSEDict['wd_mass_lim'] = 0
+BSEDict['kick_flag'] = -1
 
 class TestEvolve(unittest.TestCase):
     """`TestCase` for the cosmic
