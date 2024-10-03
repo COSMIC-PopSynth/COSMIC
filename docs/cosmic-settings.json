@@ -476,7 +476,7 @@
                 ]
             },
             {
-                "name": "pts2",
+                "name": "pts3",
                 "description": "Sets the timestep modifier for HG, HeMS stars (<code>dtp *= pts3</code>)",
                 "type": "number",
                 "options-preface": "",
@@ -612,8 +612,7 @@
                 "options": [
                     {
                         "name": -1,
-                        "description": "Follow StarTrack prescription for wind velocity factor, \\(\\beta_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>",
-                        "default": true
+                        "description": "Follow StarTrack prescription for wind velocity factor, \\(\\beta_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>"
                     },
                     {
                         "name": "positive values",
@@ -621,7 +620,8 @@
                     },
                     {
                         "name": 0.125,
-                        "description": "Default value"
+                        "description": "Default value",
+                        "default": true
                     }
                 ]
             },
