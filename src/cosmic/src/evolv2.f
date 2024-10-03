@@ -1328,7 +1328,7 @@ component.
                else
                   b02_bcm = B(2)
                endif
-               CALL writebpp(jp,tphys,evolve_type,
+               CALL writetab(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),
@@ -1338,7 +1338,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype,'bpp')
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
 
@@ -1366,7 +1368,7 @@ component.
                   b02_bcm = B(2)
                endif
 
-               CALL writebpp(jp,tphys,evolve_type,
+               CALL writetab(jp,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
      &                       aj(1),aj(2),tms(1),tms(2),
@@ -1376,7 +1378,9 @@ component.
      &                       menv(1),menv(2),renv(1),renv(2),
      &                       ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                       epoch(2),bhspin(1),bhspin(2))
+     &                       epoch(2),bhspin(1),bhspin(2),
+     &                       deltam1_bcm,deltam2_bcm,formation(1),
+     &                       formation(2),binstate,mergertype,'bpp')
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
@@ -1580,7 +1584,7 @@ component.
              b02_bcm = B(2)
           endif
 
-          CALL writebpp(jp,tphys,evolve_type,
+          CALL writetab(jp,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -1590,7 +1594,9 @@ component.
      &                  menv(1),menv(2),renv(1),renv(2),
      &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                  epoch(2),bhspin(1),bhspin(2))
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype,'bpp')
          if(snova)then
             bpp(jp,11) = 2.0
             dtm = 0.d0
@@ -1642,14 +1648,19 @@ component.
             if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
             if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
-            CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
-     &                    lumin(1),rad(1),teff1,massc(1),
-     &                    radc(1),menv(1),renv(1),epoch(1),
-     &                    ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
-     &                    mass(2),lumin(2),rad(2),teff2,massc(2),
-     &                    radc(2),menv(2),renv(2),epoch(2),ospin(2),
-     &                    deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
-     &                    formation(1),formation(2),binstate,mergertype)
+            CALL writetab(ip,tphys,evolve_type,
+     &                    mass(1),mass(2),kstar(1),kstar(2),
+     &                    sep,tb,ecc,rrl1,rrl2,
+     &                    aj(1),aj(2),tms(1),tms(2),
+     &                    massc(1),massc(2),rad(1),rad(2),
+     &                    mass0(1),mass0(2),lumin(1),lumin(2),
+     &                    teff1,teff2,radc(1),radc(2),
+     &                    menv(1),menv(2),renv(1),renv(2),
+     &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                    epoch(2),bhspin(1),bhspin(2),
+     &                    deltam1_bcm,deltam2_bcm,formation(1),
+     &                    formation(2),binstate,mergertype,'bcm')
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1785,7 +1796,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
@@ -1795,7 +1806,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
       endif
 *
       iter = iter + 1
@@ -1870,7 +1883,7 @@ component.
          b02_bcm = B(2)
       endif
 
-      CALL writebpp(jp,tphys,evolve_type,
+      CALL writetab(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
      &              aj(1),aj(2),tms(1),tms(2),
@@ -1880,7 +1893,9 @@ component.
      &              menv(1),menv(2),renv(1),renv(2),
      &              ospin(1),ospin(2),b01_bcm,b02_bcm,
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &              epoch(2),bhspin(1),bhspin(2))
+     &              epoch(2),bhspin(1),bhspin(2),
+     &              deltam1_bcm,deltam2_bcm,formation(1),
+     &              formation(2),binstate,mergertype,'bpp')
 *
       if(check_dtp.eq.1)then
           CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
@@ -1924,14 +1939,19 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
-     &                  lumin(1),rad(1),teff1,massc(1),
-     &                  radc(1),menv(1),renv(1),epoch(1),
-     &                  ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
-     &                  mass(2),lumin(2),rad(2),teff2,massc(2),
-     &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
-     &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
-     &                  formation(1),formation(2),binstate,mergertype)
+          CALL writetab(ip,tphys,evolve_type,
+     &                  mass(1),mass(2),kstar(1),kstar(2),
+     &                  sep,tb,ecc,rrl1,rrl2,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2),
+     &                  mass0(1),mass0(2),lumin(1),lumin(2),
+     &                  teff1,teff2,radc(1),radc(2),
+     &                  menv(1),menv(2),renv(1),renv(2),
+     &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype,'bcm')
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
@@ -2359,7 +2379,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -2370,7 +2390,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
 
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
@@ -2378,7 +2400,8 @@ component.
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
+     &               deltam1_bcm,deltam2_bcm)
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
@@ -2424,7 +2447,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass1_bpp,mass2_bpp,
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -2435,7 +2458,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
 *
          epoch(j1) = tphys - aj(j1)
          if(coel)then
@@ -3538,7 +3563,7 @@ component.
             else
                b02_bcm = B(2)
             endif
-            CALL writebpp(jp,tphys,evolve_type,
+            CALL writetab(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
@@ -3548,7 +3573,9 @@ component.
      &                    menv(1),menv(2),renv(1),renv(2),
      &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                    epoch(2),bhspin(1),bhspin(2))
+     &                    epoch(2),bhspin(1),bhspin(2),
+     &                    deltam1_bcm,deltam2_bcm,formation(1),
+     &                    formation(2),binstate,mergertype,'bpp')
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -3677,14 +3704,19 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
-     &                  lumin(1),rad(1),teff1,massc(1),
-     &                  radc(1),menv(1),renv(1),epoch(1),
-     &                  ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
-     &                  mass(2),lumin(2),rad(2),teff2,massc(2),
-     &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
-     &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
-     &                  formation(1),formation(2),binstate,mergertype)
+          CALL writetab(ip,tphys,evolve_type,
+     &                  mass(1),mass(2),kstar(1),kstar(2),
+     &                  sep,tb,ecc,rrl1,rrl2,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2),
+     &                  mass0(1),mass0(2),lumin(1),lumin(2),
+     &                  teff1,teff2,radc(1),radc(2),
+     &                  menv(1),menv(2),renv(1),renv(2),
+     &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype,'bcm')
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3717,7 +3749,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
@@ -3727,7 +3759,9 @@ component.
      &                    menv(1),menv(2),renv(1),renv(2),
      &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                    epoch(2),bhspin(1),bhspin(2))
+     &                    epoch(2),bhspin(1),bhspin(2),
+     &                    deltam1_bcm,deltam2_bcm,formation(1),
+     &                    formation(2),binstate,mergertype,'bpp')
       endif
 
 *
@@ -3763,7 +3797,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
@@ -3773,7 +3807,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
          dtm = 0.d0
          goto 4
       endif
@@ -3812,7 +3848,7 @@ component.
       else
          b02_bcm = B(2)
       endif
-      CALL writebpp(jp,tphys,evolve_type,
+      CALL writetab(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
      &              aj(1),aj(2),tms(1),tms(2),
@@ -3822,7 +3858,9 @@ component.
      &              menv(1),menv(2),renv(1),renv(2),
      &              ospin(1),ospin(2),b01_bcm,b02_bcm,
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &              epoch(2),bhspin(1),bhspin(2))
+     &              epoch(2),bhspin(1),bhspin(2),
+     &              deltam1_bcm,deltam2_bcm,formation(1),
+     &              formation(2),binstate,mergertype,'bpp')
 *
       kcomp1 = kstar(j1)
       kcomp2 = kstar(j2)
@@ -3856,7 +3894,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -3867,14 +3905,17 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
+     &               deltam1_bcm,deltam2_bcm)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -3937,7 +3978,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -3948,14 +3989,17 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j2,j1,
      &               vk,kick_info,formation(j2),formation(j1),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
+     &               deltam1_bcm,deltam2_bcm)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -4023,7 +4067,7 @@ component.
              b02_bcm = B(2)
           endif
 
-          CALL writebpp(jp,tphys,evolve_type,
+          CALL writetab(jp,tphys,evolve_type,
      &                  mass1_bpp,mass2_bpp,
      &                  kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
@@ -4034,7 +4078,9 @@ component.
      &                  menv(1),menv(2),renv(1),renv(2),
      &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                  epoch(2),bhspin(1),bhspin(2))
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype,'bpp')
       endif
       epoch(1) = tphys - aj(1)
       epoch(2) = tphys - aj(2)
@@ -4079,7 +4125,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writebpp(jp,tphys,evolve_type,
+         CALL writetab(jp,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
@@ -4089,7 +4135,9 @@ component.
      &                 menv(1),menv(2),renv(1),renv(2),
      &                 ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                 epoch(2),bhspin(1),bhspin(2))
+     &                 epoch(2),bhspin(1),bhspin(2),
+     &                 deltam1_bcm,deltam2_bcm,formation(1),
+     &                 formation(2),binstate,mergertype,'bpp')
          dtm = 0.d0
 *
 * Reset orbital parameters as separation may have changed.
@@ -4149,7 +4197,7 @@ component.
                 else
                    b02_bcm = B(2)
                 endif
-                CALL writebpp(jp,tphys,evolve_type,
+                CALL writetab(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
      &                        0.d0,-1.d0,0.d0,ngtv,
@@ -4160,7 +4208,9 @@ component.
      &                        menv(1),menv(2),renv(1),renv(2),
      &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                        epoch(2),bhspin(1),bhspin(2))
+     &                        epoch(2),bhspin(1),bhspin(2),
+     &                        deltam1_bcm,deltam2_bcm,formation(1),
+     &                        formation(2),binstate,mergertype,'bpp')
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -4189,7 +4239,7 @@ component.
                 else
                    b02_bcm = B(2)
                 endif
-                CALL writebpp(jp,tphys,evolve_type,
+                CALL writetab(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
      &                        tb,ecc,0.d0,ngtv2,
@@ -4200,7 +4250,9 @@ component.
      &                        menv(1),menv(2),renv(1),renv(2),
      &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                        epoch(2),bhspin(1),bhspin(2))
+     &                        epoch(2),bhspin(1),bhspin(2),
+     &                        deltam1_bcm,deltam2_bcm,formation(1),
+     &                        formation(2),binstate,mergertype,'bpp')
             else
                 evolve_type = 9.0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4221,7 +4273,7 @@ component.
                 else
                    b02_bcm = B(2)
                 endif
-                CALL writebpp(jp,tphys,evolve_type,
+                CALL writetab(jp,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
      &                        0.d0,0.d0,0.d0,ngtv,
@@ -4232,7 +4284,9 @@ component.
      &                        menv(1),menv(2),renv(1),renv(2),
      &                        ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                        epoch(2),bhspin(1),bhspin(2))
+     &                        epoch(2),bhspin(1),bhspin(2),
+     &                        deltam1_bcm,deltam2_bcm,formation(1),
+     &                        formation(2),binstate,mergertype,'bpp')
             endif
          endif
          if(kstar(2).eq.15)then
@@ -4302,7 +4356,7 @@ component.
                  b02_bcm = B(2)
               endif
 
-              CALL writebpp(jp,tphys,evolve_type,
+              CALL writetab(jp,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -4312,7 +4366,9 @@ component.
      &                  menv(1),menv(2),renv(1),renv(2),
      &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                  epoch(2),bhspin(1),bhspin(2))
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype,'bpp')
           endif
           
 *          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
@@ -4343,7 +4399,7 @@ component.
               else
                  b02_bcm = B(2)
               endif
-              CALL writebpp(jp,tphys,evolve_type,
+              CALL writetab(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
      &                      0.d0,-1.d0,0.d0,ngtv,
@@ -4354,7 +4410,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype,'bpp')
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -4379,7 +4437,7 @@ component.
               else
                  b02_bcm = B(2)
               endif
-              CALL writebpp(jp,tphys,evolve_type,
+              CALL writetab(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
      &                      0.d0,0.d0,0.d0,ngtv2,
@@ -4390,7 +4448,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype,'bpp')
           else
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
@@ -4415,7 +4475,7 @@ component.
               else
                  b02_bcm = B(2)
               endif
-              CALL writebpp(jp,tphys,evolve_type,
+              CALL writetab(jp,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -4426,7 +4486,9 @@ component.
      &                      menv(1),menv(2),renv(1),renv(2),
      &                      ospin(1),ospin(2),b01_bcm,b02_bcm,
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &                      epoch(2),bhspin(1),bhspin(2))
+     &                      epoch(2),bhspin(1),bhspin(2),
+     &                      deltam1_bcm,deltam2_bcm,formation(1),
+     &                      formation(2),binstate,mergertype,'bpp')
           endif
       endif
 *
@@ -4475,14 +4537,19 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writebcm(ip,tphys,kstar(1),mass0(1),mass(1),
-     &                  lumin(1),rad(1),teff1,massc(1),
-     &                  radc(1),menv(1),renv(1),epoch(1),
-     &                  ospin(1),deltam1_bcm,rrl1,kstar(2),mass0(2),
-     &                  mass(2),lumin(2),rad(2),teff2,massc(2),
-     &                  radc(2),menv(2),renv(2),epoch(2),ospin(2),
-     &                  deltam2_bcm,rrl2,tb,sep,ecc,b01_bcm,b02_bcm,
-     &                  formation(1),formation(2),binstate,mergertype)
+          CALL writetab(ip,tphys,evolve_type,
+     &                  mass(1),mass(2),kstar(1),kstar(2),
+     &                  sep,tb,ecc,rrl1,rrl2,
+     &                  aj(1),aj(2),tms(1),tms(2),
+     &                  massc(1),massc(2),rad(1),rad(2),
+     &                  mass0(1),mass0(2),lumin(1),lumin(2),
+     &                  teff1,teff2,radc(1),radc(2),
+     &                  menv(1),menv(2),renv(1),renv(2),
+     &                  ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                  epoch(2),bhspin(1),bhspin(2),
+     &                  deltam1_bcm,deltam2_bcm,formation(1),
+     &                  formation(2),binstate,mergertype,'bcm')
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
