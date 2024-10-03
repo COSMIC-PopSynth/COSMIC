@@ -1,7 +1,7 @@
 project('cosmic', 
     'c',
     'fortran',
-    version : '3.4.13',
+    version : '3.4.14',
     default_options: ['warning_level=0', 'optimization=3'],
 )
 
@@ -21,7 +21,7 @@ f2py_source = custom_target(
     'evolvebin-target',
     input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '@OUTDIR']
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower', '@OUTDIR@']
 )
 
 lib_source = [
