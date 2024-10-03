@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.evolve.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.evolve"><cite>evolve</cite></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.evolve.</span></span><span class="sig-name descname"><span class="pre">Evolve</span></span><a class="headerlink" href="#cosmic.evolve.Evolve" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.evolve',</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">Evolve.__init__&gt;,</span> <span class="pre">'evolve':</span> <span class="pre">&lt;classmethod(&lt;function</span> <span class="pre">Evolve.evolve&gt;)&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'Evolve'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'Evolve'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.evolve.Evolve.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.evolve.Evolve.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.Evolve.__init__" title="Link to this definition"></a></dt>
+<dd><p>initialize Evolve</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.evolve'</span></em><a class="headerlink" href="#cosmic.evolve.Evolve.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.evolve.Evolve.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.evolve.Evolve.evolve">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialbinarytable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpp_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcm_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.Evolve.evolve" title="Link to this definition"></a></dt>
+<dd><p>After setting a number of initial conditions we evolve the system.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>initialbinarytable</strong><span class="classifier">DataFrame</span></dt><dd><p>Initial conditions of the binary</p>
+</dd>
+<dt><strong>pool</strong><span class="classifier">Multiprocessing pool</span></dt><dd><p>Pool of workers to use to evolve systems in parallel</p>
+</dd>
+<dt><strong>bpp_columns</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Columns to save in the bpp table (key evolutionary stage table)</p>
+</dd>
+<dt><strong>bcm_columns</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Columns to save in the bcm table (detailed evolution table)</p>
+</dd>
+<dt><strong>**kwargs:</strong></dt><dd><p>There are three ways to tell evolve and thus the fortran
+what you want all the flags and other BSE specific
+parameters to be. If you pass both a dictionary of flags and/or a inifile
+and a table with the BSE parameters in the columns,
+the column values will be overwritten by
+what is in the dictionary or ini file.</p>
+<p>NUMBER 1: PASS A DICTIONARY OF FLAGS</p>
+<blockquote>
+<div><p>BSEDict</p>
+</div></blockquote>
+<p>NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS</p>
+<blockquote>
+<div><p>All you need is the initialbinarytable if the all
+the BSE parameters are defined as columns</p>
+</div></blockquote>
+<p>NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED</p>
+<blockquote>
+<div><p>params</p>
+</div></blockquote>
+</dd>
+<dt><strong>randomseed</strong><span class="classifier"><cite>int</cite>, optional, default let numpy choose for you</span></dt><dd><p>If you would like the random seed that the underlying fortran code
+uses to be the same for all of the initial conditions you passed
+then you can send this keyword argument in. It is recommended
+to just let numpy choose a random number as the Fortran random seed
+and then this number will be returned as a column in the
+initial binary table so that you can reproduce the results.</p>
+</dd>
+<dt><strong>nproc</strong><span class="classifier"><cite>int</cite>, optional, default: 1</span></dt><dd><p>number of CPUs to use to evolve systems
+in parallel</p>
+</dd>
+<dt><strong>idx</strong><span class="classifier"><cite>int</cite>, optional, default: 0</span></dt><dd><p>initial index of the bcm/bpp arrays</p>
+</dd>
+<dt><strong>dtp</strong><span class="classifier"><cite>float</cite>, optional: default: tphysf</span></dt><dd><p>timestep size in Myr for bcm output where tphysf
+is total evolution time in Myr</p>
+</dd>
+<dt><strong>n_per_block</strong><span class="classifier"><cite>int</cite>, optional, default: -1</span></dt><dd><p>number of systems to evolve in a block with
+_evolve_multi_system, to allow larger multiprocessing
+queues and reduced overhead. If less than 1 use _evolve_single_system</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>output_bpp</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></span></dt><dd><p>Table of key evolutionary stages for each binary</p>
+</dd>
+<dt><strong>output_bcm</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></span></dt><dd><p>Table of detailed evolution for each binary</p>
+</dd>
+<dt><strong>initialbinarytable</strong><span class="classifier">DataFrame</span></dt><dd><p>Initial conditions for each binary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.evolve.</span></span><span class="sig-name descname"><span class="pre">MultiPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.MultiPool" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Pool</span></code></p>
+<p>A modified version of <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocess.pool.Pool</span></code> that has better
+behavior with regard to <code class="docutils literal notranslate"><span class="pre">KeyboardInterrupts</span></code> in the <a class="reference internal" href="#cosmic.evolve.MultiPool.map" title="cosmic.evolve.MultiPool.map"><code class="xref py py-func docutils literal notranslate"><span class="pre">map()</span></code></a> method.</p>
+<p>NOTE: This is no longer built off of the standard library
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.pool.Pool</span></code></a> – this uses the version from <cite>multiprocess</cite>,
+which uses <cite>dill</cite> to pickle objects instead of the standard library <cite>pickle</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>processes</strong><span class="classifier">int, optional</span></dt><dd><p>The number of worker processes to use; defaults to the number of CPUs.</p>
+</dd>
+<dt><strong>initializer</strong><span class="classifier">callable, optional</span></dt><dd><p>If specified, a callable that will be invoked by each worker process
+when it starts.</p>
+</dd>
+<dt><strong>initargs</strong><span class="classifier">iterable, optional</span></dt><dd><p>Arguments for <code class="docutils literal notranslate"><span class="pre">initializer</span></code>; it will be called as
+<code class="docutils literal notranslate"><span class="pre">initializer(*initargs)</span></code>.</p>
+</dd>
+<dt><strong>kwargs:</strong></dt><dd><p>Extra arguments passed to the <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocess.pool.Pool</span></code> superclass.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">modified</span> <span class="pre">version</span> <span class="pre">of</span> <span class="pre">:class:`multiprocess.pool.Pool`</span> <span class="pre">that</span> <span class="pre">has</span> <span class="pre">better\n</span>&#160;&#160;&#160; <span class="pre">behavior</span> <span class="pre">with</span> <span class="pre">regard</span> <span class="pre">to</span> <span class="pre">``KeyboardInterrupts``</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">:func:`map`</span> <span class="pre">method.\n\n</span>&#160;&#160;&#160; <span class="pre">NOTE:</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">no</span> <span class="pre">longer</span> <span class="pre">built</span> <span class="pre">off</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">standard</span> <span class="pre">library\n</span>&#160;&#160;&#160; <span class="pre">:class:`multiprocessing.pool.Pool`</span> <span class="pre">--</span> <span class="pre">this</span> <span class="pre">uses</span> <span class="pre">the</span> <span class="pre">version</span> <span class="pre">from</span> <span class="pre">`multiprocess`,\n</span>&#160;&#160;&#160; <span class="pre">which</span> <span class="pre">uses</span> <span class="pre">`dill`</span> <span class="pre">to</span> <span class="pre">pickle</span> <span class="pre">objects</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">standard</span> <span class="pre">library</span> <span class="pre">`pickle`.\n\n</span>&#160;&#160;&#160; <span class="pre">Parameters\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">processes</span> <span class="pre">:</span> <span class="pre">int,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">worker</span> <span class="pre">processes</span> <span class="pre">to</span> <span class="pre">use;</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">CPUs.\n</span>&#160;&#160;&#160; <span class="pre">initializer</span> <span class="pre">:</span> <span class="pre">callable,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">specified,</span> <span class="pre">a</span> <span class="pre">callable</span> <span class="pre">that</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">invoked</span> <span class="pre">by</span> <span class="pre">each</span> <span class="pre">worker</span> <span class="pre">process\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">when</span> <span class="pre">it</span> <span class="pre">starts.\n</span>&#160;&#160;&#160; <span class="pre">initargs</span> <span class="pre">:</span> <span class="pre">iterable,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Arguments</span> <span class="pre">for</span> <span class="pre">``initializer``;</span> <span class="pre">it</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">called</span> <span class="pre">as\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``initializer(*initargs)``.\n</span>&#160;&#160;&#160; <span class="pre">kwargs:\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Extra</span> <span class="pre">arguments</span> <span class="pre">passed</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">:class:`multiprocess.pool.Pool`</span> <span class="pre">superclass.\n\n</span>&#160;&#160;&#160; <span class="pre">'</span></em><a class="headerlink" href="#cosmic.evolve.MultiPool.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.MultiPool.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'schwimmbad.multiprocessing'</span></em><a class="headerlink" href="#cosmic.evolve.MultiPool.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool.enabled">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.MultiPool.enabled" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool.map">
+<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.MultiPool.map" title="Link to this definition"></a></dt>
+<dd><p>Equivalent to the built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code> function and
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool.map" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiprocessing.pool.Pool.map()</span></code></a>, without catching
+<code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>worker</strong><span class="classifier">callable</span></dt><dd><p>A function or callable object that is executed on each element of
+the specified <code class="docutils literal notranslate"><span class="pre">tasks</span></code> iterable. This object must be picklable
+(i.e. it can’t be a function scoped within a function or a
+<code class="docutils literal notranslate"><span class="pre">lambda</span></code> function). This should accept a single positional
+argument and return a single object.</p>
+</dd>
+<dt><strong>tasks</strong><span class="classifier">iterable</span></dt><dd><p>A list or iterable of tasks. Each task can be itself an iterable
+(e.g., tuple) of values or data to pass in to the worker function.</p>
+</dd>
+<dt><strong>callback</strong><span class="classifier">callable, optional</span></dt><dd><p>An optional callback function (or callable) that is called with the
+result from each worker run and is executed on the master process.
+This is useful for, e.g., saving results to a file, since the
+callback is only called on the master thread.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>results</strong><span class="classifier">list</span></dt><dd><p>A list of results from the output of each <code class="docutils literal notranslate"><span class="pre">worker()</span></code> call.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.evolve.MultiPool.wait_timeout">
+<span class="sig-name descname"><span class="pre">wait_timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3600</span></em><a class="headerlink" href="#cosmic.evolve.MultiPool.wait_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.evolve._evolve_multi_system">
+<span class="sig-prename descclassname"><span class="pre">cosmic.evolve.</span></span><span class="sig-name descname"><span class="pre">_evolve_multi_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve._evolve_multi_system" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.evolve._evolve_single_system">
+<span class="sig-prename descclassname"><span class="pre">cosmic.evolve.</span></span><span class="sig-name descname"><span class="pre">_evolve_single_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve._evolve_single_system" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.evolve.set_checkstates">
+<span class="sig-prename descclassname"><span class="pre">cosmic.evolve.</span></span><span class="sig-name descname"><span class="pre">set_checkstates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestep_conditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.evolve.set_checkstates" title="Link to this definition"></a></dt>
+<dd><p>A function which will detemine different time resolution for different states</p>
+<dl>
+<dt>Parameters:</dt><dd><dl>
+<dt>timestep_conditions<span class="classifier">(list) default empty (no dynamic dtp setting)</span></dt><dd><p>a nested list of the many different time resolutions and conditions
+for which you would like to apply those time resolution, e.g.,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">timestep_conditions</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;20.0&lt;mass_1&lt;25.5&#39;</span><span class="p">,</span> <span class="s1">&#39;15.5&gt;mass_2&gt;10.0&#39;</span><span class="p">,</span> <span class="s1">&#39;dtp=1.0&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;kstar_1=14&#39;</span><span class="p">,</span> <span class="s1">&#39;lum_1&gt;10.0&#39;</span><span class="p">,</span> <span class="s1">&#39;dtp=0.01&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;2&gt;=binstate&gt;=1&#39;</span><span class="p">,</span> <span class="s1">&#39;dtp=None&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>The first two sets of conditons would be done in a AND fashion.
+The last condition would end time resolution for the BCM array and it
+would skip to only printing the final state</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

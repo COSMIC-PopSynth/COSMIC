@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.filter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.filter">Utilies for filtering a <cite>Table</cite> using column slice definitions</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.filter._flatten">
+<span class="sig-prename descclassname"><span class="pre">cosmic.filter.</span></span><span class="sig-name descname"><span class="pre">_flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">container</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.filter._flatten" title="Link to this definition"></a></dt>
+<dd><p>Flatten arbitrary nested list of filters into a 1-D list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.filter._float_or_str">
+<span class="sig-prename descclassname"><span class="pre">cosmic.filter.</span></span><span class="sig-name descname"><span class="pre">_float_or_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.filter._float_or_str" title="Link to this definition"></a></dt>
+<dd><p>Internal method to attempt <cite>float(value)</cite> handling a <cite>ValueError</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.filter.is_filter_tuple">
+<span class="sig-prename descclassname"><span class="pre">cosmic.filter.</span></span><span class="sig-name descname"><span class="pre">is_filter_tuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tup</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.filter.is_filter_tuple" title="Link to this definition"></a></dt>
+<dd><p>Return whether a <cite>tuple</cite> matches the format for a column filter</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.filter.parse_column_filter">
+<span class="sig-prename descclassname"><span class="pre">cosmic.filter.</span></span><span class="sig-name descname"><span class="pre">parse_column_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">definition</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.filter.parse_column_filter" title="Link to this definition"></a></dt>
+<dd><p>Parse a <cite>str</cite> of the form ‘column&gt;50’</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>definition</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>a column filter definition of the form <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;&lt;operator&gt;&lt;threshold&gt;</span></code>
+or <code class="docutils literal notranslate"><span class="pre">&lt;threshold&gt;&lt;operator&gt;&lt;name&gt;&lt;operator&gt;&lt;threshold&gt;</span></code>, e.g.
+<code class="docutils literal notranslate"><span class="pre">frequency</span> <span class="pre">&gt;=</span> <span class="pre">10</span></code>, or <code class="docutils literal notranslate"><span class="pre">50</span> <span class="pre">&lt;</span> <span class="pre">snr</span> <span class="pre">&lt;</span> <span class="pre">100</span></code></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>filters</strong><span class="classifier"><cite>list</cite> of <cite>tuple</cite></span></dt><dd><p>a <cite>list</cite> of filter 3-<cite>tuple`s, where each `tuple</cite> contains the
+following elements:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">column</span></code> (<cite>str</cite>) - the name of the column on which to operate</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator</span></code> (<cite>callable</cite>) - the operator to call when evaluating
+the filter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operand</span></code> (<cite>anything</cite>) - the argument to the operator function</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if the filter definition cannot be parsed</p>
+</dd>
+<dt>KeyError</dt><dd><p>if any parsed operator string cannnot be mapped to a function from
+the <cite>operator</cite> module</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Strings that contain non-alphanumeric characters (e.g. hyphen <cite>-</cite>) should
+be quoted inside the filter definition, to prevent such characters
+being interpreted as operators, e.g. <code class="docutils literal notranslate"><span class="pre">channel</span> <span class="pre">=</span> <span class="pre">X1:TEST</span></code> should always
+be passed as <code class="docutils literal notranslate"><span class="pre">channel</span> <span class="pre">=</span> <span class="pre">&quot;X1:TEST&quot;</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_column_filter</span><span class="p">(</span><span class="s2">&quot;frequency&gt;10&quot;</span><span class="p">)</span>
+<span class="go">[(&#39;frequency&#39;, &lt;function operator.gt&gt;, 10.)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_column_filter</span><span class="p">(</span><span class="s2">&quot;50 &lt; snr &lt; 100&quot;</span><span class="p">)</span>
+<span class="go">[(&#39;snr&#39;, &lt;function operator.gt&gt;, 50.), (&#39;snr&#39;, &lt;function operator.lt&gt;, 100.)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_column_filter</span><span class="p">(</span><span class="s2">&quot;channel = &quot;</span><span class="n">H1</span><span class="p">:</span><span class="n">TEST</span><span class="s2">&quot;)</span>
+<span class="go">[(&#39;channel&#39;, &lt;function operator.eq&gt;, &#39;H1:TEST&#39;)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.filter.parse_column_filters">
+<span class="sig-prename descclassname"><span class="pre">cosmic.filter.</span></span><span class="sig-name descname"><span class="pre">parse_column_filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">definitions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.filter.parse_column_filters" title="Link to this definition"></a></dt>
+<dd><p>Parse multiple compound column filter definitions</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_column_filters</span><span class="p">(</span><span class="s1">&#39;snr &gt; 10&#39;</span><span class="p">,</span> <span class="s1">&#39;frequency &lt; 1000&#39;</span><span class="p">)</span>
+<span class="go">[(&#39;snr&#39;, &lt;function operator.gt&gt;, 10.), (&#39;frequency&#39;, &lt;function operator.lt&gt;, 1000.)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_column_filters</span><span class="p">(</span><span class="s1">&#39;snr &gt; 10 &amp;&amp; frequency &lt; 1000&#39;</span><span class="p">)</span>
+<span class="go">[(&#39;snr&#39;, &lt;function operator.gt&gt;, 10.), (&#39;frequency&#39;, &lt;function operator.lt&gt;, 1000.)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.filter.parse_operator">
+<span class="sig-prename descclassname"><span class="pre">cosmic.filter.</span></span><span class="sig-name descname"><span class="pre">parse_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mathstr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.filter.parse_operator" title="Link to this definition"></a></dt>
+<dd><p>Parse a <cite>str</cite> as a function from the <cite>operator</cite> module</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>mathstr</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>a <cite>str</cite> representing a mathematical operator</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>op</strong><span class="classifier"><cite>func</cite></span></dt><dd><p>a callable <cite>operator</cite> module function</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>KeyError</dt><dd><p>if input <cite>str</cite> cannot be mapped to an <cite>operator</cite> function</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_operator</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span>
+<span class="go">&lt;built-in function gt&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

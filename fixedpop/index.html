@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate a population the COSMIC way &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Generate a binary population by hand" href="../runpop/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generate a population the <cite>COSMIC</cite> way</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cosmic-pop">cosmic-pop</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inputs">Inputs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#params-ini">Params.ini</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sample-command-line">Sample command line</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#stopping-conditions">Stopping conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-of-cosmic-pop">Output of cosmic-pop</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scaling-to-an-astrophysical-population">scaling to an astrophysical population</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Generate a population the <cite>COSMIC</cite> way</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/fixedpop/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="generate-a-population-the-cosmic-way">
+<span id="fixedpop"></span><h1>Generate a population the <cite>COSMIC</cite> way<a class="headerlink" href="#generate-a-population-the-cosmic-way" title="Link to this heading"></a></h1>
+<p>Beyond providing a simple interface and several updates to BSE (<a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002</a>), COSMIC is designed to adapt the number of systems simulated to each binary evolution model a user selects. This is done by iteratively simulating binaries initialized with ZAMS binary parameters and a star formation history until the distributions of binary parameters specified by the user converge. This process is carried out by <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code>. Once this population is simulated, an astrophysical population can be sampled from the output of <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code>.</p>
+<section id="cosmic-pop">
+<h2>cosmic-pop<a class="headerlink" href="#cosmic-pop" title="Link to this heading"></a></h2>
+<p>The <cite>fixed population</cite> is the output of <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> and is designed to fully describe the distribution of binary parameters that results from a user specified star formation history (SFH) and binary evolution model (BSEDict, specified in an inifile). The fixed population is only simulated once and only contains information about the intrinsic properties of the binary (e.g. masses, semimajor axes, metallicities, etc.) Information about the location and orientation of each binary is <cite>not</cite> contained in the fixed population. The arguments necessary to run the <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> executable can be found using the help command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cosmic-pop<span class="w"> </span>-h
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: cosmic-pop [-h] [--inifile FILE] --final-kstar1 FINAL_KSTAR1
+                  [FINAL_KSTAR1 ...] --final-kstar2 FINAL_KSTAR2
+                  [FINAL_KSTAR2 ...] [--Niter NITER] [--Nstep NSTEP]
+                  [--max-wall-time MAX_WALL_TIME]
+                  [--binary_state BINARY_STATE [BINARY_STATE ...]]
+                  [--sampling_method SAMPLING_METHOD]
+                  [--primary_model PRIMARY_MODEL]
+                  [--binfrac_model BINFRAC_MODEL] [--ecc_model ECC_MODEL]
+                  [--porb_model PORB_MODEL] [--SF_start SF_START]
+                  [--SF_duration SF_DURATION] [--metallicity METALLICITY]
+                  [--convergence_params CONVERGENCE_PARAMS [CONVERGENCE_PARAMS ...]]
+                  [--convergence_limits CONVERGENCE_LIMITS]
+                  [--pop_select POP_SELECT] [--match MATCH]
+                  [--apply_convergence_limits [APPLY_CONVERGENCE_LIMITS]]
+                  [--seed SEED] [--verbose] [--complib COMPLIB]
+                  [--complevel COMPLEVEL] [-n NPROC | --mpi]
+
+options:
+  -h, --help            show this help message and exit
+  --inifile FILE        Name of ini file of params
+  --final-kstar1 FINAL_KSTAR1 [FINAL_KSTAR1 ...]
+                        Specify the final condition of kstar1 , you want
+                        systems to end at for your samples
+  --final-kstar2 FINAL_KSTAR2 [FINAL_KSTAR2 ...]
+                        Specify the final condition of kstar2, you want
+                        systems to end at for your samples
+  --Niter NITER         Number of iterations of binaries to try, will check
+                        ever Nstep for convergence
+  --Nstep NSTEP         Number of binaries to try before checking for
+                        convergence, it will check ever Nstep binaries until
+                        it reach Niter binaries
+  --max-wall-time MAX_WALL_TIME
+                        Maximum wall time (seconds) for sampling binaries
+  --binary_state BINARY_STATE [BINARY_STATE ...]
+  --sampling_method SAMPLING_METHOD
+  --primary_model PRIMARY_MODEL
+                        Chooses the initial primary mass function from:
+                        salpeter55, kroupa93, kroupa01
+  --binfrac_model BINFRAC_MODEL
+                        Chooses the binary fraction model from: a float
+                        between [0,1], vanHaaften, and offner22
+  --ecc_model ECC_MODEL
+                        Chooses the initial eccentricity distribution model
+                        from: thermal, uniform, and sana12
+  --porb_model PORB_MODEL
+                        Chooses the initial orbital period distribution model
+                        from: log_uniform and sana12
+  --SF_start SF_START   Sets the time in the past when star formation
+                        initiates in Myr
+  --SF_duration SF_DURATION
+                        Sets the duration of constant star formation in Myr
+  --metallicity METALLICITY
+  --convergence_params CONVERGENCE_PARAMS [CONVERGENCE_PARAMS ...]
+                        specifies the list of parameters for which you would
+                        like to track the distribution shapes for convergence
+  --convergence_limits CONVERGENCE_LIMITS
+                        dictionary that can contain limits for convergence
+                        params
+  --pop_select POP_SELECT
+                        Used in combination with the specified final_kstar1
+                        and final_kstar2 values to select the subpopulation of
+                        interest from the evolved population
+  --match MATCH         provides the tolerance for the convergence calculation
+  --apply_convergence_limits [APPLY_CONVERGENCE_LIMITS]
+                        filters the evolved binary population to contain only
+                        the binaries that satsify the convergence limits
+  --seed SEED
+  --verbose             Run in Verbose Mode
+  --complib COMPLIB     HDFStore compression library
+  --complevel COMPLEVEL
+                        HDFStore compression level
+  -n NPROC, --nproc NPROC
+                        number of processors
+  --mpi                 Run with MPI.
+</pre></div>
+</div>
+<section id="inputs">
+<h3>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h3>
+<section id="params-ini">
+<h4>Params.ini<a class="headerlink" href="#params-ini" title="Link to this heading"></a></h4>
+<p>PLEASE SEE <a class="reference internal" href="../inifile/index.html#inifile"><span class="std std-ref">Configuration files for COSMIC</span></a> for detailed information about the inifile and how it is constructed</p>
+<p>The inifile contains five subsections: <code class="docutils literal notranslate"><span class="pre">filters</span></code>, <code class="docutils literal notranslate"><span class="pre">convergence</span></code>, <code class="docutils literal notranslate"><span class="pre">rand_seed</span></code>, and <code class="docutils literal notranslate"><span class="pre">bse</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">filters</span></code> subsection allows you to specify how you would like to filter the binary population. See the inifile for a description of each flag.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">convergence</span></code> subsection allows you to specify a particular region of parameter space where you would like the convergence of each binary parameter distribution to be tested. The only implemented convergence filter is for LISA binaries, where the convergence is computed only for binaries with orbital period less than 5000 s. This allows for low probability, but high signal to noise binaries with very short orbital periods to be fully accounted for.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">rand_seed</span></code> subsections allows you to initialize the population with a random seed for reproduceability. Note that for each simulated binary, COSMIC also returns the initial conditions, including a random seed that will reproduce that exact binary. The random seed produced in the rand_seed subsection allows full populations to be reproduced. This is particularly useful when comparing two popuations, e.g. binary black holes and binary neutron stars, which should be simulated separately, but using the same rand_seed value.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sampling</span></code> subsection allows you to control how you sample and achieve the initial binaries that you evolve.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">bse</span></code> subsection is where all the BSE flags are specified.</p>
+</section>
+<section id="sample-command-line">
+<h4>Sample command line<a class="headerlink" href="#sample-command-line" title="Link to this heading"></a></h4>
+<p>Below is an example command line call for <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> with multiprocessing (i.e. shared memory on a single computer):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cosmic-pop<span class="w"> </span>--final-kstar1<span class="w"> </span><span class="m">13</span><span class="w"> </span><span class="m">14</span><span class="w"> </span>--final-kstar2<span class="w"> </span><span class="m">13</span><span class="w"> </span><span class="m">14</span><span class="w"> </span>--inifile<span class="w"> </span>Params.ini<span class="w"> </span>--Nstep<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--Niter<span class="w"> </span><span class="m">1000000000</span><span class="w"> </span>-n<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<p>Below is an example command line call for <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> with MPI (i.e. across many computers):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpiexec<span class="w"> </span>-n<span class="w"> </span><span class="m">2</span><span class="w"> </span>python<span class="w"> </span>PATHTOEXECTUABLEDIRECTORY/cosmic-pop<span class="w"> </span>--final-kstar1<span class="w"> </span><span class="m">13</span><span class="w"> </span><span class="m">14</span><span class="w"> </span>--final-kstar2<span class="w"> </span><span class="m">13</span><span class="w"> </span><span class="m">14</span><span class="w"> </span>--inifile<span class="w"> </span>Params.ini<span class="w"> </span>--Nstep<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--Niter<span class="w"> </span><span class="m">1000000000</span>
+</pre></div>
+</div>
+<p>A breakdown of each argument follows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--final-kstar1</span> <span class="pre">13</span> <span class="pre">14</span> <span class="pre">--final-kstar2</span> <span class="pre">13</span> <span class="pre">14</span></code> : this tells COSMIC to keep all systems where the primary star is a BH or NS and the secondary star is also a BH or NS.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--inifile</span> <span class="pre">Params.ini</span></code> : this tells COSMIC where to look for the BSE flags that set the binary evolution model; in this case, the inifile is assumed to be in the same directory that the command line call is made</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--Nstep</span> <span class="pre">5000</span> <span class="pre">--Niter</span> <span class="pre">10000000</span> <span class="pre">-n</span> <span class="pre">2</span></code> : this tells COSMIC to use 2 processors (or in the MPI case, MPI tasks) to evolve a maximum of 1e7 systems and check in every 5000 systems to track how the shape of the distributions of the parameters specified in convergence-params change</p></li>
+</ul>
+</section>
+</section>
+<section id="stopping-conditions">
+<h3>Stopping conditions<a class="headerlink" href="#stopping-conditions" title="Link to this heading"></a></h3>
+<p>There are two stopping conditions for <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code>:</p>
+<ol class="arabic simple">
+<li><p>The shape of the parameter distributions for the parameters specified in convergence_params section of the inifile file converge to a shape, regardless of adding new binaries to the evolved population. This is quantified by the match criteria detailed in Breivik+2020</p></li>
+<li><p>The number of binaries sampled exceeds <code class="docutils literal notranslate"><span class="pre">--Niter</span></code>.</p></li>
+</ol>
+</section>
+<section id="output-of-cosmic-pop">
+<h3>Output of cosmic-pop<a class="headerlink" href="#output-of-cosmic-pop" title="Link to this heading"></a></h3>
+<p>PLEASE SEE <a class="reference internal" href="../output_info/index.html#output-info"><span class="std std-ref">Describing the output of COSMIC/BSE: Columns names/Values/Units</span></a> for more information about the output data frames including
+what each column means and the units.</p>
+<p>The output of <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> is the <cite>fixed population</cite>, an hdf5 file with a naming scheme that tells you the Galactic component and final kstars of the population; the data file created by the <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> call above is: dat_DeltaBurst_13_14_13_14.h5.</p>
+<p>The fixed population contains several pandas DataFrames accessed by the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conv</span></code> : The converged population whose parameters are sepcified by the <code class="docutils literal notranslate"><span class="pre">convergence</span></code> subsection of the inifile</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bpp</span></code> : The evolutionary history of binaries which satisfy the user-specified final kstars and filter in the <code class="docutils literal notranslate"><span class="pre">convergence</span></code> subsection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bcm</span></code> : The final state of binaries in the bcm array which satisfy the user-specified final kstars and filter in the <code class="docutils literal notranslate"><span class="pre">convergence</span></code> subsection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kick_info</span></code> : The magnitude and direction of natal kicks, three dimensional systemic velocity changes, total tilt of orbital plane, and azimuthal angle of orbital angular momentum axis with respect to spins</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">initCond</span></code> : The initial conditions for each binary which satisfies the user-specified final kstars and filter in the <code class="docutils literal notranslate"><span class="pre">convergence</span></code> subsection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idx</span></code> : An integer that keeps track of the total number of simulated binaries to maintain proper indexing across several runs of <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">match</span></code> : Tracks the convergence where match = Log <sub>10</sub> (1-convergence)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mass_binaries</span></code> : Tracks the total mass of binaries needed to create the fixed population</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mass_singles</span></code> : Tracks the total mass of single stars needed to create the fixed population; if the binary fraction is 100%, the mass in singles will be zero</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mass_stars</span></code> : Tracks the total mass of all stars, including binaries and singles, needed to create the fixed population</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_binaries</span></code> : Tracks the total number of binaries needed to create the fixed population</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_singles</span></code> : Tracks the total number of single stars needed to create the fixed population</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_stars</span></code> : Tracks the total number of stars, where n_stars = n_singles + 2*n_binaries, needed to create the fixed population</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">conv</span></code>, <code class="docutils literal notranslate"><span class="pre">bpp</span></code>, <code class="docutils literal notranslate"><span class="pre">bcm</span></code>, and <code class="docutils literal notranslate"><span class="pre">initCond</span></code> DataFrames share a common column called <code class="docutils literal notranslate"><span class="pre">bin_num</span></code> which is used to index the population across the DataFrames.</p>
+</section>
+</section>
+<section id="scaling-to-an-astrophysical-population">
+<h2>scaling to an astrophysical population<a class="headerlink" href="#scaling-to-an-astrophysical-population" title="Link to this heading"></a></h2>
+<p>Once the fixed population is simulated, you can scale the simulation to an astrophysical population by resampling the <code class="docutils literal notranslate"><span class="pre">conv</span></code> DataFrame.</p>
+<p>First, we need to load the data which is saved in the same directory where` <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> is called:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="gp">In [3]: </span><span class="n">conv</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s1">&#39;fixedpop/dat_DeltaBurst_13_14_13_14.h5&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;conv&#39;</span><span class="p">)</span>
+
+<span class="gp">In [4]: </span><span class="n">total_mass</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s1">&#39;fixedpop/dat_DeltaBurst_13_14_13_14.h5&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;mass_stars&#39;</span><span class="p">)</span>
+
+<span class="gp">In [5]: </span><span class="n">N_stars</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s1">&#39;fixedpop/dat_DeltaBurst_13_14_13_14.h5&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;n_stars&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The masses and numbers of stars/binaries is saved at each iteration, so you’ll need to take the maximum mass/number:</p>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="nb">print</span><span class="p">(</span><span class="n">N_stars</span><span class="p">)</span>
+<span class="go">           0</span>
+<span class="go">0    9832994</span>
+<span class="go">0   19664494</span>
+<span class="go">0   29497317</span>
+<span class="go">0   39329473</span>
+<span class="go">0   49161732</span>
+<span class="go">0   58992422</span>
+<span class="go">0   68823776</span>
+<span class="go">0   78655686</span>
+<span class="go">0   88189369</span>
+<span class="go">0   98023296</span>
+<span class="go">0  107858668</span>
+<span class="go">0  117692244</span>
+<span class="go">0  127524814</span>
+<span class="go">0  136830882</span>
+<span class="go">0  146137733</span>
+<span class="go">0  155970005</span>
+<span class="go">0  165803742</span>
+<span class="go">0  175636330</span>
+<span class="go">0  185467780</span>
+<span class="go">0  195300614</span>
+<span class="go">0  205131835</span>
+<span class="go">0  214964373</span>
+<span class="go">0  224798029</span>
+<span class="go">0  234631004</span>
+<span class="go">0  244464116</span>
+
+<span class="gp">In [7]: </span><span class="n">total_mass</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">total_mass</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="gp">In [8]: </span><span class="n">N_stars</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N_stars</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="gp">In [9]: </span><span class="nb">print</span><span class="p">(</span><span class="n">total_mass</span><span class="p">,</span> <span class="n">N_stars</span><span class="p">)</span>
+<span class="go">99434460.72687817 244464116</span>
+</pre></div>
+</div>
+<p>Since COSMIC tracks both the total number and total mass of stars formed, you can either scale by number or mass.</p>
+<p>To scale by number, multiply the number of systems in the conv array by the ratio of the total number of stars in the astrophysical population to the total number of stars used to generate the population:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">N_astro</span> <span class="o">=</span> <span class="mf">1e10</span>
+
+<span class="gp">In [11]: </span><span class="n">N_13_14_13_14_astro</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conv</span><span class="p">)</span><span class="o">*</span><span class="n">N_astro</span><span class="o">/</span><span class="n">N_stars</span><span class="p">)</span>
+
+<span class="gp">In [12]: </span><span class="nb">print</span><span class="p">(</span><span class="n">N_13_14_13_14_astro</span><span class="p">)</span>
+<span class="go">64590</span>
+</pre></div>
+</div>
+<p>Instead, if you want to scale by mass, you can choose between supplying your own mass or using the built in COSMIC models. The process for a user-supplied mass is nearly identical to scaling by number:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">M_astro</span> <span class="o">=</span> <span class="mf">1e11</span>
+
+<span class="gp">In [14]: </span><span class="n">N_13_14_13_14_astro</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conv</span><span class="p">)</span><span class="o">*</span><span class="n">M_astro</span><span class="o">/</span><span class="n">total_mass</span><span class="p">)</span>
+
+<span class="gp">In [15]: </span><span class="nb">print</span><span class="p">(</span><span class="n">N_13_14_13_14_astro</span><span class="p">)</span>
+<span class="go">1587980</span>
+</pre></div>
+</div>
+<p>Now we can generate the astrophysical population:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">pop_astro</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">N_13_14_13_14_astro</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you specified a star formation history in the inifile for the <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> call (i.e. by setting <code class="docutils literal notranslate"><span class="pre">SF_start</span></code> and <code class="docutils literal notranslate"><span class="pre">SF_duration</span></code> to follow a star formation history of your choice), the data in the resampled population will also be consistent with that star formation history. If you assigned the same <code class="docutils literal notranslate"><span class="pre">SF_start</span></code> to all binaries in the <code class="docutils literal notranslate"><span class="pre">cosmic-pop</span></code> call, you can assign birth times in post processing. As an example, we can assign a uniform birth time, assuming that the age of the population is 10 Gyr:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">pop_astro</span><span class="p">[</span><span class="s1">&#39;tbirth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">N_13_14_13_14_astro</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since we are interested in NSs/BHs that form before the present, we can filter out anything that has a formation time after 10 Gyr:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [18]: </span><span class="n">pop_astro</span> <span class="o">=</span> <span class="n">pop_astro</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pop_astro</span><span class="o">.</span><span class="n">tbirth</span> <span class="o">+</span> <span class="n">pop_astro</span><span class="o">.</span><span class="n">tphys</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This leaves us with a population of NSs/BHs at formation where the formation time is the sum of the birth time and tphys in the <code class="docutils literal notranslate"><span class="pre">conv</span></code> array.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../runpop/index.html" class="btn btn-neutral float-left" title="Generate a binary population by hand" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

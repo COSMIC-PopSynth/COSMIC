@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate a binary population by hand &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generate a population the COSMIC way" href="../fixedpop/index.html" />
+    <link rel="prev" title="Using COSMIC to evolve binaries" href="../examples/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generate a binary population by hand</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#independent">independent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#targetting-specific-final-kstar-types">Targetting specific final kstar types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-parameter-sampling-models">Understanding parameter sampling models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stopping-conditions-for-sampling">Stopping conditions for sampling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#number-of-binaries">Number of binaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#total-mass-sampled">Total mass sampled</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mass-dependent-binary-fractions-and-mass-pairings">Mass dependent binary fractions and mass pairings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multidim">multidim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evolving-an-initial-binary-population">Evolving an initial binary population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustermontecarlo">ClusterMonteCarlo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Generate a binary population by hand</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/runpop/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="generate-a-binary-population-by-hand">
+<span id="runpop"></span><h1>Generate a binary population by hand<a class="headerlink" href="#generate-a-binary-population-by-hand" title="Link to this heading"></a></h1>
+<p>The process to generate a synthetic binary population, is similar to the
+process to evolve a single/multiple binaries by hand: first generate an
+initial population, then evolve it with the <a class="reference internal" href="../api/cosmic.evolve.html#cosmic.evolve.Evolve" title="cosmic.evolve.Evolve"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evolve</span></code></a> class.</p>
+<p>An initialized binary population consists of a collection of binary systems
+with assigned primary and secondary masses, orbital periods, eccentricities,
+metallicities, and star formation histories. These parameters are randomly
+sampled from observationally motivated distribution functions.</p>
+<p>In COSMIC, the initial sample is done through an initial binary sampler which works
+with the <a class="reference internal" href="../api/cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable" title="cosmic.sample.initialbinarytable.InitialBinaryTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialBinaryTable</span></code></a> class. There are two samplers available:</p>
+<p>1. <cite>independent</cite> : initialize binaries with independent parameter
+distributions for the primary mass, mass ratio, eccentricity, separation,
+and binary fraction</p>
+<p>2. <cite>multidim</cite> : initialize binaries with multidimensional parameter
+distributions according to <a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a></p>
+<p>We consider both cases below.</p>
+<section id="independent">
+<h2>independent<a class="headerlink" href="#independent" title="Link to this heading"></a></h2>
+<p>First import the <a class="reference internal" href="../api/cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable" title="cosmic.sample.initialbinarytable.InitialBinaryTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialBinaryTable</span></code></a> class and the independent sampler</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.initialbinarytable</span> <span class="kn">import</span> <span class="n">InitialBinaryTable</span>
+
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.sampler</span> <span class="kn">import</span> <span class="n">independent</span>
+</pre></div>
+</div>
+<p>The independent sampler contains multiple models for each binary parameter.
+You can access the available models using the independent sampler help call:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">help</span><span class="p">(</span><span class="n">independent</span><span class="o">.</span><span class="n">get_independent_sampler</span><span class="p">)</span>
+<span class="go">Help on function get_independent_sampler in module cosmic.sample.sampler.independent:</span>
+
+<span class="go">get_independent_sampler(final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration, binfrac_model, met, size=None, total_mass=inf, sampling_target=&#39;size&#39;, trim_extra_samples=False, q_power_law=0, **kwargs)</span>
+<span class="go">    Generates an initial binary sample according to user specified models</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    final_kstar1 : `int or list`</span>
+<span class="go">        Int or list of final kstar1</span>
+<span class="go">    </span>
+<span class="go">    final_kstar2 : `int or list`</span>
+<span class="go">        Int or list of final kstar2</span>
+<span class="go">    </span>
+<span class="go">    primary_model : `str`</span>
+<span class="go">        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom</span>
+<span class="go">        if &#39;custom&#39; is selected, must also pass arguemts:</span>
+<span class="go">        alphas : `array`</span>
+<span class="go">            list of power law indicies</span>
+<span class="go">        mcuts : `array`</span>
+<span class="go">            breaks in the power laws.</span>
+<span class="go">        e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF</span>
+<span class="go">    </span>
+<span class="go">    ecc_model : `str`</span>
+<span class="go">        Model to sample eccentricity; choices include: thermal, uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    porb_model : `str` or `dict`</span>
+<span class="go">        Model to sample orbital period; choices include: log_uniform, sana12, raghavan10, moe19</span>
+<span class="go">        or a custom power law distribution defined with a dictionary with keys &quot;min&quot;, &quot;max&quot;, and &quot;slope&quot;</span>
+<span class="go">        (e.g. {&quot;min&quot;: 0.15, &quot;max&quot;: 0.55, &quot;slope&quot;: -0.55}) would reproduce the Sana+2012 distribution</span>
+<span class="go">    </span>
+<span class="go">    qmin : `float`</span>
+<span class="go">        kwarg which sets the minimum mass ratio for sampling the secondary</span>
+<span class="go">        where the mass ratio distribution is flat in q</span>
+<span class="go">        if q &gt; 0, qmin sets the minimum mass ratio</span>
+<span class="go">        q = -1, this limits the minimum mass ratio to be set such that</span>
+<span class="go">        the pre-MS lifetime of the secondary is not longer than the full</span>
+<span class="go">        lifetime of the primary if it were to evolve as a single star</span>
+<span class="go">    </span>
+<span class="go">    m_max : `float`</span>
+<span class="go">        kwarg which sets the maximum primary and secondary mass for sampling</span>
+<span class="go">        NOTE: this value changes the range of the IMF and should *not* be used</span>
+<span class="go">            as a means of selecting certain kstar types!</span>
+<span class="go">    </span>
+<span class="go">    m1_min : `float`</span>
+<span class="go">        kwarg which sets the minimum primary mass for sampling</span>
+<span class="go">        NOTE: this value changes the range of the IMF and should *not* be used</span>
+<span class="go">            as a means of selecting certain kstar types!</span>
+<span class="go">    </span>
+<span class="go">    m2_min : `float`</span>
+<span class="go">        kwarg which sets the minimum secondary mass for sampling</span>
+<span class="go">        the secondary as uniform in mass_2 between m2_min and mass_1</span>
+<span class="go">    </span>
+<span class="go">    msort : `float`</span>
+<span class="go">        Stars with M&gt;msort can have different pairing and sampling of companions</span>
+<span class="go">    </span>
+<span class="go">    qmin_msort : `float`</span>
+<span class="go">        Same as qmin for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    m2_min_msort : `float`</span>
+<span class="go">        Same as m2_min for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    SF_start : `float`</span>
+<span class="go">        Time in the past when star formation initiates in Myr</span>
+<span class="go">    </span>
+<span class="go">    SF_duration : `float`</span>
+<span class="go">        Duration of constant star formation beginning from SF_Start in Myr</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model : `str or float`</span>
+<span class="go">        Model for binary fraction; choices include: vanHaaften, offner22, or a fraction where 1.0 is 100% binaries</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model_msort : `str or float`</span>
+<span class="go">        Same as binfrac_model for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    met : `float`</span>
+<span class="go">        Sets the metallicity of the binary population where solar metallicity is zsun</span>
+<span class="go">    </span>
+<span class="go">    size : `int`</span>
+<span class="go">        Size of the population to sample</span>
+<span class="go">    </span>
+<span class="go">    total_mass : `float`</span>
+<span class="go">        Total mass to use as a target for sampling</span>
+<span class="go">    </span>
+<span class="go">    sampling_target : `str`</span>
+<span class="go">        Which type of target to use for sampling (either &quot;size&quot; or &quot;total_mass&quot;), by default &quot;size&quot;.</span>
+<span class="go">        Note that `total_mass` must not be None when `sampling_target==&quot;total_mass&quot;`.</span>
+<span class="go">    </span>
+<span class="go">    trim_extra_samples : `str`</span>
+<span class="go">        Whether to trim the sampled population so that the total mass sampled is as close as possible to</span>
+<span class="go">        `total_mass`. Ignored when `sampling_target==size`.</span>
+<span class="go">        Note that given the discrete mass of stars, this could mean your sample is off by 300</span>
+<span class="go">        solar masses in the worst case scenario (of a 150+150 binary being sampled). In reality the majority</span>
+<span class="go">        of cases track the target total mass to within a solar mass.        </span>
+<span class="go">    </span>
+<span class="go">    zsun : `float`</span>
+<span class="go">        optional kwarg for setting effective radii, default is 0.02</span>
+<span class="go">    </span>
+<span class="go">    q_power_law : `float`</span>
+<span class="go">        Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that</span>
+<span class="go">        q_power_law cannot be exactly -1, as this would result in a divergent distribution.</span>
+<span class="go">    </span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    InitialBinaryTable : `pandas.DataFrame`</span>
+<span class="go">        DataFrame in the format of the InitialBinaryTable</span>
+<span class="go">    </span>
+<span class="go">    mass_singles : `float`</span>
+<span class="go">        Total mass in single stars needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    mass_binaries : `float`</span>
+<span class="go">        Total mass in binaries needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    n_singles : `int`</span>
+<span class="go">        Number of single stars needed to generate a population</span>
+<span class="go">    </span>
+<span class="go">    n_binaries : `int`</span>
+<span class="go">        Number of binaries needed to generate a population</span>
+</pre></div>
+</div>
+<section id="targetting-specific-final-kstar-types">
+<h3>Targetting specific final kstar types<a class="headerlink" href="#targetting-specific-final-kstar-types" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">final_kstar1</span></code> and <code class="docutils literal notranslate"><span class="pre">final_kstar2</span></code> parameters are lists that contain the kstar types
+that you would like the final population to contain.</p>
+<p>The final kstar is the final state of the binary system we are interested in and is based on the BSE kstar naming convention, see <a class="reference internal" href="../output_info/index.html#kstar-table"><span class="std std-ref">Evolutionary State of the Star</span></a> for more information.</p>
+<p>Thus, if you want to generate a
+population containing double white dwarfs with CO and ONe WD primaries and He-WD secondaries,
+the final kstar inputs would be:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">final_kstar1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+
+<span class="gp">In [5]: </span><span class="n">final_kstar2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types.
+However, we also keep track of the total mass of the single and binary stars as well as the number of binary and single stars so that we can scale our results to larger populations.
+If you don’t want to filter the binaries, you can supply final kstars as</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">final_kstars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+<span class="gp">In [7]: </span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">mass_singles</span><span class="p">,</span> <span class="n">mass_binaries</span><span class="p">,</span> <span class="n">n_singles</span><span class="p">,</span> <span class="n">n_binaries</span> <span class="o">=</span> <span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span> <span class="n">final_kstars</span><span class="p">,</span> <span class="n">final_kstars</span><span class="p">,</span> <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">&#39;kroupa01&#39;</span><span class="p">,</span> <span class="n">ecc_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m2_min</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally if you are interested in single stars then you can specify <code class="docutils literal notranslate"><span class="pre">keep_singles=True</span></code>.</p>
+</section>
+<section id="understanding-parameter-sampling-models">
+<h3>Understanding parameter sampling models<a class="headerlink" href="#understanding-parameter-sampling-models" title="Link to this heading"></a></h3>
+<p>Similar to the help for the sampler, the different models that can be used for each parameter
+to be sampled can be accessed by the help function for the argument. The syntax for each parameter
+sample is always: sample_`parameter`. See the example for the star formation
+history (SFH) below:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">help</span><span class="p">(</span><span class="n">independent</span><span class="o">.</span><span class="n">Sample</span><span class="o">.</span><span class="n">sample_SFH</span><span class="p">)</span>
+<span class="go">Help on function sample_SFH in module cosmic.sample.sampler.independent:</span>
+
+<span class="go">sample_SFH(self, SF_start=13700.0, SF_duration=0.0, met=0.02, size=None)</span>
+<span class="go">    Sample an evolution time for each binary based on a user-specified</span>
+<span class="go">    time at the start of star formation and the duration of star formation.</span>
+<span class="go">    The default is a burst of star formation 13,700 Myr in the past.</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    SF_start : float</span>
+<span class="go">        Time in the past when star formation initiates in Myr</span>
+<span class="go">    SF_duration : float</span>
+<span class="go">        Duration of constant star formation beginning from SF_Start in Myr</span>
+<span class="go">    met : float</span>
+<span class="go">        metallicity of the population [Z_sun = 0.02]</span>
+<span class="go">        Default: 0.02</span>
+<span class="go">    size : int, optional</span>
+<span class="go">        number of evolution times to sample</span>
+<span class="go">        NOTE: this is set in cosmic-pop call as Nstep</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    tphys : array</span>
+<span class="go">        array of evolution times of size=size</span>
+<span class="go">    metallicity : array</span>
+<span class="go">        array of metallicities</span>
+</pre></div>
+</div>
+</section>
+<section id="stopping-conditions-for-sampling">
+<h3>Stopping conditions for sampling<a class="headerlink" href="#stopping-conditions-for-sampling" title="Link to this heading"></a></h3>
+<p>In addition to telling <code class="docutils literal notranslate"><span class="pre">COSMIC</span></code> <em>how</em> to sample, you also need to tell it how <em>much</em> to sample. You can
+do this in one of two ways: (1) by specifying the number of binaries to sample, or (2) by specifying the total mass of singles and binaries to sample. Let’s look at both of these in more detail.</p>
+<section id="number-of-binaries">
+<h4>Number of binaries<a class="headerlink" href="#number-of-binaries" title="Link to this heading"></a></h4>
+<p>Using the final kstar inputs we mentioned above, the initial binary population can be sampled based on the desired number of binaries (10000 in this case) as follows</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">mass_singles</span><span class="p">,</span> <span class="n">mass_binaries</span><span class="p">,</span> <span class="n">n_singles</span><span class="p">,</span> <span class="n">n_binaries</span> <span class="o">=</span> <span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span> <span class="n">final_kstar1</span><span class="p">,</span> <span class="n">final_kstar2</span><span class="p">,</span> <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">&#39;kroupa01&#39;</span><span class="p">,</span> <span class="n">ecc_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m2_min</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+
+<span class="gp">In [10]: </span><span class="nb">print</span><span class="p">(</span><span class="n">InitialBinaries</span><span class="p">)</span>
+<span class="go">       kstar_1  kstar_2     mass_1  ...  bhspin_2  tphys  binfrac</span>
+<span class="go">0          1.0      1.0   3.853043  ...       0.0    0.0      0.5</span>
+<span class="go">1          1.0      0.0   0.977576  ...       0.0    0.0      0.5</span>
+<span class="go">2          1.0      1.0  14.509648  ...       0.0    0.0      0.5</span>
+<span class="go">3          1.0      1.0   0.880338  ...       0.0    0.0      0.5</span>
+<span class="go">4          1.0      1.0   1.808589  ...       0.0    0.0      0.5</span>
+<span class="go">...        ...      ...        ...  ...       ...    ...      ...</span>
+<span class="go">10409      1.0      1.0  18.345183  ...       0.0    0.0      0.5</span>
+<span class="go">10410      1.0      0.0   0.918056  ...       0.0    0.0      0.5</span>
+<span class="go">10411      1.0      1.0   0.984430  ...       0.0    0.0      0.5</span>
+<span class="go">10412      1.0      0.0   2.014796  ...       0.0    0.0      0.5</span>
+<span class="go">10413      1.0      1.0   1.480655  ...       0.0    0.0      0.5</span>
+
+<span class="go">[10414 rows x 38 columns]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The length of the initial binary data set, <code class="docutils literal notranslate"><span class="pre">InitialBinaries</span></code>, does not always match
+the size parameter provided to <a class="reference internal" href="../api/cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.sampler" title="cosmic.sample.initialbinarytable.InitialBinaryTable.sampler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sampler()</span></code></a>.
+This is because of the various cuts that the sampler makes to the population (e.g. the binary fraction,
+which is either a fraction between 0 and 1 or mass dependent following the
+prescription in <a class="reference external" href="http://adsabs.harvard.edu/abs/2012A%26A...537A.104V">van Haaften+2013</a>.) specified by the user.</p>
+</div>
+</section>
+<section id="total-mass-sampled">
+<h4>Total mass sampled<a class="headerlink" href="#total-mass-sampled" title="Link to this heading"></a></h4>
+<p>Alternatively, we could do the same thing but now instead set our <code class="docutils literal notranslate"><span class="pre">sampling_target</span></code> to be the total mass and aim for 15000 solar masses. This is done by setting <code class="docutils literal notranslate"><span class="pre">sampling_target=&quot;total_mass&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">total_mass=15000</span></code>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">mass_singles</span><span class="p">,</span> <span class="n">mass_binaries</span><span class="p">,</span> <span class="n">n_singles</span><span class="p">,</span> <span class="n">n_binaries</span> <span class="o">=</span> <span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span> <span class="n">final_kstar1</span><span class="p">,</span> <span class="n">final_kstar2</span><span class="p">,</span> <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">&#39;kroupa01&#39;</span><span class="p">,</span> <span class="n">ecc_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m2_min</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">sampling_target</span><span class="o">=</span><span class="s2">&quot;total_mass&quot;</span><span class="p">,</span> <span class="n">total_mass</span><span class="o">=</span><span class="mi">15000</span><span class="p">)</span>
+
+<span class="gp">In [12]: </span><span class="nb">print</span><span class="p">(</span><span class="n">InitialBinaries</span><span class="p">)</span>
+<span class="go">      kstar_1  kstar_2    mass_1    mass_2  ...  bhspin_1  bhspin_2  tphys  binfrac</span>
+<span class="go">0         1.0      1.0  3.333541  0.843308  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">1         1.0      1.0  1.259961  0.769420  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">2         1.0      1.0  1.644375  1.454379  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">3         1.0      1.0  1.003911  0.864505  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">4         1.0      1.0  3.038599  2.729126  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">...       ...      ...       ...       ...  ...       ...       ...    ...      ...</span>
+<span class="go">1365      1.0      0.0  2.659504  0.531773  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">1366      1.0      0.0  0.882433  0.677457  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">1367      1.0      1.0  2.934133  2.025925  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">1368      1.0      1.0  1.907866  1.146731  ...       0.0       0.0    0.0      0.5</span>
+<span class="go">1369      1.0      0.0  0.971765  0.630025  ...       0.0       0.0    0.0      0.5</span>
+
+<span class="go">[1370 rows x 38 columns]</span>
+</pre></div>
+</div>
+<p>And we can check what the total sampled mass was by looking at the sum of the <code class="docutils literal notranslate"><span class="pre">mass_singles</span></code> and <code class="docutils literal notranslate"><span class="pre">mass_binaries</span></code> variables</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="nb">print</span><span class="p">(</span><span class="n">mass_singles</span> <span class="o">+</span> <span class="n">mass_binaries</span><span class="p">)</span>
+<span class="go">22865.40198110109</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you’d like to avoid your sample overshooting your desired <code class="docutils literal notranslate"><span class="pre">total_mass</span></code> and instead get as close to this value as possible,
+you can set <code class="docutils literal notranslate"><span class="pre">trim_extra_samples=True</span></code>. This will trim the sample to get a total mass as close as possible to your target.
+In many cases, this will be within a solar mass, but could be as large as twice the maximum stellar mass (for the very rare case that
+the final binary drawn is the most massive primary with an equal mass ratio).</p>
+</div>
+</section>
+</section>
+<section id="mass-dependent-binary-fractions-and-mass-pairings">
+<h3>Mass dependent binary fractions and mass pairings<a class="headerlink" href="#mass-dependent-binary-fractions-and-mass-pairings" title="Link to this heading"></a></h3>
+<p>If you want to have separate binary fractions and mass pairings for low and high mass stars, you can by supplying the <code class="docutils literal notranslate"><span class="pre">msort</span></code> kwarg to the sampler. This sets the mass above which an alternative mass pairing (specified by kwargs <code class="docutils literal notranslate"><span class="pre">qmin_msort</span></code> and <code class="docutils literal notranslate"><span class="pre">m2_min_msort</span></code>) and binary fraction model (specified by kwarg <code class="docutils literal notranslate"><span class="pre">binfrac_model_msort</span></code>) are used. This is handy if you want, for example, a higher binary fraction and more equal mass pairings for high mass stars.</p>
+<p>Below we show the effect of different assumptions for the independent initial sampler. The standard assumptions are shown in purple, the assumptions of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract">Sana et al. 2012</a> are shown in orange, and the assumptions of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract">Moe et al. 2019</a> are shown in green.</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/ea25099b8bbaae0b7661233a83d3d528/index-1.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/74b7c57a18dddfa82fdc75bbffaa48a3/index-1.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/718d656ca9e10ed05283529da9cb4de6/index-1.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/e9fdc04d8828c7545c992da4a85b8b71/index-1.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/index-11.png" class="plot-directive" src="../_images/index-11.png" />
+</figure>
+</section>
+</section>
+<section id="multidim">
+<h2>multidim<a class="headerlink" href="#multidim" title="Link to this heading"></a></h2>
+<p>COSMIC implements multidimensionally distributed initial binaries according to <a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a>. The python code used in COSMIC to create this sample was written by Mads Sorenson, and is based on the IDL codes written to accompany <a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a>.</p>
+<p>The multidimensional initial binary data is sampled in COSMIC as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.initialbinarytable</span> <span class="kn">import</span> <span class="n">InitialBinaryTable</span>
+
+<span class="gp">In [15]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.sampler</span> <span class="kn">import</span> <span class="n">multidim</span>
+</pre></div>
+</div>
+<p>To see the arguments necessary to call the multidimensional sampler use the help function:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">help</span><span class="p">(</span><span class="n">multidim</span><span class="o">.</span><span class="n">get_multidim_sampler</span><span class="p">)</span>
+<span class="go">Help on function get_multidim_sampler in module cosmic.sample.sampler.multidim:</span>
+
+<span class="go">get_multidim_sampler(final_kstar1, final_kstar2, rand_seed, nproc, SF_start, SF_duration, met, size, **kwargs)</span>
+<span class="go">    adapted version of Maxwell Moe&#39;s IDL code that generates a population of single and binary stars</span>
+<span class="go">    </span>
+<span class="go">    Below is the adapted version of Maxwell Moe&#39;s IDL code</span>
+<span class="go">    that generates a population of single and binary stars</span>
+<span class="go">    based on the paper Mind your P&#39;s and Q&#39;s</span>
+<span class="go">    By Maxwell Moe and Rosanne Di Stefano</span>
+<span class="go">    </span>
+<span class="go">    The python code has been adopted by Mads Sørensen</span>
+<span class="go">    </span>
+<span class="go">    Version history:</span>
+<span class="go">    V. 0.1; 2017/02/03</span>
+<span class="go">    By Mads Sørensen</span>
+<span class="go">    - This is a pure adaption from IDL to Python.</span>
+<span class="go">    - The function idl_tabulate is similar to</span>
+<span class="go">    the IDL function int_tabulated except, this function seems to be slightly</span>
+<span class="go">    more exact in its solution.</span>
+<span class="go">    Therefore, relative to the IDL code, there are small numerical differences.</span>
+<span class="go">    </span>
+<span class="go">    Comments below beginning with ; is the original nodes by Maxwell Moe.</span>
+<span class="go">    Please read these careful for understanding the script.</span>
+<span class="go">    ; NOTE - This version produces only the statistical distributions of</span>
+<span class="go">    ;        single stars, binaries, and inner binaries in hierarchical triples.</span>
+<span class="go">    ;        Outer tertiaries in hierarchical triples are NOT generated.</span>
+<span class="go">    ;        Moreover, given a set of companions, all with period P to</span>
+<span class="go">    ;        primary mass M1, this version currently uses an approximation to</span>
+<span class="go">    ;        determine the fraction of those companions that are inner binaries</span>
+<span class="go">    ;        vs. outer triples. Nevertheless, this approximation reproduces</span>
+<span class="go">    ;        the overall multiplicity statistics.</span>
+<span class="go">    ; Step 1 - Tabulate probably density functions of periods,</span>
+<span class="go">    ;          mass ratios, and eccentricities based on</span>
+<span class="go">    ;          analytic fits to corrected binary star populations.</span>
+<span class="go">    ; Step 2 - Implement Monte Carlo method to generate stellar</span>
+<span class="go">    ;          population from those density functions.</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    final_kstar1 : `list` or `int`</span>
+<span class="go">        Int or list of final kstar1</span>
+<span class="go">    </span>
+<span class="go">    final_kstar2 : `list` or `int`</span>
+<span class="go">        Int or list of final kstar2</span>
+<span class="go">    </span>
+<span class="go">    rand_seed : `int`</span>
+<span class="go">        Int to seed random number generator</span>
+<span class="go">    </span>
+<span class="go">    nproc : `int`</span>
+<span class="go">        Number of processors to use to generate population</span>
+<span class="go">    </span>
+<span class="go">    SF_start : `float`</span>
+<span class="go">            Time in the past when star formation initiates in Myr</span>
+<span class="go">    </span>
+<span class="go">    SF_duration : `float`</span>
+<span class="go">            Duration of constant star formation beginning from SF_Start in Myr</span>
+<span class="go">    </span>
+<span class="go">    met : `float`</span>
+<span class="go">        Sets the metallicity of the binary population where solar metallicity is 0.02</span>
+<span class="go">    </span>
+<span class="go">    size : `int`</span>
+<span class="go">        Size of the population to sample</span>
+<span class="go">    </span>
+<span class="go">    **porb_lo : `float`</span>
+<span class="go">        Lower limit in days for the orbital period distribution</span>
+<span class="go">    </span>
+<span class="go">    **porb_hi: `float`</span>
+<span class="go">        Upper limit in days for the orbital period distribution</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    InitialBinaryTable : `pandas.DataFrame`</span>
+<span class="go">        DataFrame in the format of the InitialBinaryTable</span>
+<span class="go">    </span>
+<span class="go">    mass_singles : `float`</span>
+<span class="go">        Total mass in single stars needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    mass_binaries : `float`</span>
+<span class="go">        Total mass in binaries needed to generate population</span>
+<span class="go">    </span>
+<span class="go">    n_singles : `int`</span>
+<span class="go">        Number of single stars needed to generate a population</span>
+<span class="go">    </span>
+<span class="go">    n_binaries : `int`</span>
+<span class="go">        Number of binaries needed to generate a population</span>
+</pre></div>
+</div>
+<p>The random seed is used to reproduce your initial sample, since there are several stochastic processes involved in the muldimensional sample.
+As in the independent sampler, the final_kstar1 and final_kstar2 inputs are lists containing the kstar types that the evolved population should contain.</p>
+<p>The multidimensional sample is generated as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">mass_singles</span><span class="p">,</span> <span class="n">mass_binaries</span><span class="p">,</span> <span class="n">n_singles</span><span class="p">,</span> <span class="n">n_binaries</span> <span class="o">=</span> <span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;multidim&#39;</span><span class="p">,</span> <span class="n">final_kstar1</span><span class="o">=</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">final_kstar2</span><span class="o">=</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">rand_seed</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="gp">In [18]: </span><span class="nb">print</span><span class="p">(</span><span class="n">InitialBinaries</span><span class="p">)</span>
+<span class="go">   kstar_1  kstar_2    mass_1    mass_2  ...  bhspin_1  bhspin_2  tphys   binfrac</span>
+<span class="go">0      1.0      1.0  1.298835  0.828975  ...       0.0       0.0    0.0  0.421378</span>
+<span class="go">1      1.0      1.0  2.511134  2.488243  ...       0.0       0.0    0.0  0.528636</span>
+<span class="go">2      1.0      1.0  1.916814  1.866092  ...       0.0       0.0    0.0  0.478645</span>
+<span class="go">3      1.0      1.0  1.535498  1.508893  ...       0.0       0.0    0.0  0.447819</span>
+<span class="go">4      1.0      1.0  0.966816  0.955379  ...       0.0       0.0    0.0  0.406506</span>
+<span class="go">5      1.0      1.0  2.127949  0.978555  ...       0.0       0.0    0.0  0.499146</span>
+<span class="go">6      1.0      1.0  0.951036  0.889363  ...       0.0       0.0    0.0  0.405617</span>
+<span class="go">7      1.0      1.0  9.699633  8.419705  ...       0.0       0.0    0.0  0.849914</span>
+<span class="go">8      1.0      1.0  7.280302  3.839528  ...       0.0       0.0    0.0  0.821422</span>
+<span class="go">9      1.0      1.0  4.634300  1.110560  ...       0.0       0.0    0.0  0.695107</span>
+
+<span class="go">[10 rows x 38 columns]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass of singles and binaries as well as the total number of single and binary stars to scale thesimulated population to astrophysical populations.</p>
+</div>
+<p>(<a class="reference download internal" download="" href="../_downloads/c5b48928fcb29c05a9fdcce3433c01e7/index-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>)</p>
+</section>
+<section id="evolving-an-initial-binary-population">
+<h2>Evolving an initial binary population<a class="headerlink" href="#evolving-an-initial-binary-population" title="Link to this heading"></a></h2>
+<p>As in <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">Using COSMIC to evolve binaries</span></a>, once an initial binary population is sampled, it is evolved using the Evolve class. Note that the same process used in <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">Using COSMIC to evolve binaries</span></a> applies here as well: the BSEDict must be supplied, but only need be resupplied if the flags in the dictionary change.</p>
+<p>The syntax for the Evolve class is as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="kn">from</span> <span class="nn">cosmic.evolve</span> <span class="kn">import</span> <span class="n">Evolve</span>
+
+<span class="gp">In [20]: </span><span class="n">BSEDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;xi&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;bhflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;neta&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;windflag&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wdflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;alpha1&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;pts1&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;pts3&#39;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span> <span class="s1">&#39;pts2&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;epsnov&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;hewind&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;ck&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;bwind&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;lambdaf&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;mxns&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;tflag&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;acc2&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;grflag&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;remnantflag&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;ceflag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;eddfac&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;ifflag&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bconst&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">265.0</span><span class="p">,</span> <span class="s1">&#39;gamma&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;pisn&#39;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span> <span class="s1">&#39;natal_kick_array&#39;</span> <span class="p">:</span> <span class="p">[[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span> <span class="s1">&#39;bhsigmafrac&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;polar_kick_angle&#39;</span> <span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;qcrit_array&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="s1">&#39;cekickflag&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;cehestarflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;cemergeflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ecsn&#39;</span> <span class="p">:</span> <span class="mf">2.25</span><span class="p">,</span> <span class="s1">&#39;ecsn_mlow&#39;</span> <span class="p">:</span> <span class="mf">1.6</span><span class="p">,</span> <span class="s1">&#39;aic&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ussn&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;sigmadiv&#39;</span> <span class="p">:</span><span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="s1">&#39;qcflag&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;eddlimflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;fprimc_array&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">,</span><span class="mf">2.0</span><span class="o">/</span><span class="mf">21.0</span><span class="p">],</span> <span class="s1">&#39;bhspinflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;bhspinmag&#39;</span> <span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;rejuv_fac&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;rejuvflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;htpmb&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ST_cr&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ST_tide&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;bdecayfac&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;rembar_massloss&#39;</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;kickflag&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;zsun&#39;</span> <span class="p">:</span> <span class="mf">0.019</span><span class="p">,</span> <span class="s1">&#39;bhms_coll_flag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;don_lim&#39;</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;acc_lim&#39;</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;rtmsflag&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;wd_mass_lim&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="gp">In [21]: </span><span class="n">bpp</span><span class="p">,</span> <span class="n">bcm</span><span class="p">,</span> <span class="n">initC</span><span class="p">,</span> <span class="n">kick_info</span>  <span class="o">=</span> <span class="n">Evolve</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">initialbinarytable</span><span class="o">=</span><span class="n">InitialBinaries</span><span class="p">,</span> <span class="n">BSEDict</span><span class="o">=</span><span class="n">BSEDict</span><span class="p">)</span>
+
+<span class="gp">In [22]: </span><span class="nb">print</span><span class="p">(</span><span class="n">bcm</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="go">     tphys  kstar_1   mass0_1    mass_1  ...  SN_2  bin_state  merger_type  bin_num</span>
+<span class="go">0      0.0        1  1.298835  1.298835  ...     0          0         -001        0</span>
+<span class="go">0  13700.0       11  0.547574  0.547574  ...     0          0         -001        0</span>
+<span class="go">1      0.0        1  2.511134  2.511134  ...     0          0         -001        1</span>
+<span class="go">1  13700.0       11  0.685870  0.686271  ...     0          0         -001        1</span>
+<span class="go">2      0.0        1  1.916814  1.916814  ...     0          0         -001        2</span>
+<span class="go">2  13700.0       11  0.779833  0.779833  ...     0          1         0710        2</span>
+<span class="go">3      0.0        1  1.535498  1.535498  ...     0          0         -001        3</span>
+<span class="go">3  13700.0       11  0.576634  0.577433  ...     0          0         -001        3</span>
+<span class="go">4      0.0        1  0.966816  0.966816  ...     0          0         -001        4</span>
+<span class="go">4  13700.0        3  0.966284  0.965793  ...     0          0         -001        4</span>
+
+<span class="go">[10 rows x 39 columns]</span>
+
+<span class="gp">In [23]: </span><span class="nb">print</span><span class="p">(</span><span class="n">bpp</span><span class="p">)</span>
+<span class="go">           tphys    mass_1    mass_2  ...  bhspin_1  bhspin_2  bin_num</span>
+<span class="go">0       0.000000  1.298835  0.828975  ...       0.0       0.0        0</span>
+<span class="go">0    4324.583068  1.298835  0.828975  ...       0.0       0.0        0</span>
+<span class="go">0    4552.323208  1.298395  0.828975  ...       0.0       0.0        0</span>
+<span class="go">0    4886.040187  1.184608  0.829128  ...       0.0       0.0        0</span>
+<span class="go">0    5017.984285  1.151317  0.829129  ...       0.0       0.0        0</span>
+<span class="go">..           ...       ...       ...  ...       ...       ...      ...</span>
+<span class="go">9     125.676282  5.634826  0.000000  ...       0.0       0.0        9</span>
+<span class="go">9     136.479964  5.554229  0.000000  ...       0.0       0.0        9</span>
+<span class="go">9     137.026066  5.511117  0.000000  ...       0.0       0.0        9</span>
+<span class="go">9     137.576987  1.080394  0.000000  ...       0.0       0.0        9</span>
+<span class="go">9   13700.000000  1.080394  0.000000  ...       0.0       0.0        9</span>
+
+<span class="go">[134 rows x 44 columns]</span>
+</pre></div>
+</div>
+</section>
+<section id="clustermontecarlo">
+<h2>ClusterMonteCarlo<a class="headerlink" href="#clustermontecarlo" title="Link to this heading"></a></h2>
+<p>New in COSMIC 3.4, you can now use COSMIC to sample initial conditions that can be used in the simulation of a Globular Cluster (GC), using the ClusterMonteCarlo (CMC) software package. To create these initial conditions, and save them in a format readable by CMC, you can do the following.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.initialcmctable</span> <span class="kn">import</span> <span class="n">InitialCMCTable</span>
+
+<span class="gp">In [25]: </span><span class="kn">from</span> <span class="nn">cosmic.sample.sampler</span> <span class="kn">import</span> <span class="n">cmc</span>
+</pre></div>
+</div>
+<p>To see the arguments necessary to call the CMC sampler use the help function:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [26]: </span><span class="n">help</span><span class="p">(</span><span class="n">cmc</span><span class="o">.</span><span class="n">get_cmc_sampler</span><span class="p">)</span>
+<span class="go">Help on function get_cmc_sampler in module cosmic.sample.sampler.cmc:</span>
+
+<span class="go">get_cmc_sampler(cluster_profile, primary_model, ecc_model, porb_model, binfrac_model, met, size, **kwargs)</span>
+<span class="go">    Generates an initial cluster sample according to user specified models</span>
+<span class="go">    </span>
+<span class="go">    Parameters</span>
+<span class="go">    ----------</span>
+<span class="go">    cluster_profile : `str`</span>
+<span class="go">        Model to use for the cluster profile (i.e. sampling of the placement of objects in the cluster and their velocity within the cluster)</span>
+<span class="go">        Options include:</span>
+<span class="go">        &#39;plummer&#39; : Standard Plummer sphere.</span>
+<span class="go">            Additional parameters:</span>
+<span class="go">            &#39;r_max&#39; : `float`</span>
+<span class="go">                the maximum radius (in virial radii) to sample the clsuter</span>
+<span class="go">        &#39;elson&#39; : EFF 1987 profile.  Generalization of Plummer that better fits young massive clusters</span>
+<span class="go">            Additional parameters:</span>
+<span class="go">            &#39;gamma&#39; : `float`</span>
+<span class="go">                steepness paramter for Elson profile; note that gamma=4 is same is Plummer</span>
+<span class="go">            &#39;r_max&#39; : `float`</span>
+<span class="go">                the maximum radius (in virial radii) to sample the clsuter</span>
+<span class="go">        &#39;king&#39; : King profile </span>
+<span class="go">            &#39;w_0&#39; : `float`</span>
+<span class="go">                King concentration parameter</span>
+<span class="go">            &#39;r_max&#39; : `float`</span>
+<span class="go">                the maximum radius (in virial radii) to sample the clsuter</span>
+<span class="go">    </span>
+<span class="go">    primary_model : `str`</span>
+<span class="go">        Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom</span>
+<span class="go">        if &#39;custom&#39; is selected, must also pass arguemts:</span>
+<span class="go">        alphas : `array`</span>
+<span class="go">            list of power law indicies</span>
+<span class="go">        mcuts : `array`</span>
+<span class="go">            breaks in the power laws.</span>
+<span class="go">        e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF</span>
+<span class="go">    </span>
+<span class="go">    ecc_model : `str`</span>
+<span class="go">        Model to sample eccentricity; choices include: thermal, uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    porb_model : `str`</span>
+<span class="go">        Model to sample orbital period; choices include: log_uniform, sana12</span>
+<span class="go">    </span>
+<span class="go">    msort : `float`</span>
+<span class="go">        Stars with M&gt;msort can have different pairing and sampling of companions</span>
+<span class="go">    </span>
+<span class="go">    pair : `float`</span>
+<span class="go">        Sets the pairing of stars M&gt;msort only with stars with M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model : `str or float`</span>
+<span class="go">        Model for binary fraction; choices include: vanHaaften, offner22, or a fraction where 1.0 is 100% binaries</span>
+<span class="go">    </span>
+<span class="go">    binfrac_model_msort : `str or float`</span>
+<span class="go">        Same as binfrac_model for M&gt;msort</span>
+<span class="go">    </span>
+<span class="go">    qmin : `float`</span>
+<span class="go">        kwarg which sets the minimum mass ratio for sampling the secondary</span>
+<span class="go">        where the mass ratio distribution is flat in q</span>
+<span class="go">        if q &gt; 0, qmin sets the minimum mass ratio</span>
+<span class="go">        q = -1, this limits the minimum mass ratio to be set such that</span>
+<span class="go">        the pre-MS lifetime of the secondary is not longer than the full</span>
+<span class="go">        lifetime of the primary if it were to evolve as a single star</span>
+<span class="go">    </span>
+<span class="go">    m2_min : `float`</span>
+<span class="go">        kwarg which sets the minimum secondary mass for sampling</span>
+<span class="go">        the secondary as uniform in mass_2 between m2_min and mass_1</span>
+<span class="go">    </span>
+<span class="go">    qmin_msort : `float`</span>
+<span class="go">        Same as qmin for M&gt;msort; only applies if qmin is supplied</span>
+<span class="go">    </span>
+<span class="go">    met : `float`</span>
+<span class="go">        Sets the metallicity of the binary population where solar metallicity is zsun </span>
+<span class="go">    </span>
+<span class="go">    size : `int`</span>
+<span class="go">        Size of the population to sample</span>
+<span class="go">    </span>
+<span class="go">    zsun : `float`</span>
+<span class="go">        optional kwarg for setting effective radii, default is 0.02</span>
+<span class="go">    </span>
+<span class="go">    Optional Parameters</span>
+<span class="go">    -------------------</span>
+<span class="go">    virial_radius : `float`</span>
+<span class="go">        the initial virial radius of the cluster, in parsecs</span>
+<span class="go">        Default -- 1 pc</span>
+<span class="go">    </span>
+<span class="go">    tidal_radius : `float`</span>
+<span class="go">        the initial tidal radius of the cluster, in units of the virial_radius</span>
+<span class="go">        Default -- 1e6 rvir</span>
+<span class="go">    </span>
+<span class="go">    central_bh : `float`</span>
+<span class="go">        Put a central massive black hole in the cluster</span>
+<span class="go">        Default -- 0 MSUN</span>
+<span class="go">        </span>
+<span class="go">    scale_with_central_bh : `bool`</span>
+<span class="go">        If True, then the potential from the central_bh is included when scaling the radii.</span>
+<span class="go">        Default -- False</span>
+<span class="go">    </span>
+<span class="go">    seed : `float`</span>
+<span class="go">        seed to the random number generator, for reproducability</span>
+<span class="go">    </span>
+<span class="go">    Returns</span>
+<span class="go">    -------</span>
+<span class="go">    Singles: `pandas.DataFrame`</span>
+<span class="go">        DataFrame of Single objects in the format of the InitialCMCTable</span>
+<span class="go">    </span>
+<span class="go">    Binaries: `pandas.DataFrame`</span>
+<span class="go">        DataFrame of Single objects in the format of the InitialCMCTable</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [27]: </span><span class="kn">from</span> <span class="nn">cosmic.sample</span> <span class="kn">import</span> <span class="n">InitialCMCTable</span>
+
+<span class="gp">In [28]: </span><span class="n">Singles</span><span class="p">,</span> <span class="n">Binaries</span> <span class="o">=</span> <span class="n">InitialCMCTable</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="s1">&#39;cmc&#39;</span><span class="p">,</span> <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">&#39;kroupa01&#39;</span><span class="p">,</span> <span class="n">ecc_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">&#39;sana12&#39;</span><span class="p">,</span> <span class="n">qmin</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">cluster_profile</span><span class="o">=</span><span class="s1">&#39;plummer&#39;</span><span class="p">,</span> <span class="n">met</span><span class="o">=</span><span class="mf">0.014</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="s1">&#39;../examples/Params.ini&#39;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="gp">In [29]: </span><span class="n">InitialCMCTable</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Singles</span><span class="p">,</span> <span class="n">Binaries</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;input.hdf5&quot;</span><span class="p">)</span>
+
+<span class="gp">In [30]: </span><span class="n">InitialCMCTable</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Singles</span><span class="p">,</span> <span class="n">Binaries</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;input.fits&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../examples/index.html" class="btn btn-neutral float-left" title="Using COSMIC to evolve binaries" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../fixedpop/index.html" class="btn btn-neutral float-right" title="Generate a population the COSMIC way" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

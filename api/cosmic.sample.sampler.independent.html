@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.sample.sampler.independent.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.sample.sampler.independent"><cite>independent</cite></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.independent.</span></span><span class="sig-name descname"><span class="pre">InitialBinaryTable</span></span><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.InitialBinaries">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InitialBinaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tphysf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metallicity</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.InitialBinaries" title="Link to this definition"></a></dt>
+<dd><p>Create single binary</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>m1</strong><span class="classifier">float</span></dt><dd><p>Primary mass [Msun]</p>
+</dd>
+<dt><strong>m2</strong><span class="classifier">float</span></dt><dd><p>Secondary mass [Msun]</p>
+</dd>
+<dt><strong>porb</strong><span class="classifier">float</span></dt><dd><p>Orbital period [days]</p>
+</dd>
+<dt><strong>ecc</strong><span class="classifier">float</span></dt><dd><p>Eccentricity</p>
+</dd>
+<dt><strong>tphysf</strong><span class="classifier">float</span></dt><dd><p>Time to evolve the binary [Myr]</p>
+</dd>
+<dt><strong>kstar1</strong><span class="classifier">array</span></dt><dd><p>0-14 Initial stellar type of the larger object;
+main sequence stars are 0 if m &lt; 0.7 Msun and 1 otherwise</p>
+</dd>
+<dt><strong>kstar2</strong><span class="classifier">array</span></dt><dd><p>0-14 Initial stellar type of the smaller object;
+main sequence stars are 0 if m &lt; 0.7 Msun and 1 otherwise</p>
+</dd>
+<dt><strong>metallicity</strong><span class="classifier">float</span></dt><dd><p>Metallicity of the binaries; Z_sun = 0.02</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><dl class="simple">
+<dt>binfrac<span class="classifier">float</span></dt><dd><p>System-specific probability of the primary star being in a binary</p>
+</dd>
+</dl>
+<p>mass0_1,mass0_2,rad1,rad2,lumin1,lumin2,
+massc1,massc2,radc1,radc2,menv1,menv2,renv1,renv2,
+ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
+tacc1,tacc2,epoch1,epoch2,tms1,tms2
+bhspin1,bhspin2</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>InitialBinaries</strong><span class="classifier">DataFrame</span></dt><dd><p>Single binary initial conditions</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.__annotations__">
+<span class="sig-name descname"><span class="pre">__annotations__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.__annotations__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.sample.initialbinarytable',</span> <span class="pre">'InitialBinaries':</span> <span class="pre">&lt;classmethod(&lt;function</span> <span class="pre">InitialBinaryTable.InitialBinaries&gt;)&gt;,</span> <span class="pre">'sampler':</span> <span class="pre">&lt;classmethod(&lt;function</span> <span class="pre">InitialBinaryTable.sampler&gt;)&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'InitialBinaryTable'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'InitialBinaryTable'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.sample.initialbinarytable'</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.InitialBinaryTable.sampler">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.InitialBinaryTable.sampler" title="Link to this definition"></a></dt>
+<dd><p>Fetch a method to generate an initial binary sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>format</strong><span class="classifier">str</span></dt><dd><p>the method name; Choose from ‘independent’ or ‘multidim’</p>
+</dd>
+<dt><strong>*args</strong></dt><dd><p>the arguments necessary for the registered sample
+method; see help(InitialBinaryTable.sampler(‘independent’)
+to see the arguments necessary for the independent sample</p>
+</dd>
+<dt><strong>The available named formats are:</strong></dt><dd></dd>
+<dt><strong>=========== …</strong></dt><dd><p>Format   …</p>
+</dd>
+<dt><strong>=========== …</strong></dt><dd></dd>
+<dt><strong>independent …</strong></dt><dd><p>multidim …</p>
+</dd>
+<dt><strong>=========== …</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.independent.</span></span><span class="sig-name descname"><span class="pre">Sample</span></span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.__annotations__">
+<span class="sig-name descname"><span class="pre">__annotations__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.__annotations__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.sample.sampler.independent',</span> <span class="pre">'sample_primary':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.sample_primary&gt;,</span> <span class="pre">'sample_secondary':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.sample_secondary&gt;,</span> <span class="pre">'binary_select':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.binary_select&gt;,</span> <span class="pre">'sample_porb':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.sample_porb&gt;,</span> <span class="pre">'sample_ecc':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.sample_ecc&gt;,</span> <span class="pre">'sample_SFH':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.sample_SFH&gt;,</span> <span class="pre">'set_kstar':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.set_kstar&gt;,</span> <span class="pre">'set_reff':</span> <span class="pre">&lt;function</span> <span class="pre">Sample.set_reff&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'Sample'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'Sample'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.sample.sampler.independent'</span></em><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.binary_select">
+<span class="sig-name descname"><span class="pre">binary_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binfrac_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.binary_select" title="Link to this definition"></a></dt>
+<dd><p>Select which primary masses will have a companion using
+either a binary fraction specified by a float or a
+primary-mass dependent binary fraction following
+<a class="reference external" href="http://adsabs.harvard.edu/abs/2013A%26A...552A..69V">van Haaften et al.(2009)</a> in appdx
+or <a class="reference external" href="https://arxiv.org/abs/2203.10066">Offner et al.(2022)</a> in fig 1</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>primary_mass</strong><span class="classifier">array</span></dt><dd><blockquote>
+<div><p>Mass that determines the binary fraction</p>
+</div></blockquote>
+<dl>
+<dt>binfrac_model<span class="classifier">str or float</span></dt><dd><p>vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun</p>
+<p>offner22 - primary mass dependent</p>
+<p>float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
+means every star is in a binary pair</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>Optional kwargs are defined in `get_independent_sampler`</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>stars_in_binary</strong><span class="classifier">array</span></dt><dd><p>primary masses that will have a binary companion</p>
+</dd>
+<dt><strong>stars_in_single</strong><span class="classifier">array</span></dt><dd><p>primary masses that will be single stars</p>
+</dd>
+<dt><strong>binary_fraction</strong><span class="classifier">array</span></dt><dd><p>system-specific probability of being in a binary</p>
+</dd>
+<dt><strong>binaryIdx</strong><span class="classifier">array</span></dt><dd><p>Idx of stars in binary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.sample_SFH">
+<span class="sig-name descname"><span class="pre">sample_SFH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SF_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13700.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SF_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">met</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.sample_SFH" title="Link to this definition"></a></dt>
+<dd><p>Sample an evolution time for each binary based on a user-specified
+time at the start of star formation and the duration of star formation.
+The default is a burst of star formation 13,700 Myr in the past.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>SF_start</strong><span class="classifier">float</span></dt><dd><p>Time in the past when star formation initiates in Myr</p>
+</dd>
+<dt><strong>SF_duration</strong><span class="classifier">float</span></dt><dd><p>Duration of constant star formation beginning from SF_Start in Myr</p>
+</dd>
+<dt><strong>met</strong><span class="classifier">float</span></dt><dd><p>metallicity of the population [Z_sun = 0.02]
+Default: 0.02</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int, optional</span></dt><dd><p>number of evolution times to sample
+NOTE: this is set in cosmic-pop call as Nstep</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>tphys</strong><span class="classifier">array</span></dt><dd><p>array of evolution times of size=size</p>
+</dd>
+<dt><strong>metallicity</strong><span class="classifier">array</span></dt><dd><p>array of metallicities</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.sample_ecc">
+<span class="sig-name descname"><span class="pre">sample_ecc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aRL_over_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecc_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sana12'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.sample_ecc" title="Link to this definition"></a></dt>
+<dd><p>Sample the eccentricity according to a user specified model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ecc_model</strong><span class="classifier">string</span></dt><dd><p>‘thermal’ samples from a  thermal eccentricity distribution following
+<a class="reference external" href="http://adsabs.harvard.edu/abs/1975MNRAS.173..729H">Heggie (1975)</a>
+‘uniform’ samples from a uniform eccentricity distribution
+‘sana12’ samples from the eccentricity distribution from
+<cite>Sana+2012 &lt;https://ui.adsabs.harvard.edu/abs/2012Sci…337..444S/abstract&gt;_</cite>
+‘circular’ assumes zero eccentricity for all systems
+DEFAULT = ‘sana12’</p>
+</dd>
+<dt><strong>aRL_over_a</strong><span class="classifier">ratio of the minimum seperation (where RL overflow starts)</span></dt><dd><p>to the sampled semi-major axis.  Use this to truncate the eccentricitiy</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int, optional</span></dt><dd><p>number of eccentricities to sample
+this is set in cosmic-pop call as Nstep</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ecc</strong><span class="classifier">array</span></dt><dd><p>array of sampled eccentricities with size=size</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.sample_porb">
+<span class="sig-name descname"><span class="pre">sample_porb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.sample_porb" title="Link to this definition"></a></dt>
+<dd><p>Sample the orbital period according to the user-specified model</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>mass1</strong><span class="classifier">array</span></dt><dd><p>primary masses</p>
+</dd>
+<dt><strong>mass2</strong><span class="classifier">array</span></dt><dd><p>secondary masses</p>
+</dd>
+<dt><strong>rad1</strong><span class="classifier">array</span></dt><dd><p>radii of the primaries.</p>
+</dd>
+<dt><strong>rad2</strong><span class="classifier">array</span></dt><dd><p>radii of the secondaries</p>
+</dd>
+<dt><strong>porb_model</strong><span class="classifier"><cite>str</cite> or <cite>dict</cite></span></dt><dd><p>selects which model to sample orbital periods, choices include:
+log_uniform : semi-major axis flat in log space from RRLO &lt; 0.5 up to 1e5 Rsun according to
+<a class="reference external" href="http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A">Abt (1983)</a>
+and consistent with Dominik+2012,2013
+and then converted to orbital period in days using Kepler III
+sana12 : power law orbital period between 0.15 &lt; log(P/day) &lt; 5.5 following
+<cite>Sana+2012 &lt;https://ui.adsabs.harvard.edu/abs/2012Sci…337..444S/abstract&gt;_</cite>
+renzo19 : power law orbital period for m1 &gt; 15Msun binaries from
+<cite>Sana+2012 &lt;https://ui.adsabs.harvard.edu/abs/2012Sci…337..444S/abstract&gt;_</cite>
+following the implementation of
+<cite>Renzo+2019 &lt;https://ui.adsabs.harvard.edu/abs/2019A%26A…624A..66R/abstract&gt;_</cite>
+and flat in log otherwise
+raghavan10 : log normal orbital periods in days with mean_logP = 4.9 
+and sigma_logP = 2.3 between 0 &lt; log10(P/day) &lt; 9  following 
+<cite>Raghavan+2010 &lt;https://ui.adsabs.harvard.edu/abs/2010ApJS..190….1R/abstract&gt;_</cite>
+moe19 : log normal orbital periods in days with mean_logP = 4.9 
+and sigma_logP = 2.3 between 0 &lt; log10(P/day) &lt; 9  following 
+<cite>Raghavan+2010 &lt;https://ui.adsabs.harvard.edu/abs/2010ApJS..190….1R/abstract&gt;_</cite>
+but with different close binary fractions following 
+<cite>Moe+2019 &lt;https://ui.adsabs.harvard.edu/abs/2019ApJ…875…61M/abstract&gt;_</cite>
+Custom power law distribution defined with a dictionary with keys “min”, “max”, and “slope”
+(e.g. porb_model={“min”: 0.15, “max”: 0.55, “slope”: -0.55}) would reproduce the
+Sana+2012 distribution.</p>
+</dd>
+<dt><strong>met</strong><span class="classifier">float</span></dt><dd><p>metallicity of the population</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>porb</strong><span class="classifier">array</span></dt><dd><p>orbital period with array size equalling array size
+of mass1 and mass2 in units of days</p>
+</dd>
+<dt>aRL_over_a: array</dt><dd><p>ratio of radius where RL overflow starts to the sampled seperation
+used to truncate the eccentricitiy distribution</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.sample_primary">
+<span class="sig-name descname"><span class="pre">sample_primary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kroupa01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.sample_primary" title="Link to this definition"></a></dt>
+<dd><p>Sample the primary mass (always the most massive star) from a user-selected model</p>
+<p>kroupa93 follows Kroupa (1993), normalization comes from
+<a class="reference external" href="https://arxiv.org/abs/astro-ph/0201220">Hurley 2002</a>
+between 0.08 and 150 Msun
+salpter55 follows
+<a class="reference external" href="http://adsabs.harvard.edu/abs/1955ApJ...121..161S">Salpeter (1955)</a>
+between 0.08 and 150 Msun
+kroupa01 follows Kroupa (2001) &lt;<a class="reference external" href="https://arxiv.org/abs/astro-ph/0009005">https://arxiv.org/abs/astro-ph/0009005</a>&gt;
+between 0.08 and 100 Msun</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>primary_model</strong><span class="classifier">str, optional</span></dt><dd></dd>
+<dt><strong>model for mass distribution; choose from:</strong></dt><dd></dd>
+<dt><strong>kroupa93 follows Kroupa (1993), normalization comes from</strong></dt><dd></dd>
+<dt><strong>`Hurley 2002 &lt;https://arxiv.org/abs/astro-ph/0201220&gt;`_</strong></dt><dd></dd>
+<dt><strong>valid for masses between 0.1 and 100 Msun</strong></dt><dd></dd>
+<dt><strong>salpter55 follows</strong></dt><dd></dd>
+<dt><strong>`Salpeter (1955) &lt;http://adsabs.harvard.edu/abs/1955ApJ…121..161S&gt;`_</strong></dt><dd></dd>
+<dt><strong>valid for masses between 0.1 and 100 Msun</strong></dt><dd></dd>
+<dt><strong>kroupa01 follows Kroupa (2001), normalization comes from</strong></dt><dd></dd>
+<dt><strong>`Hurley 2002 &lt;https://arxiv.org/abs/astro-ph/0009005&gt;`_</strong></dt><dd></dd>
+<dt><strong>valid for masses between 0.1 and 100 Msun</strong></dt><dd></dd>
+<dt><strong>custom is a generic piecewise power law that takes in the power</strong></dt><dd></dd>
+<dt><strong>law slopes and break points given in the optional input lists (alphas, mcuts)</strong></dt><dd></dd>
+<dt><strong>default alphas and mcuts yield an IMF identical to kroupa01</strong></dt><dd></dd>
+<dt><strong>Default kroupa01</strong></dt><dd></dd>
+<dt><strong>size</strong><span class="classifier">int, optional</span></dt><dd></dd>
+<dt><strong>number of initial primary masses to sample</strong></dt><dd></dd>
+<dt><strong>NOTE: this is set in cosmic-pop call as Nstep</strong></dt><dd></dd>
+<dt><strong>alphas</strong><span class="classifier">array, optional</span></dt><dd></dd>
+<dt><strong>absolute values of the power law slopes for primary_model = ‘custom’</strong></dt><dd></dd>
+<dt><strong>Default [-1.3,-2.3,-2.3] (identical to slopes for primary_model = ‘kroupa01’)</strong></dt><dd></dd>
+<dt><strong>mcuts</strong><span class="classifier">array, optional, units of Msun</span></dt><dd></dd>
+<dt><strong>break points separating the power law ‘pieces’ for primary_model = ‘custom’</strong></dt><dd></dd>
+<dt><strong>Default [0.08,0.5,1.0,150.] (identical to breaks for primary_model = ‘kroupa01’)</strong></dt><dd></dd>
+<dt><strong>Optional kwargs are defined in `get_independent_sampler`</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>a_0</strong><span class="classifier">array</span></dt><dd></dd>
+<dt>Sampled primary masses</dt><dd></dd>
+<dt><strong>np.sum(a_0)</strong><span class="classifier">float</span></dt><dd></dd>
+<dt>Total amount of mass sampled</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.sample_secondary">
+<span class="sig-name descname"><span class="pre">sample_secondary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_power_law</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.sample_secondary" title="Link to this definition"></a></dt>
+<dd><p>Sample a secondary mass using draws from a uniform mass ratio distribution motivated by
+<a class="reference external" href="http://adsabs.harvard.edu/abs/1992ApJ...401..265M">Mazeh et al. (1992)</a>
+and <a class="reference external" href="http://adsabs.harvard.edu/abs/1994ApJ...429..362G">Goldberg &amp; Mazeh (1994)</a></p>
+<p>NOTE: the lower lim is set by either qmin or m2_min which are passed as kwargs</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>primary_mass</strong><span class="classifier"><cite>array</cite></span></dt><dd><p>sets the maximum secondary mass (for a maximum mass ratio of 1)</p>
+</dd>
+<dt><strong>Optional kwargs are defined in `get_independent_sampler`</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>secondary_mass</strong><span class="classifier">array</span></dt><dd><p>sampled secondary masses with array size matching size of
+primary_mass</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.set_kstar">
+<span class="sig-name descname"><span class="pre">set_kstar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.set_kstar" title="Link to this definition"></a></dt>
+<dd><p>Initialize stellar types according to BSE classification
+kstar=1 if M&gt;=0.7 Msun; kstar=0 if M&lt;0.7 Msun</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mass</strong><span class="classifier">array</span></dt><dd><p>array of masses</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>kstar</strong><span class="classifier">array</span></dt><dd><p>array of initial stellar types</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.Sample.set_reff">
+<span class="sig-name descname"><span class="pre">set_reff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metallicity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zsun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.Sample.set_reff" title="Link to this definition"></a></dt>
+<dd><p>Better way to set the radii from BSE, by calling it directly</p>
+<p>takes masses and metallicities, and returns the radii</p>
+<p>Note that the BSE function is hard-coded to go through arrays
+of length 10^5.  If your masses are more than that, you’ll
+need to divide it into chunks</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.get_independent_sampler">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.independent.</span></span><span class="sig-name descname"><span class="pre">get_independent_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">final_kstar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_kstar2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecc_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SF_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SF_duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binfrac_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">met</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'size'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_extra_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_power_law</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.get_independent_sampler" title="Link to this definition"></a></dt>
+<dd><p>Generates an initial binary sample according to user specified models</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>final_kstar1</strong><span class="classifier"><cite>int or list</cite></span></dt><dd><p>Int or list of final kstar1</p>
+</dd>
+<dt><strong>final_kstar2</strong><span class="classifier"><cite>int or list</cite></span></dt><dd><p>Int or list of final kstar2</p>
+</dd>
+<dt><strong>primary_model</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
+if ‘custom’ is selected, must also pass arguemts:
+alphas : <cite>array</cite></p>
+<blockquote>
+<div><p>list of power law indicies</p>
+</div></blockquote>
+<dl>
+<dt>mcuts<span class="classifier"><cite>array</cite></span></dt><dd><p>breaks in the power laws.</p>
+</dd>
+</dl>
+<p>e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF</p>
+</dd>
+<dt><strong>ecc_model</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>Model to sample eccentricity; choices include: thermal, uniform, sana12</p>
+</dd>
+<dt><strong>porb_model</strong><span class="classifier"><cite>str</cite> or <cite>dict</cite></span></dt><dd><p>Model to sample orbital period; choices include: log_uniform, sana12, raghavan10, moe19
+or a custom power law distribution defined with a dictionary with keys “min”, “max”, and “slope”
+(e.g. {“min”: 0.15, “max”: 0.55, “slope”: -0.55}) would reproduce the Sana+2012 distribution</p>
+</dd>
+<dt><strong>qmin</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>kwarg which sets the minimum mass ratio for sampling the secondary
+where the mass ratio distribution is flat in q
+if q &gt; 0, qmin sets the minimum mass ratio
+q = -1, this limits the minimum mass ratio to be set such that
+the pre-MS lifetime of the secondary is not longer than the full
+lifetime of the primary if it were to evolve as a single star</p>
+</dd>
+<dt><strong>m_max</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>kwarg which sets the maximum primary and secondary mass for sampling
+NOTE: this value changes the range of the IMF and should <em>not</em> be used</p>
+<blockquote>
+<div><p>as a means of selecting certain kstar types!</p>
+</div></blockquote>
+</dd>
+<dt><strong>m1_min</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>kwarg which sets the minimum primary mass for sampling
+NOTE: this value changes the range of the IMF and should <em>not</em> be used</p>
+<blockquote>
+<div><p>as a means of selecting certain kstar types!</p>
+</div></blockquote>
+</dd>
+<dt><strong>m2_min</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>kwarg which sets the minimum secondary mass for sampling
+the secondary as uniform in mass_2 between m2_min and mass_1</p>
+</dd>
+<dt><strong>msort</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Stars with M&gt;msort can have different pairing and sampling of companions</p>
+</dd>
+<dt><strong>qmin_msort</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Same as qmin for M&gt;msort</p>
+</dd>
+<dt><strong>m2_min_msort</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Same as m2_min for M&gt;msort</p>
+</dd>
+<dt><strong>SF_start</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Time in the past when star formation initiates in Myr</p>
+</dd>
+<dt><strong>SF_duration</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Duration of constant star formation beginning from SF_Start in Myr</p>
+</dd>
+<dt><strong>binfrac_model</strong><span class="classifier"><cite>str or float</cite></span></dt><dd><p>Model for binary fraction; choices include: vanHaaften, offner22, or a fraction where 1.0 is 100% binaries</p>
+</dd>
+<dt><strong>binfrac_model_msort</strong><span class="classifier"><cite>str or float</cite></span></dt><dd><p>Same as binfrac_model for M&gt;msort</p>
+</dd>
+<dt><strong>met</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Sets the metallicity of the binary population where solar metallicity is zsun</p>
+</dd>
+<dt><strong>size</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Size of the population to sample</p>
+</dd>
+<dt><strong>total_mass</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass to use as a target for sampling</p>
+</dd>
+<dt><strong>sampling_target</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>Which type of target to use for sampling (either “size” or “total_mass”), by default “size”.
+Note that <cite>total_mass</cite> must not be None when <cite>sampling_target==”total_mass”</cite>.</p>
+</dd>
+<dt><strong>trim_extra_samples</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>Whether to trim the sampled population so that the total mass sampled is as close as possible to
+<cite>total_mass</cite>. Ignored when <cite>sampling_target==size</cite>.
+Note that given the discrete mass of stars, this could mean your sample is off by 300
+solar masses in the worst case scenario (of a 150+150 binary being sampled). In reality the majority
+of cases track the target total mass to within a solar mass.</p>
+</dd>
+<dt><strong>zsun</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>optional kwarg for setting effective radii, default is 0.02</p>
+</dd>
+<dt><strong>q_power_law</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that
+q_power_law cannot be exactly -1, as this would result in a divergent distribution.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>InitialBinaryTable</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>DataFrame in the format of the InitialBinaryTable</p>
+</dd>
+<dt><strong>mass_singles</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass in single stars needed to generate population</p>
+</dd>
+<dt><strong>mass_binaries</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass in binaries needed to generate population</p>
+</dd>
+<dt><strong>n_singles</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of single stars needed to generate a population</p>
+</dd>
+<dt><strong>n_binaries</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of binaries needed to generate a population</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.independent.register_sampler">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.independent.</span></span><span class="sig-name descname"><span class="pre">register_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.independent.register_sampler" title="Link to this definition"></a></dt>
+<dd><p>Register a new method to InitialBinaryTable.sampler() for a given format</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data_format</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>name of the format to be registered</p>
+</dd>
+<dt><strong>data_class</strong><span class="classifier"><cite>type</cite></span></dt><dd><p>the class that the sampler returns</p>
+</dd>
+<dt><strong>function</strong><span class="classifier"><cite>callable</cite></span></dt><dd><p>the method to call from <a class="reference internal" href="#cosmic.sample.sampler.independent.InitialBinaryTable.sampler" title="cosmic.sample.sampler.independent.InitialBinaryTable.sampler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InitialBinaryTable.sampler()</span></code></a></p>
+</dd>
+<dt><strong>force</strong><span class="classifier"><cite>bool</cite>, optional</span></dt><dd><p>overwrite existing registration for <code class="docutils literal notranslate"><span class="pre">data_format</span></code> if found,
+default: <cite>False</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

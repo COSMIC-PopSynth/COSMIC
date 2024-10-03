@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.utils"><cite>utils</cite></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">ConfigParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaults=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_type=&lt;class</span> <span class="pre">'dict'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_no_value=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiters=('='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">':')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment_prefixes=('#'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">';')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inline_comment_prefixes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_lines_in_values=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_section='DEFAULT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation=&lt;object</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">converters=&lt;object</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.ConfigParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawConfigParser</span></code></a></p>
+<p>ConfigParser implementing interpolation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser._DEFAULT_INTERPOLATION">
+<span class="sig-name descname"><span class="pre">_DEFAULT_INTERPOLATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;configparser.BasicInterpolation</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cosmic.utils.ConfigParser._DEFAULT_INTERPOLATION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser.__abstractmethods__">
+<span class="sig-name descname"><span class="pre">__abstractmethods__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({})</span></em><a class="headerlink" href="#cosmic.utils.ConfigParser.__abstractmethods__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ConfigParser</span> <span class="pre">implementing</span> <span class="pre">interpolation.'</span></em><a class="headerlink" href="#cosmic.utils.ConfigParser.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'configparser'</span></em><a class="headerlink" href="#cosmic.utils.ConfigParser.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cosmic.utils.ConfigParser._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser._read_defaults">
+<span class="sig-name descname"><span class="pre">_read_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">defaults</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.ConfigParser._read_defaults" title="Link to this definition"></a></dt>
+<dd><p>Reads the defaults passed in the initializer, implicitly converting
+values to strings like the rest of the API.</p>
+<p>Does not perform interpolation for backwards compatibility.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser.add_section">
+<span class="sig-name descname"><span class="pre">add_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.ConfigParser.add_section" title="Link to this definition"></a></dt>
+<dd><p>Create a new section in the configuration.  Extends
+RawConfigParser.add_section by validating if the section name is
+a string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.utils.ConfigParser.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.ConfigParser.set" title="Link to this definition"></a></dt>
+<dd><p>Set an option.  Extends RawConfigParser.set by validating type and
+interpolation syntax on the value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">VariableKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.VariableKey" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A dictionary key which is a variable.
+&#64;ivar item: The variable AST object.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.utils',</span> <span class="pre">'__doc__':</span> <span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">dictionary</span> <span class="pre">key</span> <span class="pre">which</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">variable.\n</span>&#160;&#160;&#160; <span class="pre">&#64;ivar</span> <span class="pre">item:</span> <span class="pre">The</span> <span class="pre">variable</span> <span class="pre">AST</span> <span class="pre">object.\n</span>&#160;&#160;&#160; <span class="pre">',</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">VariableKey.__init__&gt;,</span> <span class="pre">'__eq__':</span> <span class="pre">&lt;function</span> <span class="pre">VariableKey.__eq__&gt;,</span> <span class="pre">'__hash__':</span> <span class="pre">&lt;function</span> <span class="pre">VariableKey.__hash__&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'VariableKey'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'VariableKey'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.utils.VariableKey.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">dictionary</span> <span class="pre">key</span> <span class="pre">which</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">variable.\n</span>&#160;&#160;&#160; <span class="pre">&#64;ivar</span> <span class="pre">item:</span> <span class="pre">The</span> <span class="pre">variable</span> <span class="pre">AST</span> <span class="pre">object.\n</span>&#160;&#160;&#160; <span class="pre">'</span></em><a class="headerlink" href="#cosmic.utils.VariableKey.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compare</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.VariableKey.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Return self==value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.VariableKey.__hash__" title="Link to this definition"></a></dt>
+<dd><p>Return hash(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.VariableKey.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.utils'</span></em><a class="headerlink" href="#cosmic.utils.VariableKey.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.utils.VariableKey.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.utils.VariableKey.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.a_from_p">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">a_from_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.a_from_p" title="Link to this definition"></a></dt>
+<dd><p>Computes the separation from orbital period with KEPLER III</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p</strong><span class="classifier">float/array</span></dt><dd><p>orbital period [day]</p>
+</dd>
+<dt><strong>m1</strong><span class="classifier">float/array</span></dt><dd><p>primary mass [msun]</p>
+</dd>
+<dt><strong>m2</strong><span class="classifier">float/array</span></dt><dd><p>secondary mass [msun]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>sep</strong><span class="classifier">float/array</span></dt><dd><p>separation [rsun]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.calc_Roche_radius">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">calc_Roche_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.calc_Roche_radius" title="Link to this definition"></a></dt>
+<dd><p>Get Roche lobe radius (Eggleton 1983)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>M1</strong><span class="classifier">float</span></dt><dd><p>Primary mass [any unit]</p>
+</dd>
+<dt><strong>M2</strong><span class="classifier">float</span></dt><dd><p>Secondary mass [any unit]</p>
+</dd>
+<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Orbital separation [any unit]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Roche radius</strong><span class="classifier">float</span></dt><dd><p>in units of input ‘A’</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.check_initial_conditions">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">check_initial_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_initial_binary_table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.check_initial_conditions" title="Link to this definition"></a></dt>
+<dd><p>Checks initial conditions and reports warnings</p>
+<p>Only warning provided right now is if star begins in Roche lobe
+overflow</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.conv_select">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">conv_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcm_save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpp_save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_kstar_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_kstar_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_lims</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.conv_select" title="Link to this definition"></a></dt>
+<dd><p>Select bcm data for special convergence cases</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>bcm_save</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>bcm dataframe containing all saved bcm data</p>
+</dd>
+<dt><strong>bpp_save</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>bpp dataframe containing all saved bpp data</p>
+</dd>
+<dt><strong>final_kstar_1</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>contains list of final primary kstars specified by user</p>
+</dd>
+<dt><strong>final_kstar_2</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>contains list of final primary kstars specified by user</p>
+</dd>
+<dt><strong>method</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>stage in binary evolution to check convergence for
+only one method may be supplied and they are specified
+in the inifile</p>
+</dd>
+<dt><strong>conv_lims</strong><span class="classifier"><cite>dict</cite></span></dt><dd><p>dictionary where keys are convergence params and the
+values are lists containing a [lo, hi] value to filter the
+convergence param between
+any non-specified convergence params will not be filtered</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>conv_save</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>filtered dataframe containing binaries that fulfill
+user-specified convergence criteria</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.convert_kstar_evol_type">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">convert_kstar_evol_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.convert_kstar_evol_type" title="Link to this definition"></a></dt>
+<dd><p>Provides way to convert integer values to their string counterpart</p>
+<p>The underlying fortran code relies on integers to indicate
+things like the evoltuionary stage of the star as well as
+key moments in its evolutionary track. If you pass the
+data frame returned from running</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">`Evolve.evolve`</span></code></p>
+</div></blockquote>
+<p>you can convert the columns with these integer proxies
+to their true astrophysical meaning.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.dat_transform">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">dat_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dat_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.dat_transform" title="Link to this definition"></a></dt>
+<dd><p>Transform a data set to have limits between zero and one using
+param_transform, then transform to log space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dat “ DataFrame</strong></dt><dd><p>Data to transform to eventually perform KDE</p>
+</dd>
+<dt><strong>dat_list</strong><span class="classifier">list</span></dt><dd><p>List of DataFrame columns to include in transformation</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dat_trans</strong><span class="classifier">array</span></dt><dd><p>Transformed data for columns in dat_list</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.dat_un_transform">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">dat_un_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dat_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dat_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dat_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.dat_un_transform" title="Link to this definition"></a></dt>
+<dd><p>Un-transform data that was transformed in dat_transform</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dat_sample</strong><span class="classifier">array</span></dt><dd><p>Data sampled from kde generated with transformed data</p>
+</dd>
+<dt><strong>dat_set</strong><span class="classifier">DataFrame</span></dt><dd><p>Un-transformed data (same as dat in dat_transform)</p>
+</dd>
+<dt><strong>dat_list</strong><span class="classifier">list</span></dt><dd><p>List of DataFrame columns to include in transformation</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dat</strong><span class="classifier">array</span></dt><dd><p>Array of data sampled from kde that is transformed back to
+bounds of the un-transformed data set the kde is generated from</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.error_check">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">error_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BSEDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.error_check" title="Link to this definition"></a></dt>
+<dd><p>Checks that values in BSEDict, filters, and convergence are viable</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.filter_bin_state">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">filter_bin_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar1_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar2_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.filter_bin_state" title="Link to this definition"></a></dt>
+<dd><p>Filter the output of bpp and bcm, where the kstar ranges
+have already been selected by the conv_select module</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>bcm</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>bcm dataframe</p>
+</dd>
+<dt><strong>bpp</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>bpp dataframe</p>
+</dd>
+<dt><strong>method</strong><span class="classifier"><cite>dict</cite>,</span></dt><dd><p>one or more methods by which to filter the
+bpp or bcm table, e.g. <code class="docutils literal notranslate"><span class="pre">{'binary_state'</span> <span class="pre">:</span> <span class="pre">[0,1]}</span></code>;
+This means you do <em>not</em> want to select the final state of the binaries in the bcm array</p>
+</dd>
+<dt><strong>kstar1_range</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>list containing all kstar1 values to retain</p>
+</dd>
+<dt><strong>kstar2_range</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>list containing all kstar2 values to retain</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>bcm</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>filtered bcm dataframe</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.get_FeH_from_Z">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">get_FeH_from_Z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_sun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.get_FeH_from_Z" title="Link to this definition"></a></dt>
+<dd><p>Converts from Z to FeH under the assumption that
+all stars have the same abundance as the sun</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Z</strong><span class="classifier">array</span></dt><dd><p>metallicities to convert to Fe/H</p>
+</dd>
+<dt><strong>Z_sun</strong><span class="classifier">float</span></dt><dd><p>solar metallicity</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>FeH</strong><span class="classifier">array</span></dt><dd><p>Fe/H corresponding to metallicities</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.get_Z_from_FeH">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">get_Z_from_FeH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FeH</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_sun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.get_Z_from_FeH" title="Link to this definition"></a></dt>
+<dd><p>Converts from FeH to Z under the assumption that
+all stars have the same abundance as the sun</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>FeH</strong><span class="classifier">array</span></dt><dd><p>Fe/H values to convert</p>
+</dd>
+<dt><strong>Z_sun</strong><span class="classifier">float</span></dt><dd><p>solar metallicity</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Z</strong><span class="classifier">array</span></dt><dd><p>metallicities corresponding to Fe/H</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.get_binfrac_of_Z">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">get_binfrac_of_Z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.get_binfrac_of_Z" title="Link to this definition"></a></dt>
+<dd><p>Calculates the theoretical binary fraction as a 
+function of metallicity. Following Moe+2019</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Z</strong><span class="classifier">array</span></dt><dd><p>metallicity Z values</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>binfrac</strong><span class="classifier">array</span></dt><dd><p>binary fraction values</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.get_met_dep_binfrac">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">get_met_dep_binfrac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">met</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.get_met_dep_binfrac" title="Link to this definition"></a></dt>
+<dd><p>Returns a population-wide binary fraction consistent with
+Moe+19 based on the supplied metallicity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>met</strong><span class="classifier">float</span></dt><dd><p>metallicity of the population</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>binfrac</strong><span class="classifier">float</span></dt><dd><p>binary fraction of the population based on metallicity</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.get_porb_norm">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">get_porb_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close_logP</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wide_logP</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binfrac_tot_solar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.66</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z_sun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.get_porb_norm" title="Link to this definition"></a></dt>
+<dd><p>Returns normalization constants to produce log normals consistent with Fig 19 of Moe+19
+for the orbital period distribution</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Z</strong><span class="classifier">array</span></dt><dd><p>metallicity values</p>
+</dd>
+<dt><strong>close_logP</strong><span class="classifier">float</span></dt><dd><p>divding line beween close and intermediate orbits</p>
+</dd>
+<dt><strong>wide_logP</strong><span class="classifier">float</span></dt><dd><p>dividing line between intermediate and wide orbits</p>
+</dd>
+<dt><strong>binfrac_tot</strong><span class="classifier">float</span></dt><dd><p>integrated total binary fraction at solar metallicity</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>norm_wide</strong><span class="classifier">float</span></dt><dd><p>normalization factor for kde for wide binaries</p>
+</dd>
+<dt><strong>norm_close</strong><span class="classifier">float</span></dt><dd><p>normalization factor for kde for wide binaries</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.idl_tabulate">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">idl_tabulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.idl_tabulate" title="Link to this definition"></a></dt>
+<dd><p>Function that replicates the IDL int_tabulated function
+which performs a p-point integration on a tabulated set of data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">array</span></dt><dd><p>tabulated x-value data</p>
+</dd>
+<dt><strong>f</strong><span class="classifier">array</span></dt><dd><p>tabulated f-value data, same size as x</p>
+</dd>
+<dt><strong>p</strong><span class="classifier">int</span></dt><dd><p>number of chunks to divide tabulated data into
+Default: 5</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ret</strong><span class="classifier">float</span></dt><dd><p>Integration result</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.knuth_bw_selector">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">knuth_bw_selector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dat_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.knuth_bw_selector" title="Link to this definition"></a></dt>
+<dd><p>Selects the kde bandwidth using Knuth’s rule implemented in Astropy
+If Knuth’s rule raises error, Scott’s rule is used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dat_list</strong><span class="classifier">list</span></dt><dd><p>List of data arrays that will be used to generate a kde</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>bw_min</strong><span class="classifier">float</span></dt><dd><p>Minimum of bandwidths for all of the data arrays in dat_list</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.mass_min_max_select">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">mass_min_max_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kstar_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar_2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.mass_min_max_select" title="Link to this definition"></a></dt>
+<dd><p>Select a minimum and maximum mass to filter out binaries in the initial
+parameter sample to reduce the number of unneccessary binaries evolved
+in BSE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>kstar_1</strong><span class="classifier">int, list</span></dt><dd><p>BSE stellar type for the primary
+or minimum and maximum stellar types for the primary</p>
+</dd>
+<dt><strong>kstar_2</strong><span class="classifier">int, list</span></dt><dd><p>BSE stellar type for the secondary
+or minimum and maximum stellar types for the secondary</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>min_mass[0]</strong><span class="classifier">float</span></dt><dd><p>minimum primary mass for initial sample</p>
+</dd>
+<dt><strong>max_mass[0]</strong><span class="classifier">float</span></dt><dd><p>maximum primary mass for initial sample</p>
+</dd>
+<dt><strong>min_mass[1]</strong><span class="classifier">float</span></dt><dd><p>minimum secondary mass for initial sample</p>
+</dd>
+<dt><strong>max_mass[1]</strong><span class="classifier">float</span></dt><dd><p>maximum secondary mass for initial sample</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.p_from_a">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">p_from_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.p_from_a" title="Link to this definition"></a></dt>
+<dd><p>Computes separation from orbital period with kepler III</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sep</strong><span class="classifier">float/array</span></dt><dd><p>separation [rsun]</p>
+</dd>
+<dt><strong>m1</strong><span class="classifier">float/array</span></dt><dd><p>primary mass [msun]</p>
+</dd>
+<dt><strong>m2</strong><span class="classifier">float/array</span></dt><dd><p>secondary mass [msun]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>p</strong><span class="classifier">float/array</span></dt><dd><p>orbital period [day]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.param_transform">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">param_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.param_transform" title="Link to this definition"></a></dt>
+<dd><p>Transforms a data set to limits between zero and one
+Leaves some wiggle room on the edges of the data set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dat</strong><span class="classifier">array</span></dt><dd><p>array of data to transform between 0 and 1</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>datTransformed</strong><span class="classifier">array</span></dt><dd><p>array of data with limits between 0 and 1</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.parse_inifile">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">parse_inifile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inifile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.parse_inifile" title="Link to this definition"></a></dt>
+<dd><p>Provides a method for parsing the inifile and returning dicts of each section</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.pop_write">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">pop_write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dat_store</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kick_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_state_nums</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.pop_write" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Writes all the good stuff that you want to save from runFixedPop in a</dt><dd><p>single function</p>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>dat_store</strong><span class="classifier"><cite>pandas HDFStore</cite></span></dt><dd><p>H5 file to write to</p>
+</dd>
+<dt><strong>log_file</strong><span class="classifier"><cite>file write</cite></span></dt><dd><p>log file to write to</p>
+</dd>
+<dt><strong>mass_list</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>list containing the mass of the singles, mass of the binaries,
+and mass of the stars</p>
+</dd>
+<dt><strong>n_list</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>list containing the number of singles, number of binaries,
+and number of stars</p>
+</dd>
+<dt><strong>bcm</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>bcm array to write</p>
+</dd>
+<dt><strong>bpp</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>bpp array to write</p>
+</dd>
+<dt><strong>initCond</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>initCond array to write</p>
+</dd>
+<dt><strong>conv</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>conv array to write</p>
+</dd>
+<dt><strong>kick_info</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>kick_info array to write</p>
+</dd>
+<dt><strong>bin_state_nums</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>contains the count of binstates 0,1,2</p>
+</dd>
+<dt><strong>match</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>contains the match values for each conv_param</p>
+</dd>
+<dt><strong>idx</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>contains the index of the bcm so we can pick up where we left off
+if runFixedPop hits a wall time</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Nothing!</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.rndm">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">rndm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.rndm" title="Link to this definition"></a></dt>
+<dd><p>Power-law generator for pdf(x)propto x^{g} for a&lt;=x&lt;=b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Minimum of range for power law</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">float</span></dt><dd><p>Maximum of range for power law</p>
+</dd>
+<dt><strong>g</strong><span class="classifier">float</span></dt><dd><p>Index for power law</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int</span></dt><dd><p>Number of data points to draw</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>power</strong><span class="classifier">array</span></dt><dd><p>Array of data sampled from power law distribution with params
+fixed by inputs</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.utils.zcnsts">
+<span class="sig-prename descclassname"><span class="pre">cosmic.utils.</span></span><span class="sig-name descname"><span class="pre">zcnsts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.utils.zcnsts" title="Link to this definition"></a></dt>
+<dd><p>Calculate constants based on the metallicty
+*      zpars:  1; M below which hook doesn’t appear on MS, Mhook.
+*              2; M above which He ignition occurs non-degenerately, Mhef.
+*              3; M above which He ignition occurs on the HG, Mfgb.
+*              4; M below which C/O ignition doesn’t occur, Mup.
+*              5; M above which C ignites in the centre, Mec.
+*              6; value of log D for M&lt;= zpars[2]
+*              7; value of x for Rgb propto M^(-x)
+*              8; value of x for tMS = numpy.maximum(tHOOK,x*tBGB)
+*              9; constant for McHeIf when computing Mc,BGB, mchefl.
+*             10; constant for McHeIf when computing Mc,HeI, mchefl.
+*             11; hydrogen abundance.
+*             12; helium abundance.
+*             13; constant x in rnumpy.minimum = rgb*x**y used by LM CHeB.
+*             14; z**0.4 to be used for WD L formula.</p>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

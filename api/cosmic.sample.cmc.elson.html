@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.sample.cmc.elson.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.sample.cmc.elson"><cite>Elson</cite></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.M_enclosed">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">M_enclosed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.M_enclosed" title="Link to this definition"></a></dt>
+<dd><p>Compute the mass enclosed in an Elson profile at radius r with slope
+gamma, central concentration rho_0, and assumed scale factor a = 1</p>
+<p>In practice, this is only used to sample the positions of stars, so rho_0 is
+just picked to normalize the distribution (i.e. rho_0 s.t. M_enclosed(rmax) = 1)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.draw_r_vr_vt">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">draw_r_vr_vt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.draw_r_vr_vt" title="Link to this definition"></a></dt>
+<dd><p>Draw random velocities and positions from the Elson profile.</p>
+<p>N     = number of stars
+r_max = maximum number of virial radii for the farthest star
+gamma = steepness function of the profile</p>
+<p>Note that gamma=4 is the Plummer profile</p>
+<p>returns (vr,vt,r) in G=M_cluster=1 units</p>
+<p>N.B. if you’re getting a “Expect x to not have duplicates” error
+with a large gamma, use a smaller r_max.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.find_rmax_vir">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">find_rmax_vir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.find_rmax_vir" title="Link to this definition"></a></dt>
+<dd><p>This is a little tricky: because the virial radius of the Elson profile
+depends on the maximum radius, if the profile is very flat (e.g. gamma~2)
+then you need a large maximum radius to get a large number of virial radius
+in there.  This basically finds r such that  r / rVir(r) = r_max.  In other
+word, how far out do we need to go to have r_max number of virial radii in the
+sample.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.find_sigma_sqr">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">find_sigma_sqr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max_cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.find_sigma_sqr" title="Link to this definition"></a></dt>
+<dd><p>Find the 1D velocity dispersion at a given radius r using one of the
+spherial Jeans equations (and assuming velocity is isotropic)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.get_positions">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">get_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max_cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.get_positions" title="Link to this definition"></a></dt>
+<dd><p>This one’s easy: the mass enclosed function is just the CDF of the mass
+density, so just invert that, and you’ve got positions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.get_velocities">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">get_velocities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max_cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.get_velocities" title="Link to this definition"></a></dt>
+<dd><p>The correct way to generate velocities: generate the distribution function from rho,
+then use rejection sampling.</p>
+<p>returns (vr,vt) with same length as r</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.get_velocities_old">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">get_velocities_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max_cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.get_velocities_old" title="Link to this definition"></a></dt>
+<dd><p>Uses the spherical Jeans functions to sample the velocity dispersion for the
+cluster at different radii, then draws a random, isotropic velocity for each
+star</p>
+<p>NOTE: this gives you correct velocity dispersion and produces a cluster in virial
+equilibrium, but it’s not strictly speaking correct (the distribution should
+have some kurtosis, in addition to getting the variance of the Gaussian correct).
+You can see the disagreement in the tail of the distributions when sampling a
+Plummer sphere.  This is what mcluster does…</p>
+<p>Use the new get_velocities function, which generates a distribution function
+directly from rho and samples velocities from it</p>
+<p>This is kept around because it’s super useful to sample from when the rejection sampling
+gets too slow at the last X samples (e.g. gamma ~ 10)</p>
+<p>returns (vr,vt) with same length as r</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.get_velocities_plummer">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">get_velocities_plummer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max_cluster</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.get_velocities_plummer" title="Link to this definition"></a></dt>
+<dd><p>The correct way to generate velocities</p>
+<p>this is a special case for gamma=4, which is the plummer sphere (and has an analytic distribution function)</p>
+<p>returns (vr,vt) with same length as r</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.normal">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.normal" title="Link to this definition"></a></dt>
+<dd><p>Draw random samples from a normal (Gaussian) distribution.</p>
+<p>The probability density function of the normal distribution, first
+derived by De Moivre and 200 years later by both Gauss and Laplace
+independently <a class="reference internal" href="#rddbf9382c336-2" id="id1">[2]</a>, is often called the bell curve because of
+its characteristic shape (see the example below).</p>
+<p>The normal distributions occurs often in nature.  For example, it
+describes the commonly occurring distribution of samples influenced
+by a large number of tiny, random disturbances, each with its own
+unique distribution <a class="reference internal" href="#rddbf9382c336-2" id="id2">[2]</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New code should use the <code class="docutils literal notranslate"><span class="pre">normal</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
+instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v2.1)"><span>Quick start</span></a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>loc</strong><span class="classifier">float or array_like of floats</span></dt><dd><p>Mean (“centre”) of the distribution.</p>
+</dd>
+<dt><strong>scale</strong><span class="classifier">float or array_like of floats</span></dt><dd><p>Standard deviation (spread or “width”) of the distribution. Must be
+non-negative.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int or tuple of ints, optional</span></dt><dd><p>Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">loc</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are both scalars.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">np.broadcast(loc,</span> <span class="pre">scale).size</span></code> samples are drawn.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">ndarray or scalar</span></dt><dd><p>Drawn samples from the parameterized normal distribution.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html#scipy.stats.norm" title="(in SciPy v1.14.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.stats.norm</span></code></a></dt><dd><p>probability density function, distribution or cumulative density function, etc.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random.Generator.normal</span></code></dt><dd><p>which should be used for new code.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The probability density for the Gaussian distribution is</p>
+<div class="math">
+<p><span class="math">p(x) = \frac{1}{\sqrt{ 2 \pi \sigma^2 }}
+e^{ - \frac{ (x - \mu)^2 } {2 \sigma^2} },</span></p>
+</div><p>where <span class="math">\mu</span> is the mean and <span class="math">\sigma</span> the standard
+deviation. The square of the standard deviation, <span class="math">\sigma^2</span>,
+is called the variance.</p>
+<p>The function has its peak at the mean, and its “spread” increases with
+the standard deviation (the function reaches 0.607 times its maximum at
+<span class="math">x + \sigma</span> and <span class="math">x - \sigma</span> <a class="reference internal" href="#rddbf9382c336-2" id="id3">[2]</a>).  This implies that
+normal is more likely to return samples lying close to the mean, rather
+than those far away.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="rddbf9382c336-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Wikipedia, “Normal distribution”,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Normal_distribution">https://en.wikipedia.org/wiki/Normal_distribution</a></p>
+</div>
+<div class="citation" id="rddbf9382c336-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id3">3</a>)</span>
+<p>P. R. Peebles Jr., “Central Limit Theorem” in “Probability,
+Random Variables and Random Signal Principles”, 4th ed., 2001,
+pp. 51, 51, 125.</p>
+</div>
+</div>
+<p class="rubric">Examples</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/b45f4effa7e44dc5a0b48f39367a444f/cosmic-sample-cmc-elson-1.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/89e51902f2c2499b01103b2d4d33620b/cosmic-sample-cmc-elson-1_00_00.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/a8b3eb20d7ae1df62b6ba60bea992635/cosmic-sample-cmc-elson-1_00_00.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/6d2f47a79ce751d7e604133b70341bd1/cosmic-sample-cmc-elson-1_00_00.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/cosmic-sample-cmc-elson-1_00_00.png" class="plot-directive" src="../_images/cosmic-sample-cmc-elson-1_00_00.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.phi_r">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">phi_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.phi_r" title="Link to this definition"></a></dt>
+<dd><p>Compute the gravitational potential of an Elson profile at radius r with slope
+gamma, central concentration rho_0, and assumed scale factor a = 1</p>
+<p>Needed to compute the escape speed (for resampling stars)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.rho_r">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">rho_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.rho_r" title="Link to this definition"></a></dt>
+<dd><p>Compute the density of the Elson profile at radius r
+Best to use the same normalized rho_0 from M_enclosed</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.scale_pos_and_vel">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">scale_pos_and_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.scale_pos_and_vel" title="Link to this definition"></a></dt>
+<dd><p>Scale the positions and velocities to be in N-body units
+If we add binaries we’ll do this again in initialcmctable.py</p>
+<p>takes r, vr, and vt as input</p>
+<p>returns (r,vr,vt) scaled to Henon units</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.uniform">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.uniform" title="Link to this definition"></a></dt>
+<dd><p>Draw samples from a uniform distribution.</p>
+<p>Samples are uniformly distributed over the half-open interval
+<code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high)</span></code> (includes low, but excludes high).  In other words,
+any value within the given interval is equally likely to be drawn
+by <cite>uniform</cite>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New code should use the <code class="docutils literal notranslate"><span class="pre">uniform</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
+instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v2.1)"><span>Quick start</span></a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>low</strong><span class="classifier">float or array_like of floats, optional</span></dt><dd><p>Lower boundary of the output interval.  All values generated will be
+greater than or equal to low.  The default value is 0.</p>
+</dd>
+<dt><strong>high</strong><span class="classifier">float or array_like of floats</span></dt><dd><p>Upper boundary of the output interval.  All values generated will be
+less than or equal to high.  The high limit may be included in the 
+returned array of floats due to floating-point rounding in the 
+equation <code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high-low)</span> <span class="pre">*</span> <span class="pre">random_sample()</span></code>.  The default value 
+is 1.0.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int or tuple of ints, optional</span></dt><dd><p>Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> are both scalars.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">np.broadcast(low,</span> <span class="pre">high).size</span></code> samples are drawn.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">ndarray or scalar</span></dt><dd><p>Drawn samples from the parameterized uniform distribution.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></dt><dd><p>Discrete uniform distribution, yielding integers.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_integers</span></code></dt><dd><p>Discrete uniform distribution over the closed interval <code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high]</span></code>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></dt><dd><p>Floats uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a></dt><dd><p>Alias for <cite>random_sample</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand</span></code></dt><dd><p>Convenience function that accepts dimensions as input, e.g., <code class="docutils literal notranslate"><span class="pre">rand(2,2)</span></code> would generate a 2-by-2 array of floats, uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random.Generator.uniform</span></code></dt><dd><p>which should be used for new code.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The probability density function of the uniform distribution is</p>
+<div class="math">
+<p><span class="math">p(x) = \frac{1}{b - a}</span></p>
+</div><p>anywhere within the interval <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b)</span></code>, and zero elsewhere.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">high</span></code> == <code class="docutils literal notranslate"><span class="pre">low</span></code>, values of <code class="docutils literal notranslate"><span class="pre">low</span></code> will be returned.
+If <code class="docutils literal notranslate"><span class="pre">high</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">low</span></code>, the results are officially undefined
+and may eventually raise an error, i.e. do not rely on this
+function to behave when passed arguments satisfying that
+inequality condition. The <code class="docutils literal notranslate"><span class="pre">high</span></code> limit may be included in the
+returned array of floats due to floating-point rounding in the
+equation <code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high-low)</span> <span class="pre">*</span> <span class="pre">random_sample()</span></code>. For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mf">0.99999999</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">5.0</span>
+</pre></div>
+</div>
+<p class="rubric">Examples</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/680703111c080ecb192b1386de4bdbd3/cosmic-sample-cmc-elson-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/921ec866f7609c4e37eae85b053d020a/cosmic-sample-cmc-elson-2.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/f9912ba488007fe3f87469b153802114/cosmic-sample-cmc-elson-2.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/259b25c6db6ac866207ff7f3d50b1420/cosmic-sample-cmc-elson-2.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/cosmic-sample-cmc-elson-2.png" class="plot-directive" src="../_images/cosmic-sample-cmc-elson-2.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.elson.virial_radius_analytic">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.elson.</span></span><span class="sig-name descname"><span class="pre">virial_radius_analytic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.elson.virial_radius_analytic" title="Link to this definition"></a></dt>
+<dd><p>Virial radius is best calculated directly, since rmax may be pretty far from
+infinity.  Directly integrate 4*pi*r*rho*m_enclosed from 0 to rMax to get the
+binding energy, then just divide 0.5 by that.</p>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

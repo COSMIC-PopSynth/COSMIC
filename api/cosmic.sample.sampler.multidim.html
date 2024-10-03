@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.sample.sampler.multidim.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.sample.sampler.multidim"><cite>multidim</cite></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">InitialBinaryTable</span></span><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.InitialBinaries">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InitialBinaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tphysf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kstar2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metallicity</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.InitialBinaries" title="Link to this definition"></a></dt>
+<dd><p>Create single binary</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>m1</strong><span class="classifier">float</span></dt><dd><p>Primary mass [Msun]</p>
+</dd>
+<dt><strong>m2</strong><span class="classifier">float</span></dt><dd><p>Secondary mass [Msun]</p>
+</dd>
+<dt><strong>porb</strong><span class="classifier">float</span></dt><dd><p>Orbital period [days]</p>
+</dd>
+<dt><strong>ecc</strong><span class="classifier">float</span></dt><dd><p>Eccentricity</p>
+</dd>
+<dt><strong>tphysf</strong><span class="classifier">float</span></dt><dd><p>Time to evolve the binary [Myr]</p>
+</dd>
+<dt><strong>kstar1</strong><span class="classifier">array</span></dt><dd><p>0-14 Initial stellar type of the larger object;
+main sequence stars are 0 if m &lt; 0.7 Msun and 1 otherwise</p>
+</dd>
+<dt><strong>kstar2</strong><span class="classifier">array</span></dt><dd><p>0-14 Initial stellar type of the smaller object;
+main sequence stars are 0 if m &lt; 0.7 Msun and 1 otherwise</p>
+</dd>
+<dt><strong>metallicity</strong><span class="classifier">float</span></dt><dd><p>Metallicity of the binaries; Z_sun = 0.02</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><dl class="simple">
+<dt>binfrac<span class="classifier">float</span></dt><dd><p>System-specific probability of the primary star being in a binary</p>
+</dd>
+</dl>
+<p>mass0_1,mass0_2,rad1,rad2,lumin1,lumin2,
+massc1,massc2,radc1,radc2,menv1,menv2,renv1,renv2,
+ospin1,ospin2,b_0_1,b_0_2,bacc1,bacc2,
+tacc1,tacc2,epoch1,epoch2,tms1,tms2
+bhspin1,bhspin2</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>InitialBinaries</strong><span class="classifier">DataFrame</span></dt><dd><p>Single binary initial conditions</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.__annotations__">
+<span class="sig-name descname"><span class="pre">__annotations__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.__annotations__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.sample.initialbinarytable',</span> <span class="pre">'InitialBinaries':</span> <span class="pre">&lt;classmethod(&lt;function</span> <span class="pre">InitialBinaryTable.InitialBinaries&gt;)&gt;,</span> <span class="pre">'sampler':</span> <span class="pre">&lt;classmethod(&lt;function</span> <span class="pre">InitialBinaryTable.sampler&gt;)&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'InitialBinaryTable'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'InitialBinaryTable'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.sample.initialbinarytable'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.InitialBinaryTable.sampler">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.sampler" title="Link to this definition"></a></dt>
+<dd><p>Fetch a method to generate an initial binary sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>format</strong><span class="classifier">str</span></dt><dd><p>the method name; Choose from ‘independent’ or ‘multidim’</p>
+</dd>
+<dt><strong>*args</strong></dt><dd><p>the arguments necessary for the registered sample
+method; see help(InitialBinaryTable.sampler(‘independent’)
+to see the arguments necessary for the independent sample</p>
+</dd>
+<dt><strong>The available named formats are:</strong></dt><dd></dd>
+<dt><strong>=========== …</strong></dt><dd><p>Format   …</p>
+</dd>
+<dt><strong>=========== …</strong></dt><dd></dd>
+<dt><strong>independent …</strong></dt><dd><p>multidim …</p>
+</dd>
+<dt><strong>=========== …</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">MPIPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_dill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePool</span></code></p>
+<p>A processing pool that distributes tasks using MPI.</p>
+<p>With this pool class, the master process distributes tasks to worker
+processes using an MPI communicator. This pool therefore supports parallel
+processing on large compute clusters and in environments with multiple
+nodes or computers that each have many processor cores.</p>
+<p>This implementation is inspired by &#64;juliohm in <a class="reference external" href="https://github.com/juliohm/HUM/blob/master/pyhum/utils.py#L24">this module</a></p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>comm</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">mpi4py.MPI.Comm</span></code>, optional</span></dt><dd><p>An MPI communicator to distribute tasks with. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, this uses
+<code class="docutils literal notranslate"><span class="pre">MPI.COMM_WORLD</span></code> by default.</p>
+</dd>
+<dt><strong>use_dill: Set `True` to use `dill` serialization. Default is `False`.</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.__abstractmethods__">
+<span class="sig-name descname"><span class="pre">__abstractmethods__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({})</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.__abstractmethods__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A</span> <span class="pre">processing</span> <span class="pre">pool</span> <span class="pre">that</span> <span class="pre">distributes</span> <span class="pre">tasks</span> <span class="pre">using</span> <span class="pre">MPI.\n\n</span>&#160;&#160;&#160; <span class="pre">With</span> <span class="pre">this</span> <span class="pre">pool</span> <span class="pre">class,</span> <span class="pre">the</span> <span class="pre">master</span> <span class="pre">process</span> <span class="pre">distributes</span> <span class="pre">tasks</span> <span class="pre">to</span> <span class="pre">worker\n</span>&#160;&#160;&#160; <span class="pre">processes</span> <span class="pre">using</span> <span class="pre">an</span> <span class="pre">MPI</span> <span class="pre">communicator.</span> <span class="pre">This</span> <span class="pre">pool</span> <span class="pre">therefore</span> <span class="pre">supports</span> <span class="pre">parallel\n</span>&#160;&#160;&#160; <span class="pre">processing</span> <span class="pre">on</span> <span class="pre">large</span> <span class="pre">compute</span> <span class="pre">clusters</span> <span class="pre">and</span> <span class="pre">in</span> <span class="pre">environments</span> <span class="pre">with</span> <span class="pre">multiple\n</span>&#160;&#160;&#160; <span class="pre">nodes</span> <span class="pre">or</span> <span class="pre">computers</span> <span class="pre">that</span> <span class="pre">each</span> <span class="pre">have</span> <span class="pre">many</span> <span class="pre">processor</span> <span class="pre">cores.\n\n</span>&#160;&#160;&#160; <span class="pre">This</span> <span class="pre">implementation</span> <span class="pre">is</span> <span class="pre">inspired</span> <span class="pre">by</span> <span class="pre">&#64;juliohm</span> <span class="pre">in</span> <span class="pre">`this</span> <span class="pre">module\n</span>&#160;&#160;&#160; <span class="pre">&lt;https://github.com/juliohm/HUM/blob/master/pyhum/utils.py#L24&gt;`_\n\n</span>&#160;&#160;&#160; <span class="pre">Parameters\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">comm</span> <span class="pre">:</span> <span class="pre">:class:`mpi4py.MPI.Comm`,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">An</span> <span class="pre">MPI</span> <span class="pre">communicator</span> <span class="pre">to</span> <span class="pre">distribute</span> <span class="pre">tasks</span> <span class="pre">with.</span> <span class="pre">If</span> <span class="pre">``None``,</span> <span class="pre">this</span> <span class="pre">uses\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``MPI.COMM_WORLD``</span> <span class="pre">by</span> <span class="pre">default.\n</span>&#160;&#160;&#160; <span class="pre">use_dill:</span> <span class="pre">Set</span> <span class="pre">`True`</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">`dill`</span> <span class="pre">serialization.</span> <span class="pre">Default</span> <span class="pre">is</span> <span class="pre">`False`.\n</span>&#160;&#160;&#160; <span class="pre">'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_dill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'schwimmbad.mpi'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.close" title="Link to this definition"></a></dt>
+<dd><p>Tell all the workers to quit.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.enabled">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.enabled" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.map">
+<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.map" title="Link to this definition"></a></dt>
+<dd><p>Evaluate a function or callable on each task in parallel using MPI.</p>
+<p>The callable, <code class="docutils literal notranslate"><span class="pre">worker</span></code>, is called on each element of the <code class="docutils literal notranslate"><span class="pre">tasks</span></code>
+iterable. The results are returned in the expected order (symmetric with
+<code class="docutils literal notranslate"><span class="pre">tasks</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>worker</strong><span class="classifier">callable</span></dt><dd><p>A function or callable object that is executed on each element of
+the specified <code class="docutils literal notranslate"><span class="pre">tasks</span></code> iterable. This object must be picklable
+(i.e. it can’t be a function scoped within a function or a
+<code class="docutils literal notranslate"><span class="pre">lambda</span></code> function). This should accept a single positional
+argument and return a single object.</p>
+</dd>
+<dt><strong>tasks</strong><span class="classifier">iterable</span></dt><dd><p>A list or iterable of tasks. Each task can be itself an iterable
+(e.g., tuple) of values or data to pass in to the worker function.</p>
+</dd>
+<dt><strong>callback</strong><span class="classifier">callable, optional</span></dt><dd><p>An optional callback function (or callable) that is called with the
+result from each worker run and is executed on the master process.
+This is useful for, e.g., saving results to a file, since the
+callback is only called on the master thread.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>results</strong><span class="classifier">list</span></dt><dd><p>A list of results from the output of each <code class="docutils literal notranslate"><span class="pre">worker()</span></code> call.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MPIPool.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MPIPool.wait" title="Link to this definition"></a></dt>
+<dd><p>Tell the workers to wait and listen for the master process. This is
+called automatically when using <a class="reference internal" href="#cosmic.sample.sampler.multidim.MPIPool.map" title="cosmic.sample.sampler.multidim.MPIPool.map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MPIPool.map()</span></code></a> and doesn’t need to
+be called by the user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">MultiDim</span></span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.sample.sampler.multidim',</span> <span class="pre">'initial_sample':</span> <span class="pre">&lt;function</span> <span class="pre">MultiDim.initial_sample&gt;,</span> <span class="pre">'sample_SFH':</span> <span class="pre">&lt;function</span> <span class="pre">MultiDim.sample_SFH&gt;,</span> <span class="pre">'set_kstar':</span> <span class="pre">&lt;function</span> <span class="pre">MultiDim.set_kstar&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'MultiDim'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'MultiDim'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.sample.sampler.multidim'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.initial_sample">
+<span class="sig-name descname"><span class="pre">initial_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M1min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M1max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_lo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_hi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rand_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp_seeds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.initial_sample" title="Link to this definition"></a></dt>
+<dd><p>Sample initial binary distribution according to Moe &amp; Di Stefano (2017)
+&lt;<a class="reference external" href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">http://adsabs.harvard.edu/abs/2017ApJS..230…15M</a>&gt;`_</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>M1min</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>minimum primary mass to sample [Msun]
+DEFAULT: 0.08</p>
+</dd>
+<dt><strong>M2min</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>minimum secondary mass to sample [Msun]
+DEFAULT: 0.08</p>
+</dd>
+<dt><strong>M1max</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>maximum primary mass to sample [Msun]
+DEFAULT: 150.0</p>
+</dd>
+<dt><strong>M2max</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>maximum primary mass to sample [Msun]
+DEFAULT: 150.0</p>
+</dd>
+<dt><strong>porb_lo</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>minimum orbital period to sample [log10(days)]</p>
+</dd>
+<dt><strong>porb_hi</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>maximum orbital period to sample [log10(days)]</p>
+</dd>
+<dt><strong>rand_seed</strong><span class="classifier">int</span></dt><dd><p>random seed generator
+DEFAULT: 0</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int, optional</span></dt><dd><p>number of evolution times to sample
+NOTE: this is set in cosmic-pop call as Nstep</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>primary_mass_list</strong><span class="classifier">array</span></dt><dd><p>array of primary masses with size=size</p>
+</dd>
+<dt><strong>secondary_mass_list</strong><span class="classifier">array</span></dt><dd><p>array of secondary masses with size=size</p>
+</dd>
+<dt><strong>porb_list</strong><span class="classifier">array</span></dt><dd><p>array of orbital periods in days with size=size</p>
+</dd>
+<dt><strong>ecc_list</strong><span class="classifier">array</span></dt><dd><p>array of eccentricities with size=size</p>
+</dd>
+<dt><strong>mass_singles</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass in single stars needed to generate population</p>
+</dd>
+<dt><strong>mass_binaries</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass in binaries needed to generate population</p>
+</dd>
+<dt><strong>n_singles</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of single stars needed to generate a population</p>
+</dd>
+<dt><strong>n_binaries</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of binaries needed to generate a population</p>
+</dd>
+<dt><strong>binfrac_list</strong><span class="classifier">array</span></dt><dd><p>array of binary probabilities based on primary mass and period with size=size</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.sample_SFH">
+<span class="sig-name descname"><span class="pre">sample_SFH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SF_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13700.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SF_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">met</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.sample_SFH" title="Link to this definition"></a></dt>
+<dd><p>Sample an evolution time for each binary based on a user-specified
+time at the start of star formation and the duration of star formation.
+The default is a burst of star formation 13,700 Myr in the past.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>SF_start</strong><span class="classifier">float</span></dt><dd><p>Time in the past when star formation initiates in Myr</p>
+</dd>
+<dt><strong>SF_duration</strong><span class="classifier">float</span></dt><dd><p>Duration of constant star formation beginning from SF_Start in Myr</p>
+</dd>
+<dt><strong>met</strong><span class="classifier">float</span></dt><dd><p>metallicity of the population [Z_sun = 0.02]
+Default: 0.02</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int, optional</span></dt><dd><p>number of evolution times to sample
+NOTE: this is set in cosmic-pop call as Nstep</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>tphys</strong><span class="classifier">array</span></dt><dd><p>array of evolution times of size=size</p>
+</dd>
+<dt><strong>metallicity</strong><span class="classifier">array</span></dt><dd><p>array of metallicities</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiDim.set_kstar">
+<span class="sig-name descname"><span class="pre">set_kstar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiDim.set_kstar" title="Link to this definition"></a></dt>
+<dd><p>Initialize stellar types according to BSE classification
+kstar=1 if M&gt;=0.7 Msun; kstar=0 if M&lt;0.7 Msun</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mass</strong><span class="classifier">array</span></dt><dd><p>array of masses</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>kstar</strong><span class="classifier">array</span></dt><dd><p>array of initial stellar types</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">MultiPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Pool</span></code></p>
+<p>A modified version of <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocess.pool.Pool</span></code> that has better
+behavior with regard to <code class="docutils literal notranslate"><span class="pre">KeyboardInterrupts</span></code> in the <a class="reference internal" href="#cosmic.sample.sampler.multidim.MultiPool.map" title="cosmic.sample.sampler.multidim.MultiPool.map"><code class="xref py py-func docutils literal notranslate"><span class="pre">map()</span></code></a> method.</p>
+<p>NOTE: This is no longer built off of the standard library
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.pool.Pool</span></code></a> – this uses the version from <cite>multiprocess</cite>,
+which uses <cite>dill</cite> to pickle objects instead of the standard library <cite>pickle</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>processes</strong><span class="classifier">int, optional</span></dt><dd><p>The number of worker processes to use; defaults to the number of CPUs.</p>
+</dd>
+<dt><strong>initializer</strong><span class="classifier">callable, optional</span></dt><dd><p>If specified, a callable that will be invoked by each worker process
+when it starts.</p>
+</dd>
+<dt><strong>initargs</strong><span class="classifier">iterable, optional</span></dt><dd><p>Arguments for <code class="docutils literal notranslate"><span class="pre">initializer</span></code>; it will be called as
+<code class="docutils literal notranslate"><span class="pre">initializer(*initargs)</span></code>.</p>
+</dd>
+<dt><strong>kwargs:</strong></dt><dd><p>Extra arguments passed to the <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocess.pool.Pool</span></code> superclass.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.__annotations__">
+<span class="sig-name descname"><span class="pre">__annotations__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.__annotations__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">modified</span> <span class="pre">version</span> <span class="pre">of</span> <span class="pre">:class:`multiprocess.pool.Pool`</span> <span class="pre">that</span> <span class="pre">has</span> <span class="pre">better\n</span>&#160;&#160;&#160; <span class="pre">behavior</span> <span class="pre">with</span> <span class="pre">regard</span> <span class="pre">to</span> <span class="pre">``KeyboardInterrupts``</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">:func:`map`</span> <span class="pre">method.\n\n</span>&#160;&#160;&#160; <span class="pre">NOTE:</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">no</span> <span class="pre">longer</span> <span class="pre">built</span> <span class="pre">off</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">standard</span> <span class="pre">library\n</span>&#160;&#160;&#160; <span class="pre">:class:`multiprocessing.pool.Pool`</span> <span class="pre">--</span> <span class="pre">this</span> <span class="pre">uses</span> <span class="pre">the</span> <span class="pre">version</span> <span class="pre">from</span> <span class="pre">`multiprocess`,\n</span>&#160;&#160;&#160; <span class="pre">which</span> <span class="pre">uses</span> <span class="pre">`dill`</span> <span class="pre">to</span> <span class="pre">pickle</span> <span class="pre">objects</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">standard</span> <span class="pre">library</span> <span class="pre">`pickle`.\n\n</span>&#160;&#160;&#160; <span class="pre">Parameters\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">processes</span> <span class="pre">:</span> <span class="pre">int,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">worker</span> <span class="pre">processes</span> <span class="pre">to</span> <span class="pre">use;</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">CPUs.\n</span>&#160;&#160;&#160; <span class="pre">initializer</span> <span class="pre">:</span> <span class="pre">callable,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">specified,</span> <span class="pre">a</span> <span class="pre">callable</span> <span class="pre">that</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">invoked</span> <span class="pre">by</span> <span class="pre">each</span> <span class="pre">worker</span> <span class="pre">process\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">when</span> <span class="pre">it</span> <span class="pre">starts.\n</span>&#160;&#160;&#160; <span class="pre">initargs</span> <span class="pre">:</span> <span class="pre">iterable,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Arguments</span> <span class="pre">for</span> <span class="pre">``initializer``;</span> <span class="pre">it</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">called</span> <span class="pre">as\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``initializer(*initargs)``.\n</span>&#160;&#160;&#160; <span class="pre">kwargs:\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Extra</span> <span class="pre">arguments</span> <span class="pre">passed</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">:class:`multiprocess.pool.Pool`</span> <span class="pre">superclass.\n\n</span>&#160;&#160;&#160; <span class="pre">'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'schwimmbad.multiprocessing'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.enabled">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.enabled" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.map">
+<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.map" title="Link to this definition"></a></dt>
+<dd><p>Equivalent to the built-in <code class="docutils literal notranslate"><span class="pre">map()</span></code> function and
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool.map" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">multiprocessing.pool.Pool.map()</span></code></a>, without catching
+<code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>worker</strong><span class="classifier">callable</span></dt><dd><p>A function or callable object that is executed on each element of
+the specified <code class="docutils literal notranslate"><span class="pre">tasks</span></code> iterable. This object must be picklable
+(i.e. it can’t be a function scoped within a function or a
+<code class="docutils literal notranslate"><span class="pre">lambda</span></code> function). This should accept a single positional
+argument and return a single object.</p>
+</dd>
+<dt><strong>tasks</strong><span class="classifier">iterable</span></dt><dd><p>A list or iterable of tasks. Each task can be itself an iterable
+(e.g., tuple) of values or data to pass in to the worker function.</p>
+</dd>
+<dt><strong>callback</strong><span class="classifier">callable, optional</span></dt><dd><p>An optional callback function (or callable) that is called with the
+result from each worker run and is executed on the master process.
+This is useful for, e.g., saving results to a file, since the
+callback is only called on the master thread.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>results</strong><span class="classifier">list</span></dt><dd><p>A list of results from the output of each <code class="docutils literal notranslate"><span class="pre">worker()</span></code> call.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.MultiPool.wait_timeout">
+<span class="sig-name descname"><span class="pre">wait_timeout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3600</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.MultiPool.wait_timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">Worker</span></span><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker.__call__" title="Link to this definition"></a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.sample.sampler.multidim',</span> <span class="pre">'__call__':</span> <span class="pre">&lt;function</span> <span class="pre">Worker.__call__&gt;,</span> <span class="pre">'_sample_initial_pop':</span> <span class="pre">&lt;function</span> <span class="pre">Worker._sample_initial_pop&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'Worker'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'Worker'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.sample.sampler.multidim'</span></em><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.Worker._sample_initial_pop">
+<span class="sig-name descname"><span class="pre">_sample_initial_pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M1min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M1max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_hi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porb_lo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.Worker._sample_initial_pop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.get_multidim_sampler">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">get_multidim_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">final_kstar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_kstar2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rand_seed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SF_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SF_duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">met</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.get_multidim_sampler" title="Link to this definition"></a></dt>
+<dd><p>adapted version of Maxwell Moe’s IDL code that generates a population of single and binary stars</p>
+<p>Below is the adapted version of Maxwell Moe’s IDL code
+that generates a population of single and binary stars
+based on the paper Mind your P’s and Q’s
+By Maxwell Moe and Rosanne Di Stefano</p>
+<p>The python code has been adopted by Mads Sørensen</p>
+<p>Version history:
+V. 0.1; 2017/02/03
+By Mads Sørensen
+- This is a pure adaption from IDL to Python.
+- The function idl_tabulate is similar to
+the IDL function int_tabulated except, this function seems to be slightly
+more exact in its solution.
+Therefore, relative to the IDL code, there are small numerical differences.</p>
+<p>Comments below beginning with ; is the original nodes by Maxwell Moe.
+Please read these careful for understanding the script.
+; NOTE - This version produces only the statistical distributions of
+;        single stars, binaries, and inner binaries in hierarchical triples.
+;        Outer tertiaries in hierarchical triples are NOT generated.
+;        Moreover, given a set of companions, all with period P to
+;        primary mass M1, this version currently uses an approximation to
+;        determine the fraction of those companions that are inner binaries
+;        vs. outer triples. Nevertheless, this approximation reproduces
+;        the overall multiplicity statistics.
+; Step 1 - Tabulate probably density functions of periods,
+;          mass ratios, and eccentricities based on
+;          analytic fits to corrected binary star populations.
+; Step 2 - Implement Monte Carlo method to generate stellar
+;          population from those density functions.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>final_kstar1</strong><span class="classifier"><cite>list</cite> or <cite>int</cite></span></dt><dd><p>Int or list of final kstar1</p>
+</dd>
+<dt><strong>final_kstar2</strong><span class="classifier"><cite>list</cite> or <cite>int</cite></span></dt><dd><p>Int or list of final kstar2</p>
+</dd>
+<dt><strong>rand_seed</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Int to seed random number generator</p>
+</dd>
+<dt><strong>nproc</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of processors to use to generate population</p>
+</dd>
+<dt><strong>SF_start</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Time in the past when star formation initiates in Myr</p>
+</dd>
+<dt><strong>SF_duration</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Duration of constant star formation beginning from SF_Start in Myr</p>
+</dd>
+<dt><strong>met</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Sets the metallicity of the binary population where solar metallicity is 0.02</p>
+</dd>
+<dt><strong>size</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Size of the population to sample</p>
+</dd>
+<dt><strong>**porb_lo</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Lower limit in days for the orbital period distribution</p>
+</dd>
+<dt><strong>**porb_hi: `float`</strong></dt><dd><p>Upper limit in days for the orbital period distribution</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>InitialBinaryTable</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>DataFrame in the format of the InitialBinaryTable</p>
+</dd>
+<dt><strong>mass_singles</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass in single stars needed to generate population</p>
+</dd>
+<dt><strong>mass_binaries</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>Total mass in binaries needed to generate population</p>
+</dd>
+<dt><strong>n_singles</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of single stars needed to generate a population</p>
+</dd>
+<dt><strong>n_binaries</strong><span class="classifier"><cite>int</cite></span></dt><dd><p>Number of binaries needed to generate a population</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.sampler.multidim.register_sampler">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.sampler.multidim.</span></span><span class="sig-name descname"><span class="pre">register_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.sampler.multidim.register_sampler" title="Link to this definition"></a></dt>
+<dd><p>Register a new method to InitialBinaryTable.sampler() for a given format</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data_format</strong><span class="classifier"><cite>str</cite></span></dt><dd><p>name of the format to be registered</p>
+</dd>
+<dt><strong>data_class</strong><span class="classifier"><cite>type</cite></span></dt><dd><p>the class that the sampler returns</p>
+</dd>
+<dt><strong>function</strong><span class="classifier"><cite>callable</cite></span></dt><dd><p>the method to call from <a class="reference internal" href="#cosmic.sample.sampler.multidim.InitialBinaryTable.sampler" title="cosmic.sample.sampler.multidim.InitialBinaryTable.sampler"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InitialBinaryTable.sampler()</span></code></a></p>
+</dd>
+<dt><strong>force</strong><span class="classifier"><cite>bool</cite>, optional</span></dt><dd><p>overwrite existing registration for <code class="docutils literal notranslate"><span class="pre">data_format</span></code> if found,
+default: <cite>False</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

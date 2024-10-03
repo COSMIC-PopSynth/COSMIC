@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.sample.cmc.king.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.sample.cmc.king"><cite>King</cite></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">RK45</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extraneous</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.RK45" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RungeKutta</span></code></p>
+<p>Explicit Runge-Kutta method of order 5(4).</p>
+<p>This uses the Dormand-Prince pair of formulas <a class="reference internal" href="#r48adf5410bc9-1" id="id1">[1]</a>. The error is controlled
+assuming accuracy of the fourth-order method accuracy, but steps are taken
+using the fifth-order accurate formula (local extrapolation is done).
+A quartic interpolation polynomial is used for the dense output <a class="reference internal" href="#r48adf5410bc9-2" id="id2">[2]</a>.</p>
+<p>Can be applied in the complex domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fun</strong><span class="classifier">callable</span></dt><dd><p>Right-hand side of the system. The calling signature is <code class="docutils literal notranslate"><span class="pre">fun(t,</span> <span class="pre">y)</span></code>.
+Here <code class="docutils literal notranslate"><span class="pre">t</span></code> is a scalar, and there are two options for the ndarray <code class="docutils literal notranslate"><span class="pre">y</span></code>:
+It can either have shape (n,); then <code class="docutils literal notranslate"><span class="pre">fun</span></code> must return array_like with
+shape (n,). Alternatively it can have shape (n, k); then <code class="docutils literal notranslate"><span class="pre">fun</span></code>
+must return an array_like with shape (n, k), i.e., each column
+corresponds to a single column in <code class="docutils literal notranslate"><span class="pre">y</span></code>. The choice between the two
+options is determined by <cite>vectorized</cite> argument (see below).</p>
+</dd>
+<dt><strong>t0</strong><span class="classifier">float</span></dt><dd><p>Initial time.</p>
+</dd>
+<dt><strong>y0</strong><span class="classifier">array_like, shape (n,)</span></dt><dd><p>Initial state.</p>
+</dd>
+<dt><strong>t_bound</strong><span class="classifier">float</span></dt><dd><p>Boundary time - the integration won’t continue beyond it. It also
+determines the direction of the integration.</p>
+</dd>
+<dt><strong>first_step</strong><span class="classifier">float or None, optional</span></dt><dd><p>Initial step size. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code> which means that the algorithm
+should choose.</p>
+</dd>
+<dt><strong>max_step</strong><span class="classifier">float, optional</span></dt><dd><p>Maximum allowed step size. Default is np.inf, i.e., the step size is not
+bounded and determined solely by the solver.</p>
+</dd>
+<dt><strong>rtol, atol</strong><span class="classifier">float and array_like, optional</span></dt><dd><p>Relative and absolute tolerances. The solver keeps the local error
+estimates less than <code class="docutils literal notranslate"><span class="pre">atol</span> <span class="pre">+</span> <span class="pre">rtol</span> <span class="pre">*</span> <span class="pre">abs(y)</span></code>. Here <cite>rtol</cite> controls a
+relative accuracy (number of correct digits), while <cite>atol</cite> controls
+absolute accuracy (number of correct decimal places). To achieve the
+desired <cite>rtol</cite>, set <cite>atol</cite> to be smaller than the smallest value that
+can be expected from <code class="docutils literal notranslate"><span class="pre">rtol</span> <span class="pre">*</span> <span class="pre">abs(y)</span></code> so that <cite>rtol</cite> dominates the
+allowable error. If <cite>atol</cite> is larger than <code class="docutils literal notranslate"><span class="pre">rtol</span> <span class="pre">*</span> <span class="pre">abs(y)</span></code> the
+number of correct digits is not guaranteed. Conversely, to achieve the
+desired <cite>atol</cite> set <cite>rtol</cite> such that <code class="docutils literal notranslate"><span class="pre">rtol</span> <span class="pre">*</span> <span class="pre">abs(y)</span></code> is always smaller
+than <cite>atol</cite>. If components of y have different scales, it might be
+beneficial to set different <cite>atol</cite> values for different components by
+passing array_like with shape (n,) for <cite>atol</cite>. Default values are
+1e-3 for <cite>rtol</cite> and 1e-6 for <cite>atol</cite>.</p>
+</dd>
+<dt><strong>vectorized</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether <cite>fun</cite> is implemented in a vectorized fashion. Default is False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Number of equations.</p>
+</dd>
+<dt><strong>status</strong><span class="classifier">string</span></dt><dd><p>Current status of the solver: ‘running’, ‘finished’ or ‘failed’.</p>
+</dd>
+<dt><strong>t_bound</strong><span class="classifier">float</span></dt><dd><p>Boundary time.</p>
+</dd>
+<dt><strong>direction</strong><span class="classifier">float</span></dt><dd><p>Integration direction: +1 or -1.</p>
+</dd>
+<dt><strong>t</strong><span class="classifier">float</span></dt><dd><p>Current time.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">ndarray</span></dt><dd><p>Current state.</p>
+</dd>
+<dt><strong>t_old</strong><span class="classifier">float</span></dt><dd><p>Previous time. None if no steps were made yet.</p>
+</dd>
+<dt><strong>step_size</strong><span class="classifier">float</span></dt><dd><p>Size of the last successful step. None if no steps were made yet.</p>
+</dd>
+<dt><strong>nfev</strong><span class="classifier">int</span></dt><dd><p>Number evaluations of the system’s right-hand side.</p>
+</dd>
+<dt><strong>njev</strong><span class="classifier">int</span></dt><dd><p>Number of evaluations of the Jacobian.
+Is always 0 for this solver as it does not use the Jacobian.</p>
+</dd>
+<dt><strong>nlu</strong><span class="classifier">int</span></dt><dd><p>Number of LU decompositions. Is always 0 for this solver.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r48adf5410bc9-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>J. R. Dormand, P. J. Prince, “A family of embedded Runge-Kutta
+formulae”, Journal of Computational and Applied Mathematics, Vol. 6,
+No. 1, pp. 19-26, 1980.</p>
+</div>
+<div class="citation" id="r48adf5410bc9-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>L. W. Shampine, “Some Practical Runge-Kutta Formulas”, Mathematics
+of Computation,, Vol. 46, No. 173, pp. 135-150, 1986.</p>
+</div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[</span>&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span>&#160; <span class="pre">0.2</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span>&#160; <span class="pre">0.075</span>&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.225</span>&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span>&#160; <span class="pre">0.97777778,</span>&#160; <span class="pre">-3.73333333,</span>&#160;&#160; <span class="pre">3.55555556,</span>&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span>&#160; <span class="pre">2.95259869,</span> <span class="pre">-11.59579332,</span>&#160;&#160; <span class="pre">9.82289285,</span>&#160; <span class="pre">-0.29080933,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span>&#160; <span class="pre">2.84627525,</span> <span class="pre">-10.75757576,</span>&#160;&#160; <span class="pre">8.90642272,</span>&#160;&#160; <span class="pre">0.27840909,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-0.2735313</span> <span class="pre">]])</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.A" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.B">
+<span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([</span> <span class="pre">0.09114583,</span>&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">0.4492363</span> <span class="pre">,</span>&#160; <span class="pre">0.65104167,</span> <span class="pre">-0.32237618,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.13095238])</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.B" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">0.2</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">0.3</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">0.8</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">0.88888889,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">])</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.C" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.E">
+<span class="sig-name descname"><span class="pre">E</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([-0.00123264,</span>&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">0.00425277,</span> <span class="pre">-0.03697917,</span>&#160; <span class="pre">0.0508638</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-0.04190476,</span>&#160; <span class="pre">0.025</span>&#160;&#160;&#160;&#160; <span class="pre">])</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.E" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.P">
+<span class="sig-name descname"><span class="pre">P</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><span class="pre">ndarray</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[</span> <span class="pre">1.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">-2.85358007,</span>&#160; <span class="pre">3.07174346,</span> <span class="pre">-1.12701757],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">4.02313338,</span> <span class="pre">-6.24932157,</span>&#160; <span class="pre">2.67542448],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">-3.73240196,</span> <span class="pre">10.06897059,</span> <span class="pre">-5.68552696],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">2.55480383,</span> <span class="pre">-6.39911238,</span>&#160; <span class="pre">3.52193237],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">-1.37442411,</span>&#160; <span class="pre">3.27265775,</span> <span class="pre">-1.76728126],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span>&#160; <span class="pre">1.38246893,</span> <span class="pre">-3.76493786,</span>&#160; <span class="pre">2.38246893]])</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.P" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.__annotations__">
+<span class="sig-name descname"><span class="pre">__annotations__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'A':</span> <span class="pre">'np.ndarray',</span> <span class="pre">'B':</span> <span class="pre">'np.ndarray',</span> <span class="pre">'C':</span> <span class="pre">'np.ndarray',</span> <span class="pre">'E':</span> <span class="pre">'np.ndarray',</span> <span class="pre">'P':</span> <span class="pre">'np.ndarray',</span> <span class="pre">'error_estimator_order':</span> <span class="pre">'int',</span> <span class="pre">'n_stages':</span> <span class="pre">'int',</span> <span class="pre">'order':</span> <span class="pre">'int'}</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.__annotations__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Explicit</span> <span class="pre">Runge-Kutta</span> <span class="pre">method</span> <span class="pre">of</span> <span class="pre">order</span> <span class="pre">5(4).\n\n</span>&#160;&#160;&#160; <span class="pre">This</span> <span class="pre">uses</span> <span class="pre">the</span> <span class="pre">Dormand-Prince</span> <span class="pre">pair</span> <span class="pre">of</span> <span class="pre">formulas</span> <span class="pre">[1]_.</span> <span class="pre">The</span> <span class="pre">error</span> <span class="pre">is</span> <span class="pre">controlled\n</span>&#160;&#160;&#160; <span class="pre">assuming</span> <span class="pre">accuracy</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">fourth-order</span> <span class="pre">method</span> <span class="pre">accuracy,</span> <span class="pre">but</span> <span class="pre">steps</span> <span class="pre">are</span> <span class="pre">taken\n</span>&#160;&#160;&#160; <span class="pre">using</span> <span class="pre">the</span> <span class="pre">fifth-order</span> <span class="pre">accurate</span> <span class="pre">formula</span> <span class="pre">(local</span> <span class="pre">extrapolation</span> <span class="pre">is</span> <span class="pre">done).\n</span>&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">quartic</span> <span class="pre">interpolation</span> <span class="pre">polynomial</span> <span class="pre">is</span> <span class="pre">used</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">dense</span> <span class="pre">output</span> <span class="pre">[2]_.\n\n</span>&#160;&#160;&#160; <span class="pre">Can</span> <span class="pre">be</span> <span class="pre">applied</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">complex</span> <span class="pre">domain.\n\n</span>&#160;&#160;&#160; <span class="pre">Parameters\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">fun</span> <span class="pre">:</span> <span class="pre">callable\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Right-hand</span> <span class="pre">side</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">system.</span> <span class="pre">The</span> <span class="pre">calling</span> <span class="pre">signature</span> <span class="pre">is</span> <span class="pre">``fun(t,</span> <span class="pre">y)``.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Here</span> <span class="pre">``t``</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">scalar,</span> <span class="pre">and</span> <span class="pre">there</span> <span class="pre">are</span> <span class="pre">two</span> <span class="pre">options</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">ndarray</span> <span class="pre">``y``:\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">It</span> <span class="pre">can</span> <span class="pre">either</span> <span class="pre">have</span> <span class="pre">shape</span> <span class="pre">(n,);</span> <span class="pre">then</span> <span class="pre">``fun``</span> <span class="pre">must</span> <span class="pre">return</span> <span class="pre">array_like</span> <span class="pre">with\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">shape</span> <span class="pre">(n,).</span> <span class="pre">Alternatively</span> <span class="pre">it</span> <span class="pre">can</span> <span class="pre">have</span> <span class="pre">shape</span> <span class="pre">(n,</span> <span class="pre">k);</span> <span class="pre">then</span> <span class="pre">``fun``\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">must</span> <span class="pre">return</span> <span class="pre">an</span> <span class="pre">array_like</span> <span class="pre">with</span> <span class="pre">shape</span> <span class="pre">(n,</span> <span class="pre">k),</span> <span class="pre">i.e.,</span> <span class="pre">each</span> <span class="pre">column\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">corresponds</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">column</span> <span class="pre">in</span> <span class="pre">``y``.</span> <span class="pre">The</span> <span class="pre">choice</span> <span class="pre">between</span> <span class="pre">the</span> <span class="pre">two\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">options</span> <span class="pre">is</span> <span class="pre">determined</span> <span class="pre">by</span> <span class="pre">`vectorized`</span> <span class="pre">argument</span> <span class="pre">(see</span> <span class="pre">below).\n</span>&#160;&#160;&#160; <span class="pre">t0</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Initial</span> <span class="pre">time.\n</span>&#160;&#160;&#160; <span class="pre">y0</span> <span class="pre">:</span> <span class="pre">array_like,</span> <span class="pre">shape</span> <span class="pre">(n,)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Initial</span> <span class="pre">state.\n</span>&#160;&#160;&#160; <span class="pre">t_bound</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Boundary</span> <span class="pre">time</span> <span class="pre">-</span> <span class="pre">the</span> <span class="pre">integration</span> <span class="pre">won\'t</span> <span class="pre">continue</span> <span class="pre">beyond</span> <span class="pre">it.</span> <span class="pre">It</span> <span class="pre">also\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">determines</span> <span class="pre">the</span> <span class="pre">direction</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">integration.\n</span>&#160;&#160;&#160; <span class="pre">first_step</span> <span class="pre">:</span> <span class="pre">float</span> <span class="pre">or</span> <span class="pre">None,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Initial</span> <span class="pre">step</span> <span class="pre">size.</span> <span class="pre">Default</span> <span class="pre">is</span> <span class="pre">``None``</span> <span class="pre">which</span> <span class="pre">means</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">algorithm\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">should</span> <span class="pre">choose.\n</span>&#160;&#160;&#160; <span class="pre">max_step</span> <span class="pre">:</span> <span class="pre">float,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Maximum</span> <span class="pre">allowed</span> <span class="pre">step</span> <span class="pre">size.</span> <span class="pre">Default</span> <span class="pre">is</span> <span class="pre">np.inf,</span> <span class="pre">i.e.,</span> <span class="pre">the</span> <span class="pre">step</span> <span class="pre">size</span> <span class="pre">is</span> <span class="pre">not\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">bounded</span> <span class="pre">and</span> <span class="pre">determined</span> <span class="pre">solely</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">solver.\n</span>&#160;&#160;&#160; <span class="pre">rtol,</span> <span class="pre">atol</span> <span class="pre">:</span> <span class="pre">float</span> <span class="pre">and</span> <span class="pre">array_like,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Relative</span> <span class="pre">and</span> <span class="pre">absolute</span> <span class="pre">tolerances.</span> <span class="pre">The</span> <span class="pre">solver</span> <span class="pre">keeps</span> <span class="pre">the</span> <span class="pre">local</span> <span class="pre">error\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">estimates</span> <span class="pre">less</span> <span class="pre">than</span> <span class="pre">``atol</span> <span class="pre">+</span> <span class="pre">rtol</span> <span class="pre">*</span> <span class="pre">abs(y)``.</span> <span class="pre">Here</span> <span class="pre">`rtol`</span> <span class="pre">controls</span> <span class="pre">a\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">relative</span> <span class="pre">accuracy</span> <span class="pre">(number</span> <span class="pre">of</span> <span class="pre">correct</span> <span class="pre">digits),</span> <span class="pre">while</span> <span class="pre">`atol`</span> <span class="pre">controls\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">absolute</span> <span class="pre">accuracy</span> <span class="pre">(number</span> <span class="pre">of</span> <span class="pre">correct</span> <span class="pre">decimal</span> <span class="pre">places).</span> <span class="pre">To</span> <span class="pre">achieve</span> <span class="pre">the\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">desired</span> <span class="pre">`rtol`,</span> <span class="pre">set</span> <span class="pre">`atol`</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">smaller</span> <span class="pre">than</span> <span class="pre">the</span> <span class="pre">smallest</span> <span class="pre">value</span> <span class="pre">that\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">can</span> <span class="pre">be</span> <span class="pre">expected</span> <span class="pre">from</span> <span class="pre">``rtol</span> <span class="pre">*</span> <span class="pre">abs(y)``</span> <span class="pre">so</span> <span class="pre">that</span> <span class="pre">`rtol`</span> <span class="pre">dominates</span> <span class="pre">the\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">allowable</span> <span class="pre">error.</span> <span class="pre">If</span> <span class="pre">`atol`</span> <span class="pre">is</span> <span class="pre">larger</span> <span class="pre">than</span> <span class="pre">``rtol</span> <span class="pre">*</span> <span class="pre">abs(y)``</span> <span class="pre">the\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">number</span> <span class="pre">of</span> <span class="pre">correct</span> <span class="pre">digits</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">guaranteed.</span> <span class="pre">Conversely,</span> <span class="pre">to</span> <span class="pre">achieve</span> <span class="pre">the\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">desired</span> <span class="pre">`atol`</span> <span class="pre">set</span> <span class="pre">`rtol`</span> <span class="pre">such</span> <span class="pre">that</span> <span class="pre">``rtol</span> <span class="pre">*</span> <span class="pre">abs(y)``</span> <span class="pre">is</span> <span class="pre">always</span> <span class="pre">smaller\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">than</span> <span class="pre">`atol`.</span> <span class="pre">If</span> <span class="pre">components</span> <span class="pre">of</span> <span class="pre">y</span> <span class="pre">have</span> <span class="pre">different</span> <span class="pre">scales,</span> <span class="pre">it</span> <span class="pre">might</span> <span class="pre">be\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">beneficial</span> <span class="pre">to</span> <span class="pre">set</span> <span class="pre">different</span> <span class="pre">`atol`</span> <span class="pre">values</span> <span class="pre">for</span> <span class="pre">different</span> <span class="pre">components</span> <span class="pre">by\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">passing</span> <span class="pre">array_like</span> <span class="pre">with</span> <span class="pre">shape</span> <span class="pre">(n,)</span> <span class="pre">for</span> <span class="pre">`atol`.</span> <span class="pre">Default</span> <span class="pre">values</span> <span class="pre">are\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1e-3</span> <span class="pre">for</span> <span class="pre">`rtol`</span> <span class="pre">and</span> <span class="pre">1e-6</span> <span class="pre">for</span> <span class="pre">`atol`.\n</span>&#160;&#160;&#160; <span class="pre">vectorized</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Whether</span> <span class="pre">`fun`</span> <span class="pre">is</span> <span class="pre">implemented</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">vectorized</span> <span class="pre">fashion.</span> <span class="pre">Default</span> <span class="pre">is</span> <span class="pre">False.\n\n</span>&#160;&#160;&#160; <span class="pre">Attributes\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">n</span> <span class="pre">:</span> <span class="pre">int\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">equations.\n</span>&#160;&#160;&#160; <span class="pre">status</span> <span class="pre">:</span> <span class="pre">string\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Current</span> <span class="pre">status</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">solver:</span> <span class="pre">\'running\',</span> <span class="pre">\'finished\'</span> <span class="pre">or</span> <span class="pre">\'failed\'.\n</span>&#160;&#160;&#160; <span class="pre">t_bound</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Boundary</span> <span class="pre">time.\n</span>&#160;&#160;&#160; <span class="pre">direction</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Integration</span> <span class="pre">direction:</span> <span class="pre">+1</span> <span class="pre">or</span> <span class="pre">-1.\n</span>&#160;&#160;&#160; <span class="pre">t</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Current</span> <span class="pre">time.\n</span>&#160;&#160;&#160; <span class="pre">y</span> <span class="pre">:</span> <span class="pre">ndarray\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Current</span> <span class="pre">state.\n</span>&#160;&#160;&#160; <span class="pre">t_old</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Previous</span> <span class="pre">time.</span> <span class="pre">None</span> <span class="pre">if</span> <span class="pre">no</span> <span class="pre">steps</span> <span class="pre">were</span> <span class="pre">made</span> <span class="pre">yet.\n</span>&#160;&#160;&#160; <span class="pre">step_size</span> <span class="pre">:</span> <span class="pre">float\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Size</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">last</span> <span class="pre">successful</span> <span class="pre">step.</span> <span class="pre">None</span> <span class="pre">if</span> <span class="pre">no</span> <span class="pre">steps</span> <span class="pre">were</span> <span class="pre">made</span> <span class="pre">yet.\n</span>&#160;&#160;&#160; <span class="pre">nfev</span> <span class="pre">:</span> <span class="pre">int\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Number</span> <span class="pre">evaluations</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">system\'s</span> <span class="pre">right-hand</span> <span class="pre">side.\n</span>&#160;&#160;&#160; <span class="pre">njev</span> <span class="pre">:</span> <span class="pre">int\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">evaluations</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">Jacobian.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Is</span> <span class="pre">always</span> <span class="pre">0</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">solver</span> <span class="pre">as</span> <span class="pre">it</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">use</span> <span class="pre">the</span> <span class="pre">Jacobian.\n</span>&#160;&#160;&#160; <span class="pre">nlu</span> <span class="pre">:</span> <span class="pre">int\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Number</span> <span class="pre">of</span> <span class="pre">LU</span> <span class="pre">decompositions.</span> <span class="pre">Is</span> <span class="pre">always</span> <span class="pre">0</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">solver.\n\n</span>&#160;&#160;&#160; <span class="pre">References\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">[1]</span> <span class="pre">J.</span> <span class="pre">R.</span> <span class="pre">Dormand,</span> <span class="pre">P.</span> <span class="pre">J.</span> <span class="pre">Prince,</span> <span class="pre">&quot;A</span> <span class="pre">family</span> <span class="pre">of</span> <span class="pre">embedded</span> <span class="pre">Runge-Kutta\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">formulae&quot;,</span> <span class="pre">Journal</span> <span class="pre">of</span> <span class="pre">Computational</span> <span class="pre">and</span> <span class="pre">Applied</span> <span class="pre">Mathematics,</span> <span class="pre">Vol.</span> <span class="pre">6,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">No.</span> <span class="pre">1,</span> <span class="pre">pp.</span> <span class="pre">19-26,</span> <span class="pre">1980.\n</span>&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">[2]</span> <span class="pre">L.</span> <span class="pre">W.</span> <span class="pre">Shampine,</span> <span class="pre">&quot;Some</span> <span class="pre">Practical</span> <span class="pre">Runge-Kutta</span> <span class="pre">Formulas&quot;,</span> <span class="pre">Mathematics\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">of</span> <span class="pre">Computation,,</span> <span class="pre">Vol.</span> <span class="pre">46,</span> <span class="pre">No.</span> <span class="pre">173,</span> <span class="pre">pp.</span> <span class="pre">135-150,</span> <span class="pre">1986.\n</span>&#160;&#160;&#160; <span class="pre">'</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'scipy.integrate._ivp.rk'</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.error_estimator_order">
+<span class="sig-name descname"><span class="pre">error_estimator_order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.error_estimator_order" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.n_stages">
+<span class="sig-name descname"><span class="pre">n_stages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.n_stages" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.RK45.order">
+<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.RK45.order" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.calc_rho">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">calc_rho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.calc_rho" title="Link to this definition"></a></dt>
+<dd><p>Returns the density (unnormalized) given w = psi/sigma^2
+Note that w(0) = w_0, the main parameter of a King profile</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.cumulative_trapezoid">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">cumulative_trapezoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.cumulative_trapezoid" title="Link to this definition"></a></dt>
+<dd><p>Cumulatively integrate y(x) using the composite trapezoidal rule.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>Values to integrate.</p>
+</dd>
+<dt><strong>x</strong><span class="classifier">array_like, optional</span></dt><dd><p>The coordinate to integrate along. If None (default), use spacing <cite>dx</cite>
+between consecutive elements in <cite>y</cite>.</p>
+</dd>
+<dt><strong>dx</strong><span class="classifier">float, optional</span></dt><dd><p>Spacing between elements of <cite>y</cite>. Only used if <cite>x</cite> is None.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">int, optional</span></dt><dd><p>Specifies the axis to cumulate. Default is -1 (last axis).</p>
+</dd>
+<dt><strong>initial</strong><span class="classifier">scalar, optional</span></dt><dd><p>If given, insert this value at the beginning of the returned result.
+0 or None are the only values accepted. Default is None, which means
+<cite>res</cite> has one element less than <cite>y</cite> along the axis of integration.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.12.0: </span>The option for non-zero inputs for <cite>initial</cite> will be deprecated in
+SciPy 1.15.0. After this time, a ValueError will be raised if
+<cite>initial</cite> is not None or 0.</p>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>res</strong><span class="classifier">ndarray</span></dt><dd><p>The result of cumulative integration of <cite>y</cite> along <cite>axis</cite>.
+If <cite>initial</cite> is None, the shape is such that the axis of integration
+has one less value than <cite>y</cite>. If <cite>initial</cite> is given, the shape is equal
+to that of <cite>y</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html#numpy.cumsum" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cumsum</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cumprod.html#numpy.cumprod" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cumprod</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_simpson</span></code></dt><dd><p>cumulative integration using Simpson’s 1/3 rule</p>
+</dd>
+<dt><a class="reference internal" href="#cosmic.sample.cmc.king.quad" title="cosmic.sample.cmc.king.quad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quad</span></code></a></dt><dd><p>adaptive quadrature using QUADPACK</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixed_quad</span></code></dt><dd><p>fixed-order Gaussian quadrature</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dblquad</span></code></dt><dd><p>double integrals</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">tplquad</span></code></dt><dd><p>triple integrals</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">romb</span></code></dt><dd><p>integrators for sampled data</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/28df02138d3c4ff463278474666fdfaa/cosmic-sample-cmc-king-1.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/22b309dfafc5e63b67c6440c3b9601db/cosmic-sample-cmc-king-1.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/bbeb5cdf299418baaf2302ac0d75e241/cosmic-sample-cmc-king-1.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/f36f6df4fe4f664fbf37bd564cc75abd/cosmic-sample-cmc-king-1.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/cosmic-sample-cmc-king-1.png" class="plot-directive" src="../_images/cosmic-sample-cmc-king-1.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.draw_r_vr_vt">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">draw_r_vr_vt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tidal_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.draw_r_vr_vt" title="Link to this definition"></a></dt>
+<dd><p>Draw random velocities and positions from the King profile.</p>
+<p>N              = number of stars
+w_0            = King concentration parameter (-psi/sigma^2) 
+tidal_boundary = ratio of rho/rho_0 where we truncate the tidal boundary</p>
+<p>returns (vr,vt,r) in G=M_cluster=1 units</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.find_sigma_sqr">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">find_sigma_sqr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_enclosed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.find_sigma_sqr" title="Link to this definition"></a></dt>
+<dd><p>Find the 1D velocity dispersion at a given radius r using one of the
+spherial Jeans equations (and assuming velocity is isotropic)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.get_positions">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">get_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_enclosed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.get_positions" title="Link to this definition"></a></dt>
+<dd><p>This one’s easy: the mass enclosed function is just the CDF of the mass
+density, so just invert that, and you’ve got positions.</p>
+<p>Note that here we’ve already normalized M_enclosed to 1 at r_tidal</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.get_velocities">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">get_velocities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi_profile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_enclosed_profile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.get_velocities" title="Link to this definition"></a></dt>
+<dd><p>The correct way to generate velocities: start from the distribution function
+and use rejection sampling.</p>
+<p>returns (vr,vt) with same length as r</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.integrate_king_profile">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">integrate_king_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tidal_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.integrate_king_profile" title="Link to this definition"></a></dt>
+<dd><p>Integrate a King Profile of a given w_0 until the density (or phi/sigma^2) 
+drops below tidal_boundary limit (1e-8 times the central density by default)</p>
+<p>Let’s define some things:
+The King potential is often expressed in terms of w = psi / sigma^2 (psi is phi0 - phi, so just positive potential)
+(note that sigma is the central velocity dispersion with an infinitely deep potential, and close otherwise)</p>
+<p>in the center, w_0 = psi_0 / sigma^2 (the free parameter of the King profile)</p>
+<p>The core radius is defined (King 1966) as r_c = sqrt(9 * sigma^2 / (4 pi G rho_0))</p>
+<dl class="simple">
+<dt>If we define new scaled quantities</dt><dd><p>r_tilda = r/r_c
+rho_tilda = rho/rho_o</p>
+</dd>
+<dt>We can rewrite Poisson’s equation, (1/r^2) d/dr (r^2 dphi/dr)  =  4 pi G rho as:</dt><dd><p>d^2(r_tilda w)/dr_tilda^2 = 9 r_tilda rho_tilda</p>
+</dd>
+</dl>
+<p>After that, all we need is initial conditions:
+w(0) = w_0
+w’(0) = 0</p>
+<p>returns (radii, rho, phi, M_enclosed)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">interp1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_Interpolator1D</span></code></p>
+<p>Interpolate a 1-D function.</p>
+<p><cite>x</cite> and <cite>y</cite> are arrays of values used to approximate some function f:
+<code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">f(x)</span></code>. This class returns a function whose call method uses
+interpolation to find the value of new points.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier">(npoints, ) array_like</span></dt><dd><p>A 1-D array of real values.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">(…, npoints, …) array_like</span></dt><dd><p>A N-D array of real values. The length of <cite>y</cite> along the interpolation
+axis must be equal to the length of <cite>x</cite>. Use the <code class="docutils literal notranslate"><span class="pre">axis</span></code> parameter
+to select correct axis. Unlike other interpolators, the default
+interpolation axis is the last axis of <cite>y</cite>.</p>
+</dd>
+<dt><strong>kind</strong><span class="classifier">str or int, optional</span></dt><dd><p>Specifies the kind of interpolation as a string or as an integer
+specifying the order of the spline interpolator to use.
+The string has to be one of ‘linear’, ‘nearest’, ‘nearest-up’, ‘zero’,
+‘slinear’, ‘quadratic’, ‘cubic’, ‘previous’, or ‘next’. ‘zero’,
+‘slinear’, ‘quadratic’ and ‘cubic’ refer to a spline interpolation of
+zeroth, first, second or third order; ‘previous’ and ‘next’ simply
+return the previous or next value of the point; ‘nearest-up’ and
+‘nearest’ differ when interpolating half-integers (e.g. 0.5, 1.5)
+in that ‘nearest-up’ rounds up and ‘nearest’ rounds down. Default
+is ‘linear’.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">int, optional</span></dt><dd><p>Axis in the <code class="docutils literal notranslate"><span class="pre">y</span></code> array corresponding to the x-coordinate values. Unlike
+other interpolators, defaults to <code class="docutils literal notranslate"><span class="pre">axis=-1</span></code>.</p>
+</dd>
+<dt><strong>copy</strong><span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the class makes internal copies of x and y. If <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+references to <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are used if possible. The default is to copy.</p>
+</dd>
+<dt><strong>bounds_error</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, a ValueError is raised any time interpolation is attempted on
+a value outside of the range of x (where extrapolation is
+necessary). If False, out of bounds values are assigned <cite>fill_value</cite>.
+By default, an error is raised unless <code class="docutils literal notranslate"><span class="pre">fill_value=&quot;extrapolate&quot;</span></code>.</p>
+</dd>
+<dt><strong>fill_value</strong><span class="classifier">array-like or (array-like, array_like) or “extrapolate”, optional</span></dt><dd><ul>
+<li><p>if a ndarray (or float), this value will be used to fill in for
+requested points outside of the data range. If not provided, then
+the default is NaN. The array-like must broadcast properly to the
+dimensions of the non-interpolation axes.</p></li>
+<li><p>If a two-element tuple, then the first element is used as a
+fill value for <code class="docutils literal notranslate"><span class="pre">x_new</span> <span class="pre">&lt;</span> <span class="pre">x[0]</span></code> and the second element is used for
+<code class="docutils literal notranslate"><span class="pre">x_new</span> <span class="pre">&gt;</span> <span class="pre">x[-1]</span></code>. Anything that is not a 2-element tuple (e.g.,
+list or ndarray, regardless of shape) is taken to be a single
+array-like argument meant to be used for both bounds as
+<code class="docutils literal notranslate"><span class="pre">below,</span> <span class="pre">above</span> <span class="pre">=</span> <span class="pre">fill_value,</span> <span class="pre">fill_value</span></code>. Using a two-element tuple
+or ndarray requires <code class="docutils literal notranslate"><span class="pre">bounds_error=False</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.17.0.</span></p>
+</div>
+</li>
+<li><p>If “extrapolate”, then points outside the data range will be
+extrapolated.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.17.0.</span></p>
+</div>
+</li>
+</ul>
+</dd>
+<dt><strong>assume_sorted</strong><span class="classifier">bool, optional</span></dt><dd><p>If False, values of <cite>x</cite> can be in any order and they are sorted first.
+If True, <cite>x</cite> has to be an array of monotonically increasing values.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#cosmic.sample.cmc.king.interp1d.fill_value" title="cosmic.sample.cmc.king.interp1d.fill_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_value</span></code></a></dt><dd><p>The fill value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(x)</p></td>
+<td><p>Evaluate the interpolant</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">splrep</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">splev</span></code></dt><dd><p>Spline interpolation/smoothing based on FITPACK.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnivariateSpline</span></code></dt><dd><p>An object-oriented wrapper of the FITPACK routines.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">interp2d</span></code></dt><dd><p>2-D interpolation</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Calling <cite>interp1d</cite> with NaNs present in input values results in
+undefined behaviour.</p>
+<p>Input values <cite>x</cite> and <cite>y</cite> must be convertible to <cite>float</cite> values like
+<cite>int</cite> or <cite>float</cite>.</p>
+<p>If the values in <cite>x</cite> are not unique, the resulting behavior is
+undefined and specific to the choice of <cite>kind</cite>, i.e., changing
+<cite>kind</cite> will change the behavior for duplicates.</p>
+<p class="rubric">Examples</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/0577541cb595783e54eb0e4f12517e99/cosmic-sample-cmc-king-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/7fe79552363665f2ad8b4889f71731d5/cosmic-sample-cmc-king-2.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/5224c796b8c375ab7e043843e7d1096d/cosmic-sample-cmc-king-2.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/35f062d3649fbf7475297560ea9b08ab/cosmic-sample-cmc-king-2.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/cosmic-sample-cmc-king-2.png" class="plot-directive" src="../_images/cosmic-sample-cmc-king-2.png" />
+</figure>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'scipy.interpolate._interpolate',</span> <span class="pre">'__doc__':</span> <span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">Interpolate</span> <span class="pre">a</span> <span class="pre">1-D</span> <span class="pre">function.\n\n</span>&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">legacy::</span> <span class="pre">class\n\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">For</span> <span class="pre">a</span> <span class="pre">guide</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">intended</span> <span class="pre">replacements</span> <span class="pre">for</span> <span class="pre">`interp1d`</span> <span class="pre">see\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">:ref:`tutorial-interpolate_1Dsection`.\n\n</span>&#160;&#160;&#160; <span class="pre">`x`</span> <span class="pre">and</span> <span class="pre">`y`</span> <span class="pre">are</span> <span class="pre">arrays</span> <span class="pre">of</span> <span class="pre">values</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">approximate</span> <span class="pre">some</span> <span class="pre">function</span> <span class="pre">f:\n</span>&#160;&#160;&#160; <span class="pre">``y</span> <span class="pre">=</span> <span class="pre">f(x)``.</span> <span class="pre">This</span> <span class="pre">class</span> <span class="pre">returns</span> <span class="pre">a</span> <span class="pre">function</span> <span class="pre">whose</span> <span class="pre">call</span> <span class="pre">method</span> <span class="pre">uses\n</span>&#160;&#160;&#160; <span class="pre">interpolation</span> <span class="pre">to</span> <span class="pre">find</span> <span class="pre">the</span> <span class="pre">value</span> <span class="pre">of</span> <span class="pre">new</span> <span class="pre">points.\n\n</span>&#160;&#160;&#160; <span class="pre">Parameters\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">x</span> <span class="pre">:</span> <span class="pre">(npoints,</span> <span class="pre">)</span> <span class="pre">array_like\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">1-D</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">real</span> <span class="pre">values.\n</span>&#160;&#160;&#160; <span class="pre">y</span> <span class="pre">:</span> <span class="pre">(...,</span> <span class="pre">npoints,</span> <span class="pre">...)</span> <span class="pre">array_like\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">N-D</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">real</span> <span class="pre">values.</span> <span class="pre">The</span> <span class="pre">length</span> <span class="pre">of</span> <span class="pre">`y`</span> <span class="pre">along</span> <span class="pre">the</span> <span class="pre">interpolation\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">axis</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">equal</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">length</span> <span class="pre">of</span> <span class="pre">`x`.</span> <span class="pre">Use</span> <span class="pre">the</span> <span class="pre">``axis``</span> <span class="pre">parameter\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">to</span> <span class="pre">select</span> <span class="pre">correct</span> <span class="pre">axis.</span> <span class="pre">Unlike</span> <span class="pre">other</span> <span class="pre">interpolators,</span> <span class="pre">the</span> <span class="pre">default\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">interpolation</span> <span class="pre">axis</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">last</span> <span class="pre">axis</span> <span class="pre">of</span> <span class="pre">`y`.\n</span>&#160;&#160;&#160; <span class="pre">kind</span> <span class="pre">:</span> <span class="pre">str</span> <span class="pre">or</span> <span class="pre">int,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Specifies</span> <span class="pre">the</span> <span class="pre">kind</span> <span class="pre">of</span> <span class="pre">interpolation</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">string</span> <span class="pre">or</span> <span class="pre">as</span> <span class="pre">an</span> <span class="pre">integer\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">specifying</span> <span class="pre">the</span> <span class="pre">order</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">spline</span> <span class="pre">interpolator</span> <span class="pre">to</span> <span class="pre">use.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">The</span> <span class="pre">string</span> <span class="pre">has</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">\'linear\',</span> <span class="pre">\'nearest\',</span> <span class="pre">\'nearest-up\',</span> <span class="pre">\'zero\',\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\'slinear\',</span> <span class="pre">\'quadratic\',</span> <span class="pre">\'cubic\',</span> <span class="pre">\'previous\',</span> <span class="pre">or</span> <span class="pre">\'next\'.</span> <span class="pre">\'zero\',\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\'slinear\',</span> <span class="pre">\'quadratic\'</span> <span class="pre">and</span> <span class="pre">\'cubic\'</span> <span class="pre">refer</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">spline</span> <span class="pre">interpolation</span> <span class="pre">of\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">zeroth,</span> <span class="pre">first,</span> <span class="pre">second</span> <span class="pre">or</span> <span class="pre">third</span> <span class="pre">order;</span> <span class="pre">\'previous\'</span> <span class="pre">and</span> <span class="pre">\'next\'</span> <span class="pre">simply\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">return</span> <span class="pre">the</span> <span class="pre">previous</span> <span class="pre">or</span> <span class="pre">next</span> <span class="pre">value</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">point;</span> <span class="pre">\'nearest-up\'</span> <span class="pre">and\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\'nearest\'</span> <span class="pre">differ</span> <span class="pre">when</span> <span class="pre">interpolating</span> <span class="pre">half-integers</span> <span class="pre">(e.g.</span> <span class="pre">0.5,</span> <span class="pre">1.5)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">in</span> <span class="pre">that</span> <span class="pre">\'nearest-up\'</span> <span class="pre">rounds</span> <span class="pre">up</span> <span class="pre">and</span> <span class="pre">\'nearest\'</span> <span class="pre">rounds</span> <span class="pre">down.</span> <span class="pre">Default\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">is</span> <span class="pre">\'linear\'.\n</span>&#160;&#160;&#160; <span class="pre">axis</span> <span class="pre">:</span> <span class="pre">int,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Axis</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">``y``</span> <span class="pre">array</span> <span class="pre">corresponding</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">x-coordinate</span> <span class="pre">values.</span> <span class="pre">Unlike\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">other</span> <span class="pre">interpolators,</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">``axis=-1``.\n</span>&#160;&#160;&#160; <span class="pre">copy</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">``True``,</span> <span class="pre">the</span> <span class="pre">class</span> <span class="pre">makes</span> <span class="pre">internal</span> <span class="pre">copies</span> <span class="pre">of</span> <span class="pre">x</span> <span class="pre">and</span> <span class="pre">y.</span> <span class="pre">If</span> <span class="pre">``False``,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">references</span> <span class="pre">to</span> <span class="pre">``x``</span> <span class="pre">and</span> <span class="pre">``y``</span> <span class="pre">are</span> <span class="pre">used</span> <span class="pre">if</span> <span class="pre">possible.</span> <span class="pre">The</span> <span class="pre">default</span> <span class="pre">is</span> <span class="pre">to</span> <span class="pre">copy.\n</span>&#160;&#160;&#160; <span class="pre">bounds_error</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">True,</span> <span class="pre">a</span> <span class="pre">ValueError</span> <span class="pre">is</span> <span class="pre">raised</span> <span class="pre">any</span> <span class="pre">time</span> <span class="pre">interpolation</span> <span class="pre">is</span> <span class="pre">attempted</span> <span class="pre">on\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">a</span> <span class="pre">value</span> <span class="pre">outside</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">range</span> <span class="pre">of</span> <span class="pre">x</span> <span class="pre">(where</span> <span class="pre">extrapolation</span> <span class="pre">is\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">necessary).</span> <span class="pre">If</span> <span class="pre">False,</span> <span class="pre">out</span> <span class="pre">of</span> <span class="pre">bounds</span> <span class="pre">values</span> <span class="pre">are</span> <span class="pre">assigned</span> <span class="pre">`fill_value`.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">By</span> <span class="pre">default,</span> <span class="pre">an</span> <span class="pre">error</span> <span class="pre">is</span> <span class="pre">raised</span> <span class="pre">unless</span> <span class="pre">``fill_value=&quot;extrapolate&quot;``.\n</span>&#160;&#160;&#160; <span class="pre">fill_value</span> <span class="pre">:</span> <span class="pre">array-like</span> <span class="pre">or</span> <span class="pre">(array-like,</span> <span class="pre">array_like)</span> <span class="pre">or</span> <span class="pre">&quot;extrapolate&quot;,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">if</span> <span class="pre">a</span> <span class="pre">ndarray</span> <span class="pre">(or</span> <span class="pre">float),</span> <span class="pre">this</span> <span class="pre">value</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">fill</span> <span class="pre">in</span> <span class="pre">for\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">requested</span> <span class="pre">points</span> <span class="pre">outside</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">range.</span> <span class="pre">If</span> <span class="pre">not</span> <span class="pre">provided,</span> <span class="pre">then\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">the</span> <span class="pre">default</span> <span class="pre">is</span> <span class="pre">NaN.</span> <span class="pre">The</span> <span class="pre">array-like</span> <span class="pre">must</span> <span class="pre">broadcast</span> <span class="pre">properly</span> <span class="pre">to</span> <span class="pre">the\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">dimensions</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">non-interpolation</span> <span class="pre">axes.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">If</span> <span class="pre">a</span> <span class="pre">two-element</span> <span class="pre">tuple,</span> <span class="pre">then</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">element</span> <span class="pre">is</span> <span class="pre">used</span> <span class="pre">as</span> <span class="pre">a\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">fill</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">``x_new</span> <span class="pre">&lt;</span> <span class="pre">x[0]``</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">second</span> <span class="pre">element</span> <span class="pre">is</span> <span class="pre">used</span> <span class="pre">for\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``x_new</span> <span class="pre">&gt;</span> <span class="pre">x[-1]``.</span> <span class="pre">Anything</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">2-element</span> <span class="pre">tuple</span> <span class="pre">(e.g.,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">list</span> <span class="pre">or</span> <span class="pre">ndarray,</span> <span class="pre">regardless</span> <span class="pre">of</span> <span class="pre">shape)</span> <span class="pre">is</span> <span class="pre">taken</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">single\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">array-like</span> <span class="pre">argument</span> <span class="pre">meant</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">for</span> <span class="pre">both</span> <span class="pre">bounds</span> <span class="pre">as\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``below,</span> <span class="pre">above</span> <span class="pre">=</span> <span class="pre">fill_value,</span> <span class="pre">fill_value``.</span> <span class="pre">Using</span> <span class="pre">a</span> <span class="pre">two-element</span> <span class="pre">tuple\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">or</span> <span class="pre">ndarray</span> <span class="pre">requires</span> <span class="pre">``bounds_error=False``.\n\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">versionadded::</span> <span class="pre">0.17.0\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">If</span> <span class="pre">&quot;extrapolate&quot;,</span> <span class="pre">then</span> <span class="pre">points</span> <span class="pre">outside</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">range</span> <span class="pre">will</span> <span class="pre">be\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">extrapolated.\n\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">versionadded::</span> <span class="pre">0.17.0\n</span>&#160;&#160;&#160; <span class="pre">assume_sorted</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">False,</span> <span class="pre">values</span> <span class="pre">of</span> <span class="pre">`x`</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">in</span> <span class="pre">any</span> <span class="pre">order</span> <span class="pre">and</span> <span class="pre">they</span> <span class="pre">are</span> <span class="pre">sorted</span> <span class="pre">first.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">True,</span> <span class="pre">`x`</span> <span class="pre">has</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">an</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">monotonically</span> <span class="pre">increasing</span> <span class="pre">values.\n\n</span>&#160;&#160;&#160; <span class="pre">Attributes\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">fill_value\n\n</span>&#160;&#160;&#160; <span class="pre">Methods\n</span>&#160;&#160;&#160; <span class="pre">-------\n</span>&#160;&#160;&#160; <span class="pre">__call__\n\n</span>&#160;&#160;&#160; <span class="pre">See</span> <span class="pre">Also\n</span>&#160;&#160;&#160; <span class="pre">--------\n</span>&#160;&#160;&#160; <span class="pre">splrep,</span> <span class="pre">splev\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Spline</span> <span class="pre">interpolation/smoothing</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">FITPACK.\n</span>&#160;&#160;&#160; <span class="pre">UnivariateSpline</span> <span class="pre">:</span> <span class="pre">An</span> <span class="pre">object-oriented</span> <span class="pre">wrapper</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">FITPACK</span> <span class="pre">routines.\n</span>&#160;&#160;&#160; <span class="pre">interp2d</span> <span class="pre">:</span> <span class="pre">2-D</span> <span class="pre">interpolation\n\n</span>&#160;&#160;&#160; <span class="pre">Notes\n</span>&#160;&#160;&#160; <span class="pre">-----\n</span>&#160;&#160;&#160; <span class="pre">Calling</span> <span class="pre">`interp1d`</span> <span class="pre">with</span> <span class="pre">NaNs</span> <span class="pre">present</span> <span class="pre">in</span> <span class="pre">input</span> <span class="pre">values</span> <span class="pre">results</span> <span class="pre">in\n</span>&#160;&#160;&#160; <span class="pre">undefined</span> <span class="pre">behaviour.\n\n</span>&#160;&#160;&#160; <span class="pre">Input</span> <span class="pre">values</span> <span class="pre">`x`</span> <span class="pre">and</span> <span class="pre">`y`</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">convertible</span> <span class="pre">to</span> <span class="pre">`float`</span> <span class="pre">values</span> <span class="pre">like\n</span>&#160;&#160;&#160; <span class="pre">`int`</span> <span class="pre">or</span> <span class="pre">`float`.\n\n</span>&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">the</span> <span class="pre">values</span> <span class="pre">in</span> <span class="pre">`x`</span> <span class="pre">are</span> <span class="pre">not</span> <span class="pre">unique,</span> <span class="pre">the</span> <span class="pre">resulting</span> <span class="pre">behavior</span> <span class="pre">is\n</span>&#160;&#160;&#160; <span class="pre">undefined</span> <span class="pre">and</span> <span class="pre">specific</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">choice</span> <span class="pre">of</span> <span class="pre">`kind`,</span> <span class="pre">i.e.,</span> <span class="pre">changing\n</span>&#160;&#160;&#160; <span class="pre">`kind`</span> <span class="pre">will</span> <span class="pre">change</span> <span class="pre">the</span> <span class="pre">behavior</span> <span class="pre">for</span> <span class="pre">duplicates.\n\n\n</span>&#160;&#160;&#160; <span class="pre">Examples\n</span>&#160;&#160;&#160; <span class="pre">--------\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">import</span> <span class="pre">numpy</span> <span class="pre">as</span> <span class="pre">np\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">import</span> <span class="pre">matplotlib.pyplot</span> <span class="pre">as</span> <span class="pre">plt\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">from</span> <span class="pre">scipy</span> <span class="pre">import</span> <span class="pre">interpolate\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">np.arange(0,</span> <span class="pre">10)\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">np.exp(-x/3.0)\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">f</span> <span class="pre">=</span> <span class="pre">interpolate.interp1d(x,</span> <span class="pre">y)\n\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">xnew</span> <span class="pre">=</span> <span class="pre">np.arange(0,</span> <span class="pre">9,</span> <span class="pre">0.1)\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">ynew</span> <span class="pre">=</span> <span class="pre">f(xnew)</span>&#160;&#160; <span class="pre">#</span> <span class="pre">use</span> <span class="pre">interpolation</span> <span class="pre">function</span> <span class="pre">returned</span> <span class="pre">by</span> <span class="pre">`interp1d`\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">plt.plot(x,</span> <span class="pre">y,</span> <span class="pre">\'o\',</span> <span class="pre">xnew,</span> <span class="pre">ynew,</span> <span class="pre">\'-\')\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">plt.show()\n</span>&#160;&#160;&#160; <span class="pre">',</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d.__init__&gt;,</span> <span class="pre">'fill_value':</span> <span class="pre">&lt;property</span> <span class="pre">object&gt;,</span> <span class="pre">'_check_and_update_bounds_error_for_extrapolation':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._check_and_update_bounds_error_for_extrapolation&gt;,</span> <span class="pre">'_call_linear_np':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._call_linear_np&gt;,</span> <span class="pre">'_call_linear':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._call_linear&gt;,</span> <span class="pre">'_call_nearest':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._call_nearest&gt;,</span> <span class="pre">'_call_previousnext':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._call_previousnext&gt;,</span> <span class="pre">'_call_spline':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._call_spline&gt;,</span> <span class="pre">'_call_nan_spline':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._call_nan_spline&gt;,</span> <span class="pre">'_evaluate':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._evaluate&gt;,</span> <span class="pre">'_check_bounds':</span> <span class="pre">&lt;function</span> <span class="pre">interp1d._check_bounds&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'interp1d'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'interp1d'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">Interpolate</span> <span class="pre">a</span> <span class="pre">1-D</span> <span class="pre">function.\n\n</span>&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">legacy::</span> <span class="pre">class\n\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">For</span> <span class="pre">a</span> <span class="pre">guide</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">intended</span> <span class="pre">replacements</span> <span class="pre">for</span> <span class="pre">`interp1d`</span> <span class="pre">see\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">:ref:`tutorial-interpolate_1Dsection`.\n\n</span>&#160;&#160;&#160; <span class="pre">`x`</span> <span class="pre">and</span> <span class="pre">`y`</span> <span class="pre">are</span> <span class="pre">arrays</span> <span class="pre">of</span> <span class="pre">values</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">approximate</span> <span class="pre">some</span> <span class="pre">function</span> <span class="pre">f:\n</span>&#160;&#160;&#160; <span class="pre">``y</span> <span class="pre">=</span> <span class="pre">f(x)``.</span> <span class="pre">This</span> <span class="pre">class</span> <span class="pre">returns</span> <span class="pre">a</span> <span class="pre">function</span> <span class="pre">whose</span> <span class="pre">call</span> <span class="pre">method</span> <span class="pre">uses\n</span>&#160;&#160;&#160; <span class="pre">interpolation</span> <span class="pre">to</span> <span class="pre">find</span> <span class="pre">the</span> <span class="pre">value</span> <span class="pre">of</span> <span class="pre">new</span> <span class="pre">points.\n\n</span>&#160;&#160;&#160; <span class="pre">Parameters\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">x</span> <span class="pre">:</span> <span class="pre">(npoints,</span> <span class="pre">)</span> <span class="pre">array_like\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">1-D</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">real</span> <span class="pre">values.\n</span>&#160;&#160;&#160; <span class="pre">y</span> <span class="pre">:</span> <span class="pre">(...,</span> <span class="pre">npoints,</span> <span class="pre">...)</span> <span class="pre">array_like\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">A</span> <span class="pre">N-D</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">real</span> <span class="pre">values.</span> <span class="pre">The</span> <span class="pre">length</span> <span class="pre">of</span> <span class="pre">`y`</span> <span class="pre">along</span> <span class="pre">the</span> <span class="pre">interpolation\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">axis</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">equal</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">length</span> <span class="pre">of</span> <span class="pre">`x`.</span> <span class="pre">Use</span> <span class="pre">the</span> <span class="pre">``axis``</span> <span class="pre">parameter\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">to</span> <span class="pre">select</span> <span class="pre">correct</span> <span class="pre">axis.</span> <span class="pre">Unlike</span> <span class="pre">other</span> <span class="pre">interpolators,</span> <span class="pre">the</span> <span class="pre">default\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">interpolation</span> <span class="pre">axis</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">last</span> <span class="pre">axis</span> <span class="pre">of</span> <span class="pre">`y`.\n</span>&#160;&#160;&#160; <span class="pre">kind</span> <span class="pre">:</span> <span class="pre">str</span> <span class="pre">or</span> <span class="pre">int,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Specifies</span> <span class="pre">the</span> <span class="pre">kind</span> <span class="pre">of</span> <span class="pre">interpolation</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">string</span> <span class="pre">or</span> <span class="pre">as</span> <span class="pre">an</span> <span class="pre">integer\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">specifying</span> <span class="pre">the</span> <span class="pre">order</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">spline</span> <span class="pre">interpolator</span> <span class="pre">to</span> <span class="pre">use.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">The</span> <span class="pre">string</span> <span class="pre">has</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">\'linear\',</span> <span class="pre">\'nearest\',</span> <span class="pre">\'nearest-up\',</span> <span class="pre">\'zero\',\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\'slinear\',</span> <span class="pre">\'quadratic\',</span> <span class="pre">\'cubic\',</span> <span class="pre">\'previous\',</span> <span class="pre">or</span> <span class="pre">\'next\'.</span> <span class="pre">\'zero\',\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\'slinear\',</span> <span class="pre">\'quadratic\'</span> <span class="pre">and</span> <span class="pre">\'cubic\'</span> <span class="pre">refer</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">spline</span> <span class="pre">interpolation</span> <span class="pre">of\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">zeroth,</span> <span class="pre">first,</span> <span class="pre">second</span> <span class="pre">or</span> <span class="pre">third</span> <span class="pre">order;</span> <span class="pre">\'previous\'</span> <span class="pre">and</span> <span class="pre">\'next\'</span> <span class="pre">simply\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">return</span> <span class="pre">the</span> <span class="pre">previous</span> <span class="pre">or</span> <span class="pre">next</span> <span class="pre">value</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">point;</span> <span class="pre">\'nearest-up\'</span> <span class="pre">and\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">\'nearest\'</span> <span class="pre">differ</span> <span class="pre">when</span> <span class="pre">interpolating</span> <span class="pre">half-integers</span> <span class="pre">(e.g.</span> <span class="pre">0.5,</span> <span class="pre">1.5)\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">in</span> <span class="pre">that</span> <span class="pre">\'nearest-up\'</span> <span class="pre">rounds</span> <span class="pre">up</span> <span class="pre">and</span> <span class="pre">\'nearest\'</span> <span class="pre">rounds</span> <span class="pre">down.</span> <span class="pre">Default\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">is</span> <span class="pre">\'linear\'.\n</span>&#160;&#160;&#160; <span class="pre">axis</span> <span class="pre">:</span> <span class="pre">int,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Axis</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">``y``</span> <span class="pre">array</span> <span class="pre">corresponding</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">x-coordinate</span> <span class="pre">values.</span> <span class="pre">Unlike\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">other</span> <span class="pre">interpolators,</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">``axis=-1``.\n</span>&#160;&#160;&#160; <span class="pre">copy</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">``True``,</span> <span class="pre">the</span> <span class="pre">class</span> <span class="pre">makes</span> <span class="pre">internal</span> <span class="pre">copies</span> <span class="pre">of</span> <span class="pre">x</span> <span class="pre">and</span> <span class="pre">y.</span> <span class="pre">If</span> <span class="pre">``False``,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">references</span> <span class="pre">to</span> <span class="pre">``x``</span> <span class="pre">and</span> <span class="pre">``y``</span> <span class="pre">are</span> <span class="pre">used</span> <span class="pre">if</span> <span class="pre">possible.</span> <span class="pre">The</span> <span class="pre">default</span> <span class="pre">is</span> <span class="pre">to</span> <span class="pre">copy.\n</span>&#160;&#160;&#160; <span class="pre">bounds_error</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">True,</span> <span class="pre">a</span> <span class="pre">ValueError</span> <span class="pre">is</span> <span class="pre">raised</span> <span class="pre">any</span> <span class="pre">time</span> <span class="pre">interpolation</span> <span class="pre">is</span> <span class="pre">attempted</span> <span class="pre">on\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">a</span> <span class="pre">value</span> <span class="pre">outside</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">range</span> <span class="pre">of</span> <span class="pre">x</span> <span class="pre">(where</span> <span class="pre">extrapolation</span> <span class="pre">is\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">necessary).</span> <span class="pre">If</span> <span class="pre">False,</span> <span class="pre">out</span> <span class="pre">of</span> <span class="pre">bounds</span> <span class="pre">values</span> <span class="pre">are</span> <span class="pre">assigned</span> <span class="pre">`fill_value`.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">By</span> <span class="pre">default,</span> <span class="pre">an</span> <span class="pre">error</span> <span class="pre">is</span> <span class="pre">raised</span> <span class="pre">unless</span> <span class="pre">``fill_value=&quot;extrapolate&quot;``.\n</span>&#160;&#160;&#160; <span class="pre">fill_value</span> <span class="pre">:</span> <span class="pre">array-like</span> <span class="pre">or</span> <span class="pre">(array-like,</span> <span class="pre">array_like)</span> <span class="pre">or</span> <span class="pre">&quot;extrapolate&quot;,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">if</span> <span class="pre">a</span> <span class="pre">ndarray</span> <span class="pre">(or</span> <span class="pre">float),</span> <span class="pre">this</span> <span class="pre">value</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">fill</span> <span class="pre">in</span> <span class="pre">for\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">requested</span> <span class="pre">points</span> <span class="pre">outside</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">range.</span> <span class="pre">If</span> <span class="pre">not</span> <span class="pre">provided,</span> <span class="pre">then\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">the</span> <span class="pre">default</span> <span class="pre">is</span> <span class="pre">NaN.</span> <span class="pre">The</span> <span class="pre">array-like</span> <span class="pre">must</span> <span class="pre">broadcast</span> <span class="pre">properly</span> <span class="pre">to</span> <span class="pre">the\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">dimensions</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">non-interpolation</span> <span class="pre">axes.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">If</span> <span class="pre">a</span> <span class="pre">two-element</span> <span class="pre">tuple,</span> <span class="pre">then</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">element</span> <span class="pre">is</span> <span class="pre">used</span> <span class="pre">as</span> <span class="pre">a\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">fill</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">``x_new</span> <span class="pre">&lt;</span> <span class="pre">x[0]``</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">second</span> <span class="pre">element</span> <span class="pre">is</span> <span class="pre">used</span> <span class="pre">for\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``x_new</span> <span class="pre">&gt;</span> <span class="pre">x[-1]``.</span> <span class="pre">Anything</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">2-element</span> <span class="pre">tuple</span> <span class="pre">(e.g.,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">list</span> <span class="pre">or</span> <span class="pre">ndarray,</span> <span class="pre">regardless</span> <span class="pre">of</span> <span class="pre">shape)</span> <span class="pre">is</span> <span class="pre">taken</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">single\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">array-like</span> <span class="pre">argument</span> <span class="pre">meant</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">for</span> <span class="pre">both</span> <span class="pre">bounds</span> <span class="pre">as\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">``below,</span> <span class="pre">above</span> <span class="pre">=</span> <span class="pre">fill_value,</span> <span class="pre">fill_value``.</span> <span class="pre">Using</span> <span class="pre">a</span> <span class="pre">two-element</span> <span class="pre">tuple\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">or</span> <span class="pre">ndarray</span> <span class="pre">requires</span> <span class="pre">``bounds_error=False``.\n\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">versionadded::</span> <span class="pre">0.17.0\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">If</span> <span class="pre">&quot;extrapolate&quot;,</span> <span class="pre">then</span> <span class="pre">points</span> <span class="pre">outside</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">range</span> <span class="pre">will</span> <span class="pre">be\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">extrapolated.\n\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">..</span> <span class="pre">versionadded::</span> <span class="pre">0.17.0\n</span>&#160;&#160;&#160; <span class="pre">assume_sorted</span> <span class="pre">:</span> <span class="pre">bool,</span> <span class="pre">optional\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">False,</span> <span class="pre">values</span> <span class="pre">of</span> <span class="pre">`x`</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">in</span> <span class="pre">any</span> <span class="pre">order</span> <span class="pre">and</span> <span class="pre">they</span> <span class="pre">are</span> <span class="pre">sorted</span> <span class="pre">first.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">True,</span> <span class="pre">`x`</span> <span class="pre">has</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">an</span> <span class="pre">array</span> <span class="pre">of</span> <span class="pre">monotonically</span> <span class="pre">increasing</span> <span class="pre">values.\n\n</span>&#160;&#160;&#160; <span class="pre">Attributes\n</span>&#160;&#160;&#160; <span class="pre">----------\n</span>&#160;&#160;&#160; <span class="pre">fill_value\n\n</span>&#160;&#160;&#160; <span class="pre">Methods\n</span>&#160;&#160;&#160; <span class="pre">-------\n</span>&#160;&#160;&#160; <span class="pre">__call__\n\n</span>&#160;&#160;&#160; <span class="pre">See</span> <span class="pre">Also\n</span>&#160;&#160;&#160; <span class="pre">--------\n</span>&#160;&#160;&#160; <span class="pre">splrep,</span> <span class="pre">splev\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Spline</span> <span class="pre">interpolation/smoothing</span> <span class="pre">based</span> <span class="pre">on</span> <span class="pre">FITPACK.\n</span>&#160;&#160;&#160; <span class="pre">UnivariateSpline</span> <span class="pre">:</span> <span class="pre">An</span> <span class="pre">object-oriented</span> <span class="pre">wrapper</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">FITPACK</span> <span class="pre">routines.\n</span>&#160;&#160;&#160; <span class="pre">interp2d</span> <span class="pre">:</span> <span class="pre">2-D</span> <span class="pre">interpolation\n\n</span>&#160;&#160;&#160; <span class="pre">Notes\n</span>&#160;&#160;&#160; <span class="pre">-----\n</span>&#160;&#160;&#160; <span class="pre">Calling</span> <span class="pre">`interp1d`</span> <span class="pre">with</span> <span class="pre">NaNs</span> <span class="pre">present</span> <span class="pre">in</span> <span class="pre">input</span> <span class="pre">values</span> <span class="pre">results</span> <span class="pre">in\n</span>&#160;&#160;&#160; <span class="pre">undefined</span> <span class="pre">behaviour.\n\n</span>&#160;&#160;&#160; <span class="pre">Input</span> <span class="pre">values</span> <span class="pre">`x`</span> <span class="pre">and</span> <span class="pre">`y`</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">convertible</span> <span class="pre">to</span> <span class="pre">`float`</span> <span class="pre">values</span> <span class="pre">like\n</span>&#160;&#160;&#160; <span class="pre">`int`</span> <span class="pre">or</span> <span class="pre">`float`.\n\n</span>&#160;&#160;&#160; <span class="pre">If</span> <span class="pre">the</span> <span class="pre">values</span> <span class="pre">in</span> <span class="pre">`x`</span> <span class="pre">are</span> <span class="pre">not</span> <span class="pre">unique,</span> <span class="pre">the</span> <span class="pre">resulting</span> <span class="pre">behavior</span> <span class="pre">is\n</span>&#160;&#160;&#160; <span class="pre">undefined</span> <span class="pre">and</span> <span class="pre">specific</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">choice</span> <span class="pre">of</span> <span class="pre">`kind`,</span> <span class="pre">i.e.,</span> <span class="pre">changing\n</span>&#160;&#160;&#160; <span class="pre">`kind`</span> <span class="pre">will</span> <span class="pre">change</span> <span class="pre">the</span> <span class="pre">behavior</span> <span class="pre">for</span> <span class="pre">duplicates.\n\n\n</span>&#160;&#160;&#160; <span class="pre">Examples\n</span>&#160;&#160;&#160; <span class="pre">--------\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">import</span> <span class="pre">numpy</span> <span class="pre">as</span> <span class="pre">np\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">import</span> <span class="pre">matplotlib.pyplot</span> <span class="pre">as</span> <span class="pre">plt\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">from</span> <span class="pre">scipy</span> <span class="pre">import</span> <span class="pre">interpolate\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">np.arange(0,</span> <span class="pre">10)\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">np.exp(-x/3.0)\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">f</span> <span class="pre">=</span> <span class="pre">interpolate.interp1d(x,</span> <span class="pre">y)\n\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">xnew</span> <span class="pre">=</span> <span class="pre">np.arange(0,</span> <span class="pre">9,</span> <span class="pre">0.1)\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">ynew</span> <span class="pre">=</span> <span class="pre">f(xnew)</span>&#160;&#160; <span class="pre">#</span> <span class="pre">use</span> <span class="pre">interpolation</span> <span class="pre">function</span> <span class="pre">returned</span> <span class="pre">by</span> <span class="pre">`interp1d`\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">plt.plot(x,</span> <span class="pre">y,</span> <span class="pre">\'o\',</span> <span class="pre">xnew,</span> <span class="pre">ynew,</span> <span class="pre">\'-\')\n</span>&#160;&#160;&#160; <span class="pre">&gt;&gt;&gt;</span> <span class="pre">plt.show()\n</span>&#160;&#160;&#160; <span class="pre">'</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a 1-D linear interpolation class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'scipy.interpolate._interpolate'</span></em><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._call_linear">
+<span class="sig-name descname"><span class="pre">_call_linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._call_linear" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._call_linear_np">
+<span class="sig-name descname"><span class="pre">_call_linear_np</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._call_linear_np" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._call_nan_spline">
+<span class="sig-name descname"><span class="pre">_call_nan_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._call_nan_spline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._call_nearest">
+<span class="sig-name descname"><span class="pre">_call_nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._call_nearest" title="Link to this definition"></a></dt>
+<dd><p>Find nearest neighbor interpolated y_new = f(x_new).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._call_previousnext">
+<span class="sig-name descname"><span class="pre">_call_previousnext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._call_previousnext" title="Link to this definition"></a></dt>
+<dd><p>Use previous/next neighbor of x_new, y_new = f(x_new).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._call_spline">
+<span class="sig-name descname"><span class="pre">_call_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._call_spline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._check_and_update_bounds_error_for_extrapolation">
+<span class="sig-name descname"><span class="pre">_check_and_update_bounds_error_for_extrapolation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._check_and_update_bounds_error_for_extrapolation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._check_bounds">
+<span class="sig-name descname"><span class="pre">_check_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._check_bounds" title="Link to this definition"></a></dt>
+<dd><p>Check the inputs for being in the bounds of the interpolated data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x_new</strong><span class="classifier">array</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out_of_bounds</strong><span class="classifier">bool array</span></dt><dd><p>The mask on x_new of values that are out of the bounds.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._evaluate">
+<span class="sig-name descname"><span class="pre">_evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._evaluate" title="Link to this definition"></a></dt>
+<dd><p>Actually evaluate the value of the interpolator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._y_axis">
+<span class="sig-name descname"><span class="pre">_y_axis</span></span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._y_axis" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d._y_extra_shape">
+<span class="sig-name descname"><span class="pre">_y_extra_shape</span></span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d._y_extra_shape" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.dtype" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.interp1d.fill_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fill_value</span></span><a class="headerlink" href="#cosmic.sample.cmc.king.interp1d.fill_value" title="Link to this definition"></a></dt>
+<dd><p>The fill value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.normal">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.normal" title="Link to this definition"></a></dt>
+<dd><p>Draw random samples from a normal (Gaussian) distribution.</p>
+<p>The probability density function of the normal distribution, first
+derived by De Moivre and 200 years later by both Gauss and Laplace
+independently <a class="reference internal" href="#r154f0d3e6551-2" id="id5">[2]</a>, is often called the bell curve because of
+its characteristic shape (see the example below).</p>
+<p>The normal distributions occurs often in nature.  For example, it
+describes the commonly occurring distribution of samples influenced
+by a large number of tiny, random disturbances, each with its own
+unique distribution <a class="reference internal" href="#r154f0d3e6551-2" id="id6">[2]</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New code should use the <code class="docutils literal notranslate"><span class="pre">normal</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
+instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v2.1)"><span>Quick start</span></a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>loc</strong><span class="classifier">float or array_like of floats</span></dt><dd><p>Mean (“centre”) of the distribution.</p>
+</dd>
+<dt><strong>scale</strong><span class="classifier">float or array_like of floats</span></dt><dd><p>Standard deviation (spread or “width”) of the distribution. Must be
+non-negative.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int or tuple of ints, optional</span></dt><dd><p>Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">loc</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are both scalars.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">np.broadcast(loc,</span> <span class="pre">scale).size</span></code> samples are drawn.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">ndarray or scalar</span></dt><dd><p>Drawn samples from the parameterized normal distribution.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html#scipy.stats.norm" title="(in SciPy v1.14.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.stats.norm</span></code></a></dt><dd><p>probability density function, distribution or cumulative density function, etc.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random.Generator.normal</span></code></dt><dd><p>which should be used for new code.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The probability density for the Gaussian distribution is</p>
+<div class="math">
+<p><span class="math">p(x) = \frac{1}{\sqrt{ 2 \pi \sigma^2 }}
+e^{ - \frac{ (x - \mu)^2 } {2 \sigma^2} },</span></p>
+</div><p>where <span class="math">\mu</span> is the mean and <span class="math">\sigma</span> the standard
+deviation. The square of the standard deviation, <span class="math">\sigma^2</span>,
+is called the variance.</p>
+<p>The function has its peak at the mean, and its “spread” increases with
+the standard deviation (the function reaches 0.607 times its maximum at
+<span class="math">x + \sigma</span> and <span class="math">x - \sigma</span> <a class="reference internal" href="#r154f0d3e6551-2" id="id7">[2]</a>).  This implies that
+normal is more likely to return samples lying close to the mean, rather
+than those far away.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r154f0d3e6551-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Wikipedia, “Normal distribution”,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Normal_distribution">https://en.wikipedia.org/wiki/Normal_distribution</a></p>
+</div>
+<div class="citation" id="r154f0d3e6551-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id6">2</a>,<a role="doc-backlink" href="#id7">3</a>)</span>
+<p>P. R. Peebles Jr., “Central Limit Theorem” in “Probability,
+Random Variables and Random Signal Principles”, 4th ed., 2001,
+pp. 51, 51, 125.</p>
+</div>
+</div>
+<p class="rubric">Examples</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/d78ae4b83f4f8801634c8b6b7bee3113/cosmic-sample-cmc-king-3.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/0ea761b07c6b42cf0e5e4ae11f90aea3/cosmic-sample-cmc-king-3_00_00.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/f15ebce162b1018d48b74ca41d075883/cosmic-sample-cmc-king-3_00_00.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/26fd788a58590ad89376b41861ed38b6/cosmic-sample-cmc-king-3_00_00.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/cosmic-sample-cmc-king-3_00_00.png" class="plot-directive" src="../_images/cosmic-sample-cmc-king-3_00_00.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.quad">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">quad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsabs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.49e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsrel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.49e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wopts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxp1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limlst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complex_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.quad" title="Link to this definition"></a></dt>
+<dd><p>Compute a definite integral.</p>
+<p>Integrate func from <cite>a</cite> to <cite>b</cite> (possibly infinite interval) using a
+technique from the Fortran library QUADPACK.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>func</strong><span class="classifier">{function, scipy.LowLevelCallable}</span></dt><dd><p>A Python function or method to integrate. If <cite>func</cite> takes many
+arguments, it is integrated along the axis corresponding to the
+first argument.</p>
+<p>If the user desires improved integration performance, then <cite>f</cite> may
+be a <cite>scipy.LowLevelCallable</cite> with one of the signatures:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">double</span> <span class="n">func</span><span class="p">(</span><span class="n">double</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">double</span> <span class="n">func</span><span class="p">(</span><span class="n">double</span> <span class="n">x</span><span class="p">,</span> <span class="n">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">)</span>
+<span class="n">double</span> <span class="n">func</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">xx</span><span class="p">)</span>
+<span class="n">double</span> <span class="n">func</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">xx</span><span class="p">,</span> <span class="n">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">user_data</span></code> is the data contained in the <cite>scipy.LowLevelCallable</cite>.
+In the call forms with <code class="docutils literal notranslate"><span class="pre">xx</span></code>,  <code class="docutils literal notranslate"><span class="pre">n</span></code> is the length of the <code class="docutils literal notranslate"><span class="pre">xx</span></code>
+array which contains <code class="docutils literal notranslate"><span class="pre">xx[0]</span> <span class="pre">==</span> <span class="pre">x</span></code> and the rest of the items are
+numbers contained in the <code class="docutils literal notranslate"><span class="pre">args</span></code> argument of quad.</p>
+<p>In addition, certain ctypes call signatures are supported for
+backward compatibility, but those should not be used in new code.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Lower limit of integration (use -numpy.inf for -infinity).</p>
+</dd>
+<dt><strong>b</strong><span class="classifier">float</span></dt><dd><p>Upper limit of integration (use numpy.inf for +infinity).</p>
+</dd>
+<dt><strong>args</strong><span class="classifier">tuple, optional</span></dt><dd><p>Extra arguments to pass to <cite>func</cite>.</p>
+</dd>
+<dt><strong>full_output</strong><span class="classifier">int, optional</span></dt><dd><p>Non-zero to return a dictionary of integration information.
+If non-zero, warning messages are also suppressed and the
+message is appended to the output tuple.</p>
+</dd>
+<dt><strong>complex_func</strong><span class="classifier">bool, optional</span></dt><dd><p>Indicate if the function’s (<cite>func</cite>) return type is real
+(<code class="docutils literal notranslate"><span class="pre">complex_func=False</span></code>: default) or complex (<code class="docutils literal notranslate"><span class="pre">complex_func=True</span></code>).
+In both cases, the function’s argument is real.
+If full_output is also non-zero, the <cite>infodict</cite>, <cite>message</cite>, and
+<cite>explain</cite> for the real and complex components are returned in
+a dictionary with keys “real output” and “imag output”.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">float</span></dt><dd><p>The integral of func from <cite>a</cite> to <cite>b</cite>.</p>
+</dd>
+<dt><strong>abserr</strong><span class="classifier">float</span></dt><dd><p>An estimate of the absolute error in the result.</p>
+</dd>
+<dt><strong>infodict</strong><span class="classifier">dict</span></dt><dd><p>A dictionary containing additional information.</p>
+</dd>
+<dt>message</dt><dd><p>A convergence message.</p>
+</dd>
+<dt>explain</dt><dd><p>Appended only with ‘cos’ or ‘sin’ weighting and infinite
+integration limits, it contains an explanation of the codes in
+infodict[‘ierlst’]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>epsabs</strong><span class="classifier">float or int, optional</span></dt><dd><p>Absolute error tolerance. Default is 1.49e-8. <cite>quad</cite> tries to obtain
+an accuracy of <code class="docutils literal notranslate"><span class="pre">abs(i-result)</span> <span class="pre">&lt;=</span> <span class="pre">max(epsabs,</span> <span class="pre">epsrel*abs(i))</span></code>
+where <code class="docutils literal notranslate"><span class="pre">i</span></code> = integral of <cite>func</cite> from <cite>a</cite> to <cite>b</cite>, and <code class="docutils literal notranslate"><span class="pre">result</span></code> is the
+numerical approximation. See <cite>epsrel</cite> below.</p>
+</dd>
+<dt><strong>epsrel</strong><span class="classifier">float or int, optional</span></dt><dd><p>Relative error tolerance. Default is 1.49e-8.
+If <code class="docutils literal notranslate"><span class="pre">epsabs</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code>, <cite>epsrel</cite> must be greater than both 5e-29
+and <code class="docutils literal notranslate"><span class="pre">50</span> <span class="pre">*</span> <span class="pre">(machine</span> <span class="pre">epsilon)</span></code>. See <cite>epsabs</cite> above.</p>
+</dd>
+<dt><strong>limit</strong><span class="classifier">float or int, optional</span></dt><dd><p>An upper bound on the number of subintervals used in the adaptive
+algorithm.</p>
+</dd>
+<dt><strong>points</strong><span class="classifier">(sequence of floats,ints), optional</span></dt><dd><p>A sequence of break points in the bounded integration interval
+where local difficulties of the integrand may occur (e.g.,
+singularities, discontinuities). The sequence does not have
+to be sorted. Note that this option cannot be used in conjunction
+with <code class="docutils literal notranslate"><span class="pre">weight</span></code>.</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">float or int, optional</span></dt><dd><p>String indicating weighting function. Full explanation for this
+and the remaining arguments can be found below.</p>
+</dd>
+<dt><strong>wvar</strong><span class="classifier">optional</span></dt><dd><p>Variables for use with weighting functions.</p>
+</dd>
+<dt><strong>wopts</strong><span class="classifier">optional</span></dt><dd><p>Optional input for reusing Chebyshev moments.</p>
+</dd>
+<dt><strong>maxp1</strong><span class="classifier">float or int, optional</span></dt><dd><p>An upper bound on the number of Chebyshev moments.</p>
+</dd>
+<dt><strong>limlst</strong><span class="classifier">int, optional</span></dt><dd><p>Upper bound on the number of cycles (&gt;=3) for use with a sinusoidal
+weighting and an infinite end-point.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dblquad</span></code></dt><dd><p>double integral</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">tplquad</span></code></dt><dd><p>triple integral</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">nquad</span></code></dt><dd><p>n-dimensional integrals (uses <cite>quad</cite> recursively)</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixed_quad</span></code></dt><dd><p>fixed-order Gaussian quadrature</p>
+</dd>
+<dt><a class="reference internal" href="#cosmic.sample.cmc.king.simpson" title="cosmic.sample.cmc.king.simpson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpson</span></code></a></dt><dd><p>integrator for sampled data</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">romb</span></code></dt><dd><p>integrator for sampled data</p>
+</dd>
+<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/special.html#module-scipy.special" title="(in SciPy v1.14.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.special</span></code></a></dt><dd><p>for coefficients and roots of orthogonal polynomials</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>For valid results, the integral must converge; behavior for divergent
+integrals is not guaranteed.</p>
+<p><strong>Extra information for quad() inputs and outputs</strong></p>
+<p>If full_output is non-zero, then the third output argument
+(infodict) is a dictionary with entries as tabulated below. For
+infinite limits, the range is transformed to (0,1) and the
+optional outputs are given with respect to this transformed range.
+Let M be the input argument limit and let K be infodict[‘last’].
+The entries are:</p>
+<dl class="simple">
+<dt>‘neval’</dt><dd><p>The number of function evaluations.</p>
+</dd>
+<dt>‘last’</dt><dd><p>The number, K, of subintervals produced in the subdivision process.</p>
+</dd>
+<dt>‘alist’</dt><dd><p>A rank-1 array of length M, the first K elements of which are the
+left end points of the subintervals in the partition of the
+integration range.</p>
+</dd>
+<dt>‘blist’</dt><dd><p>A rank-1 array of length M, the first K elements of which are the
+right end points of the subintervals.</p>
+</dd>
+<dt>‘rlist’</dt><dd><p>A rank-1 array of length M, the first K elements of which are the
+integral approximations on the subintervals.</p>
+</dd>
+<dt>‘elist’</dt><dd><p>A rank-1 array of length M, the first K elements of which are the
+moduli of the absolute error estimates on the subintervals.</p>
+</dd>
+<dt>‘iord’</dt><dd><p>A rank-1 integer array of length M, the first L elements of
+which are pointers to the error estimates over the subintervals
+with <code class="docutils literal notranslate"><span class="pre">L=K</span></code> if <code class="docutils literal notranslate"><span class="pre">K&lt;=M/2+2</span></code> or <code class="docutils literal notranslate"><span class="pre">L=M+1-K</span></code> otherwise. Let I be the
+sequence <code class="docutils literal notranslate"><span class="pre">infodict['iord']</span></code> and let E be the sequence
+<code class="docutils literal notranslate"><span class="pre">infodict['elist']</span></code>.  Then <code class="docutils literal notranslate"><span class="pre">E[I[1]],</span> <span class="pre">...,</span> <span class="pre">E[I[L]]</span></code> forms a
+decreasing sequence.</p>
+</dd>
+</dl>
+<p>If the input argument points is provided (i.e., it is not None),
+the following additional outputs are placed in the output
+dictionary. Assume the points sequence is of length P.</p>
+<dl class="simple">
+<dt>‘pts’</dt><dd><p>A rank-1 array of length P+2 containing the integration limits
+and the break points of the intervals in ascending order.
+This is an array giving the subintervals over which integration
+will occur.</p>
+</dd>
+<dt>‘level’</dt><dd><p>A rank-1 integer array of length M (=limit), containing the
+subdivision levels of the subintervals, i.e., if (aa,bb) is a
+subinterval of <code class="docutils literal notranslate"><span class="pre">(pts[1],</span> <span class="pre">pts[2])</span></code> where <code class="docutils literal notranslate"><span class="pre">pts[0]</span></code> and <code class="docutils literal notranslate"><span class="pre">pts[2]</span></code>
+are adjacent elements of <code class="docutils literal notranslate"><span class="pre">infodict['pts']</span></code>, then (aa,bb) has level l
+if <code class="docutils literal notranslate"><span class="pre">|bb-aa|</span> <span class="pre">=</span> <span class="pre">|pts[2]-pts[1]|</span> <span class="pre">*</span> <span class="pre">2**(-l)</span></code>.</p>
+</dd>
+<dt>‘ndin’</dt><dd><p>A rank-1 integer array of length P+2. After the first integration
+over the intervals (pts[1], pts[2]), the error estimates over some
+of the intervals may have been increased artificially in order to
+put their subdivision forward. This array has ones in slots
+corresponding to the subintervals for which this happens.</p>
+</dd>
+</dl>
+<p><strong>Weighting the integrand</strong></p>
+<p>The input variables, <em>weight</em> and <em>wvar</em>, are used to weight the
+integrand by a select list of functions. Different integration
+methods are used to compute the integral with these weighting
+functions, and these do not support specifying break points. The
+possible values of weight and the corresponding weighting functions are.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">weight</span></code></p></th>
+<th class="head"><p>Weight function used</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">wvar</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>‘cos’</p></td>
+<td><p>cos(w*x)</p></td>
+<td><p>wvar = w</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘sin’</p></td>
+<td><p>sin(w*x)</p></td>
+<td><p>wvar = w</p></td>
+</tr>
+<tr class="row-even"><td><p>‘alg’</p></td>
+<td><p>g(x) = ((x-a)**alpha)*((b-x)**beta)</p></td>
+<td><p>wvar = (alpha, beta)</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘alg-loga’</p></td>
+<td><p>g(x)*log(x-a)</p></td>
+<td><p>wvar = (alpha, beta)</p></td>
+</tr>
+<tr class="row-even"><td><p>‘alg-logb’</p></td>
+<td><p>g(x)*log(b-x)</p></td>
+<td><p>wvar = (alpha, beta)</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘alg-log’</p></td>
+<td><p>g(x)*log(x-a)*log(b-x)</p></td>
+<td><p>wvar = (alpha, beta)</p></td>
+</tr>
+<tr class="row-even"><td><p>‘cauchy’</p></td>
+<td><p>1/(x-c)</p></td>
+<td><p>wvar = c</p></td>
+</tr>
+</tbody>
+</table>
+<p>wvar holds the parameter w, (alpha, beta), or c depending on the weight
+selected. In these expressions, a and b are the integration limits.</p>
+<p>For the ‘cos’ and ‘sin’ weighting, additional inputs and outputs are
+available.</p>
+<p>For finite integration limits, the integration is performed using a
+Clenshaw-Curtis method which uses Chebyshev moments. For repeated
+calculations, these moments are saved in the output dictionary:</p>
+<dl class="simple">
+<dt>‘momcom’</dt><dd><p>The maximum level of Chebyshev moments that have been computed,
+i.e., if <code class="docutils literal notranslate"><span class="pre">M_c</span></code> is <code class="docutils literal notranslate"><span class="pre">infodict['momcom']</span></code> then the moments have been
+computed for intervals of length <code class="docutils literal notranslate"><span class="pre">|b-a|</span> <span class="pre">*</span> <span class="pre">2**(-l)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">l=0,1,...,M_c</span></code>.</p>
+</dd>
+<dt>‘nnlog’</dt><dd><p>A rank-1 integer array of length M(=limit), containing the
+subdivision levels of the subintervals, i.e., an element of this
+array is equal to l if the corresponding subinterval is
+<code class="docutils literal notranslate"><span class="pre">|b-a|*</span> <span class="pre">2**(-l)</span></code>.</p>
+</dd>
+<dt>‘chebmo’</dt><dd><p>A rank-2 array of shape (25, maxp1) containing the computed
+Chebyshev moments. These can be passed on to an integration
+over the same interval by passing this array as the second
+element of the sequence wopts and passing infodict[‘momcom’] as
+the first element.</p>
+</dd>
+</dl>
+<p>If one of the integration limits is infinite, then a Fourier integral is
+computed (assuming w neq 0). If full_output is 1 and a numerical error
+is encountered, besides the error message attached to the output tuple,
+a dictionary is also appended to the output tuple which translates the
+error codes in the array <code class="docutils literal notranslate"><span class="pre">info['ierlst']</span></code> to English messages. The
+output information dictionary contains the following entries instead of
+‘last’, ‘alist’, ‘blist’, ‘rlist’, and ‘elist’:</p>
+<dl class="simple">
+<dt>‘lst’</dt><dd><p>The number of subintervals needed for the integration (call it <code class="docutils literal notranslate"><span class="pre">K_f</span></code>).</p>
+</dd>
+<dt>‘rslst’</dt><dd><p>A rank-1 array of length M_f=limlst, whose first <code class="docutils literal notranslate"><span class="pre">K_f</span></code> elements
+contain the integral contribution over the interval
+<code class="docutils literal notranslate"><span class="pre">(a+(k-1)c,</span> <span class="pre">a+kc)</span></code> where <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">(2*floor(|w|)</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">pi</span> <span class="pre">/</span> <span class="pre">|w|</span></code>
+and <code class="docutils literal notranslate"><span class="pre">k=1,2,...,K_f</span></code>.</p>
+</dd>
+<dt>‘erlst’</dt><dd><p>A rank-1 array of length <code class="docutils literal notranslate"><span class="pre">M_f</span></code> containing the error estimate
+corresponding to the interval in the same position in
+<code class="docutils literal notranslate"><span class="pre">infodict['rslist']</span></code>.</p>
+</dd>
+<dt>‘ierlst’</dt><dd><p>A rank-1 integer array of length <code class="docutils literal notranslate"><span class="pre">M_f</span></code> containing an error flag
+corresponding to the interval in the same position in
+<code class="docutils literal notranslate"><span class="pre">infodict['rslist']</span></code>.  See the explanation dictionary (last entry
+in the output tuple) for the meaning of the codes.</p>
+</dd>
+</dl>
+<p><strong>Details of QUADPACK level routines</strong></p>
+<p><cite>quad</cite> calls routines from the FORTRAN library QUADPACK. This section
+provides details on the conditions for each routine to be called and a
+short description of each routine. The routine called depends on
+<cite>weight</cite>, <cite>points</cite> and the integration limits <cite>a</cite> and <cite>b</cite>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>QUADPACK routine</p></th>
+<th class="head"><p><cite>weight</cite></p></th>
+<th class="head"><p><cite>points</cite></p></th>
+<th class="head"><p>infinite bounds</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>qagse</p></td>
+<td><p>None</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>qagie</p></td>
+<td><p>None</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>qagpe</p></td>
+<td><p>None</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>qawoe</p></td>
+<td><p>‘sin’, ‘cos’</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>qawfe</p></td>
+<td><p>‘sin’, ‘cos’</p></td>
+<td><p>No</p></td>
+<td><p>either <cite>a</cite> or <cite>b</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>qawse</p></td>
+<td><p>‘alg*’</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>qawce</p></td>
+<td><p>‘cauchy’</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+<p>The following provides a short description from <a class="reference internal" href="#r5ea152ce95fb-1" id="id10">[1]</a> for each
+routine.</p>
+<dl>
+<dt>qagse</dt><dd><p>is an integrator based on globally adaptive interval
+subdivision in connection with extrapolation, which will
+eliminate the effects of integrand singularities of
+several types.</p>
+</dd>
+<dt>qagie</dt><dd><p>handles integration over infinite intervals. The infinite range is
+mapped onto a finite interval and subsequently the same strategy as
+in <code class="docutils literal notranslate"><span class="pre">QAGS</span></code> is applied.</p>
+</dd>
+<dt>qagpe</dt><dd><p>serves the same purposes as QAGS, but also allows the
+user to provide explicit information about the location
+and type of trouble-spots i.e. the abscissae of internal
+singularities, discontinuities and other difficulties of
+the integrand function.</p>
+</dd>
+<dt>qawoe</dt><dd><p>is an integrator for the evaluation of
+<span class="math">\int^b_a \cos(\omega x)f(x)dx</span> or
+<span class="math">\int^b_a \sin(\omega x)f(x)dx</span>
+over a finite interval [a,b], where <span class="math">\omega</span> and <span class="math">f</span>
+are specified by the user. The rule evaluation component is based
+on the modified Clenshaw-Curtis technique</p>
+<p>An adaptive subdivision scheme is used in connection
+with an extrapolation procedure, which is a modification
+of that in <code class="docutils literal notranslate"><span class="pre">QAGS</span></code> and allows the algorithm to deal with
+singularities in <span class="math">f(x)</span>.</p>
+</dd>
+<dt>qawfe</dt><dd><p>calculates the Fourier transform
+<span class="math">\int^\infty_a \cos(\omega x)f(x)dx</span> or
+<span class="math">\int^\infty_a \sin(\omega x)f(x)dx</span>
+for user-provided <span class="math">\omega</span> and <span class="math">f</span>. The procedure of
+<code class="docutils literal notranslate"><span class="pre">QAWO</span></code> is applied on successive finite intervals, and convergence
+acceleration by means of the <span class="math">\varepsilon</span>-algorithm is applied
+to the series of integral approximations.</p>
+</dd>
+<dt>qawse</dt><dd><p>approximate <span class="math">\int^b_a w(x)f(x)dx</span>, with <span class="math">a &lt; b</span> where
+<span class="math">w(x) = (x-a)^{\alpha}(b-x)^{\beta}v(x)</span> with
+<span class="math">\alpha,\beta &gt; -1</span>, where <span class="math">v(x)</span> may be one of the
+following functions: <span class="math">1</span>, <span class="math">\log(x-a)</span>, <span class="math">\log(b-x)</span>,
+<span class="math">\log(x-a)\log(b-x)</span>.</p>
+<p>The user specifies <span class="math">\alpha</span>, <span class="math">\beta</span> and the type of the
+function <span class="math">v</span>. A globally adaptive subdivision strategy is
+applied, with modified Clenshaw-Curtis integration on those
+subintervals which contain <cite>a</cite> or <cite>b</cite>.</p>
+</dd>
+<dt>qawce</dt><dd><p>compute <span class="math">\int^b_a f(x) / (x-c)dx</span> where the integral must be
+interpreted as a Cauchy principal value integral, for user specified
+<span class="math">c</span> and <span class="math">f</span>. The strategy is globally adaptive. Modified
+Clenshaw-Curtis integration is used on those intervals containing the
+point <span class="math">x = c</span>.</p>
+</dd>
+</dl>
+<p><strong>Integration of Complex Function of a Real Variable</strong></p>
+<p>A complex valued function, <span class="math">f</span>, of a real variable can be written as
+<span class="math">f = g + ih</span>.  Similarly, the integral of <span class="math">f</span> can be
+written as</p>
+<div class="math">
+<p><span class="math">\int_a^b f(x) dx = \int_a^b g(x) dx + i\int_a^b h(x) dx</span></p>
+</div><p>assuming that the integrals of <span class="math">g</span> and <span class="math">h</span> exist
+over the interval <span class="math">[a,b]</span> <a class="reference internal" href="#r5ea152ce95fb-2" id="id11">[2]</a>. Therefore, <code class="docutils literal notranslate"><span class="pre">quad</span></code> integrates
+complex-valued functions by integrating the real and imaginary components
+separately.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r5ea152ce95fb-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">1</a><span class="fn-bracket">]</span></span>
+<p>Piessens, Robert; de Doncker-Kapenga, Elise;
+Überhuber, Christoph W.; Kahaner, David (1983).
+QUADPACK: A subroutine package for automatic integration.
+Springer-Verlag.
+ISBN 978-3-540-12553-2.</p>
+</div>
+<div class="citation" id="r5ea152ce95fb-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">2</a><span class="fn-bracket">]</span></span>
+<p>McCullough, Thomas; Phillips, Keith (1973).
+Foundations of Analysis in the Complex Plane.
+Holt Rinehart Winston.
+ISBN 0-03-086370-8</p>
+</div>
+</div>
+<p class="rubric">Examples</p>
+<p>Calculate <span class="math">\int^4_0 x^2 dx</span> and compare with an analytic result</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">integrate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">(21.333333333333332, 2.3684757858670003e-13)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="mi">4</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>  <span class="c1"># analytical result</span>
+<span class="go">21.3333333333</span>
+</pre></div>
+</div>
+<p>Calculate <span class="math">\int^\infty_0 e^{-x} dx</span></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">invexp</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">invexp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+<span class="go">(1.0, 5.842605999138044e-11)</span>
+</pre></div>
+</div>
+<p>Calculate <span class="math">\int^1_0 a x \,dx</span> for <span class="math">a = 1, 3</span></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">*</span><span class="n">x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">1.5</span>
+</pre></div>
+</div>
+<p>Calculate <span class="math">\int^1_0 x^2 + y^2 dx</span> with ctypes, holding
+y parameter as 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">testlib</span><span class="o">.</span><span class="n">c</span> <span class="o">=&gt;</span>
+    <span class="n">double</span> <span class="n">func</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">double</span> <span class="n">args</span><span class="p">[</span><span class="n">n</span><span class="p">]){</span>
+        <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">];}</span>
+<span class="nb">compile</span> <span class="n">to</span> <span class="n">library</span> <span class="n">testlib</span><span class="o">.*</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">integrate</span>
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="n">lib</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s1">&#39;/home/.../testlib.*&#39;</span><span class="p">)</span> <span class="c1">#use absolute path</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">)</span>
+<span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">func</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">#(1.3333333333333333, 1.4802973661668752e-14)</span>
+<span class="nb">print</span><span class="p">((</span><span class="mf">1.0</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mf">3.0</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.0</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="mf">3.0</span> <span class="o">+</span> <span class="mf">0.0</span><span class="p">))</span> <span class="c1">#Analytic result</span>
+<span class="c1"># 1.3333333333333333</span>
+</pre></div>
+</div>
+<p>Be aware that pulse shapes and other sharp features as compared to the
+size of the integration interval may not be integrated correctly using
+this method. A simplified example of this limitation is integrating a
+y-axis reflected step function with many zero values within the integrals
+bounds.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">x</span><span class="o">&lt;=</span><span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">(1.0, 1.1102230246251565e-14)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="go">(1.0000000002199108, 1.0189464580163188e-08)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+<span class="go">(0.0, 0.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.scale_pos_and_vel">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">scale_pos_and_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.scale_pos_and_vel" title="Link to this definition"></a></dt>
+<dd><p>Scale the positions and velocities to be in N-body units
+If we add binaries we’ll do this again in initialcmctable.py</p>
+<p>takes r, vr, and vt as input</p>
+<p>returns (r,vr,vt) scaled to Henon units</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.simpson">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">simpson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.simpson" title="Link to this definition"></a></dt>
+<dd><p>Integrate y(x) using samples along the given axis and the composite
+Simpson’s rule. If x is None, spacing of dx is assumed.</p>
+<p>If there are an even number of samples, N, then there are an odd
+number of intervals (N-1), but Simpson’s rule requires an even number
+of intervals. The parameter ‘even’ controls how this is handled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>Array to be integrated.</p>
+</dd>
+<dt><strong>x</strong><span class="classifier">array_like, optional</span></dt><dd><p>If given, the points at which <cite>y</cite> is sampled.</p>
+</dd>
+<dt><strong>dx</strong><span class="classifier">float, optional</span></dt><dd><p>Spacing of integration points along axis of <cite>x</cite>. Only used when
+<cite>x</cite> is None. Default is 1.</p>
+</dd>
+<dt><strong>axis</strong><span class="classifier">int, optional</span></dt><dd><p>Axis along which to integrate. Default is the last axis.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>The estimated integral computed with the composite Simpson’s rule.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#cosmic.sample.cmc.king.quad" title="cosmic.sample.cmc.king.quad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quad</span></code></a></dt><dd><p>adaptive quadrature using QUADPACK</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixed_quad</span></code></dt><dd><p>fixed-order Gaussian quadrature</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dblquad</span></code></dt><dd><p>double integrals</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">tplquad</span></code></dt><dd><p>triple integrals</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">romb</span></code></dt><dd><p>integrators for sampled data</p>
+</dd>
+<dt><a class="reference internal" href="#cosmic.sample.cmc.king.cumulative_trapezoid" title="cosmic.sample.cmc.king.cumulative_trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_trapezoid</span></code></a></dt><dd><p>cumulative integration for sampled data</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_simpson</span></code></dt><dd><p>cumulative integration using Simpson’s 1/3 rule</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>For an odd number of samples that are equally spaced the result is
+exact if the function is a polynomial of order 3 or less. If
+the samples are not equally spaced, then the result is exact only
+if the function is a polynomial of order 2 or less.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r0b0bc579f0b9-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Cartwright, Kenneth V. Simpson’s Rule Cumulative Integration with
+MS Excel and Irregularly-spaced Data. Journal of Mathematical
+Sciences and Mathematics Education. 12 (2): 1-9</p>
+</div>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">integrate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">simpson</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+<span class="go">40.5</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">simpson</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+<span class="go">1640.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">1640.25</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.uniform">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.uniform" title="Link to this definition"></a></dt>
+<dd><p>Draw samples from a uniform distribution.</p>
+<p>Samples are uniformly distributed over the half-open interval
+<code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high)</span></code> (includes low, but excludes high).  In other words,
+any value within the given interval is equally likely to be drawn
+by <cite>uniform</cite>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New code should use the <code class="docutils literal notranslate"><span class="pre">uniform</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
+instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v2.1)"><span>Quick start</span></a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>low</strong><span class="classifier">float or array_like of floats, optional</span></dt><dd><p>Lower boundary of the output interval.  All values generated will be
+greater than or equal to low.  The default value is 0.</p>
+</dd>
+<dt><strong>high</strong><span class="classifier">float or array_like of floats</span></dt><dd><p>Upper boundary of the output interval.  All values generated will be
+less than or equal to high.  The high limit may be included in the 
+returned array of floats due to floating-point rounding in the 
+equation <code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high-low)</span> <span class="pre">*</span> <span class="pre">random_sample()</span></code>.  The default value 
+is 1.0.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int or tuple of ints, optional</span></dt><dd><p>Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> are both scalars.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">np.broadcast(low,</span> <span class="pre">high).size</span></code> samples are drawn.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>out</strong><span class="classifier">ndarray or scalar</span></dt><dd><p>Drawn samples from the parameterized uniform distribution.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></dt><dd><p>Discrete uniform distribution, yielding integers.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_integers</span></code></dt><dd><p>Discrete uniform distribution over the closed interval <code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high]</span></code>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></dt><dd><p>Floats uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/random.html#module-random" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a></dt><dd><p>Alias for <cite>random_sample</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand</span></code></dt><dd><p>Convenience function that accepts dimensions as input, e.g., <code class="docutils literal notranslate"><span class="pre">rand(2,2)</span></code> would generate a 2-by-2 array of floats, uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random.Generator.uniform</span></code></dt><dd><p>which should be used for new code.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The probability density function of the uniform distribution is</p>
+<div class="math">
+<p><span class="math">p(x) = \frac{1}{b - a}</span></p>
+</div><p>anywhere within the interval <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b)</span></code>, and zero elsewhere.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">high</span></code> == <code class="docutils literal notranslate"><span class="pre">low</span></code>, values of <code class="docutils literal notranslate"><span class="pre">low</span></code> will be returned.
+If <code class="docutils literal notranslate"><span class="pre">high</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">low</span></code>, the results are officially undefined
+and may eventually raise an error, i.e. do not rely on this
+function to behave when passed arguments satisfying that
+inequality condition. The <code class="docutils literal notranslate"><span class="pre">high</span></code> limit may be included in the
+returned array of floats due to floating-point rounding in the
+equation <code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high-low)</span> <span class="pre">*</span> <span class="pre">random_sample()</span></code>. For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mf">0.99999999</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">5.0</span>
+</pre></div>
+</div>
+<p class="rubric">Examples</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/25dd33160bf58f396f57bcf08bdeed74/cosmic-sample-cmc-king-4.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/4f1937f58abce646c33ee6852b510ba0/cosmic-sample-cmc-king-4.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/d26af3c329ba76bf068dbf74613c65dd/cosmic-sample-cmc-king-4.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/41113a17aa317aa6559d72f6036af504/cosmic-sample-cmc-king-4.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/cosmic-sample-cmc-king-4.png" class="plot-directive" src="../_images/cosmic-sample-cmc-king-4.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.sample.cmc.king.virial_radius_numerical">
+<span class="sig-prename descclassname"><span class="pre">cosmic.sample.cmc.king.</span></span><span class="sig-name descname"><span class="pre">virial_radius_numerical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M_enclosed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.sample.cmc.king.virial_radius_numerical" title="Link to this definition"></a></dt>
+<dd><p>Virial radius is best calculated directly.  Directly integrate 
+4*pi*r*rho*m_enclosed over the samples binding energy, then just divide 0.5 by that.</p>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cosmic package &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">cosmic package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cosmic-package">
+<h1>cosmic package<a class="headerlink" href="#cosmic-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.bse_utils.html">cosmic.bse_utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.bse_utils.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zcnsts.html"><code class="docutils literal notranslate"><span class="pre">zcnsts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zdata.html"><code class="docutils literal notranslate"><span class="pre">__author__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zdata.html#cosmic.bse_utils.zdata.xg"><code class="docutils literal notranslate"><span class="pre">xg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zdata.html#cosmic.bse_utils.zdata.xl"><code class="docutils literal notranslate"><span class="pre">xl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zdata.html#cosmic.bse_utils.zdata.xr"><code class="docutils literal notranslate"><span class="pre">xr</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zdata.html#cosmic.bse_utils.zdata.xt"><code class="docutils literal notranslate"><span class="pre">xt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.bse_utils.zdata.html#cosmic.bse_utils.zdata.xz"><code class="docutils literal notranslate"><span class="pre">xz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.bse_utils.html#module-cosmic.bse_utils">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.sample.html">cosmic.sample package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.sample.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.sample.cmc.html">cosmic.sample.cmc package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.cmc.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.cmc.html#module-cosmic.sample.cmc">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.sample.sampler.html">cosmic.sample.sampler package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.sampler.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.sampler.html#module-cosmic.sample.sampler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.sample.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.sample.initialbinarytable.html"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.InitialBinaries"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable.InitialBinaries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.__dict__"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable.__dict__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.__doc__"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable.__doc__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.__module__"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable.__module__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.__weakref__"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable.__weakref__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialbinarytable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.sampler"><code class="docutils literal notranslate"><span class="pre">InitialBinaryTable.sampler()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.sample.initialcmctable.html"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.InitialCMCBinaries"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.InitialCMCBinaries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.InitialCMCSingles"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.InitialCMCSingles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.ScaleCentralBHMass"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.ScaleCentralBHMass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.ScaleToNBodyUnits"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.ScaleToNBodyUnits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.__annotations__"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.__annotations__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.__doc__"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.__doc__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.__module__"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.__module__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.central_bh"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.central_bh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.mass_of_cluster"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.mass_of_cluster</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.metallicity"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.metallicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.read"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.sampler"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.sampler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.scale_with_central_bh"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.scale_with_central_bh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.scaled_to_nbody_units"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.scaled_to_nbody_units</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.tidal_radius"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.tidal_radius</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.virial_radius"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.virial_radius</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.InitialCMCTable.write"><code class="docutils literal notranslate"><span class="pre">InitialCMCTable.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table"><code class="docutils literal notranslate"><span class="pre">Table</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.Column"><code class="docutils literal notranslate"><span class="pre">Table.Column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.ColumnClass"><code class="docutils literal notranslate"><span class="pre">Table.ColumnClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.MaskedColumn"><code class="docutils literal notranslate"><span class="pre">Table.MaskedColumn</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.Row"><code class="docutils literal notranslate"><span class="pre">Table.Row</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.TableColumns"><code class="docutils literal notranslate"><span class="pre">Table.TableColumns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.TableFormatter"><code class="docutils literal notranslate"><span class="pre">Table.TableFormatter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__array__"><code class="docutils literal notranslate"><span class="pre">Table.__array__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__bytes__"><code class="docutils literal notranslate"><span class="pre">Table.__bytes__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__copy__"><code class="docutils literal notranslate"><span class="pre">Table.__copy__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__deepcopy__"><code class="docutils literal notranslate"><span class="pre">Table.__deepcopy__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__delitem__"><code class="docutils literal notranslate"><span class="pre">Table.__delitem__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__dict__"><code class="docutils literal notranslate"><span class="pre">Table.__dict__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__doc__"><code class="docutils literal notranslate"><span class="pre">Table.__doc__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__eq__"><code class="docutils literal notranslate"><span class="pre">Table.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__getitem__"><code class="docutils literal notranslate"><span class="pre">Table.__getitem__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__getstate__"><code class="docutils literal notranslate"><span class="pre">Table.__getstate__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__hash__"><code class="docutils literal notranslate"><span class="pre">Table.__hash__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__init__"><code class="docutils literal notranslate"><span class="pre">Table.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__ior__"><code class="docutils literal notranslate"><span class="pre">Table.__ior__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__len__"><code class="docutils literal notranslate"><span class="pre">Table.__len__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__module__"><code class="docutils literal notranslate"><span class="pre">Table.__module__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__ne__"><code class="docutils literal notranslate"><span class="pre">Table.__ne__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__or__"><code class="docutils literal notranslate"><span class="pre">Table.__or__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__repr__"><code class="docutils literal notranslate"><span class="pre">Table.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__setitem__"><code class="docutils literal notranslate"><span class="pre">Table.__setitem__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__setstate__"><code class="docutils literal notranslate"><span class="pre">Table.__setstate__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__str__"><code class="docutils literal notranslate"><span class="pre">Table.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.__weakref__"><code class="docutils literal notranslate"><span class="pre">Table.__weakref__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._base_repr_"><code class="docutils literal notranslate"><span class="pre">Table._base_repr_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._check_names_dtype"><code class="docutils literal notranslate"><span class="pre">Table._check_names_dtype()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._convert_col_for_table"><code class="docutils literal notranslate"><span class="pre">Table._convert_col_for_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._convert_data_to_col"><code class="docutils literal notranslate"><span class="pre">Table._convert_data_to_col()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._convert_string_dtype"><code class="docutils literal notranslate"><span class="pre">Table._convert_string_dtype()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._get_col_cls_for_table"><code class="docutils literal notranslate"><span class="pre">Table._get_col_cls_for_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._init_from_cols"><code class="docutils literal notranslate"><span class="pre">Table._init_from_cols()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._init_from_dict"><code class="docutils literal notranslate"><span class="pre">Table._init_from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._init_from_list"><code class="docutils literal notranslate"><span class="pre">Table._init_from_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._init_from_list_of_dicts"><code class="docutils literal notranslate"><span class="pre">Table._init_from_list_of_dicts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._init_from_ndarray"><code class="docutils literal notranslate"><span class="pre">Table._init_from_ndarray()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._ipython_key_completions_"><code class="docutils literal notranslate"><span class="pre">Table._ipython_key_completions_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._is_list_or_tuple_of_str"><code class="docutils literal notranslate"><span class="pre">Table._is_list_or_tuple_of_str()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._is_mixin_for_table"><code class="docutils literal notranslate"><span class="pre">Table._is_mixin_for_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._make_index_row_display_table"><code class="docutils literal notranslate"><span class="pre">Table._make_index_row_display_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._make_table_from_cols"><code class="docutils literal notranslate"><span class="pre">Table._make_table_from_cols()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._mask"><code class="docutils literal notranslate"><span class="pre">Table._mask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._new_from_slice"><code class="docutils literal notranslate"><span class="pre">Table._new_from_slice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._replace_cols"><code class="docutils literal notranslate"><span class="pre">Table._replace_cols()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._replace_column_warnings"><code class="docutils literal notranslate"><span class="pre">Table._replace_column_warnings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._repr_html_"><code class="docutils literal notranslate"><span class="pre">Table._repr_html_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._rows_equal"><code class="docutils literal notranslate"><span class="pre">Table._rows_equal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._set_col_parent_table_and_mask"><code class="docutils literal notranslate"><span class="pre">Table._set_col_parent_table_and_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._set_column_attribute"><code class="docutils literal notranslate"><span class="pre">Table._set_column_attribute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._set_masked"><code class="docutils literal notranslate"><span class="pre">Table._set_masked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._set_of_names_in_colnames"><code class="docutils literal notranslate"><span class="pre">Table._set_of_names_in_colnames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table._set_row"><code class="docutils literal notranslate"><span class="pre">Table._set_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.add_column"><code class="docutils literal notranslate"><span class="pre">Table.add_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.add_columns"><code class="docutils literal notranslate"><span class="pre">Table.add_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.add_index"><code class="docutils literal notranslate"><span class="pre">Table.add_index()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.add_row"><code class="docutils literal notranslate"><span class="pre">Table.add_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.argsort"><code class="docutils literal notranslate"><span class="pre">Table.argsort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.as_array"><code class="docutils literal notranslate"><span class="pre">Table.as_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.colnames"><code class="docutils literal notranslate"><span class="pre">Table.colnames</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.convert_bytestring_to_unicode"><code class="docutils literal notranslate"><span class="pre">Table.convert_bytestring_to_unicode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.convert_unicode_to_bytestring"><code class="docutils literal notranslate"><span class="pre">Table.convert_unicode_to_bytestring()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.copy"><code class="docutils literal notranslate"><span class="pre">Table.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.dtype"><code class="docutils literal notranslate"><span class="pre">Table.dtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.field"><code class="docutils literal notranslate"><span class="pre">Table.field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.filled"><code class="docutils literal notranslate"><span class="pre">Table.filled()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.from_pandas"><code class="docutils literal notranslate"><span class="pre">Table.from_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.group_by"><code class="docutils literal notranslate"><span class="pre">Table.group_by()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.groups"><code class="docutils literal notranslate"><span class="pre">Table.groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.has_masked_columns"><code class="docutils literal notranslate"><span class="pre">Table.has_masked_columns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.has_masked_values"><code class="docutils literal notranslate"><span class="pre">Table.has_masked_values</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.has_mixin_columns"><code class="docutils literal notranslate"><span class="pre">Table.has_mixin_columns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.iloc"><code class="docutils literal notranslate"><span class="pre">Table.iloc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.index_column"><code class="docutils literal notranslate"><span class="pre">Table.index_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.index_mode"><code class="docutils literal notranslate"><span class="pre">Table.index_mode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.indices"><code class="docutils literal notranslate"><span class="pre">Table.indices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.info"><code class="docutils literal notranslate"><span class="pre">Table.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.insert_row"><code class="docutils literal notranslate"><span class="pre">Table.insert_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.items"><code class="docutils literal notranslate"><span class="pre">Table.items()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.itercols"><code class="docutils literal notranslate"><span class="pre">Table.itercols()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.iterrows"><code class="docutils literal notranslate"><span class="pre">Table.iterrows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.keep_columns"><code class="docutils literal notranslate"><span class="pre">Table.keep_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.keys"><code class="docutils literal notranslate"><span class="pre">Table.keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.loc"><code class="docutils literal notranslate"><span class="pre">Table.loc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.loc_indices"><code class="docutils literal notranslate"><span class="pre">Table.loc_indices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.mask"><code class="docutils literal notranslate"><span class="pre">Table.mask</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.masked"><code class="docutils literal notranslate"><span class="pre">Table.masked</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.meta"><code class="docutils literal notranslate"><span class="pre">Table.meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.more"><code class="docutils literal notranslate"><span class="pre">Table.more()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.pformat"><code class="docutils literal notranslate"><span class="pre">Table.pformat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.pformat_all"><code class="docutils literal notranslate"><span class="pre">Table.pformat_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.pprint"><code class="docutils literal notranslate"><span class="pre">Table.pprint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.pprint_all"><code class="docutils literal notranslate"><span class="pre">Table.pprint_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.pprint_exclude_names"><code class="docutils literal notranslate"><span class="pre">Table.pprint_exclude_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.pprint_include_names"><code class="docutils literal notranslate"><span class="pre">Table.pprint_include_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.read"><code class="docutils literal notranslate"><span class="pre">Table.read</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.remove_column"><code class="docutils literal notranslate"><span class="pre">Table.remove_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.remove_columns"><code class="docutils literal notranslate"><span class="pre">Table.remove_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.remove_indices"><code class="docutils literal notranslate"><span class="pre">Table.remove_indices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.remove_row"><code class="docutils literal notranslate"><span class="pre">Table.remove_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.remove_rows"><code class="docutils literal notranslate"><span class="pre">Table.remove_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.rename_column"><code class="docutils literal notranslate"><span class="pre">Table.rename_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.rename_columns"><code class="docutils literal notranslate"><span class="pre">Table.rename_columns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.replace_column"><code class="docutils literal notranslate"><span class="pre">Table.replace_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.reverse"><code class="docutils literal notranslate"><span class="pre">Table.reverse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.round"><code class="docutils literal notranslate"><span class="pre">Table.round()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.setdefault"><code class="docutils literal notranslate"><span class="pre">Table.setdefault()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.show_in_browser"><code class="docutils literal notranslate"><span class="pre">Table.show_in_browser()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.show_in_notebook"><code class="docutils literal notranslate"><span class="pre">Table.show_in_notebook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.sort"><code class="docutils literal notranslate"><span class="pre">Table.sort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.to_pandas"><code class="docutils literal notranslate"><span class="pre">Table.to_pandas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.update"><code class="docutils literal notranslate"><span class="pre">Table.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.values"><code class="docutils literal notranslate"><span class="pre">Table.values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.values_equal"><code class="docutils literal notranslate"><span class="pre">Table.values_equal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cosmic.sample.initialcmctable.html#cosmic.sample.initialcmctable.Table.write"><code class="docutils literal notranslate"><span class="pre">Table.write</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.sample.html#module-cosmic.sample">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.Match.html"><code class="docutils literal notranslate"><span class="pre">dat_transform()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.Match.html#cosmic.Match.match"><code class="docutils literal notranslate"><span class="pre">match()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.Match.html#cosmic.Match.perform_convergence"><code class="docutils literal notranslate"><span class="pre">perform_convergence()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.checkstate.html"><code class="docutils literal notranslate"><span class="pre">set_checkstates()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.evolve.html"><code class="docutils literal notranslate"><span class="pre">Evolve</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.Evolve.__dict__"><code class="docutils literal notranslate"><span class="pre">Evolve.__dict__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.Evolve.__doc__"><code class="docutils literal notranslate"><span class="pre">Evolve.__doc__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.Evolve.__init__"><code class="docutils literal notranslate"><span class="pre">Evolve.__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.Evolve.__module__"><code class="docutils literal notranslate"><span class="pre">Evolve.__module__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.Evolve.__weakref__"><code class="docutils literal notranslate"><span class="pre">Evolve.__weakref__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.Evolve.evolve"><code class="docutils literal notranslate"><span class="pre">Evolve.evolve()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool"><code class="docutils literal notranslate"><span class="pre">MultiPool</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool.__doc__"><code class="docutils literal notranslate"><span class="pre">MultiPool.__doc__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool.__init__"><code class="docutils literal notranslate"><span class="pre">MultiPool.__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool.__module__"><code class="docutils literal notranslate"><span class="pre">MultiPool.__module__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool.enabled"><code class="docutils literal notranslate"><span class="pre">MultiPool.enabled()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool.map"><code class="docutils literal notranslate"><span class="pre">MultiPool.map()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.MultiPool.wait_timeout"><code class="docutils literal notranslate"><span class="pre">MultiPool.wait_timeout</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve._evolve_multi_system"><code class="docutils literal notranslate"><span class="pre">_evolve_multi_system()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve._evolve_single_system"><code class="docutils literal notranslate"><span class="pre">_evolve_single_system()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.evolve.html#cosmic.evolve.set_checkstates"><code class="docutils literal notranslate"><span class="pre">set_checkstates()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.filter.html"><code class="docutils literal notranslate"><span class="pre">_flatten()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.filter.html#cosmic.filter._float_or_str"><code class="docutils literal notranslate"><span class="pre">_float_or_str()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.filter.html#cosmic.filter.is_filter_tuple"><code class="docutils literal notranslate"><span class="pre">is_filter_tuple()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.filter.html#cosmic.filter.parse_column_filter"><code class="docutils literal notranslate"><span class="pre">parse_column_filter()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.filter.html#cosmic.filter.parse_column_filters"><code class="docutils literal notranslate"><span class="pre">parse_column_filters()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.filter.html#cosmic.filter.parse_operator"><code class="docutils literal notranslate"><span class="pre">parse_operator()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.get_commit_hash.html"><code class="docutils literal notranslate"><span class="pre">get_commit_hash()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.get_commit_hash.html#cosmic.get_commit_hash.write_commit_hash_to_file"><code class="docutils literal notranslate"><span class="pre">write_commit_hash_to_file()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html"><code class="docutils literal notranslate"><span class="pre">Evolve</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.__annotations__"><code class="docutils literal notranslate"><span class="pre">Evolve.__annotations__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.__dict__"><code class="docutils literal notranslate"><span class="pre">Evolve.__dict__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.__doc__"><code class="docutils literal notranslate"><span class="pre">Evolve.__doc__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.__init__"><code class="docutils literal notranslate"><span class="pre">Evolve.__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.__module__"><code class="docutils literal notranslate"><span class="pre">Evolve.__module__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.__weakref__"><code class="docutils literal notranslate"><span class="pre">Evolve.__weakref__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Evolve.evolve"><code class="docutils literal notranslate"><span class="pre">Evolve.evolve()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D"><code class="docutils literal notranslate"><span class="pre">Line2D</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.__doc__"><code class="docutils literal notranslate"><span class="pre">Line2D.__doc__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.__init__"><code class="docutils literal notranslate"><span class="pre">Line2D.__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.__module__"><code class="docutils literal notranslate"><span class="pre">Line2D.__module__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.__str__"><code class="docutils literal notranslate"><span class="pre">Line2D.__str__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._alias_map"><code class="docutils literal notranslate"><span class="pre">Line2D._alias_map</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._drawStyles_l"><code class="docutils literal notranslate"><span class="pre">Line2D._drawStyles_l</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._drawStyles_s"><code class="docutils literal notranslate"><span class="pre">Line2D._drawStyles_s</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._get_markerfacecolor"><code class="docutils literal notranslate"><span class="pre">Line2D._get_markerfacecolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._get_transformed_path"><code class="docutils literal notranslate"><span class="pre">Line2D._get_transformed_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._lineStyles"><code class="docutils literal notranslate"><span class="pre">Line2D._lineStyles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._set_markercolor"><code class="docutils literal notranslate"><span class="pre">Line2D._set_markercolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._subslice_optim_min_size"><code class="docutils literal notranslate"><span class="pre">Line2D._subslice_optim_min_size</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D._transform_path"><code class="docutils literal notranslate"><span class="pre">Line2D._transform_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.contains"><code class="docutils literal notranslate"><span class="pre">Line2D.contains()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.draw"><code class="docutils literal notranslate"><span class="pre">Line2D.draw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.drawStyleKeys"><code class="docutils literal notranslate"><span class="pre">Line2D.drawStyleKeys</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.drawStyles"><code class="docutils literal notranslate"><span class="pre">Line2D.drawStyles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.fillStyles"><code class="docutils literal notranslate"><span class="pre">Line2D.fillStyles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.filled_markers"><code class="docutils literal notranslate"><span class="pre">Line2D.filled_markers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_aa"><code class="docutils literal notranslate"><span class="pre">Line2D.get_aa()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_antialiased"><code class="docutils literal notranslate"><span class="pre">Line2D.get_antialiased()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_bbox"><code class="docutils literal notranslate"><span class="pre">Line2D.get_bbox()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_c"><code class="docutils literal notranslate"><span class="pre">Line2D.get_c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_color"><code class="docutils literal notranslate"><span class="pre">Line2D.get_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_dash_capstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_dash_capstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_dash_joinstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_dash_joinstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_data"><code class="docutils literal notranslate"><span class="pre">Line2D.get_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_drawstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_drawstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_ds"><code class="docutils literal notranslate"><span class="pre">Line2D.get_ds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_fillstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_fillstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_gapcolor"><code class="docutils literal notranslate"><span class="pre">Line2D.get_gapcolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_linestyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_linestyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_linewidth"><code class="docutils literal notranslate"><span class="pre">Line2D.get_linewidth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_ls"><code class="docutils literal notranslate"><span class="pre">Line2D.get_ls()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_lw"><code class="docutils literal notranslate"><span class="pre">Line2D.get_lw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_marker"><code class="docutils literal notranslate"><span class="pre">Line2D.get_marker()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_markeredgecolor"><code class="docutils literal notranslate"><span class="pre">Line2D.get_markeredgecolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_markeredgewidth"><code class="docutils literal notranslate"><span class="pre">Line2D.get_markeredgewidth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_markerfacecolor"><code class="docutils literal notranslate"><span class="pre">Line2D.get_markerfacecolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_markerfacecoloralt"><code class="docutils literal notranslate"><span class="pre">Line2D.get_markerfacecoloralt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_markersize"><code class="docutils literal notranslate"><span class="pre">Line2D.get_markersize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_markevery"><code class="docutils literal notranslate"><span class="pre">Line2D.get_markevery()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_mec"><code class="docutils literal notranslate"><span class="pre">Line2D.get_mec()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_mew"><code class="docutils literal notranslate"><span class="pre">Line2D.get_mew()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_mfc"><code class="docutils literal notranslate"><span class="pre">Line2D.get_mfc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_mfcalt"><code class="docutils literal notranslate"><span class="pre">Line2D.get_mfcalt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_ms"><code class="docutils literal notranslate"><span class="pre">Line2D.get_ms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_path"><code class="docutils literal notranslate"><span class="pre">Line2D.get_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_pickradius"><code class="docutils literal notranslate"><span class="pre">Line2D.get_pickradius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_solid_capstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_solid_capstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_solid_joinstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.get_solid_joinstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_window_extent"><code class="docutils literal notranslate"><span class="pre">Line2D.get_window_extent()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_xdata"><code class="docutils literal notranslate"><span class="pre">Line2D.get_xdata()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_xydata"><code class="docutils literal notranslate"><span class="pre">Line2D.get_xydata()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.get_ydata"><code class="docutils literal notranslate"><span class="pre">Line2D.get_ydata()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.is_dashed"><code class="docutils literal notranslate"><span class="pre">Line2D.is_dashed()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.lineStyles"><code class="docutils literal notranslate"><span class="pre">Line2D.lineStyles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.markers"><code class="docutils literal notranslate"><span class="pre">Line2D.markers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.pickradius"><code class="docutils literal notranslate"><span class="pre">Line2D.pickradius</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.recache"><code class="docutils literal notranslate"><span class="pre">Line2D.recache()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.recache_always"><code class="docutils literal notranslate"><span class="pre">Line2D.recache_always()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set"><code class="docutils literal notranslate"><span class="pre">Line2D.set()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_aa"><code class="docutils literal notranslate"><span class="pre">Line2D.set_aa()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_antialiased"><code class="docutils literal notranslate"><span class="pre">Line2D.set_antialiased()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_c"><code class="docutils literal notranslate"><span class="pre">Line2D.set_c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_color"><code class="docutils literal notranslate"><span class="pre">Line2D.set_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_dash_capstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_dash_capstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_dash_joinstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_dash_joinstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_dashes"><code class="docutils literal notranslate"><span class="pre">Line2D.set_dashes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_data"><code class="docutils literal notranslate"><span class="pre">Line2D.set_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_drawstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_drawstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_ds"><code class="docutils literal notranslate"><span class="pre">Line2D.set_ds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_fillstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_fillstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_gapcolor"><code class="docutils literal notranslate"><span class="pre">Line2D.set_gapcolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_linestyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_linestyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_linewidth"><code class="docutils literal notranslate"><span class="pre">Line2D.set_linewidth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_ls"><code class="docutils literal notranslate"><span class="pre">Line2D.set_ls()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_lw"><code class="docutils literal notranslate"><span class="pre">Line2D.set_lw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_marker"><code class="docutils literal notranslate"><span class="pre">Line2D.set_marker()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_markeredgecolor"><code class="docutils literal notranslate"><span class="pre">Line2D.set_markeredgecolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_markeredgewidth"><code class="docutils literal notranslate"><span class="pre">Line2D.set_markeredgewidth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_markerfacecolor"><code class="docutils literal notranslate"><span class="pre">Line2D.set_markerfacecolor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_markerfacecoloralt"><code class="docutils literal notranslate"><span class="pre">Line2D.set_markerfacecoloralt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_markersize"><code class="docutils literal notranslate"><span class="pre">Line2D.set_markersize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_markevery"><code class="docutils literal notranslate"><span class="pre">Line2D.set_markevery()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_mec"><code class="docutils literal notranslate"><span class="pre">Line2D.set_mec()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_mew"><code class="docutils literal notranslate"><span class="pre">Line2D.set_mew()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_mfc"><code class="docutils literal notranslate"><span class="pre">Line2D.set_mfc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_mfcalt"><code class="docutils literal notranslate"><span class="pre">Line2D.set_mfcalt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_ms"><code class="docutils literal notranslate"><span class="pre">Line2D.set_ms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_picker"><code class="docutils literal notranslate"><span class="pre">Line2D.set_picker()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_pickradius"><code class="docutils literal notranslate"><span class="pre">Line2D.set_pickradius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_solid_capstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_solid_capstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_solid_joinstyle"><code class="docutils literal notranslate"><span class="pre">Line2D.set_solid_joinstyle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_transform"><code class="docutils literal notranslate"><span class="pre">Line2D.set_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_xdata"><code class="docutils literal notranslate"><span class="pre">Line2D.set_xdata()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.set_ydata"><code class="docutils literal notranslate"><span class="pre">Line2D.set_ydata()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.update_from"><code class="docutils literal notranslate"><span class="pre">Line2D.update_from()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.Line2D.zorder"><code class="docutils literal notranslate"><span class="pre">Line2D.zorder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.a_from_p"><code class="docutils literal notranslate"><span class="pre">a_from_p()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.calc_Roche_radius"><code class="docutils literal notranslate"><span class="pre">calc_Roche_radius()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.evolve_and_plot"><code class="docutils literal notranslate"><span class="pre">evolve_and_plot()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.evolve_binary"><code class="docutils literal notranslate"><span class="pre">evolve_binary()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_HR_diagram"><code class="docutils literal notranslate"><span class="pre">plot_HR_diagram()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_Mdot"><code class="docutils literal notranslate"><span class="pre">plot_Mdot()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_P_orb"><code class="docutils literal notranslate"><span class="pre">plot_P_orb()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_Teff"><code class="docutils literal notranslate"><span class="pre">plot_Teff()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_binary_evol"><code class="docutils literal notranslate"><span class="pre">plot_binary_evol()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_ecc"><code class="docutils literal notranslate"><span class="pre">plot_ecc()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_k_type"><code class="docutils literal notranslate"><span class="pre">plot_k_type()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_mass"><code class="docutils literal notranslate"><span class="pre">plot_mass()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.plotting.html#cosmic.plotting.plot_radius"><code class="docutils literal notranslate"><span class="pre">plot_radius()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html"><code class="docutils literal notranslate"><span class="pre">ConfigParser</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser._DEFAULT_INTERPOLATION"><code class="docutils literal notranslate"><span class="pre">ConfigParser._DEFAULT_INTERPOLATION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser.__abstractmethods__"><code class="docutils literal notranslate"><span class="pre">ConfigParser.__abstractmethods__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser.__doc__"><code class="docutils literal notranslate"><span class="pre">ConfigParser.__doc__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser.__module__"><code class="docutils literal notranslate"><span class="pre">ConfigParser.__module__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser._abc_impl"><code class="docutils literal notranslate"><span class="pre">ConfigParser._abc_impl</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser._read_defaults"><code class="docutils literal notranslate"><span class="pre">ConfigParser._read_defaults()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser.add_section"><code class="docutils literal notranslate"><span class="pre">ConfigParser.add_section()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.ConfigParser.set"><code class="docutils literal notranslate"><span class="pre">ConfigParser.set()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey"><code class="docutils literal notranslate"><span class="pre">VariableKey</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__dict__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__dict__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__doc__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__doc__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__eq__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__eq__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__hash__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__hash__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__init__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__init__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__module__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__module__</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.VariableKey.__weakref__"><code class="docutils literal notranslate"><span class="pre">VariableKey.__weakref__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.a_from_p"><code class="docutils literal notranslate"><span class="pre">a_from_p()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.calc_Roche_radius"><code class="docutils literal notranslate"><span class="pre">calc_Roche_radius()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.check_initial_conditions"><code class="docutils literal notranslate"><span class="pre">check_initial_conditions()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.conv_select"><code class="docutils literal notranslate"><span class="pre">conv_select()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.convert_kstar_evol_type"><code class="docutils literal notranslate"><span class="pre">convert_kstar_evol_type()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.dat_transform"><code class="docutils literal notranslate"><span class="pre">dat_transform()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.dat_un_transform"><code class="docutils literal notranslate"><span class="pre">dat_un_transform()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.error_check"><code class="docutils literal notranslate"><span class="pre">error_check()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.filter_bin_state"><code class="docutils literal notranslate"><span class="pre">filter_bin_state()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.get_FeH_from_Z"><code class="docutils literal notranslate"><span class="pre">get_FeH_from_Z()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.get_Z_from_FeH"><code class="docutils literal notranslate"><span class="pre">get_Z_from_FeH()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.get_binfrac_of_Z"><code class="docutils literal notranslate"><span class="pre">get_binfrac_of_Z()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.get_met_dep_binfrac"><code class="docutils literal notranslate"><span class="pre">get_met_dep_binfrac()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.get_porb_norm"><code class="docutils literal notranslate"><span class="pre">get_porb_norm()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.idl_tabulate"><code class="docutils literal notranslate"><span class="pre">idl_tabulate()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.knuth_bw_selector"><code class="docutils literal notranslate"><span class="pre">knuth_bw_selector()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.mass_min_max_select"><code class="docutils literal notranslate"><span class="pre">mass_min_max_select()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.p_from_a"><code class="docutils literal notranslate"><span class="pre">p_from_a()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.param_transform"><code class="docutils literal notranslate"><span class="pre">param_transform()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.parse_inifile"><code class="docutils literal notranslate"><span class="pre">parse_inifile()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.pop_write"><code class="docutils literal notranslate"><span class="pre">pop_write()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.rndm"><code class="docutils literal notranslate"><span class="pre">rndm()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cosmic.utils.html#cosmic.utils.zcnsts"><code class="docutils literal notranslate"><span class="pre">zcnsts()</span></code></a></li>
+</ul>
+</div>
+</section>
+<section id="module-cosmic">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cosmic" title="Link to this heading"></a></h2>
+<p>COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code)</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

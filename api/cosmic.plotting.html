@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; cosmic 3.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" href="../_static/cosmic-docs.css" type="text/css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=c1362a89"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cosmic
+          </a>
+              <div class="version">
+                3.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inifile/index.html">Configuration files for COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../output_info/index.html">Describing the output of COSMIC/BSE: Columns names/Values/Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Using COSMIC to evolve binaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../runpop/index.html">Generate a binary population by hand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fixedpop/index.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cosmic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/cosmic.plotting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p id="module-cosmic.plotting"><cite>plotting</cite></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">Evolve</span></span><a class="headerlink" href="#cosmic.plotting.Evolve" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.__annotations__">
+<span class="sig-name descname"><span class="pre">__annotations__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#cosmic.plotting.Evolve.__annotations__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cosmic.evolve',</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">Evolve.__init__&gt;,</span> <span class="pre">'evolve':</span> <span class="pre">&lt;classmethod(&lt;function</span> <span class="pre">Evolve.evolve&gt;)&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'Evolve'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'Evolve'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__doc__':</span> <span class="pre">None,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cosmic.plotting.Evolve.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cosmic.plotting.Evolve.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Evolve.__init__" title="Link to this definition"></a></dt>
+<dd><p>initialize Evolve</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cosmic.evolve'</span></em><a class="headerlink" href="#cosmic.plotting.Evolve.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cosmic.plotting.Evolve.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Evolve.evolve">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialbinarytable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpp_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcm_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Evolve.evolve" title="Link to this definition"></a></dt>
+<dd><p>After setting a number of initial conditions we evolve the system.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>initialbinarytable</strong><span class="classifier">DataFrame</span></dt><dd><p>Initial conditions of the binary</p>
+</dd>
+<dt><strong>pool</strong><span class="classifier">Multiprocessing pool</span></dt><dd><p>Pool of workers to use to evolve systems in parallel</p>
+</dd>
+<dt><strong>bpp_columns</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Columns to save in the bpp table (key evolutionary stage table)</p>
+</dd>
+<dt><strong>bcm_columns</strong><span class="classifier">list, optional, default: None</span></dt><dd><p>Columns to save in the bcm table (detailed evolution table)</p>
+</dd>
+<dt><strong>**kwargs:</strong></dt><dd><p>There are three ways to tell evolve and thus the fortran
+what you want all the flags and other BSE specific
+parameters to be. If you pass both a dictionary of flags and/or a inifile
+and a table with the BSE parameters in the columns,
+the column values will be overwritten by
+what is in the dictionary or ini file.</p>
+<p>NUMBER 1: PASS A DICTIONARY OF FLAGS</p>
+<blockquote>
+<div><p>BSEDict</p>
+</div></blockquote>
+<p>NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS</p>
+<blockquote>
+<div><p>All you need is the initialbinarytable if the all
+the BSE parameters are defined as columns</p>
+</div></blockquote>
+<p>NUMBER 3: PASS PATH TO A INI FILE WITH THE FLAGS DEFINED</p>
+<blockquote>
+<div><p>params</p>
+</div></blockquote>
+</dd>
+<dt><strong>randomseed</strong><span class="classifier"><cite>int</cite>, optional, default let numpy choose for you</span></dt><dd><p>If you would like the random seed that the underlying fortran code
+uses to be the same for all of the initial conditions you passed
+then you can send this keyword argument in. It is recommended
+to just let numpy choose a random number as the Fortran random seed
+and then this number will be returned as a column in the
+initial binary table so that you can reproduce the results.</p>
+</dd>
+<dt><strong>nproc</strong><span class="classifier"><cite>int</cite>, optional, default: 1</span></dt><dd><p>number of CPUs to use to evolve systems
+in parallel</p>
+</dd>
+<dt><strong>idx</strong><span class="classifier"><cite>int</cite>, optional, default: 0</span></dt><dd><p>initial index of the bcm/bpp arrays</p>
+</dd>
+<dt><strong>dtp</strong><span class="classifier"><cite>float</cite>, optional: default: tphysf</span></dt><dd><p>timestep size in Myr for bcm output where tphysf
+is total evolution time in Myr</p>
+</dd>
+<dt><strong>n_per_block</strong><span class="classifier"><cite>int</cite>, optional, default: -1</span></dt><dd><p>number of systems to evolve in a block with
+_evolve_multi_system, to allow larger multiprocessing
+queues and reduced overhead. If less than 1 use _evolve_single_system</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>output_bpp</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></span></dt><dd><p>Table of key evolutionary stages for each binary</p>
+</dd>
+<dt><strong>output_bcm</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></span></dt><dd><p>Table of detailed evolution for each binary</p>
+</dd>
+<dt><strong>initialbinarytable</strong><span class="classifier">DataFrame</span></dt><dd><p>Initial conditions for each binary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">Line2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gapcolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markeredgewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markeredgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markerfacecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markerfacecoloralt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antialiased</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dash_capstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solid_capstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dash_joinstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solid_joinstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickradius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drawstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markevery</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Artist</span></code></p>
+<p>A line - the line can have both a solid linestyle connecting all
+the vertices, and a marker at each vertex.  Additionally, the
+drawing of the solid line is influenced by the drawstyle, e.g., one
+can create “stepped” lines in various styles.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.__doc__">
+<span class="sig-name descname"><span class="pre">__doc__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A</span> <span class="pre">line</span> <span class="pre">-</span> <span class="pre">the</span> <span class="pre">line</span> <span class="pre">can</span> <span class="pre">have</span> <span class="pre">both</span> <span class="pre">a</span> <span class="pre">solid</span> <span class="pre">linestyle</span> <span class="pre">connecting</span> <span class="pre">all\nthe</span> <span class="pre">vertices,</span> <span class="pre">and</span> <span class="pre">a</span> <span class="pre">marker</span> <span class="pre">at</span> <span class="pre">each</span> <span class="pre">vertex.</span>&#160; <span class="pre">Additionally,</span> <span class="pre">the\ndrawing</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">solid</span> <span class="pre">line</span> <span class="pre">is</span> <span class="pre">influenced</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">drawstyle,</span> <span class="pre">e.g.,</span> <span class="pre">one\ncan</span> <span class="pre">create</span> <span class="pre">&quot;stepped&quot;</span> <span class="pre">lines</span> <span class="pre">in</span> <span class="pre">various</span> <span class="pre">styles.'</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.__doc__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gapcolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markeredgewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markeredgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markerfacecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markerfacecoloralt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antialiased</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dash_capstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solid_capstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dash_joinstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solid_joinstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickradius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drawstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markevery</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.__init__" title="Link to this definition"></a></dt>
+<dd><p>Create a <cite>.Line2D</cite> instance with <em>x</em> and <em>y</em> data in sequences of
+<em>xdata</em>, <em>ydata</em>.</p>
+<p>Additional keyword arguments are <cite>.Line2D</cite> properties:</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array and two offsets from the bottom left corner of the image
+alpha: scalar or None
+animated: bool
+antialiased or aa: bool
+clip_box: <cite>~matplotlib.transforms.BboxBase</cite> or None
+clip_on: bool
+clip_path: Patch or (Path, Transform) or None
+color or c: <a href="#id1"><span class="problematic" id="id2">:mpltype:`color`</span></a>
+dash_capstyle: <cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}
+dash_joinstyle: <cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}
+dashes: sequence of floats (on/off ink in points) or (None, None)
+data: (2, N) array or two 1D arrays
+drawstyle or ds: {‘default’, ‘steps’, ‘steps-pre’, ‘steps-mid’, ‘steps-post’}, default: ‘default’
+figure: <cite>~matplotlib.figure.Figure</cite>
+fillstyle: {‘full’, ‘left’, ‘right’, ‘bottom’, ‘top’, ‘none’}
+gapcolor: <a href="#id3"><span class="problematic" id="id4">:mpltype:`color`</span></a> or None
+gid: str
+in_layout: bool
+label: object
+linestyle or ls: {‘-’, ‘–’, ‘-.’, ‘:’, ‘’, (offset, on-off-seq), …}
+linewidth or lw: float
+marker: marker style string, <cite>~.path.Path</cite> or <cite>~.markers.MarkerStyle</cite>
+markeredgecolor or mec: <a href="#id5"><span class="problematic" id="id6">:mpltype:`color`</span></a>
+markeredgewidth or mew: float
+markerfacecolor or mfc: <a href="#id7"><span class="problematic" id="id8">:mpltype:`color`</span></a>
+markerfacecoloralt or mfcalt: <a href="#id9"><span class="problematic" id="id10">:mpltype:`color`</span></a>
+markersize or ms: float
+markevery: None or int or (int, int) or slice or list[int] or float or (float, float) or list[bool]
+mouseover: bool
+path_effects: list of <cite>.AbstractPathEffect</cite>
+picker: float or callable[[Artist, Event], tuple[bool, dict]]
+pickradius: float
+rasterized: bool
+sketch_params: (scale: float, length: float, randomness: float)
+snap: bool or None
+solid_capstyle: <cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}
+solid_joinstyle: <cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}
+transform: unknown
+url: str
+visible: bool
+xdata: 1D array
+ydata: 1D array
+zorder: float</p>
+</dd>
+</dl>
+<p>See <a class="reference internal" href="#cosmic.plotting.Line2D.set_linestyle" title="cosmic.plotting.Line2D.set_linestyle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_linestyle()</span></code></a> for a description of the line styles,
+<a class="reference internal" href="#cosmic.plotting.Line2D.set_marker" title="cosmic.plotting.Line2D.set_marker"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_marker()</span></code></a> for a description of the markers, and
+<a class="reference internal" href="#cosmic.plotting.Line2D.set_drawstyle" title="cosmic.plotting.Line2D.set_drawstyle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_drawstyle()</span></code></a> for a description of the draw styles.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'matplotlib.lines'</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.__str__" title="Link to this definition"></a></dt>
+<dd><p>Return str(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._alias_map">
+<span class="sig-name descname"><span class="pre">_alias_map</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'antialiased':</span> <span class="pre">['aa'],</span> <span class="pre">'color':</span> <span class="pre">['c'],</span> <span class="pre">'drawstyle':</span> <span class="pre">['ds'],</span> <span class="pre">'linestyle':</span> <span class="pre">['ls'],</span> <span class="pre">'linewidth':</span> <span class="pre">['lw'],</span> <span class="pre">'markeredgecolor':</span> <span class="pre">['mec'],</span> <span class="pre">'markeredgewidth':</span> <span class="pre">['mew'],</span> <span class="pre">'markerfacecolor':</span> <span class="pre">['mfc'],</span> <span class="pre">'markerfacecoloralt':</span> <span class="pre">['mfcalt'],</span> <span class="pre">'markersize':</span> <span class="pre">['ms']}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D._alias_map" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._drawStyles_l">
+<span class="sig-name descname"><span class="pre">_drawStyles_l</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'default':</span> <span class="pre">'_draw_lines',</span> <span class="pre">'steps-mid':</span> <span class="pre">'_draw_steps_mid',</span> <span class="pre">'steps-post':</span> <span class="pre">'_draw_steps_post',</span> <span class="pre">'steps-pre':</span> <span class="pre">'_draw_steps_pre'}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D._drawStyles_l" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._drawStyles_s">
+<span class="sig-name descname"><span class="pre">_drawStyles_s</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'steps':</span> <span class="pre">'_draw_steps_pre'}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D._drawStyles_s" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._get_markerfacecolor">
+<span class="sig-name descname"><span class="pre">_get_markerfacecolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D._get_markerfacecolor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._get_transformed_path">
+<span class="sig-name descname"><span class="pre">_get_transformed_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D._get_transformed_path" title="Link to this definition"></a></dt>
+<dd><p>Return this line’s <cite>~matplotlib.transforms.TransformedPath</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._lineStyles">
+<span class="sig-name descname"><span class="pre">_lineStyles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'':</span> <span class="pre">'_draw_nothing',</span> <span class="pre">'</span> <span class="pre">':</span> <span class="pre">'_draw_nothing',</span> <span class="pre">'-':</span> <span class="pre">'_draw_solid',</span> <span class="pre">'--':</span> <span class="pre">'_draw_dashed',</span> <span class="pre">'-.':</span> <span class="pre">'_draw_dash_dot',</span> <span class="pre">':':</span> <span class="pre">'_draw_dotted',</span> <span class="pre">'None':</span> <span class="pre">'_draw_nothing'}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D._lineStyles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._set_markercolor">
+<span class="sig-name descname"><span class="pre">_set_markercolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_rcdefault</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D._set_markercolor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._subslice_optim_min_size">
+<span class="sig-name descname"><span class="pre">_subslice_optim_min_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#cosmic.plotting.Line2D._subslice_optim_min_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D._transform_path">
+<span class="sig-name descname"><span class="pre">_transform_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subslice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D._transform_path" title="Link to this definition"></a></dt>
+<dd><p>Put a TransformedPath instance at self._transformed_path;
+all invalidation of the transform is then handled by the
+TransformedPath instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouseevent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.contains" title="Link to this definition"></a></dt>
+<dd><p>Test whether <em>mouseevent</em> occurred on the line.</p>
+<p>An event is deemed to have occurred “on” the line if it is less
+than <code class="docutils literal notranslate"><span class="pre">self.pickradius</span></code> (default: 5 points) away from it.  Use
+<cite>~.Line2D.get_pickradius</cite> or <cite>~.Line2D.set_pickradius</cite> to get or set
+the pick radius.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>mouseevent</strong><span class="classifier"><cite>~matplotlib.backend_bases.MouseEvent</cite></span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>contains</strong><span class="classifier">bool</span></dt><dd><p>Whether any values are within the radius.</p>
+</dd>
+<dt><strong>details</strong><span class="classifier">dict</span></dt><dd><p>A dictionary <code class="docutils literal notranslate"><span class="pre">{'ind':</span> <span class="pre">pointlist}</span></code>, where <em>pointlist</em> is a
+list of points of the line that are within the pickradius around
+the event position.</p>
+<p>TODO: sort returned indices by distance</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.draw" title="Link to this definition"></a></dt>
+<dd><p>Draw the Artist (and its children) using the given renderer.</p>
+<p>This has no effect if the artist is not visible (<cite>.Artist.get_visible</cite>
+returns False).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>renderer</strong><span class="classifier"><cite>~matplotlib.backend_bases.RendererBase</cite> subclass.</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method is overridden in the Artist subclasses.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.drawStyleKeys">
+<span class="sig-name descname"><span class="pre">drawStyleKeys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['default',</span> <span class="pre">'steps-mid',</span> <span class="pre">'steps-pre',</span> <span class="pre">'steps-post',</span> <span class="pre">'steps']</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.drawStyleKeys" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.drawStyles">
+<span class="sig-name descname"><span class="pre">drawStyles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'default':</span> <span class="pre">'_draw_lines',</span> <span class="pre">'steps':</span> <span class="pre">'_draw_steps_pre',</span> <span class="pre">'steps-mid':</span> <span class="pre">'_draw_steps_mid',</span> <span class="pre">'steps-post':</span> <span class="pre">'_draw_steps_post',</span> <span class="pre">'steps-pre':</span> <span class="pre">'_draw_steps_pre'}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.drawStyles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.fillStyles">
+<span class="sig-name descname"><span class="pre">fillStyles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('full',</span> <span class="pre">'left',</span> <span class="pre">'right',</span> <span class="pre">'bottom',</span> <span class="pre">'top',</span> <span class="pre">'none')</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.fillStyles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.filled_markers">
+<span class="sig-name descname"><span class="pre">filled_markers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('.',</span> <span class="pre">'o',</span> <span class="pre">'v',</span> <span class="pre">'^',</span> <span class="pre">'&lt;',</span> <span class="pre">'&gt;',</span> <span class="pre">'8',</span> <span class="pre">'s',</span> <span class="pre">'p',</span> <span class="pre">'*',</span> <span class="pre">'h',</span> <span class="pre">'H',</span> <span class="pre">'D',</span> <span class="pre">'d',</span> <span class="pre">'P',</span> <span class="pre">'X')</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.filled_markers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_aa">
+<span class="sig-name descname"><span class="pre">get_aa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_aa" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_antialiased</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_antialiased">
+<span class="sig-name descname"><span class="pre">get_antialiased</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_antialiased" title="Link to this definition"></a></dt>
+<dd><p>Return whether antialiased rendering is used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_bbox">
+<span class="sig-name descname"><span class="pre">get_bbox</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_bbox" title="Link to this definition"></a></dt>
+<dd><p>Get the bounding box of this line.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_c">
+<span class="sig-name descname"><span class="pre">get_c</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_c" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_color</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_color">
+<span class="sig-name descname"><span class="pre">get_color</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_color" title="Link to this definition"></a></dt>
+<dd><p>Return the line color.</p>
+<p>See also <cite>~.Line2D.set_color</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_dash_capstyle">
+<span class="sig-name descname"><span class="pre">get_dash_capstyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_dash_capstyle" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>.CapStyle</cite> for dashed lines.</p>
+<p>See also <cite>~.Line2D.set_dash_capstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_dash_joinstyle">
+<span class="sig-name descname"><span class="pre">get_dash_joinstyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_dash_joinstyle" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>.JoinStyle</cite> for dashed lines.</p>
+<p>See also <cite>~.Line2D.set_dash_joinstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_data" title="Link to this definition"></a></dt>
+<dd><p>Return the line data as an <code class="docutils literal notranslate"><span class="pre">(xdata,</span> <span class="pre">ydata)</span></code> pair.</p>
+<p>If <em>orig</em> is <em>True</em>, return the original data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_drawstyle">
+<span class="sig-name descname"><span class="pre">get_drawstyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_drawstyle" title="Link to this definition"></a></dt>
+<dd><p>Return the drawstyle.</p>
+<p>See also <cite>~.Line2D.set_drawstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_ds">
+<span class="sig-name descname"><span class="pre">get_ds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_ds" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_drawstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_fillstyle">
+<span class="sig-name descname"><span class="pre">get_fillstyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_fillstyle" title="Link to this definition"></a></dt>
+<dd><p>Return the marker fill style.</p>
+<p>See also <cite>~.Line2D.set_fillstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_gapcolor">
+<span class="sig-name descname"><span class="pre">get_gapcolor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_gapcolor" title="Link to this definition"></a></dt>
+<dd><p>Return the line gapcolor.</p>
+<p>See also <cite>~.Line2D.set_gapcolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_linestyle">
+<span class="sig-name descname"><span class="pre">get_linestyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_linestyle" title="Link to this definition"></a></dt>
+<dd><p>Return the linestyle.</p>
+<p>See also <cite>~.Line2D.set_linestyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_linewidth">
+<span class="sig-name descname"><span class="pre">get_linewidth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_linewidth" title="Link to this definition"></a></dt>
+<dd><p>Return the linewidth in points.</p>
+<p>See also <cite>~.Line2D.set_linewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_ls">
+<span class="sig-name descname"><span class="pre">get_ls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_ls" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_linestyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_lw">
+<span class="sig-name descname"><span class="pre">get_lw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_lw" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_linewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_marker">
+<span class="sig-name descname"><span class="pre">get_marker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_marker" title="Link to this definition"></a></dt>
+<dd><p>Return the line marker.</p>
+<p>See also <cite>~.Line2D.set_marker</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_markeredgecolor">
+<span class="sig-name descname"><span class="pre">get_markeredgecolor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_markeredgecolor" title="Link to this definition"></a></dt>
+<dd><p>Return the marker edge color.</p>
+<p>See also <cite>~.Line2D.set_markeredgecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_markeredgewidth">
+<span class="sig-name descname"><span class="pre">get_markeredgewidth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_markeredgewidth" title="Link to this definition"></a></dt>
+<dd><p>Return the marker edge width in points.</p>
+<p>See also <cite>~.Line2D.set_markeredgewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_markerfacecolor">
+<span class="sig-name descname"><span class="pre">get_markerfacecolor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_markerfacecolor" title="Link to this definition"></a></dt>
+<dd><p>Return the marker face color.</p>
+<p>See also <cite>~.Line2D.set_markerfacecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_markerfacecoloralt">
+<span class="sig-name descname"><span class="pre">get_markerfacecoloralt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_markerfacecoloralt" title="Link to this definition"></a></dt>
+<dd><p>Return the alternate marker face color.</p>
+<p>See also <cite>~.Line2D.set_markerfacecoloralt</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_markersize">
+<span class="sig-name descname"><span class="pre">get_markersize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_markersize" title="Link to this definition"></a></dt>
+<dd><p>Return the marker size in points.</p>
+<p>See also <cite>~.Line2D.set_markersize</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_markevery">
+<span class="sig-name descname"><span class="pre">get_markevery</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_markevery" title="Link to this definition"></a></dt>
+<dd><p>Return the markevery setting for marker subsampling.</p>
+<p>See also <cite>~.Line2D.set_markevery</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_mec">
+<span class="sig-name descname"><span class="pre">get_mec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_mec" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_markeredgecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_mew">
+<span class="sig-name descname"><span class="pre">get_mew</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_mew" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_markeredgewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_mfc">
+<span class="sig-name descname"><span class="pre">get_mfc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_mfc" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_markerfacecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_mfcalt">
+<span class="sig-name descname"><span class="pre">get_mfcalt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_mfcalt" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_markerfacecoloralt</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_ms">
+<span class="sig-name descname"><span class="pre">get_ms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_ms" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>get_markersize</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_path">
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_path" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>~matplotlib.path.Path</cite> associated with this line.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_pickradius">
+<span class="sig-name descname"><span class="pre">get_pickradius</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_pickradius" title="Link to this definition"></a></dt>
+<dd><p>Return the pick radius used for containment tests.</p>
+<p>See <cite>.contains</cite> for more details.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_solid_capstyle">
+<span class="sig-name descname"><span class="pre">get_solid_capstyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_solid_capstyle" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>.CapStyle</cite> for solid lines.</p>
+<p>See also <cite>~.Line2D.set_solid_capstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_solid_joinstyle">
+<span class="sig-name descname"><span class="pre">get_solid_joinstyle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_solid_joinstyle" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>.JoinStyle</cite> for solid lines.</p>
+<p>See also <cite>~.Line2D.set_solid_joinstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_window_extent">
+<span class="sig-name descname"><span class="pre">get_window_extent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">renderer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_window_extent" title="Link to this definition"></a></dt>
+<dd><p>Get the artist’s bounding box in display space.</p>
+<p>The bounding box’ width and height are nonnegative.</p>
+<p>Subclasses should override for inclusion in the bounding box
+“tight” calculation. Default is to return an empty bounding
+box at 0, 0.</p>
+<p>Be careful when using this function, the results will not update
+if the artist window extent of the artist changes.  The extent
+can change due to any changes in the transform stack, such as
+changing the Axes limits, the figure size, or the canvas used
+(as is done when saving a figure).  This can lead to unexpected
+behavior where interactive figures will look fine on the screen,
+but will save incorrectly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_xdata">
+<span class="sig-name descname"><span class="pre">get_xdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_xdata" title="Link to this definition"></a></dt>
+<dd><p>Return the xdata.</p>
+<p>If <em>orig</em> is <em>True</em>, return the original data, else the
+processed data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_xydata">
+<span class="sig-name descname"><span class="pre">get_xydata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_xydata" title="Link to this definition"></a></dt>
+<dd><p>Return the <em>xy</em> data as a (N, 2) array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.get_ydata">
+<span class="sig-name descname"><span class="pre">get_ydata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.get_ydata" title="Link to this definition"></a></dt>
+<dd><p>Return the ydata.</p>
+<p>If <em>orig</em> is <em>True</em>, return the original data, else the
+processed data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.is_dashed">
+<span class="sig-name descname"><span class="pre">is_dashed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.is_dashed" title="Link to this definition"></a></dt>
+<dd><p>Return whether line has a dashed linestyle.</p>
+<p>A custom linestyle is assumed to be dashed, we do not inspect the
+<code class="docutils literal notranslate"><span class="pre">onoffseq</span></code> directly.</p>
+<p>See also <cite>~.Line2D.set_linestyle</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.lineStyles">
+<span class="sig-name descname"><span class="pre">lineStyles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'':</span> <span class="pre">'_draw_nothing',</span> <span class="pre">'</span> <span class="pre">':</span> <span class="pre">'_draw_nothing',</span> <span class="pre">'-':</span> <span class="pre">'_draw_solid',</span> <span class="pre">'--':</span> <span class="pre">'_draw_dashed',</span> <span class="pre">'-.':</span> <span class="pre">'_draw_dash_dot',</span> <span class="pre">':':</span> <span class="pre">'_draw_dotted',</span> <span class="pre">'None':</span> <span class="pre">'_draw_nothing'}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.lineStyles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.markers">
+<span class="sig-name descname"><span class="pre">markers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'</span> <span class="pre">':</span> <span class="pre">'nothing',</span> <span class="pre">'':</span> <span class="pre">'nothing',</span> <span class="pre">'*':</span> <span class="pre">'star',</span> <span class="pre">'+':</span> <span class="pre">'plus',</span> <span class="pre">',':</span> <span class="pre">'pixel',</span> <span class="pre">'.':</span> <span class="pre">'point',</span> <span class="pre">'1':</span> <span class="pre">'tri_down',</span> <span class="pre">'2':</span> <span class="pre">'tri_up',</span> <span class="pre">'3':</span> <span class="pre">'tri_left',</span> <span class="pre">'4':</span> <span class="pre">'tri_right',</span> <span class="pre">'8':</span> <span class="pre">'octagon',</span> <span class="pre">'&lt;':</span> <span class="pre">'triangle_left',</span> <span class="pre">'&gt;':</span> <span class="pre">'triangle_right',</span> <span class="pre">'D':</span> <span class="pre">'diamond',</span> <span class="pre">'H':</span> <span class="pre">'hexagon2',</span> <span class="pre">'None':</span> <span class="pre">'nothing',</span> <span class="pre">'P':</span> <span class="pre">'plus_filled',</span> <span class="pre">'X':</span> <span class="pre">'x_filled',</span> <span class="pre">'^':</span> <span class="pre">'triangle_up',</span> <span class="pre">'_':</span> <span class="pre">'hline',</span> <span class="pre">'d':</span> <span class="pre">'thin_diamond',</span> <span class="pre">'h':</span> <span class="pre">'hexagon1',</span> <span class="pre">'none':</span> <span class="pre">'nothing',</span> <span class="pre">'o':</span> <span class="pre">'circle',</span> <span class="pre">'p':</span> <span class="pre">'pentagon',</span> <span class="pre">'s':</span> <span class="pre">'square',</span> <span class="pre">'v':</span> <span class="pre">'triangle_down',</span> <span class="pre">'x':</span> <span class="pre">'x',</span> <span class="pre">'|':</span> <span class="pre">'vline',</span> <span class="pre">0:</span> <span class="pre">'tickleft',</span> <span class="pre">1:</span> <span class="pre">'tickright',</span> <span class="pre">10:</span> <span class="pre">'caretupbase',</span> <span class="pre">11:</span> <span class="pre">'caretdownbase',</span> <span class="pre">2:</span> <span class="pre">'tickup',</span> <span class="pre">3:</span> <span class="pre">'tickdown',</span> <span class="pre">4:</span> <span class="pre">'caretleft',</span> <span class="pre">5:</span> <span class="pre">'caretright',</span> <span class="pre">6:</span> <span class="pre">'caretup',</span> <span class="pre">7:</span> <span class="pre">'caretdown',</span> <span class="pre">8:</span> <span class="pre">'caretleftbase',</span> <span class="pre">9:</span> <span class="pre">'caretrightbase'}</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.markers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.pickradius">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pickradius</span></span><a class="headerlink" href="#cosmic.plotting.Line2D.pickradius" title="Link to this definition"></a></dt>
+<dd><p>Return the pick radius used for containment tests.</p>
+<p>See <cite>.contains</cite> for more details.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.recache">
+<span class="sig-name descname"><span class="pre">recache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">always</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.recache" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.recache_always">
+<span class="sig-name descname"><span class="pre">recache_always</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.recache_always" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_filter=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antialiased=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_box=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_on=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_path=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dash_capstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dash_joinstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dashes=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drawstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gapcolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markeredgecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markeredgewidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markerfacecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markerfacecoloralt=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markevery=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouseover=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_effects=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picker=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickradius=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sketch_params=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solid_capstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solid_joinstyle=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xdata=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder=&lt;UNSET&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set" title="Link to this definition"></a></dt>
+<dd><p>Set multiple properties at once.</p>
+<p>Supported properties are</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array and two offsets from the bottom left corner of the image
+alpha: scalar or None
+animated: bool
+antialiased: bool
+clip_box: <cite>~matplotlib.transforms.BboxBase</cite> or None
+clip_on: bool
+clip_path: Patch or (Path, Transform) or None
+color: <a href="#id11"><span class="problematic" id="id12">:mpltype:`color`</span></a>
+dash_capstyle: <cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}
+dash_joinstyle: <cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}
+dashes: sequence of floats (on/off ink in points) or (None, None)
+data: (2, N) array or two 1D arrays
+drawstyle: {‘default’, ‘steps’, ‘steps-pre’, ‘steps-mid’, ‘steps-post’}, default: ‘default’
+figure: <cite>~matplotlib.figure.Figure</cite>
+fillstyle: {‘full’, ‘left’, ‘right’, ‘bottom’, ‘top’, ‘none’}
+gapcolor: <a href="#id13"><span class="problematic" id="id14">:mpltype:`color`</span></a> or None
+gid: str
+in_layout: bool
+label: object
+linestyle: {‘-’, ‘–’, ‘-.’, ‘:’, ‘’, (offset, on-off-seq), …}
+linewidth: float
+marker: marker style string, <cite>~.path.Path</cite> or <cite>~.markers.MarkerStyle</cite>
+markeredgecolor: <a href="#id15"><span class="problematic" id="id16">:mpltype:`color`</span></a>
+markeredgewidth: float
+markerfacecolor: <a href="#id17"><span class="problematic" id="id18">:mpltype:`color`</span></a>
+markerfacecoloralt: <a href="#id19"><span class="problematic" id="id20">:mpltype:`color`</span></a>
+markersize: float
+markevery: None or int or (int, int) or slice or list[int] or float or (float, float) or list[bool]
+mouseover: bool
+path_effects: list of <cite>.AbstractPathEffect</cite>
+picker: float or callable[[Artist, Event], tuple[bool, dict]]
+pickradius: float
+rasterized: bool
+sketch_params: (scale: float, length: float, randomness: float)
+snap: bool or None
+solid_capstyle: <cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}
+solid_joinstyle: <cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}
+transform: unknown
+url: str
+visible: bool
+xdata: 1D array
+ydata: 1D array
+zorder: float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_aa">
+<span class="sig-name descname"><span class="pre">set_aa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_aa" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_antialiased</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_antialiased">
+<span class="sig-name descname"><span class="pre">set_antialiased</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_antialiased" title="Link to this definition"></a></dt>
+<dd><p>Set whether to use antialiased rendering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>b</strong><span class="classifier">bool</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_c">
+<span class="sig-name descname"><span class="pre">set_c</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_c" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_color</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_color">
+<span class="sig-name descname"><span class="pre">set_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_color" title="Link to this definition"></a></dt>
+<dd><p>Set the color of the line.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>color</strong><span class="classifier"><a href="#id21"><span class="problematic" id="id22">:mpltype:`color`</span></a></span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_dash_capstyle">
+<span class="sig-name descname"><span class="pre">set_dash_capstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_dash_capstyle" title="Link to this definition"></a></dt>
+<dd><p>How to draw the end caps if the line is <cite>~Line2D.is_dashed</cite>.</p>
+<p>The default capstyle is <a href="#id23"><span class="problematic" id="id24">:rc:`lines.dash_capstyle`</span></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>s</strong><span class="classifier"><cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_dash_joinstyle">
+<span class="sig-name descname"><span class="pre">set_dash_joinstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_dash_joinstyle" title="Link to this definition"></a></dt>
+<dd><p>How to join segments of the line if it <cite>~Line2D.is_dashed</cite>.</p>
+<p>The default joinstyle is <a href="#id25"><span class="problematic" id="id26">:rc:`lines.dash_joinstyle`</span></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>s</strong><span class="classifier"><cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_dashes">
+<span class="sig-name descname"><span class="pre">set_dashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_dashes" title="Link to this definition"></a></dt>
+<dd><p>Set the dash sequence.</p>
+<p>The dash sequence is a sequence of floats of even length describing
+the length of dashes and spaces in points.</p>
+<p>For example, (5, 2, 1, 2) describes a sequence of 5 point and 1 point
+dashes separated by 2 point spaces.</p>
+<p>See also <cite>~.Line2D.set_gapcolor</cite>, which allows those spaces to be
+filled with a color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>seq</strong><span class="classifier">sequence of floats (on/off ink in points) or (None, None)</span></dt><dd><p>If <em>seq</em> is empty or <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">None)</span></code>, the linestyle will be set
+to solid.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_data">
+<span class="sig-name descname"><span class="pre">set_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_data" title="Link to this definition"></a></dt>
+<dd><p>Set the x and y data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>*args</strong><span class="classifier">(2, N) array or two 1D arrays</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#cosmic.plotting.Line2D.set_xdata" title="cosmic.plotting.Line2D.set_xdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xdata</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="#cosmic.plotting.Line2D.set_ydata" title="cosmic.plotting.Line2D.set_ydata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ydata</span></code></a></dt><dd></dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_drawstyle">
+<span class="sig-name descname"><span class="pre">set_drawstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drawstyle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_drawstyle" title="Link to this definition"></a></dt>
+<dd><p>Set the drawstyle of the plot.</p>
+<p>The drawstyle determines how the points are connected.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>drawstyle</strong><span class="classifier">{‘default’, ‘steps’, ‘steps-pre’, ‘steps-mid’, ‘steps-post’}, default: ‘default’</span></dt><dd><p>For ‘default’, the points are connected with straight lines.</p>
+<p>The steps variants connect the points with step-like lines,
+i.e. horizontal lines with vertical steps. They differ in the
+location of the step:</p>
+<ul class="simple">
+<li><p>‘steps-pre’: The step is at the beginning of the line segment,
+i.e. the line will be at the y-value of point to the right.</p></li>
+<li><p>‘steps-mid’: The step is halfway between the points.</p></li>
+<li><p>‘steps-post: The step is at the end of the line segment,
+i.e. the line will be at the y-value of the point to the left.</p></li>
+<li><p>‘steps’ is equal to ‘steps-pre’ and is maintained for
+backward-compatibility.</p></li>
+</ul>
+<p>For examples see <span class="xref std std-doc">/gallery/lines_bars_and_markers/step_demo</span>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_ds">
+<span class="sig-name descname"><span class="pre">set_ds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drawstyle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_ds" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_drawstyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_fillstyle">
+<span class="sig-name descname"><span class="pre">set_fillstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_fillstyle" title="Link to this definition"></a></dt>
+<dd><p>Set the marker fill style.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>fs</strong><span class="classifier">{‘full’, ‘left’, ‘right’, ‘bottom’, ‘top’, ‘none’}</span></dt><dd><p>Possible values:</p>
+<ul class="simple">
+<li><p>‘full’: Fill the whole marker with the <em>markerfacecolor</em>.</p></li>
+<li><p>‘left’, ‘right’, ‘bottom’, ‘top’: Fill the marker half at
+the given side with the <em>markerfacecolor</em>. The other
+half of the marker is filled with <em>markerfacecoloralt</em>.</p></li>
+<li><p>‘none’: No filling.</p></li>
+</ul>
+<p>For examples see <span class="xref std std-ref">marker_fill_styles</span>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_gapcolor">
+<span class="sig-name descname"><span class="pre">set_gapcolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gapcolor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_gapcolor" title="Link to this definition"></a></dt>
+<dd><p>Set a color to fill the gaps in the dashed line style.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Striped lines are created by drawing two interleaved dashed lines.
+There can be overlaps between those two, which may result in
+artifacts when using transparency.</p>
+<p>This functionality is experimental and may change.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>gapcolor</strong><span class="classifier"><a href="#id27"><span class="problematic" id="id28">:mpltype:`color`</span></a> or None</span></dt><dd><p>The color with which to fill the gaps. If None, the gaps are
+unfilled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_linestyle">
+<span class="sig-name descname"><span class="pre">set_linestyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_linestyle" title="Link to this definition"></a></dt>
+<dd><p>Set the linestyle of the line.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ls</strong><span class="classifier">{‘-’, ‘–’, ‘-.’, ‘:’, ‘’, (offset, on-off-seq), …}</span></dt><dd><p>Possible values:</p>
+<ul>
+<li><p>A string:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>linestyle</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'-'</span></code> or <code class="docutils literal notranslate"><span class="pre">'solid'</span></code></p></td>
+<td><p>solid line</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'--'</span></code> or  <code class="docutils literal notranslate"><span class="pre">'dashed'</span></code></p></td>
+<td><p>dashed line</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'-.'</span></code> or  <code class="docutils literal notranslate"><span class="pre">'dashdot'</span></code></p></td>
+<td><p>dash-dotted line</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">':'</span></code> or <code class="docutils literal notranslate"><span class="pre">'dotted'</span></code></p></td>
+<td><p>dotted line</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'none'</span></code>, <code class="docutils literal notranslate"><span class="pre">'None'</span></code>, <code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">'</span></code>, or <code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+<td><p>draw nothing</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Alternatively a dash tuple of the following form can be
+provided:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">onoffseq</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">onoffseq</span></code> is an even length tuple of on and off ink
+in points. See also <a class="reference internal" href="#cosmic.plotting.Line2D.set_dashes" title="cosmic.plotting.Line2D.set_dashes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_dashes()</span></code></a>.</p>
+</li>
+</ul>
+<p>For examples see <span class="xref std std-doc">/gallery/lines_bars_and_markers/linestyles</span>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_linewidth">
+<span class="sig-name descname"><span class="pre">set_linewidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_linewidth" title="Link to this definition"></a></dt>
+<dd><p>Set the line width in points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>w</strong><span class="classifier">float</span></dt><dd><p>Line width, in points.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_ls">
+<span class="sig-name descname"><span class="pre">set_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_ls" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_linestyle</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_lw">
+<span class="sig-name descname"><span class="pre">set_lw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_lw" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_linewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_marker">
+<span class="sig-name descname"><span class="pre">set_marker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_marker" title="Link to this definition"></a></dt>
+<dd><p>Set the line marker.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>marker</strong><span class="classifier">marker style string, <cite>~.path.Path</cite> or <cite>~.markers.MarkerStyle</cite></span></dt><dd><p>See <cite>~matplotlib.markers</cite> for full description of possible
+arguments.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_markeredgecolor">
+<span class="sig-name descname"><span class="pre">set_markeredgecolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_markeredgecolor" title="Link to this definition"></a></dt>
+<dd><p>Set the marker edge color.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ec</strong><span class="classifier"><a href="#id29"><span class="problematic" id="id30">:mpltype:`color`</span></a></span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_markeredgewidth">
+<span class="sig-name descname"><span class="pre">set_markeredgewidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ew</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_markeredgewidth" title="Link to this definition"></a></dt>
+<dd><p>Set the marker edge width in points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ew</strong><span class="classifier">float</span></dt><dd><p>Marker edge width, in points.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_markerfacecolor">
+<span class="sig-name descname"><span class="pre">set_markerfacecolor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_markerfacecolor" title="Link to this definition"></a></dt>
+<dd><p>Set the marker face color.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>fc</strong><span class="classifier"><a href="#id31"><span class="problematic" id="id32">:mpltype:`color`</span></a></span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_markerfacecoloralt">
+<span class="sig-name descname"><span class="pre">set_markerfacecoloralt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_markerfacecoloralt" title="Link to this definition"></a></dt>
+<dd><p>Set the alternate marker face color.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>fc</strong><span class="classifier"><a href="#id33"><span class="problematic" id="id34">:mpltype:`color`</span></a></span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_markersize">
+<span class="sig-name descname"><span class="pre">set_markersize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sz</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_markersize" title="Link to this definition"></a></dt>
+<dd><p>Set the marker size in points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sz</strong><span class="classifier">float</span></dt><dd><p>Marker size, in points.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_markevery">
+<span class="sig-name descname"><span class="pre">set_markevery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">every</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_markevery" title="Link to this definition"></a></dt>
+<dd><p>Set the markevery property to subsample the plot when using markers.</p>
+<p>e.g., if <code class="docutils literal notranslate"><span class="pre">every=5</span></code>, every 5-th marker will be plotted.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>every</strong><span class="classifier">None or int or (int, int) or slice or list[int] or float or (float, float) or list[bool]</span></dt><dd><p>Which markers to plot.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">every=None</span></code>: every point will be plotted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=N</span></code>: every N-th marker will be plotted starting with
+marker 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=(start,</span> <span class="pre">N)</span></code>: every N-th marker, starting at index
+<em>start</em>, will be plotted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=slice(start,</span> <span class="pre">end,</span> <span class="pre">N)</span></code>: every N-th marker, starting at
+index <em>start</em>, up to but not including index <em>end</em>, will be
+plotted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=[i,</span> <span class="pre">j,</span> <span class="pre">m,</span> <span class="pre">...]</span></code>: only markers at the given indices
+will be plotted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=[True,</span> <span class="pre">False,</span> <span class="pre">True,</span> <span class="pre">...]</span></code>: only positions that are True
+will be plotted. The list must have the same length as the data
+points.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=0.1</span></code>, (i.e. a float): markers will be spaced at
+approximately equal visual distances along the line; the distance
+along the line between markers is determined by multiplying the
+display-coordinate distance of the Axes bounding-box diagonal
+by the value of <em>every</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">every=(0.5,</span> <span class="pre">0.1)</span></code> (i.e. a length-2 tuple of float): similar
+to <code class="docutils literal notranslate"><span class="pre">every=0.1</span></code> but the first marker will be offset along the
+line by 0.5 multiplied by the
+display-coordinate-diagonal-distance along the line.</p></li>
+</ul>
+<p>For examples see
+<span class="xref std std-doc">/gallery/lines_bars_and_markers/markevery_demo</span>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Setting <em>markevery</em> will still only draw markers at actual data points.
+While the float argument form aims for uniform visual spacing, it has
+to coerce from the ideal spacing to the nearest available data point.
+Depending on the number and distribution of data points, the result
+may still not look evenly spaced.</p>
+<p>When using a start offset to specify the first marker, the offset will
+be from the first data point which may be different from the first
+the visible data point if the plot is zoomed in.</p>
+<p>If zooming in on a plot when using float arguments then the actual
+data points that have markers will change because the distance between
+markers is always determined from the display-coordinates
+axes-bounding-box-diagonal regardless of the actual axes data limits.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_mec">
+<span class="sig-name descname"><span class="pre">set_mec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_mec" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_markeredgecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_mew">
+<span class="sig-name descname"><span class="pre">set_mew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ew</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_mew" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_markeredgewidth</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_mfc">
+<span class="sig-name descname"><span class="pre">set_mfc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_mfc" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_markerfacecolor</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_mfcalt">
+<span class="sig-name descname"><span class="pre">set_mfcalt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_mfcalt" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_markerfacecoloralt</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_ms">
+<span class="sig-name descname"><span class="pre">set_ms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sz</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_ms" title="Link to this definition"></a></dt>
+<dd><p>Alias for <cite>set_markersize</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_picker">
+<span class="sig-name descname"><span class="pre">set_picker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_picker" title="Link to this definition"></a></dt>
+<dd><p>Set the event picker details for the line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p</strong><span class="classifier">float or callable[[Artist, Event], tuple[bool, dict]]</span></dt><dd><p>If a float, it is used as the pick radius in points.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_pickradius">
+<span class="sig-name descname"><span class="pre">set_pickradius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pickradius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_pickradius" title="Link to this definition"></a></dt>
+<dd><p>Set the pick radius used for containment tests.</p>
+<p>See <cite>.contains</cite> for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pickradius</strong><span class="classifier">float</span></dt><dd><p>Pick radius, in points.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_solid_capstyle">
+<span class="sig-name descname"><span class="pre">set_solid_capstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_solid_capstyle" title="Link to this definition"></a></dt>
+<dd><p>How to draw the end caps if the line is solid (not <cite>~Line2D.is_dashed</cite>)</p>
+<p>The default capstyle is <a href="#id35"><span class="problematic" id="id36">:rc:`lines.solid_capstyle`</span></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>s</strong><span class="classifier"><cite>.CapStyle</cite> or {‘butt’, ‘projecting’, ‘round’}</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_solid_joinstyle">
+<span class="sig-name descname"><span class="pre">set_solid_joinstyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_solid_joinstyle" title="Link to this definition"></a></dt>
+<dd><p>How to join segments if the line is solid (not <cite>~Line2D.is_dashed</cite>).</p>
+<p>The default joinstyle is <a href="#id37"><span class="problematic" id="id38">:rc:`lines.solid_joinstyle`</span></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>s</strong><span class="classifier"><cite>.JoinStyle</cite> or {‘miter’, ‘round’, ‘bevel’}</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_transform">
+<span class="sig-name descname"><span class="pre">set_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_transform" title="Link to this definition"></a></dt>
+<dd><p>Set the artist transform.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>t</strong><span class="classifier"><cite>~matplotlib.transforms.Transform</cite></span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_xdata">
+<span class="sig-name descname"><span class="pre">set_xdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_xdata" title="Link to this definition"></a></dt>
+<dd><p>Set the data array for x.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">1D array</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#cosmic.plotting.Line2D.set_data" title="cosmic.plotting.Line2D.set_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="#cosmic.plotting.Line2D.set_ydata" title="cosmic.plotting.Line2D.set_ydata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_ydata</span></code></a></dt><dd></dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.set_ydata">
+<span class="sig-name descname"><span class="pre">set_ydata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.set_ydata" title="Link to this definition"></a></dt>
+<dd><p>Set the data array for y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">1D array</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#cosmic.plotting.Line2D.set_data" title="cosmic.plotting.Line2D.set_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="#cosmic.plotting.Line2D.set_xdata" title="cosmic.plotting.Line2D.set_xdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_xdata</span></code></a></dt><dd></dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.update_from">
+<span class="sig-name descname"><span class="pre">update_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.Line2D.update_from" title="Link to this definition"></a></dt>
+<dd><p>Copy properties from <em>other</em> to self.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cosmic.plotting.Line2D.zorder">
+<span class="sig-name descname"><span class="pre">zorder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#cosmic.plotting.Line2D.zorder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.a_from_p">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">a_from_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.a_from_p" title="Link to this definition"></a></dt>
+<dd><p>Computes the separation from orbital period with KEPLER III</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p</strong><span class="classifier">float/array</span></dt><dd><p>orbital period [day]</p>
+</dd>
+<dt><strong>m1</strong><span class="classifier">float/array</span></dt><dd><p>primary mass [msun]</p>
+</dd>
+<dt><strong>m2</strong><span class="classifier">float/array</span></dt><dd><p>secondary mass [msun]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>sep</strong><span class="classifier">float/array</span></dt><dd><p>separation [rsun]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.calc_Roche_radius">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">calc_Roche_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.calc_Roche_radius" title="Link to this definition"></a></dt>
+<dd><p>Get Roche lobe radius (Eggleton 1983)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>M1</strong><span class="classifier">float</span></dt><dd><p>Primary mass [any unit]</p>
+</dd>
+<dt><strong>M2</strong><span class="classifier">float</span></dt><dd><p>Secondary mass [any unit]</p>
+</dd>
+<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Orbital separation [any unit]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Roche radius</strong><span class="classifier">float</span></dt><dd><p>in units of input ‘A’</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.evolve_and_plot">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">evolve_and_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BSEDict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.evolve_and_plot" title="Link to this definition"></a></dt>
+<dd><p>Evolve and plot binaries as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>initC</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>initial conditions for binary to evolve</p>
+</dd>
+<dt><strong>t_min</strong><span class="classifier"><cite>float or list</cite></span></dt><dd><p>starting time for plot in Myr</p>
+</dd>
+<dt><strong>t_max</strong><span class="classifier"><cite>float or list</cite></span></dt><dd><p>ending time for plot in Myr</p>
+</dd>
+<dt><strong>BSEDict</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing all BSE flags needed</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>all_figs</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>list of all figures created</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.evolve_binary">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">evolve_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BSEDict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.evolve_binary" title="Link to this definition"></a></dt>
+<dd><p>Evolves a single binary with all timesteps written
+to the bcm array for plotting</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>initC</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>initial conditions for binary to evolve</p>
+</dd>
+<dt><strong>t_min</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>starting time for plot in Myr</p>
+</dd>
+<dt><strong>t_max</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>ending time for plot in Myr</p>
+</dd>
+<dt><strong>BSEDict</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing all BSE flags needed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>bcm</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>binary evolution data form BSE’s bcm dict</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_HR_diagram">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_HR_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Teff1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Teff2_out</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_HR_diagram" title="Link to this definition"></a></dt>
+<dd><p>Plots the eccentricity as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>L1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary luminosities at each binary evolution time step in Lsun</p>
+</dd>
+<dt><strong>L2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary luminosities at each binary evolution time step in Lsun</p>
+</dd>
+<dt><strong>Teff1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary effective temperature at each binary evolution time step in K</p>
+</dd>
+<dt><strong>Teff2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary effective temperature at each binary evolution time step in K</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_Mdot">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_Mdot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Mdot1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Mdot2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_Mdot" title="Link to this definition"></a></dt>
+<dd><p>Plots the stellar effectvie temperature as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>Mdot1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary mass transfer rate at each binary evolution time step in Msun/yr</p>
+</dd>
+<dt><strong>Mdot2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary mass transfer rate at each binary evolution time step in Msun/yr</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_P_orb">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_P_orb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_orb_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_P_orb" title="Link to this definition"></a></dt>
+<dd><p>Plots the orbital period as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>P_orb_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of orbital periods at each binary evolution time step in days</p>
+</dd>
+<dt><strong>t_max</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>ending time for plot in Myr</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_Teff">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_Teff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Teff1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Teff2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_Teff" title="Link to this definition"></a></dt>
+<dd><p>Plots the stellar effectvie temperature as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>Teff1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary effective temperature at each binary evolution time step in K</p>
+</dd>
+<dt><strong>Teff2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary effective temperature at each binary evolution time step in K</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_binary_evol">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_binary_evol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bcm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ktype_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_binary_evol" title="Link to this definition"></a></dt>
+<dd><p>Plots the full set of plots and kstar bar plots</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>bcm</strong><span class="classifier"><cite>pandas.DataFrame</cite></span></dt><dd><p>binary evolution data form BSE’s bcm dict</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>fig</strong><span class="classifier"><cite>matplotlib.figure</cite></span></dt><dd><p>Figure containing all the plots!</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_ecc">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_ecc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecc_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_ecc" title="Link to this definition"></a></dt>
+<dd><p>Plots the eccentricity as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>ecc_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of eccentricities at each binary evolution time step</p>
+</dd>
+<dt><strong>t_max</strong><span class="classifier"><cite>float</cite></span></dt><dd><p>ending time for plot in Myr</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_k_type">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_k_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_k_type_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_type_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_type_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_k_type" title="Link to this definition"></a></dt>
+<dd><p>Plots the stellar types as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax_1</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for kstar 1</p>
+</dd>
+<dt><strong>ax_2</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for kstar 2</p>
+</dd>
+<dt><strong>ax_k_type_list</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>List of ktypes for the legend of the ktype bar plots</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>k1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of kstar 1 type at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>k2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of kstar 2 type at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>k_type_colors</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>List of colors for each ktype</p>
+</dd>
+<dt><strong>k_type_labels</strong><span class="classifier"><cite>list</cite></span></dt><dd><p>List of labels for each ktype</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_mass">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_mass" title="Link to this definition"></a></dt>
+<dd><p>Plots the stellar mass as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>M1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary mass at each binary evolution time step in Msun</p>
+</dd>
+<dt><strong>M2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary mass at each binary evolution time step in Msun</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cosmic.plotting.plot_radius">
+<span class="sig-prename descclassname"><span class="pre">cosmic.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M1_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M2_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_orb_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecc_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sys_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cosmic.plotting.plot_radius" title="Link to this definition"></a></dt>
+<dd><p>Plots the stellar radii as a function of time</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><cite>matplotlib.Axes</cite></span></dt><dd><p>Axis instance for the plot</p>
+</dd>
+<dt><strong>times</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of times at each binary evolution time step in Myr</p>
+</dd>
+<dt><strong>R1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary radius at each binary evolution time step in Rsun</p>
+</dd>
+<dt><strong>R2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary radius at each binary evolution time step in Rsun</p>
+</dd>
+<dt><strong>M1_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of primary mass at each binary evolution time step in Msun</p>
+</dd>
+<dt><strong>M2_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of secondary mass at each binary evolution time step in Msun</p>
+</dd>
+<dt><strong>P_orb_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of orbital periods at each binary evolution time step in days</p>
+</dd>
+<dt><strong>ecc_out</strong><span class="classifier"><cite>pandas.Series</cite></span></dt><dd><p>Series of eccentricities at each binary evolution time step</p>
+</dd>
+<dt><strong>sys_obs</strong><span class="classifier"><cite>Dict</cite></span></dt><dd><p>Dictionary containing keys for binary parameters with values to plot
+as vertical lines for each stellar component</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Null</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Katie Breivik.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
