@@ -39,7 +39,7 @@
       integer bpp_index_out, bcm_index_out
       real*8 kick_info_out(2,17)
 *
-      real*8 mass0(2),mass(2),z,zpars(20),vs(3),kick_info(2,17)
+      real*8 mass0(2),mass(2),z,zpars(20),vs(3),kick_info(2,18)
       real*8 epoch(2),tms(2),tphys,tphysf,dtp,aj
       real*8 rad(2),lum(2),ospin(2)
       real*8 massc(2),radc(2),menv(2),renv(2)
@@ -190,7 +190,7 @@
         st_tide = 1
         rembar_massloss = 0.5
         zsun = 0.014
-        kickflag = 0
+        kickflag = -1
         using_cmc = 0
 
 

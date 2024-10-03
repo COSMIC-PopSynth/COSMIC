@@ -1280,9 +1280,9 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "kickflag"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, -1, -2, -3]:
+        if BSEDict[flag] not in [-4, -3, -2, -1, 1, 2, 3, 4]:
             raise ValueError(
-                "'{0:s}' needs to be set to either 0, -1, -2, or -3 (you set it to '{1:d}')".format(
+                "'{0:s}' needs to be set to either -4, -3, -2, -1, 1, 2, 3, 4 (you set it to '{1:d}')".format(
                     flag, BSEDict[flag]
                 )
             )

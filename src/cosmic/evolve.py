@@ -80,7 +80,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
                 'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
                 'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
-                'delta_theta_total', 'omega', 'randomseed', 'bin_num']
+                'theta_euler', 'phi_euler', 'psi_euler', 'randomseed', 'bin_num']
 
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
