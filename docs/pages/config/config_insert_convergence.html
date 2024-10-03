@@ -1,0 +1,78 @@
+<!-- This file should be created using create_settings_html.py -->
+<div class="container-fluid"><section class="card setting-card" data-category="convergence" style="border-color: #a873dd;">
+<div class="card-header" style="background-color: #a873dd;">
+<h2 class="setting-group-title">Convergence</h2>
+<p class="setting-group-description">Settings that control the convergence of the simulation run with cosmic-pop</p>
+</div>
+<div class="card-body"><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>convergence_params</code></h3>
+<p class="description">A list of parameters you would like to verify have converged to a single distribution shape when running cosmic-pop from the command line.</p>
+<p class="default">Default: [mass_1, mass_2, porb, ecc]</p>
+</div>
+<div class="col-3"><div><input checked="true" name="convergence_params_opt0" type="checkbox" value="mass_1"/><label for_="convergence_params_opt0"> mass_1</label></div><div><input checked="true" name="convergence_params_opt1" type="checkbox" value="mass_2"/><label for_="convergence_params_opt1"> mass_2</label></div><div><input name="convergence_params_opt2" type="checkbox" value="sep"/><label for_="convergence_params_opt2"> sep</label></div><div><input checked="true" name="convergence_params_opt3" type="checkbox" value="porb"/><label for_="convergence_params_opt3"> porb</label></div><div><input checked="true" name="convergence_params_opt4" type="checkbox" value="ecc"/><label for_="convergence_params_opt4"> ecc</label></div><div><input name="convergence_params_opt5" type="checkbox" value="massc_1"/><label for_="convergence_params_opt5"> massc_1</label></div><div><input name="convergence_params_opt6" type="checkbox" value="massc_2"/><label for_="convergence_params_opt6"> massc_2</label></div><div><input name="convergence_params_opt7" type="checkbox" value="rad_1"/><label for_="convergence_params_opt7"> rad_1</label></div><div><input name="convergence_params_opt8" type="checkbox" value="rad_2"/><label for_="convergence_params_opt8"> rad_2</label></div><input class="form-control hide-me" type="string" value="[mass_1, mass_2, porb, ecc]"/></div>
+</div>
+<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">mass_1</span></code>: <span class="opt-desc">Primary mass</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">mass_2</span></code>: <span class="opt-desc">Secondary mass</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">sep</span></code>: <span class="opt-desc">Separation</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">porb</span></code>: <span class="opt-desc">Orbital period</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">ecc</span></code>: <span class="opt-desc">Eccentricity</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">massc_1</span></code>: <span class="opt-desc">Primary core mass</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">massc_2</span></code>: <span class="opt-desc">Secondary core mass</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">rad_1</span></code>: <span class="opt-desc">Primary radius</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">rad_2</span></code>: <span class="opt-desc">Secondary radius</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>convergence_limits</code></h3>
+<p class="description">Specifies limits for parameters included in the <code>convergence_params</code> list.</p>
+<p class="default">Default: {}</p>
+</div>
+<div class="col-3"><input class="form-control" type="text" value="{}"/></div>
+</div>
+<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">For each parameter specified  <code>convergence_limits</code>, the lower and upper limit must be included.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">{}</span></code>: <span class="opt-desc">No limits specified</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">{'mass_1' : [5, 10], 'sep' : [0, 10]}</span></code>: <span class="opt-desc">For example, this specifies that the primary mass must be between 5 and 10 solar masses, and the separation must be between 0 and 10 Rsun.</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>pop_select</code></h3>
+<p class="description">Selects the stage of the evolution at which you would like to check for convergence.</p>
+<p class="default">Default: formation</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="formation">formation</option><option value="1_SN">1_SN</option><option value="2_SN">2_SN</option><option value="disruption">disruption</option><option value="final_state">final_state</option><option value="XRB_form">XRB_form</option></select></div>
+</div>
+<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">This will filter for systems that satisfy the <code>final_kstar1</code> and <code>final_kstar2</code> selections from the command line call of cosmic-pop at the following states:</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">formation</span></code>: <span class="opt-desc">At binary formation</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1_SN</span></code>: <span class="opt-desc">Just before the first supernova</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2_SN</span></code>: <span class="opt-desc">Just before the second supernova</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">disruption</span></code>: <span class="opt-desc">Just before binary disruption</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">final_state</span></code>: <span class="opt-desc">After the full evolution specified by the user-supplied evolution time</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">XRB_form</span></code>: <span class="opt-desc">At the start of RLOF following the first supernova</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>apply_convergence_limits</code></h3>
+<p class="description">Whether to filter the binary population (including the bcm, bpp, initC, and kick_info DataFrames) to only contain the binaries that satisfy the constraints from convergence_limits.</p>
+<p class="default">Default: False</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="True">True</option><option selected="true" value="False">False</option></select></div>
+</div>
+<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">True</span></code>: <span class="opt-desc">Filter the binary population to only contain the binaries that satisfy the constraints from convergence_limits</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">False</span></code>: <span class="opt-desc">Do not filter the binary population</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>match</code></h3>
+<p class="description">Provides the tolerance for the convergence calculation and is calculated as \({\rm match} = \log_{\rm 10} (1 - {\rm convergence})\)</p>
+<p class="default">Default: -5.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="-5.0"/></div>
+</div>
+<div class="options-expander" style="color: #a873dd;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">-5.0</span></code>: <span class="opt-desc">For example, this specifies a tolerance of \(10^{-5}\) for convergence</span></li></ul>
+</div>
+</div></div>
+</section></div>

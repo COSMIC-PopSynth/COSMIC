@@ -1,13 +1,13 @@
 .. _output_info:
 
-###############################################################
-Describing the output of COSMIC/BSE: Columns names/Values/Units
-###############################################################
-
-Evolutionary states of stars/binaries
--------------------------------------
+############################
+Understanding COSMIC outputs
+############################
 
 Since COSMIC uses BSE as it's core binary evolution algorithm, the output of COSMIC follows most of the same conventions as BSE. The kstar values and evolution stages are nearly identical to their BSE counterparts.
+
+``kstar`` - Evolutionary states of stars
+----------------------------------------
 
 The kstar value specifies the evolutionary state of the star:
 
@@ -35,6 +35,9 @@ The kstar value specifies the evolutionary state of the star:
     14      Black Hole
     15      Massless Remnant
     =====   ==================
+
+``evol_type`` - Binary evolution events
+----------------------------------------
 
 The evolutionary changes of the binary are logged in the evol_type column, which is filled with integer values. The key for each integer is listed below:
 
@@ -65,12 +68,12 @@ The evolutionary changes of the binary are logged in the evol_type column, which
     =========   =====================
 
 
-bpp
----
+``bpp`` - Key evolutionary change table
+---------------------------------------
 
-This `pandas.DataFrame` tracks a selection of binary parameters at key evolutionary changes.
+This :class:`pandas.DataFrame` tracks a selection of binary parameters at key evolutionary changes.
 Entries are added with changes in the :ref:`evolve-type-table`.
-All values with a `_1` label refer to the primary (i.e., the initially more massive component); the bpp DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
+All values with a ``_1`` label refer to the primary (i.e., the initially more massive component); the bpp DataFrame also includes the same column for the secondary with ``_1`` replaced by ``_2``
 
 ================  =====================================================
 ``tphys``         Evolution time [:math:`{\rm{Myr}}`]
@@ -102,11 +105,12 @@ All values with a `_1` label refer to the primary (i.e., the initially more mass
 
 
 
-bcm
----
-This `pandas.DataFrame` provides several binary parameters at user-specified timesteps in the evolution.
+``bcm`` - User-specified timestep table
+---------------------------------------
+
+This :class:`pandas.DataFrame` provides several binary parameters at user-specified timesteps in the evolution.
 By default, COSMIC saves only the first and last timestep in the bcm DataFrame.
-All values with a `_1` label refer to the primary; the bcm DataFrame also includes the same column for the secondary with `_1` replaced by `_2`
+All values with a ``_1`` label refer to the primary; the bcm DataFrame also includes the same column for the secondary with ``_1`` replaced by ``_2``
 
 =================  =====================================================
 ``tphys``          Evolution time [:math:`\rm{Myr}`]
@@ -148,8 +152,9 @@ All values with a `_1` label refer to the primary; the bcm DataFrame also includ
 ``bin_num``        Unique binary index that is consistent across initial conditions, bcm. bpp, and kick_info DataFrames
 =================  =====================================================
 
-kick_info
----------
+``kick_info`` - Table of natal kick information
+-----------------------------------------------
+
 kick_info is a (2,17) array that tracks information about supernova
 kicks. This allows us to track the total change to the systemic
 velocity and the total change in the orbital plane tilt after both
