@@ -2402,6 +2402,32 @@ component.
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
      &               deltam1_bcm,deltam2_bcm)
+         if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
+     &      kstar(j1).eq.13)then !PK.
+* In CE the NS got switched around. Do same to formation.
+            formation(j1) = formation(j2)
+         endif
+         if(j1.eq.1.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
+     &      kstar(j1).eq.13)then !PK.
+* In CE the NS got switched around. Do same to formation.
+            formation(j1) = formation(j2)
+         endif
+         com = .true.
+         if(com.and..not.coel.and..not.disrupt)then
+* if it went through common envelope
+* did not disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system is still in binary
+            binstate = 0
+            mergertype = -1
+         elseif(com.and..not.coel.and.disrupt)then
+* if it went through common envelope
+* and did disrupt (from one of the objects going SN)
+* and did not merge in common envelope
+* then system should be marked as disrupted
+            binstate = 2
+            mergertype = -1
+         endif
          if(binstate.eq.1.d0)then
              sep = 0.d0
              tb = 0.d0
