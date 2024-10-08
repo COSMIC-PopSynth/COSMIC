@@ -626,18 +626,28 @@
 
 * first two special cases for orbital A.M. remaining unchanged in angle
 * since the cross product is not well defined in this case
-         if(thetaE.eq.0.d0.and.ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
+         if(thetaE.eq.0.d0)then
             xx = ran3(idum1)
-            xx = ran3(idum1)
-            call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
             phiE = twopi * xx
-            psiE = psiPlusPhi - phiE
-         else if(thetaE.eq.pi.and.ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
             xx = ran3(idum1)
+* we can only calculate the angle if the eccentricity is nonzero
+            if (ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
+               call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
+               psiE = psiPlusPhi - phiE
+            else
+               psiE = twopi * xx
+            end if            
+         else if(thetaE.eq.pi)then
             xx = ran3(idum1)
-            call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
             phiE = twopi * xx
-            psiE = phiE + psiPlusPhi
+            xx = ran3(idum1)
+* we can only calculate the angle if the eccentricity is nonzero
+            if (ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
+               call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
+               psiE = phiE + psiPlusPhi
+            else
+               psiE = twopi * xx
+            end if
 * now we can actually use the cross product to get the pivot axis
          else
             call CrossProduct(h_prev, h, orbital_pivot_axis)
