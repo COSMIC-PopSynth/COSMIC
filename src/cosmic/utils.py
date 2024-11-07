@@ -1624,7 +1624,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
     if flag in BSEDict.keys():
         for f in BSEDict[flag]:
             if f not in [-1, -2, -3, -4]:
-                if BSEDict[flag] < 0.0:
+                if f < 0.0:
                     raise ValueError(
                         "'{0:s}' needs to be set to -1, -2, -3, -4 or be >=0 (you set it to '{1:0.2f}')".format(
                             flag, BSEDict[flag]
