@@ -10,7 +10,7 @@ authors = [
     { name="Tom Wagg" },
 ]
 readme = "README.md"
-version = "3.4.16"
+version = "3.5.0"
 requires-python = ">=3.9"
 license = { text = "MIT License" }
 classifiers = [
@@ -25,8 +25,10 @@ dependencies = ["numpy", "scipy", "astropy", "configparser",
                 "tqdm", "pandas", "tables", "h5py", "schwimmbad",
                 "matplotlib", "importlib-metadata"]
 
-
 [build-system]
 build-backend = 'mesonpy'
 requires = ['meson-python', 'numpy']
+
+[tool.cibuildwheel.macos]
+repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
 

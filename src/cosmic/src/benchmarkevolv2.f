@@ -10,10 +10,10 @@
         REAL*8 mass0(2),massc(2),menv(2)
         REAL*8 rad(2),epoch(2)
         REAL*8 lumin(2),renv(2),radc(2)
-        REAL*8 zpars(20),kick_info(2,17)
+        REAL*8 zpars(20),kick_info(2,18)
         REAL*8 tacc(2),bacc(2),tms(2),B_0(2),ospin(2),bkick(20)
         REAL*8 tphys
-        REAL*8 kick_info_out(2,17)
+        REAL*8 kick_info_out(2,18)
         INTEGER bpp_index_out,bcm_index_out
         CHARACTER*256 path_to_tracks,path_to_he_tracks
 
@@ -89,7 +89,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -173,7 +173,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -257,7 +257,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -341,7 +341,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -425,7 +425,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -509,7 +509,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -593,7 +593,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -677,7 +677,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -761,7 +761,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -845,7 +845,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -929,7 +929,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1013,7 +1013,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1097,7 +1097,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1181,7 +1181,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1265,7 +1265,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1349,7 +1349,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1433,7 +1433,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1517,7 +1517,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1601,7 +1601,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1685,7 +1685,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1769,7 +1769,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1853,7 +1853,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -1937,7 +1937,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2021,7 +2021,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2105,7 +2105,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2189,7 +2189,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2273,7 +2273,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2357,7 +2357,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2441,7 +2441,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2525,7 +2525,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2609,7 +2609,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2693,7 +2693,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2777,7 +2777,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2861,7 +2861,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -2945,7 +2945,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3029,7 +3029,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3113,7 +3113,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3197,7 +3197,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3281,7 +3281,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3365,7 +3365,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3449,7 +3449,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3533,7 +3533,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3617,7 +3617,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3701,7 +3701,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3785,7 +3785,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3869,7 +3869,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -3953,7 +3953,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4037,7 +4037,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4121,7 +4121,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4205,7 +4205,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4289,7 +4289,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4373,7 +4373,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4457,7 +4457,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4541,7 +4541,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4625,7 +4625,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4709,7 +4709,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4793,7 +4793,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4877,7 +4877,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -4961,7 +4961,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5045,7 +5045,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5129,7 +5129,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5213,7 +5213,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5297,7 +5297,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5381,7 +5381,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5465,7 +5465,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5549,7 +5549,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5633,7 +5633,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5717,7 +5717,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5801,7 +5801,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5885,7 +5885,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -5969,7 +5969,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6053,7 +6053,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6137,7 +6137,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6221,7 +6221,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6305,7 +6305,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6389,7 +6389,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6473,7 +6473,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6557,7 +6557,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6641,7 +6641,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6725,7 +6725,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6809,7 +6809,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6893,7 +6893,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -6977,7 +6977,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7061,7 +7061,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7145,7 +7145,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7229,7 +7229,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7313,7 +7313,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7397,7 +7397,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7481,7 +7481,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7565,7 +7565,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7649,7 +7649,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7733,7 +7733,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7817,7 +7817,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7901,7 +7901,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -7985,7 +7985,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8069,7 +8069,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8153,7 +8153,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8237,7 +8237,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8321,7 +8321,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8405,7 +8405,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8489,7 +8489,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8573,7 +8573,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8657,7 +8657,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8741,7 +8741,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8825,7 +8825,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8909,7 +8909,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -8993,7 +8993,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9077,7 +9077,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9161,7 +9161,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9245,7 +9245,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9329,7 +9329,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9413,7 +9413,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9497,7 +9497,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9581,7 +9581,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9665,7 +9665,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9749,7 +9749,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9833,7 +9833,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -9917,7 +9917,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10001,7 +10001,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10085,7 +10085,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10169,7 +10169,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10253,7 +10253,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10337,7 +10337,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10421,7 +10421,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10505,7 +10505,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10589,7 +10589,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10673,7 +10673,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10757,7 +10757,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10841,7 +10841,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -10925,7 +10925,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11009,7 +11009,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11093,7 +11093,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11177,7 +11177,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11261,7 +11261,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11345,7 +11345,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11429,7 +11429,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11513,7 +11513,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11597,7 +11597,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11681,7 +11681,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11765,7 +11765,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11849,7 +11849,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -11933,7 +11933,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12017,7 +12017,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12101,7 +12101,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12185,7 +12185,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12269,7 +12269,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12353,7 +12353,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12437,7 +12437,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12521,7 +12521,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12605,7 +12605,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12689,7 +12689,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12773,7 +12773,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12857,7 +12857,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -12941,7 +12941,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13025,7 +13025,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13109,7 +13109,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13193,7 +13193,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13277,7 +13277,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13361,7 +13361,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13445,7 +13445,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13529,7 +13529,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13613,7 +13613,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13697,7 +13697,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13781,7 +13781,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13865,7 +13865,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -13949,7 +13949,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14033,7 +14033,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14117,7 +14117,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14201,7 +14201,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14285,7 +14285,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14369,7 +14369,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14453,7 +14453,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14537,7 +14537,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14621,7 +14621,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14705,7 +14705,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14789,7 +14789,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14873,7 +14873,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -14957,7 +14957,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15041,7 +15041,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15125,7 +15125,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15209,7 +15209,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15293,7 +15293,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15377,7 +15377,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15461,7 +15461,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15545,7 +15545,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15629,7 +15629,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15713,7 +15713,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15797,7 +15797,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15881,7 +15881,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -15965,7 +15965,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16049,7 +16049,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16133,7 +16133,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16217,7 +16217,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16301,7 +16301,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16385,7 +16385,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16469,7 +16469,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16553,7 +16553,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16637,7 +16637,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16721,7 +16721,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16805,7 +16805,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16889,7 +16889,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -16973,7 +16973,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17057,7 +17057,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17141,7 +17141,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17225,7 +17225,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17309,7 +17309,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17393,7 +17393,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17477,7 +17477,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17561,7 +17561,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17645,7 +17645,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17729,7 +17729,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17813,7 +17813,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17897,7 +17897,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -17981,7 +17981,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18065,7 +18065,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18149,7 +18149,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18233,7 +18233,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18317,7 +18317,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18401,7 +18401,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18485,7 +18485,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18569,7 +18569,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18653,7 +18653,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18737,7 +18737,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18821,7 +18821,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18905,7 +18905,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -18989,7 +18989,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19073,7 +19073,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19157,7 +19157,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19241,7 +19241,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19325,7 +19325,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19409,7 +19409,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19493,7 +19493,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19577,7 +19577,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19661,7 +19661,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19745,7 +19745,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19829,7 +19829,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19913,7 +19913,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -19997,7 +19997,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -20081,7 +20081,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -20165,7 +20165,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -20249,7 +20249,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -20333,7 +20333,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -20417,7 +20417,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1
@@ -20501,7 +20501,7 @@
         bdecayfac = 1
         grflag = 1
         rembar_massloss = 0.5
-        kickflag = 0
+        kickflag = -1
         zsun = 0.014
         bhms_coll_flag = 0
         wd_mass_lim = 1

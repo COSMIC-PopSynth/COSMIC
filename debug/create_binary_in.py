@@ -16,7 +16,7 @@ BSE_settings = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1,
                                                   2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0,
                                                   2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0],
                 'bhspinflag': 0, 'bhspinmag': 0.0, 'rejuv_fac': 1.0, 'rejuvflag': 0, 'htpmb': 1,
-                'ST_cr': 1, 'ST_tide': 1, 'bdecayfac': 1, 'rembar_massloss': 0.5, 'kickflag': 0,
+                'ST_cr': 1, 'ST_tide': 1, 'bdecayfac': 1, 'rembar_massloss': 0.5, 'kickflag' : 1,
                 'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': -1, 'binfrac': 0.5,
                 'rtmsflag': 0, 'wd_mass_lim': 1, 'idum': 100}
 

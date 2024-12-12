@@ -55,8 +55,11 @@
       COMMON /TSTEPC/ dmmax,drmax
       REAL*8 scm(50000,14),spp(20,3)
       COMMON /SINGLE/ scm,spp
-      REAL*8 bcm(50000,38),bpp(1000,43)
+      REAL*8 bcm(50000,49),bpp(1000,49)
       COMMON /BINARY/ bcm,bpp
+      INTEGER n_col_bpp, n_col_bcm
+      INTEGER col_inds_bpp(49), col_inds_bcm(49)
+      COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm
 *
       LOGICAL using_metisse, using_sse
       COMMON /SE_FLAGS/ using_metisse, using_sse

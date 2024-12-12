@@ -647,7 +647,7 @@ common envelope occurs regardless of the choices below:
                          ``aic``, and ``ussn``, which are described below, are
                          only used when ``kickflag=0``
 
-                            ``0`` : The standard COSMIC kick prescription, where
+                            ``1`` : The standard COSMIC kick prescription, where
                             kicks are drawn from a bimodal distribution with
                             standard FeCCSN getting a kick drawn from a Maxwellian
                             distribution with dispersion parameter ``sigma`` and ECSN/USSN
@@ -655,18 +655,21 @@ common envelope occurs regardless of the choices below:
                             additional possible options for ``bhflag``, ``bhsigmafrac``,
                             ``aic`` and ``ussn``.
 
-                            ``-1`` : Natal kicks are drawn according to ``sigma`` and
+                            ``2`` : Natal kicks are drawn according to ``sigma`` and
                             scaled by the ejecta mass and remnant mass following Eq. 1 of
                             `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
 
-                            ``-2`` : Natal kicks are drawn according to ``sigma`` and
+                            ``3`` : Natal kicks are drawn according to ``sigma`` and
                             scaled by just the ejecta mass following Eq. 2 of
                             `Giacobbo & Mapelli 2020 <https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract>`_
 
-                            ``-3`` : Natal kicks are drawn according to Eq. 1 of
+                            ``4`` : Natal kicks are drawn according to Eq. 1 of
                             `Bray & Eldridge 2016 <https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract>`_
 
-                         **default = 0**
+                            ``negative values`` : As above except using the Kiel & Hurley 2009 velocity
+                            implementation instead of the default Pfahl+2002
+
+                         **default = 1**
 
 ``sigma``                Sets the dispersion in the Maxwellian for the
                          SN kick velocity in km/s
