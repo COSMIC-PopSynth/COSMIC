@@ -75,7 +75,7 @@ def parse_commandline():
 
     defaults = {}
     if not (args.inifile is None and (('-h' in remaining_argv) or ('--help' in remaining_argv))):
-        BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+        BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
         defaults.update(sampling)
         defaults.update(filters)
         defaults.update(convergence)
@@ -184,7 +184,7 @@ if __name__ == '__main__':
 
     # READ AND PARSE INIFILE
     ###########################################################################
-    BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+    BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
 
     # we now overwrite the inifile values with what was specified from the command line
     # (which could mean not overwriting anything at all because they are populated
@@ -220,8 +220,8 @@ if __name__ == '__main__':
                               "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
                 seed_int = getattr(args, argument)
 
-    # Check that the values in BSEDict, filters, and convergence are valid
-    utils.error_check(BSEDict, filters, convergence, sampling)
+    # Check that the values in BSEDict, SSEDict, filters, and convergence are valid
+    utils.error_check(BSEDict, SSEDict, filters, convergence, sampling)
 
     if seed_int != 0:
         np.random.seed(seed_int)
@@ -270,7 +270,7 @@ if __name__ == '__main__':
         log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
 
     # save configuration settings to output file
-    configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
+    configuration_settings = {'BSEDict' : BSEDict, 'SSEDict': SSEDict, 'filters' : filters,
                               'convergence' : convergence, 'sampling' : sampling}
 
     for k, v in configuration_settings.items():
@@ -383,6 +383,7 @@ if __name__ == '__main__':
         bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
                                                       pool=pool,
                                                       BSEDict=BSEDict,
+                                                      SSEDict=SSEDict,
                                                       idx=idx,
                                                       dtp=dtp,
                                                       timestep_conditions=filters['timestep_conditions'])
