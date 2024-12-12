@@ -478,6 +478,8 @@ class Evolve(object):
                                  columns=KICK_COLUMNS,
                                  index=kick_info_arrays[:, -1].astype(int))
 
+        import pdb
+        pdb.set_trace()
         bpp = pd.DataFrame(bpp_arrays,
                            columns=bpp_columns + ["bin_num"],
                            index=bpp_arrays[:, -1].astype(int))
@@ -608,7 +610,6 @@ def _evolve_single_system(f):
                                                               f["tphys"],
                                                               np.zeros(20),
                                                               np.zeros(20),
-<<<<<<< HEAD
                                                               f["kick_info"],
                                                               path_to_tracks,
                                                               path_to_he_tracks)
@@ -620,13 +621,6 @@ def _evolve_single_system(f):
             bpp = _evolvebin.binary.bpp[:bpp_index].copy()
             _evolvebin.binary.bpp[:bpp_index] = np.zeros(bpp.shape)
             _evolvebin.binary.bcm[:bcm_index] = np.zeros(bcm.shape)
-=======
-                                                              f["kick_info"])
-        bpp = _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]].copy()
-        _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]] = np.zeros(bpp.shape)
-        bcm = _evolvebin.binary.bcm[:bcm_index, :f["n_col_bcm"]].copy()
-        _evolvebin.binary.bcm[:bcm_index, :f["n_col_bcm"]] = np.zeros(bcm.shape)
->>>>>>> upstream/develop
 
             bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
             bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
