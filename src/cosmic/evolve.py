@@ -570,13 +570,13 @@ def _evolve_single_system(f):
         _evolvebin.snvars.kickflag = f["kickflag"]
         _evolvebin.cmcpass.using_cmc = 0
         if f["stellar_engine"] == "sse":
-            _evolvebin.se_flags.using_sse = True
-            _evolvebin.se_flags.using_metisse = False
+            _evolvebin.se_flags.using_sse = 1
+            _evolvebin.se_flags.using_metisse = 0
             path_to_tracks = ""
             path_to_he_tracks = ""
         elif f["stellar_engine"] == "metisse":
-            _evolvebin.se_flags.using_metisse = True
-            _evolvebin.se_flags.using_sse = False
+            _evolvebin.se_flags.using_metisse = 1
+            _evolvebin.se_flags.using_sse = 0
             path_to_tracks = f["path_to_tracks"]
             path_to_he_tracks = f["path_to_he_tracks"]
         else:

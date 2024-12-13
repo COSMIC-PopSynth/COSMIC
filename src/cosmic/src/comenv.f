@@ -100,9 +100,9 @@
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      IF (using_METISSE) THEN
+      IF (using_METISSE.eq.1) THEN
         CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,LAMB1)
-      ELSEIF (using_SSE) THEN
+      ELSEIF (using_SSE.eq.1) THEN
         RZAMS = RZAMSF(M01)
         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
       ENDIF
@@ -122,9 +122,9 @@
 *
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
-         IF (using_METISSE) THEN
+         IF (using_METISSE.eq.1) THEN
             CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,LAMB2)
-         ELSEIF (using_SSE) THEN
+         ELSEIF (using_SSE.eq.1) THEN
             RZAMS = RZAMSF(M02)
             LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
          ENDIF
@@ -921,7 +921,7 @@
          if(output) write(*,*)'coel 2 1:',KW,KW1,KW2,M1,M2,MF,MC22,
      & TB,OORB
          IF(KW.EQ.2)THEN
-            if (using_METISSE) call set_star_type(star1)
+            if (using_METISSE.eq.1) call set_star_type(star1)
             CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star1)
             IF(GB(9).GE.MC1)THEN
                M01 = M1
@@ -933,7 +933,7 @@
      & TB,OORB
          ELSEIF(KW.EQ.7)THEN
             M01 = M1
-            if (using_METISSE) call set_star_type(star1)
+            if (using_METISSE.eq.1) call set_star_type(star1)
             CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             AJ1 = TM1*(FAGE1*MC1 + FAGE2*MC22)/(MC1 + MC22)
             if(output) write(*,*)'coel 2 3:',KW,KW1,KW2,M1,M01,MC22,

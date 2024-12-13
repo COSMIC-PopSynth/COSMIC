@@ -90,7 +90,7 @@ C      ENDIF
 *       mixing. We will now make it a parameter so that it can
 *       be partial mixing.
          IF(K1.EQ.7) KW = 7
-         if (using_METISSE) call set_star_type(1)
+         if (using_METISSE.eq.1) call set_star_type(1)
          CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS,dtm,1)
          IF(REJUVFLAG.EQ.1.AND.KS(1).LE.2.0.AND.KS(2).LE.2.0)THEN
              M_CORE_BGB_3 = GB(9)
@@ -107,7 +107,7 @@ C      ENDIF
          AGE3 = AGE1/TMS1
          CALL gntage(MC3,M3,KW,ZPARS,M03,AGE3,1)
       ELSEIF(ICASE.EQ.7)THEN
-         if (using_METISSE) call set_star_type(1)
+         if (using_METISSE.eq.1) call set_star_type(1)
          CALL star(KW,M03,M3,TMS3,TN,TSCLS,LUMS,GB,ZPARS,dtm,1)
          AGE3 = TMS3*(AGE2*M2/TMS2)/M3
       ELSEIF(ICASE.LE.12)THEN

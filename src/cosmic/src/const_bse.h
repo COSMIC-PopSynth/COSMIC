@@ -61,7 +61,7 @@
       INTEGER col_inds_bpp(49), col_inds_bcm(49)
       COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm
 *
-      LOGICAL using_metisse, using_sse
+      INTEGER using_metisse, using_sse
       COMMON /SE_FLAGS/ using_metisse, using_sse
       LOGICAL bcm_err
       COMMON/ ER_FLAGS/ bcm_err

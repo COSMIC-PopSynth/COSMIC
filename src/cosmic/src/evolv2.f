@@ -255,7 +255,7 @@ Cf2py intent(out) kick_info_out
               CALL instar
       endif
     
-      if(using_METISSE) CALL initialize_front_end('cosmic')
+      if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *
 * Save the initial state.
 *
@@ -343,7 +343,7 @@ component.
       if(using_cmc.eq.0)then
 *      for SSE path_to_tracks and path_to_he_tracks are empty ('')
             CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
-            if(using_METISSE) then
+            if(using_METISSE.eq.1) then
                 call check_error(err)
                 if (err>0) then
                     bpp_index_out = -1
@@ -352,7 +352,7 @@ component.
             endif
       endif
         
-      if(using_METISSE) call allocate_track(2,mass0)
+      if(using_METISSE.eq.1) call allocate_track(2,mass0)
 
       kmin = 1
       kmax = 2
@@ -776,7 +776,6 @@ component.
                dt = MIN(dt,dtj)
                if(output) write(*,*)'mb1:',tphys,dt,djmb,djt
             endif
-*
             if(kstar(k).eq.13.and.pulsar.gt.0)then
 *
 * NS(pulsar) magnetic braking. PK.
@@ -1153,7 +1152,7 @@ component.
                CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,
      &                   lums,GB,zpars,dtm,k)
                if(kstar(k).eq.2)then
-                 if (using_SSE) then
+                 if (using_SSE.eq.1) then
                   if(GB(9).lt.massc(k).or.m0.gt.zpars(3))then
                      mass0(k) = m0
                   else
@@ -1717,7 +1716,7 @@ component.
 * Test whether Roche lobe overflow has begun.
 *
       if(rad(j1).gt.rol(j1))then
-         if (using_METISSE .and. (rad(j1).lt.1.05d0*rol(j1))) then
+         if (using_METISSE.eq.1 .and. (rad(j1).lt.1.05d0*rol(j1))) then
             if(tphys.ge.tphysf) goto 140
             goto 7
          endif
@@ -1785,7 +1784,7 @@ component.
                prec = .true.
             endif
             tphys0 = tphys
-             if(using_METISSE .and. (dtm.le.1.0d-10))
+             if(using_METISSE.eq.1 .and. (dtm.le.1.0d-10))
      &              dtm = max(ABS(dtm),dtmi(j1))
          endif
       endif
@@ -2318,7 +2317,7 @@ component.
             mass(j2) = mass(j2) + dm2
             if(kstar(j2).eq.2)then
                mass0(j2) = mass(j2)
-               if (using_METISSE) call set_star_type(j2)
+               if (using_METISSE.eq.1) call set_star_type(j2)
                CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
      &                   lums,GB,zpars,dtm,j2)
                aj(j2) = tmsnew + tscls(1)*(aj(j2)-tms(j2))/tbgb(j2)
@@ -2343,7 +2342,7 @@ component.
                kst = kstar(j1)
                mass(j1) = mass(j2) + dm2
                mass(j2) = 0.d0
-               if (using_METISSE) call set_star_type(j1)
+               if (using_METISSE.eq.1) call set_star_type(j1)
             else
                mass(j2) = mass(j2) + dm2
                CALL gntage(massc(j2),mass(j2),kst,zpars,
@@ -2941,7 +2940,7 @@ component.
                if((kstar(j2).eq.10.and.mass(j2).lt.0.05d0).or.
      &            (kstar(j2).ge.11.and.mass(j2).lt.0.5d0))then
                   kst = kstar(j2)
-                  if (using_METISSE) call set_star_type(j2)
+                  if (using_METISSE.eq.1) call set_star_type(j2)
                else
                   kst = MIN(6,3*kstar(j2)-27)
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
@@ -3514,7 +3513,7 @@ component.
          CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
      &             lums,GB,zpars,dtm,j1)
          if(kstar(j1).eq.2)then
-            if (using_SSE) aj(j1) = tmsnew + (tscls(1) - tmsnew)*
+            if (using_SSE.eq.1) aj(j1) = tmsnew + (tscls(1) - tmsnew)*
      &                        (aj(j1)-tms(j1))/(tbgb(j1) - tms(j1))
          else
             aj(j1) = tmsnew/tms(j1)*aj(j1)
@@ -3526,7 +3525,7 @@ component.
          CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
      &             lums,GB,zpars,dtm,j2)
          if(kstar(j2).eq.2)then
-            if (using_SSE) aj(j2) = tmsnew + (tscls(1) - tmsnew)*
+            if (using_SSE.eq.1) aj(j2) = tmsnew + (tscls(1) - tmsnew)*
      &                        (aj(j2)-tms(j2))/(tbgb(j2) - tms(j2))
          elseif((mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0).
      &           and.kstar(j2).ne.7)then
@@ -4523,7 +4522,7 @@ component.
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
               if(iter.ge.loop) evolve_type = 100.0
-              if (using_METISSE) then
+              if (using_METISSE.eq.1) then
                 call check_error(err)
                 if (err>0) evolve_type = 101.0
               end if
@@ -4675,7 +4674,7 @@ component.
           bpp_index_out = jp
           kick_info_out = kick_info
       endif
-      if (using_METISSE) call dealloc_track()
+      if (using_METISSE.eq.1) call dealloc_track()
       
 *
 

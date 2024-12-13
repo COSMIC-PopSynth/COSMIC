@@ -31,10 +31,10 @@ Cf2py intent(in) z
 Cf2py intent(in) num
 Cf2py intent(out) rad
 
-      if(using_METISSE) CALL initialize_front_end('cosmic')
+      if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
       CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
       
-      if(using_METISSE) call allocate_track(num,mass)
+      if(using_METISSE.eq.1) call allocate_track(num,mass)
 
       
 ***
@@ -61,6 +61,6 @@ Cf2py intent(out) rad
   10  continue
   
         
-        if (using_METISSE) call dealloc_track()
+        if (using_METISSE.eq.1) call dealloc_track()
 
       END SUBROUTINE compute_r

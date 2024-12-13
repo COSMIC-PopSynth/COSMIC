@@ -17,8 +17,8 @@
         INTEGER bpp_index_out,bcm_index_out
         CHARACTER*256 path_to_tracks,path_to_he_tracks
 
-        using_METISSE = .false.
-        using_SSE = .true.
+        using_METISSE = 0
+        using_SSE = 1
         path_to_tracks = ''
         path_to_he_tracks = ''      
         kstar(1) = 0.0; kstar(2) = 0.0
