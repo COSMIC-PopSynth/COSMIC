@@ -1113,6 +1113,12 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                     flag
                     )
                 )
+            elif SSEDict[flag] == None:
+                raise ValueError(
+                    "If you want to use METISSE as the stellar engine, {0} needs to be a non-empty string".format (
+                    flag
+                    )
+                )
             else:
                 metallicity_file = glob.glob(SSEDict[flag]+'/*_metallicity.in')
                 if metallicity_file == []:
@@ -1131,6 +1137,12 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                     flag
                 )
             )
+            elif SSEDict[flag] == None:
+                raise ValueError(
+                    "If you want to use METISSE as the stellar engine, {0} needs to be a non-empty string".format (
+                    flag
+                    )
+                )
             else:
                 metallicity_file = glob.glob(SSEDict[flag]+'/*_metallicity.in')
                 if metallicity_file == []:
