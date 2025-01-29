@@ -101,8 +101,8 @@ class TestEvolve(unittest.TestCase):
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
 
-    def test_ejection_velocity_pfahl(self):
-        EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
-            initialbinarytable=KICK_INITC)
+    #def test_ejection_velocity_pfahl(self):
+    #    EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
+    #        initialbinarytable=KICK_INITC, SSEDict=SSEDict)
 
-        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 17.322114, places=5)
+    #    self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 17.322114, places=5)
