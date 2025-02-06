@@ -61,10 +61,12 @@ jobs:
         
     - uses: actions/upload-artifact@v4
       with:
+        name: tar-${{ matrix.runs-on }}
         path: ./dist/*.tar.gz
         
     - uses: actions/upload-artifact@v4
       with:
+        name: wheel-${{ matrix.runs-on }}
         path: ./dist/*.whl
 
   publish:
