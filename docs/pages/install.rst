@@ -48,6 +48,12 @@ Since COSMIC requires compilation of Fortran code, you'll need a gfortran instal
             If you're using a different package manager, you can search for gfortran in the package manager's search bar.
 
 
+    .. tab-item:: Windows
+        :sync: windows
+
+        Unfortunately, we do not support Windows installations due to issues with the gfortran compiler and libraries. We recommend using a Unix-based system to run COSMIC. If you are using Windows, you can try using the Windows Subsystem for Linux (WSL) to run COSMIC. You can find instructions on how to install WSL `here <https://docs.microsoft.com/en-us/windows/wsl/install>`_ and then follow the Unix installation instructions above.
+
+
 ...then install ``COSMIC``
 ==========================
 
@@ -77,6 +83,12 @@ We recommend following the code below to create a conda environment for COSMIC. 
             conda create --name cosmic python=3.10 numpy h5py
             source activate cosmic
             pip install cosmic-popsynth
+
+
+    .. tab-item:: Windows
+        :sync: windows
+
+        Unfortunately, we do not support Windows installations due to issues with the gfortran compiler and libraries. We recommend using a Unix-based system to run COSMIC. If you are using Windows, you can try using the Windows Subsystem for Linux (WSL) to run COSMIC. You can find instructions on how to install WSL `here <https://docs.microsoft.com/en-us/windows/wsl/install>`_ and then follow the Unix installation instructions above.
 
 
 Using IPython and Jupyter with COSMIC
