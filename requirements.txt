@@ -22,4 +22,7 @@ flake8 < 5
 pytest
 pytest-cov
 wheel
+furo
+sphinx-design
+sphinx-copybutton
 meson
