@@ -18,13 +18,9 @@ this parameter is a list of lists, where each sublist contains zero or more cond
 resolution. The conditions are in the form of a string with the format ``'column_name=condition'``. The resolution
 is in the form of a string with the format ``'dtp=resolution'``.
 
-The conditions are evaluated at each time step and if the condition is met, the resolution is set to the desired value.
+The conditions are evaluated at each time step and if the condition is met, the resolution is set to the desired value. If multiple conditions are specified, a timestep is outputted if **any** of the conditions are met.
 
-.. note::
-    TODO TODO TODO: What happens if multiple conditions are met? Is the last one the one that is used? Or the smallest resolution?
-
-The resolution can be any positive float value given in units of Myr. If the resolution is set to 0.0, every time step
-will be outputted in the bcm array.
+The resolution can be any positive float value given in units of Myr. If the resolution is set to 0.0, every time step will be outputted in the bcm array.
 
 Examples
 ========

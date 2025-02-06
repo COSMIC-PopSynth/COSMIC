@@ -1,8 +1,8 @@
 .. _runpop:
 
-####################
-Sampling populations
-####################
+############################
+Sampling initial populations
+############################
 
 The process to generate a synthetic binary population, is similar to the
 process to evolve a single/multiple binaries by hand: first generate an
