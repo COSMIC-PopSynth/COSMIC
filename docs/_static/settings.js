@@ -72,6 +72,41 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    document.querySelectorAll(".setting-chooser").forEach(chooser => {
+        if (chooser.querySelector(".col-9 h3.name").innerText == "sampling_method") {
+            chooser.querySelector(".form-control").addEventListener("change", function() {
+
+                // find the relevant settings to show/hide based on the sampling method
+                const setting_names = ["primary_model", "porb_model", "ecc_model",
+                                       "qmin", "m2_min", "binfrac_model"];
+
+                // get the elements that match these names
+                const all_sampling_settings = this.parentElement.parentElement.parentElement.parentElement.children;
+                let relevant_settings = [];
+                console.log(all_sampling_settings)
+                for (let setting of all_sampling_settings) {
+                    console.log(setting.querySelector(".name"))
+                    if (setting_names.includes(setting.querySelector(".name").innerText)) {
+                        relevant_settings.push(setting);
+                    }
+                }
+
+                // show settings
+                if (this.value == "independent") {
+                    for (let setting of relevant_settings) {
+                        setting.classList.remove("hide-me");
+                    }
+                }
+                // hide settings
+                else if (this.value == "multidim") {
+                    for (let setting of relevant_settings) {
+                        setting.classList.add("hide-me");
+                    }
+                }
+            })
+        }
+    });
+
     // reconstruct the interactive files any time any input changes
     document.querySelectorAll(".form-control").forEach(input => {
         input.addEventListener("change", function() {

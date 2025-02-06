@@ -59,17 +59,17 @@
             {
                 "name": "sampling_method",
                 "description": "Select which models to use to generate an initial sample of binary parameters at Zero Age Main Sequence",
-                "type": "string",
+                "type": "dropdown",
                 "options-preface": "",
                 "options": [
                     {
                         "name": "independent",
-                        "description": "Initialize binaries with independent parameter distributions for the primary mass, mass ratio, eccentricity, separation, and binary fraction"
+                        "description": "Initialize binaries with independent parameter distributions for the primary mass, mass ratio, eccentricity, separation, and binary fraction",
+                        "default": true
                     },
                     {
                         "name": "multidim",
-                        "description": "Initialize binaries with multidimensional parameter distributions according to <a href='http://adsabs.harvard.edu/abs/2017ApJS..230...15M'>Moe & Di Stefano 2017</a>",
-                        "default": true
+                        "description": "Initialize binaries with multidimensional parameter distributions according to <a href='http://adsabs.harvard.edu/abs/2017ApJS..230...15M'>Moe & Di Stefano 2017</a>"
                     }
                 ]
             },
