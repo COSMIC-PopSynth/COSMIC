@@ -14,6 +14,24 @@ Since COSMIC requires compilation of Fortran code, you'll need a gfortran instal
     .. tab-item:: MacOS
         :sync: mac
 
+        .. dropdown:: Have you recently upgrade to Apple silicon?
+            :color: warning
+            :icon: alert
+
+            For users who have recently upgraded to an Apple silicon processor with ARM architecture, it is important that you ensure your Python architecture is ARM and not X86_64. This can be done by running the following command:
+            
+            .. code-block:: bash
+
+                python -c "import platform; print(platform.architecture())"
+
+            If the output is ('64bit', 'arm64'), then you are using the correct architecture. If the output is ('64bit', 'x86_64'), then you are using the wrong architecture. To fix this, you can install the ARM version of Python by running the following command:
+
+            .. code-block:: bash
+
+                brew install python@3.10
+
+            If brew install doesn't work, you can download the specific MacOS gfortran installers from `this link <https://github.com/fxcoudert/gfortran-for-macOS/releases>`_, which is maintained by the gfortran team. Be sure to match the version of gfortran with the version of MacOS you are using.
+
         .. code-block:: bash
 
             brew install gcc
