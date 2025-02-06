@@ -1,0 +1,8 @@
+Field name,Type,Use/meaning,Optional?
+name,string,Name of the setting,Required
+description,string,Explanation of the setting,Required
+type,string,What type of input this setting uses (one of 'number' - 'string' - 'dropdown' - 'checkbox'),Required
+options-preface,string,Extra information about the options (on docs only shown after expanding options),Optional
+options,array,List of option objects
+settings-section,string,Title of a new subsection of settings (starts immediately before this setting),Optional
+settings-section-description,string,Description of this subsection of settings,Optional

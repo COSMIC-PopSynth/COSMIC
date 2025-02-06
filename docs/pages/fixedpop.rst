@@ -126,11 +126,11 @@ First, we need to load the data which is saved in the same directory where` ``co
 
     In [2]: import numpy
 
-    In [3]: conv = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='conv')
+    In [3]: conv = pandas.read_hdf('data/dat_DeltaBurst_13_14_13_14.h5', key='conv')
 
-    In [4]: total_mass = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='mass_stars')
+    In [4]: total_mass = pandas.read_hdf('data/dat_DeltaBurst_13_14_13_14.h5', key='mass_stars')
 
-    In [5]: N_stars = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='n_stars')
+    In [5]: N_stars = pandas.read_hdf('data/dat_DeltaBurst_13_14_13_14.h5', key='n_stars')
 
 .. note::
 
