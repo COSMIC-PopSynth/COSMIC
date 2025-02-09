@@ -90,7 +90,7 @@ for group in settings:
         # create the new settings with its details
         new_setting = bs4.BeautifulSoup(settings_template, 'html.parser')
         new_setting.select_one(".name").code.string = setting["name"]
-        new_setting.select_one(".description").string = ""
+        new_setting.select_one(".description").clear()
         new_setting.select_one(".description").append(bs4.BeautifulSoup(setting["description"],
                                                                         'html.parser'))
 
@@ -155,9 +155,10 @@ for group in settings:
             new_setting.select_one(".col-3").append(new_select)
 
         # optionally there might be some extra explanation about the options
-        new_setting.select_one(".options-preface").string = ""
-        new_setting.select_one(".options-preface").append(bs4.BeautifulSoup(setting["options-preface"],
-                                                                            'html.parser'))
+        if setting["options-preface"] != "":
+            new_setting.select_one(".options-preface").clear()
+            new_setting.select_one(".options-preface").append(bs4.BeautifulSoup(setting["options-preface"],
+                                                                                'html.parser'))
 
         # add each of the options and its explanation to the list
         for i, option in enumerate(setting["options"]):
