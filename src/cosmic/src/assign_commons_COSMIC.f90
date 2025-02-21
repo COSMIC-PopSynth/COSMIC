@@ -45,4 +45,8 @@
         code_error = .true.
     end subroutine
       
-
+    subroutine initialize_metisse_front_cmc()
+    ! since passing strings with c/cmc isn't realiable
+    ! we set front end like this avoid any seg faults
+        call initialize_front_end('cosmic')
+    end subroutine

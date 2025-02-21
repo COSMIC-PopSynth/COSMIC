@@ -255,7 +255,6 @@ Cf2py intent(out) kick_info_out
               CALL instar
       endif
     
-      if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *
 * Save the initial state.
 *
@@ -341,6 +340,7 @@ component.
 *
       err = 0
       if(using_cmc.eq.0)then
+            if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *      for SSE path_to_tracks and path_to_he_tracks are empty ('')
             CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
             if(using_METISSE.eq.1) then
