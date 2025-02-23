@@ -582,13 +582,13 @@ def _evolve_single_system(f):
         if f["stellar_engine"] == "sse":
             _evolvebin.se_flags.using_sse = 1
             _evolvebin.se_flags.using_metisse = 0
-            path_to_tracks = ""
-            path_to_he_tracks = ""
+            _evolvebin.metissevars.path_to_tracks = ""
+            _evolvebin.metissevars.path_to_he_tracks = ""
         elif f["stellar_engine"] == "metisse":
             _evolvebin.se_flags.using_metisse = 1
             _evolvebin.se_flags.using_sse = 0
-            path_to_tracks = f["path_to_tracks"]
-            path_to_he_tracks = f["path_to_he_tracks"]
+            _evolvebin.metissevars.path_to_tracks = f["path_to_tracks"]
+            _evolvebin.metissevars.path_to_he_tracks = f["path_to_he_tracks"]
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
 
@@ -618,9 +618,7 @@ def _evolve_single_system(f):
                                                               f["tphys"],
                                                               np.zeros(20),
                                                               np.zeros(20),
-                                                              f["kick_info"],
-                                                              f["path_to_tracks"],
-                                                              f["path_to_he_tracks"])
+                                                              f["kick_info"])
                                                               
         if bpp_index<0:
             raise ValueError("Failed in METISSE_zcnsts")
