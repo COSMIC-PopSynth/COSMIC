@@ -66,7 +66,7 @@ lib_source = [
     'src/cosmic/src/METISSE/src/interp_support.f90',
     'src/cosmic/src/METISSE/src/comenv_lambda.f90',
     'src/cosmic/src/METISSE/src/METISSE_miscellaneous.f90',
-    'src/cosmic/src/assign_commons_COSMIC.f90']
+    'src/cosmic/src/METISSE_utils.f90']
 
 # Detect operating system and set appropriate linker flags
 host_system = host_machine.system()

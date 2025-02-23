@@ -3,7 +3,6 @@
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,bkick,kick_info,
-     \ path_to_tracks,path_to_he_tracks,
      \ bpp_index_out,bcm_index_out,kick_info_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -198,7 +197,6 @@
       COMMON /fall/fallback
       REAL ran3
       EXTERNAL ran3
-      CHARACTER*256 path_to_tracks,path_to_he_tracks
 *
 
 *
@@ -245,8 +243,6 @@ Cf2py intent(in) tphys
 Cf2py intent(in) zpars
 Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
-Cf2py intent(in) path_to_tracks
-Cf2py intent(in) path_to_he_tracks
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
 Cf2py intent(out) kick_info_out
@@ -255,7 +251,6 @@ Cf2py intent(out) kick_info_out
               CALL instar
       endif
     
-      if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *
 * Save the initial state.
 *
@@ -341,8 +336,9 @@ component.
 *
       err = 0
       if(using_cmc.eq.0)then
+            if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *      for SSE path_to_tracks and path_to_he_tracks are empty ('')
-            CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
+            CALL zcnsts(z,zpars)
             if(using_METISSE.eq.1) then
                 call check_error(err)
                 if (err>0) then

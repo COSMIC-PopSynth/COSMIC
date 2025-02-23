@@ -1189,7 +1189,7 @@ class Sample(object):
             ## cycle through the masses max_array_size number at a time
             temp_mass = mass[idx*max_array_size:(idx+1)*max_array_size]
 
-            temp_radii = _evolvebin.compute_r(temp_mass,metallicity,max_array_size,path_to_tracks,path_to_he_tracks)
+            temp_radii = _evolvebin.compute_r(temp_mass,metallicity,max_array_size)
 
             ## put these in the radii array
             radii[idx*max_array_size:(idx+1)*max_array_size] = temp_radii
@@ -1203,7 +1203,7 @@ class Sample(object):
         temp_mass = np.zeros(max_array_size)
         temp_mass[:length_remaining] = mass[-length_remaining:]
 
-        temp_radii = _evolvebin.compute_r(temp_mass,metallicity,length_remaining,path_to_tracks,path_to_he_tracks)
+        temp_radii = _evolvebin.compute_r(temp_mass,metallicity,length_remaining)
 
         #finish up the array
         radii[-length_remaining:] = temp_radii[:length_remaining]
