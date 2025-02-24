@@ -1174,13 +1174,17 @@ class Sample(object):
         if (SSEDict == None) or (SSEDict["stellar_engine"] == "sse"):
             _evolvebin.se_flags.using_sse = True
             _evolvebin.se_flags.using_metisse = False
-            path_to_tracks = ""
-            path_to_he_tracks = ""
+            _evolvebin.metissevars.path_to_tracks = ""
+            _evolvebin.metissevars.path_to_he_tracks = ""
+            _evolvebin.metissevars.z_match_limit = 1e-2
+            _evolvebin.metissevars.METISSE_verbose = False
         elif SSEDict["stellar_engine"] == "metisse":
             _evolvebin.se_flags.using_metisse = True
             _evolvebin.se_flags.using_sse = False
-            path_to_tracks = SSEDict["path_to_tracks"]
-            path_to_he_tracks = SSEDict["path_to_he_tracks"]
+            _evolvebin.metissevars.path_to_tracks = SSEDict["path_to_tracks"]
+            _evolvebin.metissevars.path_to_he_tracks = SSEDict["path_to_he_tracks"]
+            _evolvebin.metissevars.z_match_limit = 1e-2
+            _evolvebin.metissevars.METISSE_verbose = False
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
             
