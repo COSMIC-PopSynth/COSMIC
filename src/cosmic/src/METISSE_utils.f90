@@ -64,9 +64,6 @@
         COMMON/ METISSEVARS/ path_to_tracks,path_to_he_tracks,&
                      z_match_limit, METISSE_verbose
         
-        z_match_limit = 1d-2
-        METISSE_verbose = .false.
-        
         ! remove the null charcater if any
         call get_csafe_string(path_to_tracks,METALLICITY_DIR)
         call get_csafe_string(path_to_he_tracks,METALLICITY_DIR_HE)
