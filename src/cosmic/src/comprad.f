@@ -1,6 +1,5 @@
 ***
-      SUBROUTINE compute_r(mass,z,num,rad,
-     &           path_to_tracks,path_to_he_tracks)
+      SUBROUTINE compute_r(mass,z,num,rad)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 
@@ -20,7 +19,6 @@
       integer k,kstar,num
       real*8 mt,tm,tn,mass0,age,lum,mc,rc,me,re,dtm
       REAL*8 tscls(20),lums(10),GB(10),zpars(20),k2,bhspin
-      CHARACTER*256 path_to_tracks,path_to_he_tracks
 
 ***
 * f2py directives go here; we'll return the radii as a 10^5 array
@@ -32,7 +30,7 @@ Cf2py intent(in) num
 Cf2py intent(out) rad
 
       if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
-      CALL zcnsts(z,zpars,path_to_tracks,path_to_he_tracks)
+      CALL zcnsts(z,zpars)
       
       if(using_METISSE.eq.1) call allocate_track(num,mass)
 
