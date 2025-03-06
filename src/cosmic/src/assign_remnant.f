@@ -84,6 +84,34 @@
 *
                   kw = 15
                else
+* Chris Belczynski Evolutionary Roads Weak PPISN
+* This has to happen before the SNa, because it modifies
+* the properties of the star during explosion
+                  if(pisn.eq.-4.and.mt.ge.45d0)then
+                    if(mcbagb.ge.65d0) then
+                      mt = 0.d0
+                      kw = 15
+                    else
+* PPISN
+                      if(mcbagb.ge.60d0) then
+                        mtemp1 = 938d0 - (14.3d0*mcbagb)
+                      elseif(mcbagb.ge.40d0) then
+                        mtemp1 = 55.6d0
+                      else
+                        mtemp1 = 6.0d0 + (0.83d0*mcbagb)
+                      endif
+* Update mass
+                      if(mt.gt.mtemp1) then
+                        mt = mtemp1
+                      endif
+                      if(mcbagb.gt.mtemp1) then
+                        mcbagb = mtemp1
+                      endif
+                      if(mc.gt.mtemp1) then
+                        mc = mtemp1
+                    endif
+                  endif
+* Carry on with the Supernovae
                   if(remnantflag.eq.0)then
                      mt = 1.17d0 + 0.09d0*mc
                   elseif(remnantflag.eq.1)then
