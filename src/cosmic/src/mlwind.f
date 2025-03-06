@@ -170,7 +170,7 @@
 * Next check if hot massive H-rich O/B star in appropriate temperature ranges.
          if (windflag.eq.2.or.windflag.eq.3.or.windflag.eq.5) then
              if(teff.ge.12500.and.teff.le.25000)then
-                if(eddlimflag.eq.0.or.eddlimflag.eq.2) alpha = 0.85d0
+                if(eddlimflag.eq.0) alpha = 0.85d0
                 if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
                 dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
      &                1.339d0*LOG10(mt/30.d0) -
@@ -220,7 +220,7 @@
 * past the limit, rather than just for giant, evolved stars
             x = 1.0d-5*r*sqrt(lum)
             if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-               if(eddlimflag.eq.0.or.eddlimflag.eq.2) alpha = 0.d0
+               if(eddlimflag.eq.0) alpha = 0.d0
                if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
                dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
                testflag = 3
@@ -228,15 +228,9 @@
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
-            if(eddlimflag.eq.0.or.eddlimflag.eq.2) alpha = 0.86d0
+            if(eddlimflag.eq.0) alpha = 0.86d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
-* Yang et al (2023) 10.1051/0004-6361/202244770
-            if(eddlimflag.eq.2) then
-             alpha = LOG10(lum)
-             dms = 10**(0.45d0*alpha**3 - 5.26d0*alpha**2 + 20.93d0*alpha -
-     &       34.56d0)
-            endif
             testflag = 4
          endif
 *
