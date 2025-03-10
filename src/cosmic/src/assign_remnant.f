@@ -109,6 +109,7 @@
                       endif
                       if(mc.gt.mtemp1) then
                         mc = mtemp1
+                      endif
                     endif
                   endif
 * Carry on with the Supernovae
