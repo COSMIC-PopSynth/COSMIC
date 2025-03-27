@@ -175,7 +175,7 @@ def get_independent_sampler(
     stellar_engine = SSEDict.get("stellar_engine", "sse")
     
     if stellar_engine == "sse" and\
-        (metallicity < 1e-4 or metallicity > 3e-2):
+        (met < 1e-4 or met > 3e-2):
             warnings.warn("You supplied a metallicity outside of SSE's parameter space [1e-4 <= Z <= 3e-2].\
                 Z will be truncated to this limit.")
     
