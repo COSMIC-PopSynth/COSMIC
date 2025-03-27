@@ -4,6 +4,8 @@
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
+      REAL*8 preSNmass,preSNmenv,preSNmassc
+      COMMON preSNmass,preSNmenv,preSNmassc
       REAL*8 fallback
       REAL ran3
       EXTERNAL ran3
@@ -84,6 +86,12 @@
 *
                   kw = 15
                else
+* Beginning of supernova block
+*
+* Store values in common block
+                  preSNmass = mt
+                  preSNmenv = mcbagb
+                  preSNmassc = mc
 * Chris Belczynski Evolutionary Roads Weak PPISN
 * This has to happen before the SNa, because it modifies
 * the properties of the star during explosion

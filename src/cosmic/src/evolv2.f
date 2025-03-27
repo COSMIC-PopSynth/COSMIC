@@ -199,6 +199,8 @@
       EXTERNAL ran3
 *
 
+      REAL*8 preSNmass, preSNmenv, preSNmassc
+      COMMON preSNmass, preSNmenv, preSNmassc
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -1368,6 +1370,13 @@ component.
                   b02_bcm = B(2)
                endif
 
+*               print *, evolve_type
+*               print *, mass0(k), menv(k), massc(k)
+*               print *, preSNmass, preSNmenv, preSNmassc
+               mass0(k) = preSNmass
+               menv(k) = preSNmenv
+               massc(k) = preSNmassc
+*               print *, mass0(k), menv(k), massc(k)
                CALL writetab(jp,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
