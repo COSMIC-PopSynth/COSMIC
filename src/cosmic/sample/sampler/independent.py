@@ -22,7 +22,6 @@
 import numpy as np
 import warnings
 import pandas as pd
-import warnings
 
 from cosmic import utils
 
@@ -173,11 +172,6 @@ def get_independent_sampler(
         Number of binaries needed to generate a population
     """
     
-    stellar_engine = SSEDict.get("stellar_engine", "sse")
-            
-    if (stellar_engine == "sse") and\
-        ((met > 3e-2) or (met < 1e-4)):
-            warnings.warn("You supplied a metallicity outside of SSE's parameter space [1e-4 <= Z <= 3e-2].")
     
     if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
         raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
@@ -306,8 +300,6 @@ def get_independent_sampler(
 
     rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
     rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
-    
-    print(f"get_independent_sampler: rad1: {rad1} | rad2: {rad2}")
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
@@ -324,11 +316,8 @@ def get_independent_sampler(
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
-    
-    if (stellar_engine == "sse"):
-        metallicity[metallicity < 1e-4] = 1e-4
-        metallicity[metallicity > 0.03] = 0.03
-    
+    metallicity[metallicity < 1e-4] = 1e-4
+    metallicity[metallicity > 0.03] = 0.03
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
@@ -347,11 +336,8 @@ def get_independent_sampler(
         tphysf_singles, metallicity_singles = initconditions.sample_SFH(
             SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
         )
-        
-        if (stellar_engine == "sse"):
-            metallicity_singles[metallicity_singles < 1e-4] = 1e-4
-            metallicity_singles[metallicity_singles > 0.03] = 0.03
-            
+        metallicity_singles[metallicity_singles < 1e-4] = 1e-4
+        metallicity_singles[metallicity_singles > 0.03] = 0.03
         kstar1_singles = initconditions.set_kstar(mass1_singles)
         singles_table = InitialBinaryTable.InitialBinaries(
             mass1_singles,                          # mass1
@@ -374,7 +360,7 @@ def get_independent_sampler(
             kstar1,
             kstar2,
             metallicity,
-            binfrac=binfrac
+            binfrac=binfrac,
         )
 
     return (
@@ -457,7 +443,7 @@ class Sample(object):
         # Read in m1_min and m_max kwargs, if provided
         m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
         m_max = kwargs["m_max"] if "m_max" in kwargs.keys() else 150.0
-        
+
         # Make sure m1_min value is below 0.5, since otherwise it will not work for Kroupa IMF
         if m1_min > 0.5:
             raise ValueError("m1_min must be greater than 0.5 Msun")
@@ -874,7 +860,6 @@ class Sample(object):
         )
 
         # include the factor for the eccentricity
-        #print(f"sample_porb: rad1 = {rad1} | RL_fac = {RL_fac}")
         RL_max = 2 * rad1 / RL_fac
         (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
         if len(ind_switch) >= 1:
@@ -888,7 +873,6 @@ class Sample(object):
         #
         # If we have, then the minimum pericenter is set to RL overflow
         a_min = RL_max 
-        #print(f"sample_porb: a_min = {a_min}")
 
         if porb_model == "log_uniform":
             if porb_max is None:
@@ -1046,14 +1030,11 @@ class Sample(object):
             porb = 10**logP_dist 
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
             
+
         else:
             raise ValueError(
                 "You have supplied a non-supported model; Please choose either log_flat, sana12, renzo19, raghavan10, or moe19"
             )
-            
-        #print(f"sample_porb: a_min = {a_min}")
-        #print(f"sample_porb: {utils.a_from_p(porb, mass1, mass2)}")
-            
         return porb, aRL_over_a 
 
     def sample_ecc(self, aRL_over_a, ecc_model="sana12", size=None):
@@ -1083,12 +1064,9 @@ class Sample(object):
             array of sampled eccentricities with size=size
         """
 
-        #print(f"sample_ecc: aRL_overa_a = {aRL_over_a}")
         # if we sampled the periods first, we need to truncate the eccentricities
         # to avoid RL overflow/collision at pericenter
         e_max = 1.0 - aRL_over_a
-        
-        #print(f"sample_ecc: e_max = {e_max}")
 
         if ecc_model == "thermal":
             a_0 = np.random.uniform(0.0, e_max**2, size)
