@@ -22,6 +22,7 @@
 import numpy as np
 import warnings
 import pandas as pd
+import warnings
 
 from cosmic import utils
 
@@ -171,7 +172,12 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
+    stellar_engine = SSEDict.get("stellar_engine", "sse")
     
+    if stellar_engine == "sse" and\
+        (metallicity < 1e-4 or metallicity > 3e-2):
+            warnings.warn("You supplied a metallicity outside of SSE's parameter space [1e-4 <= Z <= 3e-2].\
+                Z will be truncated to this limit.")
     
     if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
         raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
@@ -316,8 +322,11 @@ def get_independent_sampler(
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
-    metallicity[metallicity < 1e-4] = 1e-4
-    metallicity[metallicity > 0.03] = 0.03
+    
+    if stellar_engine == "sse":
+        metallicity[metallicity < 1e-4] = 1e-4
+        metallicity[metallicity > 0.03] = 0.03
+        
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
@@ -336,8 +345,11 @@ def get_independent_sampler(
         tphysf_singles, metallicity_singles = initconditions.sample_SFH(
             SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
         )
-        metallicity_singles[metallicity_singles < 1e-4] = 1e-4
-        metallicity_singles[metallicity_singles > 0.03] = 0.03
+        
+        if stellar_engine == "sse":
+            metallicity_singles[metallicity_singles < 1e-4] = 1e-4
+            metallicity_singles[metallicity_singles > 0.03] = 0.03
+            
         kstar1_singles = initconditions.set_kstar(mass1_singles)
         singles_table = InitialBinaryTable.InitialBinaries(
             mass1_singles,                          # mass1
