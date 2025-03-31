@@ -172,7 +172,10 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
-    stellar_engine = SSEDict.get("stellar_engine", "sse")
+    if SSEDict is not None:
+        stellar_engine = SSEDict.get("stellar_engine", "sse")
+    else:
+        stellar_engine = "sse"
     
     if stellar_engine == "sse" and\
         (met < 1e-4 or met > 3e-2):
