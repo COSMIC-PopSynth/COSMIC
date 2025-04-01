@@ -1824,7 +1824,12 @@ component.
 *
  7    km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
-*
+      
+* Check for collision at periastron for a stable RLOF 
+      pd = sep*(1.d0 - ecc)
+      if(pd.lt.(rad(1)+rad(2))) goto 130
+      
+*      
 * Force co-rotation of primary and orbit to ensure that the tides do not
 * lead to unstable Roche (not currently used).
 *
@@ -2449,14 +2454,13 @@ component.
 *
          evolve_type = 8.0
          
-         age = tphys - epoch(1)
+         
          mc = massc(1)
          rc = radc(1)
          CALL star(kstar(1),mass0(1),mass(1),tm,tn,tscls,lums,GB,zpars)
-         CALL hrdiag(mass0(1),age,mass(1),tm,tn,tscls,lums,GB,zpars,
+         CALL hrdiag(mass0(1),aj(1),mass(1),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(1),mc,rc,me,re,k2,bhspin(1),1)
-         aj(1) = age
-         epoch(1) = tphys - age
+     
          rad(1) = rm
          lumin(1) = lum  
          massc(1) = mc
@@ -2464,14 +2468,13 @@ component.
          menv(1) = me
          renv(1) = re
          
-         age = tphys - epoch(2)
+         
          mc = massc(2)
          rc = radc(2)
          CALL star(kstar(2),mass0(2),mass(2),tm,tn,tscls,lums,GB,zpars)
-         CALL hrdiag(mass0(2),age,mass(2),tm,tn,tscls,lums,GB,zpars,
+         CALL hrdiag(mass0(2),aj(2),mass(2),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(2),mc,rc,me,re,k2,bhspin(2),2)
-         aj(2) = age
-         epoch(2) = tphys - age
+     
          rad(2) = rm
          lumin(2) = lum  
          massc(2) = mc
@@ -2520,6 +2523,7 @@ component.
      &                 formation(2),binstate,mergertype,'bpp')
 *
          epoch(j1) = tphys - aj(j1)
+         com = .false.
          if(coel)then
             com = .true.
             goto 135
@@ -3556,6 +3560,11 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
+         pd = sep*(1.d0 - ecc)
+         if(pd.lt.(rad(1)+rad(2))) goto 130
+
+
+     
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
