@@ -73,6 +73,10 @@
                mass = mt
 *
             else
+* Store values in common block
+               preSNmass = mt
+               preSNmenv = mcbagb - mc
+               preSNmassc = mc
                if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.
@@ -88,10 +92,6 @@
                else
 * Beginning of supernova block
 *
-* Store values in common block
-                  preSNmass = mt
-                  preSNmenv = mcbagb
-                  preSNmassc = mc
 * Chris Belczynski Evolutionary Roads Weak PPISN
 * This has to happen before the SNa, because it modifies
 * the properties of the star during explosion

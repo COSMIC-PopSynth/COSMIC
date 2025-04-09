@@ -1330,6 +1330,10 @@ component.
                else
                   b02_bcm = B(2)
                endif
+* Load preSN values for the SN writetab
+               mass0(k) = preSNmass
+               menv(k) = preSNmenv
+               massc(k) = preSNmassc
                CALL writetab(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -3598,6 +3602,10 @@ component.
             else
                b02_bcm = B(2)
             endif
+* Load preSN values for the SN writetab
+            mass0(k) = preSNmass
+            menv(k) = preSNmenv
+            massc(k) = preSNmassc
             CALL writetab(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
