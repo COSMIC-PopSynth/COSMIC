@@ -22,6 +22,23 @@
 *     Date : cmc version mid 2010
 *
 *
+* Note on indexing binary components:
+*
+* M01, M1, MC1, AJ1, JSPIN1, KW1, formation1, bhspin1 are selected with star1
+* M02, M2, MC2, AJ2, JSPIN2, KW2, formation2, bhspin1 are selected with star2
+*
+* star1 is the donor. star2 is the accretor
+* switchedCE is .true. if j1 is 2; .false. otherwise
+* Nope!
+*
+* deltam_1 and deltam_2 are calculated before being passed into comenv
+*
+* teff, radc, and ospin are calculated inside comenv (or a function)
+*
+* Other quantities are passed as vectors.
+* These are lumin, menv_bpp, tms, rad, renv, bacc, tacc, epoch, and B_0.
+* tms and rad are immediately separated into tms1/2_bpp and rad1/2_bpp
+*
       INTEGER KW1,KW2,KW,KW1i,KW2i,snp
       INTEGER star1,star2
       INTEGER binstate,mergertype
