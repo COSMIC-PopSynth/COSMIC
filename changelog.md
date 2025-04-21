@@ -47,3 +47,6 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.5.0
  - Feature: Added `bpp_columns` and `bcm_columns` parameters to the `evolve()` function to allow users to specify the columns in the bpp and bcm tables
  - Bug fix: Changed `kick.f` to use the Pfahl+02 kick prescription by default instead of Kiel & Hurley 2009, this fixes ejection velocities of secondaries and also changed kick_info to have an extra column
+
+## 3.6.0
+ - Overhaul documentation and added debugging environment

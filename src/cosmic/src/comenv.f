@@ -21,15 +21,13 @@
 *     Update : P. D. Kiel (for ECSN, fallback and bugs)
 *     Date : cmc version mid 2010
 *
+*     Update : V. E. Delfavero (bugs in bpp reporting)
+*     Date : 20th, April 2025
 *
 * Note on indexing binary components:
 *
 * M01, M1, MC1, AJ1, JSPIN1, KW1, formation1, bhspin1 are selected with star1
 * M02, M2, MC2, AJ2, JSPIN2, KW2, formation2, bhspin1 are selected with star2
-*
-* star1 is the donor. star2 is the accretor
-* switchedCE is .true. if j1 is 2; .false. otherwise
-* Nope!
 *
 * deltam_1 and deltam_2 are calculated before being passed into comenv
 *
@@ -58,8 +56,8 @@
       REAL*8 bhspin1,bhspin2
       REAL*8 deltam_1,deltam_2
       common /fall/fallback
-      REAL*8 preSNmass, preSNmenv, preSNmassc
-      COMMON preSNmass, preSNmenv, preSNmassc
+      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+      COMMON mass_preSN, mHe_preSN, massc_preSN
       INTEGER formation1,formation2
       REAL*8 sigmahold
       REAL*8 AURSUN,K3
@@ -318,21 +316,18 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0)) 
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       massc1_bpp,preSNmassc,rad1_bpp,rad2_bpp,
-     &                      M02,preSNmass,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),preSNmenv,renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                       massc1_bpp,massc_preSN,rad1_bpp,rad2_bpp,
+     &                      M02,mass_preSN,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                         print *, "case 1a"
@@ -341,18 +336,15 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       preSNmassc,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      preSNmass,M02,lumin(1),lumin(2),teff1,teff2,
-     &                      RC1,RC2,preSNmenv,menv_bpp(2),renv_bpp(1),
+     &                       massc_preSN,massc2_bpp,rad1_bpp,rad2_bpp,
+     &                      mass_preSN,M02,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin1,bhspin2,
@@ -633,21 +625,18 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       massc1_bpp,preSNmassc,rad1_bpp,rad2_bpp,
-     &                      M02,preSNmass,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),preSNmenv,renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                       massc1_bpp,massc_preSN,rad1_bpp,rad2_bpp,
+     &                      M02,mass_preSN,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                        print *, "case 2a"
@@ -656,18 +645,15 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       preSNmassc,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      preSNmass,M02,lumin(1),lumin(2),teff1,teff2,
-     &                      RC1,RC2,preSNmenv,menv_bpp(2),renv_bpp(1),
+     &                       massc_preSN,massc2_bpp,rad1_bpp,rad2_bpp,
+     &                      mass_preSN,M02,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin1,bhspin2,
@@ -812,21 +798,18 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       preSNmassc,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      preSNmass,M01,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,preSNmenv,menv_bpp(1),renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                       massc_preSN,massc2_bpp,rad1_bpp,rad2_bpp,
+     &                      mass_preSN,M01,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC2,RC1,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                        print *, "case 3a"
@@ -835,18 +818,15 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,SEP_postCE,TB,ECC,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       massc1_bpp,preSNmassc,rad1_bpp,rad2_bpp,
-     &                      M01,preSNmass,lumin(1),lumin(2),teff1,teff2,
-     &                      RC1,RC2,menv_bpp(1),preSNmenv,renv_bpp(1),
+     &                       massc1_bpp,massc_preSN,rad1_bpp,rad2_bpp,
+     &                      M01,mass_preSN,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC1,RC2,menv_bpp(1),mHe_preSN,renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin1,bhspin2,
@@ -1054,21 +1034,18 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       massc1_bpp,preSNmassc,rad1_bpp,rad2_bpp,
-     &                      M02,preSNmass,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),preSNmenv,renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                       massc1_bpp,massc_preSN,rad1_bpp,rad2_bpp,
+     &                      M02,mass_preSN,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                        print *, "case 4a"
@@ -1077,18 +1054,15 @@
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
                        teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
-* Load preSN values for the SN writetab
-                       print *, preSNmass, preSNmenv, preSNmassc
-                       print *, M02, menv_bpp(2), massc2_bpp
-                       print *, M01, menv_bpp(1), massc1_bpp
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
      &                       kstar2_bpp,-1.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
-     &                       preSNmassc,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      preSNmass,M02,lumin(1),lumin(2),teff1,teff2,
-     &                      RC1,RC2,preSNmenv,menv_bpp(2),renv_bpp(1),
+     &                       massc_preSN,massc2_bpp,rad1_bpp,rad2_bpp,
+     &                      mass_preSN,M02,lumin(1),lumin(2),
+     &                      teff1,teff2,
+     &                      RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
      &                      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin1,bhspin2,

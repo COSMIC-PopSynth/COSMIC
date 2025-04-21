@@ -195,12 +195,10 @@
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
+      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL ran3
       EXTERNAL ran3
-*
-
-      REAL*8 preSNmass, preSNmenv, preSNmassc
-      COMMON preSNmass, preSNmenv, preSNmassc
 *
       REAL*8 z,tm,tn,m0,mt,rm,lum,mc,rc,me,re,k2,age,dtm,dtr
       REAL*8 tscls(20),lums(10),GB(10),zpars(20)
@@ -1330,10 +1328,10 @@ component.
                else
                   b02_bcm = B(2)
                endif
-* Load preSN values for the SN writetab
-               mass0(k) = preSNmass
-               menv(k) = preSNmenv
-               massc(k) = preSNmassc
+* Load  preSN values for the SN writetab
+               mass0(k) = mass_preSN
+               menv(k) = mHe_preSN
+               massc(k) = massc_preSN
                CALL writetab(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -1374,13 +1372,10 @@ component.
                   b02_bcm = B(2)
                endif
 
-*               print *, evolve_type
-*               print *, mass0(k), menv(k), massc(k)
-*               print *, preSNmass, preSNmenv, preSNmassc
-               mass0(k) = preSNmass
-               menv(k) = preSNmenv
-               massc(k) = preSNmassc
-*               print *, mass0(k), menv(k), massc(k)
+* Load  preSN values for the SN writetab
+               mass0(k) = mass_preSN
+               menv(k) = mHe_preSN
+               massc(k) = massc_preSN
                CALL writetab(jp,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
@@ -1837,7 +1832,12 @@ component.
 *
  7    km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
-*
+      
+* Check for collision at periastron for a stable RLOF 
+      pd = sep*(1.d0 - ecc)
+      if(pd.lt.(rad(1)+rad(2))) goto 130
+      
+*      
 * Force co-rotation of primary and orbit to ensure that the tides do not
 * lead to unstable Roche (not currently used).
 *
@@ -2461,6 +2461,35 @@ component.
 
 *
          evolve_type = 8.0
+         
+         
+         mc = massc(1)
+         rc = radc(1)
+         CALL star(kstar(1),mass0(1),mass(1),tm,tn,tscls,lums,GB,zpars)
+         CALL hrdiag(mass0(1),aj(1),mass(1),tm,tn,tscls,lums,GB,zpars,
+     &               rm,lum,kstar(1),mc,rc,me,re,k2,bhspin(1),1)
+     
+         rad(1) = rm
+         lumin(1) = lum  
+         massc(1) = mc
+         radc(1) = rc
+         menv(1) = me
+         renv(1) = re
+         
+         
+         mc = massc(2)
+         rc = radc(2)
+         CALL star(kstar(2),mass0(2),mass(2),tm,tn,tscls,lums,GB,zpars)
+         CALL hrdiag(mass0(2),aj(2),mass(2),tm,tn,tscls,lums,GB,zpars,
+     &               rm,lum,kstar(2),mc,rc,me,re,k2,bhspin(2),2)
+     
+         rad(2) = rm
+         lumin(2) = lum  
+         massc(2) = mc
+         radc(2) = rc
+         menv(2) = me
+         renv(2) = re
+
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
          if(kstar(1).eq.15) mass1_bpp = mass0(1)
@@ -2502,6 +2531,7 @@ component.
      &                 formation(2),binstate,mergertype,'bpp')
 *
          epoch(j1) = tphys - aj(j1)
+         com = .false.
          if(coel)then
             com = .true.
             goto 135
@@ -3538,6 +3568,11 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
+         pd = sep*(1.d0 - ecc)
+         if(pd.lt.(rad(1)+rad(2))) goto 130
+
+
+     
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
@@ -3602,10 +3637,10 @@ component.
             else
                b02_bcm = B(2)
             endif
-* Load preSN values for the SN writetab
-            mass0(k) = preSNmass
-            menv(k) = preSNmenv
-            massc(k) = preSNmassc
+* Load  preSN values for the SN writetab
+            mass0(k) = mass_preSN
+            menv(k) = mHe_preSN
+            massc(k) = massc_preSN
             CALL writetab(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,

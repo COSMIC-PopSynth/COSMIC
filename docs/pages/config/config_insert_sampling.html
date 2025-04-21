@@ -1,0 +1,148 @@
+<!-- This file should be created using create_settings_html.py -->
+<div class="container-fluid"><section class="card setting-card" data-category="sampling" style="border-color: darkseagreen;">
+<div class="card-header" style="background-color: darkseagreen;">
+<h2 class="setting-group-title">Sampling</h2>
+<p class="setting-group-description">Settings that change how the initial binary population is sampled</p>
+</div>
+<div class="card-body"><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>sampling_method</code></h3>
+<p class="description">Select which models to use to generate an initial sample of binary parameters at Zero Age Main Sequence</p>
+<p class="default">Default: independent</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="independent">independent</option><option value="multidim">multidim</option></select></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">independent</span></code>: <span class="opt-desc">Initialize binaries with independent parameter distributions for the primary mass, mass ratio, eccentricity, separation, and binary fraction</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">multidim</span></code>: <span class="opt-desc">Initialize binaries with multidimensional parameter distributions according to <a href="http://adsabs.harvard.edu/abs/2017ApJS..230...15M">Moe &amp; Di Stefano 2017</a></span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>primary_model</code></h3>
+<p class="description">Model for sampling primary masses <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: kroupa01</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="salpeter55">salpeter55</option><option value="kroupa93">kroupa93</option><option selected="true" value="kroupa01">kroupa01</option></select></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">salpeter55</span></code>: <span class="opt-desc">Use the Salpeter 1955 IMF</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">kroupa93</span></code>: <span class="opt-desc">Use the Kroupa 1993 IMF</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">kroupa01</span></code>: <span class="opt-desc">Use the Kroupa 2001 IMF</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>porb_model</code></h3>
+<p class="description">Model for sampling orbital periods <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: sana12</p>
+</div>
+<div class="col-3"><select class="form-control"><option selected="true" value="sana12">sana12</option><option value="log_uniform">log_uniform</option><option value="renzo19">renzo19</option><option value="raghavan10">raghavan10</option><option value="moe19">moe19</option><option value="custom">custom</option></select></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">sana12</span></code>: <span class="opt-desc">Sample from power law orbital period between 0.15 &lt; log(P/day) &lt; 5.5 following <a href="https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract">Sana+2012</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">log_uniform</span></code>: <span class="opt-desc">Sample semi-major axis flat in log space from RRLO &lt; 0.5 up to \(10^{5} {\rm R_{\odot}}\) according to <a href="http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A">Abt (1983)</a> and consistent with Dominik+2012,2013 - then convert to orbital period in days using Kepler's third law.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">renzo19</span></code>: <span class="opt-desc">Uses <code>sana12</code> for massive binaries (\(m_1 &gt; 15 {\rm M_{\odot}}\)) and flat in log otherwise (following <a href="https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract">Renzo+19</a>).</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">raghavan10</span></code>: <span class="opt-desc">Sample log normal orbital periods in days with mean_logP = 4.9 and sigma_logP = 2.3 between \(0 &lt; \log_{10}(P / {\rm day}) &lt; 9\) following <a href="https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract">Raghavan+2010 </a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">moe19</span></code>: <span class="opt-desc">As <code>raghavan10</code> but with different close binary fractions following <a href="https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract">Moe+2019</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">custom</span></code>: <span class="opt-desc">Sample from a custom power law. The user provides a dictionary of min, max and slope values for the power law.</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>ecc_model</code></h3>
+<p class="description">Model for sampling eccentricity <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: sana12</p>
+</div>
+<div class="col-3"><select class="form-control"><option value="thermal">thermal</option><option value="uniform">uniform</option><option selected="true" value="sana12">sana12</option><option value="circular">circular</option></select></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">thermal</span></code>: <span class="opt-desc">Samples from a thermal eccentricity distribution following <a href="http://adsabs.harvard.edu/abs/1975MNRAS.173..729H">Heggie (1975)</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">uniform</span></code>: <span class="opt-desc">Samples from a uniform eccentricity distribution</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">sana12</span></code>: <span class="opt-desc">Samples from the eccentricity distribution from <a href="https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract">Sana+2012</a></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">circular</span></code>: <span class="opt-desc">Assumes zero eccentricity for all systems</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>qmin</code></h3>
+<p class="description">Minimum mass ratio for sampling the secondary mass <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: -1</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="-1"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">The assumed mass ratio distribution is flat in \(q \equiv m_2 / m_1\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">values in [0, 1]</span></code>: <span class="opt-desc">Sets the minimum mass ratio</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">Set the minimum mass ratio such that the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>m2_min</code></h3>
+<p class="description">Minimum secondary mass for sampling <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: 0.1</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.1"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Sample the secondary mass uniformly between <code>m2_min</code> and <code>mass_1</code></span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.1</span></code>: <span class="opt-desc">Default value</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>binfrac_model</code></h3>
+<p class="description">Model for sampling binary fraction <br/><i>[Only used when <code>sampling_method = independent</code>]</i></p>
+<p class="default">Default: 0.5</p>
+</div>
+<div class="col-3"><input class="form-control" type="text" value="0.5"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">values between [0, 1]</span></code>: <span class="opt-desc">Fixed binary fraction</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">vanHaaften</span></code>: <span class="opt-desc">Primary mass dependent binary fraction following van Haaften+05</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">offner22</span></code>: <span class="opt-desc">Primary mass dependent binary fraction following Offner+22</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.5</span></code>: <span class="opt-desc">Default value</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>SF_start</code></h3>
+<p class="description">Sets the time in the past when star formation initiates in Myr.</p>
+<p class="default">Default: 13700.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="13700.0"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Start time of star formation in Myr</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">13700.0</span></code>: <span class="opt-desc">For example, this specifies a start time at the beginning of a Hubble time</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>SF_duration</code></h3>
+<p class="description">Sets the duration of constant star formation from ``SF_start`` in Myr.</p>
+<p class="default">Default: 0.0</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.0"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface"></p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Duration of star formation in Myr</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.0</span></code>: <span class="opt-desc">A single burst of star formation</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">13700.0</span></code>: <span class="opt-desc">For example, this specifies a constant star formation rate over a Hubble time</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>metallicity</code></h3>
+<p class="description">Sets the metallicity of the stellar population.</p>
+<p class="default">Default: 0.02</p>
+</div>
+<div class="col-3"><input class="form-control" type="number" value="0.02"/></div>
+</div>
+<div class="options-expander" style="color: darkseagreen;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">COSMIC expects an <b>absolute</b> metallicity (i.e., <b>NOT</b> units of <i>zsun</i>)</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Absolute metallicity</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">0.02</span></code>: <span class="opt-desc">For example, this sets the metallicity to approximately solar metallicity</span></li></ul>
+</div>
+</div></div>
+</section></div>

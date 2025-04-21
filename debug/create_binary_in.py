@@ -1,4 +1,5 @@
 import pandas as pd
+import argparse
 
 BSE_settings = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': 1.0,
                 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 0.5,
@@ -33,7 +34,12 @@ def create_binary_in(mass0, tphysf, tb, kstar, Z, ecc, BSE_settings):
             ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf', 'windflag', 'rtmsflag'],
             ['ceflag', 'tflag', 'ifflag', 'wdflag', 'bhflag', 'remnantflag', 'mxns', 'idum'],
             ['pts1', 'pts2', 'pts3'],
-            ['sigma', 'beta', 'xi', 'acc2', 'epsnov', 'eddfac', 'gamma']
+            ['sigma', 'beta', 'xi', 'acc2', 'epsnov', 'eddfac', 'gamma', 'kickflag'],
+            ['pisn', 'cekickflag', 'cehestarflag', 'grflag', 'bhms_coll_flag'],
+            ['wd_mass_lim', 'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigmadiv', 'bhsigmafrac'],
+            ['don_lim', 'acc_lim', 'bdecayfac', 'bconst', 'ck', 'qcflag', 'eddlimflag'],
+            ['bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb', 'ST_cr'],
+            ['ST_tide', 'rembar_massloss', 'zsun']
         ]
 
         for line in lines:
@@ -58,9 +64,22 @@ def convert_initC_row_to_binary_in(initC_file, bin_num):
     BSE_settings['idum'] = r['randomseed'].astype(int)
     for key in BSE_settings:
         if key in r:
-            BSE_settings[key] = r[key]
+            BSE_settings[key] = r[key].astype(type(BSE_settings[key]))
 
     # create binary.in file
     create_binary_in([r['mass_1'], r['mass_2']], r['tphysf'], r['porb'],
-                    [r['kstar_1'].astype(int), r['kstar_2'].astype(int)],
-                    r['metallicity'], r['ecc'], BSE_settings)
+                     [r['kstar_1'].astype(int), r['kstar_2'].astype(int)],
+                     r['metallicity'], r['ecc'], BSE_settings)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Convert a row from an initC file to a binary.in file')
+    parser.add_argument('-f', '--initC_file', type=str, help='Path to the initC file')
+    parser.add_argument('-b', '--bin_num', type=int, help='The binary number to convert')
+    args = parser.parse_args()
+
+    convert_initC_row_to_binary_in(args.initC_file, args.bin_num)
+
+
+if __name__ == '__main__':
+    main()

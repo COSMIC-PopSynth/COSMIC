@@ -1,0 +1,4 @@
+Field name,Type,Use/meaning,Optional?
+name,string/number,Name of the option,Required
+description,string,Explanation of the option,Required
+default,bool,Whether this is the default option. For settings with type="checkbox" can have multiple defaults. If this field is missing it is assumed false.,Optional

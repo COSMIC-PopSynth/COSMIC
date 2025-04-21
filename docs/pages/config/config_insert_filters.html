@@ -1,0 +1,36 @@
+<!-- This file should be created using create_settings_html.py -->
+<div class="container-fluid"><section class="card setting-card" data-category="filters" style="border-color: cadetblue;">
+<div class="card-header" style="background-color: cadetblue;">
+<h2 class="setting-group-title">Filters</h2>
+<p class="setting-group-description">Settings that filter the data returned by COSMIC simulations</p>
+</div>
+<div class="card-body"><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>binary_state</code></h3>
+<p class="description">Filter for the final state of the binaries you wish to retain</p>
+<p class="default">Default: [0, 1]</p>
+</div>
+<div class="col-3"><div><input checked="true" name="binary_state_opt0" type="checkbox" value="0"/><label for_="binary_state_opt0"> 0</label></div><div><input checked="true" name="binary_state_opt1" type="checkbox" value="1"/><label for_="binary_state_opt1"> 1</label></div><div><input name="binary_state_opt2" type="checkbox" value="2"/><label for_="binary_state_opt2"> 2</label></div><input class="form-control hide-me" type="string" value="[0, 1]"/></div>
+</div>
+<div class="options-expander" style="color: cadetblue;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">Each binary system will end its evolution in one of three states. Use these options to retain only certain endstates.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">0</span></code>: <span class="opt-desc">Retain only binaries still alive today</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">Retains binaries that merged</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">Retains binaries that were disrupted</span></li></ul>
+</div>
+</div><div class="setting">
+<div class="row align-items-center setting-chooser">
+<div class="col-9">
+<h3 class="name"><code>timestep_conditions</code></h3>
+<p class="description">Pick specific time resolutions to print at targeted stages of the binary evolution.</p>
+<p class="default">Default: dtp=None</p>
+</div>
+<div class="col-3"><input class="form-control" type="text" value="'dtp=None'"/></div>
+</div>
+<div class="options-expander" style="color: cadetblue;">Option details <i class="fa fa-chevron-down"></i></div>
+<div class="row options hide">
+<p class="options-preface">This is used in conjunction with the [bse] section value dtp to determine the timestep resolution for printing to the bcm array. See the <a href="evolve/resolution.html">related guide</a> for more information.</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">'dtp=None'</span></code>: <span class="opt-desc">Only the final time step is printed to the bcm array</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">'dtp=1.0'</span></code>: <span class="opt-desc">Use 1 Myr timesteps for all evolutionary stages</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">[['binstate==0', 'dtp=1.0']]</span></code>: <span class="opt-desc">Use 1 Myr timesteps for binaries until they merge or disrupt</span></li></ul>
+</div>
+</div></div>
+</section></div>

@@ -4,8 +4,8 @@
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
-      REAL*8 preSNmass,preSNmenv,preSNmassc
-      COMMON preSNmass,preSNmenv,preSNmassc
+      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL*8 fallback
       REAL ran3
       EXTERNAL ran3
@@ -74,9 +74,9 @@
 *
             else
 * Store values in common block
-               preSNmass = mt
-               preSNmenv = mcbagb - mc
-               preSNmassc = mc
+               mass_preSN = mt
+               mHe_preSN = mcbagb - mc
+               massc_preSN = mc
                if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.

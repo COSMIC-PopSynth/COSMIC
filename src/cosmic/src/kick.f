@@ -251,6 +251,15 @@
              vk2 = vk*vk
           endif
 
+* If a massless remnant is produced then artificially set the kick to
+* a large value that will cause a disruption. This avoids infinite kicks
+* for prescriptions that scale with the mass of the remnant.
+* See Issue #687
+          if(m1n.le.0.d0)then
+             vk = 10000.d0
+             vk2 = vk * vk
+          endif
+
       endif
       sigma = sigmah
 
@@ -320,7 +329,8 @@
 
 * Check if the system is already not a bound binary
       if((sn.eq.2.and.kick_info(1,2).eq.1)
-     &   .or.sep.le.0.or.ecc.lt.0)then
+     &   .or.sep.le.0.or.ecc.lt.0
+     &   .or.sep.ne.sep.or.ecc.ne.ecc)then
 * if so, only apply kick to the current star
          disrupt = .true.
          kick_info(sn,2) = 1
