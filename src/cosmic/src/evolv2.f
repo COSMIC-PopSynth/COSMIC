@@ -195,6 +195,8 @@
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
+      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL ran3
       EXTERNAL ran3
 *
@@ -1328,6 +1330,10 @@ component.
                else
                   b02_bcm = B(2)
                endif
+* Load  preSN values for the SN writetab
+               mass0(k) = mass_preSN
+               menv(k) = mHe_preSN
+               massc(k) = massc_preSN
                CALL writetab(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -1368,6 +1374,10 @@ component.
                   b02_bcm = B(2)
                endif
 
+* Load  preSN values for the SN writetab
+               mass0(k) = mass_preSN
+               menv(k) = mHe_preSN
+               massc(k) = massc_preSN
                CALL writetab(jp,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
@@ -3629,6 +3639,10 @@ component.
             else
                b02_bcm = B(2)
             endif
+* Load  preSN values for the SN writetab
+            mass0(k) = mass_preSN
+            menv(k) = mHe_preSN
+            massc(k) = massc_preSN
             CALL writetab(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
