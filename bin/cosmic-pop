@@ -502,7 +502,7 @@ if __name__ == '__main__':
             if (args.keep_singles==True):
                 utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
                             bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
-                            bin_state_nums, match_save, idx, conv_singles_filter_match, bcm_singles_filter_match, bpp_singles_filter_match)
+                            bin_state_nums, match_save, idx, conv_singles=conv_singles_filter_match, bcm_singles=bcm_singles_filter_match, bpp_singles=bpp_singles_filter_match)
             else:
                 utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
                             bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
