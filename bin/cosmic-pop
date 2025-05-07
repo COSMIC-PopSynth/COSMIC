@@ -172,8 +172,9 @@ if __name__ == '__main__':
     pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
     if isinstance(pool, MPIPool):
         if not pool.is_master():
+            from sys import exit
             pool.wait()
-            sys.exit(0)
+            exit(0)
         nproc = len(pool.workers)
     else:
         nproc = args.nproc
@@ -318,7 +319,8 @@ if __name__ == '__main__':
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
                                                             qmin = args.qmin,
-                                                            params = args.inifile)
+                                                            params = args.inifile,
+                                                            SSEDict = SSEDict)
             elif hasattr(args,'m2_min'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
@@ -333,7 +335,8 @@ if __name__ == '__main__':
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
                                                             m2_min = args.m2_min,
-                                                            params = args.inifile)
+                                                            params = args.inifile,
+                                                            SSEDict = SSEDict)
             else:
                 raise ValueError("You must specify either qmin or m2_min in the",
                                  " inifile if you are using the independent sampler")
