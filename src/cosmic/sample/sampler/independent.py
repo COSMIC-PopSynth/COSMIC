@@ -343,7 +343,7 @@ def get_independent_sampler(
             np.ones_like(mass1_singles) * 15,       # kstar2 (all massless remnants)
             metallicity_singles,                    # metallicity
         )
-        binary_table = pd.concat([binary_table, singles_table])
+        binary_table = pd.concat([binary_table, singles_table], ignore_index=True)
     else:
         binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
@@ -363,6 +363,7 @@ def get_independent_sampler(
         m_sampled_binaries,
         n_singles,
         n_binaries,
+        len(mass1_singles)
     )
 
 

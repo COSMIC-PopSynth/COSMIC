@@ -173,6 +173,15 @@ def filter_bin_state(bcm, bpp, method, kstar1_range, kstar2_range):
 
     return bcm, bin_state_fraction
 
+def conv_select_singles(bcm_save, bpp_save, final_kstar_1): # fix
+    """Select singles"""
+    conv_save = bpp_save.loc[
+            (bpp_save.kstar_1.isin(final_kstar_1))
+        ]
+    # select the formation parameters
+    conv_save = conv_save.groupby("bin_num").first().reset_index()
+    return conv_save
+
 
 def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_lims):
     """Select bcm data for special convergence cases
@@ -352,6 +361,7 @@ def pop_write(
     bin_state_nums,
     match,
     idx,
+    **kwargs,
 ):
     """Writes all the good stuff that you want to save from runFixedPop in a
        single function
@@ -396,6 +406,15 @@ def pop_write(
         contains the index of the bcm so we can pick up where we left off
         if runFixedPop hits a wall time
 
+    conv_singles : `pandas.DataFrame`
+        kwargs conv_singles array to write
+
+    bcm_singles : `pandas.DataFrame`
+        kwargs bcm_singles array to write
+
+    bpp_singles : `pandas.DataFrame`
+        kwargs bpp_singles array to write
+
     Returns
     -------
     Nothing!
@@ -433,6 +452,18 @@ def pop_write(
 
     # Save the index
     dat_store.append("idx", pd.DataFrame([idx]))
+
+    if "conv_singles" in kwargs.keys():
+
+        # Save the singles dataframe
+        dat_store.append("conv_singles", kwargs["conv_singles"])
+
+        # Save the singles dataframe
+        dat_store.append("bcm_singles", kwargs["bcm_singles"])
+
+        # Save the singles dataframe
+        dat_store.append("bpp_singles", kwargs["bpp_singles"])
+
     return
 
 
