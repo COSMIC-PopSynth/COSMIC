@@ -1332,6 +1332,7 @@ component.
                endif
 * Load  preSN values for the SN writetab
                mass0(k) = mass_preSN
+               m0 = mass_preSN
                menv(k) = mHe_preSN
                massc(k) = massc_preSN
                CALL writetab(jp,tphys,evolve_type,
