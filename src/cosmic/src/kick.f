@@ -196,7 +196,7 @@
 * ----------------------------------------------------------------------
 
 * Before we draw the kick from the maxwellian and then scale it
-* as desired, let us see if a pre-supplied natal kick maganitude
+* as desired, let us see if a pre-supplied natal kick magnitude
 * was passed.
       if(natal_kick_array(sn,1).ge.0.d0)then
           vk = natal_kick_array(sn,1)
@@ -207,24 +207,33 @@
           xx = RAN3(idum1)
           xx = RAN3(idum1)
       else
+* If no pre-supplied kick magnitude, we draw a kick from a distribution
+* If the kickflag is 5 then use the log-normal distribution described
+* by Disberg & Mandel 2025
+          if(abskickflag.eq.5)then
+             call RandomLogNormal(5.d60, 0.d69, vk, idum1, twopi)
+             vk2 = vk*vk
+          else
+* Otherwise use the Hobbs et al. 2005 Maxwellian distribution
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
 * Use Henon's method for pairwise components (Douglas Heggie 22/5/97).
-          do 25 k = 1,2
-             u1 = RAN3(idum1)
-             u2 = RAN3(idum1)
-             if(u1.gt.0.9999d0) u1 = 0.9999d0
-             if(u2.gt.1.d0) u2 = 1.d0
+            do 25 k = 1,2
+                u1 = RAN3(idum1)
+                u2 = RAN3(idum1)
+                if(u1.gt.0.9999d0) u1 = 0.9999d0
+                if(u2.gt.1.d0) u2 = 1.d0
 * Generate two velocities from polar coordinates S & THETA.
-             s = -2.d0*LOG(1.d0 - u1)
-             s = sigma*SQRT(s)
-             theta = twopi*u2
-             v(2*k-1) = s*COS(theta)
-             v(2*k) = s*SIN(theta)
- 25          continue
-          vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
-          vk = SQRT(vk2)
+                s = -2.d0*LOG(1.d0 - u1)
+                s = sigma*SQRT(s)
+                theta = twopi*u2
+                v(2*k-1) = s*COS(theta)
+                v(2*k) = s*SIN(theta)
+25          continue
+            vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
+            vk = SQRT(vk2)
+          endif
 
-          if(abskickflag.eq.1)then
+          if(abskickflag.eq.1.or.abskickflag.eq.5)then
 * Limit BH kick with fallback mass fraction.
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
