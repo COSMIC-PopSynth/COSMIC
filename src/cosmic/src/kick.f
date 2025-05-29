@@ -1711,3 +1711,22 @@
 
       RETURN
       END
+
+      SUBROUTINE RandomLogNormal(mean, sigma, result, idum1, twopi)
+* This function generates a random number from a log-normal distribution
+* following the Box-Muller transform method.
+* http://en.wikipedia.org/wiki/Box-Muller_transform
+
+      real*8 mean, sigma, result, twopi
+      real*8 u1, u2, z0
+
+      u1 = ran3(idum1)
+      u2 = ran3(idum1)
+
+      if (u1.le.0.d0) u1 = 1.0E-10      ! Avoid log(0)
+
+      Z0 = SQRT(-2.0d0 * LOG(u1)) * COS(twopi * u2)
+      result = EXP(mean + sigma * Z0)
+
+      RETURN
+      END
