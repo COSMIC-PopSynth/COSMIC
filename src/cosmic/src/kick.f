@@ -118,6 +118,7 @@
       real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       integer i
+      logical ECSN_or_USSN
 * Output
       logical output,disrupt,collide
 *
@@ -127,6 +128,7 @@
 *
       output = .false. !useful for debugging...
       collide = .false.
+      ECSN_or_USSN = .false.
       safety = 0
       abskickflag = ABS(kickflag)
 
@@ -175,8 +177,9 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if((sigma.lt.0.d0).and.(abskickflag.eq.1))then
+      if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5))then
          sigma = -1.d0*sigma
+         ECSN_or_USSN = .true.
 * for kick prescriptions other than default, revert to original sigma
       elseif((sigma.lt.0.d0).and.(abskickflag.gt.1))then
          sigma = sigmahold
@@ -184,7 +187,7 @@
       sigmah = sigma
 
 * scale down BH kicks if bhsigmafrac is specified
-      if(abskickflag.eq.1)then
+      if(abskickflag.eq.1.or.abskickflag.eq.5)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
          endif
@@ -210,8 +213,8 @@
 * If no pre-supplied kick magnitude, we draw a kick from a distribution
 * If the kickflag is 5 then use the log-normal distribution described
 * by Disberg & Mandel 2025
-          if(abskickflag.eq.5)then
-             call RandomLogNormal(5.d60, 0.d69, vk, idum1, twopi)
+          if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
+             call RandomLogNormal(5.60d0, 0.69d0, vk, idum1, twopi)
              vk2 = vk*vk
           else
 * Otherwise use the Hobbs et al. 2005 Maxwellian distribution
