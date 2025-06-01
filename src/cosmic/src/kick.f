@@ -117,6 +117,7 @@
       real*8 thetaE, phiE, psiE
       real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
+      real*8 disberg_mean
       integer i
       logical ECSN_or_USSN
 * Output
@@ -140,6 +141,7 @@
       u1 = 0.d0
       u2 = 0.d0
       vk = 0.d0
+      disberg_mean = 5.60d0
       pi = ACOS(-1.d0)
       twopi = 2.d0*pi
 * Gravitational constant in units of km^3 / (Msun * s^2)
@@ -190,6 +192,7 @@
       if(abskickflag.eq.1.or.abskickflag.eq.5)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
+            disberg_mean = disberg_mean * bhsigmafrac
          endif
       endif
 
@@ -214,7 +217,7 @@
 * If the kickflag is 5 then use the log-normal distribution described
 * by Disberg & Mandel 2025
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
-             call RandomLogNormal(5.60d0, 0.69d0, vk, idum1, twopi)
+             call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
              vk2 = vk*vk
           else
 * Otherwise use the Hobbs et al. 2005 Maxwellian distribution
