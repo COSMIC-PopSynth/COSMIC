@@ -357,7 +357,6 @@ def get_independent_sampler(
             binfrac=binfrac,
         )
 
-    print(n_singles, len(mass1_singles))
     return (
         binary_table,
         m_sampled_singles,
@@ -506,8 +505,7 @@ class Sample(object):
             sampled secondary masses with array size matching size of
             primary_mass
         """
-
-        qmin = kwargs["qmin"] if "qmin" in kwargs.keys() else None
+        qmin = kwargs["qmin"] if "qmin" in kwargs.keys() else 0.0
         m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
         m2_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else None
         if (m2_min is None) & (qmin is None):
@@ -517,7 +515,7 @@ class Sample(object):
                              " primary mass of the IMF, either lower m2_min or"
                              " raise the lower value of your sampled primaries")
         
-        if (m2_min is not None) & (qmin is not None):
+        if (m2_min is not None) & (qmin != 0):
             raise ValueError("You cannot specify both m2_min and qmin, please choose one or the other")  
 
         # --- `msort` kwarg can be set to have different qmin above `msort`
