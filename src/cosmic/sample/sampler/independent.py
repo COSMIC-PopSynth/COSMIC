@@ -507,7 +507,7 @@ class Sample(object):
             primary_mass
         """
 
-        qmin = kwargs["qmin"] if "qmin" in kwargs.keys() else 0.0
+        qmin = kwargs["qmin"] if "qmin" in kwargs.keys() else None
         m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
         m2_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else None
         if (m2_min is None) & (qmin is None):
@@ -516,6 +516,9 @@ class Sample(object):
             raise ValueError("The m2_min you specified is above the minimum"
                              " primary mass of the IMF, either lower m2_min or"
                              " raise the lower value of your sampled primaries")
+        
+        if (m2_min is not None) & (qmin is not None):
+            raise ValueError("You cannot specify both m2_min and qmin, please choose one or the other")  
 
         # --- `msort` kwarg can be set to have different qmin above `msort`
         msort = kwargs["msort"] if "msort" in kwargs.keys() else None

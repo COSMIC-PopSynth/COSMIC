@@ -589,7 +589,7 @@ def mass_min_max_select(kstar_1, kstar_2, **kwargs):
     if ((primary_min < 0.08) | (secondary_min < 0.08)):
         warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses less than 0.08 Msun!")
     if primary_max > 150:
-        warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses greater than 150 Msun!")
+        warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses greater than 150 Msun! And to be honest, we are extrapolating beyond 50 Msun :-/")
 
     min_mass = [primary_min, secondary_min]
     max_mass = [primary_max, secondary_max]
