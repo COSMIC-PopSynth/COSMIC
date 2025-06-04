@@ -357,13 +357,13 @@ def get_independent_sampler(
             binfrac=binfrac,
         )
 
+    print(n_singles, len(mass1_singles))
     return (
         binary_table,
         m_sampled_singles,
         m_sampled_binaries,
         n_singles,
-        n_binaries,
-        len(mass1_singles)
+        n_binaries
     )
 
 
