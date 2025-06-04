@@ -415,6 +415,12 @@ def pop_write(
     bpp_singles : `pandas.DataFrame`
         kwargs bpp_singles array to write
 
+    initC_singles : `pandas.DataFrame`
+        kwargs initC_singles array to write
+
+    kick_info_singles : `pandas.DataFrame`
+        kwargs kick_info_singles array to write
+
     Returns
     -------
     Nothing!
@@ -455,14 +461,20 @@ def pop_write(
 
     if "conv_singles" in kwargs.keys():
 
-        # Save the singles dataframe
+        # Save the singles conv dataframe
         dat_store.append("conv_singles", kwargs["conv_singles"])
 
-        # Save the singles dataframe
+        # Save the singles bcm dataframe
         dat_store.append("bcm_singles", kwargs["bcm_singles"])
 
-        # Save the singles dataframe
+        # Save the singles bpp dataframe
         dat_store.append("bpp_singles", kwargs["bpp_singles"])
+
+        # save the singles initCond dataframe
+        dat_store.append("initC_singles", kwargs["initC_singles"])
+
+        # save the singles kick_info dataframe      
+        dat_store.append("kick_info_singles", kwargs["kick_info_singles"])
 
     return
 

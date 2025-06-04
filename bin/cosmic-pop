@@ -390,17 +390,17 @@ if __name__ == '__main__':
         # extract single stars
 
         if (args.keep_singles==True):
-            bcm_init = bcm.loc[bcm.tphys==0]
-            bcm_init_singles = bcm_init.iloc[-n_singles:]
-            
+            singles_bin_num = initCond.loc[initCond.kstar_2 == 15].bin_num.unique()
             # get the singles from the bcm and bpp arrays
-            bcm_singles = bcm.loc[bcm.bin_num.isin(bcm_init_singles.bin_num)]
-            bpp_singles = bpp.loc[bpp.bin_num.isin(bcm_init_singles.bin_num)]
+            bcm_singles = bcm.loc[bcm.bin_num.isin(singles_bin_num)]
+            bpp_singles = bpp.loc[bpp.bin_num.isin(singles_bin_num)]
+            initCond_singles = initCond.loc[initCond.bin_num.isin(singles_bin_num)]
+            kick_info_singles = kick_info.loc[kick_info.bin_num.isin(singles_bin_num)]
 
-            bpp = bpp.loc[~bpp.bin_num.isin(bcm_init_singles.bin_num)]
-            bcm = bcm.loc[~bcm.bin_num.isin(bcm_init_singles.bin_num)]
-            initCond = initCond.loc[~initCond.bin_num.isin(bcm_init_singles.bin_num)]
-            kick_info = kick_info.loc[~kick_info.bin_num.isin(bcm_init_singles.bin_num)]
+            bpp = bpp.loc[~bpp.bin_num.isin(singles_bin_num)]
+            bcm = bcm.loc[~bcm.bin_num.isin(singles_bin_num)]
+            initCond = initCond.loc[~initCond.bin_num.isin(singles_bin_num)]
+            kick_info = kick_info.loc[~kick_info.bin_num.isin(singles_bin_num)]
         # get any nans and pull them out for now
         nans = np.isnan(bpp.sep)
         if nans.any():
@@ -442,11 +442,14 @@ if __name__ == '__main__':
 
         bcm_filter = bcm.loc[bcm.bin_num.isin(conv_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(conv_filter.bin_num)]
+        initC_filter = initCond.loc[initCond.bin_num.isin(conv_filter.bin_num)]
+        kick_info_filter = kick_info.loc[kick_info.bin_num.isin(conv_filter.bin_num)]
+
         if (args.keep_singles==True):
             bpp_singles_filter = bpp_singles.loc[bpp_singles.bin_num.isin(conv_singles_filter.bin_num)]
             bcm_singles_filter = bcm_singles.loc[bcm_singles.bin_num.isin(conv_singles_filter.bin_num)]
-        initC_filter = initCond.loc[initCond.bin_num.isin(conv_filter.bin_num)]
-        kick_info_filter = kick_info.loc[kick_info.bin_num.isin(conv_filter.bin_num)]
+            initC_singles_filter = initCond_singles.loc[initCond_singles.bin_num.isin(conv_singles_filter.bin_num)]
+            kick_info_singles_filter = kick_info_singles.loc[kick_info_singles.bin_num.isin(conv_singles_filter.bin_num)]
 
         # Filter the bin_state based on user specified filters
         bcm_filter, bin_state_nums = utils.filter_bin_state(bcm_filter, bpp_filter, filters, kstar1_range, kstar2_range)
@@ -474,7 +477,9 @@ if __name__ == '__main__':
         if (args.keep_singles==True):
             conv_singles_filter_match = conv_singles_filter.copy()
             bpp_singles_filter_match = bpp_singles_filter.copy()
-            bcm_singles_filter_match = bcm_singles_filter.copy()          
+            bcm_singles_filter_match = bcm_singles_filter.copy()
+            initC_filter_singles_match = initC_singles_filter.copy()
+            kick_info_singles_filter_match = kick_info_singles_filter.copy()          
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
             conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
@@ -500,7 +505,10 @@ if __name__ == '__main__':
             if (args.keep_singles==True):
                 utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
                             bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
-                            bin_state_nums, match_save, idx, conv_singles=conv_singles_filter_match, bcm_singles=bcm_singles_filter_match, bpp_singles=bpp_singles_filter_match)
+                            bin_state_nums, match_save, idx, 
+                            conv_singles=conv_singles_filter_match, bcm_singles=bcm_singles_filter_match, 
+                            bpp_singles=bpp_singles_filter_match, initC_singles_filter_match=initC_filter_singles_match,
+                            kick_info_singles_filter_match=kick_info_singles_filter_match)
             else:
                 utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
                             bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
@@ -516,6 +524,8 @@ if __name__ == '__main__':
                 conv_singles_filter_match = []
                 bpp_singles_filter_match = []
                 bcm_singles_filter_match = []
+                initC_filter_singles_match = []
+                kick_info_singles_filter_match = []
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
