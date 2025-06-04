@@ -11,29 +11,23 @@
 ##############################################################################
 #  IMPORT ALL NECESSARY PYTHON PACKAGES
 ##############################################################################
-from collections import OrderedDict
-import warnings
 import argparse
 import schwimmbad
 
-import math
-import random
 import time
 from time import sleep
-import string
-import os.path
 import json
 
 import numpy as np
-import scipy.special as ss
 import pandas as pd
+from pandas.errors import PerformanceWarning
 import warnings
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
 
-from schwimmbad import MultiPool, MPIPool
+from schwimmbad import MPIPool
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -273,10 +267,12 @@ if __name__ == '__main__':
     configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
                               'convergence' : convergence, 'sampling' : sampling}
 
-    for k, v in configuration_settings.items():
-        for k1, v1 in v.items():
-            dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
-    dat_store.put('config/rand_seed/', pd.Series(seed_int))
+    with warnings.catch_warnings():
+        warnings.simplefilter(action="ignore", category=PerformanceWarning)
+        for k, v in configuration_settings.items():
+            for k1, v1 in v.items():
+                dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
+        dat_store.put('config/rand_seed/', pd.Series(seed_int))
 
     # Initialize the step counter and convergence array/list
     Nstep = idx - np.mod(idx, args.Nstep)
@@ -304,6 +300,9 @@ if __name__ == '__main__':
 
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
+            if hasattr(args,'qmin') and hasattr(args,'m2_min'):
+                raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
+            # If qmin is specified, use it to sample the initial binary table
             if hasattr(args,'qmin'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
@@ -319,6 +318,7 @@ if __name__ == '__main__':
                                                             size = args.Nstep,
                                                             qmin = args.qmin,
                                                             params = args.inifile)
+            # if m2_min is specified, use it to sample the initial binary table
             elif hasattr(args,'m2_min'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
@@ -337,7 +337,7 @@ if __name__ == '__main__':
             else:
                 raise ValueError("You must specify either qmin or m2_min in the",
                                  " inifile if you are using the independent sampler")
-            IBT, mass_singles, mass_binaries, n_singles, n_binaries, n_singles_table = init_samp_list
+            IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         if sampling['sampling_method'] == 'multidim':
             init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
@@ -391,11 +391,9 @@ if __name__ == '__main__':
 
         if (args.keep_singles==True):
             bcm_init = bcm.loc[bcm.tphys==0]
-            if sampling['sampling_method'] == 'multidim':
-                bcm_init_singles = bcm_init.iloc[-n_singles:]
-            if sampling['sampling_method'] == 'independent':
-                bcm_init_singles = bcm_init.iloc[-n_singles_table:]
-
+            bcm_init_singles = bcm_init.iloc[-n_singles:]
+            
+            # get the singles from the bcm and bpp arrays
             bcm_singles = bcm.loc[bcm.bin_num.isin(bcm_init_singles.bin_num)]
             bpp_singles = bpp.loc[bpp.bin_num.isin(bcm_init_singles.bin_num)]
 
