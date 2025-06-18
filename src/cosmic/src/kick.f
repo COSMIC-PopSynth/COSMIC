@@ -117,7 +117,9 @@
       real*8 thetaE, phiE, psiE
       real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
+      real*8 disberg_mean
       integer i
+      logical ECSN_or_USSN
 * Output
       logical output,disrupt,collide
 *
@@ -127,6 +129,7 @@
 *
       output = .false. !useful for debugging...
       collide = .false.
+      ECSN_or_USSN = .false.
       safety = 0
       abskickflag = ABS(kickflag)
 
@@ -138,6 +141,7 @@
       u1 = 0.d0
       u2 = 0.d0
       vk = 0.d0
+      disberg_mean = 5.60d0
       pi = ACOS(-1.d0)
       twopi = 2.d0*pi
 * Gravitational constant in units of km^3 / (Msun * s^2)
@@ -175,8 +179,9 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if((sigma.lt.0.d0).and.(abskickflag.eq.1))then
+      if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5))then
          sigma = -1.d0*sigma
+         ECSN_or_USSN = .true.
 * for kick prescriptions other than default, revert to original sigma
       elseif((sigma.lt.0.d0).and.(abskickflag.gt.1))then
          sigma = sigmahold
@@ -184,9 +189,10 @@
       sigmah = sigma
 
 * scale down BH kicks if bhsigmafrac is specified
-      if(abskickflag.eq.1)then
+      if(abskickflag.eq.1.or.abskickflag.eq.5)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
+            disberg_mean = disberg_mean * bhsigmafrac
          endif
       endif
 
@@ -196,7 +202,7 @@
 * ----------------------------------------------------------------------
 
 * Before we draw the kick from the maxwellian and then scale it
-* as desired, let us see if a pre-supplied natal kick maganitude
+* as desired, let us see if a pre-supplied natal kick magnitude
 * was passed.
       if(natal_kick_array(sn,1).ge.0.d0)then
           vk = natal_kick_array(sn,1)
@@ -207,24 +213,33 @@
           xx = RAN3(idum1)
           xx = RAN3(idum1)
       else
+* If no pre-supplied kick magnitude, we draw a kick from a distribution
+* If the kickflag is 5 then use the log-normal distribution described
+* by Disberg & Mandel 2025
+          if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
+             call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
+             vk2 = vk*vk
+          else
+* Otherwise use the Hobbs et al. 2005 Maxwellian distribution
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
 * Use Henon's method for pairwise components (Douglas Heggie 22/5/97).
-          do 25 k = 1,2
-             u1 = RAN3(idum1)
-             u2 = RAN3(idum1)
-             if(u1.gt.0.9999d0) u1 = 0.9999d0
-             if(u2.gt.1.d0) u2 = 1.d0
+            do 25 k = 1,2
+                u1 = RAN3(idum1)
+                u2 = RAN3(idum1)
+                if(u1.gt.0.9999d0) u1 = 0.9999d0
+                if(u2.gt.1.d0) u2 = 1.d0
 * Generate two velocities from polar coordinates S & THETA.
-             s = -2.d0*LOG(1.d0 - u1)
-             s = sigma*SQRT(s)
-             theta = twopi*u2
-             v(2*k-1) = s*COS(theta)
-             v(2*k) = s*SIN(theta)
- 25          continue
-          vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
-          vk = SQRT(vk2)
+                s = -2.d0*LOG(1.d0 - u1)
+                s = sigma*SQRT(s)
+                theta = twopi*u2
+                v(2*k-1) = s*COS(theta)
+                v(2*k) = s*SIN(theta)
+25          continue
+            vk2 = v(1)*v(1) + v(2)*v(2) + v(3)*v(3)
+            vk = SQRT(vk2)
+          endif
 
-          if(abskickflag.eq.1)then
+          if(abskickflag.eq.1.or.abskickflag.eq.5)then
 * Limit BH kick with fallback mass fraction.
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
@@ -1698,6 +1713,25 @@
             collide = .false.
          end if
       end if 
+
+      RETURN
+      END
+
+      SUBROUTINE RandomLogNormal(mean, sigma, result, idum1, twopi)
+* This function generates a random number from a log-normal distribution
+* following the Box-Muller transform method.
+* http://en.wikipedia.org/wiki/Box-Muller_transform
+
+      real*8 mean, sigma, result, twopi
+      real*8 u1, u2, z0
+
+      u1 = ran3(idum1)
+      u2 = ran3(idum1)
+
+      if (u1.le.0.d0) u1 = 1.0E-10      ! Avoid log(0)
+
+      Z0 = SQRT(-2.0d0 * LOG(u1)) * COS(twopi * u2)
+      result = EXP(mean + sigma * Z0)
 
       RETURN
       END

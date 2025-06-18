@@ -1,0 +1,1599 @@
+[
+    {
+        "category": "filters",
+        "category_label": "Filters",
+        "category_description": "Settings that filter the data returned by COSMIC simulations",
+        "docs-colour": "cadetblue",
+        "settings": [
+            {
+                "name": "binary_state",
+                "description": "Filter for the final state of the binaries you wish to retain",
+                "type": "checkbox",
+                "options-preface": "Each binary system will end its evolution in one of three states. Use these options to retain only certain endstates.",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Retain only binaries still alive today",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Retains binaries that merged",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "Retains binaries that were disrupted"
+                    }
+                ]
+            },
+            {
+                "name": "timestep_conditions",
+                "description": "Pick specific time resolutions to print at targeted stages of the binary evolution.",
+                "type": "string",
+                "options-preface": "This is used in conjunction with the [bse] section value dtp to determine the timestep resolution for printing to the bcm array. See the <a href='evolve/resolution.html'>related guide</a> for more information.",
+                "options": [
+                    {
+                        "name": "'dtp=None'",
+                        "description": "Only the final time step is printed to the bcm array",
+                        "default": true
+                    },
+                    {
+                        "name": "'dtp=1.0'",
+                        "description": "Use 1 Myr timesteps for all evolutionary stages"
+                    },
+                    {
+                        "name": "[['binstate==0', 'dtp=1.0']]",
+                        "description": "Use 1 Myr timesteps for binaries until they merge or disrupt"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "sampling",
+        "category_label": "Sampling",
+        "category_description": "Settings that change how the initial binary population is sampled",
+        "docs-colour": "darkseagreen",
+        "settings": [
+            {
+                "name": "sampling_method",
+                "description": "Select which models to use to generate an initial sample of binary parameters at Zero Age Main Sequence",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "independent",
+                        "description": "Initialize binaries with independent parameter distributions for the primary mass, mass ratio, eccentricity, separation, and binary fraction",
+                        "default": true
+                    },
+                    {
+                        "name": "multidim",
+                        "description": "Initialize binaries with multidimensional parameter distributions according to <a href='http://adsabs.harvard.edu/abs/2017ApJS..230...15M'>Moe & Di Stefano 2017</a>"
+                    }
+                ]
+            },
+            {
+                "name": "primary_model",
+                "description": "Model for sampling primary masses <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "salpeter55",
+                        "description": "Use the Salpeter 1955 IMF"
+                    },
+                    {
+                        "name": "kroupa93",
+                        "description": "Use the Kroupa 1993 IMF"
+                    },
+                    {
+                        "name": "kroupa01",
+                        "description": "Use the Kroupa 2001 IMF",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "porb_model",
+                "description": "Model for sampling orbital periods <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "sana12",
+                        "description": "Sample from power law orbital period between 0.15 < log(P/day) < 5.5 following <a href='https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract'>Sana+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": "log_uniform",
+                        "description": "Sample semi-major axis flat in log space from RRLO < 0.5 up to \\(10^{5} {\\rm R_{\\odot}}\\) according to <a href='http://adsabs.harvard.edu/abs/1983ARA%26A..21..343A'>Abt (1983)</a> and consistent with Dominik+2012,2013 - then convert to orbital period in days using Kepler's third law."
+                    },
+                    {
+                        "name": "renzo19",
+                        "description": "Uses <code>sana12</code> for massive binaries (\\(m_1 > 15 {\\rm M_{\\odot}}\\)) and flat in log otherwise (following <a href='https://ui.adsabs.harvard.edu/abs/2019A%26A...624A..66R/abstract'>Renzo+19</a>)."
+                    },
+                    {
+                        "name": "raghavan10",
+                        "description": "Sample log normal orbital periods in days with mean_logP = 4.9 and sigma_logP = 2.3 between \\(0 < \\log_{10}(P / {\\rm day}) < 9\\) following <a href='https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract'>Raghavan+2010 </a>"
+                    },
+                    {
+                        "name": "moe19",
+                        "description": "As <code>raghavan10</code> but with different close binary fractions following <a href='https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract'>Moe+2019</a>"
+                    },
+                    {
+                        "name": "custom",
+                        "description": "Sample from a custom power law. The user provides a dictionary of min, max and slope values for the power law."
+                    }
+                ]
+            },
+            {
+                "name": "ecc_model",
+                "description": "Model for sampling eccentricity <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "thermal",
+                        "description": "Samples from a thermal eccentricity distribution following <a href='http://adsabs.harvard.edu/abs/1975MNRAS.173..729H'>Heggie (1975)</a>"
+                    },
+                    {
+                        "name": "uniform",
+                        "description": "Samples from a uniform eccentricity distribution"
+                    },
+                    {
+                        "name": "sana12",
+                        "description": "Samples from the eccentricity distribution from <a href='https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract'>Sana+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": "circular",
+                        "description": "Assumes zero eccentricity for all systems"
+                    }
+                ]
+            },
+            {
+                "name": "qmin",
+                "description": "Minimum mass ratio for sampling the secondary mass <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "number",
+                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options": [
+                    {
+                        "name": "values in [0, 1]",
+                        "description": "Sets the minimum mass ratio"
+                    },
+                    {
+                        "name": -1,
+                        "description": "Set the minimum mass ratio such that the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "m2_min",
+                "description": "Minimum secondary mass for sampling <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "number",
+                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sample the secondary mass uniformly between <code>m2_min</code> and <code>mass_1</code>"
+                    },
+                    {
+                        "name": 0.1,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "binfrac_model",
+                "description": "Model for sampling binary fraction <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values between [0, 1]",
+                        "description": "Fixed binary fraction"
+                    },
+                    {
+                        "name": "vanHaaften",
+                        "description": "Primary mass dependent binary fraction following van Haaften+05"
+                    },
+                    {
+                        "name": "offner22",
+                        "description": "Primary mass dependent binary fraction following Offner+22"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "SF_start",
+                "description": "Sets the time in the past when star formation initiates in Myr.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Start time of star formation in Myr"
+                    },
+                    {
+                        "name": 13700.0,
+                        "description": "For example, this specifies a start time at the beginning of a Hubble time",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "SF_duration",
+                "description": "Sets the duration of constant star formation from ``SF_start`` in Myr.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Duration of star formation in Myr"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "A single burst of star formation",
+                        "default": true
+                    },
+                    {
+                        "name": 13700.0,
+                        "description": "For example, this specifies a constant star formation rate over a Hubble time"
+                    }
+                ]
+
+            },
+            {
+                "name": "metallicity",
+                "description": "Sets the metallicity of the stellar population.",
+                "type": "number",
+                "options-preface": "COSMIC expects an <b>absolute</b> metallicity (i.e., <b>NOT</b> units of <i>zsun</i>)",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Absolute metallicity"
+                    },
+                    {
+                        "name": 0.02,
+                        "description": "For example, this sets the metallicity to approximately solar metallicity",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "convergence",
+        "category_label": "Convergence",
+        "category_description": "Settings that control the convergence of the simulation run with cosmic-pop",
+        "docs-colour": "#a873dd",
+        "settings": [
+            {
+                "name": "convergence_params",
+                "description": "A list of parameters you would like to verify have converged to a single distribution shape when running cosmic-pop from the command line.",
+                "type": "checkbox",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "mass_1",
+                        "description": "Primary mass",
+                        "default": true
+                    },
+                    {
+                        "name": "mass_2",
+                        "description": "Secondary mass",
+                        "default": true
+                    },
+                    {
+                        "name": "sep",
+                        "description": "Separation"
+                    },
+                    {
+                        "name": "porb",
+                        "description": "Orbital period",
+                        "default": true
+                    },
+                    {
+                        "name": "ecc",
+                        "description": "Eccentricity",
+                        "default": true
+                    },
+                    {
+                        "name": "massc_1",
+                        "description": "Primary core mass"
+                    },
+                    {
+                        "name": "massc_2",
+                        "description": "Secondary core mass"
+                    },
+                    {
+                        "name": "rad_1",
+                        "description": "Primary radius"
+                    },
+                    {
+                        "name": "rad_2",
+                        "description": "Secondary radius"
+                    }
+                ]
+            },
+            {
+                "name": "convergence_limits",
+                "description": "Specifies limits for parameters included in the <code>convergence_params</code> list.",
+                "type": "string",
+                "options-preface": "For each parameter specified  <code>convergence_limits</code>, the lower and upper limit must be included.",
+                "options": [
+                    {
+                        "name": "{}",
+                        "description": "No limits specified",
+                        "default": true
+                    },
+                    {
+                        "name": "{'mass_1' : [5, 10], 'sep' : [0, 10]}",
+                        "description": "For example, this specifies that the primary mass must be between 5 and 10 solar masses, and the separation must be between 0 and 10 Rsun."
+                    }
+                ]
+            },
+            {
+                "name": "pop_select",
+                "description": "Selects the stage of the evolution at which you would like to check for convergence.",
+                "type": "dropdown",
+                "options-preface": "This will filter for systems that satisfy the <code>final_kstar1</code> and <code>final_kstar2</code> selections from the command line call of cosmic-pop at the following states:",
+                "options": [
+                    {
+                        "name": "formation",
+                        "description": "At binary formation",
+                        "default": true
+                    },
+                    {
+                        "name": "1_SN",
+                        "description": "Just before the first supernova"
+                    },
+                    {
+                        "name": "2_SN",
+                        "description": "Just before the second supernova"
+                    },
+                    {
+                        "name": "disruption",
+                        "description": "Just before binary disruption"
+                    },
+                    {
+                        "name": "final_state",
+                        "description": "After the full evolution specified by the user-supplied evolution time"
+                    },
+                    {
+                        "name": "XRB_form",
+                        "description": "At the start of RLOF following the first supernova"
+                    }
+                ]
+            },
+            {
+                "name": "apply_convergence_limits",
+                "description": "Whether to filter the binary population (including the bcm, bpp, initC, and kick_info DataFrames) to only contain the binaries that satisfy the constraints from convergence_limits.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Filter the binary population to only contain the binaries that satisfy the constraints from convergence_limits"
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not filter the binary population",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "match",
+                "description": "Provides the tolerance for the convergence calculation and is calculated as \\({\\rm match} = \\log_{\\rm 10} (1 - {\\rm convergence})\\)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -5.0,
+                        "description": "For example, this specifies a tolerance of \\(10^{-5}\\) for convergence",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "rand_seed",
+        "category_label": "Random Seed",
+        "category_description": "Settings that control the random number generation used",
+        "docs-colour": "#f0ba80",
+        "settings": [
+            {
+                "name": "seed",
+                "description": "Sets the seed for the random number generator (for <code>numpy.random.seed()</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "integer values",
+                        "description": "Random seed"
+                    },
+                    {
+                        "name": 42,
+                        "description": "For example, this sets the seed to 42",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "category": "bse",
+        "category_label": "Binary physics",
+        "category_description": "Settings that control the binary physics in the simulation",
+        "docs-colour": "lightcoral",
+        "settings": [
+            {
+                "name": "pts1",
+                "description": "Sets the timestep modifier for main sequence stars (<code>dtp *= pts1</code>)",
+                "type": "number",
+                "settings-section": "Timesteps",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Timestep modifier"
+                    },
+                    {
+                        "name": 0.001,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2019arXiv190207718B/abstract'>Bannerjee+2019</a> for NS/BH progenitors",
+                        "default": true
+                    },
+                    {
+                        "name": 0.05,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>"
+                    }
+                ]
+            },
+            {
+                "name": "pts2",
+                "description": "Sets the timestep modifier for Giant Branch (GB, CHeB, AGB, HeGB) stars (<code>dtp *= pts2</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Timestep modifier"
+                    },
+                    {
+                        "name": 0.01,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "pts3",
+                "description": "Sets the timestep modifier for HG, HeMS stars (<code>dtp *= pts3</code>)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Timestep modifier"
+                    },
+                    {
+                        "name": 0.02,
+                        "description": "Recommended value from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "zsun",
+                "description": "Sets the metallicity of the Sun which primarily affects stellar winds.",
+                "type": "number",
+                "settings-section": "Metallicity",
+                "options-preface": "Note that the wind prescriptions for OB stars are calibrated to zsun = 0.019 as described in <a href='https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract'>Vink+2001.</a>",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Set the solar metallicity"
+                    },
+                    {
+                        "name": 0.014,
+                        "description": "Following <a href='https://ui.adsabs.harvard.edu/abs/2009ARA%26A..47..481A/abstract'>Asplund+2009</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "windflag",
+                "description": "Selects the model for wind mass loss for each star",
+                "type": "dropdown",
+                "settings-section": "Stellar Winds",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Standard SSE/BSE (<a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "StarTrack (<a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
+                    },
+                    {
+                        "name": 2,
+                        "description": "Metallicity dependence for O/B stars and Wolf Rayet stars (<a href='https://ui.adsabs.harvard.edu/abs/2001A%26A...369..574V/abstract'>Vink+2001</a>, <a href='https://ui.adsabs.harvard.edu/abs/2005A%26A...442..587V/abstract'>Vink+2005</a>)"
+                    },
+                    {
+                        "name": 3,
+                        "description": "Same as 2, but LBV-like mass loss for giants and non-degenerate stars beyond the Humphreys-Davidson limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "eddlimflag",
+                "description": "Adjusts the dependence of mass loss on metallicity for stars near the Eddington limit (see <a href='https://ui.adsabs.harvard.edu/abs/2011A%26A...535A..56G/abstract'>Grafener+2011</a>, <a href='https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract'>Giacobbo+2018</a>).",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "does not adjust metallicity dependence for stars near the Eddington limit",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "adjusts metallicity dependence for stars near the Eddington limit as in <a href='https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2959G/abstract'>Giacobbo+2018</a>."
+                    }
+                ]
+            },
+            {
+                "name": "neta",
+                "description": "Reimers mass-loss coefficient (<a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Equation 106 of SSE</a>).",
+                "type": "number",
+                "options-preface": "Note: this equation has a typo. There is an extra \\(\\eta\\) out front; the correct rate is directly proportional to \\(\\eta\\). See also <a href='https://ui.adsabs.harvard.edu/abs/1978A%26A....70..227K/abstract'>Kurdritzki+1978, Section Vb</a> for discussion.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Set \\(\\eta\\) value"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Sets \\(\\eta\\) for Reimers mass loss to 0.5",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "bwind",
+                "description": "Binary enhanced mass loss parameter",
+                "type": "number",
+                "options-preface": "This parameter is used to enhance mass loss in binaries. See <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a> for more information.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the binary enhanced mass loss parameter, \\(B_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, Eq. 12</a>"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default value (no effect on single stars)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "hewind",
+                "description": "Helium star mass loss parameter",
+                "type": "number",
+                "options-preface": "\\( 10^{-13} {\\rm \\ \\texttt{hewind} \\ } L^{2/3}\\) gives He star mass-loss. Equivalent to \\(1 - \\mu\\) in the last equation on <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, page 19</a>.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the helium star mass loss parameter"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "beta",
+                "description": "Wind velocity factor. \\( v_{\\rm wind}^2 \\propto \\beta\\), see <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 9</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "Follow StarTrack prescription for wind velocity factor, \\(\\beta_w\\), from <a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "Sets the wind velocity factor, \\(\\beta_w\\)"
+                    },
+                    {
+                        "name": 0.125,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "xi",
+                "description": "Wind accretion efficiency factor, which gives the fraction of angular momentum lost via winds from the primary that transfers to the spin angular momentum of the companion.",
+                "type": "number",
+                "options-preface": "Corresponds to \\(\\mu_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 11</a>",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the wind accretion efficiency factor"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "acc2",
+                "description": "Bondi-Hoyle wind accretion factor where the mean wind accretion rate onto the secondary is proportional to <code>acc2</code>. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 6</a>.",
+                "type": "number",
+                "options-preface": "This value is equivalent to \\(\\alpha_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 6</a>.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the Bondi-Hoyle wind accretion factor, \\(\\alpha_w\\)"
+                    },
+                    {
+                        "name": 1.5,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Common-envelope",
+                "settings-section-description": "Note: there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer. In the following cases, a common envelope occurs regardless of the choices below:<ul><li><b>contact</b>: the stellar radii go into contact (common for similar ZAMS systems)</li><li><b>periapse contact</b>: the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)</li><li><b>core Roche overflow</b>: either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)</li></ul>",
+                "name": "alpha1",
+                "description": "Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "type": "number",
+                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\)"
+                    },
+                    {
+                        "name": 1.0,
+                        "description": "Default value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "lambdaf",
+                "description": "Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \\(1 / \\lambda\\). See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 69</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "uses variable lambda prescription detailed in appendix of <a href='https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract'>Claeys+2014</a> where lambdaf is the fraction of the ionization energy that can go into ejecting the envelope; to use this prescription without extra ionization energy, set lambdaf = 0"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "As above, this is the default choice",
+                        "default": true
+                    },
+                    {
+                        "name": -1.0,
+                        "description": "Uses a fixed value (i.e. fixes \\( \\lambda \\) to a value of -lambdaf)"
+                    }
+                ]
+            }, 
+            {
+                "name": "ceflag",
+                "description": "Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the core masses of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 70</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "cekickflag",
+                "description": "Selects which mass and separation values to use when a supernova occurs during the CE and a kick needs to be applied.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "uses pre-CE mass and post-CE sep (BSE default)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "uses pre-CE mass and sep values"
+                    },
+                    {
+                        "name": 2,
+                        "description": "uses post-CE mass and sep",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "cemergeflag",
+                "description": "Determines whether stars that begin a CE without a distinct core-envelope boundary automatically lead to merger in a CE. These systems include: kstars = [0,1,2,7,8,10,11,12].",
+                "type": "dropdown",
+                "options-preface": "Note that while the optimal choice is <code>cemergeflag=1</code> according to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>, <code>cemergeflag=0</code> allows for both options to be explored, since it is trivial to remove these systems from a population in post processing.",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "allows the CE to proceed (optimistic CE)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "forces the stars to merge in the CE (pessimistic CE)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "cehestarflag",
+                "description": "Uses fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a> for evolving RLO systems with a helium star donor and compact object accretor. NOTE: this flag will override <code>cekickflag</code> if set",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not use the fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a> for final period only"
+                    },
+                    {
+                        "name": 2,
+                        "description": "Use the fitting formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2015MNRAS.451.2123T/abstract'>Tauris+2015</a> for both final mass and final period"
+                    }
+                ]
+            },
+            {
+                "name": "qcflag",
+                "description": "Selects model to determine critical mass ratios for the onset of unstable mass transfer and/or a common envelope during RLO. NOTE: this is overridden by <code>qcrit_array</code> if any of its values are non-zero.",
+                "type": "dropdown",
+                "options-preface": "The table below shows the values for <code>qcflag</code> across the choices of this flag and the kstar type. The equations in the table correspond to:<br>  - Eq.1: <code class='docutils literal notranslate'><span class='pre'>qc = 0.362 + 1.0/(3.0*(1.0 - massc(j1)/mass(j1)))</span></code> (from Hjellming & Webbink 1983)<br>  - Eq 2: <code class='docutils literal notranslate'><span class='pre'>qc = (1.67d0-zpars(7)+2.d0*(massc(j1)/mass(j1))**5)/2.13d0</span></code> (from Claeys+ 2014)",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Section 2.6 of Hurley+2002</a> (Default BSE)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "same as 0 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract'>Table 2 of Claeys+2014</a>"
+                    },
+                    {
+                        "name": 3,
+                        "description": "same as 2 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars"
+                    },
+                    {
+                        "name": 4,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Section 5.1 of Belcyznski+2008</a> except for WD donors which follow BSE"
+                    },
+                    {
+                        "name": 5,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable"
+                    }
+                ]
+            },
+            {
+                "name": "qcrit_array",
+                "description": "User-defined values for critical mass ratios for the onset of unstable mass transfer and a common envelope during RLOF.",
+                "type": "string",
+                "options-preface": "Array of dimensions (1,16) specifying user-input values for the critical mass ratios that govern the onset of unstable mass transfer and a common envelope. Each item is set individually for its associated kstar, and a value of 0.0 will apply the prescription specified qcflag for that kstar.<br>NOTE: Recall from the start of this section that there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer.",
+                "options": [
+                    {
+                        "name": "[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]",
+                        "description": "Default value, which applies the prescription specified by <code>qcrit</code> for each kstar type",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Natal kicks",
+                "name": "kickflag",
+                "description": "Sets the particular natal kick prescription to use. Note that <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code>, and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>, which are described below, are only used when <code class='docutils literal notranslate'><span class='pre'>abs(kickflag)=1</span></code>. Positive values use the Pfahl+2002 prescription for handling natal kicks.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 1,
+                        "description": "The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and ECSN/USSN are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>. This setting has additional possible options for <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code> and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>.",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a></p> with their default parameters (\\(m_{\\rm NS = 1.2 {\\rm M_\\odot}\\), \\(m_{\\rm ej = 9 {\\rm M_\\odot}\\))"
+                    },
+                    {
+                        "name": 3,
+                        "description": "Natal kicks are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a>, which does not scale the kick by (\\(m_{\\rm NS\\)"
+                    },
+                    {
+                        "name": 4,
+                        "description": "Natal kicks are drawn according to Eq. 1 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract'>Bray &amp; Eldridge 2016</a>, with their default parameters (\\(\\alpha=70 \\, {\\rm km/s}, \\beta = 120 \\, {\\rm km/s)}"
+                    },
+                    {
+                        "name": 5,
+                        "description": "Follows the same prescription as 1, but uses the kick prescription described in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract'>Disberg & Mandel 2025</a> for CCSN."
+                    },
+                    {
+                        "name": "negative values",
+                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    }
+                ]
+            },
+            {
+                "name": "sigma",
+                "description": "Sets the dispersion in the Maxwellian for the SN kick velocity in km/s",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the dispersion in the Maxwellian for the SN kick velocity in km/s"
+                    },
+                    {
+                        "name": 265.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "bhflag",
+                "description": "Sets the model for how SN kicks are applied to BHs, where bhflag != 0 allows for velocity kick at BH formation",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No BH kick"
+                    },
+                    {
+                        "name": 1,
+                        "description": "fallback-modulated kicks following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "kicks decreased by ratio of BH mass to NS mass (1.44 Msun); conserves linear momentum"
+                    },
+                    {
+                        "name": 3,
+                        "description": "BH natal kicks are not decreased compared to NS kicks and are drawn from the same Maxwellian distribution with dispersion = <code>sigma</code> set above"
+                    }
+                ]
+            },
+            {
+                "name": "bhsigmafrac",
+                "description": "Sets a fractional modification which scales down sigma for BHs. This works in addition to whatever is chosen for bhflag, and is applied to sigma before the bhflag prescriptions are applied",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values between [0, 1]",
+                        "description": "reduces sigma by bhsigmafrac for BHs"
+                    },
+                    {
+                        "name": 1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "sigmadiv",
+                "description": "Sets the modified ECSN kick strength",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "divide sigma (defined above) by sigmadiv"
+                    },
+                    {
+                        "name": "negative values",
+                        "description": "    sets ECSN kicks to be drawn from a Maxwellian distribution with dispersion given by sigmadiv"
+                    },
+                    {
+                        "name": -20.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ecsn",
+                "description": "Allows for electron capture SNe and sets the maximum He-star mass (at core helium depletion) that will result in an ECSN",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "turns off ECSN"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> and <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> use ecsn = 2.25, while <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can increase this to ecsn = 2.5"
+                    },
+                    {
+                        "name": 2.25,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ecsn_low",
+                "description": "Sets the low end of the ECSN mass range",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> uses ecsn_mlow = 1.6, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> uses ecsn_mlow = 1.85, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can decrease this to ecsn_mlow = 1.4"
+                    },
+                    {
+                        "name": 1.6,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "aic",
+                "description": "Sets the model for accretion induced collapse SN natal kicks",
+                "type": "dropdown",
+                "options-preface": "Applies even if <code>ecsn = 0<.code>",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "AIC SN receive kicks drawn from Maxwellian with dispersion = sigma defined above"
+                    },
+                    {
+                        "name": 1,
+                        "description": "sets AIC SN kick strength according to sigmadiv; NOTE that this will apply even if ecsn = 0.0",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ussn",
+                "description": "Reduces kicks according to the sigmadiv selection for ultra-stripped supernovae, assumed to happen if a He-star undergoes a CE with a compact companion",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "USSN receive kicks drawn from Maxwellian with dispersion = sigma defined above"
+                    },
+                    {
+                        "name": 1,
+                        "description": "sets USSN kick strength according to sigmadiv",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "pisn",
+                "description": "Allows for (pulsational) pair instability supernovae and sets either the model to use or the maximum mass of the remnant.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "no pulsational pair instability SN"
+                    },
+                    {
+                        "name": -1,
+                        "description": " uses the formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4739S/abstract'>Spera &amp; Mapelli 2017</a>"
+                    },
+                    {
+                        "name": -2,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2018arXiv181013412M/abstract'>Table 1 in Marchant+2018</a>",
+                        "default": true
+                    },
+                    {
+                        "name": -3,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract'>Table 5 in Woosley 2019</a>"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "turns on pulsational pair instability and pair instability SNe, and sets the maximum mass of the allowed remnant (i.e., the bottom of the pair instability mass gap). He core masses between pisn and 65 Msun are assumed to go through pulsational pair instability and limit the He core mass to pisn, while He core masses from 65-135 Msun are assumed have a pair instability SN and leave no remnant."
+                    }
+                ]
+            },
+            {
+                "name": "polar_kick_angle",
+                "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values between [0, 90]",
+                        "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Strictly polar kicks"
+                    },
+                    {
+                        "name": 90.0,
+                        "description": "Fully isotropic kicks (default choice)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "natal_kick_array",
+                "description": "Array of dimensions (2,5) which takes user input values for the SN natal kick, where the first row corresponds to the first star and the second row corresponds to the second star and columns are: [vk, phi, theta, mean_anomaly, rand_seed].",
+                "type": "string",
+                "options-preface": "NOTE: any numbers outside the ranges below will be sampled in the standard ways detailed above.",
+                "options": [
+                    {
+                        "name": "vk",
+                        "description": "SN kick velocity in km/s, valid on the range [0, inf]"
+                    },
+                    {
+                        "name": "phi",
+                        "description": "SN kick co-lateral polar angle in degrees, valid on the range [-90, 90]"
+                    },
+                    {
+                        "name": "theta",
+                        "description": "SN kick azimuthal angle in degrees, valid on the range [0, 360]"
+                    },
+                    {
+                        "name": "mean_anomaly",
+                        "description": "SN kick mean anomaly in degrees, valid on the range [0, 360]"
+                    },
+                    {
+                        "name": "rand_seed",
+                        "description": "supplied if restarting evolution after a supernova has already occurred"
+                    },
+                    {
+                        "name": "[[-100.0, -100.0, -100.0, -100.0, 0.0], [-100.0, -100.0, -100.0, -100.0, 0.0]]",
+                        "description": "Default choice, which applies the standard natal kick prescription",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Remnant mass",
+                "name": "remnantflag",
+                "description": "Determines the remnant mass prescription used for NSs and BHs.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Section 6 of Hurley+2000</a> (default BSE)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002ApJ...572..407B/abstract'>Belczynski+2002</a>"
+                    },
+                    {
+                        "name": 2,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>"
+                    },
+                    {
+                        "name": 3,
+                        "description": "follows the rapid prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>, with updated proto-core mass from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract'>Giacobbo &amp; Mapelli 2020</a>. This leads to a mass gap between neutron stars and black holes."
+                    },
+                    {
+                        "name": 4,
+                        "description": "follows the delayed prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>. This fills the mass gap between neutron stars and black holes.",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "mxns",
+                "description": "Sets the boundary between the maximum NS mass and the minimum BH mass",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the boundary between the maximum NS mass and the minimum BH mass"
+                    },
+                    {
+                        "name": 3.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "rembar_massloss",
+                "description": "Determines the prescriptions for mass conversion due to neutrino emission during the collapse of the proto-compact object",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\\({\\sim 5 \\mathrm{M}_\\odot}\\) Fryer, private communication)"
+                    },
+                    {
+                        "name": "values in [-1, 0)",
+                        "description": "assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole, such that \\(M_{\\rm rem} = (1 + \\texttt{rembar\\_massloss}) M_{\\rm rem}\\) (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "wd_mass_lim",
+                "description": "Determines if the maximum white dwarf mass is limited to the chandraekhar mass during merger induced collapse",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not apply the limit"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Apply the limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Remnant spin",
+                "name": "bhspinflag",
+                "description": "Uses different prescriptions for BH spin after formation",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "sets all BH spins to bhspinmag",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "draws a random BH spin between 0 and bhspinmag for every BH"
+                    },
+                    {
+                        "name": 2,
+                        "description": "core-mass dependent BH spin (based on <a class='reference external' href='https://arxiv.org/abs/1706.07053v1'>Belczynski+2017 v1</a>)"
+                    }
+                ]
+            },
+            {
+                "name": "bhspinmag",
+                "description": "Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins (see bhspinflag)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins (see bhspinflag)"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "GR Orbital Decay",
+                "name": "grflag",
+                "description": "Turns on or off orbital decay due to gravitational wave emission",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No orbital decay due to gravitational wave emission"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Orbital decay due to gravitational wave emission is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Mass transfer",
+                "name": "eddfac",
+                "description": "Eddington limit factor for mass transfer.",
+                "options-preface": "",
+                "type": "number",
+                "options": [
+                    {
+                        "name": "1",
+                        "description": "mass transfer rate is limited by the Eddington rate following Equation 67 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                        "default": true
+                    },
+                    {
+                        "name": "values > 1",
+                        "description": "permit super-Eddington accretion up to value <code>eddfac</code>"
+                    },
+                    {
+                        "name": "values in [0, 1]",
+                        "description": "restrict accretion limit to fraction of Eddington (sub-Eddington accretion)"
+                    }
+                ]
+            },
+            {
+                "name": "gamma",
+                "description": "Angular momentum prescriptions for mass lost during Roche-lobe overflow at super-Eddington mass transfer rates",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "assumes the lost material carries away the specific angular momentum of the primary"
+                    },
+                    {
+                        "name": -2,
+                        "description": "assumes material is lost from the system as if it is a wind from the secondary",
+                        "default": true
+                    },
+                    {
+                        "name": -3,
+                        "description": "assumes mass is lost through the outer Lagrangian point, forming a circumbinary disk. See Zapartas+17 Eq. 9 and Artymowicz & Lubow (1994)."
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "assumes that the lost material takes away a fraction <code>gamma</code> of the orbital angular momentum"
+                    }
+                ]
+            },
+            {
+                "name": "don_lim",
+                "description": "Determines the rate of mass loss through Roche-lobe overflow mass transfer from the donor star",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "donor mass loss rate is calculated following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                        "default": true
+                    },
+                    {
+                        "name": -2,
+                        "description": "donor mass loss rate is calculated following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2014A%26A...563A..83C/abstract'>Claeys+2014</a>"
+                    }
+                ]
+            },
+            {
+                "name": "acc_lim",
+                "description": "Limits the amount of mass accreted during Roche-lobe overflow",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars",
+                        "default": true
+                    },
+                    {
+                        "name": -2,
+                        "description": "limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
+                    },
+                    {
+                        "name": -3,
+                        "description": "limited to 10x the thermal rate of the accretor for all stars"   
+                    },
+                    {
+                        "name": -4,
+                        "description": "limited to 1x the thermal rate of the accretor for all stars"
+                    },
+                    {
+                        "name": ">= 0",
+                        "description": "sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
+                    }
+                ]
+            },
+            {
+                "settings-section": "Tides",
+                "name": "tflag",
+                "description": "Activates tidal circularization following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No tidal circularization"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Tidal circularization is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ST_tide",
+                "description": "Activates StarTrack setup for tides following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Follows BSE (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Follow StarTrack (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>). Note StarTrack method does not use a better integration scheme (yet) but simply ; follows similar set up to startrack (including initial vrot, using roche-lobe check ; at periastron, and circularisation and synchronisation at start of MT).",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fprimc_array",
+                "description": "Controls the scaling factor for convective tides. Each value in the array is set individually for its associated kstar. The relevant equation is <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 21</a>.",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets scaling factor of Equation 21 referenced above"
+                    },
+                    {
+                        "name": "[2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]",
+                        "description": "Default choice, which applies the standard scaling factor",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "White dwarfs",
+                "name": "ifflag",
+                "description": "Activates the initial-final white dwarf mass relation from Han+1995 <a class='reference external' href='http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1995MNRAS.272..800H&amp;link_type=ARTICLE&amp;db_key=AST&amp;high=#page=4'>Equations 3, 4, and 5</a>.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Initial-final white dwarf mass relation is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "wdflag",
+                "description": "Activates an alternate cooling law found in the description immediately following <a class='reference external' href='http://iopscience.iop.org/article/10.1086/374637/pdf#page=3'>Equation 1</a> in Hurley &amp; Shara 2003. Equation 1 gives the BSE default Mestel cooling law.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Alternate cooling law is turned on",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "epsnov",
+                "description": "Fraction of accreted matter retained in a nova eruption. This is relevant for accretion onto degenerate objects; see Section 2.6.6.2 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Retains epsnov fraction of accreted matter"
+                    },
+                    {
+                        "name": 0.001,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Pulsars",
+                "name": "bdecayfac",
+                "description": "Activates different models for accretion induced field decay; see <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract'>Kiel+2008</a>.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "uses an exponential decay"
+                    },
+                    {
+                        "name": 1,
+                        "description": "uses an inverse decay",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "bconst",
+                "description": "Sets the magnetic field decay timescale for pulsars following Section 3 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract'>Kiel+2008</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets \\(k\\) in Myr from Equation 8 to <code>bconst</code>"
+                    },
+                    {
+                        "name": 3000,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ck",
+                "description": "Sets the magnetic field decay timescale for pulsars following Section 3 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008MNRAS.388..393K/abstract'>Kiel+2008</a>.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets \\(\\tau_b\\) in Myr from Equation 2 to <code>ck</code>"
+                    },
+                    {
+                        "name": 1000,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Mixing variables",
+                "name": "rejuv_fac",
+                "description": "Sets the mixing factor in main sequence star collisions. This is hard coded to 0.1 in the original BSE release and in Equation 80 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a> but can lead to extended main sequence lifetimes in some cases.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "sets the mixing factor in main sequence star collisions"
+                    },
+                    {
+                        "name": 1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "rejuvflag",
+                "description": "Sets whether to use the orginal prescription for mixing of main-sequence stars (based on equation 80 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>) or whether to use the ratio of the pre-merger He core mass at the base of the giant branch to the merger product's He core mass at the base of the giant branch",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "modified mixing times"
+                    }
+                ]
+            },
+            {
+                "name": "bhms_coll_flag",
+                "description": "If set to 1, then the star is not destroyed in a BH+star collision  if \\(M_{\\rm star} > M_{\\rm BH}\\)",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Star is destroyed in a BH+star collision even if \\(M_{\\rm star} > M_{\\rm BH}\\)",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Star is not destroyed in a BH+star collision if \\(M_{\\rm star} > M_{\\rm BH}\\)"
+                    }
+                ]
+            },
+            {
+                "settings-section": "Magnetic Braking",
+                "name": "htpmb",
+                "description": "Activates different models for magnetic braking",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": -1,
+                        "description": "No magnetic braking"
+                    },
+                    {
+                        "name": 0,
+                        "description": "No modifications to BSE"
+                    },
+                    {
+                        "name": 1,
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2003ApJ...599..516I/abstract'>Ivanona and Taam 2003</a>",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "settings-section": "Miscellaneous",
+                "name": "ST_cr",
+                "description": "Activates different convective vs radiative boundaries",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Follows BSE (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>)"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Follow StarTrack (<a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "rtmsflag",
+                "description": "Flag for calculating the radius at the end of the main sequence.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the original SSE calculation <b>except</b> if M>200Msun and Z<0.0008 (~0.04 Zsun). For the exception, an extrapolation is used. This ad hoc extrapolation works well for stars with M < 4000 Msun for Z >= 0.01 Zsun. For lower metallicities, you may still run into issues of negative radii for very massive stars - use at your own risk.",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Calculate using BoOST simulation data. BoOST metallicities = [1.1e-4, 2.1e-4, 1e-3, 2e-3] corresponding to [dwarfD, IZw18, dwarfA, SMC] models (Szecsi et al. (2022))"
+                    },
+                    {
+                        "name": 2,
+                        "description": "Calculating using BPASS simulation data. BPASS metallicities = [1e-4, *2e-4*, 1e-3, 2e-3]. NOTE : For BPASS, we used a power law to fit the rtms v/s mzams values for each metallicity. We have coded the best fit power-laws for the above BPASS metallicities here. Since, Z = 2e-4 model is not available in the BPASS tracks, we assume the same rtms v/s mzams power law as Z=1e-4 for Z=2e-4."
+                    }
+                ]
+            }
+        ]
+    }
+]
