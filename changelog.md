@@ -50,3 +50,6 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 
 ## 3.6.0
  - Overhaul documentation and added debugging environment
+
+## 3.6.1
+ - Feature: Added Disberg+2025 kick prescription as a new choice of `kickflag` (`kickflag=5`). Applies log-normal distribution to regular CCSN, ECSN/USSN still use `sigmadiv` Maxwellian and BH fallback scaling is still applied via `bhflag` and `bhsigmafrac` as with `kickflag=1`
