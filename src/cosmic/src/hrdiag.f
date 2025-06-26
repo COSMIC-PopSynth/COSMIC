@@ -27,7 +27,7 @@
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20),met
       real*8 bhspin
-      real*8 r,lum,mc,rc,menv,renv,k2
+      real*8 r,lum,mc_he,mc_co,rc,menv,renv,k2
       real*8 mch,mlp,tiny
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
       parameter(mlp=12.d0,tiny=1.0d-14)
