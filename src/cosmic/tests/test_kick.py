@@ -18,6 +18,7 @@ warnings.filterwarnings("ignore")
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
+SSEDict = {"stellar_engine": "sse", "path_to_tracks": "", "path_to_he_tracks": ""}
 BSEFlag_columns = list(set(INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(INITIAL_CONDITIONS_COLUMNS_ALL))
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
@@ -57,7 +58,7 @@ class TestKick(unittest.TestCase):
 
         # evolve using disberg
         BSEDict["kickflag"] = 5
-        _, _, _, kick_info = Evolve.evolve(initialbinarytable=ibt, BSEDict=BSEDict, nproc=1)
+        _, _, _, kick_info = Evolve.evolve(initialbinarytable=ibt, BSEDict=BSEDict, SSEDict=SSEDict, nproc=1)
         natal_kicks_disberg = kick_info['natal_kick'][kick_info['natal_kick'] != 0.0]
 
         # fit a lognormal distribution and ensure it matches the expected values
@@ -84,7 +85,7 @@ class TestKick(unittest.TestCase):
 
         # evolve using hobbs
         BSEDict["kickflag"] = 1
-        _, _, _, kick_info = Evolve.evolve(initialbinarytable=ibt, BSEDict=BSEDict, nproc=1)
+        _, _, _, kick_info = Evolve.evolve(initialbinarytable=ibt, BSEDict=BSEDict, SSEDict=SSEDict, nproc=1)
         natal_kicks = kick_info['natal_kick'][kick_info['natal_kick'] != 0.0]
 
         # fit a maxwellian to the hobbs natal kicks and ensure it matches the expected values
