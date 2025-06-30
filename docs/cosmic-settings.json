@@ -851,7 +851,7 @@
                     },
                     {
                         "name": "negative values",
-                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work. kickflag=-5 is NOT implemented."
                     }
                 ]
             },
