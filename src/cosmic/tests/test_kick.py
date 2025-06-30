@@ -27,7 +27,7 @@ BSEDict['fprimc_array'] = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
 BSEDict['grflag'] = 1
 BSEDict['don_lim'] = -1
-BSEDict['acc_lim'] = -1
+BSEDict['acc_lim'] = [-1,-1]
 BSEDict['wd_mass_lim'] = 0
 
 # avoid using the same randomseed
