@@ -348,14 +348,15 @@ if __name__ == '__main__':
             init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                         final_kstar1 = kstar1_range,
                                                         final_kstar2 = kstar2_range,
-                                                        keep_singles = args.keep_singles,
                                                         rand_seed = rand_seed,
                                                         nproc = args.nproc,
                                                         SF_start = sampling['SF_start'],
                                                         SF_duration = sampling['SF_duration'],
                                                         met = sampling['metallicity'],
                                                         size = args.Nstep,
-                                                        pool=pool)
+                                                        pool=pool,
+                                                        keep_singles = args.keep_singles
+                                                        )
             IBT, mass_singles, mass_binaries, n_singles, n_binaries = init_samp_list
 
         # Log the total sampled mass from the initial binary sample
@@ -416,8 +417,9 @@ if __name__ == '__main__':
                     dat_store.append("nan_initC", initCond_nan)
                 else:
                     dat_store["nan_initC"] = initCond_nan
-            log_file.write(f"There are {len(nan_bin_nums)} NaNs stored in the datfile with key: 'nan_initC'")
-            log_file.write(f"These NaNs likely arise because you have pts1 = 0.001, try running with pts1 = 0.01")
+            log_file.write(f"There are {len(nan_bin_nums)} NaNs stored in the datfile with key: 'nan_initC'\n")
+            log_file.write(f"You might want to check them out carefully to see if there is something that impacts your results\n")
+            #log_file.write(f"These NaNs likely arise because you have pts1 = 0.001, try running with pts1 = 0.01")
 
             bcm = bcm.loc[~bcm.bin_num.isin(nan_bin_nums)]
             bpp = bpp.loc[~bpp.bin_num.isin(nan_bin_nums)]
@@ -515,8 +517,8 @@ if __name__ == '__main__':
                                 bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
                                 bin_state_nums, match_save, idx, 
                                 conv_singles=conv_singles_filter_match, bcm_singles=bcm_singles_filter_match, 
-                                bpp_singles=bpp_singles_filter_match, initC_singles_filter_match=initC_filter_singles_match,
-                                kick_info_singles_filter_match=kick_info_singles_filter_match)
+                                bpp_singles=bpp_singles_filter_match, initC_singles=initC_filter_singles_match,
+                                kick_info_singles=kick_info_singles_filter_match)
                 else:
                     utils.pop_write(dat_store, log_file, mass_list, n_list, bcm_filter_match,
                                 bpp_filter_match, initC_filter_match, conv_filter_match, kick_info_filter_match,
