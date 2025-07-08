@@ -27,8 +27,8 @@ about the independent sampler in the :ref:`independent` page.
        ...:       InitialBinaryTable.sampler('independent', final_kstars, final_kstars,
        ...:                                  binfrac_model=0.5, primary_model='kroupa01',
        ...:                                  ecc_model='sana12', porb_model='sana12',
-       ...:                                  qmin=-1, m2_min=0.08, SF_start=13700.0,
-       ...:                                  SF_duration=0.0, met=0.02, size=10)
+       ...:                                  qmin=-1, SF_start=13700.0,
+       ...:                                  SF_duration=0.0, met=0.02, size=10, keep_singles=True)
 
 
 And finally, we can evolve the initial binary population using the Evolve class as we've done in the previous
