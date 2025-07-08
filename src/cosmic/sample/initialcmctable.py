@@ -332,9 +332,14 @@ class InitialCMCTable(pd.DataFrame):
         )
         singles = pd.concat([singles, Singles])
         singles = pd.concat([singles, singles_bottom])
-        singles.loc[singles.index[-1], "r"] = 1e40
-        singles.loc[singles.index[0], "r"] = 2.2250738585072014e-308
-        singles.loc[singles.index[0], "m"] = Singles.central_bh
+        
+        singles.iloc[-1, singles.columns.get_loc("r")] = 1e40
+        singles.iloc[0, singles.columns.get_loc("r")] = 2.2250738585072014e-308
+        singles.iloc[0, singles.columns.get_loc("m")] = Singles.central_bh
+
+        #singles["r"].iloc[-1] = 1e40
+        #singles["r"].iloc[0] = 2.2250738585072014e-308
+        #singles["m"].iloc[0] = Singles.central_bh
 
         # Add a special row to the end of Bianries table
         binaries = pd.DataFrame(
