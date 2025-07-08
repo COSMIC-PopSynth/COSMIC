@@ -442,7 +442,7 @@ def pop_write(
 
     # Save the initial binaries
     # ensure that the index corresponds to bin_num
-    dat_store.append("initCond", initC.set_index("bin_num", drop=False))
+    dat_store.append("initC", initC.set_index("bin_num", drop=False))
 
     # Save the converging dataframe
     dat_store.append("conv", conv)
