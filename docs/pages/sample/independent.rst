@@ -47,9 +47,9 @@ If you don't want to filter the binaries, you can supply final kstars as
 
     In [6]: final_kstars = np.linspace(0, 14, 15)
 
-    In [7]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstars, final_kstars, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, m2_min=0.08, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    In [7]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstars, final_kstars, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
 
-Additionally if you are interested in single stars then you can specify ``keep_singles=True``.
+Additionally if you are interested in single stars then you can specify ``keep_singles=True``. In this case, the singles will be added onto the end of the InitialBinaryTable where ``kstar_1`` will host the singles, ``kstar_2`` will be filled with 15s only, and all orbital properties (e.g. ``porb`` or ``ecc``) will be indicated with -1.
 
 Understanding parameter sampling models
 =======================================
@@ -76,7 +76,7 @@ Using the final kstar inputs we mentioned above, the initial binary population c
 
 .. ipython::
 
-    In [9]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, m2_min=0.08, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    In [9]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
 
     In [10]: print(InitialBinaries)
 
@@ -95,7 +95,7 @@ Alternatively, we could do the same thing but now instead set our ``sampling_tar
 
 .. ipython::
 
-    In [10]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, m2_min=0.08, SF_start=13700.0, SF_duration=0.0, met=0.02, sampling_target="total_mass", total_mass=15000)
+    In [10]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, sampling_target="total_mass", total_mass=15000)
 
     In [11]: print(InitialBinaries)
 

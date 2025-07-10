@@ -186,11 +186,12 @@ class TestSample(unittest.TestCase):
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
-        np.random.seed(2)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1, m2_min=0.08)
-        q = mass2[ind_massive] / mass1[ind_massive]
-        slope = linear_fit(q)
-        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+        # This is now redundant since you should only sample with qmin or m2_min
+        #np.random.seed(2)
+        #mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1, m2_min=0.08)
+        #q = mass2[ind_massive] / mass1[ind_massive]
+        #slope = linear_fit(q)
+        #self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
     def test_sample_q(self):
         """Test you can sample different mass ratio distributions"""
@@ -239,15 +240,15 @@ class TestSample(unittest.TestCase):
         np.random.seed(2)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
         # Check that qmin_msort and m2_min_msort are workings as expected
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1, m2_min=0.08, msort=15, qmin_msort=0.7, m2_min_msort=12)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1, msort=15, qmin_msort=0.7, m2_min_msort=12)
         ind_light, = np.where(mass1 < 15.0)
         ind_massive, = np.where(mass1 >= 15.0)
         m2_light = mass2[ind_light]
         m2_massive = mass2[ind_massive]
         q_light = mass2[ind_light]/mass1[ind_light]
         q_massive = mass2[ind_massive]/mass1[ind_massive]
-        assert m2_light.min() > M2MIN_LOWMASS
-        assert m2_massive.min() > M2MIN_HIGHMASS
+        assert m2_light.min() > np.min(mass1[ind_light]) * 0.1
+        assert m2_massive.min() > np.min(mass1[ind_massive]) * 0.7
         assert q_light.min() > QMIN_LOWMASS
         assert q_massive.min() > QMIN_HIGHMASS
         # Check that the binary fraction tracking is correct when using msort
@@ -324,7 +325,6 @@ class TestSample(unittest.TestCase):
         metallicity = 0.001
         # this is a metallicity dependent population:
         binfrac = get_met_dep_binfrac(metallicity)
-        print(binfrac)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
         (mass1_binaries, mass_single, binfrac_binaries, binary_index,) = SAMPLECLASS.binary_select(
             mass1, binfrac_model=binfrac,

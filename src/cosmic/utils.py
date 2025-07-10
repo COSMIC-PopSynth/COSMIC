@@ -415,6 +415,12 @@ def pop_write(
     bpp_singles : `pandas.DataFrame`
         kwargs bpp_singles array to write
 
+    initC_singles : `pandas.DataFrame`
+        kwargs initC_singles array to write
+
+    kick_info_singles : `pandas.DataFrame`
+        kwargs kick_info_singles array to write
+
     Returns
     -------
     Nothing!
@@ -436,7 +442,7 @@ def pop_write(
 
     # Save the initial binaries
     # ensure that the index corresponds to bin_num
-    dat_store.append("initCond", initC.set_index("bin_num", drop=False))
+    dat_store.append("initC", initC.set_index("bin_num", drop=False))
 
     # Save the converging dataframe
     dat_store.append("conv", conv)
@@ -455,14 +461,20 @@ def pop_write(
 
     if "conv_singles" in kwargs.keys():
 
-        # Save the singles dataframe
+        # Save the singles conv dataframe
         dat_store.append("conv_singles", kwargs["conv_singles"])
 
-        # Save the singles dataframe
+        # Save the singles bcm dataframe
         dat_store.append("bcm_singles", kwargs["bcm_singles"])
 
-        # Save the singles dataframe
+        # Save the singles bpp dataframe
         dat_store.append("bpp_singles", kwargs["bpp_singles"])
+
+        # save the singles initCond dataframe
+        dat_store.append("initC_singles", kwargs["initC_singles"])
+
+        # save the singles kick_info dataframe      
+        dat_store.append("kick_info_singles", kwargs["kick_info_singles"])
 
     return
 
@@ -577,7 +589,7 @@ def mass_min_max_select(kstar_1, kstar_2, **kwargs):
     if ((primary_min < 0.08) | (secondary_min < 0.08)):
         warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses less than 0.08 Msun!")
     if primary_max > 150:
-        warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses greater than 150 Msun!")
+        warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses greater than 150 Msun! And to be honest, we are extrapolating beyond 50 Msun :-/")
 
     min_mass = [primary_min, secondary_min]
     max_mass = [primary_max, secondary_max]
