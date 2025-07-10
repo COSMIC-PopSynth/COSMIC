@@ -50,3 +50,7 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 
 ## 3.6.0
  - Overhaul documentation and added debugging environment
+
+## 3.6.1
+ - Add support for single stars in both independent and multidim sampling
+ - update documentation
