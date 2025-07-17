@@ -234,7 +234,7 @@ def get_cmc_sampler(
     singles_table.tidal_radius = kwargs.get("tidal_radius",1e6) 
     singles_table.central_bh = kwargs.get("central_bh",0)
     singles_table.scale_with_central_bh = kwargs.get("scale_with_central_bh",False)
-    singles_table.mass_of_cluster = np.sum(singles_table["m"]) + singles_table.central_bh
+    singles_table.mass_of_cluster = np.sum(singles_table["m"])
 
     return singles_table, binaries_table
 
