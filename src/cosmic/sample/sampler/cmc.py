@@ -335,7 +335,7 @@ def get_cmc_point_mass_sampler(
     singles_table.tidal_radius = kwargs.get("tidal_radius",1e13)
     singles_table.central_bh = kwargs.get("central_bh",0)
     singles_table.scale_with_central_bh = kwargs.get("scale_with_central_bh",False)
-    singles_table.mass_of_cluster = np.sum(singles_table["m"])*size + singles_table.central_bh
+    singles_table.mass_of_cluster = np.sum(singles_table["m"])*size
 
     # Already scaled from the IC generators (unless we've added a central BH)
     if singles_table.central_bh != 0:
