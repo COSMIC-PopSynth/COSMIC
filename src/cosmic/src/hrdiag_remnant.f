@@ -27,7 +27,7 @@
 *
          mc = mt
          mchold = mch
-         if(ecsn.gt.0.d0.and.kw.eq.12) mch = 1.38d0
+         if(abs(ecsn).gt.0.d0.and.kw.eq.12) mch = 1.38d0
          if(mc.ge.mch)then
 *
 * Accretion induced supernova with no remnant
@@ -38,7 +38,7 @@
                kw = 13
                aj = 0.d0
                mt = 1.3d0
-               if(ecsn.gt.0.d0)then
+               if(abs(ecsn).gt.0.d0)then
 *                  mt = 1.38d0
                   if(wd_mass_lim.eq.1)then
                       mt = 1.38d0

@@ -13,7 +13,24 @@
       real*8 mc,mcbagb,mass,mt
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
-      integer kw,kidx
+      integer kw,kidx, i
+
+      ! I swear to god I will figure this out
+      open(11, file="dbg.txt", access="append")
+      write(11,*) "star number ", kidx, " initial mass ", mass
+      write(11,'(a)') "mc, mcbagb, mass, mt, kw"
+      write(11,*) mc, mcbagb, mass, mt, kw
+      write(11,'(a)') "M_co ignition (Mup), M_cCburn (Mec)"
+      write(11,*) zpars(4), zpars(5) 
+      open(12, file="zpars.txt", access="append")
+      write(12,*) "===="
+      write(12,*) "initial mass:", mass
+      write(12,*) "zpars: "
+      do i=1,12,1
+         write(12,*) zpars(i)
+      end do
+      write(12,*) "===="
+      close(12)
 
       
 * input mc(or mcmax),mass, mcbagb
@@ -57,10 +74,8 @@
                elseif(ecsn.gt.0.d0.and.mcbagb.ge.ecsn_mlow.and.
      &                mcbagb.le.ecsn.and.mc.lt.1.08d0)then
                   kw = 11
-*               elseif(mcbagb.ge.1.6d0.and.mcbagb.le.2.5d0.and.
-*                      mc.lt.1.08d0)then !can introduce this into code at some point.
-*                  kw = 11
-
+               elseif(ecsn.lt.0.d0.and.mc.lt.abs(ecsn_mlow))then
+                  kw = 11
                else
 *
 * Zero-age Oxygen/Neon White Dwarf
@@ -81,6 +96,8 @@
 * Star is not massive enough to ignite C burning.
 * so no remnant is left after the SN
 *
+                  kw = 15
+               elseif(ecsn.lt.0.d0.and.mc.lt.abs(ecsn_mlow))then
                   kw = 15
                else
                   if(remnantflag.eq.0)then
@@ -111,6 +128,12 @@
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &                    mcbagb.ge.ecsn_mlow)then
                         mcx = 1.38d0
+                        write(11,*) "ecsn! (>0)"
+                     elseif(ecsn.lt.0.d0.and.mc.gt.
+     &                    abs(ecsn_mlow).and.
+     &                     mc.lt.abs(ecsn))then
+                        mcx = 1.38d0
+                        write(11,*) "ecsn! (<0)"
 *                     elseif(mc.lt.4.29d0)then
                      elseif(mc.lt.4.82d0)then
                         mcx = 1.5d0
@@ -155,6 +178,11 @@
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &                    mcbagb.ge.ecsn_mlow)then
                         mt = 1.38d0   ! ECSN fixed mass, no fallback
+                        write(11,*) "ecsn! (>0)"
+                     elseif(ecsn.lt.0.d0.and.
+     &                   mc.ge.abs(ecsn_mlow).and.mc.le.abs(ecsn))then
+                        mt = 1.38d0
+                        write(11,*) "ecsn! (<0)"
                      elseif(mc.le.2.5d0)then
                         fallback = 0.2d0 / (mt - mcx)
                         mt = mcx + 0.2d0
@@ -203,6 +231,9 @@
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &                    mcbagb.ge.ecsn_mlow)then
                         mt = 1.38d0   ! ECSN fixed mass, no fallback
+                     elseif(ecsn.lt.0.d0.and.mc.ge.
+     &                  abs(ecsn_mlow).and.mc.le.abs(ecsn))then
+                        mt = 1.38d0
                      elseif(mc.lt.2.5d0)then
                         fallback = 0.2d0 / (mt - mcx)
                         mt = mcx + 0.2
@@ -383,4 +414,6 @@
                endif
             endif
 *
+            write(11,*) "final kstar:  ", kw, "final mass:  ", mt
+            close(11)
       end

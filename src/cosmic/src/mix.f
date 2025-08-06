@@ -113,7 +113,7 @@ C      ENDIF
       ELSEIF(ICASE.LE.12)THEN
 *       Ensure that a new WD has the initial mass set correctly.
          M03 = M3
-         IF(ecsn.gt.0.d0.and.ICASE.EQ.11.AND.M3.GE.1.38d0)then
+         IF(abs(ecsn).gt.0.d0.and.ICASE.EQ.11.AND.M3.GE.1.38d0)then
             KW = 12 !will let hrdiag update accordingly...
          ELSEIF(ICASE.LT.12.AND.M3.GE.MCH)THEN
             M3 = 0.D0

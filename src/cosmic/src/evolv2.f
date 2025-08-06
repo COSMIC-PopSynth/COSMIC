@@ -216,7 +216,7 @@
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
-      integer err
+      integer err, print_iter
 
 Cf2py intent(in) kstar
 Cf2py intent(in) mass
@@ -339,6 +339,18 @@ component.
             if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *      for SSE path_to_tracks and path_to_he_tracks are empty ('')
             CALL zcnsts(z,zpars)
+
+            ! print zpars to check my sanity
+            open(13, file="evolv_zpars.txt", access="append")
+            write(13,*) "===="
+            write(13,*) "initial mass: ", mass
+            write(13,*) "zpars: "
+            do print_iter=1, 12, 1
+               write(13,*) zpars(print_iter)
+            end do
+            write(13,*) "===="
+            close(13)
+
             if(using_METISSE.eq.1) then
                 call check_error(err)
                 if (err>0) then
@@ -1238,10 +1250,11 @@ component.
 *
 * At this point there may have been a supernova.
 *
+         !print*, "zpars 5:", zpars(5)
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
      &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
             if(formation(k).ne.11) formation(k) = 1
-            if(kw.eq.13.and.ecsn.gt.0.d0)then
+            if(kw.eq.13.and.ecsn.ne.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1252,7 +1265,8 @@ component.
                      formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
-                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
+                   if((mass(k).gt.abs(ecsn_mlow).and.
+     &             mass(k).le.abs(ecsn)))then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = -sigmahold/sigmadiv
@@ -3560,7 +3574,7 @@ component.
      &      (kw.eq.13.or.kw.eq.14))then
             dms(k) = mass(k) - mt
             if(formation(k).ne.11) formation(k) = 1
-            if(kw.eq.13.and.ecsn.gt.0.d0)then
+            if(kw.eq.13.and.ecsn.ne.0.d0)then
                if(kstar(k).le.6)then
                   if(mass0(k).le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -3571,7 +3585,8 @@ component.
                      formation(k) = 2
                   endif
                elseif(kstar(k).ge.7.and.kstar(k).le.9)then
-                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
+                  if(mass(k).gt.abs(ecsn_mlow).and.
+     &                  mass(k).le.abs(ecsn))then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = -sigmahold/sigmadiv

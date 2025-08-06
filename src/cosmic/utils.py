@@ -1378,16 +1378,17 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
     flag = "ecsn"
     if flag in BSEDict.keys():
         if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
+            pass
+        #    raise ValueError(
+        #        "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
+        #            flag, BSEDict[flag]
+        #        )
+        #    )
     flag = "ecsn_mlow"
     if flag in BSEDict.keys():
-        if (BSEDict[flag] > BSEDict["ecsn"]) or (BSEDict[flag] < 0.0):
+        if (abs(BSEDict[flag]) > abs(BSEDict["ecsn"])): #or (BSEDict[flag] < 0.0):
             raise ValueError(
-                "'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 "
+                "'abs({0:s})' needs to be less than abs('ecsn')," #and must be greater than or equal to 0 "
                 "(you set it to '{1:0.2f}')".format(
                                                     flag, BSEDict[flag]
                                                    )

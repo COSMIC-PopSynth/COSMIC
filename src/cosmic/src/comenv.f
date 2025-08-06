@@ -239,7 +239,7 @@
      &                  bhspin1,star1)
             IF(KW1.GE.13)THEN
                formation1 = 1
-               if(KW1.eq.13.and.ecsn.gt.0.d0)then
+               if(KW1.eq.13.and.abs(ecsn).gt.0.d0)then
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -250,7 +250,7 @@
                         formation1 = 2
                      endif
                   elseif(KW1i.ge.7.and.KW1i.le.9)then
-                     if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
+                     if(M1i.gt.abs(ecsn_mlow).and.M1i.le.abs(ecsn))then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                            sigma = -sigmahold/sigmadiv
@@ -550,7 +550,7 @@
      &                  bhspin1,star1)
             IF(KW1.GE.13)THEN
                formation1 = 1
-               if(KW1.eq.13.and.ecsn.gt.0.d0)then
+               if(KW1.eq.13.and.abs(ecsn).gt.0.d0)then
                   if(KW1i.le.6)then
                      if(M1i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -561,7 +561,7 @@
                         formation1 = 2
                      endif
                   elseif(KW1i.ge.7.and.KW1i.le.9)then
-                     if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
+                     if(M1i.gt.abs(ecsn_mlow).and.M1i.le.abs(ecsn))then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                            sigma = -sigmahold/sigmadiv
@@ -717,7 +717,7 @@
      &                  bhspin2,star2)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 1
-               if(KW2.eq.13.and.ecsn.gt.0.d0)then
+               if(KW2.eq.13.and.abs(ecsn).gt.0.d0)then
                   if(KW2i.le.6)then
                      if(M2i.le.zpars(5))then
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -728,7 +728,7 @@
                         formation2 = 2
                      endif
                   elseif(KW2i.ge.7.and.KW2i.le.9)then
-                     if(M2i.gt.ecsn_mlow.and.M2i.le.ecsn)then
+                     if(M2i.gt.abs(ecsn_mlow).and.M2i.le.abs(ecsn))then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                         if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                            sigma = -sigmahold/sigmadiv
@@ -960,7 +960,7 @@
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
-            if(KW1.eq.13.and.ecsn.gt.0.d0)then
+            if(KW1.eq.13.and.abs(ecsn).gt.0.d0)then
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -971,7 +971,7 @@
                      formation1 = 2
                   endif
                elseif(KW1i.ge.7.and.KW1i.le.9)then
-                  if(M1i.gt.ecsn_mlow.and.M1i.le.ecsn)then
+                  if(M1i.gt.abs(ecsn_mlow).and.M1i.le.abs(ecsn))then
 * BSE orgi: 1.6-2.25, Pod: 1.4-2.5, StarTrack: 1.83-2.25 (all in Msun)
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
                         sigma = -sigmahold/sigmadiv
