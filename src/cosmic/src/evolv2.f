@@ -240,7 +240,7 @@ Cf2py intent(in) epoch
 Cf2py intent(in) tms
 Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
-Cf2py intent(in) zpars
+Cf2py intent(in,out) zpars
 Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
 Cf2py intent(out) bpp_index_out
@@ -339,17 +339,6 @@ component.
             if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
 *      for SSE path_to_tracks and path_to_he_tracks are empty ('')
             CALL zcnsts(z,zpars)
-
-            ! print zpars to check my sanity
-            open(13, file="evolv_zpars.txt", access="append")
-            write(13,*) "===="
-            write(13,*) "initial mass: ", mass
-            write(13,*) "zpars: "
-            do print_iter=1, 12, 1
-               write(13,*) zpars(print_iter)
-            end do
-            write(13,*) "===="
-            close(13)
 
             if(using_METISSE.eq.1) then
                 call check_error(err)
