@@ -304,7 +304,9 @@ class Evolve(object):
                     initialbinarytable = initialbinarytable.assign(**kwargs1)
                 _evolvebin.se_flags.using_metisse = 1
                 _evolvebin.se_flags.using_sse = 0
-
+                
+                if initialbinarytable.metallicity.unique().shape[0] > 1:
+                    raise ValueError("Cannot pass multiple metallicity values when `stellar_engine` is set to `metisse`.")
 
             elif SSEDict['stellar_engine'] == 'sse':
                 kwargs1 = {'stellar_engine': 'sse'}
