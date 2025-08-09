@@ -49,3 +49,6 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - Bug fix: Changed `kick.f` to use the Pfahl+02 kick prescription by default instead of Kiel & Hurley 2009, this fixes ejection velocities of secondaries and also changed kick_info to have an extra column
 ## 3.5.1
  - Feature: Added Disberg+2025 kick prescription as a new choice of `kickflag` (`kickflag=5`). Applies log-normal distribution to regular CCSN, ECSN/USSN still use `sigmadiv` Maxwellian and BH fallback scaling is still applied via `bhflag` and `bhsigmafrac` as with `kickflag=1`
+## 3.5.2
+- Feature: Added the ability to pass `ecsn<0`, to use `mc` for electron-capture supernova assignment. This implements the Tauris+2015 electron-capture supernova prescription.
+- Bug fixes: Altered `evolv2` and `Evolve.evolve` to return `zpars`, which is then fed back into subsequent calls for other systems. This is necessary for METISSE, as `zpars` is not recalculated for each new binary.
