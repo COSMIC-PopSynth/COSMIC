@@ -13,7 +13,7 @@
       real*8 mc,mcbagb,mass,mt
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
-      integer kw,kidx, i
+      integer kw,kidx
 
 
       

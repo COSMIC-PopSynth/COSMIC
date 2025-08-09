@@ -216,7 +216,7 @@
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
-      integer err, print_iter
+      integer err
 
 Cf2py intent(in) kstar
 Cf2py intent(in) mass
