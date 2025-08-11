@@ -20,7 +20,8 @@
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
-      COMMON /TRACKERS/ pisn_track
+      REAL*8 mc_he(2),mc_co(2)
+      COMMON /TRACKERS/ pisn_track,mc_he,mc_co
 *
       REAL*8 zsun
       COMMON /METVARS/ zsun

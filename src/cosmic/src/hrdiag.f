@@ -27,7 +27,7 @@
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20),met
       real*8 bhspin
-      real*8 r,lum,mc_he,mc_co,rc,menv,renv,k2
+      real*8 r,lum,rc,menv,renv,k2,mc
       real*8 mch,mlp,tiny
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
       parameter(mlp=12.d0,tiny=1.0d-14)
@@ -178,8 +178,14 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             endif
             eta = mctmsf(mass)
             tau = (aj - tm)/thg
+*            WRITE(*,*)'hrdiag: 184, k=',kidx,' mass=',mass
+*            WRITE(*,*)'mc=',mc,' mcx=',mcx
+            
             mc = ((1.d0 - tau)*eta + tau)*mc
             mc = MAX(mc,mcx)
+
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
 *
 * Test whether core mass has reached total mass.
 *
@@ -190,6 +196,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium star
 *
                   mc = 0.d0
+                  mc_he(kidx) = 0.d0
+                  mc_co(kidx) = 0.d0
                   mass = mt
                   kw = 7
                   CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
@@ -198,6 +206,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium white dwarf.
 *
                   mc = mt
+                  mc_he(kidx) = 0.d0
+                  mc_co(kidx) = 0.d0
                   mass = mt
                   kw = 10
                endif
@@ -235,6 +245,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mass.le.zpars(2))then
 * Star has a degenerate He core which grows on the GB
             mc = mcgbf(lum,GB,lums(6))
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
          else
 * Star has a non-degenerate He core which may grow, but
 * only slightly, on the GB
@@ -242,6 +254,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(9))
             mcy = mcheif(mass,zpars(2),zpars(10))
             mc = mcx + (mcy - mcx)*tau
+*            WRITE(*,*)'hrdiag249: k=',kidx,'mass=',mass,'kw=',kw
+*            WRITE(*,*)'mc=',mc,' mcx=',mcx,' mcy-mcx=',mcy-mcx
+*            WRITE(*,*)
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
          endif
          r = rgbf(mt,lum)
          rg = r
@@ -252,6 +269,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium star
 *
                mc = 0.d0
+               mc_he(kidx) = mc
+               mc_co(kidx) = 0.0
                mass = mt
                kw = 7
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
@@ -260,6 +279,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium white dwarf.
 *
                mc = mt
+               mc_he(kidx) = mc
+               mc_co(kidx) = 0.0
                mass = mt
                kw = 10
             endif
@@ -280,7 +301,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(10))
          endif
          tau = (aj - tscls(2))/tscls(3)
+*        here, mcx is the He core mass, and the other part is the C core
          mc = mcx + (mcagbf(mass) - mcx)*tau
+         WRITE(*,*)'hrdiag: mc=',mc,' mcx=',mcx, 'kw=',kw,' k=',kidx
+         WRITE(*,*)'hrdiag: mc_co=',(mcagbf(mass) - mcx)*tau
+         mc_he(kidx) = mcx + (mcagbf(mass) - mcx)*tau
+         mc_co(kidx) = 0.0
 *
          if(mass.le.zpars(2))then
             lx = lums(5)
@@ -401,6 +427,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(aj.lt.tscls(13))then
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
+            WRITE(*,*)'hrdiag 430: mc=',mc,' mcx=',mcx,' kw=',kw
+            WRITE(*,*)'hrdiag: mcbagb=',mcbagb
+            mc_co(kidx) = mcx
+            mc_he(kidx) = mcbagb
             lum = lmcgbf(mcx,GB)
             if(mt.le.mc)then
 *
@@ -412,6 +442,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mt = mc
                mass = mt
                mc = mcx
+               mc_co(kidx) = mc
+               mc_he(kidx) = 0.d0
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                if(mc.le.GB(7))then
                   aj = tscls(4) - (1.d0/((GB(5)-1.d0)*GB(8)*GB(4)))*
@@ -438,6 +470,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcy = mc
             mc = mc - lambdahrdiag*(mcy-mcx)
             mcx = mc
+            mc_co(kidx) = mcx
+            mc_he(kidx) = mcy
             mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))
@@ -477,6 +511,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * which is why we subject mass and mt to mass loss for
 * this phase.
             mc = 0.d0
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
             if(mt.lt.zpars(10)) kw = 10
          else
 *
@@ -491,6 +527,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                r = rg
             endif
             mc = mcgbf(lum,GB,lums(6))
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = mc
             mtc = MIN(mt,1.45d0*mt-0.31d0)
             mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
             if(mcmax-mc.lt.tiny)then
