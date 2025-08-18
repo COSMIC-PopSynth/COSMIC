@@ -304,6 +304,26 @@ class Evolve(object):
                 _evolvebin.se_flags.using_metisse = 1
                 _evolvebin.se_flags.using_sse = 0
 
+                # Convert to fixed-length bytes arrays for f2py
+                l = utils.get_METISSE_files(SSEDict['path_to_tracks'],SSEDict['path_to_he_tracks'])
+                h_eep_tracks, he_eep_tracks, met_files, met_files_he = l
+                
+                # Convert Python lists to fixed-length NumPy arrays
+                strlen = 256
+                h_eep_np = utils.to_f2py_str_array(h_eep_tracks)
+                he_eep_np = utils.to_f2py_str_array(he_eep_tracks)
+                met_np = utils.to_f2py_str_array(met_files)
+                met_he_np = utils.to_f2py_str_array(met_files_he)
+
+                #import pdb; pdb.set_trace()
+                # Then pass to Fortran
+                _evolvebin.cosmic_metisse_files.set_file_lists_from_python(
+                    len(met_np), met_np,
+                    len(met_he_np), met_he_np,
+                    len(h_eep_np), h_eep_np,
+                    len(he_eep_np), he_eep_np
+                )
+
 
             elif SSEDict['stellar_engine'] == 'sse':
                 kwargs1 = {'stellar_engine': 'sse'}

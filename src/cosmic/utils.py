@@ -1910,6 +1910,69 @@ def parse_inifile(inifile):
 
     return BSEDict, SSEDict, seed_int, filters, convergence, sampling
 
+def get_METISSE_files(path_to_tracks, path_to_he_tracks):
+    """Returns the path to the METISSE files
+    
+    Parameters
+    ----------
+    path_to_tracks : str
+        Path to the directory containing the METISSE tracks.
+    path_to_he_tracks : str
+        Path to the directory containing the METISSE He tracks.
+    
+    Returns
+    -------
+    eep_tracks : list
+        List of paths to the METISSE EEP tracks
+    he_eep_tracks : list
+        List of paths to the METISSE helium EEP tracks
+    met_files : list
+        List of paths to the METISSE metallicity files for hydrogen tracks
+    met_files_he : list
+        List of paths to the METISSE He metallicity files for helium trakcs
+    """
+    import os
+
+    # first find all the EEPs in the specified directories
+    eep_dir = path_to_tracks+"/eeps/"
+    he_eep_dir = path_to_he_tracks+"/eeps/"
+    h_eep_tracks = [os.path.join(eep_dir, f) for f in os.listdir(eep_dir) if f.endswith("data.eep")]
+    he_eep_tracks = [os.path.join(he_eep_dir, f) for f in os.listdir(he_eep_dir) if f.endswith("data.eep")]
+
+    if len(h_eep_tracks) == 0:
+        raise ValueError("No METISSE tracks found in the specified path: {0}".format(eep_dir))
+    if len(he_eep_tracks) == 0:
+        raise ValueError("No METISSE He tracks found in the specified path: {0}".format(he_eep_dir))
+    
+    # Next also get the Metallicity files
+    met_files = [os.path.join(path_to_tracks, f) for f in os.listdir(path_to_tracks) if f.endswith("metallicity.in")]
+    met_files_he = [os.path.join(path_to_he_tracks, f) for f in os.listdir(path_to_he_tracks) if f.endswith("metallicity.in")]
+
+    if len(met_files) == 0:
+        raise ValueError("No METISSE metallicity files found in the specified path: {0}".format(path_to_tracks))
+    if len(met_files_he) == 0:
+        raise ValueError("No METISSE He metallicity files found in the specified path: {0}".format(path_to_he_tracks))
+    
+    return h_eep_tracks, he_eep_tracks, met_files, met_files_he
+
+
+def to_f2py_str_array(pylist):
+    """
+    Convert a Python list of strings to a 1D NumPy array of fixed-length strings
+    suitable for passing to an F2PY-wrapped Fortran subroutine.
+    
+    Parameters
+    ----------
+    pylist : list of str
+        Python list of strings to convert.
+        
+    Returns
+    -------
+    np.ndarray
+        1D array of dtype S{strlen} and shape (len(pylist),)
+    """
+    arr = np.array([str(f) for f in pylist], dtype=object).ravel()
+    return arr  
 
 class VariableKey(object):
     """
