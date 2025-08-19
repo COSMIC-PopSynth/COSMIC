@@ -303,7 +303,7 @@ class InitialCMCTable(pd.DataFrame):
         # and the attribute mass_of_cluster is None, then
         # we can calculate it now
         if (not Singles.scaled_to_nbody_units) and (Singles.mass_of_cluster is None):
-            Singles.mass_of_cluster = np.sum(Singles["m"]) + central_bh
+            Singles.mass_of_cluster = np.sum(Singles["m"])
             InitialCMCTable.ScaleToNBodyUnits(
                 Singles, Binaries, virial_radius=virial_radius, central_bh=central_bh, scale_with_central_bh=scale_with_central_bh
             )
