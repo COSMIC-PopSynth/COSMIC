@@ -332,7 +332,7 @@ def get_cmc_point_mass_sampler(
     singles_table.metallicity = 0.02
     binaries_table.metallicity = 0.02
     singles_table.virial_radius = kwargs.get("virial_radius",1)
-    singles_table.tidal_radius = kwargs.get("tidal_radius",1e13)
+    singles_table.tidal_radius = kwargs.get("tidal_radius",1e6)
     singles_table.central_bh = kwargs.get("central_bh",0)
     singles_table.scale_with_central_bh = kwargs.get("scale_with_central_bh",False)
     singles_table.mass_of_cluster = np.sum(singles_table["m"])*size + singles_table.central_bh
