@@ -31,6 +31,7 @@ import pandas as pd
 import warnings
 import os
 import sys
+import tqdm
 try:
     import multiprocessing
     multiprocessing.set_start_method("fork")
@@ -304,9 +305,41 @@ class Evolve(object):
                 _evolvebin.se_flags.using_metisse = 1
                 _evolvebin.se_flags.using_sse = 0
 
-                # Convert to fixed-length bytes arrays for f2py
+                # load in the METISSE files
                 l = utils.get_METISSE_files(SSEDict['path_to_tracks'],SSEDict['path_to_he_tracks'])
                 h_eep_tracks, he_eep_tracks, met_files, met_files_he = l
+                
+                #check if the metallicity for the initialbinarytable changes
+                # raise an error if all the metallicities are not the same
+                if initialbinarytable['metallicity'].nunique() > 1:
+                    raise ValueError("All the metallicities in the initial binary table "
+                                     "must be the same if you are using the METISSE stellar engine. ")
+                
+                # loop over the hydrogen metallicity files to find the one that is the closest 
+                # to the metallicity in the initial binary table
+                met_dict_keep = None
+                fmt_dict_keep = None
+                mets = []
+                for m in met_files:
+                    met_dict, fmt_dict = utils.read_metallicity_and_format(m)
+                    mets.append(met_dict['Z_files'])
+                    if met_dict['Z_files'] == initialbinarytable['metallicity'].iloc[0]:
+                        met_dict_keep = met_dict
+                        fmt_dict_keep = fmt_dict
+                if met_dict_keep is None: 
+                    raise ValueError("No metallicity file found that matches the metallicity "
+                                     "in the initial binary table. Please check the metallicity "
+                                     "and supply one that is in this list: {0}".format(mets))
+                
+                # loop over the hydrogen metallicity files to find the one that is the closest 
+                # to the metallicity in the initial binary table
+                met_dict_he_keep = None
+                fmt_dict_he_keep = None
+                for m in met_files_he:
+                    met_dict, fmt_dict = utils.read_metallicity_and_format(m)
+                    if met_dict['Z_files'] == initialbinarytable['metallicity'].iloc[0]:
+                        met_dict_he_keep = met_dict
+                        fmt_dict_he_keep = fmt_dict
                 
                 # Convert Python lists to fixed-length NumPy arrays
                 strlen = 256
@@ -314,14 +347,85 @@ class Evolve(object):
                 he_eep_np = utils.to_f2py_str_array(he_eep_tracks)
                 met_np = utils.to_f2py_str_array(met_files)
                 met_he_np = utils.to_f2py_str_array(met_files_he)
+                z_list_h = utils.to_f2py_str_array(met_dict_keep['Z_files'])
+                z_list_he = utils.to_f2py_str_array(met_dict_he_keep['Z_files'])
 
-                #import pdb; pdb.set_trace()
-                # Then pass to Fortran
-                _evolvebin.cosmic_metisse_files.set_file_lists_from_python(
-                    len(met_np), met_np,
-                    len(met_he_np), met_he_np,
-                    len(h_eep_np), h_eep_np,
-                    len(he_eep_np), he_eep_np
+                # Set the metallicity lists in Fortran
+                _evolvebin.metisse_interface.set_mets(z_list_h, z_list_he)
+
+                # Then pass to Fortran; note that f2py seems to get the number files on its own?
+                _evolvebin.metisse_interface.set_file_lists(
+                    met_np,       # met_files
+                    met_he_np,    # met_he_files
+                    h_eep_np,     # h_tracks
+                    he_eep_np     # he_tracks
+                )
+
+                # Next pass the format dictionaries:
+                _evolvebin.metisse_interface.set_format_controls_h(
+                    read_eep=fmt_dict_keep['read_eep_files'], 
+                    prems=fmt_dict_keep['PreMS_EEP'],
+                    zams=fmt_dict_keep['ZAMS_EEP'], 
+                    iams=fmt_dict_keep['IAMS_EEP'], 
+                    tams=fmt_dict_keep['TAMS_EEP'], 
+                    bgb=fmt_dict_keep['BGB_EEP'],
+                    cheign=fmt_dict_keep['cHeIgnition_EEP'], 
+                    cheburn=fmt_dict_keep['cHeBurn_EEP'], 
+                    ta_cheb=fmt_dict_keep['TA_cHeB_EEP'], 
+                    tpagb=fmt_dict_keep['TPAGB_EEP'], 
+                    ccburn=fmt_dict_keep['cCBurn_EEP'], 
+                    postagb=fmt_dict_keep['post_AGB_EEP'],
+                    initeep=fmt_dict_keep['Initial_EEP'], 
+                    finaleep=fmt_dict_keep['Final_EEP'], 
+                    fixtrack=fmt_dict_keep['fix_track'], 
+                    loweep=fmt_dict_keep['low_mass_final_eep'], 
+                    higheep=fmt_dict_keep['high_mass_final_eep'],
+                    age_col=fmt_dict_keep['age_colname'],
+                    mass_col=fmt_dict_keep['mass_colname'],
+                    logl_col=fmt_dict_keep['log_L_colname'],
+                    logt_col=fmt_dict_keep['log_T_colname'],
+                    logr_col=fmt_dict_keep['log_R_colname'],
+                    he_mass_col=fmt_dict_keep['he_core_mass'],
+                    co_mass_col=fmt_dict_keep['co_core_mass'],
+                    he_radius_col=fmt_dict_keep['he_core_radius'],
+                    co_radius_col=fmt_dict_keep['co_core_radius'],
+                    mass_env_col=fmt_dict_keep['mass_conv_envelope'],
+                    radius_env_col=fmt_dict_keep['radius_conv_envelope'],
+                    logtc_col=fmt_dict_keep['log_Tc'],
+                    he4_col=fmt_dict_keep['He4_mass_frac'],
+                    c12_col=fmt_dict_keep['c12_mass_frac'],
+                    o16_col=fmt_dict_keep['o16_mass_frac']
+                )
+
+             # Next pass the format dictionaries:
+                _evolvebin.metisse_interface.set_format_controls_he(
+                    read_eep=fmt_dict_he_keep['read_eep_files'], 
+                    bgb=fmt_dict_he_keep['BGB_EEP'],
+                    cheburn=fmt_dict_he_keep['cHeBurn_EEP'], 
+                    ta_cheb=fmt_dict_he_keep['TA_cHeB_EEP'], 
+                    tpagb=fmt_dict_he_keep['TPAGB_EEP'], 
+                    ccburn=fmt_dict_he_keep['cCBurn_EEP'], 
+                    postagb=fmt_dict_he_keep['post_AGB_EEP'],
+                    initeep=fmt_dict_he_keep['Initial_EEP'], 
+                    finaleep=fmt_dict_he_keep['Final_EEP'], 
+                    fixtrack=fmt_dict_he_keep['fix_track'], 
+                    loweep=fmt_dict_he_keep['low_mass_final_eep'], 
+                    higheep=fmt_dict_he_keep['high_mass_final_eep'],
+                    age_col=fmt_dict_he_keep['age_colname'],
+                    mass_col=fmt_dict_he_keep['mass_colname'],
+                    logl_col=fmt_dict_he_keep['log_L_colname'],
+                    logt_col=fmt_dict_he_keep['log_T_colname'],
+                    logr_col=fmt_dict_he_keep['log_R_colname'],
+                    he_mass_col=fmt_dict_he_keep['he_core_mass'],
+                    co_mass_col=fmt_dict_he_keep['co_core_mass'],
+                    he_radius_col=fmt_dict_he_keep['he_core_radius'],
+                    co_radius_col=fmt_dict_he_keep['co_core_radius'],
+                    mass_env_col=fmt_dict_he_keep['mass_conv_envelope'],
+                    radius_env_col=fmt_dict_he_keep['radius_conv_envelope'],
+                    logtc_col=fmt_dict_he_keep['log_Tc'],
+                    he4_col=fmt_dict_he_keep['He4_mass_frac'],
+                    c12_col=fmt_dict_he_keep['c12_mass_frac'],
+                    o16_col=fmt_dict_he_keep['o16_mass_frac']
                 )
 
 

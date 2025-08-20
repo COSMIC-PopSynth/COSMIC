@@ -46,7 +46,7 @@ lib_source = [
     'src/cosmic/src/hrdiag.f',
     'src/cosmic/src/star.f',
     'src/cosmic/src/zcnsts.f',
-    'src/cosmic/src/cosmic_metisse_files.f90',
+    'src/cosmic/src/metisse_interface.f90',
     'src/cosmic/src/SSE/SSE_deltat.f',
     'src/cosmic/src/SSE/SSE_mlwind.f',
     'src/cosmic/src/SSE/SSE_hrdiag.f',
@@ -81,7 +81,7 @@ endif
 
 f2py_source = custom_target(
     'evolvebin-target',
-    input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f', 'src/cosmic/src/cosmic_metisse_files.f90'],
+    input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f', 'src/cosmic/src/metisse_interface.f90'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f', '_evolvebin-f2pywrappers2.f90'],
     command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower']
 )

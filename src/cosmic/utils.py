@@ -30,6 +30,8 @@ import json
 import itertools
 import os.path
 import glob
+import re
+from pathlib import Path
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -1956,23 +1958,204 @@ def get_METISSE_files(path_to_tracks, path_to_he_tracks):
     return h_eep_tracks, he_eep_tracks, met_files, met_files_he
 
 
-def to_f2py_str_array(pylist):
+def read_metallicity_and_format(met_file_path):
     """
-    Convert a Python list of strings to a 1D NumPy array of fixed-length strings
-    suitable for passing to an F2PY-wrapped Fortran subroutine.
+    Read a metallicity namelist and its associated format file.
+
+    Parameters
+    ----------
+    met_file_path : str or Path
+        Path to the metallicity file (*.in).
+
+    Returns
+    -------
+    met_dict : dict
+        Dictionary containing metallicity options, e.g., 
+        'eep_tracks_dir', 'Z_files', 'format_file', etc. Paths are converted to Path objects.
+    fmt_dict : dict
+        Dictionary containing format file options, e.g., column names, EEP stages, flags.
+
+    Notes
+    -----
+    - Booleans (.true./.false.) are converted to Python True/False.
+    - Fortran-style scientific notation with 'd' (e.g., 1.23d-04) is converted to float.
+    - Strings in quotes are stripped of the quotes.
+    - Stops parsing at the Fortran namelist terminator '/'.
+    """
+    met_file_path = Path(met_file_path)
     
+    # --- Read metallicity file ---
+    met_dict = {}
+    with open(met_file_path, 'r') as f:
+        for line in f:
+            line = line.split('!')[0].strip()  # remove comments
+            if not line:
+                continue
+            if line == '/':
+                break
+            m = re.match(r'(\w+)\s*=\s*(.*)', line)
+            if m:
+                key, value = m.groups()
+                value = value.strip()
+                # Convert numbers
+                try:
+                    value_num = float(value.replace('d','e').replace('D','e'))
+                    met_dict[key] = value_num
+                except ValueError:
+                    met_dict[key] = value.strip("'\"")  # keep strings
+    
+    # Convert paths to Path objects relative to metallicity file
+    if 'eep_tracks_dir' in met_dict:
+        met_dict['eep_tracks_dir'] = met_file_path.parent / met_dict['eep_tracks_dir']
+    if 'format_file' in met_dict:
+        met_dict['format_file'] = met_file_path.parent / met_dict['format_file']
+    
+    # --- Read format file ---
+    fmt_dict = {}
+    format_file_path = met_dict['format_file']
+    with open(format_file_path, 'r') as f:
+        for line in f:
+            line = line.split('!')[0].strip()
+            if not line:
+                continue
+            if line == '/':
+                break
+            m = re.match(r'(\w+)\s*=\s*(.*)', line)
+            if m:
+                key, value = m.groups()
+                value = value.strip()
+                
+                # Booleans
+                if value.lower() == '.true.':
+                    fmt_dict[key] = True
+                elif value.lower() == '.false.':
+                    fmt_dict[key] = False
+                # Strings in quotes
+                elif (value.startswith("'") and value.endswith("'")) or \
+                     (value.startswith('"') and value.endswith('"')):
+                    fmt_dict[key] = value[1:-1]
+                else:
+                    # Numeric: convert Fortran 'd' notation to float
+                    try:
+                        fmt_dict[key] = float(value.replace('d','e').replace('D','e'))
+                        # convert integer-looking floats to int
+                        if fmt_dict[key].is_integer():
+                            fmt_dict[key] = int(fmt_dict[key])
+                    except ValueError:
+                        fmt_dict[key] = value  # fallback
+    
+    return met_dict, fmt_dict
+
+
+def read_eep_file(eep_path):
+    """
+    Read a MIST-format EEP file into a Python dictionary.
+
+    Parameters
+    ----------
+    eep_path : str or Path
+        Path to the EEP file.
+
+    Returns
+    -------
+    track : dict
+        Dictionary containing EEP track data:
+        - 'filename' : str, name of the file
+        - 'initial_mass' : float
+        - 'ntrack' : int
+        - 'neep' : int
+        - 'ncol' : int
+        - 'eep' : np.ndarray, shape (neep,)
+        - 'cols' : list of str, column names
+        - 'tr' : np.ndarray, shape (ncol, ntrack)
+    """
+    eep_path = Path(eep_path)
+    track = {'filename': str(eep_path)}
+
+    with eep_path.open() as f:
+        lines = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+
+    # Composition line: Yinit, Zinit, [Fe/H], [a/Fe], v/vcrit
+    comp_line = lines[0].split()
+    track['initial_Y'] = float(comp_line[0])
+    track['initial_Z'] = float(comp_line[1])
+    track['Fe_div_H'] = float(comp_line[2])
+    track['alpha_div_Fe'] = float(comp_line[3])
+    track['v_div_vcrit'] = float(comp_line[4])
+
+    # Track info: initial_mass, ntrack, neep, ncol, phase, type
+    info_line = lines[1].split()
+    track['initial_mass'] = float(info_line[0])
+    track['ntrack'] = int(info_line[1])
+    track['neep'] = int(info_line[2])
+    track['ncol'] = int(info_line[3])
+    track['phase'] = info_line[4]
+    track['type_label'] = info_line[5]
+
+    # EEP numbers
+    eep_numbers = [int(x) for x in lines[2].split()]
+    track['eep'] = np.array(eep_numbers, dtype=int)
+
+    # Column names (split by whitespace)
+    cols_line = lines[3]
+    track['cols'] = cols_line.split()
+
+    # Remaining lines are track data
+    data_lines = lines[4:]
+    ntrack = track['ntrack']
+    ncol = track['ncol']
+    tr = np.zeros((ncol, ntrack), dtype=float)
+
+    for j, line in enumerate(data_lines):
+        values = [float(x) for x in line.split()]
+        tr[:, j] = values[:ncol]
+
+    track['tr'] = tr
+
+    return track
+
+
+def read_eep_directory(eep_dir, pattern="*.eep"):
+    """
+    Read all EEP files in a directory matching the given pattern.
+
+    Parameters
+    ----------
+    eep_dir : str or Path
+        Directory containing the EEP files.
+    pattern : str
+        Glob pattern to match EEP files (default: "*.eep").
+
+    Returns
+    -------
+    tracks : list of dict
+        List of track dictionaries, each as returned by `read_eep_file`.
+    """
+    eep_dir = Path(eep_dir)
+    eep_files = sorted(eep_dir.glob(pattern))
+    tracks = [read_eep_file(f) for f in eep_files]
+    return tracks
+
+
+def to_f2py_str_array(pylist, maxlen=256):
+    """
+    Convert Python list of strings to NumPy array of fixed-length strings
+    for F2PY.
+
     Parameters
     ----------
     pylist : list of str
-        Python list of strings to convert.
-        
+        Strings to convert.
+    maxlen : int
+        Max length for Fortran strings.
+
     Returns
     -------
     np.ndarray
-        1D array of dtype S{strlen} and shape (len(pylist),)
+        Array of dtype S{maxlen}
     """
-    arr = np.array([str(f) for f in pylist], dtype=object).ravel()
-    return arr  
+    return np.array(pylist, dtype=f"S{maxlen}")
+
 
 class VariableKey(object):
     """
