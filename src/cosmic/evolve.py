@@ -797,7 +797,42 @@ def _evolve_multi_system(f):
         raise
 
 def populate_tracks(track_list, is_he=False):
+    """
+    Populate Fortran track data structures from a list of Python track dictionaries
+    and pass them to the COSMIC Fortran backend.
+
+    Parameters
+    ----------
+    track_list : list of dict
+        Each dictionary must contain the following keys:
+            - 'filename' : str
+            - 'initial_mass' : float
+            - 'initial_Y' : float
+            - 'initial_Z' : float
+            - 'Fe_div_H' : float
+            - 'alpha_div_Fe' : float
+            - 'v_div_vcrit' : float
+            - 'ntrack' : int
+            - 'neep' : int
+            - 'ncol' : int
+            - 'eep' : array-like of shape (neep,)
+            - 'tr' : array-like of shape (ncol, ntrack)
+            - 'cols' : list of str of length ncol
+        Optional key:
+            - 'is_he_track' : bool
+
+    is_he : bool, default=False
+        Indicates whether the tracks are helium-enriched.
+
+    Returns
+    -------
+    None
+        The function calls the Fortran subroutine `_evolvebin.c_m_interface.set_tracks_from_python`
+        and populates the Fortran-side track arrays. The Python-side arrays are used only
+        as temporary buffers for the call.
+    """
     ntracks = len(track_list)
+    col_width = 32  # must match Fortran CHARACTER(len=32)
 
     # Allocate arrays
     filenames = np.array([t['filename'].encode('ascii') for t in track_list], dtype='S256')
@@ -815,20 +850,21 @@ def populate_tracks(track_list, is_he=False):
     # Determine max sizes
     max_neep = max(neep_arr)
     max_ncol = max(ncol_arr)
-    max_ntrack = sum(ntrack_arr)  # total track points across all tracks
+    max_ntrack = sum(ntrack_arr)
 
-    # Prepare 2D arrays for eep and tr data
+    # Prepare 2D arrays
     eep_data = np.zeros((max_neep, ntracks), dtype=np.int32, order='F')
     tr_data = np.zeros((max_ncol, max_ntrack), dtype=np.float64, order='F')
-    col_names = np.zeros((max_ncol, ntracks), dtype='S256', order='F')
+    col_names = np.full((max_ncol, ntracks), b' ' * col_width, dtype=f'S{col_width}', order='F')
 
     # Fill arrays
     offset = 0
     for i, t in enumerate(track_list):
         eep_data[:t['neep'], i] = t['eep']
         tr_data[:t['ncol'], offset:offset+t['ntrack']] = t['tr']
-        for j in range(t['ncol']):
-            col_names[j, i] = t['cols'][j].encode('ascii')
+        for j, col in enumerate(t['cols']):
+            s = col.encode('ascii')[:col_width]      # truncate if too long
+            col_names[j, i] = s.ljust(col_width, b' ')  # pad with spaces
         offset += t['ntrack']
 
     # Call Fortran
@@ -838,6 +874,7 @@ def populate_tracks(track_list, is_he=False):
         ntrack_arr, neep_arr, ncol_arr, is_he_arr,
         eep_data, tr_data, col_names, is_he
     )
+
     return None 
 
 

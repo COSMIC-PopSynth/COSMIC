@@ -1934,10 +1934,13 @@ def get_METISSE_files(path_to_tracks, path_to_he_tracks):
         List of paths to the METISSE He metallicity files for helium trakcs
     """
     import os
+    
+    path_to_tracks = Path(path_to_tracks)
+    path_to_he_tracks = Path(path_to_he_tracks)
 
     # first find all the EEPs in the specified directories
-    eep_dir = path_to_tracks+"/eeps/"
-    he_eep_dir = path_to_he_tracks+"/eeps/"
+    eep_dir = path_to_tracks / "eeps/"
+    he_eep_dir = path_to_he_tracks / "eeps/"
     h_eep_tracks = [os.path.join(eep_dir, f) for f in os.listdir(eep_dir) if f.endswith("data.eep")]
     he_eep_tracks = [os.path.join(he_eep_dir, f) for f in os.listdir(he_eep_dir) if f.endswith("data.eep")]
 
