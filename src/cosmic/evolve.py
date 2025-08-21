@@ -818,9 +818,9 @@ def populate_tracks(track_list, is_he=False):
     max_ntrack = sum(ntrack_arr)  # total track points across all tracks
 
     # Prepare 2D arrays for eep and tr data
-    eep_data = np.empty((max_neep, ntracks), dtype=np.int32)
-    tr_data = np.empty((max_ncol, max_ntrack), dtype=np.float64)
-    col_names = np.empty((max_ncol, ntracks), dtype='S256')
+    eep_data = np.zeros((max_neep, ntracks), dtype=np.int32, order='F')
+    tr_data = np.zeros((max_ncol, max_ntrack), dtype=np.float64, order='F')
+    col_names = np.zeros((max_ncol, ntracks), dtype='S256', order='F')
 
     # Fill arrays
     offset = 0

@@ -321,10 +321,10 @@ contains
             allocate(tr_data_h_in(max_ncol, max_points)); tr_data_h_in = tr_data
             if (allocated(col_names_h_in)) deallocate(col_names_h_in)
             allocate(col_names_h_in(max_ncol, ntracks)); col_names_h_in = col_names
-    
         end if
 
-end subroutine set_tracks_from_python
+    end subroutine set_tracks_from_python
+
 
 
 
