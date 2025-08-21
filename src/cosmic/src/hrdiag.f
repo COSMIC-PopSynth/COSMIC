@@ -11,7 +11,6 @@
       real*8 r,lum,mc,rc,menv,renv,k2,mcx
       
       if (using_METISSE.eq.1) then
-          WRITE(*,*) 'Calling METISSE_hrdiag'
           CALL METISSE_hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,
      &                  mcx,id)

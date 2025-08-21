@@ -1,4 +1,4 @@
-module metisse_interface
+module c_m_interface
     implicit none
     integer, parameter :: f2py_strlen = 256
 
@@ -328,4 +328,4 @@ end subroutine set_tracks_from_python
 
 
 
-end module metisse_interface
+end module c_m_interface

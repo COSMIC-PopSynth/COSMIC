@@ -342,7 +342,6 @@ class Evolve(object):
                         fmt_dict_he_keep = fmt_dict
                 
                 # Convert Python lists to fixed-length NumPy arrays
-                strlen = 256
                 h_eep_np = utils.to_f2py_str_array(h_eep_tracks)
                 he_eep_np = utils.to_f2py_str_array(he_eep_tracks)
                 met_np = utils.to_f2py_str_array(met_files)
@@ -351,10 +350,10 @@ class Evolve(object):
                 z_list_he = utils.to_f2py_str_array(met_dict_he_keep['Z_files'])
 
                 # Set the metallicity lists in Fortran
-                _evolvebin.metisse_interface.set_mets(z_list_h, z_list_he)
+                _evolvebin.c_m_interface.set_mets(z_list_h, z_list_he)
 
                 # Then pass to Fortran; note that f2py seems to get the number files on its own?
-                _evolvebin.metisse_interface.set_file_lists(
+                _evolvebin.c_m_interface.set_file_lists(
                     met_np,       # met_files
                     met_he_np,    # met_he_files
                     h_eep_np,     # h_tracks
@@ -362,7 +361,7 @@ class Evolve(object):
                 )
 
                 # Next pass the format dictionaries:
-                _evolvebin.metisse_interface.set_format_controls_h(
+                _evolvebin.c_m_interface.set_format_controls_h(
                     read_eep=fmt_dict_keep['read_eep_files'], 
                     prems=fmt_dict_keep['PreMS_EEP'],
                     zams=fmt_dict_keep['ZAMS_EEP'], 
@@ -398,7 +397,7 @@ class Evolve(object):
                 )
 
                 # Next pass the format dictionaries:
-                _evolvebin.metisse_interface.set_format_controls_he(
+                _evolvebin.c_m_interface.set_format_controls_he(
                     read_eep=fmt_dict_he_keep['read_eep_files'], 
                     bgb=fmt_dict_he_keep['BGB_EEP'],
                     cheburn=fmt_dict_he_keep['cHeBurn_EEP'], 
@@ -833,7 +832,7 @@ def populate_tracks(track_list, is_he=False):
         offset += t['ntrack']
 
     # Call Fortran
-    _evolvebin.metisse_interface.set_tracks_from_python(
+    _evolvebin.c_m_interface.set_tracks_from_python(
         filenames, initial_mass, initial_Y, initial_Z,
         Fe_div_H, alpha_div_Fe, v_div_vcrit,
         ntrack_arr, neep_arr, ncol_arr, is_he_arr,
