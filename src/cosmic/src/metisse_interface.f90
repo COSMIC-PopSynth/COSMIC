@@ -3,6 +3,43 @@ module metisse_interface
     integer, parameter :: f2py_strlen = 256
 
     ! -----------------------
+    ! Python track info
+    ! -----------------------
+    ! Arrays
+    integer :: ntracks_h_in, max_ncol_h_in, max_neep_h_in, max_points_h_in
+    logical :: is_he_in
+    character(len=f2py_strlen), allocatable :: filenames_h_in(:)
+    real(8), allocatable :: initial_mass_h_in(:)
+    real(8), allocatable :: initial_Y_h_in(:)
+    real(8), allocatable :: initial_Z_h_in(:)
+    real(8), allocatable :: Fe_div_H_h_in(:)
+    real(8), allocatable :: alpha_div_Fe_h_in(:)
+    real(8), allocatable :: v_div_vcrit_h_in(:)
+    integer, allocatable :: ntrack_arr_h_in(:)
+    integer, allocatable :: neep_arr_h_in(:)
+    integer, allocatable :: ncol_arr_h_in(:)
+    logical, allocatable :: is_he_arr_h_in(:)
+    integer, allocatable :: eep_data_h_in(:,:)       ! (max_neep, ntracks)
+    real(8), allocatable :: tr_data_h_in(:,:)       ! (max_ncol, max_points)
+    character(len=f2py_strlen), allocatable :: col_names_h_in(:,:) ! (max_ncol, ntracks)
+
+    ! Similarly for helium tracks
+    integer :: ntracks_he_in, max_ncol_he_in, max_neep_he_in, max_points_he_in
+    character(len=f2py_strlen), allocatable :: filenames_he_in(:)
+    real(8), allocatable :: initial_mass_he_in(:)
+    real(8), allocatable :: initial_Y_he_in(:)
+    real(8), allocatable :: initial_Z_he_in(:)
+    real(8), allocatable :: Fe_div_H_he_in(:)
+    real(8), allocatable :: alpha_div_Fe_he_in(:)
+    real(8), allocatable :: v_div_vcrit_he_in(:)
+    integer, allocatable :: ntrack_arr_he_in(:)
+    integer, allocatable :: neep_arr_he_in(:)
+    integer, allocatable :: ncol_arr_he_in(:)
+    logical, allocatable :: is_he_arr_he_in(:)
+    integer, allocatable :: eep_data_he_in(:,:)       
+    real(8), allocatable :: tr_data_he_in(:,:)       
+    character(len=f2py_strlen), allocatable :: col_names_he_in(:,:) 
+    ! -----------------------
     ! File lists
     ! -----------------------
     character(len=f2py_strlen), allocatable :: py_track_list(:)
@@ -59,6 +96,7 @@ contains
                                      age_col, mass_col, logL_col, logT_col, logR_col, &
                                      he_mass_col, co_mass_col, he_radius_col, co_radius_col, &
                                      mass_env_col, radius_env_col, logTc_col, He4_col, c12_col, o16_col)
+                                     
         logical, intent(in) :: read_eep, fixtrack
         integer, intent(in) :: prems, zams, iams, tams, bgb
         integer, intent(in) :: cHeIgn, cHeBurn, ta_cHeB, tpagb
@@ -152,7 +190,7 @@ contains
     end subroutine set_format_controls_He
 
     ! --------------------------
-    ! File/metallicity routines (unchanged)
+    ! File/metallicity routines 
     ! --------------------------
     subroutine set_file_lists(nmet, met_files, nmet_he, met_he_files, &
                               nh_track, h_tracks, nhe_track, he_tracks)
@@ -191,5 +229,103 @@ contains
         allocate(py_Z_list_he(nmet_he))
         py_Z_list_he = Z_values_he
     end subroutine set_mets
+
+    subroutine set_tracks_from_python(ntracks, max_ncol, max_neep, max_points, filenames, &
+                                      initial_mass, initial_Y, initial_Z, &
+                                      Fe_div_H, alpha_div_Fe, v_div_vcrit, ntrack_arr, &
+                                      neep_arr, ncol_arr, is_he_arr, eep_data, tr_data, col_names, is_he)
+        implicit none
+        integer, intent(in) :: ntracks, max_ncol, max_neep, max_points
+        character(len=*), intent(in) :: filenames(ntracks)
+        real(8), intent(in) :: initial_mass(ntracks), initial_Y(ntracks), initial_Z(ntracks)
+        real(8), intent(in) :: Fe_div_H(ntracks), alpha_div_Fe(ntracks), v_div_vcrit(ntracks)
+        integer, intent(in) :: ntrack_arr(ntracks), neep_arr(ntracks), ncol_arr(ntracks)
+        logical, intent(in) :: is_he_arr(ntracks)
+        integer, intent(in) :: eep_data(max_neep, ntracks)
+        real(8), intent(in) :: tr_data(max_ncol, max_points)
+        character(len=*), intent(in) :: col_names(max_ncol, ntracks)
+        logical, intent(in) :: is_he
+    
+        integer :: i
+    
+        if (is_he) then
+            ! Store in He arrays
+            ntracks_he_in = ntracks
+            max_ncol_he_in = max_ncol
+            max_neep_he_in = max_neep
+            max_points_he_in = max_points
+            is_he_in = is_he
+    
+            if (allocated(filenames_he_in)) deallocate(filenames_he_in)
+            allocate(filenames_he_in(ntracks)); filenames_he_in = filenames
+            if (allocated(initial_mass_he_in)) deallocate(initial_mass_he_in)
+            allocate(initial_mass_he_in(ntracks)); initial_mass_he_in = initial_mass
+            if (allocated(initial_Y_he_in)) deallocate(initial_Y_he_in)
+            allocate(initial_Y_he_in(ntracks)); initial_Y_he_in = initial_Y
+            if (allocated(initial_Z_he_in)) deallocate(initial_Z_he_in)
+            allocate(initial_Z_he_in(ntracks)); initial_Z_he_in = initial_Z
+            if (allocated(Fe_div_H_he_in)) deallocate(Fe_div_H_he_in)
+            allocate(Fe_div_H_he_in(ntracks)); Fe_div_H_he_in = Fe_div_H
+            if (allocated(alpha_div_Fe_he_in)) deallocate(alpha_div_Fe_he_in)
+            allocate(alpha_div_Fe_he_in(ntracks)); alpha_div_Fe_he_in = alpha_div_Fe
+            if (allocated(v_div_vcrit_he_in)) deallocate(v_div_vcrit_he_in)
+            allocate(v_div_vcrit_he_in(ntracks)); v_div_vcrit_he_in = v_div_vcrit
+            if (allocated(ntrack_arr_he_in)) deallocate(ntrack_arr_he_in)
+            allocate(ntrack_arr_he_in(ntracks)); ntrack_arr_he_in = ntrack_arr
+            if (allocated(neep_arr_he_in)) deallocate(neep_arr_he_in)
+            allocate(neep_arr_he_in(ntracks)); neep_arr_he_in = neep_arr
+            if (allocated(ncol_arr_he_in)) deallocate(ncol_arr_he_in)
+            allocate(ncol_arr_he_in(ntracks)); ncol_arr_he_in = ncol_arr
+            if (allocated(is_he_arr_he_in)) deallocate(is_he_arr_he_in)
+            allocate(is_he_arr_he_in(ntracks)); is_he_arr_he_in = is_he_arr
+            if (allocated(eep_data_he_in)) deallocate(eep_data_he_in)
+            allocate(eep_data_he_in(max_neep, ntracks)); eep_data_he_in = eep_data
+            if (allocated(tr_data_he_in)) deallocate(tr_data_he_in)
+            allocate(tr_data_he_in(max_ncol, max_points)); tr_data_he_in = tr_data
+            if (allocated(col_names_he_in)) deallocate(col_names_he_in)
+            allocate(col_names_he_in(max_ncol, ntracks)); col_names_he_in = col_names
+    
+        else
+            ! Store in H arrays
+            ntracks_h_in = ntracks
+            max_ncol_h_in = max_ncol
+            max_neep_h_in = max_neep
+            max_points_h_in = max_points
+            is_he_in = is_he
+    
+            if (allocated(filenames_h_in)) deallocate(filenames_h_in)
+            allocate(filenames_h_in(ntracks)); filenames_h_in = filenames
+            if (allocated(initial_mass_h_in)) deallocate(initial_mass_h_in)
+            allocate(initial_mass_h_in(ntracks)); initial_mass_h_in = initial_mass
+            if (allocated(initial_Y_h_in)) deallocate(initial_Y_h_in)
+            allocate(initial_Y_h_in(ntracks)); initial_Y_h_in = initial_Y
+            if (allocated(initial_Z_h_in)) deallocate(initial_Z_h_in)
+            allocate(initial_Z_h_in(ntracks)); initial_Z_h_in = initial_Z
+            if (allocated(Fe_div_H_h_in)) deallocate(Fe_div_H_h_in)
+            allocate(Fe_div_H_h_in(ntracks)); Fe_div_H_h_in = Fe_div_H
+            if (allocated(alpha_div_Fe_h_in)) deallocate(alpha_div_Fe_h_in)
+            allocate(alpha_div_Fe_h_in(ntracks)); alpha_div_Fe_h_in = alpha_div_Fe
+            if (allocated(v_div_vcrit_h_in)) deallocate(v_div_vcrit_h_in)
+            allocate(v_div_vcrit_h_in(ntracks)); v_div_vcrit_h_in = v_div_vcrit
+            if (allocated(ntrack_arr_h_in)) deallocate(ntrack_arr_h_in)
+            allocate(ntrack_arr_h_in(ntracks)); ntrack_arr_h_in = ntrack_arr
+            if (allocated(neep_arr_h_in)) deallocate(neep_arr_h_in)
+            allocate(neep_arr_h_in(ntracks)); neep_arr_h_in = neep_arr
+            if (allocated(ncol_arr_h_in)) deallocate(ncol_arr_h_in)
+            allocate(ncol_arr_h_in(ntracks)); ncol_arr_h_in = ncol_arr
+            if (allocated(is_he_arr_h_in)) deallocate(is_he_arr_h_in)
+            allocate(is_he_arr_h_in(ntracks)); is_he_arr_h_in = is_he_arr
+            if (allocated(eep_data_h_in)) deallocate(eep_data_h_in)
+            allocate(eep_data_h_in(max_neep, ntracks)); eep_data_h_in = eep_data
+            if (allocated(tr_data_h_in)) deallocate(tr_data_h_in)
+            allocate(tr_data_h_in(max_ncol, max_points)); tr_data_h_in = tr_data
+            if (allocated(col_names_h_in)) deallocate(col_names_h_in)
+            allocate(col_names_h_in(max_ncol, ntracks)); col_names_h_in = col_names
+    
+        end if
+
+end subroutine set_tracks_from_python
+
+
 
 end module metisse_interface

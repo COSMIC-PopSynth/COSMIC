@@ -2048,76 +2048,68 @@ def read_metallicity_and_format(met_file_path):
 
 
 def read_eep_file(eep_path):
-    """
-    Read a MIST-format EEP file into a Python dictionary.
-
-    Parameters
-    ----------
-    eep_path : str or Path
-        Path to the EEP file.
-
-    Returns
-    -------
-    track : dict
-        Dictionary containing EEP track data:
-        - 'filename' : str, name of the file
-        - 'initial_mass' : float
-        - 'ntrack' : int
-        - 'neep' : int
-        - 'ncol' : int
-        - 'eep' : np.ndarray, shape (neep,)
-        - 'cols' : list of str, column names
-        - 'tr' : np.ndarray, shape (ncol, ntrack)
-    """
-    eep_path = Path(eep_path)
-    track = {'filename': str(eep_path)}
+    track = {}
+    track['filename'] = str(eep_path)
 
     with eep_path.open() as f:
-        lines = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+        # Read lines sequentially to mimic Fortran
+        version_line = f.readline()
+        track['version_string'] = version_line[25:33].strip()  # 25x,a8
 
-    # Composition line: Yinit, Zinit, [Fe/H], [a/Fe], v/vcrit
-    comp_line = lines[0].split()
-    track['initial_Y'] = float(comp_line[0])
-    track['initial_Z'] = float(comp_line[1])
-    track['Fe_div_H'] = float(comp_line[2])
-    track['alpha_div_Fe'] = float(comp_line[3])
-    track['v_div_vcrit'] = float(comp_line[4])
+        rev_line = f.readline()
+        track['MESA_revision_number'] = int(rev_line[25:33].strip())  # 25x,i8
 
-    # Track info: initial_mass, ntrack, neep, ncol, phase, type
-    info_line = lines[1].split()
-    track['initial_mass'] = float(info_line[0])
-    track['ntrack'] = int(info_line[1])
-    track['neep'] = int(info_line[2])
-    track['ncol'] = int(info_line[3])
-    track['phase'] = info_line[4]
-    track['type_label'] = info_line[5]
+        f.readline()  # comment line
+        f.readline()  # comment line
 
-    # EEP numbers
-    eep_numbers = [int(x) for x in lines[2].split()]
-    track['eep'] = np.array(eep_numbers, dtype=int)
+        # Composition line
+        comp_line = f.readline()
+        values = comp_line.split()
+        track['initial_Y'] = float(values[1])
+        track['initial_Z'] = float(values[2])
+        track['Fe_div_H'] = float(values[3])
+        track['alpha_div_Fe'] = float(values[4])
+        track['v_div_vcrit'] = float(values[5])
 
-    # Column names (split by whitespace)
-    cols_line = lines[3]
-    track['cols'] = cols_line.split()
+        f.readline()  # comment line
+        f.readline()  # comment line
 
-    # Remaining lines are track data
-    data_lines = lines[4:]
-    ntrack = track['ntrack']
-    ncol = track['ncol']
-    tr = np.zeros((ncol, ntrack), dtype=float)
+        # Track info line
+        info_line = f.readline()
+        track['initial_mass'] = float(info_line[2:18].strip())
+        track['ntrack'] = int(info_line[18:26].strip())
+        track['neep'] = int(info_line[26:34].strip())
+        track['ncol'] = int(info_line[34:42].strip())
+        track['phase_info'] = info_line[42:50].strip()
+        track['type_label'] = info_line[50:65].strip()
 
-    for j, line in enumerate(data_lines):
-        values = [float(x) for x in line.split()]
-        tr[:, j] = values[:ncol]
+        # EEP lines
+        eep_line = f.readline()
+        track['eep'] = np.array([int(x) for x in eep_line.split()[2:]], dtype=int)
 
-    track['tr'] = tr
+        f.readline()  # comment line
+        f.readline()  # column numbers line
+
+        # Column names line
+        cols_line = f.readline()
+        track['cols'] = cols_line.split()[1:]  # list of strings start at 1 to skip # symbol
+
+        # track data
+        tr = np.zeros((track['ncol'], track['ntrack']), dtype=float)
+        for j in range(track['ntrack']):
+            data_line = f.readline()
+            values = [float(x) for x in data_line.split()]
+            tr[:, j] = values[:track['ncol']]
+        track['tr'] = tr
 
     return track
 
 
+
 def read_eep_directory(eep_dir, pattern="*.eep"):
     """
-    Read all EEP files in a directory matching the given pattern.
+    Read all EEP files in a directory matching the given pattern and sort by
+    the leading number in the filename.
 
     Parameters
     ----------
@@ -2129,11 +2121,19 @@ def read_eep_directory(eep_dir, pattern="*.eep"):
     Returns
     -------
     tracks : list of dict
-        List of track dictionaries, each as returned by `read_eep_file`.
+        List of track dictionaries, each as returned by `read_eep_file`,
+        sorted by the leading number in the filename.
     """
     eep_dir = Path(eep_dir)
-    eep_files = sorted(eep_dir.glob(pattern))
-    tracks = [read_eep_file(f) for f in eep_files]
+    eep_files = list(eep_dir.glob(pattern))
+
+    # Sort files by the leading number in the filename
+    def extract_mass(f):
+        # Get the first integer before the first underscore
+        return int(f.stem.split('_')[0])
+
+    eep_files_sorted = sorted(eep_files, key=extract_mass)
+    tracks = [read_eep_file(f) for f in eep_files_sorted]
     return tracks
 
 

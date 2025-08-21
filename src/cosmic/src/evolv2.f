@@ -424,8 +424,10 @@ component.
          rc = radc(k)
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
      &                                                          dtm,k)
+         WRITE(*,*) 'star 427: ',kstar(k), mass(k), tm, tn
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
+         WRITE(*,*) 'hrdiag 430: ',kstar(k), mass(k), rm, lum, mc, rc
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -4670,8 +4672,7 @@ component.
           bpp_index_out = jp
           kick_info_out = kick_info
       endif
-      if (using_METISSE.eq.1) call dealloc_track()
-      
+      if (using_METISSE.eq.1) call dealloc_track()      
 *
 
       END SUBROUTINE evolv2

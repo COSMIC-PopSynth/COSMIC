@@ -397,7 +397,7 @@ class Evolve(object):
                     o16_col=fmt_dict_keep['o16_mass_frac']
                 )
 
-             # Next pass the format dictionaries:
+                # Next pass the format dictionaries:
                 _evolvebin.metisse_interface.set_format_controls_he(
                     read_eep=fmt_dict_he_keep['read_eep_files'], 
                     bgb=fmt_dict_he_keep['BGB_EEP'],
@@ -428,8 +428,15 @@ class Evolve(object):
                     o16_col=fmt_dict_he_keep['o16_mass_frac']
                 )
 
+                # Finally, load in the EEPs! 
+                tracks_h = utils.read_eep_directory(SSEDict['path_to_tracks'] + '/eeps/')
+                _ = populate_tracks(tracks_h, is_he=False)
 
-            elif SSEDict['stellar_engine'] == 'sse':
+                tracks_he = utils.read_eep_directory(SSEDict['path_to_he_tracks'] + '/eeps/')
+                _ = populate_tracks(tracks_he, is_he=True)
+
+
+            elif SSEDict['stellar_engine'] == 'sse':    
                 kwargs1 = {'stellar_engine': 'sse'}
                 initialbinarytable = initialbinarytable.assign(**kwargs1)
                 for col in ['path_to_tracks', 'path_to_he_tracks']:
@@ -789,3 +796,51 @@ def _evolve_multi_system(f):
     except Exception as e:
         print(e)
         raise
+
+def populate_tracks(track_list, is_he=False):
+    ntracks = len(track_list)
+
+    # Allocate arrays
+    filenames = np.array([t['filename'].encode('ascii') for t in track_list], dtype='S256')
+    initial_mass = np.array([t['initial_mass'] for t in track_list], dtype=np.float64)
+    initial_Y = np.array([t['initial_Y'] for t in track_list], dtype=np.float64)
+    initial_Z = np.array([t['initial_Z'] for t in track_list], dtype=np.float64)
+    Fe_div_H = np.array([t['Fe_div_H'] for t in track_list], dtype=np.float64)
+    alpha_div_Fe = np.array([t['alpha_div_Fe'] for t in track_list], dtype=np.float64)
+    v_div_vcrit = np.array([t['v_div_vcrit'] for t in track_list], dtype=np.float64)
+    ntrack_arr = np.array([t['ntrack'] for t in track_list], dtype=np.int32)
+    neep_arr = np.array([t['neep'] for t in track_list], dtype=np.int32)
+    ncol_arr = np.array([t['ncol'] for t in track_list], dtype=np.int32)
+    is_he_arr = np.array([t.get('is_he_track', is_he) for t in track_list], dtype=np.bool_)
+
+    # Determine max sizes
+    max_neep = max(neep_arr)
+    max_ncol = max(ncol_arr)
+    max_ntrack = sum(ntrack_arr)  # total track points across all tracks
+
+    # Prepare 2D arrays for eep and tr data
+    eep_data = np.empty((max_neep, ntracks), dtype=np.int32)
+    tr_data = np.empty((max_ncol, max_ntrack), dtype=np.float64)
+    col_names = np.empty((max_ncol, ntracks), dtype='S256')
+
+    # Fill arrays
+    offset = 0
+    for i, t in enumerate(track_list):
+        eep_data[:t['neep'], i] = t['eep']
+        tr_data[:t['ncol'], offset:offset+t['ntrack']] = t['tr']
+        for j in range(t['ncol']):
+            col_names[j, i] = t['cols'][j].encode('ascii')
+        offset += t['ntrack']
+
+    # Call Fortran
+    _evolvebin.metisse_interface.set_tracks_from_python(
+        filenames, initial_mass, initial_Y, initial_Z,
+        Fe_div_H, alpha_div_Fe, v_div_vcrit,
+        ntrack_arr, neep_arr, ncol_arr, is_he_arr,
+        eep_data, tr_data, col_names, is_he
+    )
+    return None 
+
+
+    
+    
