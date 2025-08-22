@@ -23,9 +23,10 @@ jobs:
     - name: Switch METISSE submodule to develop branch
       run: |
         cd src/cosmic/src/METISSE 
-        git fetch origin develop
-        git checkout develop
-        git pull origin develop
+        git remote set-url origin https://github.com/katiebreivik/METISSE
+        git fetch origin cosmic-interface
+        git checkout cosmic-interface
+        git pull origin cosmic-interface
         cd $GITHUB_WORKSPACE
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
