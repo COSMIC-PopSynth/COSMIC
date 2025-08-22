@@ -62,7 +62,12 @@ __all__ = [
     "get_FeH_from_Z",
     "get_binfrac_of_Z",
     "get_porb_norm",
-    "get_met_dep_binfrac"
+    "get_met_dep_binfrac",
+    "get_METISSE_files",
+    "read_metallicity_and_format",
+    "read_eep_file",
+    "read_eep_directory",
+    "to_f2py_str_array"
 ]
 
 
