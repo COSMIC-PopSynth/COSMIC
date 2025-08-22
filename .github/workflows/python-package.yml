@@ -25,7 +25,7 @@ jobs:
         cd src/cosmic/src/METISSE 
         git fetch origin develop
         git checkout develop
-        git pull origin developi
+        git pull origin develop
         cd $GITHUB_WORKSPACE
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
