@@ -1,2 +1,59 @@
-gfortran -coverage -fprofile-arcs -ftest-coverage -O0 src/cosmic/src/hrdiag_remnant.f src/cosmic/src/assign_remnant.f src/cosmic/src/benchmarkevolv2.f src/cosmic/src/corerd.f src/cosmic/src/comenv.f src/cosmic/src/dgcore.f src/cosmic/src/evolv2.f src/cosmic/src/gntage.f src/cosmic/src/instar.f src/cosmic/src/kick.f src/cosmic/src/mix.f src/cosmic/src/mrenv.f src/cosmic/src/ran3.f src/cosmic/src/rl.f src/cosmic/src/concatkstars.f src/cosmic/src/comprad.f src/cosmic/src/bpp_array.f src/cosmic/src/checkstate.f src/cosmic/src/deltat.f src/cosmic/src/mlwind.f src/cosmic/src/hrdiag.f src/cosmic/src/star.f src/cosmic/src/zcnsts.f src/cosmic/src/SSE/SSE_deltat.f src/cosmic/src/SSE/SSE_mlwind.f src/cosmic/src/SSE/SSE_hrdiag.f src/cosmic/src/SSE/SSE_star.f src/cosmic/src/SSE/SSE_zcnsts.f src/cosmic/src/SSE/SSE_zfuncs.f src/cosmic/src/SSE/SSE_gntage.f src/cosmic/src/METISSE/src/track_support.f90 src/cosmic/src/METISSE/src/z_support.f90 src/cosmic/src/METISSE/src/sse_support.f90 src/cosmic/src/METISSE/src/remnant_support.f90 src/cosmic/src/METISSE/src/interp_support.f90 src/cosmic/src/METISSE/src/METISSE_gntage.f90 src/cosmic/src/METISSE/src/c_m_interface.f90 src/cosmic/src/METISSE/src/METISSE_deltat.f90 src/cosmic/src/METISSE/src/METISSE_mlwind.f90 src/cosmic/src/METISSE/src/METISSE_hrdiag.f90 src/cosmic/src/METISSE/src/METISSE_star.f90 src/cosmic/src/METISSE/src/METISSE_zcnsts.f90 src/cosmic/src/METISSE/src/comenv_lambda.f90 src/cosmic/src/METISSE/src/METISSE_miscellaneous.f90 src/cosmic/src/METISSE_utils.f90  -o benchmarkevolv2.exe -I src/cosmic/src -Wl,-rpath,${CONDA_PREFIX}/lib
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Directories
+SRC_DIR="src/cosmic/src"
+METISSE_DIR="$SRC_DIR/METISSE/src"
+
+# Compiler flags
+FFLAGS="-coverage -fprofile-arcs -ftest-coverage -O0 -J$SRC_DIR -I$SRC_DIR -Wl,-rpath,${CONDA_PREFIX}/lib"
+
+# Phase 1: Compile METISSE modules in dependency order
+gfortran $FFLAGS -c \
+    $METISSE_DIR/c_m_interface.f90 \
+    $METISSE_DIR/track_support.f90 \
+    $METISSE_DIR/z_support.f90 \
+    $METISSE_DIR/sse_support.f90 \
+    $METISSE_DIR/remnant_support.f90 \
+    $METISSE_DIR/interp_support.f90 \
+    $METISSE_DIR/METISSE_gntage.f90 \
+    $METISSE_DIR/METISSE_deltat.f90 \
+    $METISSE_DIR/METISSE_mlwind.f90 \
+    $METISSE_DIR/METISSE_hrdiag.f90 \
+    $METISSE_DIR/METISSE_star.f90 \
+    $METISSE_DIR/METISSE_zcnsts.f90 \
+    $METISSE_DIR/comenv_lambda.f90 \
+    $METISSE_DIR/METISSE_miscellaneous.f90 \
+    $SRC_DIR/METISSE_utils.f90
+
+# Phase 2: Compile COSMIC and SSE sources + link everything
+gfortran $FFLAGS \
+    $SRC_DIR/hrdiag_remnant.f \
+    $SRC_DIR/assign_remnant.f \
+    $SRC_DIR/benchmarkevolv2.f \
+    $SRC_DIR/corerd.f \
+    $SRC_DIR/comenv.f \
+    $SRC_DIR/dgcore.f \
+    $SRC_DIR/evolv2.f \
+    $SRC_DIR/gntage.f \
+    $SRC_DIR/instar.f \
+    $SRC_DIR/kick.f \
+    $SRC_DIR/mix.f \
+    $SRC_DIR/mrenv.f \
+    $SRC_DIR/ran3.f \
+    $SRC_DIR/rl.f \
+    $SRC_DIR/concatkstars.f \
+    $SRC_DIR/comprad.f \
+    $SRC_DIR/bpp_array.f \
+    $SRC_DIR/checkstate.f \
+    $SRC_DIR/deltat.f \
+    $SRC_DIR/mlwind.f \
+    $SRC_DIR/hrdiag.f \
+    $SRC_DIR/star.f \
+    $SRC_DIR/zcnsts.f \
+    $SRC_DIR/SSE/SSE_*.f \
+    *.o \
+    -o benchmarkevolv2.exe
+
+# Run the benchmark
 ./benchmarkevolv2.exe
