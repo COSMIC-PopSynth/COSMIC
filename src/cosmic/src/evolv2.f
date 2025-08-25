@@ -4670,8 +4670,7 @@ component.
           bpp_index_out = jp
           kick_info_out = kick_info
       endif
-      if (using_METISSE.eq.1) call dealloc_track()
-      
+      if (using_METISSE.eq.1) call dealloc_track()      
 *
 
       END SUBROUTINE evolv2
