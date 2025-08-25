@@ -5,8 +5,8 @@ set -euo pipefail
 SRC_DIR="src/cosmic/src"
 METISSE_DIR="$SRC_DIR/METISSE/src"
 
-# Compiler flags
-FFLAGS="-coverage -fprofile-arcs -ftest-coverage -O0 -J$SRC_DIR -I$SRC_DIR -Wl,-rpath,${CONDA_PREFIX}/lib"
+# Compiler flags (removed rpath to CONDA_PREFIX)
+FFLAGS="-coverage -fprofile-arcs -ftest-coverage -O0 -J$SRC_DIR -I$SRC_DIR"
 
 # Phase 1: Compile METISSE modules in dependency order
 gfortran $FFLAGS -c \
