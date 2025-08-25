@@ -20,14 +20,6 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0  # needed for full submodule history
-    - name: Switch METISSE submodule to develop branch
-      run: |
-        cd src/cosmic/src/METISSE 
-        git remote set-url origin https://github.com/katiebreivik/METISSE
-        git fetch origin cosmic-interface
-        git checkout cosmic-interface
-        git pull origin cosmic-interface
-        cd $GITHUB_WORKSPACE
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
