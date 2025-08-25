@@ -2114,17 +2114,15 @@ def read_eep_file(eep_path):
 
 
 
-def read_eep_directory(eep_dir, pattern="*.eep"):
+def read_eep_directory(eep_files, pattern="*.eep"):
     """
     Read all EEP files in a directory matching the given pattern and sort by
     the leading number in the filename.
 
     Parameters
     ----------
-    eep_dir : str or Path
-        Directory containing the EEP files.
-    pattern : str
-        Glob pattern to match EEP files (default: "*.eep").
+    eep_files : list
+        list of all files in the eep directory
 
     Returns
     -------
@@ -2132,8 +2130,8 @@ def read_eep_directory(eep_dir, pattern="*.eep"):
         List of track dictionaries, each as returned by `read_eep_file`,
         sorted by the leading number in the filename.
     """
-    eep_dir = Path(eep_dir)
-    eep_files = list(eep_dir.glob(pattern))
+    # Convert all to Path objects
+    eep_files = [Path(f) for f in eep_files]
 
     # Sort files by the leading number in the filename
     def extract_mass(f):
