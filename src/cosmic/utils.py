@@ -1944,19 +1944,9 @@ def get_METISSE_files(path_to_tracks, path_to_he_tracks):
     
     path_to_tracks = Path(path_to_tracks)
     path_to_he_tracks = Path(path_to_he_tracks)
-
-    # first find all the EEPs in the specified directories
-    eep_dir = path_to_tracks / "eeps/"
-    he_eep_dir = path_to_he_tracks / "eeps/"
-    h_eep_tracks = [os.path.join(eep_dir, f) for f in os.listdir(eep_dir) if f.endswith("data.eep")]
-    he_eep_tracks = [os.path.join(he_eep_dir, f) for f in os.listdir(he_eep_dir) if f.endswith("data.eep")]
-
-    if len(h_eep_tracks) == 0:
-        raise ValueError("No METISSE tracks found in the specified path: {0}".format(eep_dir))
-    if len(he_eep_tracks) == 0:
-        raise ValueError("No METISSE He tracks found in the specified path: {0}".format(he_eep_dir))
     
-    # Next also get the Metallicity files
+    h_eep_tracks = []
+    he_eep_tracks = []
     met_files = [os.path.join(path_to_tracks, f) for f in os.listdir(path_to_tracks) if f.endswith("metallicity.in")]
     met_files_he = [os.path.join(path_to_he_tracks, f) for f in os.listdir(path_to_he_tracks) if f.endswith("metallicity.in")]
 
@@ -1964,6 +1954,55 @@ def get_METISSE_files(path_to_tracks, path_to_he_tracks):
         raise ValueError("No METISSE metallicity files found in the specified path: {0}".format(path_to_tracks))
     if len(met_files_he) == 0:
         raise ValueError("No METISSE He metallicity files found in the specified path: {0}".format(path_to_he_tracks))
+    
+    for met in met_files:
+        with open(met, "r") as file:
+            lines = file.read().splitlines()
+        eep_path: str | None = None
+        for l in lines:
+            if (l.lower().find("eep_tracks_dir") != -1):
+                eep_path = l.split("=")[-1].strip()[1:-1]
+                break
+        if eep_path is None: raise ValueError(f"No eep_tracks_dir found in {met}. Is this a valid metallicity file?")
+        if eep_path.startswith(os.path.sep):
+            eep_pattern = os.path.join(eep_path, "*.eep")
+        else:
+            eep_pattern = os.path.join(path_to_tracks, eep_path, "*.eep")
+        eeps = glob.glob(eep_pattern)
+        if len(eeps) == 0:
+            raise ValueError(f"No METISSE tracks found in the specified path: {eep_pattern}")
+        h_eep_tracks.append(eeps.copy())
+    for met in met_files_he:
+        with open(met, "r") as file:
+            lines = file.read().splitlines()
+        eep_path: str | None = None
+        for l in lines:
+            if (l.lower().find("eep_tracks_dir") != -1):
+                eep_path = l.split("=")[-1].strip()[1:-1]
+                break
+        if eep_path is None: raise ValueError(f"No eep_tracks_dir found in {met}. Is this a valid metallicity file?")
+        if eep_path.startswith(os.path.sep):
+            eep_pattern = os.path.join(eep_path, "*.eep")
+        else:
+            eep_pattern = os.path.join(path_to_he_tracks, eep_path, "*.eep")
+        eeps = glob.glob(eep_pattern)
+        if len(eeps) == 0:
+            raise ValueError(f"No METISSE tracks found in the specified path: {eep_pattern}")
+        he_eep_tracks.append(eeps.copy())
+    
+    # first find all the EEPs in the specified directories
+    #eep_dir = path_to_tracks #/ "eeps/"
+    #he_eep_dir = path_to_he_tracks #/ "eeps/"
+    #h_eep_tracks = glob.glob(os.path.join(eep_dir, "*.eep"), recursive=True) #[os.path.join(eep_dir, f) for f in os.listdir(eep_dir) if f.endswith("data.eep")]
+    #he_eep_tracks = glob.glob(os.path.join(he_eep_dir, "*.eep"), recursive=True) #[os.path.join(he_eep_dir, f) for f in os.listdir(he_eep_dir) if f.endswith("data.eep")]
+
+    if len(h_eep_tracks) == 0:
+        raise ValueError("No METISSE tracks found in the specified path.") #:{0}".format(eep_dir))
+    if len(he_eep_tracks) == 0:
+        raise ValueError("No METISSE He tracks found in the specified path.")#:{0}".format(he_eep_dir))
+    
+    # Next also get the Metallicity files
+
     
     return h_eep_tracks, he_eep_tracks, met_files, met_files_he
 
