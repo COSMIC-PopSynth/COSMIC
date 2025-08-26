@@ -32,6 +32,7 @@ import warnings
 import os
 import sys
 import tqdm
+from pathlib import Path
 try:
     import multiprocessing
     multiprocessing.set_start_method("fork")
@@ -706,11 +707,11 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z):
     
     Parameters
     ----------
-    path_to_tracks : str
+    path_to_tracks : str or Path
         Direct path to where all single star data and metallicty/format files are stored
         for hydrogen-rich stars
     
-    path_to_tracks : str
+    path_to_tracks : str or Path
         Direct path to where all single star data and metallicty/format files are stored
         for hydrogen-rich stars
 
@@ -722,6 +723,10 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z):
         None
     
     """
+
+    # convert to Path
+    path_to_tracks = Path(path_to_tracks)
+    path_to_he_tracks = Path(path_to_he_tracks)
 
     # load in the METISSE files
     l = utils.get_METISSE_files(path_to_tracks, path_to_he_tracks)
