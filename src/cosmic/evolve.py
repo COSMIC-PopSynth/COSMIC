@@ -248,6 +248,7 @@ class Evolve(object):
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
         SSEDict = kwargs.pop('SSEDict', {})
+        metisse_metallicity_tolerance = kwargs.pop('metisse_metallicity_tolerance', 1e-6)
 
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
@@ -315,7 +316,8 @@ class Evolve(object):
                 _ = set_metisse_interface(
                     path_to_tracks=SSEDict['path_to_tracks'], 
                     path_to_he_tracks=SSEDict['path_to_he_tracks'],
-                    IBT_Z=initialbinarytable['metallicity'].iloc[0]
+                    IBT_Z=initialbinarytable['metallicity'].iloc[0],
+                    Z_tolerance=metisse_metallicity_tolerance
                     )
 
 
@@ -345,7 +347,8 @@ class Evolve(object):
             _ = set_metisse_interface(
                     path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
                     path_to_he_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
-                    IBT_Z=initialbinarytable['metallicity'].iloc[0]
+                    IBT_Z=initialbinarytable['metallicity'].iloc[0],
+                    Z_tolerance=metisse_metallicity_tolerance
                     )
             
 
@@ -702,7 +705,7 @@ def _evolve_multi_system(f):
         raise
 
 
-def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z):
+def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance):
     """load in the metallicity, format, and eep files
     
     Parameters
@@ -737,30 +740,41 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z):
     met_dict_keep = None
     fmt_dict_keep = None
     mets = []
-    for m in met_files:
+    Z_idx = -1
+    for i, m in enumerate(met_files):
         met_dict, fmt_dict = utils.read_metallicity_and_format(m)
         mets.append(met_dict['Z_files'])
-        if met_dict['Z_files'] == IBT_Z:
+        if np.abs(met_dict['Z_files'] - IBT_Z) < Z_tolerance:
             met_dict_keep = met_dict
             fmt_dict_keep = fmt_dict
+            Z_idx = i
     if met_dict_keep is None: 
         raise ValueError("No metallicity file found that matches the metallicity "
                          "in the initial binary table. Please check the metallicity "
                          "and supply one that is in this list: {0}".format(mets))
     
-    # loop over the hydrogen metallicity files to find the one that is the closest 
+    # loop over the helium metallicity files to find the one that is the closest 
     # to the metallicity in the initial binary table
     met_dict_he_keep = None
     fmt_dict_he_keep = None
-    for m in met_files_he:
+    Z_idx_he = -1
+    for i, m in enumerate(met_files_he):
         met_dict, fmt_dict = utils.read_metallicity_and_format(m)
-        if met_dict['Z_files'] == IBT_Z:
+        if np.abs(met_dict['Z_files'] - IBT_Z) < Z_tolerance:
             met_dict_he_keep = met_dict
             fmt_dict_he_keep = fmt_dict
+            Z_idx_he = i
+
+    if Z_idx == -1 or Z_idx_he == -1:
+        raise ValueError(f"No metallicities found in range for {IBT_Z}!")
     
     # Convert Python lists to fixed-length NumPy arrays
-    h_eep_np = utils.to_f2py_str_array(h_eep_tracks)
-    he_eep_np = utils.to_f2py_str_array(he_eep_tracks)
+    h_eep_np = []
+    he_eep_np = []
+    for ls in h_eep_tracks:
+        h_eep_np.append(utils.to_f2py_str_array(ls))
+    for ls in he_eep_tracks:
+        he_eep_np.append(utils.to_f2py_str_array(ls))
     met_np = utils.to_f2py_str_array(met_files)
     met_he_np = utils.to_f2py_str_array(met_files_he)
     z_list_h = utils.to_f2py_str_array(met_dict_keep['Z_files'])
@@ -773,8 +787,8 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z):
     _evolvebin.c_m_interface.set_file_lists(
         met_np,       # met_files
         met_he_np,    # met_he_files
-        h_eep_np,     # h_tracks
-        he_eep_np     # he_tracks
+        h_eep_np[Z_idx],     # h_tracks
+        he_eep_np[Z_idx_he]    # he_tracks
     )
 
     # Next pass the format dictionaries:
@@ -845,10 +859,10 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z):
     )
 
     # Finally, load in the EEPs! 
-    tracks_h = utils.read_eep_directory(h_eep_tracks)
+    tracks_h = utils.read_eep_directory(h_eep_tracks[Z_idx])
     _ = populate_tracks(tracks_h, is_he=False)
 
-    tracks_he = utils.read_eep_directory(he_eep_tracks)
+    tracks_he = utils.read_eep_directory(he_eep_tracks[Z_idx_he])
     _ = populate_tracks(tracks_he, is_he=True)
 
     return None
