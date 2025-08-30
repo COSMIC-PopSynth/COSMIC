@@ -1182,7 +1182,7 @@ class Sample(object):
         from cosmic import _evolvebin
         from cosmic.evolve import set_metisse_interface
 
-        metisse_metallicity_tolerance = kwargs.get("metisse_metallicity_tolerance", 1e-6)
+        z_accuracy_limit = kwargs.get("z_accuracy_limit", 1e-2)
 
         max_array_size = 100000
         total_length = len(mass)
@@ -1209,7 +1209,7 @@ class Sample(object):
                 path_to_tracks=SSEDict['path_to_tracks'], 
                 path_to_he_tracks=SSEDict['path_to_he_tracks'],
                 IBT_Z=metallicity,
-                Z_tolerance=metisse_metallicity_tolerance
+                z_accuracy_limit=z_accuracy_limit
                 )
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine")

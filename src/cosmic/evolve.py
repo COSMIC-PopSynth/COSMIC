@@ -249,7 +249,7 @@ class Evolve(object):
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
         SSEDict = kwargs.pop('SSEDict', {})
-        metisse_metallicity_tolerance = kwargs.pop('metisse_metallicity_tolerance', 1e-6)
+        z_accuracy_limit = kwargs.pop('METISSE_z_accuracy_limit', 1e-2)
 
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
@@ -318,7 +318,7 @@ class Evolve(object):
                     path_to_tracks=SSEDict['path_to_tracks'], 
                     path_to_he_tracks=SSEDict['path_to_he_tracks'],
                     IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    Z_tolerance=metisse_metallicity_tolerance
+                    z_accuracy_limit=z_accuracy_limit
                     )
 
 
@@ -349,7 +349,7 @@ class Evolve(object):
                     path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
                     path_to_he_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
                     IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    Z_tolerance=metisse_metallicity_tolerance
+                    z_accuracy_limit=z_accuracy_limit
                     )
             
 
@@ -714,7 +714,7 @@ def _evolve_multi_system(f):
         raise
 
 
-def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance):
+def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, z_accuracy_limit):
     """load in the metallicity, format, and eep files
     
     Parameters
@@ -753,11 +753,11 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance)
     for i, m in enumerate(met_files):
         met_dict, fmt_dict = utils.read_metallicity_and_format(m)
         mets.append(met_dict['Z_files'])
-        if np.abs(met_dict['Z_files'] - IBT_Z) < Z_tolerance:
+        if abs(met_dict['Z_files'] - IBT_Z)/min(met_dict['Z_files'], IBT_Z) <= z_accuracy_limit:
             met_dict_keep = met_dict
             fmt_dict_keep = fmt_dict
             Z_idx = i
-    if met_dict_keep is None: 
+    if met_dict_keep is None or fmt_dict_keep is None: 
         raise ValueError("No metallicity file found that matches the metallicity "
                          "in the initial binary table. Please check the metallicity "
                          "and supply one that is in this list: {0}".format(mets))
@@ -769,13 +769,14 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance)
     Z_idx_he = -1
     for i, m in enumerate(met_files_he):
         met_dict, fmt_dict = utils.read_metallicity_and_format(m)
-        if np.abs(met_dict['Z_files'] - IBT_Z) < Z_tolerance:
+        if abs(met_dict['Z_files'] - IBT_Z)/min(met_dict['Z_files'], IBT_Z) <= z_accuracy_limit:
             met_dict_he_keep = met_dict
             fmt_dict_he_keep = fmt_dict
             Z_idx_he = i
-
-    if Z_idx == -1 or Z_idx_he == -1:
-        raise ValueError(f"No metallicities found in range for {IBT_Z}!")
+    if met_dict_he_keep is None or fmt_dict_he_keep is None: 
+        raise ValueError("No metallicity file found that matches the metallicity "
+                         "in the initial binary table. Please check the metallicity "
+                         "and supply one that is in this list: {0}".format(mets))
     
     # Convert Python lists to fixed-length NumPy arrays
     h_eep_np = []
@@ -800,6 +801,7 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance)
         he_eep_np[Z_idx_he]    # he_tracks
     )
 
+    assert fmt_dict_keep is not None and fmt_dict_he_keep is not None
     # Next pass the format dictionaries:
     _evolvebin.c_m_interface.set_format_controls_h(
         read_eep=fmt_dict_keep['read_eep_files'], 
