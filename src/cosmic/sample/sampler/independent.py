@@ -307,8 +307,10 @@ def get_independent_sampler(
 
     zsun = kwargs.pop("zsun", 0.02)
 
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
+    # TODO -- figure out how user can pass this
+    Ztol = 1e-6
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict, metisse_metallicity_tolerance=Ztol)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict, metisse_metallicity_tolerance=Ztol)
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
@@ -1166,7 +1168,7 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self ,mass, metallicity, zsun=0.02, SSEDict=None):
+    def set_reff(self ,mass, metallicity, zsun=0.02, SSEDict=None, **kwargs):
         """
         Better way to set the radii from BSE, by calling it directly
 
@@ -1178,7 +1180,9 @@ class Sample(object):
         """
 
         from cosmic import _evolvebin
+        from cosmic.evolve import set_metisse_interface
 
+        z_accuracy_limit = kwargs.get("z_accuracy_limit", 1e-2)
 
         max_array_size = 100000
         total_length = len(mass)
@@ -1200,6 +1204,13 @@ class Sample(object):
             _evolvebin.metissevars.path_to_he_tracks = SSEDict["path_to_he_tracks"]
             _evolvebin.metissevars.z_match_limit = 1e-2
             _evolvebin.metissevars.METISSE_verbose = False
+            
+            _ = set_metisse_interface(
+                path_to_tracks=SSEDict['path_to_tracks'], 
+                path_to_he_tracks=SSEDict['path_to_he_tracks'],
+                IBT_Z=metallicity,
+                z_accuracy_limit=z_accuracy_limit
+                )
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
             

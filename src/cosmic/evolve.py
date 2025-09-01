@@ -32,6 +32,7 @@ import warnings
 import os
 import sys
 import tqdm
+from functools import partial
 from pathlib import Path
 try:
     import multiprocessing
@@ -248,7 +249,7 @@ class Evolve(object):
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
         SSEDict = kwargs.pop('SSEDict', {})
-        metisse_metallicity_tolerance = kwargs.pop('metisse_metallicity_tolerance', 1e-6)
+        z_accuracy_limit = kwargs.pop('METISSE_z_accuracy_limit', 1e-2)
 
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
@@ -317,7 +318,7 @@ class Evolve(object):
                     path_to_tracks=SSEDict['path_to_tracks'], 
                     path_to_he_tracks=SSEDict['path_to_he_tracks'],
                     IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    Z_tolerance=metisse_metallicity_tolerance
+                    z_accuracy_limit=z_accuracy_limit
                     )
 
 
@@ -348,7 +349,7 @@ class Evolve(object):
                     path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
                     path_to_he_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
                     IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    Z_tolerance=metisse_metallicity_tolerance
+                    z_accuracy_limit=z_accuracy_limit
                     )
             
 
@@ -478,6 +479,9 @@ class Evolve(object):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
 
+        # evolve one system to get zpars
+        _, _, _, _, _, zpars = _evolve_single_system(initial_conditions[0], None)
+
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
@@ -493,7 +497,8 @@ class Evolve(object):
                         itr_block = itr_next
                     output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
                 else:
-                    output = list(pool.map(_evolve_single_system, initial_conditions))
+                    evolve_args = partial(_evolve_single_system, zpars=zpars)
+                    output = list(pool.map(evolve_args, initial_conditions))
         else:
             # evolve systems
             if n_per_block > 0:
@@ -507,7 +512,8 @@ class Evolve(object):
                     itr_block = itr_next
                 output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
             else:
-                output = list(pool.map(_evolve_single_system, initial_conditions))
+                evolve_args = partial(_evolve_single_system, zpars=zpars)
+                output = list(pool.map(evolve_args, initial_conditions))
 
         output = np.array(output, dtype=object)
         bpp_arrays = np.vstack(output[:, 1])
@@ -549,7 +555,9 @@ class Evolve(object):
         return bpp, bcm, initialbinarytable, kick_info
 
 
-def _evolve_single_system(f):
+def _evolve_single_system(f, zpars=None):
+    if zpars is None:
+        zpars = np.zeros(20, dtype=float)
     try:
         f["kick_info"] = np.zeros((2, len(KICK_COLUMNS)-1))
         # determine if we already have a compact object, if yes than one SN has already occured
@@ -639,7 +647,7 @@ def _evolve_single_system(f):
         _evolvebin.col.n_col_bcm = f["n_col_bcm"]
         _evolvebin.col.col_inds_bcm = f["col_inds_bcm"]
 
-        [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
+        [zpars, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 
                                                               f["tphysf"], f["dtp"],
@@ -658,7 +666,7 @@ def _evolve_single_system(f):
                                                               [f["tms_1"], f["tms_2"]],
                                                               [f["bhspin_1"], f["bhspin_2"]],
                                                               f["tphys"],
-                                                              np.zeros(20),
+                                                              zpars,
                                                               np.zeros(20),
                                                               f["kick_info"])
                                                               
@@ -674,7 +682,7 @@ def _evolve_single_system(f):
             bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
             kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
 
-        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy()
+        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy(), zpars
 
     except Exception as e:
         print(e)
@@ -683,6 +691,7 @@ def _evolve_single_system(f):
 
 def _evolve_multi_system(f):
     try:
+        zpars = np.zeros(20, dtype=float)
         res_bcm = np.zeros(f.shape[0], dtype=object)
         res_bpp = np.zeros(f.shape[0], dtype=object)
         res_kick_info = np.zeros(f.shape[0], dtype=object)
@@ -690,7 +699,7 @@ def _evolve_multi_system(f):
         for i in range(0, f.shape[0]):
 
             # call evolve single system
-            _, bpp, bcm, kick_info, _ = _evolve_single_system(f[i])
+            _, bpp, bcm, kick_info, _, zpars = _evolve_single_system(f[i], zpars=zpars)
 
             # add results to pre-allocated list
             res_bpp[i] = bpp
@@ -705,7 +714,7 @@ def _evolve_multi_system(f):
         raise
 
 
-def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance):
+def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, z_accuracy_limit):
     """load in the metallicity, format, and eep files
     
     Parameters
@@ -744,11 +753,11 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance)
     for i, m in enumerate(met_files):
         met_dict, fmt_dict = utils.read_metallicity_and_format(m)
         mets.append(met_dict['Z_files'])
-        if np.abs(met_dict['Z_files'] - IBT_Z) < Z_tolerance:
+        if abs(met_dict['Z_files'] - IBT_Z)/min(met_dict['Z_files'], IBT_Z) <= z_accuracy_limit:
             met_dict_keep = met_dict
             fmt_dict_keep = fmt_dict
             Z_idx = i
-    if met_dict_keep is None: 
+    if met_dict_keep is None or fmt_dict_keep is None: 
         raise ValueError("No metallicity file found that matches the metallicity "
                          "in the initial binary table. Please check the metallicity "
                          "and supply one that is in this list: {0}".format(mets))
@@ -760,13 +769,14 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance)
     Z_idx_he = -1
     for i, m in enumerate(met_files_he):
         met_dict, fmt_dict = utils.read_metallicity_and_format(m)
-        if np.abs(met_dict['Z_files'] - IBT_Z) < Z_tolerance:
+        if abs(met_dict['Z_files'] - IBT_Z)/min(met_dict['Z_files'], IBT_Z) <= z_accuracy_limit:
             met_dict_he_keep = met_dict
             fmt_dict_he_keep = fmt_dict
             Z_idx_he = i
-
-    if Z_idx == -1 or Z_idx_he == -1:
-        raise ValueError(f"No metallicities found in range for {IBT_Z}!")
+    if met_dict_he_keep is None or fmt_dict_he_keep is None: 
+        raise ValueError("No metallicity file found that matches the metallicity "
+                         "in the initial binary table. Please check the metallicity "
+                         "and supply one that is in this list: {0}".format(mets))
     
     # Convert Python lists to fixed-length NumPy arrays
     h_eep_np = []
@@ -791,6 +801,7 @@ def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, Z_tolerance)
         he_eep_np[Z_idx_he]    # he_tracks
     )
 
+    assert fmt_dict_keep is not None and fmt_dict_he_keep is not None
     # Next pass the format dictionaries:
     _evolvebin.c_m_interface.set_format_controls_h(
         read_eep=fmt_dict_keep['read_eep_files'], 
