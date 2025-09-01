@@ -249,7 +249,6 @@ class Evolve(object):
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
         SSEDict = kwargs.pop('SSEDict', {})
-        z_accuracy_limit = kwargs.pop('METISSE_z_accuracy_limit', 1e-2)
 
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
@@ -295,6 +294,7 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
         if SSEDict:
+            z_accuracy_limit = SSEDict.get("z_accuracy_limit", 1e-2)
             if SSEDict['stellar_engine'] == 'metisse':
                 for k, v in SSEDict.items():
                     if k in initialbinarytable.keys():
@@ -349,7 +349,7 @@ class Evolve(object):
                     path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
                     path_to_he_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
                     IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    z_accuracy_limit=z_accuracy_limit
+                    z_accuracy_limit=1e-2
                     )
             
 

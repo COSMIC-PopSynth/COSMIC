@@ -307,10 +307,8 @@ def get_independent_sampler(
 
     zsun = kwargs.pop("zsun", 0.02)
 
-    # TODO -- figure out how user can pass this
-    Ztol = 1e-6
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict, metisse_metallicity_tolerance=Ztol)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict, metisse_metallicity_tolerance=Ztol)
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
@@ -1182,8 +1180,6 @@ class Sample(object):
         from cosmic import _evolvebin
         from cosmic.evolve import set_metisse_interface
 
-        z_accuracy_limit = kwargs.get("z_accuracy_limit", 1e-2)
-
         max_array_size = 100000
         total_length = len(mass)
         radii = np.zeros(total_length)
@@ -1198,12 +1194,14 @@ class Sample(object):
             _evolvebin.metissevars.z_match_limit = 1e-2
             _evolvebin.metissevars.METISSE_verbose = False
         elif SSEDict["stellar_engine"] == "metisse":
+            z_accuracy_limit = SSEDict.get("z_accuracy_limit", 1e-2)
+            METISSE_verbose = SSEDict.get("metisse_verbose", False)
             _evolvebin.se_flags.using_metisse = True
             _evolvebin.se_flags.using_sse = False
             _evolvebin.metissevars.path_to_tracks = SSEDict["path_to_tracks"]
             _evolvebin.metissevars.path_to_he_tracks = SSEDict["path_to_he_tracks"]
-            _evolvebin.metissevars.z_match_limit = 1e-2
-            _evolvebin.metissevars.METISSE_verbose = False
+            _evolvebin.metissevars.z_match_limit = z_accuracy_limit
+            _evolvebin.metissevars.METISSE_verbose = METISSE_verbose
             
             _ = set_metisse_interface(
                 path_to_tracks=SSEDict['path_to_tracks'], 
