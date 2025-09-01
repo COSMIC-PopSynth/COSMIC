@@ -298,6 +298,9 @@ if __name__ == '__main__':
         log_file.write("You have specified both qmin and m2_min.\n")
         log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
 
+    if sampling["sampling_method"] == "multidim" and args.Nstep < args.nproc ** 2:
+            warnings.warn("`Nstep` is less than the square of `nproc`. You will see repeats with multidim sampling. Consider raising `Nstep`.")
+
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']) & ((time.time() - start_time) < args.max_wall_time):
         # Set random seed such that each iteration gets a unique, determinable seed
         rand_seed = seed_int + Nstep
