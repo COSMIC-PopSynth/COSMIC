@@ -240,7 +240,7 @@ Cf2py intent(in) epoch
 Cf2py intent(in) tms
 Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
-Cf2py intent(in) zpars
+Cf2py intent(in,out) zpars
 Cf2py intent(in) bkick
 Cf2py intent(in) kick_info
 Cf2py intent(out) bpp_index_out

@@ -32,6 +32,7 @@ import warnings
 import os
 import sys
 import tqdm
+from functools import partial
 from pathlib import Path
 try:
     import multiprocessing
@@ -478,6 +479,9 @@ class Evolve(object):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
 
+        # evolve one system to get zpars
+        _, _, _, _, _, zpars = _evolve_single_system(initial_conditions[0], None)
+
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
@@ -493,7 +497,8 @@ class Evolve(object):
                         itr_block = itr_next
                     output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
                 else:
-                    output = list(pool.map(_evolve_single_system, initial_conditions))
+                    evolve_args = partial(_evolve_single_system, zpars=zpars)
+                    output = list(pool.map(evolve_args, initial_conditions))
         else:
             # evolve systems
             if n_per_block > 0:
@@ -507,7 +512,8 @@ class Evolve(object):
                     itr_block = itr_next
                 output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
             else:
-                output = list(pool.map(_evolve_single_system, initial_conditions))
+                evolve_args = partial(_evolve_single_system, zpars=zpars)
+                output = list(pool.map(evolve_args, initial_conditions))
 
         output = np.array(output, dtype=object)
         bpp_arrays = np.vstack(output[:, 1])
@@ -549,7 +555,9 @@ class Evolve(object):
         return bpp, bcm, initialbinarytable, kick_info
 
 
-def _evolve_single_system(f):
+def _evolve_single_system(f, zpars=None):
+    if zpars is None:
+        zpars = np.zeros(20, dtype=float)
     try:
         f["kick_info"] = np.zeros((2, len(KICK_COLUMNS)-1))
         # determine if we already have a compact object, if yes than one SN has already occured
@@ -639,7 +647,7 @@ def _evolve_single_system(f):
         _evolvebin.col.n_col_bcm = f["n_col_bcm"]
         _evolvebin.col.col_inds_bcm = f["col_inds_bcm"]
 
-        [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
+        [zpars, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 
                                                               f["tphysf"], f["dtp"],
@@ -658,7 +666,7 @@ def _evolve_single_system(f):
                                                               [f["tms_1"], f["tms_2"]],
                                                               [f["bhspin_1"], f["bhspin_2"]],
                                                               f["tphys"],
-                                                              np.zeros(20),
+                                                              zpars,
                                                               np.zeros(20),
                                                               f["kick_info"])
                                                               
@@ -674,7 +682,7 @@ def _evolve_single_system(f):
             bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
             kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
 
-        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy()
+        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy(), zpars
 
     except Exception as e:
         print(e)
@@ -683,6 +691,7 @@ def _evolve_single_system(f):
 
 def _evolve_multi_system(f):
     try:
+        zpars = np.zeros(20, dtype=float)
         res_bcm = np.zeros(f.shape[0], dtype=object)
         res_bpp = np.zeros(f.shape[0], dtype=object)
         res_kick_info = np.zeros(f.shape[0], dtype=object)
@@ -690,7 +699,7 @@ def _evolve_multi_system(f):
         for i in range(0, f.shape[0]):
 
             # call evolve single system
-            _, bpp, bcm, kick_info, _ = _evolve_single_system(f[i])
+            _, bpp, bcm, kick_info, _, zpars = _evolve_single_system(f[i], zpars=zpars)
 
             # add results to pre-allocated list
             res_bpp[i] = bpp
