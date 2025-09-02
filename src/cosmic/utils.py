@@ -1130,7 +1130,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                 )
             else:
                 path = Path(SSEDict[flag])
-                metallicity_file = list(path.glob('*_metallicity.in'))
+                metallicity_file = list(path.glob('[!.]*_metallicity.in'))
                 if metallicity_file == []:
                     raise ValueError(
                         "No metallicity file found in {0}. Make sure that {1} is valid".format (
@@ -1155,7 +1155,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                 )
             else:
                 path = Path(SSEDict[flag])
-                metallicity_file = list(path.glob('*_metallicity.in'))
+                metallicity_file = list(path.glob('[!.]*_metallicity.in'))
                 if metallicity_file == []:
                     raise ValueError(
                         "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid".format (
