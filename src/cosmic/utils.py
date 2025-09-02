@@ -63,9 +63,11 @@ __all__ = [
     "get_binfrac_of_Z",
     "get_porb_norm",
     "get_met_dep_binfrac",
-    "get_METISSE_files",
-    "read_metallicity_and_format",
-    "read_eep_file",
+    "get_METISSE_metallicity_files",
+    "read_metallicity_file",
+    "read_format_file",
+    "read_MIST_track",
+    "read_other_track",
     "read_eep_directory",
     "to_f2py_str_array"
 ]
@@ -1128,7 +1130,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                 )
             else:
                 path = Path(SSEDict[flag])
-                metallicity_file = list(path.glob('*_metallicity.in'))
+                metallicity_file = list(path.glob('[!.]*_metallicity.in'))
                 if metallicity_file == []:
                     raise ValueError(
                         "No metallicity file found in {0}. Make sure that {1} is valid".format (
@@ -1153,7 +1155,7 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                 )
             else:
                 path = Path(SSEDict[flag])
-                metallicity_file = list(path.glob('*_metallicity.in'))
+                metallicity_file = list(path.glob('[!.]*_metallicity.in'))
                 if metallicity_file == []:
                     raise ValueError(
                         "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid".format (
@@ -1935,97 +1937,35 @@ def parse_inifile(inifile):
 
     return BSEDict, SSEDict, seed_int, filters, convergence, sampling
 
-def get_METISSE_files(path_to_tracks, path_to_he_tracks):
+def get_METISSE_metallicity_files(path_to_tracks):
     """Returns the path to the METISSE files
     
     Parameters
     ----------
     path_to_tracks : str
-        Path to the directory containing the METISSE tracks.
-    path_to_he_tracks : str
-        Path to the directory containing the METISSE He tracks.
+        Path to the directory containing the METISSE metallicity file(s) for hydrogen/helium tracks
     
     Returns
     -------
-    eep_tracks : list
-        List of paths to the METISSE EEP tracks
-    he_eep_tracks : list
-        List of paths to the METISSE helium EEP tracks
     met_files : list
-        List of paths to the METISSE metallicity files for hydrogen tracks
-    met_files_he : list
-        List of paths to the METISSE He metallicity files for helium trakcs
+        List of paths to the METISSE metallicity files for hydrogen/helium tracks
     """
     import os
-    
+
     path_to_tracks = Path(path_to_tracks)
-    path_to_he_tracks = Path(path_to_he_tracks)
-    
-    h_eep_tracks = []
-    he_eep_tracks = []
+
+    # Next also get the Metallicity files
     met_files = [os.path.join(path_to_tracks, f) for f in os.listdir(path_to_tracks) if f.endswith("metallicity.in")]
-    met_files_he = [os.path.join(path_to_he_tracks, f) for f in os.listdir(path_to_he_tracks) if f.endswith("metallicity.in")]
 
     if len(met_files) == 0:
         raise ValueError("No METISSE metallicity files found in the specified path: {0}".format(path_to_tracks))
-    if len(met_files_he) == 0:
-        raise ValueError("No METISSE He metallicity files found in the specified path: {0}".format(path_to_he_tracks))
-    
-    for met in met_files:
-        with open(met, "r") as file:
-            lines = file.read().splitlines()
-        eep_path: str | None = None
-        for l in lines:
-            if (l.lower().find("eep_tracks_dir") != -1):
-                eep_path = l.split("=")[-1].strip()[1:-1]
-                break
-        if eep_path is None: raise ValueError(f"No eep_tracks_dir found in {met}. Is this a valid metallicity file?")
-        if eep_path.startswith(os.path.sep):
-            eep_pattern = os.path.join(eep_path, "*.eep")
-        else:
-            eep_pattern = os.path.join(path_to_tracks, eep_path, "*.eep")
-        eeps = glob.glob(eep_pattern)
-        if len(eeps) == 0:
-            raise ValueError(f"No METISSE tracks found in the specified path: {eep_pattern}")
-        h_eep_tracks.append(eeps.copy())
-    for met in met_files_he:
-        with open(met, "r") as file:
-            lines = file.read().splitlines()
-        eep_path: str | None = None
-        for l in lines:
-            if (l.lower().find("eep_tracks_dir") != -1):
-                eep_path = l.split("=")[-1].strip()[1:-1]
-                break
-        if eep_path is None: raise ValueError(f"No eep_tracks_dir found in {met}. Is this a valid metallicity file?")
-        if eep_path.startswith(os.path.sep):
-            eep_pattern = os.path.join(eep_path, "*.eep")
-        else:
-            eep_pattern = os.path.join(path_to_he_tracks, eep_path, "*.eep")
-        eeps = glob.glob(eep_pattern)
-        if len(eeps) == 0:
-            raise ValueError(f"No METISSE tracks found in the specified path: {eep_pattern}")
-        he_eep_tracks.append(eeps.copy())
-    
-    # first find all the EEPs in the specified directories
-    #eep_dir = path_to_tracks #/ "eeps/"
-    #he_eep_dir = path_to_he_tracks #/ "eeps/"
-    #h_eep_tracks = glob.glob(os.path.join(eep_dir, "*.eep"), recursive=True) #[os.path.join(eep_dir, f) for f in os.listdir(eep_dir) if f.endswith("data.eep")]
-    #he_eep_tracks = glob.glob(os.path.join(he_eep_dir, "*.eep"), recursive=True) #[os.path.join(he_eep_dir, f) for f in os.listdir(he_eep_dir) if f.endswith("data.eep")]
 
-    if len(h_eep_tracks) == 0:
-        raise ValueError("No METISSE tracks found in the specified path.") #:{0}".format(eep_dir))
-    if len(he_eep_tracks) == 0:
-        raise ValueError("No METISSE He tracks found in the specified path.")#:{0}".format(he_eep_dir))
-    
-    # Next also get the Metallicity files
-
-    
-    return h_eep_tracks, he_eep_tracks, met_files, met_files_he
+    return met_files
 
 
-def read_metallicity_and_format(met_file_path):
+def read_metallicity_file(met_file_path):
     """
-    Read a metallicity namelist and its associated format file.
+    Read a metallicity namelist 
 
     Parameters
     ----------
@@ -2037,8 +1977,6 @@ def read_metallicity_and_format(met_file_path):
     met_dict : dict
         Dictionary containing metallicity options, e.g., 
         'eep_tracks_dir', 'Z_files', 'format_file', etc. Paths are converted to Path objects.
-    fmt_dict : dict
-        Dictionary containing format file options, e.g., column names, EEP stages, flags.
 
     Notes
     -----
@@ -2050,7 +1988,19 @@ def read_metallicity_and_format(met_file_path):
     met_file_path = Path(met_file_path)
     
     # --- Read metallicity file ---
-    met_dict = {}
+    met_dict = {
+    "eep_tracks_dir": "",
+    "Z_files": -1.0,
+    "format_file": "",
+    "Y_files": -1.0,
+    "Mhook": -1.0,
+    "Mhef": -1.0,
+    "Mfgb": -1.0,
+    "Mup": -1.0,
+    "Mec": -1.0,
+    "Mextra": -1.0
+    }
+
     with open(met_file_path, 'r') as f:
         for line in f:
             line = line.split('!')[0].strip()  # remove comments
@@ -2069,15 +2019,95 @@ def read_metallicity_and_format(met_file_path):
                 except ValueError:
                     met_dict[key] = value.strip("'\"")  # keep strings
     
-    # Convert paths to Path objects relative to metallicity file
+    # Check if the paths exist
     if 'eep_tracks_dir' in met_dict:
-        met_dict['eep_tracks_dir'] = met_file_path.parent / met_dict['eep_tracks_dir']
+        if os.path.exists(met_dict['eep_tracks_dir']) is False:
+            # Otherwise convert paths to Path objects relative to metallicity file
+            # met_dict['eep_tracks_dir'] = os.path.join(met_file_path.parent,met_dict['eep_tracks_dir'])
+            met_dict['eep_tracks_dir'] = met_file_path.parent / met_dict['eep_tracks_dir']
+    else:
+        raise ValueError("eep_tracks_dir not found in {0}".format (met_file_path))
     if 'format_file' in met_dict:
-        met_dict['format_file'] = met_file_path.parent / met_dict['format_file']
+        if os.path.exists(met_dict['format_file']) is False:
+            met_dict['format_file'] = met_file_path.parent / met_dict['format_file']
+    else:
+        raise ValueError("format_file not found in {0}".format (met_file_path))
     
-    # --- Read format file ---
-    fmt_dict = {}
-    format_file_path = met_dict['format_file']
+    met_dict = {k.lower(): v for k, v in met_dict.items()}
+
+    return met_dict
+
+def read_format_file(format_file_path):
+    """
+    Read the format file associated with the metallicity namelist 
+
+    Parameters
+    ----------
+    format_file_path : str or Path
+        Path to the format file.
+
+    Returns
+    -------
+    fmt_dict : dict
+        Dictionary containing format file options, e.g., column names, EEP stages, flags.
+
+    Notes
+    -----
+    - Booleans (.true./.false.) are converted to Python True/False.
+    - Fortran-style scientific notation with 'd' (e.g., 1.23d-04) is converted to float.
+    - Strings in quotes are stripped of the quotes.
+    - Stops parsing at the Fortran namelist terminator '/'.
+    """
+
+# --- Read format file ---
+    fmt_dict = {
+    "read_eep_files": False,
+    "file_extension": "",
+    "header_location": -1,
+    "extra_char": "",
+    "column_name_file": "",
+    "total_cols": -1,
+    "age_colname": "",
+    "mass_colname": "",
+    "log_L_colname": "",
+    "Lum_colname": "",
+    "log_R_colname": "",
+    "Radius_colname": "",
+    "he_core_mass": "",
+    "co_core_mass": "",
+    "binding_energy_colname": "",
+    "he_core_radius": "",
+    "co_core_radius": "",
+    "mass_conv_envelope": "",
+    "radius_conv_envelope": "",
+    "log_T_colname": "",
+    "Teff_colname": "",
+    "log_Tc": "",
+    "he4_mass_frac": "",
+    "c12_mass_frac": "",
+    "o16_mass_frac": "",
+    "PreMS_EEP": -1,
+    "ZAMS_EEP": -1,
+    "IAMS_EEP": -1,
+    "TAMS_EEP": -1,
+    "BGB_EEP": -1,
+    "cHeIgnition_EEP": -1,
+    "cHeBurn_EEP": -1,
+    "TA_cHeB_EEP": -1,
+    "TPAGB_EEP": -1,
+    "cCBurn_EEP": -1,
+    "post_AGB_EEP": -1,
+    "Initial_EEP": -1,
+    "Final_EEP": -1,
+    "Extra_EEP1": -1,
+    "Extra_EEP2": -1,
+    "Extra_EEP3": -1,
+    "low_mass_final_eep": -1,
+    "high_mass_final_eep": -1,
+    "fix_track": True,
+    "lookup_index": 1.0
+    }
+
     with open(format_file_path, 'r') as f:
         for line in f:
             line = line.split('!')[0].strip()
@@ -2109,10 +2139,14 @@ def read_metallicity_and_format(met_file_path):
                     except ValueError:
                         fmt_dict[key] = value  # fallback
     
-    return met_dict, fmt_dict
+    # Convert all keys in fmt_dict_keep to lowercase
+    fmt_dict = {k.lower(): v for k, v in fmt_dict.items()}
+
+    return fmt_dict
 
 
-def read_eep_file(eep_path):
+
+def read_MIST_track(eep_path):
     track = {}
     track['filename'] = str(eep_path)
 
@@ -2143,14 +2177,14 @@ def read_eep_file(eep_path):
         info_line = f.readline()
         track['initial_mass'] = float(info_line[2:18].strip())
         track['ntrack'] = int(info_line[18:26].strip())
-        track['neep'] = int(info_line[26:34].strip())
         track['ncol'] = int(info_line[34:42].strip())
-        track['phase_info'] = info_line[42:50].strip()
+        # track['phase_info'] = info_line[42:50].strip()
         track['type_label'] = info_line[50:65].strip()
 
         # EEP lines
         eep_line = f.readline()
         track['eep'] = np.array([int(x) for x in eep_line.split()[2:]], dtype=int)
+        track['neep'] = len(track['eep'])
 
         f.readline()  # comment line
         f.readline()  # column numbers line
@@ -2160,43 +2194,100 @@ def read_eep_file(eep_path):
         track['cols'] = cols_line.split()[1:]  # list of strings start at 1 to skip # symbol
 
         # track data
-        tr = np.zeros((track['ncol'], track['ntrack']), dtype=float)
-        for j in range(track['ntrack']):
-            data_line = f.readline()
-            values = [float(x) for x in data_line.split()]
-            tr[:, j] = values[:track['ncol']]
-        track['tr'] = tr
+        # tr = np.zeros((track['ncol'], track['ntrack']), dtype=float)
+        # for j in range(track['ntrack']):
+        #     data_line = f.readline()
+        #     values = [float(x) for x in data_line.split()]
+        #     tr[:, j] = values[:track['ncol']]
+        # track['tr'] = tr
+        # track data
+        track['tr'] = np.loadtxt(eep_path, skiprows = 11,dtype=float) 
+        track['tr'] = np.transpose(track['tr']) 
+        track['ncol'], track['ntrack'] = track['tr'].shape
+    return track
+
+def read_other_track(eep_path,fmt):
+    track = {}
+    track['filename'] = str(eep_path)
+    header = fmt['header_location']
+
+    # track data
+    track['tr'] = np.loadtxt(eep_path, skiprows = header, dtype=float) 
+    track['tr'] = np.transpose(track['tr']) 
+    track['ncol'], track['ntrack'] = track['tr'].shape
+    # Set the following values to defaults
+    # they are either not relevant at this point 
+    # or are assigned later within METISSE
+    track['initial_mass'] = -1.0
+    track['initial_Y'] = -1.0
+    track['initial_Z'] = -1.0
+    track['Fe_div_H'] = -1.0
+    track['alpha_div_Fe'] = -1.0
+    track['v_div_vcrit'] = -1.0
+    track['neep'] = 0
+
+    with eep_path.open() as f:
+        # Read lines sequentially to mimic Fortran
+        if header>0:
+            for i in range(header-1):
+                f.readline()
+            # Column names line
+            track['cols'] = f.readline().strip().split() 
+            # remove any extra chracter (such as #) if present
+            track['cols'] = [c for c in track['cols'] if c != fmt['extra_char']]
+        else:
+            if os.path.exists(fmt["column_name_file"]):
+                #read the column name file
+                with open(fmt["column_name_file"], "r") as f:
+                    track['cols'] = [line.strip() for line in f if line.strip()]
+                    if (len(track['cols']) != track['ncol']):
+                        raise ValueError(
+                            "Total columns {0} in the column_name_file do not match the number of columns {1} in the eep file".format(
+                                len(track['cols']), track['ncol'])
+                            )
+            else:
+                raise ValueError(
+                        "Check if header location {0} and column_name_file {1} are correct".format(
+                            header, fmt["column_name_file"])
+                            )
 
     return track
 
-
-
-def read_eep_directory(eep_files, pattern="*.eep"):
+def read_eep_directory(eep_dir,fmt_dict):
     """
-    Read all EEP files in a directory matching the given pattern and sort by
-    the leading number in the filename.
+    Read all EEP files in a directory matching the given pattern 
 
     Parameters
     ----------
-    eep_files : list
-        list of all files in the eep directory
+    eep_dir : str or Path
+        Directory containing the EEP files.
+
+    fmt_dict : dict
+        Dictionary containing format file options, e.g., column names, EEP stages, flags.
 
     Returns
     -------
     tracks : list of dict
-        List of track dictionaries, each as returned by `read_eep_file`,
-        sorted by the leading number in the filename.
+        List of track dictionaries, each as returned by `read_eep_file`
     """
-    # Convert all to Path objects
-    eep_files = [Path(f) for f in eep_files]
 
-    # Sort files by the leading number in the filename
-    def extract_mass(f):
-        # Get the first integer before the first underscore
-        return int(f.stem.split('_')[0])
+    eep_dir = Path(eep_dir)
 
-    eep_files_sorted = sorted(eep_files, key=extract_mass)
-    tracks = [read_eep_file(f) for f in eep_files_sorted]
+
+    if fmt_dict['read_eep_files']:
+        pattern="*.eep"
+    else:
+        pattern = "*"+fmt_dict['file_extension']
+
+    eep_files = list(eep_dir.glob(pattern))
+
+    if len(eep_files) == 0:
+        raise ValueError("No eep tracks found in the specified path: {0}".format(eep_dir))
+
+    if fmt_dict['read_eep_files']:
+        tracks = [read_MIST_track(f) for f in eep_files]
+    else:
+        tracks = [read_other_track(f,fmt_dict) for f in eep_files]
     return tracks
 
 
