@@ -10,8 +10,8 @@ FFLAGS="-coverage -fprofile-arcs -ftest-coverage -O0 -J$SRC_DIR -I$SRC_DIR"
 
 # Phase 1: Compile METISSE modules in dependency order
 gfortran $FFLAGS -c \
-    $METISSE_DIR/c_m_interface.f90 \
     $METISSE_DIR/track_support.f90 \
+    $METISSE_DIR/c_m_interface.f90 \
     $METISSE_DIR/z_support.f90 \
     $METISSE_DIR/sse_support.f90 \
     $METISSE_DIR/remnant_support.f90 \

@@ -1178,7 +1178,7 @@ class Sample(object):
         """
 
         from cosmic import _evolvebin
-        from cosmic.evolve import set_metisse_interface
+        from cosmic.evolve import read_tracks_for_METISSE
 
         max_array_size = 100000
         total_length = len(mass)
@@ -1203,7 +1203,7 @@ class Sample(object):
             _evolvebin.metissevars.z_match_limit = z_accuracy_limit
             _evolvebin.metissevars.METISSE_verbose = METISSE_verbose
             
-            _ = set_metisse_interface(
+            _ = read_tracks_for_METISSE(
                 path_to_tracks=SSEDict['path_to_tracks'], 
                 path_to_he_tracks=SSEDict['path_to_he_tracks'],
                 IBT_Z=metallicity,
