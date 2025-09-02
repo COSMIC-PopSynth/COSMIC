@@ -314,13 +314,21 @@ class Evolve(object):
                     raise ValueError("All the metallicities in the initial binary table "
                                      "must be the same if you are using the METISSE stellar engine. ")
             
-                _ = set_metisse_interface(
-                    path_to_tracks=SSEDict['path_to_tracks'], 
-                    path_to_he_tracks=SSEDict['path_to_he_tracks'],
-                    IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    z_accuracy_limit=z_accuracy_limit
+                # load in the METISSE files
+                _ = read_tracks_for_METISSE(
+                    path_to_tracks = SSEDict['path_to_tracks'], 
+                    IBT_Z = initialbinarytable['metallicity'].iloc[0],
+                    z_accuracy_limit = z_accuracy_limit,
+                    is_he = False
                     )
 
+                if (SSEDict['path_to_he_tracks'] != ''):
+                    _ = read_tracks_for_METISSE(
+                        path_to_tracks = SSEDict['path_to_he_tracks'],
+                        IBT_Z = initialbinarytable['metallicity'].iloc[0], 
+                        z_accuracy_limit = z_accuracy_limit,
+                        is_he = True
+                        )
 
             elif SSEDict['stellar_engine'] == 'sse':    
                 kwargs1 = {'stellar_engine': 'sse'}
@@ -345,11 +353,19 @@ class Evolve(object):
                                  "must be the same if you are using the METISSE stellar engine. ")
             
             # load in the METISSE files
-            _ = set_metisse_interface(
-                    path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
-                    path_to_he_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
-                    IBT_Z=initialbinarytable['metallicity'].iloc[0],
-                    z_accuracy_limit=z_accuracy_limit
+            _ = read_tracks_for_METISSE(
+                path_to_tracks = SSEDict['path_to_tracks'], 
+                IBT_Z = initialbinarytable['metallicity'].iloc[0],
+                z_accuracy_limit = z_accuracy_limit,
+                is_he = False
+                )
+
+            if (SSEDict['path_to_he_tracks'] != ''):
+                _ = read_tracks_for_METISSE(
+                    path_to_tracks = SSEDict['path_to_he_tracks'],
+                    IBT_Z = initialbinarytable['metallicity'].iloc[0], 
+                    z_accuracy_limit = z_accuracy_limit,
+                    is_he = True
                     )
             
 
@@ -713,171 +729,150 @@ def _evolve_multi_system(f):
         print(e)
         raise
 
+def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
 
-def set_metisse_interface(path_to_tracks, path_to_he_tracks, IBT_Z, z_accuracy_limit):
     """load in the metallicity, format, and eep files
     
     Parameters
     ----------
-    path_to_tracks : str or Path
+    path_to_tracks : str
         Direct path to where all single star data and metallicty/format files are stored
         for hydrogen-rich stars
-    
-    path_to_tracks : str or Path
-        Direct path to where all single star data and metallicty/format files are stored
-        for hydrogen-rich stars
-
     IBT_Z : float
         Metallicity from the initialbinarytable
-
+    z_accuracy_limit : float
+        Tolerance for match in metallicity value
+    is_he : bool, default=False
+        Indicates whether the tracks are helium-enriched.
     Returns
     -------
         None
     
     """
 
-    # convert to Path
-    path_to_tracks = Path(path_to_tracks)
-    path_to_he_tracks = Path(path_to_he_tracks)
-
     # load in the METISSE files
-    l = utils.get_METISSE_files(path_to_tracks, path_to_he_tracks)
-    h_eep_tracks, he_eep_tracks, met_files, met_files_he = l
-    
-    # loop over the hydrogen metallicity files to find the one that is the closest 
+    met_files = utils.get_METISSE_metallicity_files(path_to_tracks)
+
+    # loop over the hydrogen metallicity files to find the one that is the closest
     # to the metallicity in the initial binary table
     met_dict_keep = None
     fmt_dict_keep = None
     mets = []
-    Z_idx = -1
     for i, m in enumerate(met_files):
-        met_dict, fmt_dict = utils.read_metallicity_and_format(m)
-        mets.append(met_dict['Z_files'])
-        if abs(met_dict['Z_files'] - IBT_Z)/min(met_dict['Z_files'], IBT_Z) <= z_accuracy_limit:
+        met_dict = utils.read_metallicity_file(m)
+        mets.append(met_dict['z_files'])
+        if abs(met_dict['z_files'] - IBT_Z)/min(met_dict['z_files'], IBT_Z) <= z_accuracy_limit:
             met_dict_keep = met_dict
-            fmt_dict_keep = fmt_dict
+            fmt_dict_keep = utils.read_format_file(met_dict['format_file'])
             Z_idx = i
-    if met_dict_keep is None or fmt_dict_keep is None: 
+    if met_dict_keep is None: 
         raise ValueError("No metallicity file found that matches the metallicity "
                          "in the initial binary table. Please check the metallicity "
                          "and supply one that is in this list: {0}".format(mets))
-    
-    # loop over the helium metallicity files to find the one that is the closest 
-    # to the metallicity in the initial binary table
-    met_dict_he_keep = None
-    fmt_dict_he_keep = None
-    Z_idx_he = -1
-    for i, m in enumerate(met_files_he):
-        met_dict, fmt_dict = utils.read_metallicity_and_format(m)
-        if abs(met_dict['Z_files'] - IBT_Z)/min(met_dict['Z_files'], IBT_Z) <= z_accuracy_limit:
-            met_dict_he_keep = met_dict
-            fmt_dict_he_keep = fmt_dict
-            Z_idx_he = i
-    if met_dict_he_keep is None or fmt_dict_he_keep is None: 
-        raise ValueError("No metallicity file found that matches the metallicity "
-                         "in the initial binary table. Please check the metallicity "
-                         "and supply one that is in this list: {0}".format(mets))
-    
+
+    # PA: it's not needed since metisse is not reading files at all
+
     # Convert Python lists to fixed-length NumPy arrays
-    h_eep_np = []
-    he_eep_np = []
-    for ls in h_eep_tracks:
-        h_eep_np.append(utils.to_f2py_str_array(ls))
-    for ls in he_eep_tracks:
-        he_eep_np.append(utils.to_f2py_str_array(ls))
-    met_np = utils.to_f2py_str_array(met_files)
-    met_he_np = utils.to_f2py_str_array(met_files_he)
-    z_list_h = utils.to_f2py_str_array(met_dict_keep['Z_files'])
-    z_list_he = utils.to_f2py_str_array(met_dict_he_keep['Z_files'])
+    # h_eep_np = []
+    # he_eep_np = []
+    # for ls in h_eep_tracks:
+    #     h_eep_np.append(utils.to_f2py_str_array(ls))
+    # for ls in he_eep_tracks:
+    #     he_eep_np.append(utils.to_f2py_str_array(ls))
+    # met_np = utils.to_f2py_str_array(met_files)
+    # met_he_np = utils.to_f2py_str_array(met_files_he)
+    # z_list_h = utils.to_f2py_str_array(met_dict_keep['Z_files'])
+    # z_list_he = utils.to_f2py_str_array(met_dict_he_keep['Z_files'])
 
-    # Set the metallicity lists in Fortran
-    _evolvebin.c_m_interface.set_mets(z_list_h, z_list_he)
+    # # Set the metallicity lists in Fortran
+    # _evolvebin.c_m_interface.set_mets(z_list_h, z_list_he)
 
-    # Then pass to Fortran; note that f2py seems to get the number files on its own?
-    _evolvebin.c_m_interface.set_file_lists(
-        met_np,       # met_files
-        met_he_np,    # met_he_files
-        h_eep_np[Z_idx],     # h_tracks
-        he_eep_np[Z_idx_he]    # he_tracks
-    )
+    # # Then pass to Fortran; note that f2py seems to get the number files on its own?
+    # _evolvebin.c_m_interface.set_file_lists(
+    #     met_np,       # met_files
+    #     met_he_np,    # met_he_files
+    #     h_eep_np[Z_idx],     # h_tracks
+    #     he_eep_np[Z_idx_he]    # he_tracks
+    # )
 
-    assert fmt_dict_keep is not None and fmt_dict_he_keep is not None
-    # Next pass the format dictionaries:
-    _evolvebin.c_m_interface.set_format_controls_h(
-        read_eep=fmt_dict_keep['read_eep_files'], 
-        prems=fmt_dict_keep['PreMS_EEP'],
-        zams=fmt_dict_keep['ZAMS_EEP'], 
-        iams=fmt_dict_keep['IAMS_EEP'], 
-        tams=fmt_dict_keep['TAMS_EEP'], 
-        bgb=fmt_dict_keep['BGB_EEP'],
-        cheign=fmt_dict_keep['cHeIgnition_EEP'], 
-        cheburn=fmt_dict_keep['cHeBurn_EEP'], 
-        ta_cheb=fmt_dict_keep['TA_cHeB_EEP'], 
-        tpagb=fmt_dict_keep['TPAGB_EEP'], 
-        ccburn=fmt_dict_keep['cCBurn_EEP'], 
-        postagb=fmt_dict_keep['post_AGB_EEP'],
-        initeep=fmt_dict_keep['Initial_EEP'], 
-        finaleep=fmt_dict_keep['Final_EEP'], 
-        fixtrack=fmt_dict_keep['fix_track'], 
-        loweep=fmt_dict_keep['low_mass_final_eep'], 
-        higheep=fmt_dict_keep['high_mass_final_eep'],
-        age_col=fmt_dict_keep['age_colname'],
-        mass_col=fmt_dict_keep['mass_colname'],
-        logl_col=fmt_dict_keep['log_L_colname'],
-        logt_col=fmt_dict_keep['log_T_colname'],
-        logr_col=fmt_dict_keep['log_R_colname'],
-        he_mass_col=fmt_dict_keep['he_core_mass'],
-        co_mass_col=fmt_dict_keep['co_core_mass'],
-        he_radius_col=fmt_dict_keep['he_core_radius'],
-        co_radius_col=fmt_dict_keep['co_core_radius'],
-        mass_env_col=fmt_dict_keep['mass_conv_envelope'],
-        radius_env_col=fmt_dict_keep['radius_conv_envelope'],
-        logtc_col=fmt_dict_keep['log_Tc'],
-        he4_col=fmt_dict_keep['He4_mass_frac'],
-        c12_col=fmt_dict_keep['c12_mass_frac'],
-        o16_col=fmt_dict_keep['o16_mass_frac']
-    )
+    assert fmt_dict_keep is not None 
 
-    # Next pass the format dictionaries:
-    _evolvebin.c_m_interface.set_format_controls_he(
-        read_eep=fmt_dict_he_keep['read_eep_files'], 
-        bgb=fmt_dict_he_keep['BGB_EEP'],
-        cheburn=fmt_dict_he_keep['cHeBurn_EEP'], 
-        ta_cheb=fmt_dict_he_keep['TA_cHeB_EEP'], 
-        tpagb=fmt_dict_he_keep['TPAGB_EEP'], 
-        ccburn=fmt_dict_he_keep['cCBurn_EEP'], 
-        postagb=fmt_dict_he_keep['post_AGB_EEP'],
-        initeep=fmt_dict_he_keep['Initial_EEP'], 
-        finaleep=fmt_dict_he_keep['Final_EEP'], 
-        fixtrack=fmt_dict_he_keep['fix_track'], 
-        loweep=fmt_dict_he_keep['low_mass_final_eep'], 
-        higheep=fmt_dict_he_keep['high_mass_final_eep'],
-        age_col=fmt_dict_he_keep['age_colname'],
-        mass_col=fmt_dict_he_keep['mass_colname'],
-        logl_col=fmt_dict_he_keep['log_L_colname'],
-        logt_col=fmt_dict_he_keep['log_T_colname'],
-        logr_col=fmt_dict_he_keep['log_R_colname'],
-        he_mass_col=fmt_dict_he_keep['he_core_mass'],
-        co_mass_col=fmt_dict_he_keep['co_core_mass'],
-        he_radius_col=fmt_dict_he_keep['he_core_radius'],
-        co_radius_col=fmt_dict_he_keep['co_core_radius'],
-        mass_env_col=fmt_dict_he_keep['mass_conv_envelope'],
-        radius_env_col=fmt_dict_he_keep['radius_conv_envelope'],
-        logtc_col=fmt_dict_he_keep['log_Tc'],
-        he4_col=fmt_dict_he_keep['He4_mass_frac'],
-        c12_col=fmt_dict_he_keep['c12_mass_frac'],
-        o16_col=fmt_dict_he_keep['o16_mass_frac']
-    )
 
-    # Finally, load in the EEPs! 
-    tracks_h = utils.read_eep_directory(h_eep_tracks[Z_idx])
-    _ = populate_tracks(tracks_h, is_he=False)
+    if is_he:
+        # Pass the format dictionaries for helium tracks:
+        _evolvebin.c_m_interface.set_format_controls_he(
+            read_eep=fmt_dict_keep['read_eep_files'],
+            bgb=fmt_dict_keep['bgb_eep'],
+            cheburn=fmt_dict_keep['cheburn_eep'],
+            ta_cheb=fmt_dict_keep['ta_cheb_eep'],
+            tpagb=fmt_dict_keep['tpagb_eep'],
+            ccburn=fmt_dict_keep['ccburn_eep'],
+            postagb=fmt_dict_keep['post_agb_eep'],
+            initeep=fmt_dict_keep['initial_eep'],
+            finaleep=fmt_dict_keep['final_eep'],
+            fixtrack=fmt_dict_keep['fix_track'],
+            loweep=fmt_dict_keep['low_mass_final_eep'],
+            higheep=fmt_dict_keep['high_mass_final_eep'],
+            age_col=fmt_dict_keep['age_colname'],
+            mass_col=fmt_dict_keep['mass_colname'],
+            logl_col=fmt_dict_keep['log_l_colname'],
+            logt_col=fmt_dict_keep['log_t_colname'],
+            logr_col=fmt_dict_keep['log_r_colname'],
+            he_mass_col=fmt_dict_keep['he_core_mass'],
+            co_mass_col=fmt_dict_keep['co_core_mass'],
+            he_radius_col=fmt_dict_keep['he_core_radius'],
+            co_radius_col=fmt_dict_keep['co_core_radius'],
+            mass_env_col=fmt_dict_keep['mass_conv_envelope'],
+            radius_env_col=fmt_dict_keep['radius_conv_envelope'],
+            logtc_col=fmt_dict_keep['log_tc'],
+            he4_col=fmt_dict_keep['he4_mass_frac'],
+            c12_col=fmt_dict_keep['c12_mass_frac'],
+            o16_col=fmt_dict_keep['o16_mass_frac']
+        )
+    else:
+        # Pass the format dictionaries:
+        _evolvebin.c_m_interface.set_format_controls_h(
+            read_eep=fmt_dict_keep['read_eep_files'],
+            prems=fmt_dict_keep['prems_eep'],
+            zams=fmt_dict_keep['zams_eep'],
+            iams=fmt_dict_keep['iams_eep'],
+            tams=fmt_dict_keep['tams_eep'],
+            bgb=fmt_dict_keep['bgb_eep'],
+            cheign=fmt_dict_keep['cheignition_eep'],
+            cheburn=fmt_dict_keep['cheburn_eep'],
+            ta_cheb=fmt_dict_keep['ta_cheb_eep'],
+            tpagb=fmt_dict_keep['tpagb_eep'],
+            ccburn=fmt_dict_keep['ccburn_eep'],
+            postagb=fmt_dict_keep['post_agb_eep'],
+            initeep=fmt_dict_keep['initial_eep'],
+            finaleep=fmt_dict_keep['final_eep'],
+            fixtrack=fmt_dict_keep['fix_track'],
+            loweep=fmt_dict_keep['low_mass_final_eep'],
+            higheep=fmt_dict_keep['high_mass_final_eep'],
+            age_col=fmt_dict_keep['age_colname'],
+            mass_col=fmt_dict_keep['mass_colname'],
+            logl_col=fmt_dict_keep['log_l_colname'],
+            logt_col=fmt_dict_keep['log_t_colname'],
+            logr_col=fmt_dict_keep['log_r_colname'],
+            he_mass_col=fmt_dict_keep['he_core_mass'],
+            co_mass_col=fmt_dict_keep['co_core_mass'],
+            he_radius_col=fmt_dict_keep['he_core_radius'],
+            co_radius_col=fmt_dict_keep['co_core_radius'],
+            mass_env_col=fmt_dict_keep['mass_conv_envelope'],
+            radius_env_col=fmt_dict_keep['radius_conv_envelope'],
+            logtc_col=fmt_dict_keep['log_tc'],
+            he4_col=fmt_dict_keep['he4_mass_frac'],
+            c12_col=fmt_dict_keep['c12_mass_frac'],
+            o16_col=fmt_dict_keep['o16_mass_frac']
+        )
 
-    tracks_he = utils.read_eep_directory(he_eep_tracks[Z_idx_he])
-    _ = populate_tracks(tracks_he, is_he=True)
+    # Finally, load in the EEPs!
+    track_list = utils.read_eep_directory(
+                met_dict_keep['eep_tracks_dir'],
+                fmt_dict_keep)
+    _ = populate_tracks(track_list,is_he)
+    return
 
-    return None
-    
 
 def populate_tracks(track_list, is_he=False):
     """
@@ -901,8 +896,6 @@ def populate_tracks(track_list, is_he=False):
             - 'eep' : array-like of shape (neep,)
             - 'tr' : array-like of shape (ncol, ntrack)
             - 'cols' : list of str of length ncol
-        Optional key:
-            - 'is_he_track' : bool
 
     is_he : bool, default=False
         Indicates whether the tracks are helium-enriched.
@@ -928,7 +921,6 @@ def populate_tracks(track_list, is_he=False):
     ntrack_arr = np.array([t['ntrack'] for t in track_list], dtype=np.int32)
     neep_arr = np.array([t['neep'] for t in track_list], dtype=np.int32)
     ncol_arr = np.array([t['ncol'] for t in track_list], dtype=np.int32)
-    is_he_arr = np.array([t.get('is_he_track', is_he) for t in track_list], dtype=np.bool_)
 
     # Determine max sizes
     max_neep = max(neep_arr)
@@ -936,6 +928,9 @@ def populate_tracks(track_list, is_he=False):
     max_ntrack = sum(ntrack_arr)
 
     # Prepare 2D arrays
+
+    if max_neep<0:
+        max_neep = 0
     eep_data = np.zeros((max_neep, ntracks), dtype=np.int32, order='F')
     tr_data = np.zeros((max_ncol, max_ntrack), dtype=np.float64, order='F')
     col_names = np.full((max_ncol, ntracks), b' ' * col_width, dtype=f'S{col_width}', order='F')
@@ -943,18 +938,19 @@ def populate_tracks(track_list, is_he=False):
     # Fill arrays
     offset = 0
     for i, t in enumerate(track_list):
-        eep_data[:t['neep'], i] = t['eep']
+        if max_neep>0:
+            eep_data[:t['neep'], i] = t['eep']
         tr_data[:t['ncol'], offset:offset+t['ntrack']] = t['tr']
+
         for j, col in enumerate(t['cols']):
             s = col.encode('ascii')[:col_width]      # truncate if too long
             col_names[j, i] = s.ljust(col_width, b' ')  # pad with spaces
         offset += t['ntrack']
 
-    # Call Fortran
     _evolvebin.c_m_interface.set_tracks_from_python(
         filenames, initial_mass, initial_Y, initial_Z,
         Fe_div_H, alpha_div_Fe, v_div_vcrit,
-        ntrack_arr, neep_arr, ncol_arr, is_he_arr,
+        ntrack_arr, neep_arr, ncol_arr, 
         eep_data, tr_data, col_names, is_he
     )
 
