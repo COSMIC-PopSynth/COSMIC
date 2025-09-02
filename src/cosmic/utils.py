@@ -1162,6 +1162,22 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                         SSEDict[flag], flag
                     )
                 )
+    flag = "z_accuracy_limit"
+    if flag in SSEDict.keys():
+        if not isinstance(SSEDict[flag], float):
+            raise ValueError(
+                "`z_accuracy_limit` must be of type `float`. You supplied {0}, which is of type {1}".format(
+                    SSEDict[flag], type(SSEDict[flag])
+                )
+            )
+    flag = "metisse_verbose"
+    if flag in SSEDict.keys():
+        if not isinstance(SSEDict[flag], bool):
+            raise ValueError(
+                "`metisse_verbose` must be of type `bool`. You supplied {0}, which is of type {1}".format(
+                    SSEDict[flag], type(SSEDict[flag])
+                )
+            )
                 
     # BSEDict
     flag = "dtp"
