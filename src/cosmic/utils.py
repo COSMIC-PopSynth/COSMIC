@@ -66,7 +66,7 @@ __all__ = [
     "get_METISSE_metallicity_files",
     "read_metallicity_file",
     "read_format_file",
-    "rread_MIST_track",
+    "read_MIST_track",
     "read_other_track",
     "read_eep_directory",
     "to_f2py_str_array"
