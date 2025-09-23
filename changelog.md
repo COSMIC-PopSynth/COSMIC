@@ -55,3 +55,7 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.6.1
  - Add support for single stars in both independent and multidim sampling
  - update documentation
+
+## 3.6.2
+ - Add functions to `cosmic.utils` for initC IO that's more efficient (`save_initC`, `load_initC`) by saving
+ identical setting columns separately with only one copy - saves ~1kb per binary
