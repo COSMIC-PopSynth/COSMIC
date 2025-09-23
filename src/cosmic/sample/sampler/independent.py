@@ -1205,10 +1205,17 @@ class Sample(object):
             
             _ = read_tracks_for_METISSE(
                 path_to_tracks=SSEDict['path_to_tracks'], 
-                path_to_he_tracks=SSEDict['path_to_he_tracks'],
                 IBT_Z=metallicity,
-                z_accuracy_limit=z_accuracy_limit
+                z_accuracy_limit=z_accuracy_limit,
+                is_he=False
                 )
+            if (SSEDict['path_to_he_tracks'] != ''):
+                _ = read_tracks_for_METISSE(
+                    path_to_tracks=SSEDict['path_to_he_tracks'], 
+                    IBT_Z=metallicity,
+                    z_accuracy_limit=z_accuracy_limit,
+                    is_he=True
+                    )
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
             

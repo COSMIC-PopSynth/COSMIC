@@ -2202,7 +2202,9 @@ def read_MIST_track(eep_path):
         # track['tr'] = tr
         # track data
         track['tr'] = np.loadtxt(eep_path, skiprows = 11,dtype=float) 
-        track['tr'] = np.transpose(track['tr']) 
+        track['tr'] = np.transpose(track['tr'])
+        if len(track['tr'].shape) < 2:
+            track['tr'] = track['tr'].reshape((-1, 1))
         track['ncol'], track['ntrack'] = track['tr'].shape
     return track
 
