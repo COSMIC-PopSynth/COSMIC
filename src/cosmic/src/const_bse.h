@@ -61,3 +61,7 @@
       INTEGER col_inds_bpp(49), col_inds_bcm(49)
       COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm
 *
+* Knigge (2011) magnetic braking parameters
+      REAL*8 knigge_K, knigge_gamma, knigge_Mcrit
+      COMMON /KNIGGEMB/ knigge_K, knigge_gamma, knigge_Mcrit
+*
