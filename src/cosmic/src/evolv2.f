@@ -218,7 +218,6 @@
       LOGICAL switchedCE,disrupt
 *
       REAL*8 knigge_K, knigge_gamma, knigge_Mcrit
-      PARAMETER(knigge_K = 2.7d47, knigge_gamma = 3.0d0, knigge_Mcrit = 0.35d0)
 
 
 Cf2py intent(in) kstar
@@ -1009,6 +1008,10 @@ component.
                endif
             elseif(htpmb.eq.2) then
             ! Knigge (2011) MB prescription
+               ! Knigge constants
+               knigge_K = 2.7d47
+               knigge_gamma = 3.0d0
+               knigge_Mcrit = 0.35d0
                if(mass(k) .gt. knigge_Mcrit .and. menv(k) .gt. 0.d0) then
                   djmb = -knigge_K * (rad(k)/rsun)**4 * (ospin(k)/wsun)**knigge_gamma
                   djspint(k) = djspint(k) + djmb
