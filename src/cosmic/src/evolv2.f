@@ -216,9 +216,6 @@
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt
-*
-      REAL*8 knigge_K, knigge_gamma, knigge_Mcrit
-
 
 Cf2py intent(in) kstar
 Cf2py intent(in) mass
