@@ -1649,9 +1649,10 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
     flag = "htpmb"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [-1, 0, 1]:
+        # allow new model value 2 in addition to legacy -1, 0, 1
+        if BSEDict[flag] not in [-1, 0, 1, 2]:
             raise ValueError(
-                "'{0:s}' needs to be set to -1, 0 or 1 (you set it to '{1:0.2f}')".format(
+                "'{0:s}' needs to be set to -1, 0, 1 or 2 (you set it to '{1:0.2f}')".format(
                     flag, BSEDict[flag]
                 )
             )
