@@ -173,8 +173,9 @@
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
-      REAL*8 yeardy,yearsc,aursun
-      PARAMETER(yeardy=365.24d0,aursun=214.95d0,yearsc=3.1557d+07)
+      REAL*8 yeardy,yearsc,aursun,rsun
+      PARAMETER(yeardy=365.24d0,aursun=214.95d0)
+      PARAMETER(yearsc=3.1557d+07,rsun=6.9551d+10)
       REAL*8 acc1,tiny
       PARAMETER(acc1=3.920659d+08,tiny=1.0d-14)
       REAL*8 ecc,ecc1,tc,tcirc,ttid,ecc2,omecc2,sqome2,sqome3,sqome5
@@ -728,9 +729,9 @@ component.
                if(ST_cr.le.0.and.mass(k).gt.0.35d0.and.
      &            kstar(k).lt.10.and.menv(k).gt.0.0d0)then
 * Ivanova & Taam (2002) method
-                  if(ospin(k).le.wx) djmb = kw3 * rad(k)**4.0d0 *
+                  if(ospin(k).le.wx) djmb = kw3 * (rad(k)/rsun)**4.0d0 *
      &                (ospin(k)/wsun)**3.0d0
-                  if(ospin(k).gt.wx) djmb = kw3 * rad(k)**4.0d0 *
+                  if(ospin(k).gt.wx) djmb = kw3 * (rad(k)/rsun)**4.0d0 *
      &                (ospin(k)/wsun)**1.3d0 * (wx/wsun)**1.7d0
                   djspint(k) = djspint(k) + djmb
                elseif(ST_cr.gt.0.and.menv(k).gt.0.d0.and.
@@ -741,9 +742,9 @@ component.
      &              ((kstar(k).eq.3).or.(kstar(k).eq.5).or.
      &              (kstar(k).eq.6))))then
 * Ivanova & Taam (2002) method
-                  if(ospin(k).le.wx) djmb = kw3 * rad(k)**4.0d0 *
+                  if(ospin(k).le.wx) djmb = kw3 * (rad(k)/rsun)**4.0d0 *
      &               (ospin(k)/wsun)**3.0d0
-                  if(ospin(k).gt.wx) djmb = kw3 * rad(k)**4.0d0 *
+                  if(ospin(k).gt.wx) djmb = kw3 * (rad(k)/rsun)**4.0d0 *
      &               (ospin(k)/wsun)**1.3d0 * (wx/wsun)**1.7d0
                   djspint(k) = djspint(k) + djmb
                endif
@@ -997,9 +998,9 @@ component.
 * MB given in Ivanova & Taam (2002)
 *            if(mass(k).gt.0.35d0.and.kstar(k).lt.10.and.
 *     &              menv(k).gt.0.0d0)then
-                  if(ospin(k).le.wx) djmb = kw3 * rad(k)**4.0d0 *
-     &                (ospin(k)/wsun)**3.0d0
-                  if(ospin(k).gt.wx) djmb = kw3 * rad(k)**4.0d0 *
+                  if(ospin(k).le.wx) djmb = kw3 * (rad(k)/rsun)**4.0d0 *
+     &               (ospin(k)/wsun)**3.0d0
+                  if(ospin(k).gt.wx) djmb = kw3 * (rad(k)/rsun)**4.0d0 *
      &               (ospin(k)/wsun)**1.3d0 * (wx/wsun)**1.7d0
                   djspint(k) = djspint(k) + djmb
                endif
@@ -1009,7 +1010,7 @@ component.
                knigge_Mcrit = 0.35d0
                if(mass(k) .gt. knigge_Mcrit .and. 
      &                menv(k) .gt. 0.d0) then
-                  djmb = -knigge_K * rad(k)**4.0d0 * 
+                  djmb = -knigge_K * (rad(k)/rsun)**4.0d0 * 
      &                 (ospin(k)/wsun)**knigge_gamma
                   djspint(k) = djspint(k) + djmb
                endif

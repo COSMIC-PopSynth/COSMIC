@@ -14,9 +14,8 @@ add_project_arguments(f_args, language: 'fortran')
 
 py3 = import('python').find_installation(pure: false)
 
-numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_include())'], check: true).stdout().strip()
-f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
-inc_np = include_directories(numpy_include_dir, f2py_include_dir)
+# Use relative paths in build_include directory
+inc_np = include_directories('build_include/numpy', 'build_include/f2py')
 
 get_hash = run_command('python', './src/cosmic/get_commit_hash.py', check: true).stdout().strip()
 
@@ -74,7 +73,7 @@ f2py_source = custom_target(
 evolvebin_module = py3.extension_module('_evolvebin',
   f2py_source,
   lib_source,
-  f2py_include_dir / 'fortranobject.c',
+  'build_include/f2py/fortranobject.c',
   include_directories: inc_np,
   link_args: ldflags,
   install : true,

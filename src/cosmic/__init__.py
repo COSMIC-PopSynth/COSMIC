@@ -22,6 +22,7 @@
 
 from ._version import __version__
 from ._commit_hash import COMMIT_HASH
+from .evolve import Evolve
 
 __version__ = __version__
 __commithash__ = COMMIT_HASH
