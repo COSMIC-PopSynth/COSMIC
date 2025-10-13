@@ -14,8 +14,11 @@ add_project_arguments(f_args, language: 'fortran')
 
 py3 = import('python').find_installation(pure: false)
 
-# Use relative paths in build_include directory
-inc_np = include_directories('build_include/numpy', 'build_include/f2py')
+# Get numpy include directory
+numpy_include = run_command(py3, '-c', 'import numpy; print(numpy.get_include())', check: true).stdout().strip()
+f2py_include = run_command(py3, '-c', 'import numpy.f2py; import os; print(os.path.join(os.path.dirname(numpy.f2py.__file__), "src"))', check: true).stdout().strip()
+
+inc_np = include_directories(numpy_include, f2py_include)
 
 get_hash = run_command('python', './src/cosmic/get_commit_hash.py', check: true).stdout().strip()
 
