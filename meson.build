@@ -2,7 +2,14 @@ project('cosmic',
     'c',
     'fortran',
     version : '3.6.1',
-    default_options: ['warning_level=0', 'optimization=3'],
+    default_optionevolvebin_module = py3.extension_module('_evolvebin',
+  f2py_source,
+  lib_source,
+  fortranobject[0],  # Use generated fortranobject.c
+  include_directories: inc_np,
+  link_args: ldflags,
+  install : true,
+  subdir : 'cosmic')ning_level=0', 'optimization=3'],
 )
 
 # Enable fortran and check arguments
@@ -64,6 +71,15 @@ else
   ldflags = []  # No special flags for other systems
 endif
 
+
+# Generate fortranobject.c
+fortranobject = custom_target(
+    'fortranobject',
+    output : ['fortranobject.c', 'fortranobject.h'],
+    command : [py3, '-c',
+        'import numpy.f2py; from shutil import copy; copy(numpy.f2py.get_include() + "/fortranobject.c", "@OUTPUT0@"); copy(numpy.f2py.get_include() + "/fortranobject.h", "@OUTPUT1@")'
+    ]
+)
 
 f2py_source = custom_target(
     'evolvebin-target',
