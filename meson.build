@@ -2,14 +2,10 @@ project('cosmic',
     'c',
     'fortran',
     version : '3.6.1',
-    default_optionevolvebin_module = py3.extension_module('_evolvebin',
-  f2py_source,
-  lib_source,
-  fortranobject[0],  # Use generated fortranobject.c
-  include_directories: inc_np,
-  link_args: ldflags,
-  install : true,
-  subdir : 'cosmic')ning_level=0', 'optimization=3'],
+    default_options: [
+        'warning_level=0',
+        'optimization=3'
+    ]
 )
 
 # Enable fortran and check arguments
@@ -90,13 +86,13 @@ f2py_source = custom_target(
 
 
 evolvebin_module = py3.extension_module('_evolvebin',
-  f2py_source,
-  lib_source,
-  'build_include/f2py/fortranobject.c',
-  include_directories: inc_np,
-  link_args: ldflags,
-  install : true,
-  subdir : 'cosmic'
+    f2py_source,
+    lib_source,
+    fortranobject[0],  # Use generated fortranobject.c
+    include_directories: inc_np,
+    link_args: ldflags,
+    install : true,
+    subdir : 'cosmic'
 )
 
 python_script = 'bin/cosmic-pop'
