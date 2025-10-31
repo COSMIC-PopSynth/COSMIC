@@ -29,7 +29,9 @@ periods spaced evenly in log space.
        ...:                                                  kstar2=np.ones(n_grid),
        ...:                                                  metallicity=np.ones(n_grid)*0.005)
 
-    In [5]: BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': 1.0,
+    In [6]: SSEDict = {'stellar_engine': 'sse'}
+
+    In [7]: BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': [1.0, 1.0],
        ...:            'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 0.5, 'ck': 1000,
        ...:            'bwind': 0.0, 'lambdaf': 0.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5,
        ...:            'grflag' : 1, 'remnantflag': 4, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0,
@@ -42,13 +44,13 @@ periods spaced evenly in log space.
        ...:            'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0],
        ...:            'bhspinflag' : 0, 'bhspinmag' : 0.0, 'rejuv_fac' : 1.0, 'rejuvflag' : 0, 'htpmb' : 1,
        ...:            'ST_cr' : 1, 'ST_tide' : 1, 'bdecayfac' : 1, 'rembar_massloss' : 0.5, 'kickflag' : 1,
-       ...:            'zsun' : 0.014, 'bhms_coll_flag' : 0, 'don_lim' : -1, 'acc_lim' : -1, 'rtmsflag' : 0,
+       ...:            'zsun' : 0.014, 'bhms_coll_flag' : 0, 'don_lim' : -1, 'acc_lim' : [-1, -1], 'rtmsflag' : 0,
        ...:            'wd_mass_lim': 1}
 
-    In [6]: print(binary_grid)
+    In [8]: print(binary_grid)
 
-    In [7]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary_grid, BSEDict=BSEDict)
+    In [9]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary_grid, BSEDict=BSEDict, SSEDict=SSEDict)
 
-    In [8]: print(bpp)
+    In [10]: print(bpp)
 
-    In [9]: print(bcm)
+    In [11]: print(bcm)
