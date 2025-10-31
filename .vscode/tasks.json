@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "make test",
             "options": {
-                "cwd": "${workspaceFolder}/cosmic/src"
+                "cwd": "${workspaceFolder}/src/cosmic/src"
             },
         }
     ]

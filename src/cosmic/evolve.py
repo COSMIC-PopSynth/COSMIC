@@ -49,7 +49,7 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
 __all__ = ['Evolve']
 
 
-
+# Make this match the ordering of all_cols in bpp_array.f
 ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
                'tms_2', 'massc_1', 'massc_2', 'rad_1', 'rad_2', 'mass0_1',

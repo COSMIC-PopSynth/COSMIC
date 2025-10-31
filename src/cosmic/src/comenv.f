@@ -21,6 +21,21 @@
 *     Update : P. D. Kiel (for ECSN, fallback and bugs)
 *     Date : cmc version mid 2010
 *
+*     Update : V. E. Delfavero (bugs in bpp reporting)
+*     Date : 20th, April 2025
+*
+* Note on indexing binary components:
+*
+* M01, M1, MC1, AJ1, JSPIN1, KW1, formation1, bhspin1 are selected with star1
+* M02, M2, MC2, AJ2, JSPIN2, KW2, formation2, bhspin1 are selected with star2
+*
+* deltam_1 and deltam_2 are calculated before being passed into comenv
+*
+* teff, radc, and ospin are calculated inside comenv (or a function)
+*
+* Other quantities are passed as vectors.
+* These are lumin, menv_bpp, tms, rad, renv, bacc, tacc, epoch, and B_0.
+* tms and rad are immediately separated into tms1/2_bpp and rad1/2_bpp
 *
       INTEGER KW1,KW2,KW,KW1i,KW2i,snp
       INTEGER star1,star2
@@ -324,11 +339,11 @@
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                      M02,M01,lumin(1),lumin(2),teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),menv_bpp(2),renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                    else
@@ -634,11 +649,11 @@
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                      M02,M01,lumin(1),lumin(2),teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),menv_bpp(2),renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                    else
@@ -803,11 +818,11 @@
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                      M02,M01,lumin(1),lumin(2),teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),menv_bpp(2),renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                    else
@@ -1038,11 +1053,11 @@
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       massc1_bpp,massc2_bpp,rad1_bpp,rad2_bpp,
-     &                      M02,M01,lumin(2),lumin(1),teff2,teff1,
-     &                      RC2,RC1,menv_bpp(2),menv_bpp(1),renv_bpp(2),
-     &                      renv_bpp(1),OSPIN2,OSPIN1,B_0(2),B_0(1),
-     &                      bacc(2),bacc(1),tacc(2),tacc(1),epoch(2),
-     &                      epoch(1),bhspin2,bhspin1,
+     &                      M02,M01,lumin(1),lumin(2),teff1,teff2,
+     &                      RC2,RC1,menv_bpp(1),menv_bpp(2),renv_bpp(1),
+     &                      renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                      epoch(2),bhspin2,bhspin1,
      &                      deltam_2,deltam_1,formation2,formation1,
      &                      binstate,mergertype,'bpp')
                    else

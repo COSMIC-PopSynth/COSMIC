@@ -32,6 +32,7 @@ import os.path
 import glob
 import re
 from pathlib import Path
+import h5py as h5
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -40,6 +41,7 @@ __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = [
     "Scott Coughlin <scott.coughlin@ligo.org>",
     "Michael Zevin <zevin@northwestern.edu>",
+    "Tom Wagg <tomjwagg@gmail.com>",
 ]
 __all__ = [
     "filter_bin_state",
@@ -55,6 +57,8 @@ __all__ = [
     "check_initial_conditions",
     "convert_kstar_evol_type",
     "parse_inifile",
+    "save_initC",
+    "load_initC",
     "pop_write",
     "a_from_p",
     "p_from_a",
@@ -182,6 +186,15 @@ def filter_bin_state(bcm, bpp, method, kstar1_range, kstar2_range):
             ]
 
     return bcm, bin_state_fraction
+
+def conv_select_singles(bcm_save, bpp_save, final_kstar_1): # fix
+    """Select singles"""
+    conv_save = bpp_save.loc[
+            (bpp_save.kstar_1.isin(final_kstar_1))
+        ]
+    # select the formation parameters
+    conv_save = conv_save.groupby("bin_num").first().reset_index()
+    return conv_save
 
 
 def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_lims):
@@ -349,6 +362,77 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
     return conv_save, conv_lims_bin_num
 
 
+def save_initC(filename, initC, key="initC", settings_key="initC_settings", force_save_all=False):
+    """Save an initC table to an HDF5 file.
+
+    Any column where every binary has the same value (setting) is saved separately with only a single copy
+    to save space.
+
+    This will take slightly longer (a few seconds instead of 1 second) to run but will save you around
+    a kilobyte per binary, which adds up!
+
+    Parameters
+    ----------
+    filename : `str`
+        Filename/path to the HDF5 file
+    initC : `pandas.DataFrame`
+        Initial conditions table
+    key : `str`, optional
+        Dataset key to use for main table, by default "initC"
+    settings_key : `str`, optional
+        Dataset key to use for settings table, by default "initC_settings"
+    force_save_all : `bool`, optional
+        If true, force all settings columns to be saved in the main table, by default False
+    """
+
+    # for each column, check if all values are the same
+    uniques = initC.nunique(axis=0)
+    compress_cols = [col for col in initC.columns if uniques[col] == 1]
+
+    if len(compress_cols) == 0 or force_save_all:
+        # nothing to compress, just save the whole table
+        initC.to_hdf(filename, key=key)
+    else:
+        # save the main table without the compressed columns
+        initC.drop(columns=compress_cols).to_hdf(filename, key=key)
+
+        # save the compressed columns separately
+        settings_df = pd.DataFrame([{col: initC[col].iloc[0] for col in compress_cols}])
+        settings_df.to_hdf(filename, key=settings_key)
+
+
+def load_initC(filename, key="initC", settings_key="initC_settings"):
+    """Load an initC table from an HDF5 file.
+
+    If settings were saved separately, they are merged back into the main table.
+
+    Parameters
+    ----------
+    filename : `str`
+        Filename/path to the HDF5 file
+    key : `str`, optional
+        Dataset key to use for main table, by default "initC"
+    settings_key : `str`, optional
+        Dataset key to use for settings table, by default "initC_settings"
+
+    Returns
+    -------
+    initC : `pandas.DataFrame`
+        Initial conditions table
+    """
+
+    with h5.File(filename, 'r') as f:
+        has_settings = settings_key in f.keys()
+
+    initC = pd.read_hdf(filename, key=key)
+
+    if has_settings:
+        settings_df = pd.read_hdf(filename, key=settings_key)
+        initC.loc[:, settings_df.columns] = settings_df.values[0]
+
+    return initC
+
+
 def pop_write(
     dat_store,
     log_file,
@@ -362,6 +446,7 @@ def pop_write(
     bin_state_nums,
     match,
     idx,
+    **kwargs,
 ):
     """Writes all the good stuff that you want to save from runFixedPop in a
        single function
@@ -406,6 +491,21 @@ def pop_write(
         contains the index of the bcm so we can pick up where we left off
         if runFixedPop hits a wall time
 
+    conv_singles : `pandas.DataFrame`
+        kwargs conv_singles array to write
+
+    bcm_singles : `pandas.DataFrame`
+        kwargs bcm_singles array to write
+
+    bpp_singles : `pandas.DataFrame`
+        kwargs bpp_singles array to write
+
+    initC_singles : `pandas.DataFrame`
+        kwargs initC_singles array to write
+
+    kick_info_singles : `pandas.DataFrame`
+        kwargs kick_info_singles array to write
+
     Returns
     -------
     Nothing!
@@ -427,7 +527,7 @@ def pop_write(
 
     # Save the initial binaries
     # ensure that the index corresponds to bin_num
-    dat_store.append("initCond", initC.set_index("bin_num", drop=False))
+    dat_store.append("initC", initC.set_index("bin_num", drop=False))
 
     # Save the converging dataframe
     dat_store.append("conv", conv)
@@ -443,6 +543,24 @@ def pop_write(
 
     # Save the index
     dat_store.append("idx", pd.DataFrame([idx]))
+
+    if "conv_singles" in kwargs.keys():
+
+        # Save the singles conv dataframe
+        dat_store.append("conv_singles", kwargs["conv_singles"])
+
+        # Save the singles bcm dataframe
+        dat_store.append("bcm_singles", kwargs["bcm_singles"])
+
+        # Save the singles bpp dataframe
+        dat_store.append("bpp_singles", kwargs["bpp_singles"])
+
+        # save the singles initCond dataframe
+        dat_store.append("initC_singles", kwargs["initC_singles"])
+
+        # save the singles kick_info dataframe      
+        dat_store.append("kick_info_singles", kwargs["kick_info_singles"])
+
     return
 
 
@@ -556,7 +674,7 @@ def mass_min_max_select(kstar_1, kstar_2, **kwargs):
     if ((primary_min < 0.08) | (secondary_min < 0.08)):
         warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses less than 0.08 Msun!")
     if primary_max > 150:
-        warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses greater than 150 Msun!")
+        warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses greater than 150 Msun! And to be honest, we are extrapolating beyond 50 Msun :-/")
 
     min_mass = [primary_min, secondary_min]
     max_mass = [primary_max, secondary_max]

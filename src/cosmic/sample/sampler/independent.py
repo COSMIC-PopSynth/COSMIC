@@ -364,7 +364,7 @@ def get_independent_sampler(
             np.ones_like(mass1_singles) * 15,       # kstar2 (all massless remnants)
             metallicity_singles,                    # metallicity
         )
-        binary_table = pd.concat([binary_table, singles_table])
+        binary_table = pd.concat([binary_table, singles_table], ignore_index=True)
     else:
         binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
@@ -383,7 +383,7 @@ def get_independent_sampler(
         m_sampled_singles,
         m_sampled_binaries,
         n_singles,
-        n_binaries,
+        n_binaries
     )
 
 
@@ -526,7 +526,6 @@ class Sample(object):
             sampled secondary masses with array size matching size of
             primary_mass
         """
-
         qmin = kwargs["qmin"] if "qmin" in kwargs.keys() else 0.0
         m1_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
         m2_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else None
@@ -536,6 +535,9 @@ class Sample(object):
             raise ValueError("The m2_min you specified is above the minimum"
                              " primary mass of the IMF, either lower m2_min or"
                              " raise the lower value of your sampled primaries")
+        
+        if (m2_min is not None) & (qmin != 0):
+            raise ValueError("You cannot specify both m2_min and qmin, please choose one or the other")  
 
         # --- `msort` kwarg can be set to have different qmin above `msort`
         msort = kwargs["msort"] if "msort" in kwargs.keys() else None

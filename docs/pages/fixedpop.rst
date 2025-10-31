@@ -92,7 +92,15 @@ The fixed population contains several pandas DataFrames accessed by the followin
 
 * ``kick_info`` : The magnitude and direction of natal kicks, three dimensional systemic velocity changes, total tilt of orbital plane, and azimuthal angle of orbital angular momentum axis with respect to spins
 
-* ``initCond`` : The initial conditions for each binary which satisfies the user-specified final kstars and filter in the ``convergence`` subsection
+* ``initC`` : The initial conditions for each binary which satisfies the user-specified final kstars and filter in the ``convergence`` subsection
+
+* ``bpp_singles`` : The evolutionary history of single stars which satisfy the user-specified final kstars and filter in the ``convergence`` subsection
+
+* ``bcm_singles`` : The final state of single stars in the bcm array which satisfy the user-specified final kstars and filter in the ``convergence`` subsection
+
+* ``kick_info_singles`` : The magnitude and direction of natal kicks, three dimensional systemic velocity changes, total tilt of orbital plane, and azimuthal angle of orbital angular momentum axis with respect to spins
+
+* ``initC_singles`` : The initial conditions for each single star which satisfies the user-specified final kstars and filter in the ``convergence`` subsection
 
 * ``idx`` : An integer that keeps track of the total number of simulated binaries to maintain proper indexing across several runs of ``cosmic-pop``
 
@@ -126,11 +134,11 @@ First, we need to load the data which is saved in the same directory where` ``co
 
     In [2]: import numpy
 
-    In [3]: conv = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='conv')
+    In [3]: conv = pandas.read_hdf('data/dat_DeltaBurst_13_14_13_14.h5', key='conv')
 
-    In [4]: total_mass = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='mass_stars')
+    In [4]: total_mass = pandas.read_hdf('data/dat_DeltaBurst_13_14_13_14.h5', key='mass_stars')
 
-    In [5]: N_stars = pandas.read_hdf('fixedpop/dat_DeltaBurst_13_14_13_14.h5', key='n_stars')
+    In [5]: N_stars = pandas.read_hdf('data/dat_DeltaBurst_13_14_13_14.h5', key='n_stars')
 
 .. note::
 

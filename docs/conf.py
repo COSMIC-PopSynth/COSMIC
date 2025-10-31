@@ -46,7 +46,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.imgmath',
+    'sphinx.ext.mathjax',
     'sphinx.ext.autosummary',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.linkcode',
@@ -57,9 +57,16 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'numpydoc',
+    'sphinx_design',
+    'sphinx_copybutton',
 ]
 
 # -- Extensions ---------------------------------------------------------------
+
+# -- copybutton ---------------------------------
+
+copybutton_exclude = '.linenos, .gp, .go, .gh'
+copybutton_copy_empty_lines = False
 
 # -- autodoc ------------------------------------
 
@@ -102,9 +109,6 @@ source_suffix = '.rst'
 fortran_ext = ['f']
 fortran_src = '../cosmic/src/'
 
-# The encoding of source files.
-# source_encoding = 'utf-8-sig'
-
 # The master toctree document.
 master_doc = 'index'
 
@@ -129,40 +133,13 @@ release = cosmic_version
 # Usually you set "language" from the command line for these cases.
 language = 'en'
 
-# There are two options for replacing |today|: either, you set today to some
-# non-false value, then it is used:
-# today = ''
-# Else, today_fmt is used as the format for a strftime call.
-# today_fmt = '%B %d, %Y'
-
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "*tests*"]
 
-# The reST default role (used for this markup: `text`) to use for all
-# documents.
-# default_role = None
-
-# If true, '()' will be appended to :func: etc. cross-reference text.
-# add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-# add_module_names = True
-
-# If true, sectionauthor and moduleauthor directives will be shown in the
-# output. They are ignored by default.
-# show_authors = False
-
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
-
-# A list of ignored prefixes for module index sorting.
-# modindex_common_prefix = []
-
-# If true, keep warnings as "system message" paragraphs in the built documents.
-# keep_warnings = False
+pygments_style = 'monokai'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -172,26 +149,49 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+html_theme_options = {
+    "source_repository": "https://github.com/COSMIC-popsynth/COSMIC",
+    "source_branch": "develop",
+    "source_directory": "docs/",
+    "light_css_variables": {
+        "color-brand-primary": "#3f95e1",
+        "color-brand-content": "#3f95e1",
+        "color-brand-visited": "#3f95e1",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#f08c33",
+        "color-brand-content": "#f08c33",
+        "color-brand-visited": "#f08c33"
+    },
+    "sidebar_hide_name": False,
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/COSMIC-PopSynth/COSMIC",
+            "html": "",
+            "class": "fa-brands fa-solid fa-github fa-2x",
+        },
+    ],
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-# html_title = u'cosmic v0.1'
+html_title = f"<span class='hide-me'>COSMIC </span>v{cosmic_version}"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = None
+html_logo = "https://cosmic-popsynth.github.io/images/cosmic-popsynth_1200.png"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16
@@ -203,6 +203,18 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css",
+    "cosmic-docs.css",
+    "bootstrap-grid.min.css",
+]
+
+html_js_files = [
+    "custom.js"
+]
+
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
@@ -212,13 +224,6 @@ html_static_path = ['_static']
 # bottom, using the given strftime format.
 # The empty string is equivalent to '%b %d, %Y'.
 # html_last_updated_fmt = None
-
-# If true, SmartyPants will be used to convert quotes and dashes to
-# typographically correct entities.
-# html_use_smartypants = True
-
-# Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -322,9 +327,6 @@ man_pages = [
      [author], 1)
 ]
 
-# If true, show URL addresses after external links.
-# man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -337,17 +339,8 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
 # If false, no module index is generated.
 # texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-# texinfo_no_detailmenu = False
 
 # -- Extensions -----------------------------------------------------------
 
@@ -357,6 +350,7 @@ intersphinx_mapping = {
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'astropy': ('http://docs.astropy.org/en/stable/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
 }
 
 # -- linkcode -----------------------------------------------------------------

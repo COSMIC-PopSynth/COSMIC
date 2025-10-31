@@ -16,7 +16,7 @@ OBJT1 = $(SRC:.f=.o)
 
 test:    $(OBJT1) $(LFLAGS)
 	$(CMPLR) $(FFLAGS) $(OBJT1) -o test
-	mv test ../../debug/test
+	mv test ../../../debug/test
 
 clean:
 	rm -f *.o ../../debug/test

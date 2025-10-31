@@ -957,7 +957,7 @@
                 ]
             },
             {
-                "name": "ecsn_low",
+                "name": "ecsn_mlow",
                 "description": "Sets the low end of the ECSN mass range",
                 "type": "number",
                 "options-preface": "",

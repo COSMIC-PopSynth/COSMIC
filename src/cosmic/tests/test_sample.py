@@ -186,11 +186,22 @@ class TestSample(unittest.TestCase):
         slope = linear_fit(q)
         self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
 
+        # This is now redundant since you should only sample with qmin or m2_min
+        #np.random.seed(2)
+        #mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1, m2_min=0.08)
+        #q = mass2[ind_massive] / mass1[ind_massive]
+        #slope = linear_fit(q)
+        #self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+
+    def test_sample_q(self):
+        """Test you can sample different mass ratio distributions"""
         np.random.seed(2)
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, qmin=0.1, m2_min=0.08)
-        q = mass2[ind_massive] / mass1[ind_massive]
-        slope = linear_fit(q)
-        self.assertEqual(np.round(slope, 1), FLAT_SLOPE)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=10000000)
+        for slope in [0, 1, 2]:
+            mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, q_power_law=slope, qmin=0.0)
+            q = mass2 / mass1
+            fit_slope = power_law_fit(q)
+            self.assertEqual(np.round(fit_slope, 1), slope)
 
     def test_sample_q(self):
         """Test you can sample different mass ratio distributions"""
@@ -249,19 +260,33 @@ class TestSample(unittest.TestCase):
             error = abs(offner_value - bin_frac)
             self.assertLess(error, offner_error)
 
+        test_fracs = []
+        test_errs = []
+        primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner22')
+        for i in range(len(OFFNER_MASS_RANGES)):
+            low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
+            offner_value = OFFNER_DATA[i]
+            offner_error = OFFNER_ERRORS[i]
+            bins_count = len(m1_b[(m1_b >= low) & (m1_b <= high)])
+            singles_count = len(m1_s[(m1_s >= low) & (m1_s <= high)])
+            bin_frac = bins_count / (bins_count + singles_count)
+            error = abs(offner_value - bin_frac)
+            self.assertLess(error, offner_error)
+
     def test_msort(self):
         np.random.seed(2)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=1000000)
         # Check that qmin_msort and m2_min_msort are workings as expected
-        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1, m2_min=0.08, msort=15, qmin_msort=0.7, m2_min_msort=12)
+        mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1, msort=15, qmin_msort=0.7, m2_min_msort=12)
         ind_light, = np.where(mass1 < 15.0)
         ind_massive, = np.where(mass1 >= 15.0)
         m2_light = mass2[ind_light]
         m2_massive = mass2[ind_massive]
         q_light = mass2[ind_light]/mass1[ind_light]
         q_massive = mass2[ind_massive]/mass1[ind_massive]
-        assert m2_light.min() > M2MIN_LOWMASS
-        assert m2_massive.min() > M2MIN_HIGHMASS
+        assert m2_light.min() > np.min(mass1[ind_light]) * 0.1
+        assert m2_massive.min() > np.min(mass1[ind_massive]) * 0.7
         assert q_light.min() > QMIN_LOWMASS
         assert q_massive.min() > QMIN_HIGHMASS
         # Check that the binary fraction tracking is correct when using msort
@@ -339,7 +364,6 @@ class TestSample(unittest.TestCase):
         metallicity = 0.001
         # this is a metallicity dependent population:
         binfrac = get_met_dep_binfrac(metallicity)
-        print(binfrac)
         mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
         (mass1_binaries, mass_single, binfrac_binaries, binary_index,) = SAMPLECLASS.binary_select(
             mass1, binfrac_model=binfrac,
@@ -420,7 +444,7 @@ class TestSample(unittest.TestCase):
 
     def test_Moe_sample(self):
         # Test the multidim sampler and system-by-system binary fraction
-        m1, m2, porb, ecc, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1, mp_seeds=[0])
+        m1, m2, porb, ecc, single_mass_list, mass_singles, mass_binaries, n_singles, n_binaries, binfrac = MULTIDIMSAMPLECLASS.initial_sample(rand_seed = 2, size=10, nproc=1, mp_seeds=[0])
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
         self.assertAlmostEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
         self.assertAlmostEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)

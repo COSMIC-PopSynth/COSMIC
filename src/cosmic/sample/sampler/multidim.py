@@ -25,6 +25,7 @@ from .. import InitialBinaryTable
 from ... import utils
 
 import numpy as np
+import pandas as pd
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
@@ -146,6 +147,7 @@ def get_multidim_sampler(
         mass2_binary,
         porb,
         ecc,
+        single_mass_list,
         mass_singles,
         mass_binaries,
         n_singles,
@@ -174,7 +176,7 @@ def get_multidim_sampler(
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
 
-    if kwargs.pop("keep_singles", False):
+    if kwargs.pop("keep_singles", True):
         binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
             mass2_binary,
@@ -187,22 +189,22 @@ def get_multidim_sampler(
             binfrac=binfrac,
         )
         tphysf, metallicity = initconditions.sample_SFH(
-            SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass_singles.size
+            SF_start=SF_start, SF_duration=SF_duration, met=met, size=single_mass_list.size
         )
         metallicity[metallicity < 1e-4] = 1e-4
         metallicity[metallicity > 0.03] = 0.03
-        kstar1 = initconditions.set_kstar(mass_singles)
+        kstar1 = initconditions.set_kstar(single_mass_list)
         singles_table = InitialBinaryTable.InitialBinaries(
-            mass_singles,
-            np.ones_like(mass_singles)*0,
-            np.ones_like(mass_singles)*-1,
-            np.ones_like(mass_singles)*-1,
+            single_mass_list,
+            np.ones_like(single_mass_list)*0,
+            np.ones_like(single_mass_list)*-1,
+            np.ones_like(single_mass_list)*-1,
             tphysf,
             kstar1,
-            np.ones_like(mass_singles)*0,
+            np.ones_like(single_mass_list)*15, # # kstar2 is not used for singles
             metallicity,
         )
-        binary_table = binary_table.append(singles_table)
+        binary_table = pd.concat([binary_table, singles_table], ignore_index=True)
     else:
         binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
@@ -321,6 +323,8 @@ class MultiDim:
             array of orbital periods in days with size=size
         ecc_list : array
             array of eccentricities with size=size
+        single_mass_list : array
+            array of mass of single stars
         mass_singles : `float`
             Total mass in single stars needed to generate population
         mass_binaries : `float`
@@ -360,7 +364,7 @@ class MultiDim:
             worker = Worker()
             results = list(pool.map(worker, inputs))
 
-        dat_lists = [[], [], [], [], [], [], [], [], []]
+        dat_lists = [[], [], [], [], [], [], [], [], [], []]
 
         for output_list in results:
             ii = 0
@@ -372,17 +376,19 @@ class MultiDim:
         secondary_mass_list = np.hstack(dat_lists[1])
         porb_list = np.hstack(dat_lists[2])
         ecc_list = np.hstack(dat_lists[3])
-        mass_singles = np.sum(dat_lists[4])
-        mass_binaries = np.sum(dat_lists[5])
-        n_singles = np.sum(dat_lists[6])
-        n_binaries = np.sum(dat_lists[7])
-        binfrac_list = np.hstack(dat_lists[8])
+        single_mass_list = np.hstack(dat_lists[4])
+        mass_singles = np.sum(dat_lists[5])
+        mass_binaries = np.sum(dat_lists[6])
+        n_singles = np.sum(dat_lists[7])
+        n_binaries = np.sum(dat_lists[8])
+        binfrac_list = np.hstack(dat_lists[9])
 
         return (
                 primary_mass_list,
                 secondary_mass_list,
                 porb_list,
                 ecc_list,
+                single_mass_list,
                 mass_singles,
                 mass_binaries,
                 n_singles,
@@ -773,6 +779,7 @@ class Worker(object):
         n_binaries = 0
         primary_mass_list = []
         secondary_mass_list = []
+        single_mass_list = []
         porb_list = []
         ecc_list = []
         binfrac_list = []
@@ -857,6 +864,7 @@ class Worker(object):
                 mass_binaries += myq * myM1
                 n_binaries += 1
             else:
+                single_mass_list.append(myM1)
                 mass_singles += myM1
                 n_singles += 1
 
@@ -865,6 +873,7 @@ class Worker(object):
                 secondary_mass_list,
                 porb_list,
                 ecc_list,
+                single_mass_list,
                 mass_singles,
                 mass_binaries,
                 n_singles,
