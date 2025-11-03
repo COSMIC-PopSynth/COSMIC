@@ -177,14 +177,14 @@
 <div class="col-9">
 <h3 class="name"><code>alpha1</code></h3>
 <p class="description">Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 71</a>.</p>
-<p class="default">Default: 1.0</p>
+<p class="default">Default: [1.0, 1.0]</p>
 </div>
-<div class="col-3"><input class="form-control" type="number" value="1.0"/></div>
+<div class="col-3"><input class="form-control" type="text" value="[1.0, 1.0]"/></div>
 </div>
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
-<p class="options-preface">This value is equivalent to \(\alpha\) in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 71</a>.</p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Sets the common-envelope efficiency parameter, \(\alpha\)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">1.0</span></code>: <span class="opt-desc">Default value</span></li></ul>
+<p class="options-preface">This value is equivalent to \(\alpha\) in <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 71</a>. A list is supplied such that the primary and secondary can be assigned different values for \(\alpha\).</p>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">positive values</span></code>: <span class="opt-desc">Sets the common-envelope efficiency parameter, \(\alpha\), for each binary component</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">[1.0, 1.0]</span></code>: <span class="opt-desc">Default value</span></li></ul>
 </div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
@@ -193,7 +193,7 @@
 <p class="description">Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \(1 / \lambda\). See <a href="https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract">Hurley+2002, Eq. 69</a>.</p>
 <p class="default">Default: 0.0</p>
 </div>
-<div class="col-3"><input class="form-control" type="number" value="0.0"/></div>
+<div class="col-3"><input class="form-control" type="text" value="0.0"/></div>
 </div>
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
@@ -404,12 +404,12 @@
 <p class="description">Sets the particular natal kick prescription to use. Note that <code class="docutils literal notranslate"><span class="pre">sigmadiv</span></code>, <code class="docutils literal notranslate"><span class="pre">bhflag</span></code>, <code class="docutils literal notranslate"><span class="pre">bhsigmafrac</span></code>, <code class="docutils literal notranslate"><span class="pre">aic</span></code>, and <code class="docutils literal notranslate"><span class="pre">ussn</span></code>, which are described below, are only used when <code class="docutils literal notranslate"><span class="pre">abs(kickflag)=1</span></code>. Positive values use the Pfahl+2002 prescription for handling natal kicks.</p>
 <p class="default">Default: 1</p>
 </div>
-<div class="col-3"><select class="form-control"><option selected="true" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="negative values">negative values</option></select></div>
+<div class="col-3"><select class="form-control"><option selected="true" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="negative values">negative values</option></select></div>
 </div>
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
 <p class="options-preface"></p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and ECSN/USSN are drawn according to <code class="docutils literal notranslate"><span class="pre">sigmadiv</span></code>. This setting has additional possible options for <code class="docutils literal notranslate"><span class="pre">bhflag</span></code>, <code class="docutils literal notranslate"><span class="pre">bhsigmafrac</span></code>, <code class="docutils literal notranslate"><span class="pre">aic</span></code> and <code class="docutils literal notranslate"><span class="pre">ussn</span></code>.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a> with their default parameters (\(m_{\rm NS = 1.2 {\rm M_\odot}\), \(m_{\rm ej = 9 {\rm M_\odot}\))</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">3</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a>, which does not scale the kick by (\(m_{\rm NS\)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">4</span></code>: <span class="opt-desc">Natal kicks are drawn according to Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract">Bray &amp; Eldridge 2016</a>, with their default parameters (\(\alpha=70 \, {\rm km/s}, \beta = 120 \, {\rm km/s)}</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">negative values</span></code>: <span class="opt-desc">Same as above settings but using the old Kiel &amp; Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work</span></li></ul>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">1</span></code>: <span class="opt-desc">The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and ECSN/USSN are drawn according to <code class="docutils literal notranslate"><span class="pre">sigmadiv</span></code>. This setting has additional possible options for <code class="docutils literal notranslate"><span class="pre">bhflag</span></code>, <code class="docutils literal notranslate"><span class="pre">bhsigmafrac</span></code>, <code class="docutils literal notranslate"><span class="pre">aic</span></code> and <code class="docutils literal notranslate"><span class="pre">ussn</span></code>.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">2</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by the ejecta mass and remnant mass following Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a> with their default parameters (\(m_{\rm NS = 1.2 {\rm M_\odot}\), \(m_{\rm ej = 9 {\rm M_\odot}\))</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">3</span></code>: <span class="opt-desc">Natal kicks are drawn according to <code class="docutils literal notranslate"><span class="pre">sigma</span></code> and scaled by just the ejecta mass following Eq. 2 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2020ApJ...891..141G/abstract">Giacobbo &amp; Mapelli 2020</a>, which does not scale the kick by (\(m_{\rm NS\)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">4</span></code>: <span class="opt-desc">Natal kicks are drawn according to Eq. 1 of <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2016MNRAS.461.3747B/abstract">Bray &amp; Eldridge 2016</a>, with their default parameters (\(\alpha=70 \, {\rm km/s}, \beta = 120 \, {\rm km/s)}</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">5</span></code>: <span class="opt-desc">Follows the same prescription as 1, but uses the kick prescription described in <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract">Disberg &amp; Mandel 2025</a> for CCSN.</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">negative values</span></code>: <span class="opt-desc">Same as above settings but using the old Kiel &amp; Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work. kickflag=-5 is NOT implemented.</span></li></ul>
 </div>
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
@@ -484,7 +484,7 @@
 </div><div class="setting">
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
-<h3 class="name"><code>ecsn_low</code></h3>
+<h3 class="name"><code>ecsn_mlow</code></h3>
 <p class="description">Sets the low end of the ECSN mass range</p>
 <p class="default">Default: 1.6</p>
 </div>
@@ -709,15 +709,15 @@
 <div class="row align-items-center setting-chooser">
 <div class="col-9">
 <h3 class="name"><code>acc_lim</code></h3>
-<p class="description">Limits the amount of mass accreted during Roche-lobe overflow</p>
-<p class="default">Default: -1</p>
+<p class="description">Limits the amount of mass accreted during Roche-lobe overflow where each binary component must have its own limit specified in a list</p>
+<p class="default">Default: [-1, -1]</p>
 </div>
-<div class="col-3"><input class="form-control" type="number" value="-1"/></div>
+<div class="col-3"><input class="form-control" type="text" value="[-1, -1]"/></div>
 </div>
 <div class="options-expander" style="color: lightcoral;">Option details <i class="fa fa-chevron-down"></i></div>
 <div class="row options hide">
 <p class="options-preface"></p>
-<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-2</span></code>: <span class="opt-desc">limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-3</span></code>: <span class="opt-desc">limited to 10x the thermal rate of the accretor for all stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-4</span></code>: <span class="opt-desc">limited to 1x the thermal rate of the accretor for all stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">&gt;= 0</span></code>: <span class="opt-desc">sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a>)</span></li></ul>
+<ul style="margin-left: 2rem; max-width: calc(100% - 2rem)"><li><code class="docutils literal notranslate"><span class="pre opt-val">-1</span></code>: <span class="opt-desc">limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-2</span></code>: <span class="opt-desc">limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-3</span></code>: <span class="opt-desc">limited to 10x the thermal rate of the accretor for all stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">-4</span></code>: <span class="opt-desc">limited to 1x the thermal rate of the accretor for all stars</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">&gt;= 0</span></code>: <span class="opt-desc">sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract">Belczynski+2008</a>)</span></li><li><code class="docutils literal notranslate"><span class="pre opt-val">[-1, -1]</span></code>: <span class="opt-desc">Default choice</span></li></ul>
 </div>
 </div><div class="settings-section"><h2 id="tides">Tides</h2><hr/></div><div class="setting">
 <div class="row align-items-center setting-chooser">
