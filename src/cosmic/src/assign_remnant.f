@@ -7,6 +7,7 @@
       REAL*8 fallback
       REAL ran3
       EXTERNAL ran3
+      EXTERNAL RandomNormal
       real*8 zpars(20)
 
       real*8 avar,bvar
@@ -450,24 +451,3 @@
             endif
 *
       end
-
-
-      SUBROUTINE RandomNormal(mean, sigma, idum, lower, upper, result)
-* Generate a normally distributed random number with given mean and sigma
-* using the Box-Muller transform, redrawing if the number is outside
-* the specified lower and upper bounds.
-
-      real*8 mean, sigma, result, lower, upper
-      integer idum
-      real*8 u1, u2, Z0
-
-      do
-         u1 = ran3(idum)
-         u2 = ran3(idum)
-         Z0 = SQRT(-2.d0*LOG(u1))*COS(2.d0*3.141592653589793d0*u2)
-         result = Z0 * sigma + mean
-         if(result.ge.lower .and. result.le.upper) exit
-      enddo
-
-      RETURN
-      END
