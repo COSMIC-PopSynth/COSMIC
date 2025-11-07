@@ -231,6 +231,39 @@
                          endif
                      endif
                      mc = mt
+                  elseif(remnantflag.eq.5)then
+*
+* Use the Mandel & Mueller 2020 prescription
+*
+                     pBH = 0.0d0
+                     mm_m1 = 2.0d0
+                     mm_m2 = 3.0d0
+                     mm_m3 = 7.0d0
+                     mm_m4 = 8.0d0
+                     min_ns_mass = 1.13d0
+
+* Determine probability of forming a BH based on core mass
+                     if(mc.lt.mm_m1)then
+                        pBH = 0.0d0
+                     elseif(mc.ge.mm_m1.and.mc.lt.mm_m3)then
+                        pBH = (mc - mm_m1)/(mm_m3 - mm_m1)
+                     else
+                        pBH = 1.0d0
+                     endif
+
+* Draw random numbers for BH/NS decision, complete fallback decision
+* and remnant mass assignment
+                     u_pBH = ran3(idum1)
+                     u_pCF = ran3(idum1)
+                     u_rem = ran3(idum1)
+                     if(u_pBH.le.pBH)then
+                        pCF = 0.0d0
+                        if (mc.ge.mm_m1.and.mc.lt.mm_m4) then
+                           pCF = (mc - mm_m1)/(mm_m4 - mm_m1)
+                        else
+                           pCF = 1.0d0
+                        endif
+                     endif
                   endif
 
 * Specify the baryonic to gravitational remnant mass prescription
@@ -384,3 +417,24 @@
             endif
 *
       end
+
+
+      SUBROUTINE RandomNormal(mean, sigma, idum, lower, upper, result)
+* Generate a normally distributed random number with given mean and sigma
+* using the Box-Muller transform, redrawing if the number is outside
+* the specified lower and upper bounds.
+
+      real*8 mean, sigma, result, lower, upper
+      integer idum
+      real*8 u1, u2, Z0
+
+      do
+         u1 = ran3(idum)
+         u2 = ran3(idum)
+         Z0 = SQRT(-2.d0*LOG(u1))*COS(2.d0*3.141592653589793d0*u2)
+         result = Z0 * sigma + mean
+         if(result.ge.lower .and. result.le.upper) exit
+      enddo
+
+      RETURN
+      END
