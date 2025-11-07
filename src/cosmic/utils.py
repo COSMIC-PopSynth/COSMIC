@@ -1399,9 +1399,9 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "kickflag"
     if flag in BSEDict.keys():
-        if abs(BSEDict[flag]) not in [1, 2, 3, 4, 5]:
+        if abs(BSEDict[flag]) not in [1, 2, 3, 4, 5, 6]:
             raise ValueError(
-                "abs('{0:s}') needs to be set to value in 1 - 5 inclusive (you set it to '{1:d}')".format(
+                "abs('{0:s}') needs to be set to value in 1 - 6 inclusive (you set it to '{1:d}')".format(
                     flag, BSEDict[flag]
                 )
             )
