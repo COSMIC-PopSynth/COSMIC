@@ -15,6 +15,11 @@
       real*8 mcx, bhspin,mrem,mch
       integer kw,kidx
 
+      real*8 mm_m1, mm_m2, mm_m3, mm_m4, min_ns_mass
+      real*8 pBH, pCF
+      real*8 u_pBH, u_pCF, u_rem
+      real*8 ns_mu, ns_sigma
+
       
 * input mc(or mcmax),mass, mcbagb
 * output mt, kw, mc, mass,bhspin
@@ -256,13 +261,41 @@
                      u_pBH = ran3(idum1)
                      u_pCF = ran3(idum1)
                      u_rem = ran3(idum1)
+
+* Determine remnant type based on pBH
                      if(u_pBH.le.pBH)then
+* BH formed
                         pCF = 0.0d0
                         if (mc.ge.mm_m1.and.mc.lt.mm_m4) then
                            pCF = (mc - mm_m1)/(mm_m4 - mm_m1)
                         else
                            pCF = 1.0d0
                         endif
+
+                        if (u_pCF.le.pCF) then
+* Complete fallback occurred, remnant mass equals pre-SN core mass
+                           mt = mc
+                        else
+* Partial fallback occurred, remnant mass drawn from Normal
+                           call RandomNormal(0.8d0 * mc, 0.5d0 * 0.5d0,
+     &                                       idum1, mxns, mc, mt)
+                        endif
+                     else
+* NS formed, determine mu and sigma for random normal draw
+                        if (mc.lt.mm_m1) then
+                            ns_mu = 1.2d0
+                            ns_sigma = 0.02d0
+                        elseif (mc.ge.mm_m1.and.mc.lt.mm_m2) then
+                            ns_mu = 1.4d0 + 0.5d0
+     &                             * (mc - mm_m1) / (mm_m2 - mm_m1)
+                            ns_sigma = 0.05d0
+                        else
+                            ns_mu = 1.4d0 + 0.4d0
+     &                             * (mc - mm_m2) / (mm_m3 - mm_m2)
+                            ns_sigma = 0.05d0
+                        endif
+                        call RandomNormal(ns_mu, ns_sigma, idum1,
+     &                                    min_ns_mass, mxns, mt)
                      endif
                   endif
 
