@@ -1341,7 +1341,7 @@ component.
      &                      epoch(2),bhspin(1),bhspin(2),
      &                      deltam1_bcm,deltam2_bcm,formation(1),
      &                      formation(2),binstate,mergertype,'bpp')
-               CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
+               CALL kick(kw,mass(k),massc(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -1382,7 +1382,7 @@ component.
      &                       deltam1_bcm,deltam2_bcm,formation(1),
      &                       formation(2),binstate,mergertype,'bpp')
 
-               CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
+               CALL kick(kw,mass(k),massc(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -3642,7 +3642,7 @@ component.
      &                    epoch(2),bhspin(1),bhspin(2),
      &                    deltam1_bcm,deltam2_bcm,formation(1),
      &                    formation(2),binstate,mergertype,'bpp')
-            CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
+            CALL kick(kw,mass(k),massc(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 

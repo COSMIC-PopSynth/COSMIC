@@ -1,4 +1,4 @@
-      SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
+      SUBROUTINE kick(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
      &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -9,6 +9,8 @@
 *    Stellar type of the exploding star
 * m1: real*8
 *    Mass of the exploding star
+* m1c: real*8
+*    Core mass of the exploding star
 * m1n: real*8
 *    Mass of the compact remnant post-SN
 * m2: real*8
@@ -48,14 +50,14 @@
      &                  r2,fallback,sigmahold,kick_info,disrupt,bkick)
       else
 * New Pfahl et al. 2002 prescription
-         call kick_pfahl(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
+         call kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
      &                   r2,fallback,sigmahold,kick_info,disrupt,bkick)
       end if
       RETURN
       END
 
 
-      SUBROUTINE kick_pfahl(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,r2,
+      SUBROUTINE kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,r2,
      &                      fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
