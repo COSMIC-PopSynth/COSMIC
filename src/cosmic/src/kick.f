@@ -39,7 +39,7 @@
 *    Whether the system is disrupted by the supernova
 
       integer kw,sn
-      real*8 m1,m2,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
+      real*8 m1,m2,m1c,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
       real*8 kick_info(2,18), bkick(20)
       logical disrupt
 
@@ -97,7 +97,7 @@
 * For cmc kick_info array is zero, not negative.
       integer kw,k,sn,safety,abskickflag
 
-      real*8 m1,m2,m1n
+      real*8 m1,m2,m1n,m1c
       real*8 ecc,ecc_2,sep
       real*8 pi,twopi,yearsc,rsunkm,G_const
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
@@ -120,6 +120,7 @@
       real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
+      real*8 mu_mm
       integer i
       logical ECSN_or_USSN
 * Output
@@ -128,6 +129,7 @@
       real*8 kick_info(2,18)
       real ran3,xx
       external ran3
+      external RandomNormal
 *
       output = .false. !useful for debugging...
       collide = .false.
@@ -221,6 +223,16 @@
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
              call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
              vk2 = vk*vk
+          elseif(abskickflag.eq.6)then
+* if the kickflag is 6 then use the Mandel & Muller 2020 distribution
+* https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.3214M/abstract
+             if(kw.eq.14)then
+                mu_mm = 200d0 * max(m1c - m1n, 0.0d0) / m1n
+             else
+                mu_mm = 400d0 * max(m1c - m1n, 0.0d0) / m1n
+             endif
+             call RandomNormal(mu_mm, 0.3d0, idum1, 0.d0, 10000.d0, vk)
+             vk2 = vk * vk
           else
 * Otherwise use the Hobbs et al. 2005 Maxwellian distribution
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
