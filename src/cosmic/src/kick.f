@@ -129,7 +129,7 @@
       real*8 kick_info(2,18)
       real ran3,xx
       external ran3
-      external RandomNormal
+      external RandomTruncatedNormal
 *
       output = .false. !useful for debugging...
       collide = .false.
@@ -231,7 +231,8 @@
              else
                 mu_mm = 400d0 * max(m1c - m1n, 0.0d0) / m1n
              endif
-             call RandomNormal(mu_mm, 0.3d0, idum1, 0.d0, 10000.d0, vk)
+             call RandomTruncatedNormal(mu_mm, 0.3d0 * mu_mm, idum1,
+     &                                  0.d0, 10000.d0, vk)
              vk2 = vk * vk
           else
 * Otherwise use the Hobbs et al. 2005 Maxwellian distribution

@@ -7,7 +7,7 @@
       REAL*8 fallback
       REAL ran3
       EXTERNAL ran3
-      EXTERNAL RandomNormal
+      EXTERNAL RandomTruncatedNormal
       real*8 zpars(20)
 
       real*8 avar,bvar
@@ -278,8 +278,10 @@
                            mt = mc
                         else
 * Partial fallback occurred, remnant mass drawn from Normal
-                           call RandomNormal(0.8d0 * mc, 0.5d0 * 0.5d0,
-     &                                       idum1, mxns, mc, mt)
+                           call RandomTruncatedNormal(0.8d0 * mc,
+     &                                                0.5d0 * 0.5d0,
+     &                                                idum1, mxns, mc,
+     &                                                mt)
                         endif
                      else
 * NS formed, determine mu and sigma for random normal draw
@@ -295,8 +297,9 @@
      &                             * (mc - mm_m2) / (mm_m3 - mm_m2)
                             ns_sigma = 0.05d0
                         endif
-                        call RandomNormal(ns_mu, ns_sigma, idum1,
-     &                                    min_ns_mass, mxns, mt)
+                        call RandomTruncatedNormal(ns_mu, ns_sigma,
+     &                                             idum1, min_ns_mass,
+     &                                             mxns, mt)
                      endif
                   endif
 
