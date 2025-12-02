@@ -32,6 +32,14 @@ Since COSMIC requires compilation of Fortran code, you'll need a gfortran instal
 
             If brew install doesn't work, you can download the specific MacOS gfortran installers from `this link <https://github.com/fxcoudert/gfortran-for-macOS/releases>`_, which is maintained by the gfortran team. Be sure to match the version of gfortran with the version of MacOS you are using.
 
+            Alternatively, if you are using ``conda``, you may have an Intel version installed, running using Rosetta.  You can check this by running:
+
+            .. code-block:: bash
+
+                conda info | grep "platform"
+
+            If you see ``platform : osx-64``, then you have an Intel installation.  Reinstalling using an Apple Silicon version of conda (not ``x86``) will help.
+
         .. code-block:: bash
 
             brew install gcc
