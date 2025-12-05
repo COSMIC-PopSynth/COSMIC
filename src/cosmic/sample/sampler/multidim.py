@@ -176,7 +176,7 @@ def get_multidim_sampler(
     metallicity[metallicity < 1e-4] = 1e-4
     metallicity[metallicity > 0.03] = 0.03
 
-    if kwargs.pop("keep_singles", False):
+    if kwargs.pop("keep_singles", True):
         binary_table = InitialBinaryTable.InitialBinaries(
             mass1_binary,
             mass2_binary,
@@ -201,7 +201,7 @@ def get_multidim_sampler(
             np.ones_like(single_mass_list)*-1,
             tphysf,
             kstar1,
-            np.ones_like(single_mass_list)*0,
+            np.ones_like(single_mass_list)*15, # # kstar2 is not used for singles
             metallicity,
         )
         binary_table = pd.concat([binary_table, singles_table], ignore_index=True)

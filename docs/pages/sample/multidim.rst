@@ -33,3 +33,7 @@ The multidimensional sample is generated as follows:
 
     NOTE that in the multidimensional case, the binary fraction is a parameter in the sample. This results in the size of the initial binary data matching the size provided to the sampler. As in the independent sampling case, we keep track of the total sampled mass of singles and binaries as well as the total number of single and binary stars to scale the simulated population to astrophysical populations.
 
+.. note::
+
+    NOTE that you can also keep singles for the multidim sampelr as well. As with the independent sampler, the singles will be added onto the end of the InitialBinaryTable where ``kstar_1`` will host the singles, ``kstar_2`` will be filled with 15s only, and all orbital properties (e.g. ``porb`` or ``ecc``) will be indicated with -1.
+
