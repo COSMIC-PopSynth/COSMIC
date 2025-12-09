@@ -301,11 +301,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(10))
          endif
          tau = (aj - tscls(2))/tscls(3)
-*        here, mcx is the He core mass, and the other part is the C core
+*        here, mcx is the helium core mass at helium ignition
          mc = mcx + (mcagbf(mass) - mcx)*tau
          WRITE(*,*)'hrdiag: mc=',mc,' mcx=',mcx, 'kw=',kw,' k=',kidx
-         WRITE(*,*)'hrdiag: mc_co=',(mcagbf(mass) - mcx)*tau
-         mc_he(kidx) = mcx + (mcagbf(mass) - mcx)*tau
+         WRITE(*,*)'hrdiag: mc_he=',(mcagbf(mass) - mcx)*tau
+         mc_he(kidx) = mc
          mc_co(kidx) = 0.0
 *
          if(mass.le.zpars(2))then
@@ -466,12 +466,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
             lambdahrdiag = MIN(0.9d0,0.3d0+0.001d0*mass**5)
             tau = tscls(13)
-            mcx = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
-            mcy = mc
-            mc = mc - lambdahrdiag*(mcy-mcx)
+            mcy = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
+            mcx = mc
+            mc = mcy - lambdahrdiag*(mcx-mcy)
             mcx = mc
             mc_co(kidx) = mcx
-            mc_he(kidx) = mcy
+            mc_he(kidx) = mcy - mcx
             mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))
@@ -510,9 +510,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Star has no core mass and hence no memory of its past
 * which is why we subject mass and mt to mass loss for
 * this phase.
+*KB: no helium core mass for stripped stars; no CO core yet since He MS
             mc = 0.d0
-            mc_he(kidx) = mc
-            mc_co(kidx) = 0.0
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = 0.d0
             if(mt.lt.zpars(10)) kw = 10
          else
 *
@@ -527,6 +528,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                r = rg
             endif
             mc = mcgbf(lum,GB,lums(6))
+*
+*KB: helium core mass is always 0 for stripped stars; now calculate CO core mass
+*
             mc_he(kidx) = 0.d0
             mc_co(kidx) = mc
             mtc = MIN(mt,1.45d0*mt-0.31d0)
