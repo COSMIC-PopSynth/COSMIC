@@ -1580,6 +1580,9 @@ component.
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
+          if(kstar(1).eq.14)then
+             WRITE(*,*)'BH???'
+          endif
           evolve_type = 1.d0
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)

@@ -430,7 +430,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             WRITE(*,*)'hrdiag 430: mc=',mc,' mcx=',mcx,' kw=',kw
             WRITE(*,*)'hrdiag: mcbagb=',mcbagb
             mc_co(kidx) = mcx
-            mc_he(kidx) = mcbagb
+            mc_he(kidx) = mcbagb - mcx
             lum = lmcgbf(mcx,GB)
             if(mt.le.mc)then
 *
