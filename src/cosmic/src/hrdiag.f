@@ -467,13 +467,16 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Approximate 3rd Dredge-up on AGB by limiting Mc.
 *
             lambdahrdiag = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+* Tau is the time at the start of the TP-AGB
             tau = tscls(13)
-            mcy = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
-            mcx = mc
-            mc = mcy - lambdahrdiag*(mcx-mcy)
-            mcx = mc
-            mc_co(kidx) = mcx
-            mc_he(kidx) = mcy - mcx
+* mcx is M_c,DU in the equation *between* 73 and 74 of Hurley et al. 2000
+            mcx = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
+* mcy is M_c' in the same equation; it is defined in line 464 above for the current age. 
+            mcy = mc
+* The current core mass is then M_c' - lambda*(M_c' - M_c,DU)  
+            mc = mcy - lambdahrdiag*(mcy-mcx)
+            mc_co(kidx) = mc
+            mc_he(kidx) = mc
             mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))

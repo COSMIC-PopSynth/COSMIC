@@ -1335,6 +1335,7 @@ component.
                   b02_bcm = B(2)
                endif
 * Load  preSN values for the SN writetab
+* KB fix this
                mass0(k) = mass_preSN
                m0 = mass_preSN
                menv(k) = mHe_preSN
@@ -1381,6 +1382,7 @@ component.
                endif
 
 * Load  preSN values for the SN writetab
+* KB fix this too
                mass0(k) = mass_preSN
                m0 = mass_preSN
                menv(k) = mHe_preSN
@@ -3659,6 +3661,7 @@ component.
                b02_bcm = B(2)
             endif
 * Load  preSN values for the SN writetab
+* KB fix this too
             mass0(k) = mass_preSN
             m0 = mass_preSN
             menv(k) = mHe_preSN
