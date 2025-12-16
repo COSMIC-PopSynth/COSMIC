@@ -1251,6 +1251,11 @@
                     {
                         "name": "values in [0, 1]",
                         "description": "restrict accretion limit to fraction of Eddington (sub-Eddington accretion)"
+                    },
+                    {
+                        "name": "10",
+                        "description": "mass transfer rate is limited to 10x the Eddington rate",
+                        "default": true
                     }
                 ]
             },
