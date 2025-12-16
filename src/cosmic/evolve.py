@@ -60,7 +60,7 @@ ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
 INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2", "evol_type"]
 
 
-BPP_COLUMNS = ['tphys', 'metallicity', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
+BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
                'massc_he_1', 'massc_he_2', 'massc_co_1', 'massc_co_2', 'rad_1', 'rad_2',
@@ -70,7 +70,7 @@ BPP_COLUMNS = ['tphys', 'metallicity', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
                'bhspin_1', 'bhspin_2']
 
-BCM_COLUMNS = ['tphys', 'metallicity', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
+BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'teff_1', 'massc_he_1', 'massc_co_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
                'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
                'lum_2', 'rad_2', 'teff_2', 'massc_he_2', 'massc_co_2', 'radc_2', 'menv_2',
