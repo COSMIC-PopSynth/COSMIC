@@ -156,7 +156,7 @@
       INTEGER loop,iter,intpol,k,ip,jp,j1,j2
       INTEGER bcm_index_out, bpp_index_out
       INTEGER kcomp1,kcomp2,formation(2)
-      PARAMETER(loop=200000)
+      PARAMETER(loop=20000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
       INTEGER kstar1_bpp,kstar2_bpp
 *
@@ -1580,10 +1580,11 @@ component.
 *
       if((tphys.lt.tiny.and.ABS(dtm).lt.tiny.and.
      &    (mass2i.lt.0.1d0.or..not.sgl)).or.snova)then
-          if(kstar(1).eq.14)then
-             WRITE(*,*)'BH???'
-          endif
           evolve_type = 1.d0
+          if(snova)then
+* We should capture to evol_type change for SN as an evolutionary change
+             evolve_type = 2.d0
+          endif         
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
           teff1 = 1000.d0*((1130.d0*lumin(1)/

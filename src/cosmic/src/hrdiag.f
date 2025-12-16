@@ -109,6 +109,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *           Main sequence star.
 *
             mc = 0.d0
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = 0.d0
             tau = aj/tm
             thook = thookf(mass)*tscls(1)
             zeta = 0.01d0
@@ -303,8 +305,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          tau = (aj - tscls(2))/tscls(3)
 *        here, mcx is the helium core mass at helium ignition
          mc = mcx + (mcagbf(mass) - mcx)*tau
-         WRITE(*,*)'hrdiag: mc=',mc,' mcx=',mcx, 'kw=',kw,' k=',kidx
-         WRITE(*,*)'hrdiag: mc_he=',(mcagbf(mass) - mcx)*tau
+*         WRITE(*,*)'hrdiag: mc=',mc,' mcx=',mcx, 'kw=',kw,' k=',kidx
+*         WRITE(*,*)'hrdiag: mc_he=',(mcagbf(mass) - mcx)*tau
          mc_he(kidx) = mc
          mc_co(kidx) = 0.0
 *
@@ -427,8 +429,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(aj.lt.tscls(13))then
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
-            WRITE(*,*)'hrdiag 430: mc=',mc,' mcx=',mcx,' kw=',kw
-            WRITE(*,*)'hrdiag: mcbagb=',mcbagb
+*            WRITE(*,*)'hrdiag 430: mc=',mc,' mcx=',mcx,' kw=',kw
+*            WRITE(*,*)'hrdiag: mcbagb=',mcbagb
             mc_co(kidx) = mcx
             mc_he(kidx) = mcbagb - mcx
             lum = lmcgbf(mcx,GB)
