@@ -787,8 +787,7 @@
                     },
                     {
                         "name": 1,
-                        "description": "same as 0 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars",
-                        "default": true
+                        "description": "same as 0 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars"
                     },
                     {
                         "name": 2,
@@ -804,7 +803,8 @@
                     },
                     {
                         "name": 5,
-                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable"
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable",
+                        "default": true
                     }
                 ]
             },
