@@ -4,6 +4,7 @@ from cosmic.evolve import Evolve
 from cosmic._version import __version__
 from cosmic.plotting import plot_binary_evol
 import matplotlib.pyplot as plt
+import numpy as np
 import warnings
 
 
@@ -64,6 +65,29 @@ class COSMICOutput:
 
     def __repr__(self):
         return f'<COSMICOutput{" - " + self.label if self.label is not None else ""}: {len(self)} {"binaries" if len(self) != 1 else "binary"}>'
+    
+    def __getitem__(self, key):
+        """Subselect binaries by bin_num across all data components.
+        Keys can be integers or lists/arrays of integers or slices.
+        If the key is an array of bools, mask initC to get the corresponding bin_nums."""
+        # convert key to list of bin_nums, regardless of input type
+        if isinstance(key, int):
+            key = [key]
+        elif isinstance(key, slice):
+            key = self.initC['bin_num'].iloc[key].tolist()
+        elif isinstance(key, (pd.Series, list, np.ndarray)) and len(key) == len(self.initC) and isinstance(key[0], (bool, np.bool_)):
+            if not key.any():
+                raise IndexError("Boolean mask resulted in zero selected binaries.")
+            key = self.initC['bin_num'][key].tolist()
+        # otherwise, reject invalid types
+        elif not isinstance(key, (list, np.ndarray, pd.Series)):
+            raise TypeError("Key must be an int, slice, list/array of ints, or boolean mask.")
+
+        bpp_subset = self.bpp[self.bpp['bin_num'].isin(key)]
+        bcm_subset = self.bcm[self.bcm['bin_num'].isin(key)]
+        initC_subset = self.initC[self.initC['bin_num'].isin(key)]
+        kick_info_subset = self.kick_info[self.kick_info['bin_num'].isin(key)]
+        return COSMICOutput(bpp=bpp_subset, bcm=bcm_subset, initC=initC_subset, kick_info=kick_info_subset, label=self.label)
         
     @property
     def final_bpp(self):
