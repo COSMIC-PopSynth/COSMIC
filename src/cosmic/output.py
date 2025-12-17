@@ -9,7 +9,31 @@ __all__ = ['COSMICOutput', 'save_initC', 'load_initC']
 
 
 class COSMICOutput:
-    def __init__(self, bpp=None, bcm=None, initC=None, kick_info=None, file=None):
+    def __init__(self, bpp=None, bcm=None, initC=None, kick_info=None, file=None, label=None):
+        """Container for COSMIC output data components.
+
+        Can be initialized either from data components directly or by loading from an HDF5 file.
+
+        Parameters
+        ----------
+        bpp : `pandas.DataFrame`, optional
+            Important evolution timestep table, by default None
+        bcm : `pandas.DataFrame`, optional
+            User-defined timestep table, by default None
+        initC : `pandas.DataFrame`, optional
+            Initial conditions table, by default None
+        kick_info : `pandas.DataFrame`, optional
+            Natal kick information table, by default None
+        file : `str`, optional
+            Filename/path to HDF5 file to load data from, by default None
+        label : `str`, optional
+            Optional label for the output instance, by default None
+
+        Raises
+        ------
+        ValueError
+            If neither file nor all data components are provided.
+        """
         # require that either file is given or all data components are given
         if file is None and (bpp is None or bcm is None or initC is None or kick_info is None):
             raise ValueError("Either file or all data components (bpp, bcm, initC, kick_info) must be provided.")
@@ -20,6 +44,8 @@ class COSMICOutput:
             self.kick_info = pd.read_hdf(file, key='kick_info')
             with h5.File(file, 'r') as f:
                 file_version = f.attrs.get('COSMIC_version', 'unknown')
+                label = f.attrs.get('label', '')
+            self.label = label if label != '' else None
             if file_version != __version__:
                 warnings.warn(f"You have loaded COSMICOutput from a file that was run using COSMIC version {file_version}, "
                               f"but the current version is {__version__}. "
@@ -29,12 +55,13 @@ class COSMICOutput:
             self.bcm = bcm
             self.initC = initC
             self.kick_info = kick_info
+            self.label = label if label is not None else None
 
     def __len__(self):
         return len(self.initC)
 
     def __repr__(self):
-        return f'<COSMICOutput: {len(self)} {"binaries" if len(self) != 1 else "binary"}>'
+        return f'<COSMICOutput{" - " + self.label if self.label is not None else ""}: {len(self)} {"binaries" if len(self) != 1 else "binary"}>'
         
     def save(self, output_file):
         """Save all data components to an HDF5 file
@@ -50,6 +77,7 @@ class COSMICOutput:
         self.kick_info.to_hdf(output_file, key='kick_info')
         with h5.File(output_file, 'a') as f:
             f.attrs['COSMIC_version'] = __version__
+            f.attrs['label'] = self.label if self.label is not None else ''
 
     def rerun_with_settings(self, new_settings, inplace=False):
         """Rerun the simulation with new settings.
