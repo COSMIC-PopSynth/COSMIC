@@ -54,8 +54,6 @@ __all__ = [
     "check_initial_conditions",
     "convert_kstar_evol_type",
     "parse_inifile",
-    "save_initC",
-    "load_initC",
     "pop_write",
     "a_from_p",
     "p_from_a",
