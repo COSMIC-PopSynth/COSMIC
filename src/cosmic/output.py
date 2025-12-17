@@ -145,6 +145,88 @@ class COSMICOutput:
         return fig
 
 
+    def plot_distribution(self, x_col, y_col=None, c_col=None, when='final',
+                          fig=None, ax=None, show=True,
+                          xlabel='auto', ylabel='auto', clabel='auto', **kwargs):
+        """Plot distribution of binaries in specified columns.
+
+        Plots can be histograms (if only x_col is given) or scatter plots (if both x_col and y_col are given).
+        Optionally, colour coding can be applied using c_col.
+
+        Parameters
+        ----------
+        x_col : `str`
+            Column name for x-axis.
+        y_col : `str`, optional
+            Column name for y-axis. If None, a histogram will be plotted. By default None.
+        c_col : `str`, optional
+            Column name for colour coding. By default None.
+        when : `str`, optional
+            When to take the values from: 'initial' or 'final'. By default 'final'.
+        fig : `matplotlib.figure.Figure`, optional
+            Figure to plot on. If None, a new figure is created. By default None.
+        ax : `matplotlib.axes.Axes`, optional
+            Axes to plot on. If None, new axes are created. By default None.
+        show : `bool`, optional
+            If True, display the plot immediately. By default True.
+        xlabel : `str`, optional
+            Label for x-axis. If 'auto', uses the column name. By default 'auto'.
+        ylabel : `str`, optional
+            Label for y-axis. If 'auto', uses the column name or 'Count' for histogram. By default 'auto'.
+        clabel : `str`, optional
+            Label for colorbar. If 'auto', uses the column name. By default 'auto
+        **kwargs :
+            Additional keyword arguments passed to the plotting function.
+
+        Returns
+        -------
+        fig : `matplotlib.figure.Figure`
+            The figure containing the plot.
+        ax : `matplotlib.axes.Axes`
+            The axes containing the plot.
+        """
+        if fig is None or ax is None:
+            fig, ax = plt.subplots()
+
+        if when == 'initial':
+            data = self.initC
+        elif when == 'final':
+            data = self.bpp.drop_duplicates(subset='bin_num', keep='last')
+        else:
+            raise ValueError("Parameter 'when' must be either 'initial' or 'final'.")
+        
+        if xlabel == 'auto':
+            xlabel = x_col
+        if ylabel == 'auto':
+            ylabel = y_col if y_col is not None else 'Count'
+        if clabel == 'auto' and c_col is not None:
+            clabel = c_col
+        
+        if y_col is None:
+            # histogram
+            ax.hist(data[x_col], bins=kwargs.get('bins', "fd"),
+                    color=kwargs.get('color', "tab:blue"), **kwargs)
+            ax.set(
+                xlabel=xlabel,
+                ylabel=ylabel,
+            )
+        else:
+            # scatter plot
+            sc = ax.scatter(data[x_col], data[y_col],
+                            c=data[c_col] if c_col is not None else kwargs.get('color', "tab:blue"),
+                            **kwargs)
+            ax.set(
+                xlabel=xlabel,
+                ylabel=ylabel,
+            )
+            if c_col is not None:
+                cbar = fig.colorbar(sc, ax=ax)
+                cbar.set_label(clabel)
+
+        if show:
+            plt.show()
+        return fig, ax
+
 
 def save_initC(filename, initC, key="initC", settings_key="initC_settings", force_save_all=False):
     """Save an initC table to an HDF5 file.
