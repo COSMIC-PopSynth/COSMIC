@@ -180,8 +180,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             endif
             eta = mctmsf(mass)
             tau = (aj - tm)/thg
-*            WRITE(*,*)'hrdiag: 184, k=',kidx,' mass=',mass
-*            WRITE(*,*)'mc=',mc,' mcx=',mcx
             
             mc = ((1.d0 - tau)*eta + tau)*mc
             mc = MAX(mc,mcx)
@@ -256,9 +254,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(9))
             mcy = mcheif(mass,zpars(2),zpars(10))
             mc = mcx + (mcy - mcx)*tau
-*            WRITE(*,*)'hrdiag249: k=',kidx,'mass=',mass,'kw=',kw
-*            WRITE(*,*)'mc=',mc,' mcx=',mcx,' mcy-mcx=',mcy-mcx
-*            WRITE(*,*)
+
             mc_he(kidx) = mc
             mc_co(kidx) = 0.0
          endif
@@ -305,8 +301,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          tau = (aj - tscls(2))/tscls(3)
 *        here, mcx is the helium core mass at helium ignition
          mc = mcx + (mcagbf(mass) - mcx)*tau
-*         WRITE(*,*)'hrdiag: mc=',mc,' mcx=',mcx, 'kw=',kw,' k=',kidx
-*         WRITE(*,*)'hrdiag: mc_he=',(mcagbf(mass) - mcx)*tau
          mc_he(kidx) = mc
          mc_co(kidx) = 0.0
 *
@@ -429,8 +423,6 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(aj.lt.tscls(13))then
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
-*            WRITE(*,*)'hrdiag 430: mc=',mc,' mcx=',mcx,' kw=',kw
-*            WRITE(*,*)'hrdiag: mcbagb=',mcbagb
             mc_co(kidx) = mcx
             mc_he(kidx) = mcbagb - mcx
             lum = lmcgbf(mcx,GB)
@@ -475,8 +467,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcy = mc
 * The current core mass is then M_c' - lambda*(M_c' - M_c,DU)  
             mc = mcy - lambdahrdiag*(mcy-mcx)
+            mcx = mc
             mc_co(kidx) = mc
-            mc_he(kidx) = mc
+            mc_he(kidx) = 0.0
             mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))
@@ -649,6 +642,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
            k2 = 0.1d0
          endif
       endif
+
 *
 C      if(mass.gt.99.99d0)then
 C         mass = mass0

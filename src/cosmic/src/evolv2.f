@@ -195,8 +195,6 @@
       REAL*8 deltam1_bcm,deltam2_bcm,b01_bcm,b02_bcm
       REAL*8 B(2),Bbot,omdot,b_mdot,b_mdot_lim,evolve_type
       COMMON /fall/fallback
-      REAL*8 mass_preSN, mHe_preSN, massc_preSN
-      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL ran3
       EXTERNAL ran3
 *
@@ -414,7 +412,6 @@ component.
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
-         WRITE(*,*)'k=',k,' kstar=',kstar(k),'HRDIAG ran'
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -1217,7 +1214,6 @@ component.
 *            goto 140
          endif
 *
-*         WRITE(*,*)'hrdiag call 1220'
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
@@ -1225,7 +1221,6 @@ component.
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
          endif
-*         WRITE(*,*)'hrdiag call finished'  
 *
 * At this point there may have been a supernova.
 *
@@ -1334,12 +1329,7 @@ component.
                else
                   b02_bcm = B(2)
                endif
-* Load  preSN values for the SN writetab
-* KB fix this
-               mass0(k) = mass_preSN
-               m0 = mass_preSN
-               menv(k) = mHe_preSN
-               massc(k) = massc_preSN
+
                CALL writetab(jp,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -1381,12 +1371,6 @@ component.
                   b02_bcm = B(2)
                endif
 
-* Load  preSN values for the SN writetab
-* KB fix this too
-               mass0(k) = mass_preSN
-               m0 = mass_preSN
-               menv(k) = mHe_preSN
-               massc(k) = massc_preSN
                CALL writetab(jp,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
@@ -1498,7 +1482,6 @@ component.
 *                  if(s.ge.-2.0457d0.or.s.le.-2.53d0) goto 175
                      if(s.ge.-1.6457d0.or.s.le.-2.53d0) goto 175
                      ospin(k) = (twopi*yearsc)/(10.d0**s)!have commented this out to keeps same spin
-*                  write(*,*)'P=',s
  176                 u1 = ran3(idum1)
                      u2 = ran3(idum1)
                      if(u1.gt.0.9999d0) u1 = 0.9999d0
@@ -1586,7 +1569,17 @@ component.
           if(snova)then
 * We should capture to evol_type change for SN as an evolutionary change
              evolve_type = 2.d0
-          endif         
+          endif  
+
+* KB: set core masses to zero for remnants          
+          if(kstar(1).ge.10)then
+             mc_he(1) = 0
+             mc_co(1) = 0
+          endif
+          if(kstar(2).ge.10)then
+             mc_he(2) = 0
+             mc_co(2) = 0
+          endif
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
           teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -1623,7 +1616,6 @@ component.
      &                  deltam1_bcm,deltam2_bcm,formation(1),
      &                  formation(2),binstate,mergertype,z,'bpp')
          if(snova)then
-            bpp(jp,11) = 2.0
             dtm = 0.d0
             goto 4
          endif
@@ -1697,7 +1689,6 @@ component.
 * If not interpolating set the next timestep.
 *
       if(intpol.eq.0)then
-*         WRITE(*,*)'you should see this to advance the time'
          if(output) write(*,*)'nxt t, prior:',tphys,dtm,dtmi(1),dtmi(2)
          dtm = MAX(1.0d-07*tphys,MIN(dtmi(1),dtmi(2)))
          dtm = MIN(dtm,tsave-tphys)
@@ -1801,6 +1792,17 @@ component.
       if(change)then
          change = .false.
          evolve_type = 2.d0
+
+* KB: set core masses to zero for remnants
+         if(kstar(1).ge.10)then
+            mc_he(1) = 0
+            mc_co(1) = 0
+         endif
+         if(kstar(2).ge.10)then
+            mc_he(2) = 0
+            mc_co(2) = 0
+         endif
+
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -3156,7 +3158,6 @@ component.
          do 602 , k = 1,2
 *
             dms(k) = km*dms(k)
-*            WRITE(*,*)dme/tb,dms(j2)/tb/km,dmt(j2),dms(j1)/tb/km,dmr(j1)
 
             if(kstar(k).lt.10) dms(k) = MIN(dms(k),mass(k) - massc(k))
 *
@@ -3660,12 +3661,7 @@ component.
             else
                b02_bcm = B(2)
             endif
-* Load  preSN values for the SN writetab
-* KB fix this too
-            mass0(k) = mass_preSN
-            m0 = mass_preSN
-            menv(k) = mHe_preSN
-            massc(k) = massc_preSN
+
             CALL writetab(jp,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
