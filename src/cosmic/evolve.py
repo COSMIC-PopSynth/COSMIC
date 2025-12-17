@@ -49,7 +49,7 @@ __all__ = ['Evolve']
 
 ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
-               'tms_2', 'massc_he_1', 'massc_he_2', 'massc_co_1', 'massc_co_2',
+               'tms_2', 'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2',
                'rad_1', 'rad_2', 'mass0_1',
                'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2', 'radc_1',
                'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
@@ -63,7 +63,7 @@ INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2",
 BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
-               'massc_he_1', 'massc_he_2', 'massc_co_1', 'massc_co_2', 'rad_1', 'rad_2',
+               'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2', 'rad_1', 'rad_2',
                'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
                'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
@@ -71,9 +71,9 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'bhspin_1', 'bhspin_2']
 
 BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
-               'teff_1', 'massc_he_1', 'massc_co_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
+               'teff_1', 'massc_he_layer_1', 'massc_co_layer_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
                'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
-               'lum_2', 'rad_2', 'teff_2', 'massc_he_2', 'massc_co_2', 'radc_2', 'menv_2',
+               'lum_2', 'rad_2', 'teff_2', 'massc_he_layer_2', 'massc_co_layer_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
                'porb', 'sep', 'ecc', 'B_1', 'B_2',
                'SN_1', 'SN_2', 'bin_state', 'merger_type']
@@ -369,18 +369,14 @@ class Evolve(object):
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bpp"] = len(bpp_columns)
             initial_conditions[i]["col_inds_bpp"] = col_inds_bpp
-        print("n_col_bpp: ", initial_conditions[0]["n_col_bpp"])
-        print("col_inds_bpp: ", initial_conditions[0]["col_inds_bpp"], len(initial_conditions[0]["col_inds_bpp"]))
-
+        
         # same for bcm
         col_inds_bcm = np.zeros(len(ALL_COLUMNS), dtype=int)
         col_inds_bcm[:len(bcm_columns)] = [ALL_COLUMNS.index(col) + 1 for col in bcm_columns]
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
-        print("n_col_bcm: ", initial_conditions[0]["n_col_bcm"])
-        print("col_inds_bcm: ", initial_conditions[0]["col_inds_bcm"], len(initial_conditions[0]["col_inds_bcm"]))
-
+        
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
