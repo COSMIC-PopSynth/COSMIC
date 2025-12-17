@@ -2,6 +2,8 @@ import pandas as pd
 import h5py as h5
 from cosmic.evolve import Evolve
 from cosmic._version import __version__
+from cosmic.plotting import plot_binary_evol
+import matplotlib.pyplot as plt
 import warnings
 
 
@@ -112,6 +114,36 @@ class COSMICOutput:
             self.kick_info = new_kick_info
         else:
             return COSMICOutput(bpp=new_bpp, bcm=new_bcm, initC=new_initC, kick_info=new_kick_info)
+        
+
+    def plot_detailed_evolution(self, bin_num, show=True, **kwargs):
+        """Plot detailed evolution for a specific binary.
+
+        Parameters
+        ----------
+        bin_num : `int`
+            Index of the binary to plot.
+        **kwargs : 
+            Additional keyword arguments passed to the plotting function (plotting.plot_binary_evol).
+        """
+        # check the bin_num is in the bcm
+        if bin_num not in self.bcm['bin_num'].values:
+            raise ValueError(f"bin_num {bin_num} not found in bcm table.")
+
+        # warn if bcm has only two entries for this binary
+        bcm_subset = self.bcm[self.bcm['bin_num'] == bin_num]
+        if len(bcm_subset) <= 2:
+            warnings.warn(
+                f"bcm table for bin_num {bin_num} has only {len(bcm_subset)} entries. Detailed evolution "
+                "plot may be uninformative. You should set dtp, or timestep_conditions, to increase the "
+                "number of timesteps in the bcm table.", UserWarning
+            )
+
+        fig = plot_binary_evol(self.bcm.loc[bin_num], **kwargs)
+        if show:
+            plt.show()
+        return fig
+
 
 
 def save_initC(filename, initC, key="initC", settings_key="initC_settings", force_save_all=False):
