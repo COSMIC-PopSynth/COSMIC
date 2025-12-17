@@ -65,6 +65,17 @@ class COSMICOutput:
     def __repr__(self):
         return f'<COSMICOutput{" - " + self.label if self.label is not None else ""}: {len(self)} {"binaries" if len(self) != 1 else "binary"}>'
         
+    @property
+    def final_bpp(self):
+        """Get the final timestep for each binary from the bpp table.
+
+        Returns
+        -------
+        final_bpp : `pandas.DataFrame`
+            DataFrame containing only the final timestep for each binary.
+        """
+        return self.bpp.drop_duplicates(subset='bin_num', keep='last')
+
     def save(self, output_file):
         """Save all data components to an HDF5 file
 
@@ -81,13 +92,18 @@ class COSMICOutput:
             f.attrs['COSMIC_version'] = __version__
             f.attrs['label'] = self.label if self.label is not None else ''
 
-    def rerun_with_settings(self, new_settings, inplace=False):
+    def rerun_with_settings(self, new_settings, reset_kicks=False, inplace=False):
         """Rerun the simulation with new settings.
 
         Parameters
         ----------
         new_settings : `dict`
             Dictionary of new settings to apply. Any setting not included will retain its original value.
+        reset_kicks : `bool`, optional
+            If True, reset natal kicks to be randomly sampled again.
+            If False, retain original kicks. By default False.
+            (You may want to reset the kicks if changing settings that affect remnant masses or
+            kick distribution.)
         inplace : `bool`, optional
             If True, update the current instance. If False, return a new instance. By default False.
         
@@ -103,8 +119,21 @@ class COSMICOutput:
                 updated_initC[key] = value
             else:
                 raise KeyError(f"Setting '{key}' not found in initC columns.")
+            
+        # reset kicks if requested
+        if reset_kicks:
+            kick_cols = ["natal_kick_1", "natal_kick_2", "phi_1", "phi_2", "theta_1", "theta_2",
+                         "mean_anomaly_1", "mean_anomaly_2"]
+            for col in kick_cols:
+                updated_initC[col] = -100.0
+        elif 'kickflag' in new_settings or 'remnantflag' in new_settings:
+            warnings.warn(
+                "You have changed 'kickflag' or 'remnantflag' without resetting kicks. "
+                "This may lead to inconsistent results if the kick distribution or remnant masses have changed. "
+                "Consider setting reset_kicks=True.", UserWarning
+            )
 
-        # Rerun the simulation
+        # re-run the simulation
         new_bpp, new_bcm, new_initC, new_kick_info = Evolve.evolve(initialbinarytable=updated_initC)
         
         if inplace:
