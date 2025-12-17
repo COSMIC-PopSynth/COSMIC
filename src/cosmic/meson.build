@@ -8,7 +8,8 @@ python_sources = [
   'get_commit_hash.py',
   'Match.py',
   'plotting.py',
-  'utils.py'
+  'utils.py',
+  'output.py',
 ]
 
 py3.install_sources(
