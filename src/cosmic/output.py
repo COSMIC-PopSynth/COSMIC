@@ -1,6 +1,8 @@
 import pandas as pd
 import h5py as h5
 from cosmic.evolve import Evolve
+from cosmic._version import __version__
+import warnings
 
 
 __all__ = ['COSMICOutput', 'save_initC', 'load_initC']
@@ -16,6 +18,12 @@ class COSMICOutput:
             self.bcm = pd.read_hdf(file, key='bcm')
             self.initC = load_initC(file, key='initC', settings_key='initC_settings')
             self.kick_info = pd.read_hdf(file, key='kick_info')
+            with h5.File(file, 'r') as f:
+                file_version = f.attrs.get('COSMIC_version', 'unknown')
+            if file_version != __version__:
+                warnings.warn(f"You have loaded COSMICOutput from a file that was run using COSMIC version {file_version}, "
+                              f"but the current version is {__version__}. "
+                              "There may be compatibility issues, or differences in output when rerunning, be sure to check the changelog.", UserWarning)
         else:
             self.bpp = bpp
             self.bcm = bcm
@@ -40,6 +48,8 @@ class COSMICOutput:
         self.bcm.to_hdf(output_file, key='bcm')
         save_initC(output_file, self.initC, key='initC', settings_key='initC_settings')
         self.kick_info.to_hdf(output_file, key='kick_info')
+        with h5.File(output_file, 'a') as f:
+            f.attrs['COSMIC_version'] = __version__
 
     def rerun_with_settings(self, new_settings, inplace=False):
         """Rerun the simulation with new settings.
