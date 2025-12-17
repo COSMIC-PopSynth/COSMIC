@@ -303,7 +303,7 @@ class InitialCMCTable(pd.DataFrame):
         # and the attribute mass_of_cluster is None, then
         # we can calculate it now
         if (not Singles.scaled_to_nbody_units) and (Singles.mass_of_cluster is None):
-            Singles.mass_of_cluster = np.sum(Singles["m"]) + central_bh
+            Singles.mass_of_cluster = np.sum(Singles["m"])
             InitialCMCTable.ScaleToNBodyUnits(
                 Singles, Binaries, virial_radius=virial_radius, central_bh=central_bh, scale_with_central_bh=scale_with_central_bh
             )
@@ -332,9 +332,10 @@ class InitialCMCTable(pd.DataFrame):
         )
         singles = pd.concat([singles, Singles])
         singles = pd.concat([singles, singles_bottom])
-        singles["r"].iloc[-1] = 1e40
-        singles["r"].iloc[0] = 2.2250738585072014e-308
-        singles["m"].iloc[0] = Singles.central_bh
+        
+        singles.iloc[-1, singles.columns.get_loc("r")] = 1e40
+        singles.iloc[0, singles.columns.get_loc("r")] = 2.2250738585072014e-308
+        singles.iloc[0, singles.columns.get_loc("m")] = Singles.central_bh
 
         # Add a special row to the end of Bianries table
         binaries = pd.DataFrame(

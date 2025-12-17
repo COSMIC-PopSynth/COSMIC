@@ -50,3 +50,12 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 
 ## 3.6.0
  - Overhaul documentation and added debugging environment
+ - Feature: Added Disberg+2025 kick prescription as a new choice of `kickflag` (`kickflag=5`). Applies log-normal distribution to regular CCSN, ECSN/USSN still use `sigmadiv` Maxwellian and BH fallback scaling is still applied via `bhflag` and `bhsigmafrac` as with `kickflag=1`
+
+## 3.6.1
+ - Add support for single stars in both independent and multidim sampling
+ - update documentation
+
+## 3.6.2
+ - Add functions to `cosmic.utils` for initC IO that's more efficient (`save_initC`, `load_initC`) by saving
+ identical setting columns separately with only one copy - saves ~1kb per binary
