@@ -4,11 +4,34 @@ from cosmic.evolve import Evolve
 from cosmic._version import __version__
 from cosmic.plotting import plot_binary_evol
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
 import numpy as np
 import warnings
 
 
 __all__ = ['COSMICOutput', 'save_initC', 'load_initC']
+
+
+kstar_translator = [
+    {'long': 'Main Sequence (Low mass)', 'short': 'MS < 0.7', 'colour': (0.996078, 0.843476, 0.469158, 1.0)},
+    {'long': 'Main Sequence', 'short': 'MS', 'colour': (0.996078, 0.843476, 0.469158, 1.0)},
+    {'long': 'Hertzsprung Gap', 'short': 'HG', 'colour': (0.939608, 0.471373, 0.094902, 1.0)},
+    {'long': 'First Giant Branch', 'short': 'FGB', 'colour': (0.716186, 0.833203, 0.916155, 1.0)},
+    {'long': 'Core Helium Burning', 'short': 'CHeB', 'colour': (0.29098, 0.59451, 0.78902, 1.0)},
+    {'long': 'Early AGB', 'short': 'EAGB', 'colour': (0.294902, 0.690196, 0.384314, 1.0)},
+    {'long': 'Thermally Pulsing AGB', 'short': 'TPAGB',
+     'colour': (0.723122, 0.889612, 0.697178, 1.0)},
+    {'long': 'Helium Main Sequence', 'short': 'HeMS', 'colour': (0.254627, 0.013882, 0.615419, 1.0)},
+    {'long': 'Helium Hertsprung Gap', 'short': 'HeHG', 'colour': (0.562738, 0.051545, 0.641509, 1.0)},
+    {'long': 'Helium Giant Branch', 'short': 'HeGB', 'colour': (0.798216, 0.280197, 0.469538, 1.0)},
+    {'long': 'Helium White Dwarf', 'short': 'HeWD', 'colour': (0.368166, 0.232828, 0.148275, 1.0)},
+    {'long': 'Carbon/Oxygen White Dwarf', 'short': 'COWD', 'colour': (0.620069, 0.392132, 0.249725, 1.0)},
+    {'long': 'Oxygen/Neon White Dwarf', 'short': 'ONeWD', 'colour': (0.867128, 0.548372, 0.349225, 1.0)},
+    {'long': 'Neutron Star', 'short': 'NS', 'colour': (0.501961, 0.501961, 0.501961, 1.0)},
+    {'long': 'Black Hole', 'short': 'BH', 'colour': (0.0, 0.0, 0.0, 1.0)},
+    {'long': 'Massless Remnant', 'short': 'MR', 'colour': "white"},
+    {'long': 'Chemically Homogeneous', 'short': 'CHE', 'colour': (0.647059, 0.164706, 0.164706, 1.0)}
+]
 
 
 class COSMICOutput:
@@ -192,6 +215,8 @@ class COSMICOutput:
                 "number of timesteps in the bcm table.", UserWarning
             )
 
+        if "ktype_kwargs" not in kwargs:
+            kwargs["ktype_kwargs"] = {'k_type_colors': [kstar_translator[k]["colour"] for k in range(len(kstar_translator))]}
         fig = plot_binary_evol(self.bcm.loc[bin_num], **kwargs)
         if show:
             plt.show()
@@ -265,16 +290,37 @@ class COSMICOutput:
             )
         else:
             # scatter plot
+            c = data[c_col] if c_col is not None else kwargs.get('color', None)
+            if c_col == 'kstar_1' or c_col == 'kstar_2':
+                c = data[c_col].map(lambda k: kstar_translator[k]['colour'])
             sc = ax.scatter(data[x_col], data[y_col],
-                            c=data[c_col] if c_col is not None else kwargs.get('color', "tab:blue"),
+                            c=c,
                             **kwargs)
             ax.set(
                 xlabel=xlabel,
                 ylabel=ylabel,
             )
-            if c_col is not None:
+            if c_col is not None and c_col not in ['kstar_1', 'kstar_2']:
                 cbar = fig.colorbar(sc, ax=ax)
                 cbar.set_label(clabel)
+            elif c_col is not None:
+                # extract colours and labels
+                colours = [entry["colour"] for entry in kstar_translator[1:-2]]
+                labels = [entry["short"] for entry in kstar_translator[1:-2]]
+
+                # create colormap
+                cmap = ListedColormap(colours)
+                bounds = np.arange(len(colours) + 1)
+                norm = BoundaryNorm(bounds, cmap.N)
+
+                cb = plt.colorbar(
+                    mappable=plt.cm.ScalarMappable(norm=norm, cmap=cmap),
+                    ticks=np.arange(len(colours)) + 0.5,
+                    boundaries=bounds,
+                    ax=ax
+                )
+                cb.ax.set_yticklabels(labels)
+                cb.set_label(clabel)
 
         if show:
             plt.show()
