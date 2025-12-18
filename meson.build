@@ -1,7 +1,7 @@
 project('cosmic', 
     'c',
     'fortran',
-    version : '3.6.1',
+    version : '3.6.2',
     default_options: ['warning_level=0', 'optimization=3'],
 )
 
