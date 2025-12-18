@@ -31,7 +31,12 @@ import itertools
 import os.path
 import h5py as h5
 import re
-from importlib.resources import files as io_files
+
+import sys
+if sys.version_info >= (3, 9):
+    from importlib.resources import files as io_files
+else:
+    from importlib_resources import files as io_files
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
