@@ -65,8 +65,8 @@ __all__ = [
     "get_FeH_from_Z",
     "get_binfrac_of_Z",
     "get_porb_norm",
-    "get_met_dep_binfrac"
-
+    "get_met_dep_binfrac",
+    "explain_setting",
 ]
 
 
