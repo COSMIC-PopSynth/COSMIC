@@ -30,6 +30,7 @@ import json
 import itertools
 import os.path
 import h5py as h5
+import re
 from importlib.resources import files as io_files
 
 from configparser import ConfigParser
@@ -1294,8 +1295,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if "ecsn_mlow" in BSEDict.keys() and "ecsn" in BSEDict.keys():
         if BSEDict["ecsn_mlow"] > BSEDict["ecsn"]:
             raise ValueError(
-                f"'ecsn_mlow' needs to be less than 'ecsn', (you set 'ecsn_mlow' to '{BSEDict['ecsn_mlow']}' "
-                f"and 'ecsn' to '{BSEDict['ecsn']}')"
+                f"`ecsn_mlow` needs to be less than `ecsn`, (you set `ecsn_mlow` to {BSEDict['ecsn_mlow']} "
+                f"and `ecsn` to {BSEDict['ecsn']})"
             )
     
     # ensure the natal kick array is the correct shape and each value is in the valid range
@@ -1318,7 +1319,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             for j in range(5):
                 val = BSEDict["natal_kick_array"][i][j]
                 low, high = valid_ranges[j]
-                if not (low <= val <= high):
+                if not (low <= val <= high) or val == -100.0:
                     raise ValueError(
                         f"Value at position ({i},{j}) in 'natal_kick_array' must be in range [{low}, {high}] "
                         f"(you set it to '{val}')"
@@ -1329,14 +1330,14 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if np.any(np.array(BSEDict["fprimc_array"]) < 0.0) or len(BSEDict["fprimc_array"]) != 16:
             raise ValueError(
                 f"fprimc_array values must be >= 0 and there must be 16 values "
-                f"(you set them to '[{BSEDict["fprimc_array"]}]', length '{len(BSEDict["fprimc_array"])}')"
+                f'(you set them to {BSEDict["fprimc_array"]}], length={len(BSEDict["fprimc_array"])})'
             )
         
     if "qcrit_array" in BSEDict.keys():
         if np.any(np.array(BSEDict["qcrit_array"]) < 0.0) or len(BSEDict["qcrit_array"]) != 16:
             raise ValueError(
                 f"qcrit_array values must be >= 0 and there must be 16 values "
-                f"(you set them to '[{BSEDict["qcrit_array"]}]', length '{len(BSEDict["qcrit_array"])}')"
+                f'(you set them to {BSEDict["qcrit_array"]}], length={len(BSEDict["qcrit_array"])})'
             )
 
     return
@@ -1591,6 +1592,43 @@ def parse_inifile(inifile):
     sampling = dictionary["sampling"]
 
     return BSEDict, seed_int, filters, convergence, sampling
+
+
+def explain_setting(setting):
+    """Provides explanation for a BSE setting from the cosmic-settings.json file
+
+    Parameters
+    ----------
+    setting : str
+        Name of BSE setting to explain
+    """
+    # use the cosmic-settings.json file to define the valid ranges for BSE flags
+    settings_path = io_files("cosmic.data").joinpath('cosmic-settings.json')
+    settings = json.loads(settings_path.read_text(encoding='utf-8'))
+
+    strip_tags = lambda s: re.sub(r'<[^>]+>', '', s).replace("&amp;", "&")
+
+    BOLD = '\033[1m'
+    GREEN = '\033[92m'
+    END = '\033[0m'
+
+    for cat in settings:
+        # ignore anything that's not BSE
+        if cat['category'] != "bse":
+            continue
+
+        # go through each flag in the settings
+        for flag in cat['settings']:
+            if flag['name'] == setting:
+                print(f"\n{BOLD}{flag['name']}{END}")
+                print("-" * len(flag['name']))
+                print(f"{strip_tags(flag['description'])}")
+                print("\nValid options (default marked in green and with *):")
+                for opt in flag['options']:
+                    print(f"  {f'{GREEN}*' if 'default' in opt else '-'} {opt['name']}: {strip_tags(opt['description'])}{END}")
+                return
+            
+    raise ValueError(f"Unknown setting '{setting}'")
 
 
 class VariableKey(object):
