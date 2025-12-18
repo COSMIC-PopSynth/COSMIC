@@ -1319,7 +1319,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             for j in range(5):
                 val = BSEDict["natal_kick_array"][i][j]
                 low, high = valid_ranges[j]
-                if not (low <= val <= high) or val == -100.0:
+                if not (low <= val <= high) and val != -100.0:
                     raise ValueError(
                         f"Value at position ({i},{j}) in 'natal_kick_array' must be in range [{low}, {high}] "
                         f"(you set it to '{val}')"
