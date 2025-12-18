@@ -1260,11 +1260,6 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                             if lower_ok and upper_ok:
                                 flag_is_valid = True
                                 break
-                    # if it's a list, check if the user value is in the list
-                    elif isinstance(opt, list):
-                        if user_val in opt:
-                            flag_is_valid = True
-                            break
                     # otherwise, just do a direct comparison
                     elif user_val == opt:
                         flag_is_valid = True

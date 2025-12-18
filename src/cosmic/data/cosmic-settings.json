@@ -850,8 +850,20 @@
                         "description": "Follows the same prescription as 1, but uses the kick prescription described in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract'>Disberg & Mandel 2025</a> for CCSN."
                     },
                     {
-                        "name": [-1, -2, -3, -4, -5],
-                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                        "name": -1,
+                        "description": "As 1, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -2,
+                        "description": "As 2, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -3,
+                        "description": "As 3, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -4,
+                        "description": "As 4, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     }
                 ]
             },
