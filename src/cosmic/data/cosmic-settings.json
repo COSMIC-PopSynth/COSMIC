@@ -983,6 +983,10 @@
                         "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> uses ecsn_mlow = 1.6, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> uses ecsn_mlow = 1.85, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can decrease this to ecsn_mlow = 1.4"
                     },
                     {
+                        "name": 0.0,
+                        "description": "no lower limit on He-star mass for ECSN"
+                    },
+                    {
                         "name": 1.6,
                         "description": "Default choice",
                         "default": true
