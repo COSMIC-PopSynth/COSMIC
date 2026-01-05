@@ -34,7 +34,13 @@ Cf2py intent(out) rad
 ***
 * Then just loop through everything 
 ***
+
+      if(num.gt.loop) then
+         print *, 'Error in compute_r: num > 100000'
+         stop
+      end if
       do 10 , k = 1,num
+         WRITE(*,*)' Computing radius for star ',k,' of ',num
          age = 0.0
          mc = 0.d0 
          tm = 0.d0
