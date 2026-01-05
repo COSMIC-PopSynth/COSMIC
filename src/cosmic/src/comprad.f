@@ -39,8 +39,11 @@ Cf2py intent(out) rad
          print *, 'Error in compute_r: num > 100000'
          stop
       end if
+      mc_he(1) = 0.d0
+      mc_he(2) = 0.d0
+      mc_co(1) = 0.d0
+      mc_co(2) = 0.d0
       do 10 , k = 1,num
-         WRITE(*,*)' Computing radius for star ',k,' of ',num
          age = 0.0
          mc = 0.d0 
          tm = 0.d0
@@ -55,7 +58,7 @@ Cf2py intent(out) rad
          rc = 0.d0 
          CALL star(kstar,mass0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rad(k),lum,kstar,mc,rc,me,re,k2,bhspin,k)
+     &               rad(k),lum,kstar,mc,rc,me,re,k2,bhspin,1)
 
   10  continue
 
