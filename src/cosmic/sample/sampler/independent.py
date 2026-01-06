@@ -1158,9 +1158,7 @@ class Sample(object):
         of length 10^5.  If your masses are more than that, you'll
         need to divide it into chunks
         """
-
         from cosmic import _evolvebin
-
 
         max_array_size = 100000
         total_length = len(mass)
@@ -1183,7 +1181,7 @@ class Sample(object):
 
         length_remaining = total_length
 
-        ## if smaller than 10^5, need to pad out the array
+        # if smaller than 10^5, need to pad out the array
         temp_mass = np.zeros(max_array_size)
         temp_mass[:length_remaining] = mass[-length_remaining:]
 
