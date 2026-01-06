@@ -17,7 +17,7 @@ The buttons below link to the most recent stable and unstable default inifiles f
 .. raw:: html
 
     <div class="toms-nav-container" style="margin-bottom: 3rem; height: 90px; grid-template-rows: 90px">
-        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini">Latest stable INIFILE</div>
+        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/v3.6.1/examples/Params.ini">Latest stable INIFILE</div>
         <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini">Latest development INIFILE</div>
     </div>
 
