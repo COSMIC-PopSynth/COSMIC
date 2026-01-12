@@ -91,6 +91,10 @@ Use the buttons below to toggle whether to include explanatory comments in the I
 Python BSE settings dictionary
 ------------------------------
 
+.. note::
+    
+    Note that the BSE settings dictionary does not include sampling, filtering, convergence, or random seed settings - these are only relevant for the `cosmic-pop` executable.
+
 .. code-block:: python
 
     BSE dictionary HERE

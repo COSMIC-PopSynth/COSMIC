@@ -346,6 +346,7 @@ component.
 *
       if(mt2.lt.tiny.or.tb.le.0.d0)then
          sgl = .true.
+         binstate = -1
          if(mt2.lt.tiny)then
             mt2 = 0.d0
             if(mass(1).lt.tiny)then
