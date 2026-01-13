@@ -407,12 +407,14 @@
 * Complete fallback occurred, remnant mass equals pre-SN core mass
             mt = mc_tot
          else
-* Partial fallback occurred, remnant mass drawn from Normal
+* Partial fallback occurred, remnant mass drawn from Normal,
+* but truncated to always be between max NS mass and CO core mass
             call RandomTruncatedNormal(0.8d0 * mc, 0.5d0 * 0.5d0,
      &                                 idum1, mxns, mc, mt)
          endif
       else
 * NS formed, determine mu and sigma for random normal draw
+* normal is truncated to be between min/max NS mass
          if (mc.lt.mm_m1) then
              ns_mu = 1.2d0
              ns_sigma = 0.02d0
