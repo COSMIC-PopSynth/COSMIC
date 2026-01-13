@@ -1101,7 +1101,7 @@
                         "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
                     },
                     {
-                        "name": 200.0,
+                        "name": 400.0,
                         "description": "Default choice",
                         "default": true
                     }
@@ -1118,7 +1118,7 @@
                         "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
                     },
                     {
-                        "name": 400.0,
+                        "name": 200.0,
                         "description": "Default choice",
                         "default": true
                     }

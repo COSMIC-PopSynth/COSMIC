@@ -183,7 +183,8 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5))then
+      if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5
+     &                        .or.abskickflag.eq.6))then
          sigma = -1.d0*sigma
          ECSN_or_USSN = .true.
 * for kick prescriptions other than default, revert to original sigma
@@ -223,13 +224,13 @@
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
              call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
              vk2 = vk*vk
-          elseif(abskickflag.eq.6)then
+          elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
 * if the kickflag is 6 then use the Mandel & Muller 2020 distribution
 * https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.3214M/abstract
              if(kw.eq.14)then
-                mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
-             else
                 mu_mm = mm_mu_bh * max(m1c - m1n, 0.0d0) / m1n
+             else
+                mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
              endif
              call RandomTruncatedNormal(mu_mm, 0.3d0 * mu_mm, idum1,
      &                                  0.d0, 10000.d0, vk)
