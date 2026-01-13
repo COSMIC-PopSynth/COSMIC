@@ -140,7 +140,6 @@
                elseif(mc.gt.7.60)then
                   fallback = 1.d0
                endif
-               call assign_remnant_spin(mc, bhspin)
                mc = mt
             elseif(remnantflag.eq.3)then
 *
@@ -167,7 +166,6 @@
                elseif(mc.gt.11.d0)then
                   fallback = 1.d0
                endif
-               call assign_remnant_spin(mc, bhspin)
                mc = mt
             elseif(remnantflag.eq.4)then
 *
@@ -201,7 +199,6 @@
                elseif(mc.ge.11.d0)then
                   fallback = 1.d0
                endif
-               call assign_remnant_spin(mc, bhspin)
                mc = mt
             elseif(remnantflag.eq.5)then
 *
@@ -268,6 +265,9 @@
      &                                       mxns, mt)
                endif
             endif
+            
+* Assign the BH spin based on the chosen prescription
+            call assign_remnant_spin(mc, bhspin)
 
 * Specify the baryonic to gravitational remnant mass prescription
 * MJZ 04/2020
