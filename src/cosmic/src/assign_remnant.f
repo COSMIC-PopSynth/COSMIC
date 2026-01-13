@@ -1,5 +1,6 @@
 ***
-      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
+      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mc_tot,
+     &                          kidx,mt,kw,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -8,7 +9,7 @@
       real*8 zpars(20)
 
       real*8 avar,bvar
-      real*8 mc,mcbagb,mass,mt
+      real*8 mc,mcbagb,mass,mt,mc_tot
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
       integer kw,kidx
@@ -17,7 +18,8 @@
 *       zpars      : Array of metallicity dependent parameters
 *       mc         : CO core mass before SN
 *       mcbagb     : Core mass at the base of the AGB
-*       mass       : Total mass before SN
+*       mass       : Total ZAMS mass of the star
+*       mc_tot     : Total core mass before SN (CO + He layers)
 *       kidx       : Index of the star in the pisn track arrays
 
 * Outputs
@@ -193,7 +195,7 @@
                endif
                mc = mt
             elseif(remnantflag.eq.5)then
-               call assign_remnant_mandel_muller(mc, mt)
+               call assign_remnant_mandel_muller(mc, mc_tot, mt)
             endif
             
 * Assign the BH spin based on the chosen prescription
@@ -352,7 +354,7 @@
       end
 
 
-      SUBROUTINE assign_remnant_mandel_muller(mc, mt)
+      SUBROUTINE assign_remnant_mandel_muller(mc, mc_tot, mt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -360,7 +362,7 @@
       EXTERNAL ran3
       EXTERNAL RandomTruncatedNormal
 
-      real*8 mc, mt
+      real*8 mc, mc_tot, mt
 
       real*8 mm_m1, mm_m2, mm_m3, mm_m4, min_ns_mass
       real*8 pBH, pCF
@@ -403,7 +405,7 @@
 
          if (u_pCF.le.pCF) then
 * Complete fallback occurred, remnant mass equals pre-SN core mass
-            mt = mc
+            mt = mc_tot
          else
 * Partial fallback occurred, remnant mass drawn from Normal
             call RandomTruncatedNormal(0.8d0 * mc, 0.5d0 * 0.5d0,
