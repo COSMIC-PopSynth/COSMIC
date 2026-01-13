@@ -78,7 +78,6 @@
          mass = mt
 *
       else
-* Store values in common block
          if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.
@@ -92,6 +91,8 @@
 *
             kw = 15
          else
+*
+* Use remnant mass given by Hurley+2000
             if(remnantflag.eq.0)then
                mt = 1.17d0 + 0.09d0*mc
             elseif(remnantflag.eq.1)then
@@ -120,10 +121,8 @@
                if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &              mcbagb.ge.ecsn_mlow)then
                   mcx = 1.38d0
-*               elseif(mc.lt.4.29d0)then
                elseif(mc.lt.4.82d0)then
                   mcx = 1.5d0
-*               elseif(mc.ge.4.29d0.and.mc.lt.6.31d0)then
                elseif(mc.ge.4.82d0.and.mc.lt.6.31d0)then
                   mcx = 2.11d0
                elseif(mc.ge.6.31d0.and.mc.lt.6.75d0)then
@@ -141,19 +140,7 @@
                elseif(mc.gt.7.60)then
                   fallback = 1.d0
                endif
-               if(bhspinflag.eq.0)then
-                      bhspin = bhspinmag
-               elseif(bhspinflag.eq.1)then
-                      bhspin = ran3(idum1) * bhspinmag
-               elseif(bhspinflag.eq.2)then
-                   if(mc.le.13.d0)then
-                       bhspin = 0.9d0
-                   elseif(mc.lt.27.d0)then
-                       bhspin = -0.064d0*mc + 1.736d0
-                   else
-                       bhspin = 0.0d0
-                   endif
-               endif
+               call assign_remnant_spin(mc, bhspin)
                mc = mt
             elseif(remnantflag.eq.3)then
 *
@@ -180,19 +167,7 @@
                elseif(mc.gt.11.d0)then
                   fallback = 1.d0
                endif
-               if(bhspinflag.eq.0)then
-                      bhspin = bhspinmag
-               elseif(bhspinflag.eq.1)then
-                      bhspin = ran3(idum1) * bhspinmag
-               elseif(bhspinflag.eq.2)then
-                   if(mc.le.13.d0)then
-                       bhspin = 0.9d0
-                   elseif(mc.lt.27.d0)then
-                       bhspin = -0.064d0*mc + 1.736d0
-                   else
-                       bhspin = 0.0d0
-                   endif
-               endif
+               call assign_remnant_spin(mc, bhspin)
                mc = mt
             elseif(remnantflag.eq.4)then
 *
@@ -226,19 +201,7 @@
                elseif(mc.ge.11.d0)then
                   fallback = 1.d0
                endif
-               if(bhspinflag.eq.0)then
-                      bhspin = bhspinmag
-               elseif(bhspinflag.eq.1)then
-                      bhspin = ran3(idum1) * bhspinmag
-               elseif(bhspinflag.eq.2)then
-                   if(mc.le.13.d0)then
-                       bhspin = 0.9d0
-                   elseif(mc.lt.27.d0)then
-                       bhspin = -0.064d0*mc + 1.736d0
-                   else
-                       bhspin = 0.0d0
-                   endif
-               endif
+               call assign_remnant_spin(mc, bhspin)
                mc = mt
             elseif(remnantflag.eq.5)then
 *
@@ -456,4 +419,31 @@
          endif
       endif
 *
+      end
+
+
+      SUBROUTINE assign_remnant_spin(mc, bhspin)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
+
+      real*8 ran3, mc, bhspin
+      EXTERNAL ran3
+
+* Set all BH spins equal to bhspinmag
+      if(bhspinflag.eq.0)then
+         bhspin = bhspinmag
+* Randomly assign BH spins between 0 and bhspinmag
+      elseif(bhspinflag.eq.1)then
+         bhspin = ran3(idum1) * bhspinmag
+* Assign BH spins based on Belczynski+17 prescription
+      elseif(bhspinflag.eq.2)then
+         if(mc.le.13.d0)then
+            bhspin = 0.9d0
+         elseif(mc.lt.27.d0)then
+            bhspin = -0.064d0*mc + 1.736d0
+         else
+            bhspin = 0.0d0
+         endif
+      endif
+
       end
