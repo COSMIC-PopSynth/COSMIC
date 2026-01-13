@@ -84,14 +84,5 @@
           endif
       end do
 
-      if (attempt.ne.1) then
-         WRITE(*,*) ' RandomTruncatedNormal called with: '
-         WRITE(*,*) ' mu = ', mu
-         WRITE(*,*) ' sigma = ', sigma
-         WRITE(*,*) ' lower = ', lower
-         WRITE(*,*) ' upper = ', upper
-         WRITE(*,*) ' RandomTruncatedNormal: took ', attempt, ' runs'
-      end if
-
       RETURN
       END
