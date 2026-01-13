@@ -17,7 +17,7 @@ The buttons below link to the most recent stable and unstable default inifiles f
 .. raw:: html
 
     <div class="toms-nav-container" style="margin-bottom: 3rem; height: 90px; grid-template-rows: 90px">
-        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini">Latest stable INIFILE</div>
+        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/v3.6.1/examples/Params.ini">Latest stable INIFILE</div>
         <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini">Latest development INIFILE</div>
     </div>
 
@@ -90,6 +90,10 @@ Use the buttons below to toggle whether to include explanatory comments in the I
 
 Python BSE settings dictionary
 ------------------------------
+
+.. note::
+    
+    Note that the BSE settings dictionary does not include sampling, filtering, convergence, or random seed settings - these are only relevant for the `cosmic-pop` executable.
 
 .. code-block:: python
 

@@ -12,11 +12,10 @@ The multidimensional initial binary data is sampled in COSMIC as follows:
 
     In [2]: from cosmic.sample.sampler import multidim
 
-To see the arguments necessary to call the multidimensional sampler use the help function:
 
-.. ipython::
-
-    In [3]: help(multidim.get_multidim_sampler)
+.. tip::
+    
+    The multidimensional sampler arguments can be found here :func:`~cosmic.sample.sampler.multidim.get_multidim_sampler` or by using the multidimensional sampler help call (``help(multidim.get_multidim_sampler)``)
 
 The random seed is used to reproduce your initial sample, since there are several stochastic processes involved in the muldimensional sample.
 As in the independent sampler, the final_kstar1 and final_kstar2 inputs are lists containing the kstar types that the evolved population should contain.
@@ -25,9 +24,9 @@ The multidimensional sample is generated as follows:
 
 .. ipython::
 
-    In [4]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('multidim', final_kstar1=[11], final_kstar2=[11], rand_seed=2, nproc=1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10)
+    In [3]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('multidim', final_kstar1=[11], final_kstar2=[11], rand_seed=2, nproc=1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10)
 
-    In [5]: print(InitialBinaries)
+    In [4]: print(InitialBinaries)
 
 .. note::
 

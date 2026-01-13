@@ -147,7 +147,7 @@ All values with a ``_1`` label refer to the primary; the bcm DataFrame also incl
                     6: Pulsational pair instability
 
                     7: Pair instability supernova
-``bin_state``      State of the binary: 0 [binary], 1 [merged], 2 [disrupted]
+``bin_state``      State of the binary: -1 [single], 0 [binary], 1 [merged], 2 [disrupted]
 ``merger_type``    String of the kstar's in the merger. For example, two neutron stars that merged will be '1313'. Set to '-001' if binary has not merged. 
 ``bin_num``        Unique binary index that is consistent across initial conditions, bcm. bpp, and kick_info DataFrames
 =================  =====================================================
