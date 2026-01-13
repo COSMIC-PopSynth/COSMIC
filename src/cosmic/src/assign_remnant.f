@@ -5,9 +5,6 @@
       
       common /fall/fallback
       REAL*8 fallback
-      REAL ran3
-      EXTERNAL ran3
-      EXTERNAL RandomTruncatedNormal
       real*8 zpars(20)
 
       real*8 avar,bvar
@@ -15,11 +12,6 @@
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
       integer kw,kidx
-
-      real*8 mm_m1, mm_m2, mm_m3, mm_m4, min_ns_mass
-      real*8 pBH, pCF
-      real*8 u_pBH, u_pCF, u_rem
-      real*8 ns_mu, ns_sigma
 
 * Inputs
 *       zpars      : Array of metallicity dependent parameters
@@ -201,69 +193,7 @@
                endif
                mc = mt
             elseif(remnantflag.eq.5)then
-*
-* Use the Mandel & Mueller 2020 prescription
-*
-               pBH = 0.0d0
-               mm_m1 = 2.0d0
-               mm_m2 = 3.0d0
-               mm_m3 = 7.0d0
-               mm_m4 = 8.0d0
-               min_ns_mass = 1.13d0
-
-* Determine probability of forming a BH based on core mass
-               if(mc.lt.mm_m1)then
-                  pBH = 0.0d0
-               elseif(mc.ge.mm_m1.and.mc.lt.mm_m3)then
-                  pBH = (mc - mm_m1)/(mm_m3 - mm_m1)
-               else
-                  pBH = 1.0d0
-               endif
-
-* Draw random numbers for BH/NS decision, complete fallback decision
-* and remnant mass assignment
-               u_pBH = ran3(idum1)
-               u_pCF = ran3(idum1)
-               u_rem = ran3(idum1)
-
-* Determine remnant type based on pBH
-               if(u_pBH.le.pBH)then
-* BH formed
-                  pCF = 0.0d0
-                  if (mc.ge.mm_m1.and.mc.lt.mm_m4) then
-                     pCF = (mc - mm_m1)/(mm_m4 - mm_m1)
-                  else
-                     pCF = 1.0d0
-                  endif
-
-                  if (u_pCF.le.pCF) then
-* Complete fallback occurred, remnant mass equals pre-SN core mass
-                     mt = mc
-                  else
-* Partial fallback occurred, remnant mass drawn from Normal
-                     call RandomTruncatedNormal(0.8d0 * mc,
-     &                                          0.5d0 * 0.5d0,
-     &                                          idum1, mxns, mc,
-     &                                          mt)
-                  endif
-               else
-* NS formed, determine mu and sigma for random normal draw
-                  if (mc.lt.mm_m1) then
-                      ns_mu = 1.2d0
-                      ns_sigma = 0.02d0
-                  elseif (mc.ge.mm_m1.and.mc.lt.mm_m2) then
-                      ns_mu = 1.4d0 + 0.5d0
-     &                       * (mc - mm_m1) / (mm_m2 - mm_m1)
-                      ns_sigma = 0.05d0
-                  else
-                      ns_mu = 1.4d0 + 0.4d0
-     &                       * (mc - mm_m2) / (mm_m3 - mm_m2)
-                      ns_sigma = 0.05d0
-                  endif
-                  call RandomTruncatedNormal(ns_mu, ns_sigma,
-     &                                       idum1, min_ns_mass,
-     &                                       mxns, mt)
-               endif
+               call assign_remnant_mandel_muller(mc, mt)
             endif
             
 * Assign the BH spin based on the chosen prescription
@@ -419,6 +349,82 @@
          endif
       endif
 *
+      end
+
+
+      SUBROUTINE assign_remnant_mandel_muller(mc, mt)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
+      
+      real ran3
+      EXTERNAL ran3
+      EXTERNAL RandomTruncatedNormal
+
+      real*8 mc, mt
+
+      real*8 mm_m1, mm_m2, mm_m3, mm_m4, min_ns_mass
+      real*8 pBH, pCF
+      real*8 u_pBH, u_pCF, u_rem
+      real*8 ns_mu, ns_sigma
+
+* Use the Mandel & Mueller 2020 prescription
+*
+      pBH = 0.0d0
+      mm_m1 = 2.0d0
+      mm_m2 = 3.0d0
+      mm_m3 = 7.0d0
+      mm_m4 = 8.0d0
+      min_ns_mass = 1.13d0
+
+* Determine probability of forming a BH based on core mass
+      if(mc.lt.mm_m1)then
+         pBH = 0.0d0
+      elseif(mc.ge.mm_m1.and.mc.lt.mm_m3)then
+         pBH = (mc - mm_m1)/(mm_m3 - mm_m1)
+      else
+         pBH = 1.0d0
+      endif
+
+* Draw random numbers for BH/NS decision, complete fallback decision
+* and remnant mass assignment
+      u_pBH = ran3(idum1)
+      u_pCF = ran3(idum1)
+      u_rem = ran3(idum1)
+
+* Determine remnant type based on pBH
+      if(u_pBH.le.pBH)then
+* BH formed
+         pCF = 0.0d0
+         if (mc.ge.mm_m1.and.mc.lt.mm_m4) then
+            pCF = (mc - mm_m1)/(mm_m4 - mm_m1)
+         else
+            pCF = 1.0d0
+         endif
+
+         if (u_pCF.le.pCF) then
+* Complete fallback occurred, remnant mass equals pre-SN core mass
+            mt = mc
+         else
+* Partial fallback occurred, remnant mass drawn from Normal
+            call RandomTruncatedNormal(0.8d0 * mc, 0.5d0 * 0.5d0,
+     &                                 idum1, mxns, mc, mt)
+         endif
+      else
+* NS formed, determine mu and sigma for random normal draw
+         if (mc.lt.mm_m1) then
+             ns_mu = 1.2d0
+             ns_sigma = 0.02d0
+         elseif (mc.ge.mm_m1.and.mc.lt.mm_m2) then
+             ns_mu = 1.4d0 + 0.5d0 * (mc - mm_m1) / (mm_m2 - mm_m1)
+             ns_sigma = 0.05d0
+         else
+             ns_mu = 1.4d0 + 0.4d0 * (mc - mm_m2) / (mm_m3 - mm_m2)
+             ns_sigma = 0.05d0
+         endif
+         call RandomTruncatedNormal(ns_mu, ns_sigma, idum1, min_ns_mass,
+     &                              mxns, mt)
+      endif
+
       end
 
 
