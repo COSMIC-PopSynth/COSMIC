@@ -98,10 +98,10 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
                                   'mxns', 'pts1', 'pts2', 'pts3',
                                   'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
-                                  'bhsigmafrac', 'polar_kick_angle',
+                                  'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
                                   'natal_kick_array', 'qcrit_array',
                                   'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 
+                                  'eddfac', 'gamma', 'don_lim', 'acc_lim',
                                   'bdecayfac', 'bconst', 'ck',
                                   'windflag', 'qcflag', 'eddlimflag',
                                   'fprimc_array', 'dtp', 'randomseed',
@@ -319,6 +319,8 @@ class Evolve(object):
                 kwargs1 = {k: v}
                 initialbinarytable = initialbinarytable.assign(**kwargs1)
 
+
+
         # Here we perform two checks
         # First, if the BSE parameters are not in the initial binary table
         # and either a dictionary or an inifile was not provided
@@ -369,14 +371,14 @@ class Evolve(object):
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bpp"] = len(bpp_columns)
             initial_conditions[i]["col_inds_bpp"] = col_inds_bpp
-        
+
         # same for bcm
         col_inds_bcm = np.zeros(len(ALL_COLUMNS), dtype=int)
         col_inds_bcm[:len(bcm_columns)] = [ALL_COLUMNS.index(col) + 1 for col in bcm_columns]
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
-        
+
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
