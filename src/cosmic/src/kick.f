@@ -10,7 +10,7 @@
 * m1: real*8
 *    Mass of the exploding star
 * m1c: real*8
-*    Core mass of the exploding star
+*    CO Core mass of the exploding star
 * m1n: real*8
 *    Mass of the compact remnant post-SN
 * m2: real*8
