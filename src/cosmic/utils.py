@@ -1510,6 +1510,24 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 )
             )
 
+    flag = "mm_mu_bh"
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError(
+                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
+
+    flag = "mm_mu_ns"
+    if flag in BSEDict.keys():
+        if BSEDict[flag] < 0:
+            raise ValueError(
+                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
+
     flag = "remnantflag"
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0, 1, 2, 3, 4, 5]:

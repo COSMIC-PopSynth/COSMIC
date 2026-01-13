@@ -514,6 +514,8 @@ def _evolve_single_system(f):
         _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
+        _evolvebin.snvars.mm_mu_ns = f["mm_mu_ns"]
+        _evolvebin.snvars.mm_mu_bh = f["mm_mu_bh"]
         _evolvebin.cmcpass.using_cmc = 0
 
         _evolvebin.col.n_col_bpp = f["n_col_bpp"]

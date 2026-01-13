@@ -227,9 +227,9 @@
 * if the kickflag is 6 then use the Mandel & Muller 2020 distribution
 * https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.3214M/abstract
              if(kw.eq.14)then
-                mu_mm = 200d0 * max(m1c - m1n, 0.0d0) / m1n
+                mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
              else
-                mu_mm = 400d0 * max(m1c - m1n, 0.0d0) / m1n
+                mu_mm = mm_mu_bh * max(m1c - m1n, 0.0d0) / m1n
              endif
              call RandomTruncatedNormal(mu_mm, 0.3d0 * mu_mm, idum1,
      &                                  0.d0, 10000.d0, vk)

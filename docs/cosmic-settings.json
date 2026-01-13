@@ -1091,6 +1091,40 @@
                 ]
             },
             {
+                "name": "mm_mu_ns",
+                "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
+                    },
+                    {
+                        "name": 200.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "mm_mu_bh",
+                "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
+                    },
+                    {
+                        "name": 400.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "settings-section": "Remnant mass",
                 "name": "remnantflag",
                 "description": "Determines the remnant mass prescription used for NSs and BHs.",
