@@ -1528,6 +1528,24 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 )
             )
 
+    flag = "maltsev_mode"
+    if flag in BSEDict.keys():
+        if BSEDict[flag] not in [0, 1, 2]:
+            raise ValueError(
+                "'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
+
+    flag = "maltsev_fallback"
+    if flag in BSEDict.keys():
+        if BSEDict[flag] > 1 or BSEDict[flag] < 0:
+            raise ValueError(
+                "'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
+
     flag = "remnantflag"
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0, 1, 2, 3, 4, 5]:

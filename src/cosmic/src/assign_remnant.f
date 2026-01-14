@@ -1,6 +1,6 @@
 ***
       SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mc_tot,
-     &                          kidx,mt,kw,bhspin)
+     &                          met,kidx,mt,kw,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -9,7 +9,7 @@
       real*8 zpars(20)
 
       real*8 avar,bvar
-      real*8 mc,mcbagb,mass,mt,mc_tot
+      real*8 mc,mcbagb,mass,mt,mc_tot,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
       integer kw,kidx
@@ -20,6 +20,7 @@
 *       mcbagb     : Core mass at the base of the AGB
 *       mass       : Total ZAMS mass of the star
 *       mc_tot     : Total core mass before SN (CO + He layers)
+*       met        : Metallicity of the star
 *       kidx       : Index of the star in the pisn track arrays
 
 * Outputs
@@ -196,6 +197,8 @@
                mc = mt
             elseif(remnantflag.eq.5)then
                call assign_remnant_mandel_muller(mc, mc_tot, mt)
+            elseif(remnantflag.eq.6)then
+               call assign_remnant_maltsev(mc, mc_tot, met, kidx, mt)
             endif
             
 * Assign the BH spin based on the chosen prescription
@@ -432,6 +435,108 @@
       end
 
 
+      SUBROUTINE assign_remnant_maltsev(mc, mc_tot, met, kidx, mt)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
+
+      common /fall/fallback
+      REAL*8 fallback
+
+      real ran3
+      EXTERNAL ran3
+
+      real*8 mc, mc_tot, mt, met, u_NS
+      real*8 log10Z_bounded
+      integer mt_type, kidx
+      integer first_mt_type_as_donor
+      EXTERNAL first_mt_type_as_donor
+
+* Use the Maltsev+25 prescription with additional details from Willcox+25
+
+      real*8 M1, M2, M3
+      real*8 M1S, M2S, M3S, M1S_Z01, M2S_Z01, M3S_Z01
+      real*8 M1A, M2A, M3A, M1A_Z01, M2A_Z01, M3A_Z01
+      real*8 M1B, M2B, M3B, M1B_Z01, M2B_Z01, M3B_Z01
+      real*8 M1C, M2C, M3C, M1C_Z01, M2C_Z01, M3C_Z01
+      real*8 M_min, M_max, M_NS
+      real*8 log10_1, log10_1_div_10, log10_1_div_50
+
+* Taken from summary in Table A1 of Willcox+25
+      PARAMETER(M1S=6.6d0, M2S=7.2d0, M3S=13.0d0,
+     &          M1A=7.4d0, M2A=8.4d0, M3A=15.4d0,
+     &          M1B=7.7d0, M2B=8.3d0, M3B=15.2d0,
+     &          M1C=6.6d0, M2C=7.1d0, M3C=13.2d0,
+     &          M1S_Z01=6.1d0, M2S_Z01=6.6d0, M3S_Z01=12.9d0,
+     &          M1A_Z01=7.0d0, M2A_Z01=7.4d0, M3A_Z01=13.7d0,
+     &          M1B_Z01=6.9d0, M2B_Z01=7.9d0, M3B_Z01=13.7d0,
+     &          M1C_Z01=6.3d0, M2C_Z01=7.1d0, M3C_Z01=12.3d0,
+     &          M_min=5.62d0, M_max=16.18d0,
+     &          log10_1=0, log10_1_div_10=-1, log10_1_div_50=-1.69897d0,
+     &          M_NS=1.4d0)
+
+* Save some computation by immediately producing either a NS or a direct
+collapse BH if the CO core mass is outside the Maltsev+25 range
+      if(mc.lt.M_min)then
+         fallback = 0.d0
+         mt = M_NS
+         return
+      elseif(mc.gt.M_max)then
+         fallback = 1.d0
+         mt = mc_tot
+         return
+      endif
+
+* Determine the mass transfer type of the donor star at first mass transfer
+      mt_type = first_mt_type_as_donor(kidx)
+
+* Normalize metallicity to solar
+      met = met / zsun
+
+* Bound log10Z based on maltsev_mode choice from user
+      if (maltsev_mode.eq.0) then
+        log10Z_bounded = log10(met)
+      elseif (maltsev_mode.eq.1) then
+        log10Z_bounded = min(max(log10(met), log10_1_div_50), log10_1)
+      elseif (maltsev_mode.eq.2) then
+        log10Z_bounded = min(max(log10(met), log10_1_div_10), log10_1)
+      endif
+
+* Determine the mass boundaries based on MT type and metallicity
+      if(mt_type.eq.-1)then
+         M1 = M1S + (M1S - M1S_Z01) * log10Z_bounded
+         M2 = M2S + (M2S - M2S_Z01) * log10Z_bounded
+         M3 = M3S + (M3S - M3S_Z01) * log10Z_bounded
+      elseif(mt_type.eq.0)then
+         M1 = M1A + (M1A - M1A_Z01) * log10Z_bounded
+         M2 = M2A + (M2A - M2A_Z01) * log10Z_bounded
+         M3 = M3A + (M3A - M3A_Z01) * log10Z_bounded
+      elseif(mt_type.eq.1)then
+         M1 = M1B + (M1B - M1B_Z01) * log10Z_bounded
+         M2 = M2B + (M2B - M2B_Z01) * log10Z_bounded
+         M3 = M3B + (M3B - M3B_Z01) * log10Z_bounded
+      elseif(mt_type.eq.2)then
+         M1 = M1C + (M1C - M1C_Z01) * log10Z_bounded
+         M2 = M2C + (M2C - M2C_Z01) * log10Z_bounded
+         M3 = M3C + (M3C - M3C_Z01) * log10Z_bounded
+      endif
+
+* Determine fallback and remnant mass based on CO core mass
+      u_NS = ran3(idum1)
+      if ((mc.ge.M1.and.mc.le.M2).or.(mc.ge.M3)) then
+         fallback = 1.0d0
+         mt = mc_tot
+      elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.0.1d0) then
+         fallback = maltsev_fallback
+         mt = (mc_tot - M_NS) * fallback + M_NS
+      else
+         fallback = 0.0d0
+         mt = M_NS
+      endif
+
+      return
+      end
+
+
       SUBROUTINE assign_remnant_spin(mc, bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -456,4 +561,54 @@
          endif
       endif
 
+      end
+
+      integer function first_mt_type_as_donor(star)
+* Find the first occurrence of mass transfer where a star is the donor
+* and return the type
+*
+*     inputs:
+*       star : integer (1 or 2) indicating which star to check
+*
+*     return value:
+*       mt_type : integer indicating the stellar type at first mass
+*                 transfer as donor for the specified star
+*                 -1 if no mass transfer as donor found
+*                 0 if case A mass transfer found
+*                 1 if case B mass transfer found
+*                 2 if case C mass transfer found
+*
+      INCLUDE 'const_bse.h'
+
+      integer star
+      integer i, col, kstar
+
+      if (star .eq. 1) then
+         col = 4
+      else if (star .eq. 2) then
+         col = 5
+      endif
+
+      kstar = -1
+      do 10 i = 1, 1000
+*        evol_type is column 11
+         if (int(bpp(i,11)).eq.3) then
+            kstar = int(bpp(i,col))
+            goto 20
+         endif
+   10 continue
+
+   20 if (kstar.eq.-1) then
+         first_mt_type_as_donor = -1
+      else if (kstar.ge.0.and.kstar.le.1.or.kstar.eq.7) then
+         first_mt_type_as_donor = 0
+      else if (kstar.eq.2.or.kstar.eq.8) then
+         first_mt_type_as_donor = 1
+      else if (kstar.ge.3.and.kstar.le.6.or.kstar.eq.9) then
+         first_mt_type_as_donor = 2
+      else
+         first_mt_type_as_donor = -1
+      endif
+
+      return
       end

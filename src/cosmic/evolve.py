@@ -94,7 +94,8 @@ else:
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                   'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'rtmsflag',
-                                  'bhflag', 'remnantflag', 'grflag', 'bhms_coll_flag', 'wd_mass_lim',
+                                  'bhflag', 'remnantflag', 'maltsev_mode', 'maltsev_fallback',
+                                  'grflag', 'bhms_coll_flag', 'wd_mass_lim',
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
                                   'mxns', 'pts1', 'pts2', 'pts3',
                                   'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
@@ -470,6 +471,8 @@ def _evolve_single_system(f):
         _evolvebin.snvars.pisn = f["pisn"]
         _evolvebin.flags.bhflag = f["bhflag"]
         _evolvebin.flags.remnantflag = f["remnantflag"]
+        _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
+        _evolvebin.flags.maltsev_fallback = f["maltsev_fallback"]
         _evolvebin.ceflags.cekickflag = f["cekickflag"]
         _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = f["cehestarflag"]

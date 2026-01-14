@@ -10,11 +10,11 @@
       INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,windflag,qcflag
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag,rtmsflag
       INTEGER htpmb,ST_cr,ST_tide,bdecayfac,grflag,bhms_coll_flag
-      INTEGER wd_mass_lim
+      INTEGER wd_mass_lim,maltsev_mode
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
-     &               bhms_coll_flag,wd_mass_lim,rtmsflag
+     &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_mode
       REAL*8 don_lim,acc_lim,Mbh_initial
       COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
@@ -37,13 +37,13 @@
       REAL*8 sigma,sigmadiv,bhsigmafrac,pisn,mxns
       REAL*8 polar_kick_angle
       REAL*8 ecsn,ecsn_mlow,bhspinmag,rembar_massloss
-      REAL*8 mm_mu_ns, mm_mu_bh
+      REAL*8 mm_mu_ns, mm_mu_bh, maltsev_fallback
       REAL*8 natal_kick_array(2,5)
       REAL*8 mc_he(2),mc_co(2)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
      &            polar_kick_angle,pisn,ecsn,ecsn_mlow,
      &            bhspinmag,mxns,rembar_massloss,kickflag,
-     &            mc_he,mc_co,mm_mu_ns,mm_mu_bh
+     &            mc_he,mc_co,mm_mu_ns,mm_mu_bh,maltsev_fallback
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac
