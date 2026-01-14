@@ -850,6 +850,10 @@
                         "description": "Follows the same prescription as 1, but uses the kick prescription described in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract'>Disberg & Mandel 2025</a> for CCSN."
                     },
                     {
+                        "name": 6,
+                        "description": "Follows <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>, where the kick velocity is drawn based on the mass of the formed NS or BH, with scaling parameters that are set with 'mm_mu_ns' and 'mm_mu_bh'."
+                    },
+                    {
                         "name": "negative values",
                         "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     }
@@ -1189,6 +1193,14 @@
                         "name": 4,
                         "description": "follows the delayed prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>. This fills the mass gap between neutron stars and black holes.",
                         "default": true
+                    },
+                    {
+                        "name": 5,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>. The method is stochastic. NOTE: We recommend that this prescription be used in conjunction with the Mandel &amp; Mueller 2020 kick prescription (kickflag = 6) and with mxns set to 2.0 Msun and rembar_massloss set to 0.1 Msun."
+                    },
+                    {
+                        "name": 6,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2025A%26A...700A..20M/abstract'>Maltsev+2025</a>, with additions from <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251007573W/abstract'>Willcox+2025</a> for the definition of BH masses."
                     }
                 ]
             },
