@@ -598,7 +598,7 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
       kstar = -1
       do 10 i = 1, 1000
 *        evol_type is column 11
-         if (int(bpp(i,11)).eq.3) then
+         if (int(bpp(i,11)).eq.3.or.int(bpp(i,11)).eq.7) then
             kstar = int(bpp(i,col))
             goto 20
          endif
