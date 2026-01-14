@@ -1096,7 +1096,7 @@
             },
             {
                 "name": "mm_mu_ns",
-                "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6",
+                "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6)",
                 "type": "number",
                 "options-preface": "",
                 "options": [
@@ -1113,7 +1113,7 @@
             },
             {
                 "name": "mm_mu_bh",
-                "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6",
+                "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6)",
                 "type": "number",
                 "options-preface": "",
                 "options": [
@@ -1123,44 +1123,6 @@
                     },
                     {
                         "name": 200.0,
-                        "description": "Default choice",
-                        "default": true
-                    }
-                ]
-            },
-            {
-                "name": "maltsev_mode",
-                "description": "Sets the mode to use Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
-                "type": "number",
-                "options-preface": "",
-                "options": [
-                    {
-                        "name": 0,
-                        "description": "Extrapolate Maltsev+25 fits to the full range of metallicities"
-                    },
-                    {
-                        "name": 1,
-                        "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range",
-                        "default": true
-                    },
-                    {
-                        "name": 2,
-                        "description": "No extrapolation: use Maltsev+25 fits only within Z/Zsun = [1/10, 1], use boundary values outside this range"
-                    }
-                ]
-            },
-            {
-                "name": "maltsev_fallback",
-                "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
-                "type": "number",
-                "options-preface": "",
-                "options": [
-                    {
-                        "name": "values in [0, 1]",
-                        "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
-                    },
-                    {
-                        "name": 0.5,
                         "description": "Default choice",
                         "default": true
                     }
@@ -1255,6 +1217,44 @@
                     {
                         "name": 1,
                         "description": "Apply the limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_mode",
+                "description": "Sets the mode to use Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Extrapolate Maltsev+25 fits to the full range of metallicities"
+                    },
+                    {
+                        "name": 1,
+                        "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "No extrapolation: use Maltsev+25 fits only within Z/Zsun = [1/10, 1], use boundary values outside this range"
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_fallback",
+                "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values in [0, 1]",
+                        "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default choice",
                         "default": true
                     }
                 ]
