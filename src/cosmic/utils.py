@@ -1548,9 +1548,9 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "remnantflag"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3, 4, 5]:
+        if BSEDict[flag] not in [0, 1, 2, 3, 4, 5, 6]:
             raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, 2, 3, 4, or 5 (you set it to '{1:d}')".format(
+                "'{0:s}' needs to be set to either 0, 1, 2, 3, 4, 5, or 6 (you set it to '{1:d}')".format(
                     flag, BSEDict[flag]
                 )
             )

@@ -472,7 +472,7 @@ def _evolve_single_system(f):
         _evolvebin.flags.bhflag = f["bhflag"]
         _evolvebin.flags.remnantflag = f["remnantflag"]
         _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
-        _evolvebin.flags.maltsev_fallback = f["maltsev_fallback"]
+        _evolvebin.snvars.maltsev_fallback = f["maltsev_fallback"]
         _evolvebin.ceflags.cekickflag = f["cekickflag"]
         _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = f["cehestarflag"]
