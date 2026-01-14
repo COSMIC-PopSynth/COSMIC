@@ -1,6 +1,6 @@
 ***
       SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mc_tot,
-     &                          met,kidx,mt,kw,bhspin)
+     &                          kidx,mt,kw,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -20,7 +20,6 @@
 *       mcbagb     : Core mass at the base of the AGB
 *       mass       : Total ZAMS mass of the star
 *       mc_tot     : Total core mass before SN (CO + He layers)
-*       met        : Metallicity of the star
 *       kidx       : Index of the star in the pisn track arrays
 
 * Outputs
@@ -198,7 +197,8 @@
             elseif(remnantflag.eq.5)then
                call assign_remnant_mandel_muller(mc, mc_tot, mt)
             elseif(remnantflag.eq.6)then
-               call assign_remnant_maltsev(mc, mc_tot, met, kidx, mt)
+                met = 10**(LOG10(zpars(14))/0.4)
+               call assign_remnant_maltsev(mc,mc_tot,met,kidx,kw,mt)
             endif
             
 * Assign the BH spin based on the chosen prescription
@@ -435,7 +435,7 @@
       end
 
 
-      SUBROUTINE assign_remnant_maltsev(mc, mc_tot, met, kidx, mt)
+      SUBROUTINE assign_remnant_maltsev(mc, mc_tot, met, kidx, kw, mt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 
@@ -447,7 +447,7 @@
 
       real*8 mc, mc_tot, mt, met, u_NS
       real*8 log10Z_bounded
-      integer mt_type, kidx
+      integer mt_type, kidx, kw
       integer first_mt_type_as_donor
       EXTERNAL first_mt_type_as_donor
 
@@ -488,6 +488,12 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
 
 * Determine the mass transfer type of the donor star at first mass transfer
       mt_type = first_mt_type_as_donor(kidx)
+
+* If star has not undergone mass transfer as donor, but has
+* self-stripped (kw in [7,8,9]), assume case B mass transfer
+      if(mt_type.eq.-1.and.(kw.eq.7.or.kw.eq.8.or.kw.eq.9))then
+         mt_type = -1
+      endif
 
 * Normalize metallicity to solar
       met = met / zsun
