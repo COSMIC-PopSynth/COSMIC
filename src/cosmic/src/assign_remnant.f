@@ -436,6 +436,20 @@
 
 
       SUBROUTINE assign_remnant_maltsev(mc, mc_tot, met, kidx, kw, mt)
+* Assign remnant mass using the Maltsev et al. 2025 prescription,
+* with additional details from Willcox et al. 2025
+*
+* Inputs:
+*       mc         : CO core mass before SN
+*       mc_tot     : Total core mass before SN (CO + He layers)
+*       met        : Metallicity of the star
+*       kidx       : Index of the star
+*       kw         : Stellar (remnant) type
+*
+* Outputs:
+*       mt         : Remnant mass after SN
+
+
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 
@@ -527,6 +541,9 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
       endif
 
 * Determine fallback and remnant mass based on CO core mass
+*   Direct collapse:    if m1 <= mc <= m2 or mc >= m3
+*   Partial fallback:   10% of the time if m2 < mc < m3
+*   NS:                 otherwise
       u_NS = ran3(idum1)
       if ((mc.ge.M1.and.mc.le.M2).or.(mc.ge.M3)) then
          fallback = 1.0d0
