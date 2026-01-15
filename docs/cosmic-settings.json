@@ -122,6 +122,10 @@
                         "description": "As <code>raghavan10</code> but with different close binary fractions following <a href='https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract'>Moe+2019</a>"
                     },
                     {
+                        "name": "martinez26",
+                        "description": "Uses sana12 for massive binaries (\\(m_1 ≥ 8 {\\rm M_{\\odot}}\\)) with upper limit at 3000 days and raghavan10 for low-mass binaries. Used in <a href='https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract'>Martinez+2026</a>."
+                    },
+                    {
                         "name": "custom",
                         "description": "Sample from a custom power law. The user provides a dictionary of min, max and slope values for the power law."
                     }
@@ -201,8 +205,8 @@
                         "description": "Primary mass dependent binary fraction following van Haaften+05"
                     },
                     {
-                        "name": "offner22",
-                        "description": "Primary mass dependent binary fraction following Offner+22"
+                        "name": "offner23",
+                        "description": "Primary mass dependent binary fraction following Offner+23"
                     },
                     {
                         "name": 0.5,
