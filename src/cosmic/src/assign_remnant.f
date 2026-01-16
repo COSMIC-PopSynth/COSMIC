@@ -542,13 +542,13 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
 
 * Determine fallback and remnant mass based on CO core mass
 *   Direct collapse:    if m1 <= mc <= m2 or mc >= m3
-*   Partial fallback:   10% of the time if m2 < mc < m3
+*   Partial fallback:   maltsev_pf_prob fraction of the time if m2 < mc < m3
 *   NS:                 otherwise
       u_NS = ran3(idum1)
       if ((mc.ge.M1.and.mc.le.M2).or.(mc.ge.M3)) then
          fallback = 1.0d0
          mt = mc_tot
-      elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.0.1d0) then
+      elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.maltsev_pf_prob) then
          fallback = maltsev_fallback
          mt = (mc_tot - M_NS) * fallback + M_NS
       else

@@ -1229,12 +1229,12 @@
                 "options": [
                     {
                         "name": 0,
-                        "description": "Extrapolate Maltsev+25 fits to the full range of metallicities"
+                        "description": "Extrapolate Maltsev+25 fits to the full range of metallicities",
+                        "default": true
                     },
                     {
                         "name": 1,
                         "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range",
-                        "default": true
                     },
                     {
                         "name": 2,
@@ -1254,6 +1254,23 @@
                     },
                     {
                         "name": 0.5,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_pf_prob",
+                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the 'partial fallback' regime of M2 <= MCO < M3 (only relevant if remnantflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "values in [0, 1]",
+                        "description": "Sets the probability of partial fallback leading to BH formation in the Maltsev remnant mass prescription"
+                    },
+                    {         
+                        "name": 0.1,
                         "description": "Default choice",
                         "default": true
                     }

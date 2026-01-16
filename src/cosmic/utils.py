@@ -1546,6 +1546,15 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 )
             )
 
+    flag = "maltsev_pf_prob"
+    if flag in BSEDict.keys():
+        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
+            raise ValueError(
+                "'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(
+                    flag, BSEDict[flag]
+                )
+            )
+
     flag = "remnantflag"
     if flag in BSEDict.keys():
         if BSEDict[flag] not in [0, 1, 2, 3, 4, 5, 6]:
