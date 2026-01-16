@@ -178,7 +178,8 @@ class TestUtils(unittest.TestCase):
                    'bhspinflag': 0, 'bhspinmag': 0.0, 'rejuv_fac': 1.0, 'rejuvflag': 0, 'htpmb': 1,
                    'ST_cr': 1, 'ST_tide': 1, 'bdecayfac': 1, 'rembar_massloss': 0.5, 'kickflag' : 1,
                    'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': -1,
-                   'rtmsflag': 0, 'wd_mass_lim': 1, 'maltsev_mode': 1, 'maltsev_fallback': 0.5,
+                   'rtmsflag': 0, 'wd_mass_lim': 1,
+                   'maltsev_mode': 1, 'maltsev_fallback': 0.5, "maltsev_pf_prob": 0.1,
                    'mm_mu_ns': 400.0, 'mm_mu_bh': 200.0}
 
         initial_binaries = InitialBinaryTable.sampler('independent', np.linspace(0, 15, 16), np.linspace(0, 15, 16),
