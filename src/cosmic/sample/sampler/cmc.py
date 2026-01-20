@@ -74,7 +74,7 @@ def get_cmc_sampler(
         Model to sample eccentricity; choices include: thermal, uniform, sana12
 
     porb_model : `str`
-        Model to sample orbital period; choices include: log_uniform, sana12
+        Model to sample orbital period; choices include: log_uniform, sana12, renzo19, raghavan10, moe19, martinez26
 
     msort : `float`
         Stars with M>msort can have different pairing and sampling of companions
@@ -83,7 +83,7 @@ def get_cmc_sampler(
         Sets the pairing of stars M>msort only with stars with M>msort
 
     binfrac_model : `str or float`
-        Model for binary fraction; choices include: vanHaaften, offner22, or a fraction where 1.0 is 100% binaries
+        Model for binary fraction; choices include: vanHaaften, offner23, or a fraction where 1.0 is 100% binaries
 
     binfrac_model_msort : `str or float`
         Same as binfrac_model for M>msort
