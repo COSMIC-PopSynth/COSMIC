@@ -66,7 +66,7 @@ def get_independent_sampler(
         Model to sample primary mass; choices include: kroupa93, kroupa01, salpeter55, custom
         if 'custom' is selected, must also pass arguemts:
         alphas : `array`
-            list of power law indicies
+            list of power law indices
         mcuts : `array`
             breaks in the power laws.
         e.g. alphas=[-1.3,-2.3,-2.3],mcuts=[0.08,0.5,1.0,150.] reproduces standard Kroupa2001 IMF
@@ -75,7 +75,7 @@ def get_independent_sampler(
         Model to sample eccentricity; choices include: thermal, uniform, sana12
 
     porb_model : `str` or `dict`
-        Model to sample orbital period; choices include: log_uniform, sana12, raghavan10, moe19
+        Model to sample orbital period; choices include: log_uniform, sana12, renzo19, raghavan10, moe19, martinez26
         or a custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
         (e.g. {"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the Sana+2012 distribution
 
@@ -119,7 +119,7 @@ def get_independent_sampler(
         Duration of constant star formation beginning from SF_Start in Myr
 
     binfrac_model : `str or float`
-        Model for binary fraction; choices include: vanHaaften, offner22, or a fraction where 1.0 is 100% binaries
+        Model for binary fraction; choices include: vanHaaften, offner23, or a fraction where 1.0 is 100% binaries
 
     binfrac_model_msort : `str or float`
         Same as binfrac_model for M>msort
@@ -614,7 +614,7 @@ class Sample(object):
         either a binary fraction specified by a float or a
         primary-mass dependent binary fraction following
         `van Haaften et al.(2009) <http://adsabs.harvard.edu/abs/2013A%26A...552A..69V>`_ in appdx
-        or `Offner et al.(2022) <https://arxiv.org/abs/2203.10066>`_ in fig 1
+        or `Offner et al.(2023) <https://ui.adsabs.harvard.edu/abs/2023ASPC..534..275O/abstract>`_ in fig 1
 
         Parameters
         ----------
@@ -624,7 +624,7 @@ class Sample(object):
             binfrac_model : str or float
                 vanHaaften - primary mass dependent and ONLY VALID up to 100 Msun
                 
-                offner22 - primary mass dependent
+                offner23 - primary mass dependent
                 
                 float - fraction of binaries; 0.5 means 2 in 3 stars are a binary pair while 1
                 means every star is in a binary pair
@@ -671,7 +671,7 @@ class Sample(object):
                     binary_fraction_low < binary_choose_low)
                 (binaryIdx_low,) = np.where(
                     binary_fraction_low >= binary_choose_low)
-            elif binfrac_model == "offner22":
+            elif binfrac_model == "offner23":
                 from scipy.interpolate import BSpline
                 t = [0.0331963853, 0.0331963853, 0.0331963853, 0.0331963853, 0.106066017,
                      0.212132034, 0.424264069, 0.866025404, 1.03077641, 1.11803399,
@@ -695,7 +695,7 @@ class Sample(object):
                     binary_fraction_low >= binary_choose_low)
             else:
                 raise ValueError(
-                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften, offner22, or a float"
+                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften, offner23, or a float"
                 )
         elif type(binfrac_model) == float:
             if (binfrac_model <= 1.0) & (binfrac_model >= 0.0):
@@ -714,7 +714,7 @@ class Sample(object):
                 )
         else:
             raise ValueError(
-                "You have not supplied a model or a fraction. Please choose either vanHaaften, offner22, or a float"
+                "You have not supplied a model or a fraction. Please choose either vanHaaften, offner23, or a float"
             )
 
         # --- if using a different binary fraction for high-mass systems
@@ -729,7 +729,7 @@ class Sample(object):
                     binary_fraction_high < binary_choose_high)
                 (binaryIdx_high,) = np.where(
                     binary_fraction_high >= binary_choose_high)
-            elif binfrac_model_msort == "offner22":
+            elif binfrac_model_msort == "offner23":
                 from scipy.interpolate import BSpline
                 t = [0.0331963853, 0.0331963853, 0.0331963853, 0.0331963853, 0.106066017,
                      0.212132034, 0.424264069, 0.866025404, 1.03077641, 1.11803399,
@@ -753,7 +753,7 @@ class Sample(object):
                     binary_fraction_high >= binary_choose_high)
             else:
                 raise ValueError(
-                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften, offner22, or a float"
+                    "You have supplied a non-supported binary fraction model. Please choose vanHaaften, offner23, or a float"
                 )
         elif (binfrac_model_msort is not None) and (type(binfrac_model_msort) == float):
             if (binfrac_model_msort <= 1.0) & (binfrac_model_msort >= 0.0):
@@ -772,7 +772,7 @@ class Sample(object):
                 )
         elif (binfrac_model_msort is not None):
             raise ValueError(
-                "You have not supplied a model or a fraction. Please choose either vanHaaften, offner22, or a float"
+                "You have not supplied a model or a fraction. Please choose either vanHaaften, offner23, or a float"
             )
 
 
@@ -833,6 +833,13 @@ class Sample(object):
             `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
             but with different close binary fractions following 
             `Moe+2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>_`
+            martinez26 : piecewise model with a power law orbital period following
+            `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
+            between 0.15 < log(P/day) < log(3000) for binaries with m1 >= 8Msun and following
+            `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
+            with a log normal orbital period in days with mean_logP = 4.9 and sigma_logP = 2.3 between
+            0 < log10(P/day) < 9 for binaries with m1 < 8Msun. Used in
+            `Martinez+2026 <https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract>_`.
             Custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
             (e.g. porb_model={"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the
             Sana+2012 distribution.
@@ -911,7 +918,7 @@ class Sample(object):
             log10_porb_min = np.array([0.15]*len(a_min)) 
             RL_porb = utils.p_from_a(a_min,mass1,mass2)
             log10_RL_porb = np.log10(RL_porb)
-            log10_porb_min[log10_porb_min <  log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
+            log10_porb_min[log10_porb_min < log10_RL_porb] = log10_RL_porb[log10_porb_min < log10_RL_porb]
             
             porb = 10 ** utils.rndm(a=log10_porb_min, b=log10_porb_max, g=-0.55, size=size)
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
@@ -1033,10 +1040,56 @@ class Sample(object):
             porb = 10**logP_dist 
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
             
-
+        elif porb_model == "martinez26":
+            # martinez+26 model: use sana12 for mass1 >= 8.0 and raghavan10 for mass1 < 8.0
+            import scipy
+            
+            # Create mask for high-mass and low-mass systems
+            (ind_massive,) = np.where(mass1 >= 8.0)
+            (ind_lowmass,) = np.where(mass1 < 8.0)
+            
+            # Initialize porb array
+            porb = np.zeros(size)
+            
+            # sana12 for massive systems with upper bound 3000 days
+            if len(ind_massive) > 0:
+                if porb_max is None:
+                    log10_porb_max_sana = np.log10(3000)
+                else:
+                    log10_porb_max_sana = np.minimum(np.log10(3000), np.log10(porb_max))
+                
+                log10_porb_min_sana = np.array([0.15]*len(ind_massive))
+                RL_porb_sana = utils.p_from_a(a_min[ind_massive], mass1[ind_massive], mass2[ind_massive])
+                log10_RL_porb_sana = np.log10(RL_porb_sana)
+                log10_porb_min_sana[log10_porb_min_sana < log10_RL_porb_sana] = log10_RL_porb_sana[log10_porb_min_sana < log10_RL_porb_sana]
+                
+                porb[ind_massive] = 10 ** utils.rndm(a=log10_porb_min_sana, b=log10_porb_max_sana, g=-0.55, size=len(ind_massive))
+            
+            # Raghavan10 for low-mass systems (mass1 < 8.0)
+            if len(ind_lowmass) > 0:
+                if porb_max is None:
+                    log10_porb_max_ragh = 9.0
+                else:
+                    log10_porb_max_ragh = np.minimum(9.0, np.log10(porb_max))
+                
+                # Handle array vs scalar case for log10_porb_max_ragh
+                if isinstance(log10_porb_max_ragh, np.ndarray):
+                    log10_porb_max_ragh = log10_porb_max_ragh[ind_lowmass]
+                
+                lower = 0
+                upper = log10_porb_max_ragh
+                mu = 4.9
+                sigma = 2.3
+                
+                # Sample from truncated normal distribution
+                porb[ind_lowmass] = 10 ** (scipy.stats.truncnorm.rvs(
+                    (lower-mu)/sigma, (upper-mu)/sigma, loc=mu, scale=sigma, size=len(ind_lowmass)
+                ))
+            
+            aRL_over_a = a_min / utils.a_from_p(porb, mass1, mass2)
         else:
             raise ValueError(
-                "You have supplied a non-supported model; Please choose either log_flat, sana12, renzo19, raghavan10, or moe19"
+                "You have supplied a non-supported model; Please choose either log_uniform, sana12, renzo19, raghavan10, moe19, or martinez26"
             )
         return porb, aRL_over_a 
 
