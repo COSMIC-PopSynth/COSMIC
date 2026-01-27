@@ -46,7 +46,7 @@ settings_template = """<div class="setting">
 option_template = """<li><code class="docutils literal notranslate"><span class="pre opt-val"></span></code>: <span class="opt-desc"></span></li>"""
 
 # read the settings file
-with open("cosmic-settings.json") as f:
+with open("../src/cosmic/data/cosmic-settings.json") as f:
     settings = json.load(f)
 
 # go through each major settings group
