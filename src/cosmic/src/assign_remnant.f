@@ -4,6 +4,8 @@
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
+*      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+*      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL*8 fallback
       REAL ran3
       EXTERNAL ran3
@@ -70,6 +72,10 @@
                mass = mt
 *
             else
+* Store values in common block
+*               mass_preSN = mt
+*               mHe_preSN = mc_he(kidx)
+*               massc_preSN = mc_co(kidx)
                if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.
