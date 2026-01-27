@@ -433,10 +433,13 @@ class Evolve(object):
 
         natal_kick_arrays = np.vstack(output[:, 4])
         natal_kick_arrays = natal_kick_arrays.reshape(-1, 1, len(FLATTENED_NATAL_KICK_COLUMNS))
+
+        # update initial table with sampled kicks
+        to_add = {}
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-            # assigning values this way work for most of the parameters.
-            kwargs1 = {column: natal_kick_arrays[:, :, idx]}
-            initialbinarytable = initialbinarytable.assign(**kwargs1)
+            to_add[column] = natal_kick_arrays[:, 0, idx]
+        natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
+        initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                                  columns=KICK_COLUMNS,
