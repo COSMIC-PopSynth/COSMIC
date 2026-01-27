@@ -32,8 +32,12 @@ jobs:
           ${{ runner.os }}-
     - name: Install dependencies and package
       run: |
+        # upgrade apt-get and install system dependencies
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev meson python3-dev
+
+        # upgrade pip and install dependencies
+        python -m pip install -U pip setuptools wheel packaging
         pip install numpy ninja pytest
         pip install -r requirements.txt
         python -m pip install .

@@ -85,7 +85,8 @@ def get_independent_sampler(
         if q > 0, qmin sets the minimum mass ratio
         q = -1, this limits the minimum mass ratio to be set such that
         the pre-MS lifetime of the secondary is not longer than the full
-        lifetime of the primary if it were to evolve as a single star
+        lifetime of the primary if it were to evolve as a single star.
+        Cannot be used in conjunction with m2_min
 
     m_max : `float`
         kwarg which sets the maximum primary and secondary mass for sampling
@@ -100,6 +101,7 @@ def get_independent_sampler(
     m2_min : `float`
         kwarg which sets the minimum secondary mass for sampling
         the secondary as uniform in mass_2 between m2_min and mass_1
+        Cannot be used in conjunction with qmin
 
     msort : `float`
         Stars with M>msort can have different pairing and sampling of companions
@@ -177,6 +179,10 @@ def get_independent_sampler(
     if binfrac_model == 0.0 and sampling_target == "size":
         raise ValueError(("If `binfrac_model == 0.0` then `sampling_target` must be 'total_mass'. Otherwise "
                           "you are targetting a population of `size` binaries but will never select any."))
+
+    # don't allow users to specify both a qmin and m2_min
+    if "qmin" in kwargs and "m2_min" in kwargs:
+        raise ValueError("You cannot specify both qmin and m2_min, please choose one or the other")
 
     final_kstar1 = [final_kstar1] if isinstance(final_kstar1, (int, float)) else final_kstar1
     final_kstar2 = [final_kstar2] if isinstance(final_kstar2, (int, float)) else final_kstar2
@@ -1158,9 +1164,7 @@ class Sample(object):
         of length 10^5.  If your masses are more than that, you'll
         need to divide it into chunks
         """
-
         from cosmic import _evolvebin
-
 
         max_array_size = 100000
         total_length = len(mass)
@@ -1183,7 +1187,7 @@ class Sample(object):
 
         length_remaining = total_length
 
-        ## if smaller than 10^5, need to pad out the array
+        # if smaller than 10^5, need to pad out the array
         temp_mass = np.zeros(max_array_size)
         temp_mass[:length_remaining] = mass[-length_remaining:]
 

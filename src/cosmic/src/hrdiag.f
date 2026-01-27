@@ -27,7 +27,7 @@
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20),met
       real*8 bhspin
-      real*8 r,lum,mc,rc,menv,renv,k2
+      real*8 r,lum,rc,menv,renv,k2,mc
       real*8 mch,mlp,tiny
 *      parameter(mch=1.44d0,mlp=12.d0,tiny=1.0d-14)
       parameter(mlp=12.d0,tiny=1.0d-14)
@@ -109,6 +109,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *           Main sequence star.
 *
             mc = 0.d0
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = 0.d0
             tau = aj/tm
             thook = thookf(mass)*tscls(1)
             zeta = 0.01d0
@@ -178,8 +180,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             endif
             eta = mctmsf(mass)
             tau = (aj - tm)/thg
+            
             mc = ((1.d0 - tau)*eta + tau)*mc
             mc = MAX(mc,mcx)
+
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
 *
 * Test whether core mass has reached total mass.
 *
@@ -190,6 +196,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium star
 *
                   mc = 0.d0
+                  mc_he(kidx) = 0.d0
+                  mc_co(kidx) = 0.d0
                   mass = mt
                   kw = 7
                   CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
@@ -198,6 +206,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium white dwarf.
 *
                   mc = mt
+                  mc_he(kidx) = 0.d0
+                  mc_co(kidx) = 0.d0
                   mass = mt
                   kw = 10
                endif
@@ -235,6 +245,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mass.le.zpars(2))then
 * Star has a degenerate He core which grows on the GB
             mc = mcgbf(lum,GB,lums(6))
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
          else
 * Star has a non-degenerate He core which may grow, but
 * only slightly, on the GB
@@ -242,6 +254,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(9))
             mcy = mcheif(mass,zpars(2),zpars(10))
             mc = mcx + (mcy - mcx)*tau
+
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
          endif
          r = rgbf(mt,lum)
          rg = r
@@ -252,6 +267,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium star
 *
                mc = 0.d0
+               mc_he(kidx) = mc
+               mc_co(kidx) = 0.0
                mass = mt
                kw = 7
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
@@ -260,6 +277,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium white dwarf.
 *
                mc = mt
+               mc_he(kidx) = mc
+               mc_co(kidx) = 0.0
                mass = mt
                kw = 10
             endif
@@ -280,7 +299,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(10))
          endif
          tau = (aj - tscls(2))/tscls(3)
+*        here, mcx is the helium core mass at helium ignition
          mc = mcx + (mcagbf(mass) - mcx)*tau
+         mc_he(kidx) = mc
+         mc_co(kidx) = 0.0
 *
          if(mass.le.zpars(2))then
             lx = lums(5)
@@ -401,6 +423,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(aj.lt.tscls(13))then
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
+            mc_co(kidx) = mcx
+            mc_he(kidx) = mcbagb - mcx
             lum = lmcgbf(mcx,GB)
             if(mt.le.mc)then
 *
@@ -412,6 +436,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mt = mc
                mass = mt
                mc = mcx
+               mc_co(kidx) = mc
+               mc_he(kidx) = 0.d0
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                if(mc.le.GB(7))then
                   aj = tscls(4) - (1.d0/((GB(5)-1.d0)*GB(8)*GB(4)))*
@@ -433,11 +459,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Approximate 3rd Dredge-up on AGB by limiting Mc.
 *
             lambdahrdiag = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+* Tau is the time at the start of the TP-AGB
             tau = tscls(13)
+* mcx is M_c,DU in the equation *between* 73 and 74 of Hurley et al. 2000
             mcx = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
+* mcy is M_c' in the same equation; it is defined in line 464 above for the current age. 
             mcy = mc
-            mc = mc - lambdahrdiag*(mcy-mcx)
+* The current core mass is then M_c' - lambda*(M_c' - M_c,DU)  
+            mc = mcy - lambdahrdiag*(mcy-mcx)
             mcx = mc
+            mc_co(kidx) = mc
+            mc_he(kidx) = 0.0
             mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))
@@ -476,7 +508,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Star has no core mass and hence no memory of its past
 * which is why we subject mass and mt to mass loss for
 * this phase.
+*KB: no helium core mass for stripped stars; no CO core yet since He MS
             mc = 0.d0
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = 0.d0
             if(mt.lt.zpars(10)) kw = 10
          else
 *
@@ -491,6 +526,11 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                r = rg
             endif
             mc = mcgbf(lum,GB,lums(6))
+*
+*KB: helium core mass is always 0 for stripped stars; now calculate CO core mass
+*
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = mc
             mtc = MIN(mt,1.45d0*mt-0.31d0)
             mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
             if(mcmax-mc.lt.tiny)then
@@ -602,6 +642,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
            k2 = 0.1d0
          endif
       endif
+
 *
 C      if(mass.gt.99.99d0)then
 C         mass = mass0
