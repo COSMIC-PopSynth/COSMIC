@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = ["numpy", "scipy", "astropy", "configparser",
                 "tqdm", "pandas", "tables", "h5py", "schwimmbad",
-                "matplotlib"]
+                "matplotlib", "importlib_metadata"]
 
 [build-system]
 build-backend = 'mesonpy'
