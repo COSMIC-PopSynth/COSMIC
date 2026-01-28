@@ -122,6 +122,10 @@
                         "description": "As <code>raghavan10</code> but with different close binary fractions following <a href='https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract'>Moe+2019</a>"
                     },
                     {
+                        "name": "martinez26",
+                        "description": "Uses sana12 for massive binaries (\\(m_1 ≥ 8 {\\rm M_{\\odot}}\\)) with upper limit at 3000 days and raghavan10 for low-mass binaries. Used in <a href='https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract'>Martinez+2026</a>."
+                    },
+                    {
                         "name": "custom",
                         "description": "Sample from a custom power law. The user provides a dictionary of min, max and slope values for the power law."
                     }
@@ -201,8 +205,8 @@
                         "description": "Primary mass dependent binary fraction following van Haaften+05"
                     },
                     {
-                        "name": "offner22",
-                        "description": "Primary mass dependent binary fraction following Offner+22"
+                        "name": "offner23",
+                        "description": "Primary mass dependent binary fraction following Offner+23"
                     },
                     {
                         "name": 0.5,
@@ -594,7 +598,7 @@
                 "options-preface": "\\( 10^{-13} {\\rm \\ \\texttt{hewind} \\ } L^{2/3}\\) gives He star mass-loss. Equivalent to \\(1 - \\mu\\) in the last equation on <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, page 19</a>.",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Sets the helium star mass loss parameter"
                     },
                     {
@@ -632,7 +636,7 @@
                 "options-preface": "Corresponds to \\(\\mu_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 11</a>",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Sets the wind accretion efficiency factor"
                     },
                     {
@@ -694,7 +698,7 @@
                         "default": true
                     },
                     {
-                        "name": -1.0,
+                        "name": "negative values",
                         "description": "Uses a fixed value (i.e. fixes \\( \\lambda \\) to a value of -lambdaf)"
                     }
                 ]
@@ -856,6 +860,30 @@
                     {
                         "name": "negative values",
                         "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -1,
+                        "description": "As 1, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -2,
+                        "description": "As 2, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -3,
+                        "description": "As 3, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -4,
+                        "description": "As 4, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -5,
+                        "description": "As 5, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -6,
+                        "description": "As 6, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     }
                 ]
             },
@@ -868,6 +896,10 @@
                     {
                         "name": "positive values",
                         "description": "Sets the dispersion in the Maxwellian for the SN kick velocity in km/s"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "No natal kicks for core-collapse when using Hobbs kicks"
                     },
                     {
                         "name": 265.0,
@@ -908,7 +940,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "values between [0, 1]",
+                        "name": "range (0, 1]",
                         "description": "reduces sigma by bhsigmafrac for BHs"
                     },
                     {
@@ -969,6 +1001,10 @@
                     {
                         "name": "positive values",
                         "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> uses ecsn_mlow = 1.6, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> uses ecsn_mlow = 1.85, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can decrease this to ecsn_mlow = 1.4"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "no lower limit on He-star mass for ECSN"
                     },
                     {
                         "name": 1.6,
@@ -1047,7 +1083,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "values between [0, 90]",
+                        "name": "range [0, 90]",
                         "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star"
                     },
                     {
@@ -1194,7 +1230,7 @@
                         "description": "sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\\({\\sim 5 \\mathrm{M}_\\odot}\\) Fryer, private communication)"
                     },
                     {
-                        "name": "values in [-1, 0)",
+                        "name": "range [-1, 0]",
                         "description": "assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole, such that \\(M_{\\rm rem} = (1 + \\texttt{rembar\\_massloss}) M_{\\rm rem}\\) (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)"
                     },
                     {
@@ -1234,7 +1270,7 @@
                     },
                     {
                         "name": 1,
-                        "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range",
+                        "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range"
                     },
                     {
                         "name": 2,
@@ -1305,7 +1341,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins (see bhspinflag)"
                     },
                     {
@@ -1341,20 +1377,19 @@
                 "type": "number",
                 "options": [
                     {
-                        "name": "1",
-                        "description": "mass transfer rate is limited by the Eddington rate following Equation 67 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
-                        "default": true
+                        "name": "positive values",
+                        "description": "restrict accretion limit to fraction of Eddington (sub- or super-Eddington accretion)"
                     },
                     {
-                        "name": "values > 1",
-                        "description": "permit super-Eddington accretion up to value <code>eddfac</code>"
+                        "name": 0,
+                        "description": "no mass transfer onto compact objects"
                     },
                     {
-                        "name": "values in [0, 1]",
-                        "description": "restrict accretion limit to fraction of Eddington (sub-Eddington accretion)"
+                        "name": 1,
+                        "description": "mass transfer rate is limited by the Eddington rate following Equation 67 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>"
                     },
                     {
-                        "name": "10",
+                        "name": 10,
                         "description": "mass transfer rate is limited to 10x the Eddington rate",
                         "default": true
                     }
@@ -1382,6 +1417,10 @@
                     {
                         "name": "positive values",
                         "description": "assumes that the lost material takes away a fraction <code>gamma</code> of the orbital angular momentum"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "no angular momentum loss from the system due to mass loss"
                     }
                 ]
             },
@@ -1426,8 +1465,12 @@
                         "description": "limited to 1x the thermal rate of the accretor for all stars"
                     },
                     {
-                        "name": ">= 0",
+                        "name": "positive values",
                         "description": "sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "assume all mass is lost from the system (fully nonconservative)"
                     }
                 ]
             },
@@ -1525,7 +1568,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Retains epsnov fraction of accreted matter"
                     },
                     {
@@ -1595,7 +1638,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "sets the mixing factor in main sequence star collisions"
                     },
                     {
