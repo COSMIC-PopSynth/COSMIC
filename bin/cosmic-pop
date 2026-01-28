@@ -22,10 +22,12 @@ import numpy as np
 import pandas as pd
 from pandas.errors import PerformanceWarning
 import warnings
+import h5py as h5
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
+from cosmic._version import __version__
 
 from schwimmbad import MPIPool
 from os import sys
@@ -278,6 +280,10 @@ if __name__ == '__main__':
                 for k1, v1 in v.items():
                     dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
             dat_store.put('config/rand_seed/', pd.Series(seed_int))
+
+    # save the version of COSMIC used to run this
+    with h5.File(dat_store_fname, 'a') as f:
+        f.attrs['cosmic_version'] = __version__
 
     # Initialize the step counter and convergence array/list
     Nstep = idx - np.mod(idx, args.Nstep)
