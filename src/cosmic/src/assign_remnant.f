@@ -605,17 +605,53 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
 
       integer star
       integer i, col, kstar
+      integer kstar1_col, kstar2_col, evol_type_col
 
-      if (star .eq. 1) then
-         col = 4
-      else if (star .eq. 2) then
-         col = 5
+* This part is tricky, because we allow users to change bpp_columns,
+* nothing is in a fixed order. So we need to find them!
+* Determine which column to find kstar1, kstar2, evolve_type based on
+* col_inds_bpp. kstar1 col is the index of col_inds_bpp where value = 4,
+* kstar2 same with 5, evol_type same with 11
+      kstar1_col = -1
+      kstar2_col = -1
+      evol_type_col = -1
+      do 5 i = 1, n_col_bpp
+         if (col_inds_bpp(i).eq.4) then
+            kstar1_col = i
+         else if (col_inds_bpp(i) .eq. 5) then
+            kstar2_col = i
+         else if (col_inds_bpp(i) .eq. 11) then
+            evol_type_col = i
+         endif
+   5  continue
+
+      if (kstar1_col.eq.-1.or.kstar2_col.eq.-1..or.
+     &    evol_type_col.eq.-1) then
+         WRITE(*,*) 'Error in first_mt_type_as_donor: could not find '//
+     &      'necessary columns in bpp (kstar1, kstar2, evol_type)'
+         first_mt_type_as_donor = -1
+         return
+      endif
+
+* If either star is a massless remnant (i.e. this is a merger product
+* that's becoming a remnant), treat as no mass transfer and return -1
+      if (int(bpp(bpp_ind,kstar1_col)).eq.15.or.
+     &    int(bpp(bpp_ind,kstar2_col)).eq.15) then
+            first_mt_type_as_donor = -1
+            return
+      endif
+
+* work out which kstar column to use based on which star this is
+      if (star.eq.1) then
+         col = kstar1_col
+      else if (star.eq.2) then
+         col = kstar2_col
       endif
 
       kstar = -1
       do 10 i = 1, 1000
-*        evol_type is column 11
-         if (int(bpp(i,11)).eq.3.or.int(bpp(i,11)).eq.7) then
+         if (int(bpp(i,evol_type_col)).eq.3
+     &   .or.int(bpp(i,evol_type_col)).eq.7) then
             kstar = int(bpp(i,col))
             goto 20
          endif
