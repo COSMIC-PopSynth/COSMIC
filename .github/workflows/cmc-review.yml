@@ -2,7 +2,7 @@ name: Flag CMC review for cosmic changes
 
 on:
   pull_request_target:
-    types: [opened, reopened, synchronize]
+    types: [opened]
     paths:
       - 'src/cosmic/utils.py'
       - 'src/cosmic/evolve.py'
