@@ -272,7 +272,7 @@ if __name__ == '__main__':
     with h5.File(dat_store_fname, 'a') as f:
         f["config"] = json.dumps({'BSEDict' : BSEDict, 'filters' : filters, 'convergence' : convergence,
                                   'sampling' : sampling, 'rand_seed': seed_int})
-        f.attrs['cosmic_version'] = __version__
+        f.attrs['COSMIC_version'] = __version__
 
     # Initialize the step counter and convergence array/list
     Nstep = idx - np.mod(idx, args.Nstep)
