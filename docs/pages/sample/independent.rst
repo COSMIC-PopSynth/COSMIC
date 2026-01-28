@@ -7,18 +7,16 @@ Independent distributions
 This guide will show you how to sample an initial binary population using the independent sampler in COSMIC.
 First import the :class:`~cosmic.sample.initialbinarytable.InitialBinaryTable` class and the independent sampler
 
-.. ipython::
+.. ipython:: python
 
-    In [1]: from cosmic.sample.initialbinarytable import InitialBinaryTable
+    from cosmic.sample.initialbinarytable import InitialBinaryTable
 
-    In [2]: from cosmic.sample.sampler import independent
+    from cosmic.sample.sampler import independent
 
-The independent sampler contains multiple models for each binary parameter.
-You can access the available models using the independent sampler help call:
-
-.. ipython::
-
-    In [3]: help(independent.get_independent_sampler)
+.. tip::
+    
+    The independent sampler contains multiple models for each binary parameter.
+    You can find the available models here: :func:`~cosmic.sample.sampler.independent.get_independent_sampler` or by using the independent sampler help call (``help(independent.get_independent_sampler)``)
 
 
 Targetting specific final kstar types
@@ -33,21 +31,27 @@ Thus, if you want to generate a
 population containing double white dwarfs with CO and ONe WD primaries and He-WD secondaries,
 the final kstar inputs would be:
 
-.. ipython::
+.. ipython:: python
 
-    In [4]: final_kstar1 = [11, 12]
+    final_kstar1 = [11, 12]
 
-    In [5]: final_kstar2 = [10]
+    final_kstar2 = [10]
 
 Since we are interested in binaries, we only retain the binary systems that are likely to produce the user specified final kstar types.
 However, we also keep track of the total mass of the single and binary stars as well as the number of binary and single stars so that we can scale our results to larger populations.
 If you don't want to filter the binaries, you can supply final kstars as
 
-.. ipython::
+.. ipython:: python
 
-    In [6]: final_kstars = np.linspace(0, 14, 15)
+    final_kstars = np.linspace(0, 14, 15)
 
-    In [7]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstars, final_kstars, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(
+        'independent', final_kstars, final_kstars,
+        binfrac_model=0.5, primary_model='kroupa01',
+        ecc_model='sana12', porb_model='sana12',
+        qmin=-1, SF_start=13700.0, SF_duration=0.0,
+        met=0.02, size=10000
+    )
 
 Additionally if you are interested in single stars then you can specify ``keep_singles=True``. In this case, the singles will be added onto the end of the InitialBinaryTable where ``kstar_1`` will host the singles, ``kstar_2`` will be filled with 15s only, and all orbital properties (e.g. ``porb`` or ``ecc``) will be indicated with -1.
 
@@ -59,9 +63,9 @@ to be sampled can be accessed by the help function for the argument. The syntax 
 sample is always: sample_`parameter`. See the example for the star formation
 history (SFH) below:
 
-.. ipython::
+.. ipython:: python
 
-    In [8]: help(independent.Sample.sample_SFH)
+    help(independent.Sample.sample_SFH)
 
 Stopping conditions for sampling
 ================================
@@ -74,11 +78,16 @@ Number of binaries
 
 Using the final kstar inputs we mentioned above, the initial binary population can be sampled based on the desired number of binaries (10000 in this case) as follows
 
-.. ipython::
+.. ipython:: python
 
-    In [9]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000)
+    InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(
+        'independent', final_kstar1, final_kstar2,
+        binfrac_model=0.5, primary_model='kroupa01',
+        ecc_model='sana12', porb_model='sana12', qmin=-1,
+        SF_start=13700.0, SF_duration=0.0, met=0.02, size=10000
+    )
 
-    In [10]: print(InitialBinaries)
+    print(InitialBinaries)
 
 .. note::
     
@@ -93,17 +102,24 @@ Total mass sampled
 
 Alternatively, we could do the same thing but now instead set our ``sampling_target`` to be the total mass and aim for 15000 solar masses. This is done by setting ``sampling_target="total_mass"`` and ``total_mass=15000``.
 
-.. ipython::
+.. ipython:: python
 
-    In [10]: InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler('independent', final_kstar1, final_kstar2, binfrac_model=0.5, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0, met=0.02, sampling_target="total_mass", total_mass=15000)
+    InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(
+        'independent', final_kstar1, final_kstar2,
+        binfrac_model=0.5, primary_model='kroupa01',
+        ecc_model='sana12', porb_model='sana12',
+        qmin=-1, SF_start=13700.0, SF_duration=0.0,
+        met=0.02,
+        sampling_target="total_mass", total_mass=15000
+    )
 
-    In [11]: print(InitialBinaries)
+    print(InitialBinaries)
 
 And we can check what the total sampled mass was by looking at the sum of the ``mass_singles`` and ``mass_binaries`` variables
 
-.. ipython::
+.. ipython:: python
 
-    In [12]: print(mass_singles + mass_binaries)
+    print(mass_singles + mass_binaries)
 
 .. tip::
 
@@ -224,3 +240,127 @@ Below we show the effect of different assumptions for the independent initial sa
     >>> ax6.set_xlabel(r'Log$_{10}$(a(1-e)/R$_{\odot}$)', size=18)
     >>> fig.tight_layout()
     >>> fig.show()
+
+
+Secondary mass sampling
+=======================
+
+With the independent sampler, secondary masses are sampled according to a mass ratio model. This model is
+defined as a power-law distribution between equal mass systems and a minimum mass ratio, ``qmin``. By default,
+the minimum mass ratio is set to -1, which limits the minimum mass ratio to be set such that
+the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star.
+You can change this behavior by setting ``qmin`` to a value between 0 and 1.
+
+Alternatively, you can set the minimum mass ratio based off a minimum secondary mass, ``m2_min``. This
+is done by setting the ``m2_min`` kwarg to a value in solar masses.
+In this case, the minimum mass ratio will be calculated as ``qmin = m2_min / m1``, where ``m1`` is the sampled primary mass.
+
+.. warning::
+
+    You cannot set both ``qmin`` and ``m2_min`` at the same time.
+
+To change the slope of the distribution from which the mass ratio is sampled, you can set the ``q_power_law`` kwarg.
+By default, this is set to 0, which results in a uniform distribution between ``qmin`` and 1.
+
+Let's try some of this out in practice.
+
+.. ipython:: python
+
+    common_kwargs = {
+        'final_kstar1' : final_kstars,
+        'final_kstar2' : final_kstars,
+        'binfrac_model' : 1.0,
+        'primary_model' : 'kroupa01',
+        'ecc_model' : 'sana12',
+        'porb_model' : 'sana12',
+        'SF_start' : 13700.0,
+        'SF_duration' : 0.0,
+        'met' : 0.02,
+        'size' : 100000,
+        'trim_extra_samples' : True
+    }
+
+    init_bin_qmin = InitialBinaryTable.sampler(
+        'independent',
+        qmin=0.2,
+        **common_kwargs
+    )[0]
+    
+    init_bin_m2min = InitialBinaryTable.sampler(
+        'independent',
+        m2_min=0.08,
+        **common_kwargs
+    )[0]
+
+    init_bin_qpower = InitialBinaryTable.sampler(
+        'independent',
+        q_power_law=3,
+        **common_kwargs
+    )[0]
+
+Now let's compare the mass ratio distributions resulting from these different assumptions.
+
+.. plot::
+    :include-source: False
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from cosmic.sample.initialbinarytable import InitialBinaryTable
+
+    final_kstars = np.linspace(0, 14, 15)
+
+    common_kwargs = {
+        'final_kstar1' : final_kstars,
+        'final_kstar2' : final_kstars,
+        'binfrac_model' : 1.0,
+        'primary_model' : 'kroupa01',
+        'ecc_model' : 'sana12',
+        'porb_model' : 'sana12',
+        'SF_start' : 13700.0,
+        'SF_duration' : 0.0,
+        'met' : 0.02,
+        'size' : 100000,
+        'trim_extra_samples' : True
+    }
+
+    init_bin_default, _, _, _, _ = InitialBinaryTable.sampler(
+        'independent',
+        **common_kwargs
+    )
+
+    init_bin_qmin, _, _, _, _ = InitialBinaryTable.sampler(
+        'independent',
+        qmin=0.2,
+        **common_kwargs
+    )
+    
+    init_bin_m2min, _, _, _, _ = InitialBinaryTable.sampler(
+        'independent',
+        m2_min=0.08,
+        **common_kwargs
+    )
+
+    init_bin_qpower, _, _, _, _ = InitialBinaryTable.sampler(
+        'independent',
+        q_power_law=3,
+        **common_kwargs
+    )
+
+    fig, ax = plt.subplots(figsize=(8,6))
+    ax.hist(init_bin_default.mass_2/init_bin_default.mass_1, bins=np.linspace(0, 1, 60),
+            histtype='step',
+            lw=3, label='default (qmin=-1)')
+    ax.hist(init_bin_qmin.mass_2/init_bin_qmin.mass_1, bins=np.linspace(0, 1, 60),
+            histtype='step',
+            lw=3, label='qmin=0.2')
+    ax.hist(init_bin_m2min.mass_2/init_bin_m2min.mass_1, bins=np.linspace(0, 1, 60),
+            histtype='step',
+            lw=3, label='m2_min=0.08 M$_\odot$')
+    ax.hist(init_bin_qpower.mass_2/init_bin_qpower.mass_1, bins=np.linspace(0, 1, 60),
+            histtype='step',
+            lw=3, label='q_power_law=3')
+    ax.set_xlabel(r'Mass ratio q=M$_2$/M$_1$', size=18)
+    ax.set_ylabel('Counts', size=18)
+    ax.legend(prop={'size' : 14})
+    fig.tight_layout()
+    fig.show()

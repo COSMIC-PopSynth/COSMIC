@@ -17,6 +17,11 @@ py3.install_sources(
   subdir: 'cosmic'
 )
 
+install_data(
+  'data/cosmic-settings.json',
+  install_dir: py3.get_install_dir() / 'cosmic' / 'data',
+)
+
 subdir('bse_utils')
 subdir('sample')
 subdir('tests')

@@ -1,0 +1,76 @@
+name: Flag CMC review for cosmic changes
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'src/cosmic/utils.py'
+      - 'src/cosmic/evolve.py'
+      - 'docs/cosmic-settings.json'
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  flag-cmc-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: add "needs-cmc-review" label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelName = 'needs-cmc-review';
+
+            // ensure the label exists, or create it
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+              });
+            } catch (error) {
+              if (error.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: labelName,
+                  color: 'fbca04',
+                  description: 'PR touches cosmic core settings and needs CMC review',
+                });
+              } else {
+                throw error;
+              }
+            }
+
+            // add the label to the PR
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [labelName],
+            });
+
+      - name: comment to request CMC review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `
+            🚨 **CMC review requested**
+
+            This pull request modifies one or more of the following files:
+
+            - \`src/cosmic/utils.py\`
+            - \`docs/cosmic-settings.json\`
+            - \`src/cosmic/evolve.py\`
+
+            A CMC developer should review this PR to ensure corresponding changes are propagated upstream as needed.
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

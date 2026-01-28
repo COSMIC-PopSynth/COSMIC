@@ -49,12 +49,13 @@ __all__ = ['Evolve']
 # Make this match the ordering of all_cols in bpp_array.f
 ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
-               'tms_2', 'massc_1', 'massc_2', 'rad_1', 'rad_2', 'mass0_1',
+               'tms_2', 'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2',
+               'rad_1', 'rad_2', 'mass0_1',
                'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2', 'radc_1',
                'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
                'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2', 'tacc_1',
                'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2',
-               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type']
+               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type', 'metallicity']
 
 INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2", "evol_type"]
 
@@ -62,7 +63,7 @@ INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2",
 BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
-               'massc_1', 'massc_2', 'rad_1', 'rad_2',
+               'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2', 'rad_1', 'rad_2',
                'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
                'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
@@ -70,9 +71,9 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'bhspin_1', 'bhspin_2']
 
 BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
-               'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
+               'teff_1', 'massc_he_layer_1', 'massc_co_layer_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
                'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
-               'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
+               'lum_2', 'rad_2', 'teff_2', 'massc_he_layer_2', 'massc_co_layer_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
                'porb', 'sep', 'ecc', 'B_1', 'B_2',
                'SN_1', 'SN_2', 'bin_state', 'merger_type']
@@ -281,42 +282,60 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
-        for k, v in BSEDict.items():
-            if k in initialbinarytable.keys():
-                warnings.warn("The value for {0} in initial binary table is being "
-                              "overwritten by the value of {0} from either the params "
-                              "file or the BSEDict.".format(k))
-            # special columns that need to be handled differently
+        new_cols = {}
+        n = len(initialbinarytable)
+        idx = initialbinarytable.index
+
+        for k, v in list(BSEDict.items()):
+            if k in initialbinarytable.columns:
+                warnings.warn(
+                    "The value for {0} in initial binary table is being overwritten by the value of {0} "
+                    "from either the params file or the BSEDict.".format(k)
+                )
+
             if k == 'natal_kick_array':
-                assign_natal_kick_array = [BSEDict['natal_kick_array']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(natal_kick_array=assign_natal_kick_array)
-                for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
-                    for sn_idx in range(2):
-                        column_name_sn = column_name + '_{0}'.format(sn_idx + 1)
-                        column_values = pd.Series([BSEDict['natal_kick_array'][sn_idx][idx]] * len(initialbinarytable),
-                                                  index=initialbinarytable.index,
-                                                  name=column_name_sn)
-                        kwargs1 = {column_name_sn: column_values}
-                        initialbinarytable = initialbinarytable.assign(**kwargs1)
+                new_cols['natal_kick_array'] = pd.Series(
+                    [BSEDict['natal_kick_array']] * n, index=idx
+                )
+
+                for j, column_name in enumerate(NATAL_KICK_COLUMNS):
+                    for sn in range(2):
+                        col = f"{column_name}_{sn+1}"
+                        new_cols[col] = pd.Series(
+                            [BSEDict['natal_kick_array'][sn][j]] * n,
+                            index=idx,
+                        )
+
             elif k == 'qcrit_array':
-                initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
-                for kstar in range(0, 16):
-                    columns_values = pd.Series([BSEDict['qcrit_array'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='qcrit_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = columns_values
+                new_cols['qcrit_array'] = pd.Series(
+                    [BSEDict['qcrit_array']] * n, index=idx
+                )
+
+                for kstar in range(16):
+                    new_cols[f"qcrit_{kstar}"] = pd.Series(
+                        [BSEDict['qcrit_array'][kstar]] * n,
+                        index=idx,
+                    )
+
             elif k == 'fprimc_array':
-                columns_values = [BSEDict['fprimc_array']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(fprimc_array=columns_values)
-                for kstar in range(0, 16):
-                    columns_values = pd.Series([BSEDict['fprimc_array'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='fprimc_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'fprimc_{0}'.format(kstar)] = columns_values
+                new_cols['fprimc_array'] = pd.Series(
+                    [BSEDict['fprimc_array']] * n, index=idx
+                )
+
+                for kstar in range(16):
+                    new_cols[f"fprimc_{kstar}"] = pd.Series(
+                        [BSEDict['fprimc_array'][kstar]] * n,
+                        index=idx,
+                    )
+
             else:
-                # assigning values this way work for most of the parameters.
-                kwargs1 = {k: v}
-                initialbinarytable = initialbinarytable.assign(**kwargs1)
+                # scalar or array-like; pandas will broadcast scalars automatically
+                new_cols[k] = v
+
+        # concat once (fast, no fragmentation)
+        if new_cols:
+            new_df = pd.DataFrame(new_cols, index=idx)
+            initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
 
         # Here we perform two checks
         # First, if the BSE parameters are not in the initial binary table
@@ -368,14 +387,14 @@ class Evolve(object):
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bpp"] = len(bpp_columns)
             initial_conditions[i]["col_inds_bpp"] = col_inds_bpp
-
+        
         # same for bcm
         col_inds_bcm = np.zeros(len(ALL_COLUMNS), dtype=int)
         col_inds_bcm[:len(bcm_columns)] = [ALL_COLUMNS.index(col) + 1 for col in bcm_columns]
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
-
+        
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
@@ -414,10 +433,13 @@ class Evolve(object):
 
         natal_kick_arrays = np.vstack(output[:, 4])
         natal_kick_arrays = natal_kick_arrays.reshape(-1, 1, len(FLATTENED_NATAL_KICK_COLUMNS))
+
+        # update initial table with sampled kicks
+        to_add = {}
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-            # assigning values this way work for most of the parameters.
-            kwargs1 = {column: natal_kick_arrays[:, :, idx]}
-            initialbinarytable = initialbinarytable.assign(**kwargs1)
+            to_add[column] = natal_kick_arrays[:, 0, idx]
+        natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
+        initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                                  columns=KICK_COLUMNS,

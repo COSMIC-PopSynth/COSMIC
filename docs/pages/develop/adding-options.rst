@@ -13,7 +13,7 @@ Summary checklist
 Been here before and just making sure you're not missing anything? Here's a quick checklist:
 
 - ``src/cosmic/src``: Add the new option to the relevant COSMIC code file and **test your changes**!
-- ``docs/cosmic-settings.json``: Add the new option to the JSON file
+- ``src/cosmic/data/cosmic-settings.json``: Add the new option to the JSON file
 
 Code changes
 ------------
