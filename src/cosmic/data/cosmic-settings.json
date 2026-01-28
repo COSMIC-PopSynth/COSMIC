@@ -163,7 +163,7 @@
                 "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
                 "options": [
                     {
-                        "name": "values in [0, 1]",
+                        "name": "range [0, 1]",
                         "description": "Sets the minimum mass ratio"
                     },
                     {
@@ -1285,7 +1285,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "values in [0, 1]",
+                        "name": "range [0, 1]",
                         "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
                     },
                     {
@@ -1302,7 +1302,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "values in [0, 1]",
+                        "name": "range [0, 1]",
                         "description": "Sets the probability of partial fallback leading to BH formation in the Maltsev remnant mass prescription"
                     },
                     {         
