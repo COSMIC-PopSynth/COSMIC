@@ -437,9 +437,15 @@ class Evolve(object):
         # update initial table with sampled kicks
         to_add = {}
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-            to_add[column] = natal_kick_arrays[:, 0, idx]
-        natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
-        initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
+            if column not in initialbinarytable.columns:
+                to_add[column] = natal_kick_arrays[:, 0, idx]
+            else:
+                initialbinarytable[column] = natal_kick_arrays[:, 0, idx]
+
+        # if kicks weren't already present, add them
+        if to_add:
+            natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
+            initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                                  columns=KICK_COLUMNS,
