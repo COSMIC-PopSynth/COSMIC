@@ -273,6 +273,66 @@ according to the new physics settings. You can do this by setting the ``reset_ki
     print(f"Average kick velocity with kickflag=1 and reset kicks: {kickflag_1.kick_info['natal_kick'].mean():1.2f} km/s")
 
 
+Examining output from `cosmic-pop`
+==================================
+
+If you have run a population synthesis simulation using ``cosmic-pop``, you can also load the output
+from that simulation into a ``COSMICPopOutput`` object. This object extends the functionality of ``COSMICOutput``
+to handle the binary and single star populations from ``cosmic-pop``, as well as storing information about the
+convergence of the simulation.
+
+Let's say that you've saved a ``cosmic-pop`` simulation to a file called ``dat_kstar1_13_14_kstar2_13_14_SFstart_13700.0_SFduration_0.0_metallicity_0.02.h5``.
+You can load this file into a ``COSMICPopOutput`` object like so:
+
+.. code-block:: python
+
+    from cosmic.output import COSMICPopOutput
+
+    pop_output = COSMICPopOutput(file='dat_kstar1_13_14_kstar2_13_14_SFstart_13700.0_SFduration_0.0_metallicity_0.02.h5')
+    print(pop_output)
+    
+
+This file contains both binary and single star populations, which you can access via the ``output`` and ``singles_output`` attributes, respectively.
+These are both ``COSMICOutput`` objects, so you can use all the same methods and attributes on them as well (e.g., plotting distributions, subselecting binaries, re-running with new settings, etc.).
+
+.. code-block:: python
+
+    # the full bpp table for binaries
+    print(pop_output.output.bpp)
+
+If you set ``keep_singles=False`` when running ``cosmic-pop``, the ``singles_output`` attribute will be ``None``.
+
+You can access the usual cosmic-pop outputs as attributes of the class, such as:
+
+.. code-block:: python
+
+    print(pop_output.conv)
+    print(pop_output.match)
+    print(pop_output.n_binaries)
+    print(pop_output.mass_stars)
+
+Combining binary and single star outputs
+----------------------------------------
+
+If you want to combine the binary and single star outputs into a single ``COSMICOutput`` object, you can use the ``to_combined_output()`` method.
+This will concatenate the binary and single star DataFrames together. This can let you more easily analyse the full stellar population from your simulation.
+
+.. code-block:: python
+
+    combined_output = pop_output.to_combined_output()
+    
+    # for example, we could select the BHBH binaries and re-run them with more detailed output
+    bhbh_binaries = combined_output[
+        (combined_output.final_bpp["kstar_1"] == 14) &
+        (combined_output.final_bpp["kstar_2"] == 14)
+    ]
+    detailed_bhbh = bhbh_binaries.rerun_with_settings(new_settings={'dtp': 0.1}, inplace=False)
+    detailed_bhbh.plot_detailed_evolution(
+        bin_num=detailed_bhbh.initC['bin_num'].iloc[0],
+        t_max=100
+    );
+
+
 Wrapping up
 ===========
 
