@@ -10,7 +10,7 @@ import numpy as np
 import warnings
 
 
-__all__ = ['COSMICOutput', 'save_initC', 'load_initC']
+__all__ = ['COSMICOutput', 'COSMICPopOutput', 'save_initC', 'load_initC']
 
 
 kstar_translator = [
@@ -345,23 +345,20 @@ class COSMICPopOutput():
         with h5.File(file, 'r') as f:
             self.config = json.loads(f['config'][()])
 
-        # create a COSMICOutput for the binaries
+        # create a COSMICOutput for the binaries, and optionally for the singles
         self.output = COSMICOutput(file=file, label=label + ' [binaries]' if label is not None else None)
-
-        # create a COSMICOutput for the singles, if present
-        if "keep_singles" in self.config["sampling"] and self.config["sampling"]["keep_singles"]:
-            self.singles_output = COSMICOutput(
-                file=file, label=label + ' [singles]' if label is not None else None,
-                file_key_suffix='_singles'
-            )
-        else:
-            self.singles_output = None
-
+        singles = "keep_singles" in self.config["sampling"] and self.config["sampling"]["keep_singles"]
+        self.singles_output = COSMICOutput(
+            file=file, label=label + ' [singles]' if label is not None else None,
+            file_key_suffix='_singles'
+        ) if singles else None
         self.label = label
 
     def __repr__(self):
-        return (f'<COSMICPopOutput{" - " + self.label if self.label is not None else ""}: {len(self.output)} binaries'
-               (f', {len(self.singles_output)} singles' if self.singles_output is not None else '') + '>')
+        r = f'<COSMICPopOutput{" - " + self.label if self.label is not None else ""}: {len(self.output)} binaries>'
+        if self.singles_output is not None:
+            r = r[:-1] + f', {len(self.singles_output)} singles>'
+        return r
     
     def __len__(self):
         return len(self.conv)
@@ -381,17 +378,17 @@ class COSMICPopOutput():
         """
         if self.singles_output is None:
             raise ValueError("Singles output is not available in this COSMICPopOutput instance.")
-        
-        combined_bpp = pd.concat([self.output.bpp, self.singles_output.bpp], ignore_index=True)
-        combined_bcm = pd.concat([self.output.bcm, self.singles_output.bcm], ignore_index=True)
-        combined_initC = pd.concat([self.output.initC, self.singles_output.initC], ignore_index=True)
-        combined_kick_info = pd.concat([self.output.kick_info, self.singles_output.kick_info], ignore_index=True)
+
+        bpp = pd.concat([self.output.bpp, self.singles_output.bpp], ignore_index=True)
+        bcm = pd.concat([self.output.bcm, self.singles_output.bcm], ignore_index=True)
+        initC = pd.concat([self.output.initC, self.singles_output.initC], ignore_index=True)
+        kick_info = pd.concat([self.output.kick_info, self.singles_output.kick_info], ignore_index=True)
 
         return COSMICOutput(
-            bpp=combined_bpp,
-            bcm=combined_bcm,
-            initC=combined_initC,
-            kick_info=combined_kick_info,
+            bpp=bpp,
+            bcm=bcm,
+            initC=initC,
+            kick_info=kick_info,
             label=self.label + ' [combined]' if self.label is not None else None
         )
 
