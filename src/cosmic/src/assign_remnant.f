@@ -506,7 +506,7 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
 * If star has not undergone mass transfer as donor, but has
 * self-stripped (kw in [7,8,9]), assume case B mass transfer
       if(mt_type.eq.-1.and.(kw.eq.7.or.kw.eq.8.or.kw.eq.9))then
-         mt_type = -1
+         mt_type = 1
       endif
 
 * Normalize metallicity to solar
