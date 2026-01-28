@@ -268,21 +268,10 @@ if __name__ == '__main__':
         idx = 0
         log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
 
-    # save configuration settings to output file
-    configuration_settings = {'BSEDict' : BSEDict, 'filters' : filters,
-                              'convergence' : convergence, 'sampling' : sampling}
-
-    with warnings.catch_warnings():
-        warnings.simplefilter(action="ignore", category=PerformanceWarning)
-        
-        with pd.HDFStore(dat_store_fname,complib=args.complib,complevel=args.complevel) as dat_store:
-            for k, v in configuration_settings.items():
-                for k1, v1 in v.items():
-                    dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
-            dat_store.put('config/rand_seed/', pd.Series(seed_int))
-
-    # save the version of COSMIC used to run this
+    # save configuration settings and COSMIC version to output file
     with h5.File(dat_store_fname, 'a') as f:
+        f["config"] = json.dumps({'BSEDict' : BSEDict, 'filters' : filters, 'convergence' : convergence,
+                                  'sampling' : sampling, 'rand_seed': seed_int})
         f.attrs['cosmic_version'] = __version__
 
     # Initialize the step counter and convergence array/list
