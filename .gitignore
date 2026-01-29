@@ -115,3 +115,4 @@ binary.in
 binary.dat
 *.h5
 fort.99
+savefig/

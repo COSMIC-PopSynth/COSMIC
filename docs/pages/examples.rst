@@ -16,4 +16,5 @@ COSMIC can evolve binaries for several different use cases. Go through the examp
     evolve/resolution
     evolve/rerun
     evolve/restart
+    evolve/interface
 

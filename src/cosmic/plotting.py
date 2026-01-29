@@ -44,9 +44,6 @@ __all__ = [
     "evolve_and_plot",
 ]
 
-rsun_in_au = 215.0954
-day_in_year = 365.242
-
 # Colors
 primary_color = "C0"
 secondary_color = "C1"
