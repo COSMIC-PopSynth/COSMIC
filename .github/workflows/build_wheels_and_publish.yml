@@ -50,23 +50,14 @@ jobs:
       run: |
         python -m pip install setuptools wheel build meson-python ninja meson pytest cibuildwheel
 
-    - name: Install gfortran (macOS)
+    - name: Set up Fortran (macOS)
       if: runner.os == 'macOS'
-      run: |
-        brew update
-        brew install gcc hdf5
-        # ensure 'gfortran' is on PATH (Homebrew installs e.g. gfortran-13/14)
-        ln -sf "$(brew --prefix)/bin/gfortran"* "$(brew --prefix)/bin/gfortran" || true
-
-    - name: Build source and wheels distribution on MacOS
-      if: runner.os == 'macOS'
-      run: |
-        python -m build --outdir dist
-        find ./dist/*.whl | xargs pip install
-        pytest src/cosmic
+      uses: fortran-lang/setup-fortran@v1
+      with:
+        compiler: gcc
+        version: '13'
         
     - name: Build source and wheels distribution on Linux
-      if: runner.os == 'Linux'
       run: |
         python -m build --sdist --outdir dist
         python -m cibuildwheel --output-dir dist
