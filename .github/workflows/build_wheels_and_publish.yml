@@ -12,24 +12,28 @@ env:
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
   CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
   CIBW_BUILD_VERBOSITY: "1"
+  CIBW_BEFORE_ALL_LINUX: yum install -y gcc-gfortran
+  CIBW_ENVIRONMENT_LINUX: "FC=gfortran F77=gfortran"
 
 jobs:
   build-wheels-and-dist:
-    name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    # this step only uses a single python version since cibuildwheel
+    # builds multiple versions in one go on linux
     - uses: actions/setup-python@v5
       name: Install Python
       with:
-        python-version: "3.10"
+        python-version: "3.12"
 
     - name: link gfortran and hdf5
       if: runner.os == 'macOS'
@@ -40,11 +44,19 @@ jobs:
     - name: Install numpy
       run: |
         python -m pip install --upgrade pip
-        python -m pip install numpy h5py versioneer 
+        python -m pip install numpy h5py versioneer
 
     - name: Install dependencies
       run: |
         python -m pip install setuptools wheel build meson-python ninja meson pytest cibuildwheel
+
+    - name: Install gfortran (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install gcc hdf5
+        # ensure 'gfortran' is on PATH (Homebrew installs e.g. gfortran-13/14)
+        ln -sf "$(brew --prefix)/bin/gfortran"* "$(brew --prefix)/bin/gfortran" || true
 
     - name: Build source and wheels distribution on MacOS
       if: runner.os == 'macOS'
@@ -61,13 +73,13 @@ jobs:
         
     - uses: actions/upload-artifact@v4
       with:
-        name: dist-${{ matrix.os }}-${{ matrix.python-version }}
+        name: dist-${{ matrix.os }}
         path: ./dist/*
 
   publish:
     needs: [build-wheels-and-dist]
-    name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
-    runs-on: ${{ matrix.os }}
+    name: Publish Python 🐍 distributions 📦 to PyPI
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -75,10 +87,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
 
     - name: Download artifacts
       uses: actions/download-artifact@v4
