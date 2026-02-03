@@ -284,57 +284,54 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
+        # go through each item in the BSEDict and update the initialbinarytable
         new_cols = {}
         n = len(initialbinarytable)
         idx = initialbinarytable.index
-
         for k, v in list(BSEDict.items()):
+            # warn the user if they are overwriting a value
             if k in initialbinarytable.columns:
                 warnings.warn(
                     "The value for {0} in initial binary table is being overwritten by the value of {0} "
                     "from either the params file or the BSEDict.".format(k)
                 )
 
+            # handle special cases where we need to expand arrays into multiple columns
             if k == 'natal_kick_array':
-                new_cols['natal_kick_array'] = pd.Series(
-                    [BSEDict['natal_kick_array']] * n, index=idx
-                )
-
+                initialbinarytable["natal_kick_array"] = [BSEDict['natal_kick_array']] * n
                 for j, column_name in enumerate(NATAL_KICK_COLUMNS):
                     for sn in range(2):
                         col = f"{column_name}_{sn+1}"
-                        new_cols[col] = pd.Series(
-                            [BSEDict['natal_kick_array'][sn][j]] * n,
-                            index=idx,
-                        )
+                        if col in initialbinarytable.columns:
+                            initialbinarytable[col] = BSEDict['natal_kick_array'][sn][j]
+                        else:
+                            new_cols[col] = BSEDict['natal_kick_array'][sn][j]
 
             elif k == 'qcrit_array':
-                new_cols['qcrit_array'] = pd.Series(
-                    [BSEDict['qcrit_array']] * n, index=idx
-                )
-
+                initialbinarytable["qcrit_array"] = [BSEDict['qcrit_array']] * n
                 for kstar in range(16):
-                    new_cols[f"qcrit_{kstar}"] = pd.Series(
-                        [BSEDict['qcrit_array'][kstar]] * n,
-                        index=idx,
-                    )
+                    col = f"qcrit_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['qcrit_array'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['qcrit_array'][kstar]
 
             elif k == 'fprimc_array':
-                new_cols['fprimc_array'] = pd.Series(
-                    [BSEDict['fprimc_array']] * n, index=idx
-                )
-
+                initialbinarytable["fprimc_array"] = [BSEDict['fprimc_array']] * n
                 for kstar in range(16):
-                    new_cols[f"fprimc_{kstar}"] = pd.Series(
-                        [BSEDict['fprimc_array'][kstar]] * n,
-                        index=idx,
-                    )
-
+                    col = f"fprimc_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['fprimc_array'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['fprimc_array'][kstar]
             else:
-                # scalar or array-like; pandas will broadcast scalars automatically
-                new_cols[k] = v
+                # base case: if it's present, overwrite, if not, add to a list of new columns (see below)
+                if k in initialbinarytable.columns:
+                    initialbinarytable[k] = v
+                else:
+                    new_cols[k] = v
 
-        # concat once (fast, no fragmentation)
+        # for columns that are new to the initial binary table, concat once
         if new_cols:
             new_df = pd.DataFrame(new_cols, index=idx)
             initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
@@ -441,9 +438,15 @@ class Evolve(object):
         # update initial table with sampled kicks
         to_add = {}
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-            to_add[column] = natal_kick_arrays[:, 0, idx]
-        natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
-        initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
+            if column not in initialbinarytable.columns:
+                to_add[column] = natal_kick_arrays[:, 0, idx]
+            else:
+                initialbinarytable[column] = natal_kick_arrays[:, 0, idx]
+
+        # if kicks weren't already present, add them
+        if to_add:
+            natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
+            initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                                  columns=KICK_COLUMNS,
