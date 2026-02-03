@@ -1280,7 +1280,7 @@
             },
             {
                 "name": "maltsev_fallback",
-                "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
+                "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription (only relevant if remnantflag = 6). This fallback fraction, \\(f_{\\rm fallback}\\), is used to calculate the remnant mass by calculating \\(M_{\\rm rem} = M_{\\rm NS} + f_{\\rm fallback} (M_{\\rm core, total} - M_{\\rm NS})\\), where this prescription assumes that \\(M_{\\rm NS} = 1.4 \\, \\mathrm{M}_\\odot\\).",
                 "type": "number",
                 "options-preface": "",
                 "options": [
@@ -1297,7 +1297,7 @@
             },
             {
                 "name": "maltsev_pf_prob",
-                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the 'partial fallback' regime of M2 <= MCO < M3 (only relevant if remnantflag = 6)",
+                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the 'partial fallback' regime of \\(M_2 \\le M_{\\rm CO} < M_3\\) (only relevant if remnantflag = 6)",
                 "type": "number",
                 "options-preface": "",
                 "options": [
