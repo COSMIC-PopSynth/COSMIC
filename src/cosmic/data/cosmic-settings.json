@@ -310,12 +310,12 @@
                         "default": true
                     },
                     {
-                        "name": "massc_1",
-                        "description": "Primary core mass"
+                        "name": "massc_co_layer_1",
+                        "description": "Primary carbon-oxygen core mass"
                     },
                     {
-                        "name": "massc_2",
-                        "description": "Secondary core mass"
+                        "name": "massc_co_layer_2",
+                        "description": "Secondary carbon-oxygen core mass"
                     },
                     {
                         "name": "rad_1",
