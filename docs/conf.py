@@ -15,6 +15,9 @@
 import sys
 import os
 import re
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from cosmic import __version__ as cosmic_version
 
@@ -143,6 +146,12 @@ pygments_style = 'monokai'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+# this runs before each plot directive
+plot_pre_code = """
+from generate_default_bsedict import get_default_BSE_settings
+default_BSEDict = get_default_BSE_settings(to_python=True)
+"""
 
 
 # -- Options for HTML output ----------------------------------------------

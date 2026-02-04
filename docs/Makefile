@@ -55,6 +55,7 @@ clean:
 
 .PHONY: html
 html: apidoc
+	python generate_default_bsedict.py
 	python create_settings_html.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo

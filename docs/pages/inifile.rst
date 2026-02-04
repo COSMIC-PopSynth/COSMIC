@@ -39,35 +39,35 @@ Filters
 -------
 
 .. raw:: html
-    :file: config/config_insert_filters.html
+    :file: ../_generated/config_insert_filters.html
 
 
 Sampling
 --------
 
 .. raw:: html
-    :file: config/config_insert_sampling.html
+    :file: ../_generated/config_insert_sampling.html
 
 
 Convergence
 -----------
 
 .. raw:: html
-    :file: config/config_insert_convergence.html
+    :file: ../_generated/config_insert_convergence.html
 
 
 Random Seed
 -----------
 
 .. raw:: html
-    :file: config/config_insert_rand_seed.html
+    :file: ../_generated/config_insert_rand_seed.html
 
 
 Binary physics
 --------------
 
 .. raw:: html
-    :file: config/config_insert_bse.html
+    :file: ../_generated/config_insert_bse.html
 
 
 Generated data
