@@ -1,8 +1,17 @@
 import json
+from pathlib import Path
 
-def get_default_BSE_settings():
+def get_default_BSE_settings(to_python=False):
     """Get a copy of the default BSE settings from the COSMIC settings JSON file"""
-    with open("../src/cosmic/data/cosmic-settings.json") as f:
+    json_path = (
+        Path(__file__).resolve().parent.parent
+        / "src"
+        / "cosmic"
+        / "data"
+        / "cosmic-settings.json"
+    )
+
+    with json_path.open(encoding="utf-8") as f:
         cosmic_settings = json.load(f)
 
     defaults = {}
@@ -16,6 +25,16 @@ def get_default_BSE_settings():
             for option in setting["options"]:
                 if option.get("default", False):
                     defaults[setting["name"]] = option["name"]
+
+    if to_python:
+        # ensure array settings are converted from strings to lists
+        for setting in ["qcrit_array", "natal_kick_array", "fprimc_array"]:
+            # this one requires special handling because of the fractions
+            if setting == "fprimc_array":
+                parts = defaults[setting].strip("[]").split(",")
+                defaults[setting] = [float(p.split("/")[0]) / float(p.split("/")[1]) for p in parts]
+            else:
+                defaults[setting] = json.loads(defaults[setting])
 
     return defaults
 
