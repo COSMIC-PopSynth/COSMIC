@@ -59,3 +59,13 @@ See the discussed changes in our previous releases here: https://github.com/COSM
 ## 3.6.2
  - Add functions to `cosmic.utils` for initC IO that's more efficient (`save_initC`, `load_initC`) by saving
  identical setting columns separately with only one copy - saves ~1kb per binary
+
+## 3.7.0
+ - Make He and CO core masses available in output
+ - Change defaults; `qcflag=5` and `eccfac=10`
+ - Prevent users from supplying both `qmin` and `m2_min`
+ - Prevent users from supplying both `sep` and `porb` when sampling, calculate `porb` from `sep` as necessary
+ - Define `binstate=-1` as single stars
+ - Add `remnantflag=5`: The Mandel & Muller 2020 prescription for remnant masses
+ - Add `kickflag=6`: The Mandel & Muller 2020 prescription for natal kicks. This can be tuned with `mm_mu_ns` and `mm_mu_bh`
+ - Add `remnantflag=6`: The Maltsev+25 and Willcox+25 prescription for remnant masses. This can be tuned with `maltsev_mode` and `maltsev_fallback`

@@ -248,7 +248,7 @@ c-------------------------------------------------------------c
             if((kw.eq.13.or.kw.eq.14).and.kw.ne.kwold)then
                ospin = 2.0d+08
                jspin = k3*rc*rc*mc*ospin
-               CALL kick(kw,mass,mt,0.d0,0.d0,-1.d0,0.d0,vk,1,
+               CALL kick(kw,mass,mc,mt,0.d0,0.d0,-1.d0,0.d0,vk,1,
      &                   0.d0,fallback,kick_info)
             endif
             jp = jp + 1

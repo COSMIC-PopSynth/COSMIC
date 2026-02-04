@@ -94,14 +94,16 @@ else:
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
                                   'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'rtmsflag',
-                                  'bhflag', 'remnantflag', 'grflag', 'bhms_coll_flag', 'wd_mass_lim',
+                                  'bhflag', 'remnantflag',
+                                  'maltsev_mode', 'maltsev_fallback', 'maltsev_pf_prob',
+                                  'grflag', 'bhms_coll_flag', 'wd_mass_lim',
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
                                   'mxns', 'pts1', 'pts2', 'pts3',
                                   'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
-                                  'bhsigmafrac', 'polar_kick_angle',
+                                  'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
                                   'natal_kick_array', 'qcrit_array',
                                   'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 
+                                  'eddfac', 'gamma', 'don_lim', 'acc_lim',
                                   'bdecayfac', 'bconst', 'ck',
                                   'windflag', 'qcflag', 'eddlimflag',
                                   'fprimc_array', 'dtp', 'randomseed',
@@ -334,6 +336,8 @@ class Evolve(object):
             new_df = pd.DataFrame(new_cols, index=idx)
             initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
 
+
+
         # Here we perform two checks
         # First, if the BSE parameters are not in the initial binary table
         # and either a dictionary or an inifile was not provided
@@ -384,14 +388,14 @@ class Evolve(object):
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bpp"] = len(bpp_columns)
             initial_conditions[i]["col_inds_bpp"] = col_inds_bpp
-        
+
         # same for bcm
         col_inds_bcm = np.zeros(len(ALL_COLUMNS), dtype=int)
         col_inds_bcm[:len(bcm_columns)] = [ALL_COLUMNS.index(col) + 1 for col in bcm_columns]
         for i in range(len(initial_conditions)):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
-        
+
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
@@ -492,6 +496,9 @@ def _evolve_single_system(f):
         _evolvebin.snvars.pisn = f["pisn"]
         _evolvebin.flags.bhflag = f["bhflag"]
         _evolvebin.flags.remnantflag = f["remnantflag"]
+        _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
+        _evolvebin.snvars.maltsev_fallback = f["maltsev_fallback"]
+        _evolvebin.snvars.maltsev_pf_prob = f["maltsev_pf_prob"]
         _evolvebin.ceflags.cekickflag = f["cekickflag"]
         _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = f["cehestarflag"]
@@ -538,6 +545,8 @@ def _evolve_single_system(f):
         _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
+        _evolvebin.snvars.mm_mu_ns = f["mm_mu_ns"]
+        _evolvebin.snvars.mm_mu_bh = f["mm_mu_bh"]
         _evolvebin.cmcpass.using_cmc = 0
 
         _evolvebin.col.n_col_bpp = f["n_col_bpp"]

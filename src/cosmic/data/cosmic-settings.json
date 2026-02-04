@@ -163,7 +163,7 @@
                 "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
                 "options": [
                     {
-                        "name": "values in [0, 1]",
+                        "name": "range [0, 1]",
                         "description": "Sets the minimum mass ratio"
                     },
                     {
@@ -854,6 +854,14 @@
                         "description": "Follows the same prescription as 1, but uses the kick prescription described in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract'>Disberg & Mandel 2025</a> for CCSN."
                     },
                     {
+                        "name": 6,
+                        "description": "Follows <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>, where the kick velocity is drawn based on the mass of the formed NS or BH, with scaling parameters that are set with 'mm_mu_ns' and 'mm_mu_bh'."
+                    },
+                    {
+                        "name": "negative values",
+                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
                         "name": -1,
                         "description": "As 1, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     },
@@ -868,6 +876,14 @@
                     {
                         "name": -4,
                         "description": "As 4, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -5,
+                        "description": "As 5, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -6,
+                        "description": "As 6, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     }
                 ]
             },
@@ -1115,6 +1131,40 @@
                 ]
             },
             {
+                "name": "mm_mu_ns",
+                "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
+                    },
+                    {
+                        "name": 400.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "mm_mu_bh",
+                "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
+                    },
+                    {
+                        "name": 200.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "settings-section": "Remnant mass",
                 "name": "remnantflag",
                 "description": "Determines the remnant mass prescription used for NSs and BHs.",
@@ -1141,6 +1191,14 @@
                         "name": 4,
                         "description": "follows the delayed prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>. This fills the mass gap between neutron stars and black holes.",
                         "default": true
+                    },
+                    {
+                        "name": 5,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>. The method is stochastic. NOTE: We recommend that this prescription be used in conjunction with the Mandel &amp; Mueller 2020 kick prescription (kickflag = 6) and with mxns set to 2.0 Msun and rembar_massloss set to 0.1 Msun."
+                    },
+                    {
+                        "name": 6,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2025A%26A...700A..20M/abstract'>Maltsev+2025</a>, with additions from <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251007573W/abstract'>Willcox+2025</a> for the definition of BH masses."
                     }
                 ]
             },
@@ -1195,6 +1253,61 @@
                     {
                         "name": 1,
                         "description": "Apply the limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_mode",
+                "description": "Sets the mode to use Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Extrapolate Maltsev+25 fits to the full range of metallicities",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range"
+                    },
+                    {
+                        "name": 2,
+                        "description": "No extrapolation: use Maltsev+25 fits only within Z/Zsun = [1/10, 1], use boundary values outside this range"
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_fallback",
+                "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription (only relevant if remnantflag = 6). This fallback fraction, \\(f_{\\rm fallback}\\), is used to calculate the remnant mass by calculating \\(M_{\\rm rem} = M_{\\rm NS} + f_{\\rm fallback} (M_{\\rm core, total} - M_{\\rm NS})\\), where this prescription assumes that \\(M_{\\rm NS} = 1.4 \\, \\mathrm{M}_\\odot\\).",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "range [0, 1]",
+                        "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_pf_prob",
+                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the 'partial fallback' regime of \\(M_2 \\le M_{\\rm CO} < M_3\\) (only relevant if remnantflag = 6)",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "range [0, 1]",
+                        "description": "Sets the probability of partial fallback leading to BH formation in the Maltsev remnant mass prescription"
+                    },
+                    {         
+                        "name": 0.1,
+                        "description": "Default choice",
                         "default": true
                     }
                 ]

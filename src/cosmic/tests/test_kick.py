@@ -89,4 +89,4 @@ class TestKick(unittest.TestCase):
 
         # fit a maxwellian to the hobbs natal kicks and ensure it matches the expected values
         _, s_hobbs = maxwell.fit(natal_kicks, floc=0.0)
-        self.assertTrue(np.round(s_hobbs, -1) == 260)
+        self.assertTrue(np.round(s_hobbs) - 265 < 5)

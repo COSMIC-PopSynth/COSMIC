@@ -1,7 +1,14 @@
 project('cosmic', 
     'c',
     'fortran',
-    version : '3.6.2',
+    version: run_command(
+        'python3',
+        [
+            '-c',
+            'import sys; ns={}; exec(open(sys.argv[1]).read(), ns); print(ns["__version__"])',
+            join_paths(meson.current_source_dir(), 'src', 'cosmic', '_version.py')
+        ]
+    ).stdout().strip(),
     default_options: ['warning_level=0', 'optimization=3'],
 )
 

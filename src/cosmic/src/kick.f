@@ -1,4 +1,4 @@
-      SUBROUTINE kick(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
+      SUBROUTINE kick(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
      &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -9,6 +9,8 @@
 *    Stellar type of the exploding star
 * m1: real*8
 *    Mass of the exploding star
+* m1c: real*8
+*    CO Core mass of the exploding star
 * m1n: real*8
 *    Mass of the compact remnant post-SN
 * m2: real*8
@@ -37,7 +39,7 @@
 *    Whether the system is disrupted by the supernova
 
       integer kw,sn
-      real*8 m1,m2,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
+      real*8 m1,m2,m1c,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
       real*8 kick_info(2,18), bkick(20)
       logical disrupt
 
@@ -48,14 +50,14 @@
      &                  r2,fallback,sigmahold,kick_info,disrupt,bkick)
       else
 * New Pfahl et al. 2002 prescription
-         call kick_pfahl(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
+         call kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
      &                   r2,fallback,sigmahold,kick_info,disrupt,bkick)
       end if
       RETURN
       END
 
 
-      SUBROUTINE kick_pfahl(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,r2,
+      SUBROUTINE kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,r2,
      &                      fallback,sigmahold,kick_info,disrupt,bkick)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
@@ -95,7 +97,7 @@
 * For cmc kick_info array is zero, not negative.
       integer kw,k,sn,safety,abskickflag
 
-      real*8 m1,m2,m1n
+      real*8 m1,m2,m1n,m1c
       real*8 ecc,ecc_2,sep
       real*8 pi,twopi,yearsc,rsunkm,G_const
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
@@ -118,6 +120,7 @@
       real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
+      real*8 mu_mm
       integer i
       logical ECSN_or_USSN
 * Output
@@ -126,6 +129,7 @@
       real*8 kick_info(2,18)
       real ran3,xx
       external ran3
+      external RandomTruncatedNormal
 *
       output = .false. !useful for debugging...
       collide = .false.
@@ -179,7 +183,8 @@
       if(kick_info(1,2).eq.1) kick_info(2,2)=1
 
 * sigma is negative for ECSN
-      if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5))then
+      if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5
+     &                        .or.abskickflag.eq.6))then
          sigma = -1.d0*sigma
          ECSN_or_USSN = .true.
 * for kick prescriptions other than default, revert to original sigma
@@ -219,6 +224,18 @@
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
              call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
              vk2 = vk*vk
+          elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
+* if the kickflag is 6 then use the Mandel & Muller 2020 distribution
+* https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.3214M/abstract
+             if(kw.eq.14)then
+                mu_mm = mm_mu_bh * max(m1c - m1n, 0.0d0) / m1n
+             else
+                mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
+             endif
+             call RandomTruncatedNormal(0, 0.3d0, idum1,
+     &                                  -1.d0, 10000.d0, vk)
+             vk = mu_mm * (1 + vk)
+             vk2 = vk * vk
           else
 * Otherwise use the Hobbs et al. 2005 Maxwellian distribution
 * Generate Kick Velocity using Maxwellian Distribution (Phinney 1992).
