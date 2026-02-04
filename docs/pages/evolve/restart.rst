@@ -4,11 +4,11 @@ Restarting a binary
 
 COSMIC allows you to restart a binary from any point in its evolution from a COSMIC generated bpp array.
 
-.. ipython::
+.. ipython:: python
 
-    In [1]: from cosmic.sample.initialbinarytable import InitialBinaryTable
+    from cosmic.sample.initialbinarytable import InitialBinaryTable
 
-    In [2]: from cosmic.evolve import Evolve
+    from cosmic.evolve import Evolve
 
 Below we provide an example of the same evolutionary track
 started from the beginning and three different points in the evolution:
