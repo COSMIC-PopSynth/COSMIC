@@ -198,5 +198,5 @@ for group in settings:
     soup.select_one(".container-fluid").append(new_group)
 
     # write the soup out to an HTML file for this category
-    with open(f"pages/config/config_insert_{group['category']}.html", "w") as f:
+    with open(f"_generated/config_insert_{group['category']}.html", "w") as f:
         f.write(str(soup))
