@@ -116,3 +116,6 @@ binary.dat
 *.h5
 fort.99
 savefig/
+
+# ignore generated docs files
+_generated/
