@@ -17,24 +17,48 @@ started from the beginning and three different points in the evolution:
 - between the first and second supernova
 - after both supernova
 
-.. ipython::
+.. ipython:: python
     :okwarning:
 
-    In [3]: single_binary = InitialBinaryTable.InitialBinaries(m1=25.543645, m2=20.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
+    single_binary = InitialBinaryTable.InitialBinaries(
+        m1=25, m2=20, porb=6000, ecc=0.0,
+        tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002
+    )
     
-    In [4]: BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': 5.0, 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 0.5, 'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5, 'remnantflag': 3, 'ceflag': 0, 'eddfac': 1.0, 'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0, 'natal_kick_array' : [[-100.0,-100.0,-100.0,-100.0,0.0], [-100.0,-100.0,-100.0,-100.0,0.0]], 'bhsigmafrac' : 1.0, 'polar_kick_angle' : 90, 'qcrit_array' : [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0], 'cekickflag' : 2, 'cehestarflag' : 0, 'cemergeflag' : 0, 'ecsn' : 2.5, 'ecsn_mlow' : 1.4, 'aic' : 1, 'ussn' : 0, 'sigmadiv' :-20.0, 'qcflag' : 1, 'eddlimflag' : 0, 'fprimc_array' : [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0], 'bhspinflag' : 0, 'bhspinmag' : 0.0, 'rejuv_fac' : 1.0, 'rejuvflag' : 0, 'htpmb' : 1, 'ST_cr' : 1, 'ST_tide' : 0, 'bdecayfac' : 1, 'randomseed' : -1235453, 'grflag' : 1, 'rembar_massloss' : 0.5, 'kickflag' : 1, 'zsun' : 0.014,  'grflag' : 1, 'bhms_coll_flag' : 0, 'don_lim' : -1, 'acc_lim' : -1, 'rtmsflag' : 0, 'wd_mass_lim': 1}
-    
-    In [5]: for i in [3, 7, 11]:
-       ...:     bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
-       ...:     for column in bpp.columns:
-       ...:         initC = initC.assign(**{column:bpp.iloc[i][column]})
-       ...:     bpp_mid, bcm_mid, initC_mid, kick_info = Evolve.evolve(initialbinarytable=initC, BSEDict={})
-       ...:     if i == 3:
-       ...:         print("From beginning")
-       ...:         print(bpp)
-       ...:     print("Started in middle at Index {0}".format(i))
-       ...:     print(bpp_mid)
+.. include:: ../../_generated/default_bsedict.rst
 
+.. ipython:: python
+    :okwarning:
+    
+    # evolve the binary
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
+    print("From beginning")
+    print(bpp)
+    
+    # assign row indices and find SNe
+    bpp["row_iloc"] = list(range(len(bpp)))
+    first_SN_iloc = bpp[bpp["evol_type"] == 15].iloc[0]["row_iloc"]
+    second_SN_iloc = bpp[bpp["evol_type"] == 16].iloc[0]["row_iloc"]
+    print("First SN Index: ", first_SN_iloc)
+    print("Second SN Index: ", second_SN_iloc)
+
+    # choose some inds to restart from
+    before_SN_1 = int(first_SN_iloc // 2)
+    between_SNe = int((first_SN_iloc + second_SN_iloc) // 2)
+    after_SN_2 = int((second_SN_iloc + bpp["row_iloc"].max()) // 2)
+    print("Restart Indices: ", before_SN_1, between_SNe, after_SN_2)
+
+.. ipython:: python
+    :okwarning:
+
+    # restart from different points
+    for i in [before_SN_1, between_SNe, after_SN_2]:
+        new_initC = initC.copy()
+        for column in bpp.columns:
+            new_initC = new_initC.assign(**{column:bpp.iloc[i][column]})
+        bpp_mid, bcm_mid, initC_mid, kick_info = Evolve.evolve(initialbinarytable=new_initC, BSEDict={})
+        print("Started in middle at Index {0}".format(i))
+        print(bpp_mid)
 
 Natal kick example
 ==================
@@ -47,32 +71,39 @@ and `Gaia BH2 <https://ui.adsabs.harvard.edu/abs/2023MNRAS.521.4323E/abstract>`_
 channels. We can still study the effect of natal kicks on these binaries if we
 restart the evolution after the mass transfer would occur. We can do this by using a binary which gets us to the right masses given the metallicity, then overwrite some of the initial conditions to resample the natal kicks and pre-explosion separation. 
 
-.. ipython::
+.. ipython:: python
     :okwarning:
 
-    In [6]: from cosmic import utils
-       ...: import pandas as pd
+    from cosmic import utils
+    import pandas as pd
 
-    In [7]: single_binary = InitialBinaryTable.InitialBinaries(m1=65.0, m2=0.93, porb=4500, ecc=0.448872, 
-       ...:                                                    tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014*0.6)
+    single_binary = InitialBinaryTable.InitialBinaries(
+        m1=65.0, m2=0.93, porb=4500, ecc=0.448872, 
+        tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014*0.6
+    )
+    bpp, bcm, initC, kick_info = Evolve.evolve(
+        initialbinarytable=single_binary, BSEDict=BSEDict
+    )
 
-    In [8]: bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
+    for column in bpp.columns:
+        initC = initC.assign(**{column:bpp.iloc[6][column]})
 
-    In [9]: for column in bpp.columns:
-       ...:     initC = initC.assign(**{column:bpp.iloc[6][column]})
+    initC = pd.concat([initC]*1000)
+    initC['natal_kick_1'] = np.random.uniform(0, 100, 1000)
+    initC['phi_1'] = np.random.uniform(-90, 90, 1000)
+    initC['theta_1'] = np.random.uniform(0, 360, 1000)
+    initC['mean_anomaly_1'] = np.random.uniform(0, 360, 1000)
+    initC['porb'] = np.random.uniform(50, 190, 1000)
+    initC['sep'] = utils.a_from_p(p=initC.porb.values, m1=initC.mass_1.values, m2=initC.mass_2.values)
+    initC['bin_num'] = np.linspace(0, 1000, 1000)
 
-    In [10]: initC = pd.concat([initC]*1000)
-       ....: initC['natal_kick_1'] = np.random.uniform(0, 100, 1000)
-       ....: initC['phi_1'] = np.random.uniform(-90, 90, 1000)
-       ....: initC['theta_1'] = np.random.uniform(0, 360, 1000)
-       ....: initC['mean_anomaly_1'] = np.random.uniform(0, 360, 1000)
-       ....: initC['porb'] = np.random.uniform(50, 190, 1000)
-       ....: initC['sep'] = utils.a_from_p(p=initC.porb.values, m1=initC.mass_1.values, m2=initC.mass_2.values)
-       ....: initC['bin_num'] = np.linspace(0, 1000, 1000)
+    bpp_restart, bcm_restart, initC_restart, kick_info_restart = Evolve.evolve(
+        initialbinarytable=initC, BSEDict={}
+    )
 
-    In [11]: bpp_restart, bcm_restart, initC_restart, kick_info_restart = Evolve.evolve(initialbinarytable=initC, BSEDict={})
+    bpp_BH = bpp_restart.loc[
+        (bpp_restart.kstar_1 == 14)
+        & (bpp_restart.kstar_2 == 1)
+        & (bpp_restart.porb > 0)].groupby('bin_num', as_index=False).first()
 
-    In [12]: bpp_BH = bpp_restart.loc[(bpp_restart.kstar_1 == 14) & (bpp_restart.kstar_2 == 1) & (bpp_restart.porb > 0)].groupby('bin_num', as_index=False).first()
-
-    In [13]: bpp_BH[['tphys', 'mass_1', 'mass_2', 'porb', 'ecc']]
-
+    bpp_BH[['tphys', 'mass_1', 'mass_2', 'porb', 'ecc']]
