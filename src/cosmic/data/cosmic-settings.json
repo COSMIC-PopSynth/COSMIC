@@ -310,12 +310,12 @@
                         "default": true
                     },
                     {
-                        "name": "massc_1",
-                        "description": "Primary core mass"
+                        "name": "massc_co_layer_1",
+                        "description": "Primary carbon-oxygen core mass"
                     },
                     {
-                        "name": "massc_2",
-                        "description": "Secondary core mass"
+                        "name": "massc_co_layer_2",
+                        "description": "Secondary carbon-oxygen core mass"
                     },
                     {
                         "name": "rad_1",
@@ -1167,7 +1167,7 @@
             {
                 "settings-section": "Remnant mass",
                 "name": "remnantflag",
-                "description": "Determines the remnant mass prescription used for NSs and BHs.",
+                "description": "Determines the remnant mass prescription used for NSs and BHs. Note that <code class='docutils literal notranslate'><span class='pre'>rembar_massloss</span></code> is only used when <code class='docutils literal notranslate'><span class='pre'>remnantflag</span></code> >= 1.",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
