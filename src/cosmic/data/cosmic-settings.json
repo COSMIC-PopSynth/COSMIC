@@ -1314,7 +1314,7 @@
             },
             {
                 "name": "maltsev_pf_prob",
-                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the 'partial fallback' regime of \\(M_2 \\le M_{\\rm CO} < M_3\\) (only relevant if remnantflag = 6)",
+                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the partial fallback regime of \\(M_2 \\le M_{\\rm CO} \\le M_3\\) (only relevant if remnantflag = 6)",
                 "type": "number",
                 "options-preface": "",
                 "options": [
