@@ -339,7 +339,7 @@
                         "default": true
                     },
                     {
-                        "name": "{'mass_1' : [5, 10], 'sep' : [0, 10]}",
+                        "name": "{\"mass_1\" : [5, 10], \"sep\" : [0, 10]}",
                         "description": "For example, this specifies that the primary mass must be between 5 and 10 solar masses, and the separation must be between 0 and 10 Rsun."
                     }
                 ]
