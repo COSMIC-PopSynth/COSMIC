@@ -440,8 +440,8 @@ if __name__ == '__main__':
             conv_singles_filter = utils.conv_select_singles(bcm_singles, bpp_singles, kstar1_range)
         
         if conv_filter.empty:
-            warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
-            log_file.write("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
+            warnings.warn("After filtering for desired convergence systems, there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
+            log_file.write("After filtering for desired convergence systems, there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
 
         bcm_filter = bcm.loc[bcm.bin_num.isin(conv_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(conv_filter.bin_num)]
@@ -457,8 +457,8 @@ if __name__ == '__main__':
         # Filter the bin_state based on user specified filters
         bcm_filter, bin_state_nums = utils.filter_bin_state(bcm_filter, bpp_filter, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
-            warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
-            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep\n")
+            warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up the number of binaries processed in each iteration, i.e. Nstep")
+            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up the number of binaries processed in each iteration, i.e. Nstep\n")
         initC_filter = initC_filter.loc[initC_filter.bin_num.isin(bcm_filter.bin_num)]
         kick_info_filter = kick_info_filter.loc[kick_info_filter.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(bcm_filter.bin_num)]
