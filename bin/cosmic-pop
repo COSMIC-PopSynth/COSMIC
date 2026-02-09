@@ -270,6 +270,9 @@ if __name__ == '__main__':
 
     # save configuration settings and COSMIC version to output file
     with h5.File(dat_store_fname, 'a') as f:
+        # if config already exists, we need to overwrite it
+        if "config" in f:
+            del f["config"]
         f["config"] = json.dumps({'BSEDict' : BSEDict, 'filters' : filters, 'convergence' : convergence,
                                   'sampling' : sampling, 'rand_seed': seed_int})
         f.attrs['COSMIC_version'] = __version__
