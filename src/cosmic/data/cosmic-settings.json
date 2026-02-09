@@ -270,6 +270,23 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "name": "keep_singles",
+                "description": "Sets whether to keep single stars in the sampled population",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Keep single stars in the sampled population"
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not keep single stars in the sampled population",
+                        "default": true
+                    }
+                ]
             }
         ]
     },
