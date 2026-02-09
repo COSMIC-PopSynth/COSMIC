@@ -594,7 +594,7 @@ def mass_min_max_select(kstar_1, kstar_2, **kwargs):
     secondary_max = kwargs["m_max"] if "m_max" in kwargs.keys() else 150.0
 
     primary_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
-    secondary_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else 0.08
+    secondary_min = kwargs["m2_min"] if ("m2_min" in kwargs.keys() and kwargs["m2_min"] is not None) else 0.08
 
     if ((primary_min < 0.08) | (secondary_min < 0.08)):
         warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses less than 0.08 Msun!")

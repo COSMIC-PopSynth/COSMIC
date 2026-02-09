@@ -160,7 +160,7 @@
                 "name": "qmin",
                 "description": "Minimum mass ratio for sampling the secondary mass <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
                 "type": "number",
-                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None or 0 respectively.",
                 "options": [
                     {
                         "name": "range [0, 1]",
@@ -170,14 +170,18 @@
                         "name": -1,
                         "description": "Set the minimum mass ratio such that the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star",
                         "default": true
+                    },
+                    {
+                        "name": 0,
+                        "description": "Ignore qmin, use m2_min instead"
                     }
                 ]
             },
             {
                 "name": "m2_min",
                 "description": "Minimum secondary mass for sampling <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
-                "type": "string",
-                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "type": "number",
+                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None or 0 respectively.",
                 "options": [
                     {
                         "name": "positive values",
@@ -270,6 +274,23 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "name": "keep_singles",
+                "description": "Sets whether to keep single stars in the sampled population",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Keep single stars in the sampled population"
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not keep single stars in the sampled population",
+                        "default": true
+                    }
+                ]
             }
         ]
     },
@@ -339,7 +360,7 @@
                         "default": true
                     },
                     {
-                        "name": "{'mass_1' : [5, 10], 'sep' : [0, 10]}",
+                        "name": "{\"mass_1\" : [5, 10], \"sep\" : [0, 10]}",
                         "description": "For example, this specifies that the primary mass must be between 5 and 10 solar masses, and the separation must be between 0 and 10 Rsun."
                     }
                 ]
@@ -1297,7 +1318,7 @@
             },
             {
                 "name": "maltsev_pf_prob",
-                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the 'partial fallback' regime of \\(M_2 \\le M_{\\rm CO} < M_3\\) (only relevant if remnantflag = 6)",
+                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the partial fallback regime of \\(M_2 \\le M_{\\rm CO} \\le M_3\\) (only relevant if remnantflag = 6)",
                 "type": "number",
                 "options-preface": "",
                 "options": [

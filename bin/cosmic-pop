@@ -270,6 +270,9 @@ if __name__ == '__main__':
 
     # save configuration settings and COSMIC version to output file
     with h5.File(dat_store_fname, 'a') as f:
+        # if config already exists, we need to overwrite it
+        if "config" in f:
+            del f["config"]
         f["config"] = json.dumps({'BSEDict' : BSEDict, 'filters' : filters, 'convergence' : convergence,
                                   'sampling' : sampling, 'rand_seed': seed_int})
         f.attrs['COSMIC_version'] = __version__
@@ -287,11 +290,12 @@ if __name__ == '__main__':
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
-        warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
-                      "determine the secondary masses in the initial sample.")
+        if args.qmin is not None and args.m2_min is not None:
+            warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
+                        "determine the secondary masses in the initial sample.")
 
-        log_file.write("You have specified both qmin and m2_min.\n")
-        log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
+            log_file.write("You have specified both qmin and m2_min.\n")
+            log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
 
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']) & ((time.time() - start_time) < args.max_wall_time):
         # Set random seed such that each iteration gets a unique, determinable seed
@@ -301,7 +305,8 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if hasattr(args,'qmin') and hasattr(args,'m2_min'):
-                raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
+                if args.qmin != 0.0 and args.m2_min is not None:
+                    raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
             # If qmin is specified, use it to sample the initial binary table
             if hasattr(args,'qmin'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
