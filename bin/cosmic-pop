@@ -302,7 +302,7 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if hasattr(args,'qmin') and hasattr(args,'m2_min'):
-                if args.qmin is not None and args.m2_min is not None:
+                if args.qmin != 0.0 and args.m2_min is not None:
                     raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
             # If qmin is specified, use it to sample the initial binary table
             if hasattr(args,'qmin'):

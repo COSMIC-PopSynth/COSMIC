@@ -182,7 +182,7 @@ def get_independent_sampler(
 
     # don't allow users to specify both a qmin and m2_min
     if "qmin" in kwargs and "m2_min" in kwargs:
-        if kwargs["qmin"] is not None and kwargs["m2_min"] is not None:
+        if kwargs["qmin"] != 0.0 and kwargs["m2_min"] is not None:
             raise ValueError("You cannot specify both qmin and m2_min, please choose one or the other")
 
     final_kstar1 = [final_kstar1] if isinstance(final_kstar1, (int, float)) else final_kstar1

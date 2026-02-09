@@ -159,8 +159,8 @@
             {
                 "name": "qmin",
                 "description": "Minimum mass ratio for sampling the secondary mass <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
-                "type": "string",
-                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None.",
+                "type": "number",
+                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None or 0 respectively.",
                 "options": [
                     {
                         "name": "range [0, 1]",
@@ -172,7 +172,7 @@
                         "default": true
                     },
                     {
-                        "name": "None",
+                        "name": 0,
                         "description": "Ignore qmin, use m2_min instead"
                     }
                 ]
@@ -180,8 +180,8 @@
             {
                 "name": "m2_min",
                 "description": "Minimum secondary mass for sampling <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
-                "type": "string",
-                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None.",
+                "type": "number",
+                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None or 0 respectively.",
                 "options": [
                     {
                         "name": "positive values",
