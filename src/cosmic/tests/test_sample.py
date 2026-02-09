@@ -539,6 +539,46 @@ class TestSample(unittest.TestCase):
                                                 trim_extra_samples=True)
             self.assertLessEqual(abs(samples[1] + samples[2] - mass), 300)
 
+    def test_m2min_qmin(self):
+        # ensure you can't sample with both qmin and m2_min
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000,
+                                       qmin=0.1, m2_min=0.08)
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+
+        # but it works if m2_min is None
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000,
+                                       qmin=0.1, m2_min=None)
+        except ValueError:
+            it_fails = True
+        self.assertFalse(it_fails)
+
+        # and vice versa
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000,
+                                       qmin=0, m2_min=0.08)
+        except FileNotFoundError:
+            it_fails = True
+        self.assertFalse(it_fails)
+
 class TestCMCSample(unittest.TestCase):
     def test_plummer_profile(self):
         np.random.seed(2)
