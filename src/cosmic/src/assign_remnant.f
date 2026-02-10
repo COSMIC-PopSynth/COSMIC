@@ -11,7 +11,7 @@
       real*8 avar,bvar
       real*8 mc,mcbagb,mass,mt,mc_tot,met
       real*8 frac,kappa,sappa,alphap,polyfit
-      real*8 mcx, bhspin,mrem,mch
+      real*8 mcx, bhspin,mrem,mch,dMppi
       integer kw,kidx
 
 * Inputs
@@ -326,6 +326,34 @@
                      pisn_track(kidx)=6
                   elseif(mcbagb.gt.60.12d0.and.
      &                   mcbagb.lt.135.d0)then
+                     mt = 0.d0
+                     kw = 15
+                     pisn_track(kidx)=7
+                  endif
+* Apply the PPISN prescription from Renzo+2022 (https://ui.adsabs.harvard.edu/abs/2022RNAAS...6...25R/abstract)
+* with the adaptations from Hendriks+2023 (https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract)
+* This is a top-down prescription, where we subtract mass from the total core mass
+               elseif(pisn.eq.-4)then
+                  if(mc.ge.38.d0.and.mc.le.114.d0)then
+                     met = 10**(LOG10(zpars(14))/0.4)
+*       Calculate DeltaM_PPI using Eq.6 from Hendriks+2023 (equivalently Eq.2 from Renzo+2022)
+                     dMppi = (0.0006d0 * LOG10(met) + 0.0054)
+     &                       * (mc - 34.8d0)**3
+     &                       - 0.0013 * (mc - 34.8d0)**2
+*       Set the remnant mass equal to the total core mass minus the PPI mass loss.
+*       We use core mass not total mass because envelopes are expected to be removed by the first PPI pulse (e.g. Renzo+2020b)
+                     mt = mc_tot - dMppi
+*       If the remnant mass is reduced below 10 Msun, assume a full PISN with no remnant
+                     if(mt.lt.10d0)then
+                        mt = 0.0d0
+                        kw = 15
+                        pisn_track(kidx)=7
+*       Otherwise we have a PPISN
+                     else
+                        pisn_track(kidx)=6
+                     endif
+*       For very large cores, we assume a full PISN with no remnant
+                  elseif(mc.gt.114.d0)then
                      mt = 0.d0
                      kw = 15
                      pisn_track(kidx)=7
