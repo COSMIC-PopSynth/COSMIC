@@ -1069,35 +1069,6 @@
                 ]
             },
             {
-                "name": "pisn",
-                "description": "Allows for (pulsational) pair instability supernovae and sets either the model to use or the maximum mass of the remnant.",
-                "type": "number",
-                "options-preface": "",
-                "options": [
-                    {
-                        "name": 0,
-                        "description": "no pulsational pair instability SN"
-                    },
-                    {
-                        "name": -1,
-                        "description": " uses the formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4739S/abstract'>Spera &amp; Mapelli 2017</a>"
-                    },
-                    {
-                        "name": -2,
-                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2018arXiv181013412M/abstract'>Table 1 in Marchant+2018</a>",
-                        "default": true
-                    },
-                    {
-                        "name": -3,
-                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract'>Table 5 in Woosley 2019</a>"
-                    },
-                    {
-                        "name": "positive values",
-                        "description": "turns on pulsational pair instability and pair instability SNe, and sets the maximum mass of the allowed remnant (i.e., the bottom of the pair instability mass gap). He core masses between pisn and 65 Msun are assumed to go through pulsational pair instability and limit the He core mass to pisn, while He core masses from 65-135 Msun are assumed have a pair instability SN and leave no remnant."
-                    }
-                ]
-            },
-            {
                 "name": "polar_kick_angle",
                 "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star",
                 "type": "number",
@@ -1330,6 +1301,39 @@
                         "name": 0.1,
                         "description": "Default choice",
                         "default": true
+                    }
+                ]
+            },
+            {
+                "name": "pisn",
+                "description": "Allows for (pulsational) pair instability supernovae and sets either the model to use or the maximum mass of the remnant.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "no pulsational pair instability SN"
+                    },
+                    {
+                        "name": -1,
+                        "description": " uses the formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4739S/abstract'>Spera &amp; Mapelli 2017</a>"
+                    },
+                    {
+                        "name": -2,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2018arXiv181013412M/abstract'>Table 1 in Marchant+2018</a>",
+                        "default": true
+                    },
+                    {
+                        "name": -3,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract'>Table 5 in Woosley 2019</a>"
+                    },
+                    {
+                        "name": -4,
+                        "description": "Uses the top-down approach from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2022RNAAS...6...25R/abstract'>Renzo+2022</a>, with adjustable parameters from <a class='reference external' href='https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract'>Hendriks+2023</a>"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "turns on pulsational pair instability and pair instability SNe, and sets the maximum mass of the allowed remnant (i.e., the bottom of the pair instability mass gap). He core masses between pisn and 65 Msun are assumed to go through pulsational pair instability and limit the He core mass to pisn, while He core masses from 65-135 Msun are assumed have a pair instability SN and leave no remnant."
                     }
                 ]
             },
