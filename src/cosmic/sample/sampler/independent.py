@@ -145,7 +145,7 @@ def get_independent_sampler(
         of cases track the target total mass to within a solar mass.        
 
     zsun : `float`
-        optional kwarg for setting effective radii, default is 0.02
+        optional kwarg for setting metallicity, default is 0.02
 
     q_power_law : `float`
         Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that
