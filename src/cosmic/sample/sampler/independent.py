@@ -124,7 +124,8 @@ def get_independent_sampler(
     binfrac_model_msort : `str or float`
         Same as binfrac_model for M>msort
 
-    met : `float`
+    met : `str or float`
+        opt for str: "zsun"
         Sets the metallicity of the binary population where solar metallicity is zsun
 
     size : `int`
@@ -298,7 +299,11 @@ def get_independent_sampler(
     mass1_singles = np.asarray(mass1_singles)
 
     zsun = kwargs.pop("zsun", 0.02)
-
+    
+    #if user sets met to "zsun", this gives it zsun's default value or user-inputed value
+    if met == "zsun":
+        met = zsun
+      
     rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun)
     rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
 
