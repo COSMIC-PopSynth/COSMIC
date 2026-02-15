@@ -1,6 +1,5 @@
 ***
-      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mc_tot,
-     &                          kidx,mt,kw,bhspin)
+      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,kidx,mt,kw,bhspin)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -18,8 +17,7 @@
 *       zpars      : Array of metallicity dependent parameters
 *       mc         : CO core mass before SN
 *       mcbagb     : Core mass at the base of the AGB
-*       mass       : Total ZAMS mass of the star
-*       mc_tot     : Total core mass before SN (CO + He layers)
+*       mass       : Previous epoch mass of the star
 *       kidx       : Index of the star in the pisn track arrays
 
 * Outputs
@@ -27,6 +25,8 @@
 *       kw         : Stellar (remnant) type
 *       bhspin     : Dimensionless spin parameter of BH remnant
 
+* total core mass before SN (CO + He layers)
+      mc_tot = mc_co(kidx) + mc_he(kidx)
 
 * Set the Chandrasekhar mass
       mch = 1.44d0 !set here owing to AIC ECSN model.
