@@ -532,15 +532,26 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
             mc_he(kidx) = mt - mc
             mc_co(kidx) = mc
+
+            ! core mass for a He star to become a COWD (Hurley 2000, Eq. 89)
             mtc = MIN(mt,1.45d0*mt-0.31d0)
+
+            ! core mass for He to result in a SN (Hurley 2000, Eq. 75)
             mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
             if(mcmax-mc.lt.tiny)then
                aj = 0.d0
+
+               ! adjust core masses if we overshot the maximum allowed core mass
                mc = mcmax
+               mc_he(kidx) = mt - mc
+               mc_co(kidx) = mc
+
+               ! He stars use the mass at start of HeMS instead of McBAGB (Hurley 2000, just before Eq. 89)
                mcbagb = mass
                call assign_remnant(zpars,mc,mcbagb,mass,
      &                             kidx,mt,kw,bhspin)
                
+               ! TW: This seems to be an adjustment for COWD based on Hurley Eq. 89, I don't fully understand though, seems to be potentially adding envelope mass?
                if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
             endif
          endif
