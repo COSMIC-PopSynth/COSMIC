@@ -1226,7 +1226,8 @@ component.
 * At this point there may have been a supernova.
 *
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
-     &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
+     &      (kw.eq.13.or.kw.eq.14.or.(kw.eq.15.and.pisn_track(k).eq.7)))
+     &      .or.(ABS(merger).ge.20.d0))then
             if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
@@ -1331,6 +1332,9 @@ component.
                   b02_bcm = B(2)
                endif
 
+* Check if PISN occurred, and if so overwrite formation
+               if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+               if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
                CALL writetab(bpp_ind,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -1372,6 +1376,10 @@ component.
                else
                   b02_bcm = B(2)
                endif
+
+* Check if PISN occurred, and if so overwrite formation
+               if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+               if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
                CALL writetab(bpp_ind,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
@@ -3604,8 +3612,9 @@ component.
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
-         if(kw.ne.kstar(k).and.kstar(k).le.12.and.
-     &      (kw.eq.13.or.kw.eq.14))then
+         if((kw.ne.kstar(k).and.kstar(k).le.12.and.
+     &      (kw.eq.13.or.kw.eq.14
+     &       .or.(kw.eq.15.and.pisn_track(k).eq.7))))then
             dms(k) = mass(k) - mt
             if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
@@ -3665,6 +3674,10 @@ component.
             else
                b02_bcm = B(2)
             endif
+
+* Check if PISN occurred, and if so overwrite formation
+            if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+            if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
             CALL writetab(bpp_ind,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
