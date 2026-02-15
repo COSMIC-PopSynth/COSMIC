@@ -140,7 +140,6 @@
                elseif(mc_co(kidx).gt.7.60)then
                   fallback = 1.d0
                endif
-               mc = mt
             elseif(remnantflag.eq.3)then
 *
 * Use the "Rapid" SN Prescription (Fryer et al. 2012, APJ, 749,91)
@@ -169,7 +168,6 @@
                elseif(mc_co(kidx).ge.11.d0)then
                   fallback = 1.d0
                endif
-               mc = mt
             elseif(remnantflag.eq.4)then
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
@@ -233,8 +231,11 @@
 * Determine whether a zero-age NS or BH is formed
             if(mrem.le.mxns)then
                mt = mrem
+               mc = mt
                kw = 13
             else
+               mt = mrem
+               mc = mt
                kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -378,20 +379,7 @@
                   endif
                endif
 
-* Convert baryonic mass to gravitational mass
-* MJZ 04/2020
-               if(remnantflag.le.1)then
-                  mrem = mt
-               else
-* If rembar_massloss >= 0, limit the massloss by rembar_massloss
-                  if(rembar_massloss.ge.0d0)then
-                     mrem = mt-rembar_massloss
-* If -1 < rembar_massloss < 0, assume this fractional mass loss
-                  else
-                     mrem = (1.d0+rembar_massloss)*mt
-                  endif
-               endif
-               mt = mrem
+mc = mt
 * Store the initial BH mass for calculating the ISCO later
                if(Mbh_initial.eq.0)then
                   Mbh_initial = mt
