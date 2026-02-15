@@ -202,7 +202,6 @@
                elseif(mc_co(kidx).ge.11.d0)then
                   fallback = 1.d0
                endif
-               mc = mt
             elseif(remnantflag.eq.5)then
                call assign_remnant_mandel_muller(mc, mc_tot, mt)
             elseif(remnantflag.eq.6)then
@@ -213,20 +212,8 @@
 * Assign the BH spin based on the chosen prescription
             call assign_remnant_spin(mc, bhspin)
 
-* Specify the baryonic to gravitational remnant mass prescription
-* MJZ 04/2020
-
-* Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
-            if(remnantflag.le.1)then
-               mrem = mt
-            else
-               mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
-* If rembar_massloss >= 0, limit the massloss by rembar_massloss
-               if(rembar_massloss.ge.0d0)then
-                  if((mt-mrem).ge.rembar_massloss)
-     &                         mrem = mt-rembar_massloss
-               endif
-            endif
+            ! convert from baryonic to gravitational mass
+            call baryonic_to_gravitational_mass(mt, mrem)
 
 * Determine whether a zero-age NS or BH is formed
             if(mrem.le.mxns)then
@@ -247,7 +234,11 @@
                if(pisn.gt.0)then
                   if(mc_tot.ge.pisn.and.mc_tot.lt.65.d0)then
                      mt = pisn
-                     mc = pisn
+
+                     ! convert from baryonic to gravitational mass
+                     call baryonic_to_gravitational_mass(mt, mrem)
+                     mt = mrem
+
                      pisn_track(kidx)=6
                   elseif(mc_tot.ge.65.d0.and.mc_tot.lt.135.d0)then
                      mt = 0.d0
@@ -301,6 +292,10 @@
                   endif
                   mt = alphap*mt
 
+                  ! convert from baryonic to gravitational mass
+                  call baryonic_to_gravitational_mass(mt, mrem)
+                  mt = mrem
+
 * Fit (8th order polynomial) to Table 1 in Marchant+2018.
                elseif(pisn.eq.-2)then
                   if(mc_tot.ge.31.99d0.and.mc_tot.le.61.10d0)then
@@ -315,6 +310,11 @@
      &                      - 4.13587235d-8*mc_tot**8d0
                      mt = polyfit
                      pisn_track(kidx)=6
+
+                     ! convert from baryonic to gravitational mass
+                     call baryonic_to_gravitational_mass(mt, mrem)
+                     mt = mrem
+
                   elseif(mc_tot.gt.61.10d0.and.
      &                   mc_tot.lt.124.12d0)then
                      mt = 0.d0
@@ -336,6 +336,11 @@
      &                      - 3.11019088d-8*mc_tot**8d0
                      mt = polyfit
                      pisn_track(kidx)=6
+
+                     ! convert from baryonic to gravitational mass
+                     call baryonic_to_gravitational_mass(mt, mrem)
+                     mt = mrem
+
                   elseif(mc_tot.gt.60.12d0.and.
      &                   mc_tot.lt.135.d0)then
                      mt = 0.d0
@@ -388,6 +393,34 @@ mc = mt
          endif
       endif
 *
+      end
+
+
+      SUBROUTINE baryonic_to_gravitational_mass(mt, mrem)
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
+
+      real*8 mt, mrem
+
+      ! remnantflag 0 and 1 already calculate gravitational mass
+      if(remnantflag.le.1)then
+         mrem = mt
+      else
+         ! negative values set the absolute maximum mass loss
+         if(rembar_massloss.ge.0d0)then
+            ! calculate Mrem from mt using quadratic formula
+            ! mt - mrem = 0.075 mrem^2 (Lattimer & Yahil 1989, Timmes+1996)
+            mrem = 6.6666667d0*(SQRT(1.d0 + 0.3d0*mt) - 1.d0)
+
+            ! limit to maximum mass loss
+            mrem = MAX(mrem, mt - rembar_massloss)
+
+         ! positive values set the fractional mass loss
+         else
+            mrem = (1.d0 + rembar_massloss) * mt
+         endif
+      endif
+
       end
 
 
