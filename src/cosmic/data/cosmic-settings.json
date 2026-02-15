@@ -543,6 +543,10 @@
                 "options-preface": "",
                 "options": [
                     {
+                        "name": -1,
+                        "description": "No wind mass loss"
+                    },
+                    {
                         "name": 0,
                         "description": "Standard SSE/BSE (<a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>)"
                     },
