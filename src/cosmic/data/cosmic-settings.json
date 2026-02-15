@@ -1342,6 +1342,44 @@
                 ]
             },
             {
+                "name": "ppi_co_shift",
+                "description": "Shifts the CO core mass thresholds for pulsational pair instability and pair instability SNe by a constant amount in COSMIC's implementation of the Renzo+2022/Hendriks+2023 prescription (only relevant if pisn = -4). Default threshold is 38 Msun.",
+                "type": "number",
+                "options-preface": "Note the default threshold is 38 Msun.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Shifts the CO core mass threshold upwards to higher masses"
+                    },
+                    {
+                        "name": "negative values",
+                        "description": "Shifts the CO core mass threshold downwards to lower masses"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default choice: No change",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ppi_extra_ml",
+                "description": "Sets the amount of extra mass loss in Msun that is applied to stars that go through pulsational pair instability in COSMIC's implementation of the Renzo+2022/Hendriks+2023 prescription (only relevant if pisn = -4). Default is 0 Msun.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Extra mass loss reduces the final remnant mass"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default choice: No extra mass loss",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "settings-section": "Remnant spin",
                 "name": "bhspinflag",
                 "description": "Uses different prescriptions for BH spin after formation",

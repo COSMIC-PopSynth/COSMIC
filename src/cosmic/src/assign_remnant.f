@@ -334,17 +334,24 @@
 * with the adaptations from Hendriks+2023 (https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract)
 * This is a top-down prescription, where we subtract mass from the total core mass
                elseif(pisn.eq.-4)then
-                  if(mc.ge.38.d0.and.mc.le.114.d0)then
-                     met = 10**(LOG10(zpars(14))/0.4)
+                  if(mc_co(kidx).ge.38.d0+ppi_co_shift
+     &               .and.mc_co(kidx).le.114.d0)then
 *       Calculate DeltaM_PPI using Eq.6 from Hendriks+2023 (equivalently Eq.2 from Renzo+2022)
+                     met = 10**(LOG10(zpars(14))/0.4)
                      dMppi = (0.0006d0 * LOG10(met) + 0.0054)
-     &                       * (mc - 34.8d0)**3
-     &                       - 0.0013 * (mc - 34.8d0)**2
+     &                      * (mc_co(kidx) - ppi_co_shift - 34.8d0)**3
+     &                      - 0.0013 * (mc_co(kidx)
+     &                                  - ppi_co_shift - 34.8d0)**2
+     &                      + ppi_extra_ml
 *       Set the remnant mass equal to the total core mass minus the PPI mass loss.
 *       We use core mass not total mass because envelopes are expected to be removed by the first PPI pulse (e.g. Renzo+2020b)
-                     mt = mc_tot - dMppi
+                     mt = mt - dMppi
+                     
+*       NOTE: this is already gravitational mass, since we're subtracting from mt,
+*             which has already been converted to gravitational mass above.
+
 *       If the remnant mass is reduced below 10 Msun, assume a full PISN with no remnant
-                     if(mt.lt.10d0)then
+                     if(mt.lt.10.d0)then
                         mt = 0.0d0
                         kw = 15
                         pisn_track(kidx)=7
@@ -353,7 +360,7 @@
                         pisn_track(kidx)=6
                      endif
 *       For very large cores, we assume a full PISN with no remnant
-                  elseif(mc.gt.114.d0)then
+                  elseif(mc_co(kidx).gt.114.d0)then
                      mt = 0.d0
                      kw = 15
                      pisn_track(kidx)=7

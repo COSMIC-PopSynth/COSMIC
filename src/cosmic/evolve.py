@@ -93,7 +93,9 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                  'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'rtmsflag',
+                                  'ceflag', 'tflag', 'ifflag', 'wdflag',
+                                  'pisn', 'ppi_co_shift', 'ppi_extra_ml',
+                                  'rtmsflag',
                                   'bhflag', 'remnantflag',
                                   'maltsev_mode', 'maltsev_fallback', 'maltsev_pf_prob',
                                   'grflag', 'bhms_coll_flag', 'wd_mass_lim',
@@ -494,6 +496,8 @@ def _evolve_single_system(f):
         _evolvebin.flags.wdflag = f["wdflag"]
         _evolvebin.flags.rtmsflag = f["rtmsflag"]
         _evolvebin.snvars.pisn = f["pisn"]
+        _evolvebin.snvars.ppi_co_shift = f["ppi_co_shift"]
+        _evolvebin.snvars.ppi_extra_ml = f["ppi_extra_ml"]
         _evolvebin.flags.bhflag = f["bhflag"]
         _evolvebin.flags.remnantflag = f["remnantflag"]
         _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
