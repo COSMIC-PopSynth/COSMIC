@@ -155,7 +155,8 @@ class Evolve(object):
         '''
 
     @classmethod
-    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None, **kwargs):
+    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None,
+               dt_mass_modifiers=[], **kwargs):
         """After setting a number of initial conditions we evolve the system.
 
         Parameters
@@ -368,6 +369,17 @@ class Evolve(object):
 
         if (pd.Series(FPRIMC_COLUMNS).isin(initialbinarytable.keys()).all()) and ('fprimc_array' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
+
+        # update timesteps based on mass modifier
+        if dt_mass_modifiers:
+            for m_low, m_high, mod in dt_mass_modifiers:
+                if mod <= 0:
+                    raise ValueError(f"Timestep modifiers must be positive. You passed {mod} for the "
+                                     f"mass range {m_low} to {m_high}.")
+                mask = (initialbinarytable['mass_1'] >= m_low) & (initialbinarytable['mass_1'] < m_high)
+                initialbinarytable.loc[mask, 'pts1'] *= mod
+                initialbinarytable.loc[mask, 'pts2'] *= mod
+                initialbinarytable.loc[mask, 'pts3'] *= mod
 
         # need to ensure that the order of parameters that we pass to BSE
         # is correct

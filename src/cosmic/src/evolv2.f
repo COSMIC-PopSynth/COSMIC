@@ -156,7 +156,7 @@
       INTEGER loop,iter,intpol,k,ip,j1,j2
       INTEGER bcm_index_out, bpp_index_out
       INTEGER kcomp1,kcomp2,formation(2)
-      PARAMETER(loop=20000)
+      PARAMETER(loop=30000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
       INTEGER kstar1_bpp,kstar2_bpp
 *
