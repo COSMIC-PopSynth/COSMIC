@@ -437,7 +437,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mass = mt
                mc = mcx
                mc_co(kidx) = mc
-               mc_he(kidx) = 0.d0
+               mc_he(kidx) = mt - mc
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                if(mc.le.GB(7))then
                   aj = tscls(4) - (1.d0/((GB(5)-1.d0)*GB(8)*GB(4)))*
@@ -528,9 +528,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             endif
             mc = mcgbf(lum,GB,lums(6))
 *
-*KB: helium core mass is always 0 for stripped stars; now calculate CO core mass
+*KB: helium core mass is remaining total mass
 *
-            mc_he(kidx) = 0.d0
+            mc_he(kidx) = mt - mc
             mc_co(kidx) = mc
             mtc = MIN(mt,1.45d0*mt-0.31d0)
             mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
