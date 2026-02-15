@@ -424,7 +424,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
             mc_co(kidx) = mcx
-            mc_he(kidx) = mcbagb - mcx
+            mc_he(kidx) = mc - mcx
             lum = lmcgbf(mcx,GB)
             if(mt.le.mc)then
 *
