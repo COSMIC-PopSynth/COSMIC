@@ -1036,7 +1036,7 @@
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
-     &                       kstar2_bpp,-1.d0,TB,0.d0,
+     &                       kstar2_bpp,0.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
@@ -1056,7 +1056,7 @@
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
-     &                       kstar2_bpp,-1.d0,TB,0.d0,
+     &                       kstar2_bpp,0.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
@@ -1110,7 +1110,7 @@
    30 SEP = SEPF
 
 * log disruptions from SNe to the bpp with evolve_type=11
-      if(disrupt) THEN
+      if(disrupt.and..not.COEL)THEN
          call writetab(
      &      jp,tphys,11.d0,M1,M2,KW1,KW2,-1.d0,-1.d0,-1.d0,0.d0,
      &      0.d0,aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,mc_he(1),
