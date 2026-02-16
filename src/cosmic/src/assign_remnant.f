@@ -384,7 +384,7 @@
                   endif
                endif
 
-mc = mt
+               mc = mt
 * Store the initial BH mass for calculating the ISCO later
                if(Mbh_initial.eq.0)then
                   Mbh_initial = mt
