@@ -201,6 +201,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   mass = mt
                   kw = 7
                   CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+
+                  ! return so that bpp logs the stellar type change
+                  return
                else
 *
 * Zero-age helium white dwarf.
@@ -272,6 +275,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mass = mt
                kw = 7
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+
+               ! return so that bpp logs the stellar type change
+               return
             else
 *
 * Zero-age helium white dwarf.
@@ -405,6 +411,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mass = mt
             CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             aj = xx*tm
+
+            ! return so that bpp logs the stellar type change
+            return
          else
             kw = 4
          endif
@@ -447,7 +456,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            (mc**(1.d0-GB(6)))
                endif
                aj = MAX(aj,tm)
-               goto 90
+
+               ! return so that bpp logs the stellar type change
+               return
             else
                kw = 5
             endif
