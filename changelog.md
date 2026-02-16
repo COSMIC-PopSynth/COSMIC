@@ -86,9 +86,7 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
 
 - Additions/changes:
     - Linearly grow the core mass of HeMS stars from 0 to the value at the start of HeHG and check for core-collapse for all He stars (not just HeHG and HeGB)
-    - Add ``dt_mass_modifier`` argument to ``Evolve.evolve()``
-        - This lets you specify a list of tuples ``(m_low, m_high, mod)``, which multiplies ``pts1/pts2/pts3`` by ``mod`` for stars with primary star (only care about primary, conservative) ZAMS masses between ``m_low <= m_ZAMS < m_high``
-        - I think default should at least be ``dt_mass_modifiers=[(70, 150, 0.1)]``, maybe even ``dt_mass_modifiers=[(40, 70, 0.3), (70, 150, 0.1)]``
+    - Add ``dt_mass_modifier`` argument to ``Evolve.evolve()``. This lets you specify a list of tuples ``(m_low, m_high, mod)``, which multiplies ``pts1/pts2/pts3`` by ``mod`` for stars with primary star (only care about primary, conservative) ZAMS masses between ``m_low <= m_ZAMS < m_high``
     - Added a ``windflag = -1`` option to turn off stellar winds entirely
     - Added ``pisn = -4`` for Renzo+22/Hendriks+23 prescription for PPISN mass loss
         - With options ``ppi_co_shift`` and ``ppi_extral_ml``
