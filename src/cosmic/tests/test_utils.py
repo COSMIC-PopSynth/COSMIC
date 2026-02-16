@@ -180,7 +180,7 @@ class TestUtils(unittest.TestCase):
                    'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': -1,
                    'rtmsflag': 0, 'wd_mass_lim': 1,
                    'maltsev_mode': 1, 'maltsev_fallback': 0.5, "maltsev_pf_prob": 0.1,
-                   'mm_mu_ns': 400.0, 'mm_mu_bh': 200.0}
+                   'mm_mu_ns': 400.0, 'mm_mu_bh': 200.0, 'ppi_co_shift': 0.0, 'ppi_extra_ml': 0.0}
 
         initial_binaries = InitialBinaryTable.sampler('independent', np.linspace(0, 15, 16), np.linspace(0, 15, 16),
                                                     binfrac_model=0.5, SF_start=10.0,
