@@ -3074,6 +3074,7 @@ component.
                      mass(j1) = mass(j1) - km*(dm1 + dms(j1))
                      mass(j2) = 0.d0
                      kstar(j2) = 15
+* TW: TODO - check with Katie - should we be logging that a SN occurred here?
                      goto 135
                   endif
                   mass0(j2) = mt2
@@ -4372,6 +4373,8 @@ component.
      &                        formation(2),binstate,mergertype,z,'bpp')
             else
                 evolve_type = 9.0
+                tb = 0.d0
+                sep = 0.d0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
                 teff2 = 1000.d0*((1130.d0*lumin(2)/
@@ -4539,6 +4542,8 @@ component.
 * No remnant is left in either case.
 *
               evolve_type = 9.0
+              tb = 0.d0
+              sep = 0.d0
               teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
               teff2 = 1000.d0*((1130.d0*lumin(2)/
