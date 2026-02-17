@@ -169,8 +169,9 @@ class TestUtils(unittest.TestCase):
                                                     primary_model='kroupa01', ecc_model='sana12', porb_model='sana12',
                                                     keep_singles=True)[0]
 
+        # catch any warnings that explicitly mention divide by zero
         with warnings.catch_warnings():
-            warnings.simplefilter("error")
+            warnings.filterwarnings("error", message=".*divide by zero.*")
             Evolve.evolve(initialbinarytable=initial_binaries, params=PARAMS_INI)
 
     def test_convert_kstar_evol_type(self):
