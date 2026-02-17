@@ -72,6 +72,11 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - (Docs) Any tutorial that uses a plain BSEDict now uses one that is drawn from the cosmic-settings.json file to avoid missing changes and saves us updating each docs page
 
 
+## 3.7.1
+ - Bug fix [[#729](https://github.com/COSMIC-PopSynth/COSMIC/issues/729)]: ensure disruptions are logged with ``evol_type==11`` when SNe occur during CEs
+ - Bug fix [[#725](https://github.com/COSMIC-PopSynth/COSMIC/issues/725)]: set ``tb=sep=0`` for cases where AIC caused a WD to explode and leave behind no remnant (``evolve_type==9``)
+ - Bug fix [[#724](https://github.com/COSMIC-PopSynth/COSMIC/issues/724)]: remove bug where ``kstar=15`` was assigned its previous epoch mass after merging during a CE and the merger product goes SN
+
 ## 3.7.2
 This release contains _several_ fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription and windflag.
 
