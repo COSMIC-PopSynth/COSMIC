@@ -43,6 +43,9 @@ conv_dict_false = {'pop_select' : 'wrong'}
 conv_lim_dict = {"sep" : [10, 5000]}
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
+PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
+
+TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 BPP_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bpp')
 BCM_TEST = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'utils_test.hdf'), key='bcm')
 
@@ -160,28 +163,6 @@ class TestUtils(unittest.TestCase):
 
     def test_no_RL_check_for_singles(self):
         """Make sure you don't get a divide by zero error when checking for Roche Lobe Overflow"""
-        BSEDict = {'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1, 'alpha1': 1.0,
-                   'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01, 'epsnov': 0.001, 'hewind': 0.5,
-                   'ck': 1000, 'bwind': 0.0, 'lambdaf': 0.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1,
-                   'acc2': 1.5, 'grflag': 1, 'remnantflag': 4, 'ceflag': 0, 'eddfac': 1.0,
-                   'ifflag': 0, 'bconst': 3000, 'sigma': 265.0, 'gamma': -2.0, 'pisn': 45.0,
-                   'natal_kick_array': [[-100.0, -100.0, -100.0, -100.0, 0.0],
-                                        [-100.0, -100.0, -100.0, -100.0, 0.0]], 'bhsigmafrac': 1.0,
-                   'polar_kick_angle': 90, 'qcrit_array': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                   'cekickflag': 2, 'cehestarflag': 0, 'cemergeflag': 0, 'ecsn': 2.25,
-                   'ecsn_mlow': 1.6, 'aic': 1, 'ussn': 0, 'sigmadiv': -20.0, 'qcflag': 5,
-                   'eddlimflag': 0, 'fprimc_array': [2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0,
-                                                     2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0,
-                                                     2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0,
-                                                     2.0/21.0, 2.0/21.0, 2.0/21.0, 2.0/21.0],
-                   'bhspinflag': 0, 'bhspinmag': 0.0, 'rejuv_fac': 1.0, 'rejuvflag': 0, 'htpmb': 1,
-                   'ST_cr': 1, 'ST_tide': 1, 'bdecayfac': 1, 'rembar_massloss': 0.5, 'kickflag' : 1,
-                   'zsun': 0.014, 'bhms_coll_flag': 0, 'don_lim': -1, 'acc_lim': -1,
-                   'rtmsflag': 0, 'wd_mass_lim': 1,
-                   'maltsev_mode': 1, 'maltsev_fallback': 0.5, "maltsev_pf_prob": 0.1,
-                   'mm_mu_ns': 400.0, 'mm_mu_bh': 200.0, 'ppi_co_shift': 0.0, 'ppi_extra_ml': 0.0}
-
         initial_binaries = InitialBinaryTable.sampler('independent', np.linspace(0, 15, 16), np.linspace(0, 15, 16),
                                                     binfrac_model=0.5, SF_start=10.0,
                                                     SF_duration=0.0, met=0.02, size=10,
@@ -190,7 +171,7 @@ class TestUtils(unittest.TestCase):
 
         with warnings.catch_warnings():
             warnings.simplefilter("error")
-            Evolve.evolve(initialbinarytable=initial_binaries, BSEDict=BSEDict)
+            Evolve.evolve(initialbinarytable=initial_binaries, params=PARAMS_INI)
 
     def test_convert_kstar_evol_type(self):
         # convert to string
