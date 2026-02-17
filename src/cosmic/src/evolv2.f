@@ -2520,8 +2520,7 @@ component.
 
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
-* TW: Why would we give massless remnants a mass?
-*       Commenting out for now, TODO discuss with Katie
+* TW: I commented this out, don't give massless remnants a mass
 *         if(kstar(1).eq.15) mass1_bpp = mass0(1)
 *         if(kstar(2).eq.15) mass2_bpp = mass0(2)
          rrl1 = rad(1)/rol(1)
@@ -3076,7 +3075,6 @@ component.
                      mass(j1) = mass(j1) - km*(dm1 + dms(j1))
                      mass(j2) = 0.d0
                      kstar(j2) = 15
-* TW: TODO - check with Katie - should we be logging that a SN occurred here?
                      goto 135
                   endif
                   mass0(j2) = mt2
@@ -4160,8 +4158,7 @@ component.
           evolve_type = 8.0
           mass1_bpp = mass(1)
           mass2_bpp = mass(2)
-* TW: Why would we give massless remnants a mass?
-*       Commenting out for now, TODO discuss with Katie
+* TW: I commented this out, don't give massless remnants a mass
 *         if(kstar(1).eq.15) mass1_bpp = mass0(1)
 *         if(kstar(2).eq.15) mass2_bpp = mass0(2)
           rrl1 = MIN(rrl1,0.99d0)
