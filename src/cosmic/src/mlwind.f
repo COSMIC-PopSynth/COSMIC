@@ -2,7 +2,7 @@
       real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
-      integer kw,testflag
+      integer kw
       real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
       real*8 MLalpha
@@ -146,7 +146,6 @@
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
             dms = dms*(z/zsun)**(alpha)
-            testflag = 1
          endif
          if(kw.ge.2.and.kw.le.6)then
 * 'Reimers' mass loss
@@ -175,7 +174,6 @@
      &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
      &            alpha*LOG10(z/zsun) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
-            testflag = 2
          elseif(teff.gt.25000.)then
 *        Although Vink et al. formulae  are only defined until Teff=50000K,
 *        we follow the Dutch prescription of MESA, and extend to higher Teff
@@ -184,7 +182,6 @@
      &            alpha*LOG10(z/zsun) +0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
        dms = 10.d0**dms
-       testflag = 2
          endif
 
          if((windflag.eq.3.or.kw.ge.2).and.kw.le.6)then
@@ -196,7 +193,6 @@
                if(eddlimflag.eq.0) alpha = 0.d0
                if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
                dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
-               testflag = 3
             endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
@@ -204,7 +200,6 @@
             if(eddlimflag.eq.0) alpha = 0.86d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
-            testflag = 4
          endif
 *
          mlwind = dms
