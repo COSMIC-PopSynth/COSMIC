@@ -5,8 +5,8 @@
       integer kw
       real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
-      real*8 MLalpha
-      external MLalpha
+      real*8 MLalpha,LBV_winds
+      external MLalpha,LBV_winds
       parameter(lum0=7.0d+04,kap=-0.5d0)
 *
 *      windflag = 0 !BSE=0, startrack08=1, vink=2, vink+LBV for all
@@ -56,11 +56,7 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               x = 1.0d-5*r*sqrt(lum)
-               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-                  dms = dms + dml
-               endif
+               dms = dms + LBV_winds(lum,r,mt,kw,z)
             endif
          endif
 *
@@ -115,11 +111,7 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               x = 1.0d-5*r*sqrt(lum)
-               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-                  dms = dms + dml
-               endif
+               dms = dms + LBV_winds(lum,r,mt,kw,z)
             endif
          endif
 *
@@ -188,12 +180,10 @@
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
 * Optional flag (windflag=3) to use for every non-degenerate star
 * past the limit, rather than just for giant, evolved stars
-            x = 1.0d-5*r*sqrt(lum)
-            if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-               if(eddlimflag.eq.0) alpha = 0.d0
-               if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-               dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
-            endif
+
+* TW: Note this is overwrite the other mass loss, might want a sum here
+*     not assignment, but leaving it consistent for now
+            dms = LBV_winds(lum,r,mt,kw,z)
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
@@ -228,11 +218,7 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               x = 1.0d-5*r*sqrt(lum)
-               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-                  dms = dms + dml
-               endif
+               dms = dms + LBV_winds(lum,r,mt,kw,z)
             endif
          endif
 *
