@@ -107,7 +107,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                                   'beta', 'xi', 'acc2', 'epsnov',
                                   'eddfac', 'gamma', 'don_lim', 'acc_lim',
                                   'bdecayfac', 'bconst', 'ck',
-                                  'windflag', 'qcflag', 'eddlimflag',
+                                  'windflag', 'qcflag', 'eddlimflag', 'LBV_flag',
                                   'fprimc_array', 'dtp', 'randomseed',
                                   'bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
                                   'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun', 'kickflag']
@@ -572,6 +572,7 @@ def _evolve_single_system(f):
         _evolvebin.windvars.epsnov = f["epsnov"]
         _evolvebin.windvars.eddfac = f["eddfac"]
         _evolvebin.windvars.gamma = f["gamma"]
+        _evolvebin.windvars.LBV_flag = f["LBV_flag"]
         _evolvebin.flags.bdecayfac = f["bdecayfac"]
         _evolvebin.magvars.bconst = f["bconst"]
         _evolvebin.magvars.ck = f["ck"]
