@@ -1199,6 +1199,23 @@
                 ]
             },
             {
+                "name": "fryer_mass_limit",
+                "description": "Sets the mass limit to use when applying a remnant mass prescription from Fryer+12 (remnantflag=3 or 4).",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Limit remnant mass to the total stellar mass at the time of core collapse",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Limit remnant mass to the total <b>core mass</b> at the time of core collapse"
+                    }
+                ]
+            },
+            {
                 "name": "mxns",
                 "description": "Sets the boundary between the maximum NS mass and the minimum BH mass",
                 "type": "number",

@@ -168,6 +168,11 @@
                elseif(mc_co(kidx).ge.11.d0)then
                   fallback = 1.d0
                endif
+*              if the user requests it, limit the final remnant mass to
+*              is the total **core** mass, not the total stellar mass
+               if(fryer_mass_limit.eq.1)then
+                  mt = min(mt, mc_tot)
+               endif
             elseif(remnantflag.eq.4)then
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
@@ -201,6 +206,11 @@
                   mt = m_proto + fallback*(mt - m_proto)
                elseif(mc_co(kidx).ge.11.d0)then
                   fallback = 1.d0
+               endif
+*              if the user requests it, limit the final remnant mass to
+*              is the total **core** mass, not the total stellar mass
+               if(fryer_mass_limit.eq.1)then
+                  mt = min(mt, mc_tot)
                endif
             elseif(remnantflag.eq.5)then
                call assign_remnant_mandel_muller(mc, mc_tot, mt)
