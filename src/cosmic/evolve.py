@@ -93,8 +93,10 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                  'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'rtmsflag',
-                                  'bhflag', 'remnantflag',
+                                  'ceflag', 'tflag', 'ifflag', 'wdflag',
+                                  'pisn', 'ppi_co_shift', 'ppi_extra_ml',
+                                  'rtmsflag',
+                                  'bhflag', 'remnantflag', 'fryer_mass_limit',
                                   'maltsev_mode', 'maltsev_fallback', 'maltsev_pf_prob',
                                   'grflag', 'bhms_coll_flag', 'wd_mass_lim',
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
@@ -153,7 +155,8 @@ class Evolve(object):
         '''
 
     @classmethod
-    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None, **kwargs):
+    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None,
+               dt_mass_modifiers=[(40, 70, 0.3), (70, np.inf, 0.1)], **kwargs):
         """After setting a number of initial conditions we evolve the system.
 
         Parameters
@@ -169,6 +172,18 @@ class Evolve(object):
 
         bcm_columns : list, optional, default: None
             Columns to save in the bcm table (detailed evolution table)
+
+        dt_modifiers : list of tuples, optional, default: [(40, 70, 0.3), (70, np.inf, 0.1)]
+            List of tuples specifying the mass ranges and corresponding modifiers for the timestep size.
+            Our recommended default improves the numerical stability at higher masses.
+            Each tuple should be of the form (m_low, m_high, mod) and will modify the default timestep
+            by a factor of mod for systems with a *primary* mass in the range m_low <= mass_1 < m_high.
+            For example, (40, 70, 0.3) would multiply the default timestep size by 0.3 for systems with
+            primary mass between [40, 70) solar masses. We apply the modifier to the pts1, pts2, and pts3
+            parameters which control the timestep size in different evolutionary phases. These changes
+            are logged in the initial conditions table so you can keep track of which systems had their
+            timesteps modified. Avoid overlapping mass ranges for different modifiers as this will result
+            in multiple modifiers being applied in the overlap region.
 
         **kwargs:
             There are three ways to tell evolve and thus the fortran
@@ -367,6 +382,33 @@ class Evolve(object):
         if (pd.Series(FPRIMC_COLUMNS).isin(initialbinarytable.keys()).all()) and ('fprimc_array' not in BSEDict):
             initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
 
+        # update timesteps based on mass modifier
+        if dt_mass_modifiers:
+            # warn the user if their mass ranges overlap
+            for i in range(len(dt_mass_modifiers)):
+                for j in range(i + 1, len(dt_mass_modifiers)):
+                    m_low_i, m_high_i, _ = dt_mass_modifiers[i]
+                    m_low_j, m_high_j, _ = dt_mass_modifiers[j]
+                    if (m_low_i < m_high_j) and (m_low_j < m_high_i):
+                        overlap_range = (max(m_low_i, m_low_j), min(m_high_i, m_high_j))
+                        warnings.warn(
+                            f"Mass ranges for timestep modifiers overlap. You passed {dt_mass_modifiers[i]} "
+                            f"and {dt_mass_modifiers[j]} which have overlapping mass ranges in {overlap_range}. "
+                            f"This will result in *both* timestep modifiers being applied in the overlap region."
+                            "If intentional, separate the overlap region into its own mass range with its "
+                            "own modifier to avoid this warning."
+                        )
+
+            # apply the modifiers to the appropriate systems based on the primary mass, left->right
+            for m_low, m_high, mod in dt_mass_modifiers:
+                if mod <= 0:
+                    raise ValueError(f"Timestep modifiers must be positive. You passed {mod} for the "
+                                     f"mass range {m_low} to {m_high}.")
+                mask = (initialbinarytable['mass_1'] >= m_low) & (initialbinarytable['mass_1'] < m_high)
+                initialbinarytable.loc[mask, 'pts1'] *= mod
+                initialbinarytable.loc[mask, 'pts2'] *= mod
+                initialbinarytable.loc[mask, 'pts3'] *= mod
+
         # need to ensure that the order of parameters that we pass to BSE
         # is correct
         initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].to_dict('records')
@@ -494,11 +536,14 @@ def _evolve_single_system(f):
         _evolvebin.flags.wdflag = f["wdflag"]
         _evolvebin.flags.rtmsflag = f["rtmsflag"]
         _evolvebin.snvars.pisn = f["pisn"]
+        _evolvebin.snvars.ppi_co_shift = f["ppi_co_shift"]
+        _evolvebin.snvars.ppi_extra_ml = f["ppi_extra_ml"]
         _evolvebin.flags.bhflag = f["bhflag"]
         _evolvebin.flags.remnantflag = f["remnantflag"]
         _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
         _evolvebin.snvars.maltsev_fallback = f["maltsev_fallback"]
         _evolvebin.snvars.maltsev_pf_prob = f["maltsev_pf_prob"]
+        _evolvebin.snvars.fryer_mass_limit = f["fryer_mass_limit"]
         _evolvebin.ceflags.cekickflag = f["cekickflag"]
         _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = f["cehestarflag"]

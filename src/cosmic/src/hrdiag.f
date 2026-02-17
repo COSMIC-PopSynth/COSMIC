@@ -201,6 +201,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   mass = mt
                   kw = 7
                   CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+
+                  ! return so that bpp logs the stellar type change
+                  return
                else
 *
 * Zero-age helium white dwarf.
@@ -272,6 +275,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mass = mt
                kw = 7
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+
+               ! return so that bpp logs the stellar type change
+               return
             else
 *
 * Zero-age helium white dwarf.
@@ -405,6 +411,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mass = mt
             CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             aj = xx*tm
+
+            ! return so that bpp logs the stellar type change
+            return
          else
             kw = 4
          endif
@@ -424,7 +433,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
             mc_co(kidx) = mcx
-            mc_he(kidx) = mcbagb - mcx
+            mc_he(kidx) = mc - mcx
             lum = lmcgbf(mcx,GB)
             if(mt.le.mc)then
 *
@@ -437,7 +446,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mass = mt
                mc = mcx
                mc_co(kidx) = mc
-               mc_he(kidx) = 0.d0
+               mc_he(kidx) = mt - mc
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                if(mc.le.GB(7))then
                   aj = tscls(4) - (1.d0/((GB(5)-1.d0)*GB(8)*GB(4)))*
@@ -447,7 +456,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            (mc**(1.d0-GB(6)))
                endif
                aj = MAX(aj,tm)
-               goto 90
+
+               ! return so that bpp logs the stellar type change
+               return
             else
                kw = 5
             endif
@@ -481,7 +492,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mcmax-mcx.lt.tiny)then
             aj = 0.d0
             mc = mcmax
-            call assign_remnant(zpars,mc,mcbagb,mass,mc+mc_he(kidx),
+            call assign_remnant(zpars,mc,mcbagb,mass,
      &                          kidx,mt,kw,bhspin)
          endif
 *
@@ -501,18 +512,18 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
             kw = 7
             tau = aj/tm
+
+*   TW: Linearly increase the core mass of HeMS stars from zero at the start of HeMS
+*       to the core mass at the start of HeHG
+            lum = lgbtf(tm,GB(8),GB,tscls(4),tscls(5),tscls(6))
+            mc = tau * mcgbf(lum,GB,lums(6))
+
             am = MAX(0.d0,0.85d0-0.08d0*mass)
             lum = lums(1)*(1.d0+0.45d0*tau+am*tau**2)
             am = MAX(0.d0,0.4d0-0.22d0*LOG10(mt))
             r = rx*(1.d0+am*(tau-tau**6))
             rg = rx
-* Star has no core mass and hence no memory of its past
-* which is why we subject mass and mt to mass loss for
-* this phase.
-*KB: no helium core mass for stripped stars; no CO core yet since He MS
-            mc = 0.d0
-            mc_he(kidx) = 0.d0
-            mc_co(kidx) = 0.d0
+
             if(mt.lt.zpars(10)) kw = 10
          else
 *
@@ -527,22 +538,33 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                r = rg
             endif
             mc = mcgbf(lum,GB,lums(6))
+         endif
+
 *
-*KB: helium core mass is always 0 for stripped stars; now calculate CO core mass
+*KB: helium core mass is remaining total mass for all He stars
 *
-            mc_he(kidx) = 0.d0
-            mc_co(kidx) = mc
-            mtc = MIN(mt,1.45d0*mt-0.31d0)
-            mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
-            if(mcmax-mc.lt.tiny)then
-               aj = 0.d0
-               mc = mcmax
-               mcbagb = mass
-               call assign_remnant(zpars,mc,mcbagb,mass,mc+mc_he(kidx),
-     &                             kidx,mt,kw,bhspin)
-               
-               if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
-            endif
+         mc_he(kidx) = mt - mc
+         mc_co(kidx) = mc
+
+         ! core mass for a He star to become a COWD (Hurley 2000, Eq. 89)
+         mtc = MIN(mt,1.45d0*mt-0.31d0)
+
+         ! core mass for He to result in a SN (Hurley 2000, Eq. 75)
+         mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
+         if(mcmax-mc.lt.tiny)then
+             aj = 0.d0
+
+             ! adjust core masses if we overshot the maximum allowed core mass
+             mc = mcmax
+             mc_he(kidx) = mt - mc
+             mc_co(kidx) = mc
+
+             ! He stars use the mass at start of HeMS instead of McBAGB (Hurley 2000, just before Eq. 89)
+             mcbagb = mass
+             call assign_remnant(zpars,mc,mcbagb,mass,kidx,mt,kw,bhspin)
+
+             ! TW: This seems to be an adjustment for COWD based on Hurley Eq. 89, I don't fully understand though, seems to be potentially adding envelope mass?
+             if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
          endif
       endif
 *
