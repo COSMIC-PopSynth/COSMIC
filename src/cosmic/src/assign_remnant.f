@@ -362,10 +362,10 @@
      &                      + ppi_extra_ml
 *       Set the remnant mass equal to the total core mass minus the PPI mass loss.
 *       We use core mass not total mass because envelopes are expected to be removed by the first PPI pulse (e.g. Renzo+2020b)
-                     mt = mt - dMppi
+                     mt = mc_tot - dMppi
                      
-*       NOTE: this is already gravitational mass, since we're subtracting from mt,
-*             which has already been converted to gravitational mass above.
+                     call baryonic_to_gravitational_mass(mt, mrem)
+                     mt = mrem
 
 *       If the remnant mass is reduced below 10 Msun, assume a full PISN with no remnant
                      if(mt.lt.10.d0)then
