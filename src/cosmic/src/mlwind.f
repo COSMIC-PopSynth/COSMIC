@@ -243,3 +243,41 @@
       return
       end
 ***
+
+
+      real*8 FUNCTION LBV_winds(lum,r,mt,kw,z)
+*        Calculate mass loss from LBV-like winds
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
+      real*8 lum,r,mt,z,alpha,x
+      integer kw
+      real*8 MLalpha
+      external MLalpha
+
+      x = 1.0d-5*r*sqrt(lum)
+      alpha = 0.d0
+
+      ! if the star is beyond the Humphreys-Davidson limit, apply LBVs
+      if(lum.gt.6.0d+05.and.x.gt.1.d0.and.LBV_flag.ne.0)then
+         if(LBV_flag.eq.1)then
+            ! use Hurley+2000 LBV-like mass loss (Section 7.1, equation is unnumbered oof)
+            LBV_winds = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
+         elseif(LBV_flag.eq.2)then
+            ! use StarTrack (Belczynski+08) LBV-like mass loss
+            ! adjust metallicity dependence near eddington limit if eddlimflag is set
+            if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
+
+            ! use constant LBV-like mass loss
+            LBV_winds = 1.5d0*1.0d-04*((z/zsun)**alpha)
+         else
+            ! this should never happen, throw error
+            write(*,*) "Error: LBV_flag must be 0, 1, or 2. Exiting."
+            stop
+         endif
+      else
+         ! otherwise no mass loss
+         LBV_winds = 0.d0
+      endif
+
+      return
+      end
