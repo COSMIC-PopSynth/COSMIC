@@ -2520,8 +2520,9 @@ component.
 
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
-         if(kstar(1).eq.15) mass1_bpp = mass0(1)
-         if(kstar(2).eq.15) mass2_bpp = mass0(2)
+* TW: I commented this out, don't give massless remnants a mass
+*         if(kstar(1).eq.15) mass1_bpp = mass0(1)
+*         if(kstar(2).eq.15) mass2_bpp = mass0(2)
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4157,8 +4158,9 @@ component.
           evolve_type = 8.0
           mass1_bpp = mass(1)
           mass2_bpp = mass(2)
-          if(kstar(1).eq.15) mass1_bpp = mass0(1)
-          if(kstar(2).eq.15) mass2_bpp = mass0(2)
+* TW: I commented this out, don't give massless remnants a mass
+*         if(kstar(1).eq.15) mass1_bpp = mass0(1)
+*         if(kstar(2).eq.15) mass2_bpp = mass0(2)
           rrl1 = MIN(rrl1,0.99d0)
           rrl2 = MIN(rrl2,0.99d0)
           teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4372,6 +4374,8 @@ component.
      &                        formation(2),binstate,mergertype,z,'bpp')
             else
                 evolve_type = 9.0
+                tb = 0.d0
+                sep = 0.d0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
                 teff2 = 1000.d0*((1130.d0*lumin(2)/
@@ -4539,6 +4543,8 @@ component.
 * No remnant is left in either case.
 *
               evolve_type = 9.0
+              tb = 0.d0
+              sep = 0.d0
               teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
               teff2 = 1000.d0*((1130.d0*lumin(2)/
