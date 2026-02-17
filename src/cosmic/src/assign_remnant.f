@@ -165,7 +165,8 @@
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    For this, we just set the proto-core mass to one
+*                    For this, the proto-core mass varies with CO core mass 
+*                    following section 4.3 equation 18 in Fryer et al. 2012 (APJ, 749, 91)
                if(mc.le.3.5d0)then
                   mcx = 1.2d0
                elseif(mc.le.6.d0)then
