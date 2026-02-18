@@ -102,3 +102,13 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
     - Remnant flags 0-4 inclusive use ``mc_co`` instead of ``mc``
     - Got rid of ``mcx`` in ``assign_remnant`` in favour of clearer ``m_proto`` and ``m_FeNi`` to match the papers
     - [Very minor] Fryer Rapid was using <= instead of < everywhere
+
+
+## 3.7.3
+- Additions/changes:
+    - Add new setting ``LBV_flag`` which allows one to turn off LBV winds, use Hurley+2000, or use Belcyznski+2008
+    - Change the default LBV winds to Hurley
+
+- Documentation:
+    - Start new settings gallery in the documentation
+    - Tag settings/options with the version they were added in the docs page and auto link them to release
