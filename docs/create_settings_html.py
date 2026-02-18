@@ -10,6 +10,7 @@
 import bs4
 import json
 import pandas as pd
+from cosmic import __version__ as cosmic_version
 
 # blame BS4 for me calling this soup
 main_soup = """<!-- This file should be created using create_settings_html.py -->
@@ -29,7 +30,7 @@ group_template = """<section class="card setting-card">
 settings_template = """<div class="setting">
                 <div class="row align-items-center setting-chooser">
                     <div class="col-9">
-                        <h3 class="name"><code></code></h3>
+                        <div class='name-cont'><h3 class="name"><code></code></h3><span class="version-added"></span></div>
                         <p class="description"></p>
                         <p class="default"></p>
                     </div>
@@ -43,7 +44,7 @@ settings_template = """<div class="setting">
             </div>"""
 
 # same as above, but for an option for a setting, this will go in the <ul> element
-option_template = """<li><code class="docutils literal notranslate"><span class="pre opt-val"></span></code>: <span class="opt-desc"></span></li>"""
+option_template = """<li><code class="docutils literal notranslate"><span class="pre opt-val"></span></code>: <span class="opt-desc"></span><span class="opt-badge-cont"></span></li>"""
 
 # read the settings file
 with open("../src/cosmic/data/cosmic-settings.json") as f:
@@ -93,6 +94,11 @@ for group in settings:
         new_setting.select_one(".description").clear()
         new_setting.select_one(".description").append(bs4.BeautifulSoup(setting["description"],
                                                                         'html.parser'))
+        
+        # add the version added if it's there
+        if "version_added" in setting:
+            new_setting.select_one(".version-added").append(bs4.BeautifulSoup(
+                f"""<span class="badge badge-success version-added"><a class="link-white" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v{setting['version_added']}">Added in v{setting['version_added']}</a></span>""", 'html.parser'))
 
         # colour the sublinks the same as the border of the group
         new_setting.select_one(".options-expander")["style"] = "color: " + group["docs-colour"] + ";"
@@ -165,6 +171,11 @@ for group in settings:
             new_option_expl = bs4.BeautifulSoup(option_template, 'html.parser')
             new_option_expl.select_one(".opt-val").string = str(option["name"])
             new_option_expl.select_one(".opt-desc").append(bs4.BeautifulSoup(option["description"], 'html.parser'))
+
+            if "version_added" in option:
+                new_option_expl.select_one(".opt-badge-cont").append(bs4.BeautifulSoup(
+                    f"""<span class="badge badge-success version-added"><a class="link-white" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v{option['version_added']}">Added in v{option['version_added']}</a></span>""", 'html.parser'
+                ))
             new_setting.select_one(".options").ul.append(new_option_expl)
 
         # convert the default options to a string and display it
