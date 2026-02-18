@@ -181,9 +181,8 @@
 * Optional flag (windflag=3) to use for every non-degenerate star
 * past the limit, rather than just for giant, evolved stars
 
-* TW: Note this is overwrite the other mass loss, might want a sum here
-*     not assignment, but leaving it consistent for now
-            dms = LBV_winds(lum,r,mt,kw,z)
+* TW: This previously overwrote the other mass loss, changed it to a sum
+            dms = dms + LBV_winds(lum,r,mt,kw,z)
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
