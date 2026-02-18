@@ -493,7 +493,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
          if(mcmax-mcx.lt.tiny)then
             aj = 0.d0
+
+            ! adjust core masses in case we overshot the maximum allowed core mass
             mc = mcmax
+            mc_co(kidx) = mc
             call assign_remnant(zpars,mc,mcbagb,mass,
      &                          kidx,mt,kw,bhspin)
          endif
