@@ -78,7 +78,7 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - Bug fix [[#724](https://github.com/COSMIC-PopSynth/COSMIC/issues/724)]: remove bug where ``kstar=15`` was assigned its previous epoch mass after merging during a CE and the merger product goes SN
 
 ## 3.7.2
-This release contains _several_ fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription and windflag.
+This release contains _several_ fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription, windflag and LBV winds flag.
 
 - Fixes:
     - Update ``mc_co`` and ``mc_he`` after adjusting ``mc = mcmax`` in ``hrdiag.f`` for stripped stars. This can be a fairly significant change, up to ~2 Msun. (Used to actually be up to 10 Msun because we added HeMS core mass growth)
@@ -95,6 +95,8 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
     - Added a ``windflag = -1`` option to turn off stellar winds entirely
     - Added ``pisn = -4`` for Renzo+22/Hendriks+23 prescription for PPISN mass loss
         - With options ``ppi_co_shift`` and ``ppi_extral_ml``
+    - Add new setting ``LBV_flag`` which allows one to turn off LBV winds, use Hurley+2000, or use Belcyznski+2008
+    - Change the default LBV winds to Hurley
 
 - Code cleanup:
     - ``assign_remnant`` no longer takes ``mc_tot`` as a parameter, just get it from the common block
@@ -102,12 +104,6 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
     - Remnant flags 0-4 inclusive use ``mc_co`` instead of ``mc``
     - Got rid of ``mcx`` in ``assign_remnant`` in favour of clearer ``m_proto`` and ``m_FeNi`` to match the papers
     - [Very minor] Fryer Rapid was using <= instead of < everywhere
-
-
-## 3.7.3
-- Additions/changes:
-    - Add new setting ``LBV_flag`` which allows one to turn off LBV winds, use Hurley+2000, or use Belcyznski+2008
-    - Change the default LBV winds to Hurley
 
 - Documentation:
     - Start new settings gallery in the documentation
