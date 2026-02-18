@@ -58,7 +58,7 @@ extensions = [
     'sphinxcontrib.programoutput',
     'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_console_highlighting',
-    'IPython.sphinxext.ipython_directive',
+    # 'IPython.sphinxext.ipython_directive',
     'numpydoc',
     'sphinx_design',
     'sphinx_copybutton',
@@ -83,6 +83,7 @@ sphinx_gallery_conf = {
     'examples_dirs': 'settings_examples',   # path to your example scripts
     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
     'download_all_examples': False,
+    'remove_config_comments': True,
 }
 
 # -- autosummary --------------------------------
