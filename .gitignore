@@ -120,3 +120,4 @@ savefig/
 # ignore generated docs files
 _generated/
 docs/auto_examples/
+sg_execution_times.rst

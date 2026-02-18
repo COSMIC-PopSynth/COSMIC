@@ -470,3 +470,14 @@ select.form-control {
     filter: brightness(1.1);
     font-weight: bold;
 }
+
+/* Centre gallery thumbnail labels and titles */
+.sphx-glr-thumbcontainer[tooltip]:hover::after,
+.sphx-glr-thumbnail-title {
+    text-align: center;
+}
+
+/* vertically align content in the thumbnails */
+.sphx-glr-thumbcontainer {
+    justify-content: center;
+}
