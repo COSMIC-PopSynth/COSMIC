@@ -836,10 +836,10 @@ class Sample(object):
             `Moe+2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>_`
             martinez26 : piecewise model with a power law orbital period following
             `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-            between 0.15 < log(P/day) < log(3000) for binaries with m1 >= 8Msun and following
+            between 0.15 < log(P/day) < log(3000) for binaries with m1 >= 6.8Msun and following
             `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
             with a log normal orbital period in days with mean_logP = 4.9 and sigma_logP = 2.3 between
-            0 < log10(P/day) < 9 for binaries with m1 < 8Msun. Used in
+            0 < log10(P/day) < 9 for binaries with m1 < 6.8Msun. Used in
             `Martinez+2026 <https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract>_`.
             Custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
             (e.g. porb_model={"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the
@@ -1042,12 +1042,12 @@ class Sample(object):
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
             
         elif porb_model == "martinez26":
-            # martinez+26 model: use sana12 for mass1 >= 8.0 and raghavan10 for mass1 < 8.0
+            # martinez+26 model: use sana12 for mass1 >= 6.8 and raghavan10 for mass1 < 6.8
             import scipy
             
-            # Create mask for high-mass and low-mass systems
-            (ind_massive,) = np.where(mass1 >= 8.0)
-            (ind_lowmass,) = np.where(mass1 < 8.0)
+            # Create mask for high-mass and low-mass systems -- 6.8 is the minimum mass for a FeCCSN at COSMIC's lowest metallicity
+            (ind_massive,) = np.where(mass1 >= 6.8)
+            (ind_lowmass,) = np.where(mass1 < 6.8)
             
             # Initialize porb array
             porb = np.zeros(size)

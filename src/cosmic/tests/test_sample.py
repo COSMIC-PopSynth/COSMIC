@@ -323,19 +323,19 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'martinez26', size=mass1.size
         )
-        # the part of the model with m1 < 8 M_sun should follow the Raghavan10 distribution
-        porb_low_mass = porb[mass1 < 8]
+        # the part of the model with m1 < 6.8 M_sun should follow the Raghavan10 distribution
+        porb_low_mass = porb[mass1 < 6.8]
         log_porb_mean = np.mean(np.log10(porb_low_mass))
         log_porb_sigma = np.std(np.log10(porb_low_mass))
         self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
         self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
-        # the part of the model with m1 >= 8 M_sun should follow the same power law as Sana12
-        m1_high = mass1+8
+        # the part of the model with m1 >= 6.8 M_sun should follow the same power law as Sana12
+        m1_high = mass1+6.8
         rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size
         )
-        porb_high_mass = porb[(m1_high >= 8) & (np.log10(porb) > 0.5)]
+        porb_high_mass = porb[(m1_high >= 6.8) & (np.log10(porb) > 0.5)]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
