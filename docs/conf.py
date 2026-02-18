@@ -58,7 +58,7 @@ extensions = [
     'sphinxcontrib.programoutput',
     'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_console_highlighting',
-    # 'IPython.sphinxext.ipython_directive',
+    'IPython.sphinxext.ipython_directive',
     'numpydoc',
     'sphinx_design',
     'sphinx_copybutton',

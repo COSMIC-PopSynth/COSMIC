@@ -5,7 +5,7 @@
 This example shows the effect of the ``pisn`` on the remnant masses for stars with large CO cores.
 
 The ``pisn`` controls which prescription to use for pair-instability supernovae (PISN) for stars that are above a certain CO core mass.
-The plots below show the remnant masses for a grid of single stars with different choices of the ``pisn`` flag.
+The plots below show the remnant masses for a grid of single stars with different choices of the ``pisn`` flag at a metallicity of :math:`Z = 0.01 Z_{\odot}`.
 """
 
 # sphinx_gallery_thumbnail_number = 3
@@ -42,7 +42,7 @@ bpps = {}
 initCs = {}
 
 for pisn_flag, label in zip(pisn_flags, labels):
-    n_grid = 500
+    n_grid = 250
 
     binary_grid = InitialBinaryTable.InitialBinaries(m1=np.geomspace(50, 150, n_grid),
                                                     m2=np.zeros(n_grid),
