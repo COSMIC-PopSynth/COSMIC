@@ -54,7 +54,7 @@
       real*8 rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
       real*8 rgbf,rminf,ragbf,rzahbf,rzhef,rhehgf,rhegbf,rpertf
       real*8 mctmsf,mcgbtf,mcgbf,mcheif,mcagbf,lzahbf
-*      real*8 mrem
+      logical stripped_during_hrdiag
       external thookf,tblf
       external lalphf,lbetaf,lnetaf,lhookf,lgbtf,lmcgbf,lzhef,lpertf
       external rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
@@ -81,6 +81,8 @@
 *
 * Make evolutionary changes to stars that have not reached KW > 5.
 *
+      ! track whether a star stripped during hrdiag
+      stripped_during_hrdiag = .false.
       mch = 1.44d0 !set here owing to AIC ECSN model.
 *
       mass0 = mass
@@ -202,8 +204,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                   kw = 7
                   CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
 
-                  ! return so that bpp logs the stellar type change
-                  return
+                  ! flag to return so that bpp logs the stellar type change
+                  stripped_during_hrdiag = .true.
                else
 *
 * Zero-age helium white dwarf.
@@ -276,8 +278,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                kw = 7
                CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
 
-               ! return so that bpp logs the stellar type change
-               return
+               ! flag to return so that bpp logs the stellar type change
+               stripped_during_hrdiag = .true.
             else
 *
 * Zero-age helium white dwarf.
@@ -412,8 +414,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             CALL star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             aj = xx*tm
 
-            ! return so that bpp logs the stellar type change
-            return
+            ! flag to return so that bpp logs the stellar type change
+            stripped_during_hrdiag = .true.
          else
             kw = 4
          endif
@@ -457,8 +459,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                endif
                aj = MAX(aj,tm)
 
-               ! return so that bpp logs the stellar type change
-               return
+               ! flag to return so that bpp logs the stellar type change
+               stripped_during_hrdiag = .true.
             else
                kw = 5
             endif
@@ -545,6 +547,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
          mc_he(kidx) = mt - mc
          mc_co(kidx) = mc
+
+         if(stripped_during_hrdiag)then
+            return
+         endif
 
          ! core mass for a He star to become a COWD (Hurley 2000, Eq. 89)
          mtc = MIN(mt,1.45d0*mt-0.31d0)
