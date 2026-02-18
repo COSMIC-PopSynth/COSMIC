@@ -62,6 +62,7 @@ extensions = [
     'numpydoc',
     'sphinx_design',
     'sphinx_copybutton',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # -- Extensions ---------------------------------------------------------------
@@ -75,6 +76,13 @@ copybutton_copy_empty_lines = False
 
 autoclass_content = 'class'
 autodoc_default_flags = ['show-inheritance', 'members', 'inherited-members']
+
+# -- sphinx_gallery -----------------------------
+
+sphinx_gallery_conf = {
+    'examples_dirs': 'settings_examples',   # path to your example scripts
+    'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+}
 
 # -- autosummary --------------------------------
 
