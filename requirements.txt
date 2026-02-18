@@ -24,4 +24,5 @@ wheel
 furo
 sphinx-design
 sphinx-copybutton
+sphinx-gallery
 meson

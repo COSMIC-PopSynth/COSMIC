@@ -26,8 +26,9 @@
       COMMON /METVARS/ zsun
       REAL*8 neta,bwind,hewind,beta,xi,acc2,epsnov
       REAL*8 eddfac,gamma
+      INTEGER LBV_flag
       COMMON /WINDVARS/ neta,bwind,hewind,beta,xi,acc2,epsnov,
-     &                  eddfac,gamma
+     &                  eddfac,gamma,LBV_flag
       REAL*8 alpha1,lambdaf
       REAL*8 qcrit_array(16)
       COMMON /CEVARS/ qcrit_array,alpha1,lambdaf

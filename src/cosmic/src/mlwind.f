@@ -2,11 +2,11 @@
       real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
-      integer kw,testflag
+      integer kw
       real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
-      real*8 MLalpha
-      external MLalpha
+      real*8 MLalpha,LBV_winds
+      external MLalpha,LBV_winds
       parameter(lum0=7.0d+04,kap=-0.5d0)
 *
 *      windflag = 0 !BSE=0, startrack08=1, vink=2, vink+LBV for all
@@ -56,11 +56,7 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               x = 1.0d-5*r*sqrt(lum)
-               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-                  dms = dms + dml
-               endif
+               dms = dms + LBV_winds(lum,r,mt,kw,z)
             endif
          endif
 *
@@ -115,11 +111,7 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               x = 1.0d-5*r*sqrt(lum)
-               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-                  dms = dms + dml
-               endif
+               dms = dms + LBV_winds(lum,r,mt,kw,z)
             endif
          endif
 *
@@ -146,7 +138,6 @@
             dms = 9.6d-15*x*(r**0.81d0)*(lum**1.24d0)*(mt**0.16d0)
             alpha = 0.5d0
             dms = dms*(z/zsun)**(alpha)
-            testflag = 1
          endif
          if(kw.ge.2.and.kw.le.6)then
 * 'Reimers' mass loss
@@ -175,7 +166,6 @@
      &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
      &            alpha*LOG10(z/zsun) + 1.07d0*LOG10(teff/2.0d+04)
             dms = 10.d0**dms
-            testflag = 2
          elseif(teff.gt.25000.)then
 *        Although Vink et al. formulae  are only defined until Teff=50000K,
 *        we follow the Dutch prescription of MESA, and extend to higher Teff
@@ -184,27 +174,21 @@
      &            alpha*LOG10(z/zsun) +0.933d0*LOG10(teff/4.0d+04) -
      &            10.92d0*(LOG10(teff/4.0d+04)**2)
        dms = 10.d0**dms
-       testflag = 2
          endif
 
          if((windflag.eq.3.or.kw.ge.2).and.kw.le.6)then
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
 * Optional flag (windflag=3) to use for every non-degenerate star
 * past the limit, rather than just for giant, evolved stars
-            x = 1.0d-5*r*sqrt(lum)
-            if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-               if(eddlimflag.eq.0) alpha = 0.d0
-               if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-               dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
-               testflag = 3
-            endif
+
+* TW: This previously overwrote the other mass loss, changed it to a sum
+            dms = dms + LBV_winds(lum,r,mt,kw,z)
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
             if(eddlimflag.eq.0) alpha = 0.86d0
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             dms = 1.0d-13*(lum**1.5d0)*((z/zsun)**alpha)
-            testflag = 4
          endif
 *
          mlwind = dms
@@ -233,11 +217,7 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               x = 1.0d-5*r*sqrt(lum)
-               if(lum.gt.6.0d+05.and.x.gt.1.d0)then
-                  dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-                  dms = dms + dml
-               endif
+               dms = dms + LBV_winds(lum,r,mt,kw,z)
             endif
          endif
 *
@@ -248,3 +228,41 @@
       return
       end
 ***
+
+
+      real*8 FUNCTION LBV_winds(lum,r,mt,kw,z)
+*        Calculate mass loss from LBV-like winds
+      IMPLICIT NONE
+      INCLUDE 'const_bse.h'
+      real*8 lum,r,mt,z,alpha,x
+      integer kw
+      real*8 MLalpha
+      external MLalpha
+
+      x = 1.0d-5*r*sqrt(lum)
+      alpha = 0.d0
+
+      ! if the star is beyond the Humphreys-Davidson limit, apply LBVs
+      if(lum.gt.6.0d+05.and.x.gt.1.d0.and.LBV_flag.ne.0)then
+         if(LBV_flag.eq.1)then
+            ! use Hurley+2000 LBV-like mass loss (Section 7.1, equation is unnumbered oof)
+            LBV_winds = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
+         elseif(LBV_flag.eq.2)then
+            ! use StarTrack (Belczynski+08) LBV-like mass loss
+            ! adjust metallicity dependence near eddington limit if eddlimflag is set
+            if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
+
+            ! use constant LBV-like mass loss
+            LBV_winds = 1.5d0*1.0d-04*((z/zsun)**alpha)
+         else
+            ! this should never happen, throw error
+            write(*,*) "Error: LBV_flag must be 0, 1, or 2. Exiting."
+            stop
+         endif
+      else
+         ! otherwise no mass loss
+         LBV_winds = 0.d0
+      endif
+
+      return
+      end
