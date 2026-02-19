@@ -127,7 +127,7 @@
                     },
                     {
                         "name": "martinez26_ecsn",
-                        "description": "Same as <code>martinez26</code> but with the <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> power law orbital period distribution for primaries massive enough to undergo an ECSN instead of an FeCCSN."
+                        "description": "Same as <code class='docutils literal notranslate'><span class='pre'>martinez26</span></code> but with the <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> power law orbital period distribution for primaries massive enough to undergo an ECSN instead of an FeCCSN."
                     },
                     {
                         "name": "custom",
