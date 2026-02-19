@@ -77,7 +77,11 @@ See the discussed changes in our previous releases here: https://github.com/COSM
  - Bug fix [[#725](https://github.com/COSMIC-PopSynth/COSMIC/issues/725)]: set ``tb=sep=0`` for cases where AIC caused a WD to explode and leave behind no remnant (``evolve_type==9``)
  - Bug fix [[#724](https://github.com/COSMIC-PopSynth/COSMIC/issues/724)]: remove bug where ``kstar=15`` was assigned its previous epoch mass after merging during a CE and the merger product goes SN
 
-## 3.7.2
+## 3.7.2-3.7.3
+
+Issues with PyPi, unreleased.
+
+## 3.7.4
 This release contains _several_ fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription, windflag and LBV winds flag.
 
 - Fixes:
@@ -88,6 +92,7 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
     - Update ``mc = mt`` for **ALL** remnants instead of just for certain flags
     - Only apply conversion from baryonic to gravitational mass once. Previous code **APPLIED IT TWICE!!** for core-collapse BHs! Create subroutine ``baryonic_to_gravitational_mass``, which is called throughout
     - Ensure stellar type changes during hrdiag are logged to the bpp before SN occurs
+    - Add check after CE for whether a SN occurs right at the end
 
 - Additions/changes:
     - Linearly grow the core mass of HeMS stars from 0 to the value at the start of HeHG and check for core-collapse for all He stars (not just HeHG and HeGB)
