@@ -75,8 +75,8 @@ def get_independent_sampler(
         Model to sample eccentricity; choices include: thermal, uniform, sana12
 
     porb_model : `str` or `dict`
-        Model to sample orbital period; choices include: log_uniform, sana12, renzo19, raghavan10, moe19, martinez26
-        or a custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
+        Model to sample orbital period; choices include: log_uniform, sana12, renzo19, raghavan10, moe19, martinez26,
+        martinez26_ecsn or a custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
         (e.g. {"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the Sana+2012 distribution
 
     qmin : `float`
@@ -836,11 +836,14 @@ class Sample(object):
             `Moe+2019 <https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract>_`
             martinez26 : piecewise model with a power law orbital period following
             `Sana+2012 <https://ui.adsabs.harvard.edu/abs/2012Sci...337..444S/abstract>_`
-            between 0.15 < log(P/day) < log(3000) for binaries with m1 >= 6.8Msun and following
+            between 0.15 < log(P/day) < log(3000) for binaries with primaries large enough to undergo an FeCCSN and following
             `Raghavan+2010 <https://ui.adsabs.harvard.edu/abs/2010ApJS..190....1R/abstract>_`
             with a log normal orbital period in days with mean_logP = 4.9 and sigma_logP = 2.3 between
-            0 < log10(P/day) < 9 for binaries with m1 < 6.8Msun. Used in
-            `Martinez+2026 <https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract>_`.
+            0 < log10(P/day) < 9 for binaries with low mass primaries. Used in
+            `Martinez+2026 <https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract>_`. Assumes zsun = 0.02 for the 
+            metallicity dependence to predict outcomes correctly.
+            martinez26_ecsn : same as martinez26 but with the Sana+2012 power law orbital period distribution
+            for primaries massive enough to undergo an ECSN instead of an FeCCSN.
             Custom power law distribution defined with a dictionary with keys "min", "max", and "slope"
             (e.g. porb_model={"min": 0.15, "max": 0.55, "slope": -0.55}) would reproduce the
             Sana+2012 distribution.
@@ -1041,13 +1044,83 @@ class Sample(object):
             porb = 10**logP_dist 
             aRL_over_a = a_min / utils.a_from_p(porb,mass1,mass2) 
             
-        elif porb_model == "martinez26":
-            # martinez+26 model: use sana12 for mass1 >= 6.8 and raghavan10 for mass1 < 6.8
-            import scipy
+        elif porb_model == "martinez26" or porb_model == "martinez26_ecsn":
+            # martinez26 model: use sana12 for high mass primaries and raghavan10 for low mass primaries. We fit a metallicity dependent minimum mass for an FeCCSN for 'martinez26,
+            # and we fit for the minmum ecsn mass for 'martinez26_ecsn' using data from the population grid from Martinez+2026.
+            try:
+                met = kwargs.pop('met')
+            except:
+                raise ValueError(
+                    "You have chosen martinez26 or martinez26_ecsn for the orbital period distribution which is a metallicity-dependent distribution. "
+                    "Please specify a metallicity for the population."
+                    )
             
-            # Create mask for high-mass and low-mass systems -- 6.8 is the minimum mass for a FeCCSN at COSMIC's lowest metallicity
-            (ind_massive,) = np.where(mass1 >= 6.8)
-            (ind_lowmass,) = np.where(mass1 < 6.8)
+            import scipy
+
+            # Create mask for high-mass and low-mass systems
+            def zams_threshold_mass(metallicity, include_ecsn=False, eps=1e-4):
+                z_by_zsun = np.array([
+                    0.005, 0.0061, 0.0074, 0.009, 0.011, 0.01335, 0.01625, 0.0198,
+                    0.0241, 0.02935, 0.03575, 0.0435, 0.05295, 0.0645, 0.0785,
+                    0.09555, 0.1163, 0.1416, 0.1724, 0.20985, 0.25545, 0.311,
+                    0.3786, 0.4609, 0.56105, 0.683, 0.83145, 1.0, 1.2322, 1.5
+                ])
+                fe_ccsne_low = np.array([
+                    6.800704688282865, 6.800897411951605, 6.800897411951605,
+                    6.801021970762962, 6.8025286354545775, 6.802769553556676,
+                    6.803089427396513, 6.803538527040527, 6.804243674222698,
+                    6.80467206993016, 6.80526072924524, 6.8059692527155,
+                    6.806721013425345, 6.81111108784108, 6.917788936421563,
+                    7.011947874916608, 7.08861989201708, 7.149902100414557,
+                    7.204919186852334, 7.238086587027953, 7.329104218495623,
+                    7.421043416504588, 7.514067557855885, 7.667766797129948,
+                    7.714185711362864, 7.866353261910183, 7.938786132196538,
+                    8.03205271544496, 8.222270760441472, 8.266114315589816
+                ]) - eps
+                incl_ecsne_low = np.array([
+                    6.400693921416194, 6.372129640761526, 6.3238994412467235,
+                    6.309580871018385, 6.318731679747097, 6.351048092438493,
+                    6.414738750162605, 6.44081895134046, 6.4754364194354626,
+                    6.520842448126225, 6.579606889898161, 6.626748726227675,
+                    6.697069204683146, 6.81111108784108, 6.917788936421563,
+                    7.011947874916608, 7.08861989201708, 7.149902100414557,
+                    7.204919186852334, 7.198121695356181, 7.221524796053249,
+                    7.350139621902266, 7.4732604008166295, 7.667766797129948,
+                    7.714185711362864, 7.866353261910183, 7.938786132196538,
+                    8.03205271544496, 8.222270760441472, 8.266114315589816
+                ]) - eps
+
+                masses = incl_ecsne_low if include_ecsn else fe_ccsne_low
+
+                #normalize all metallicities with zsun=0.02
+                metallicity_normalized = metallicity / 0.02
+
+                # take boundary value outside range
+                if metallicity_normalized <= z_by_zsun.min():
+                    return masses[0]
+                if metallicity_normalized >= z_by_zsun.max():
+                    return masses[-1]
+
+                # interpolate in log(Z)
+                logZ = np.log10(z_by_zsun)
+                logZ_target = np.log10(metallicity_normalized)
+
+                # find bracketing indices
+                idx = np.searchsorted(logZ, logZ_target) - 1
+
+                z1, z2 = logZ[idx], logZ[idx + 1]
+                m1, m2 = masses[idx], masses[idx + 1]
+
+                # linear interpolation in logZ
+                frac = (logZ_target - z1) / (z2 - z1)
+                mass_interp = m1 + frac * (m2 - m1)
+
+                return mass_interp
+
+            include_ecsn = porb_model == "martinez26_ecsn"
+            threshold_mass = zams_threshold_mass(met, include_ecsn=include_ecsn)
+            (ind_massive,) = np.where(mass1 >= threshold_mass)
+            (ind_lowmass,) = np.where(mass1 < threshold_mass)
             
             # Initialize porb array
             porb = np.zeros(size)

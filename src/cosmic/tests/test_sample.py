@@ -261,7 +261,7 @@ class TestSample(unittest.TestCase):
     def test_sample_porb(self):
         # next do Sana12
         np.random.seed(4)
-        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=100000)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=200000)
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
         rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
@@ -319,23 +319,47 @@ class TestSample(unittest.TestCase):
         self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
         self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
 
-        # next check martinez26
+        # next check martinez26 for low mass
+        met = 2e-4 # 1/100 solar
+        feccsn_mass, ecsn_mass = 6.8, 6.4
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
-            mass1, mass2, rad1, rad2, 'martinez26', size=mass1.size
+            mass1, mass2, rad1, rad2, 'martinez26', size=mass1.size, met=met
         )
         # the part of the model with m1 < 6.8 M_sun should follow the Raghavan10 distribution
-        porb_low_mass = porb[mass1 < 6.8]
+        porb_low_mass = porb[mass1 < feccsn_mass]
         log_porb_mean = np.mean(np.log10(porb_low_mass))
         log_porb_sigma = np.std(np.log10(porb_low_mass))
         self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
         self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
-        # the part of the model with m1 >= 6.8 M_sun should follow the same power law as Sana12
-        m1_high = mass1+6.8
-        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
+
+        # check martinez26_ecsn for low mass
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
-            m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size
+            mass1, mass2, rad1, rad2, 'martinez26_ecsn', size=mass1.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= 6.8) & (np.log10(porb) > 0.5)]
+        # the part of the model with m1 < 5.3 M_sun should follow the Raghavan10 distribution
+        porb_low_mass = porb[mass1 < ecsn_mass]
+        log_porb_mean = np.mean(np.log10(porb_low_mass))
+        log_porb_sigma = np.std(np.log10(porb_low_mass))
+        self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
+        self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
+
+        # check martinez_26 for high mass
+        m1_high = mass1+feccsn_mass
+        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=met)
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size, met=met
+        )
+        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 0.5)]
+        power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
+        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+
+        # check martinez_26_ecsn for high mass
+        m1_high = mass1+ecsn_mass
+        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=met)
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            m1_high, mass2, rad1_high, rad2, 'martinez26_ecsn', size=m1_high.size, met=met
+        )
+        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 0.5)]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 

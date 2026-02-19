@@ -123,7 +123,11 @@
                     },
                     {
                         "name": "martinez26",
-                        "description": "Uses <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> for massive binaries (\\(m_1 ≥ 6.8 {\\rm M_{\\odot}}\\)) with an upper limit at 3000 days and <code class='docutils literal notranslate'><span class='pre'>raghavan10</span></code> for low-mass binaries. \\(6.8 {\\rm M_{\\odot}}\\) is the minimum mass for an FeCCSN at COSMIC's lowest metallicity (with default winds). Used in <a href='https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract'>Martinez+2026</a>."
+                        "description": "Uses <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> for binaries with a primary massive enough to undergo an FeCCSN with an upper limit at 3000 days and <code class='docutils literal notranslate'><span class='pre'>raghavan10</span></code> for low mass binaries. The mass threshold is metallicity dependent, and assumes zsun = 0.02, and standard winds. Used in <a href='https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract'>Martinez+2026</a>."
+                    },
+                    {
+                        "name": "martinez26_ecsn",
+                        "description": "Same as <code>martinez26</code> but with the <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> power law orbital period distribution for primaries massive enough to undergo an ECSN instead of an FeCCSN."
                     },
                     {
                         "name": "custom",
