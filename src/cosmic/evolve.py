@@ -33,6 +33,8 @@ import os
 import sys
 try:
     import multiprocessing
+    # NOTE: 'fork' start method is POSIX-specific and not available on Windows.
+    # This call can raise if the method is unsupported or already set; we swallow RuntimeError below.
     multiprocessing.set_start_method("fork")
 except RuntimeError:
     pass

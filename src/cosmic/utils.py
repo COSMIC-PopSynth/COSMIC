@@ -1021,6 +1021,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                         option
                     )
                 )
+        # NOTE: '&' is bitwise/element-wise AND and does not short-circuit like 'and'.
+        # Here it works because each term is a scalar boolean, but 'and' would be the more idiomatic choice.
         if ("qmin" not in sampling.keys()) & ("m2_min" not in sampling.keys()) & (sampling["sampling_method"] == 'independent'):
             raise ValueError("You have not specified qmin or m2_min. At least one of these must be specified.")
     # filters
@@ -1044,6 +1046,9 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if convergence is not None:
         flag = "convergence_limits"
         if convergence[flag]:
+            # NOTE: This validation is likely unintended: convergence.items() yields (key, value) tuples,
+            # so len(item) is always 2 and this check will never raise. If you intend to validate that
+            # convergence_limits values are length-2 ranges, iterate over convergence["convergence_limits"].
             for item, key in zip(convergence.items(), convergence.keys()):
                 if len(item) != 2:
                     raise ValueError(

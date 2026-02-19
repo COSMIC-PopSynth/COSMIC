@@ -290,6 +290,8 @@ if __name__ == '__main__':
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
+        # NOTE: '&' does not short-circuit like 'and'; both sides are always evaluated.
+        # It works for pure booleans, but can be error-prone if either side becomes array-like.
         if args.qmin is not None and args.m2_min is not None:
             warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
                         "determine the secondary masses in the initial sample.")
@@ -297,6 +299,10 @@ if __name__ == '__main__':
             log_file.write("You have specified both qmin and m2_min.\n")
             log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
 
+    # NOTE: '&' here is element-wise/bitwise AND (no short-circuit); 'and' would be the usual boolean operator.
+    # Also: Match.perform_convergence returns log10(1 - overlap) in (-inf, 0]; more negative means more similar.
+    # This loop condition assumes convergence['match'] is a negative threshold (e.g., -2). If set to >= 0,
+    # the loop may not run as expected.
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']) & ((time.time() - start_time) < args.max_wall_time):
         # Set random seed such that each iteration gets a unique, determinable seed
         rand_seed = seed_int + Nstep
