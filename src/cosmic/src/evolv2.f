@@ -2606,8 +2606,14 @@ component.
                binstate = 1
             endif
 
-            tb = (sep/aursun)*SQRT(sep/(aursun*(mt+mass(3-k))))
-            oorb = twopi/tb
+            if(ecc.gt.1.d0)then
+               tb = -1d0
+               sep = -1d0
+               oorb = -1d0
+            else
+               tb = (sep/aursun)*SQRT(sep/(aursun*(mt+mass(3-k))))
+               oorb = twopi/tb
+            endif
          endif
 
          mass0(k) = m0
