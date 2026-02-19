@@ -694,7 +694,7 @@
                 "description": "Selects the model for Luminous Blue Variable (LBV) mass loss",
                 "type": "dropdown",
                 "options-preface": "",
-                "version_added": "3.7.3",
+                "version_added": "3.7.2",
                 "options": [
                     {
                         "name": 0,
