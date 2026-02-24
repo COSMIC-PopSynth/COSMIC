@@ -2495,36 +2495,143 @@ component.
             formation(j1) = formation(j2)
          endif
 
+* Calculate stellar properties for both stars
+         do 117, k = 1,2
+         m0 = mass0(k)
+         mt = mass(k)
+         mc = massc(k)
+         kw = kstar(k)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL hrdiag(m0,aj(k),mt,tm,tn,tscls,lums,GB,zpars,
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
+     
+*
+* Check for a supernova and correct the semi-major axis if so.
+*
+         if((kw.ne.kstar(k).and.kstar(k).le.12.and.
+     &      (kw.eq.13.or.kw.eq.14
+     &       .or.(kw.eq.15.and.pisn_track(k).eq.7))))then
+            dms(k) = mass(k) - mt
+            if(formation(k).ne.11) formation(k) = 1
+            if(kw.eq.13.and.ecsn.gt.0.d0)then
+               if(kstar(k).le.6)then
+                  if(mass0(k).le.zpars(5))then
+                     if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
+                     endif
+                     formation(k) = 2
+                  endif
+               elseif(kstar(k).ge.7.and.kstar(k).le.9)then
+                  if(mass(k).gt.ecsn_mlow.and.mass(k).le.ecsn)then
+                     if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
+                        sigma = -sigmahold/sigmadiv
+                     elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                        sigma = sigmadiv
+                     endif
+                     formation(k) = 2
+                  endif
+               elseif(formation(k).eq.11)then
+                  if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
+                  endif
+                  formation(k) = 5
+               elseif(kstar(k).ge.10.or.kstar(k).eq.12)then
+                  if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
+                     sigma = -sigmahold/sigmadiv
+                  elseif(sigma.gt.0.d0.and.sigmadiv.lt.0.d0)then
+                     sigma = sigmadiv
+                  endif
+                  formation(k) = 4
+               endif
+            endif
+
+            evolve_type = 14.d0 + FLOAT(k)
+            teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad(1)**2.d0))**(1.d0/4.d0))
+            teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad(2)**2.d0))**(1.d0/4.d0))
+            if(B_0(1).eq.0.d0)then !PK.
+               b01_bcm = 0.d0
+            elseif(B_0(1).gt.0.d0.and.B(1).eq.0.d0)then
+               b01_bcm = B_0(1)
+            else
+               b01_bcm = B(1)
+            endif
+            if(B_0(2).eq.0.d0)then
+               b02_bcm = 0.d0
+            elseif(B_0(2).gt.0.d0.and.B(2).eq.0.d0)then
+               b02_bcm = B_0(2)
+            else
+               b02_bcm = B(2)
+            endif
+
+* Check if PISN occurred, and if so overwrite formation
+            if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+            if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
+
+            CALL writetab(bpp_ind,tphys,evolve_type,
+     &                    mass(1),mass(2),kstar(1),kstar(2),
+     &                    sep,tb,ecc,rrl1,rrl2,
+     &                    aj(1),aj(2),tms(1),tms(2),
+     &                    mc_he(1),mc_he(2),mc_co(1),mc_co(2),
+     &                    rad(1),rad(2),
+     &                    mass0(1),mass0(2),lumin(1),lumin(2),
+     &                    teff1,teff2,radc(1),radc(2),
+     &                    menv(1),menv(2),renv(1),renv(2),
+     &                    ospin(1),ospin(2),b01_bcm,b02_bcm,
+     &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &                    epoch(2),bhspin(1),bhspin(2),
+     &                    deltam1_bcm,deltam2_bcm,formation(1),
+     &                    formation(2),binstate,mergertype,z,'bpp')
+            CALL kick(kw,mass(k),mc_co(k),mt,mass(3-k),ecc,sep,jorb,vk,
+     &                k,rad(3-k),fallback,sigmahold,kick_info,
+     &                disrupt,bkick)
+            sigma = sigmahold
+
+            ! check if kick caused a merger
+            if(mass(3-k).lt.0.d0)then
+               if(kstar(3-k).lt.0.d0) mt = mt-mass(3-k)
+               if(kw.eq.13.and.mt.gt.mxns) kw = 14
+               CALL CONCATKSTARS(kstar(j1), kstar(j2), mergertype)
+               kstar(k) = kw
+               mass(k) = mt
+               epoch(k) = tphys - age
+               kstar(3-k) = 15
+               mass(3-k) = 0.d0
+               coel = .true.
+               binstate = 1
+            endif
+
+            if(ecc.gt.1.d0)then
+               tb = -1d0
+               sep = -1d0
+               oorb = -1d0
+            else
+               tb = (sep/aursun)*SQRT(sep/(aursun*(mt+mass(3-k))))
+               oorb = twopi/tb
+            endif
+         endif
+
+         mass0(k) = m0
+         mass(k) = mt
+         massc(k) = mc
+         kstar(k) = kw
+         rad(k) = rm
+         lumin(k) = lum  
+         radc(k) = rc
+         menv(k) = me
+         renv(k) = re
+
+
+117      continue
+
 *
          evolve_type = 8.0
-         
-         
-         mc = massc(1)
-         rc = radc(1)
-         CALL star(kstar(1),mass0(1),mass(1),tm,tn,tscls,lums,GB,zpars)
-         CALL hrdiag(mass0(1),aj(1),mass(1),tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kstar(1),mc,rc,me,re,k2,bhspin(1),1)
-     
-         rad(1) = rm
-         lumin(1) = lum  
-         massc(1) = mc
-         radc(1) = rc
-         menv(1) = me
-         renv(1) = re
-         
-         
-         mc = massc(2)
-         rc = radc(2)
-         CALL star(kstar(2),mass0(2),mass(2),tm,tn,tscls,lums,GB,zpars)
-         CALL hrdiag(mass0(2),aj(2),mass(2),tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kstar(2),mc,rc,me,re,k2,bhspin(2),2)
-     
-         rad(2) = rm
-         lumin(2) = lum  
-         massc(2) = mc
-         radc(2) = rc
-         menv(2) = me
-         renv(2) = re
+
 
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)

@@ -184,6 +184,8 @@ class Evolve(object):
             are logged in the initial conditions table so you can keep track of which systems had their
             timesteps modified. Avoid overlapping mass ranges for different modifiers as this will result
             in multiple modifiers being applied in the overlap region.
+            NOTE: these modifiers are only applied to columns which aren't present in the initialbinarytable
+            that is passed in (i.e. they only modify values provided by a BSEDict or params.ini file)
 
         **kwargs:
             There are three ways to tell evolve and thus the fortran
@@ -249,6 +251,8 @@ class Evolve(object):
             bpp_columns = BPP_COLUMNS
         if bcm_columns is None:
             bcm_columns = BCM_COLUMNS
+
+        columns_in_passed_initC = set(initialbinarytable.columns)
 
         # There are three ways to tell evolve and thus the fortran
         # what you want all the flags and other BSE specific
@@ -383,7 +387,8 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
 
         # update timesteps based on mass modifier
-        if dt_mass_modifiers:
+        mass_modifier_cols = set(['pts1', 'pts2', 'pts3']).difference(columns_in_passed_initC)
+        if dt_mass_modifiers and len(mass_modifier_cols) != 0:
             # warn the user if their mass ranges overlap
             for i in range(len(dt_mass_modifiers)):
                 for j in range(i + 1, len(dt_mass_modifiers)):
@@ -405,9 +410,8 @@ class Evolve(object):
                     raise ValueError(f"Timestep modifiers must be positive. You passed {mod} for the "
                                      f"mass range {m_low} to {m_high}.")
                 mask = (initialbinarytable['mass_1'] >= m_low) & (initialbinarytable['mass_1'] < m_high)
-                initialbinarytable.loc[mask, 'pts1'] *= mod
-                initialbinarytable.loc[mask, 'pts2'] *= mod
-                initialbinarytable.loc[mask, 'pts3'] *= mod
+                for col in mass_modifier_cols:
+                    initialbinarytable.loc[mask, col] *= mod
 
         # need to ensure that the order of parameters that we pass to BSE
         # is correct
