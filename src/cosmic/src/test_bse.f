@@ -106,6 +106,11 @@
       READ(22,*)don_lim,acc_lim,bdecayfac,bconst,ck,qcflag,eddlimflag
       READ(22,*)bhspinflag,bhspinmag,rejuv_fac,rejuvflag,htpmb,st_cr
       READ(22,*)st_tide,rembar_massloss,zsun
+      READ(22,*)natal_kick_array(1,1),natal_kick_array(1,2),
+     &natal_kick_array(1,3),natal_kick_array(1,4),natal_kick_array(1,5)
+      READ(22,*)natal_kick_array(2,1),natal_kick_array(2,2),
+     &natal_kick_array(2,3),natal_kick_array(2,4),natal_kick_array(2,5)
+
 
       if(kstar(1).lt.0.or.kstar(2).lt.0)then
          READ(22,*)tphys
@@ -150,13 +155,6 @@
 * file. This is a temporary measure until the input file is updated.
 *
         polar_kick_angle = 90
-        do i = 1,4
-            do j = 1,2
-               natal_kick_array(j, i) = -100.d0
-            enddo
-        enddo
-        natal_kick_array(1,5) = 0.0
-        natal_kick_array(2,5) = 0.0
         do i = 1,8
             qcrit_array(i) = 0.0
         enddo
@@ -273,22 +271,22 @@
 * of evolution stage.
 *
  50   j = 0
-      WRITE(*,*)'     TIME      M1       M2   K1 K2        SEP    ECC',  
-     &          '  R1/ROL1 R2/ROL2  TYPE'
- 52   j = j + 1
-      if(bpp(j,1).lt.0.0) goto 60
-      kstar(1) = INT(bpp(j,4))
-      kstar(2) = INT(bpp(j,5))
-      kw = INT(bpp(j,11))
-      WRITE(*,100)(bpp(j,k),k=1,3),kstar,(bpp(j,k),k=6,9),label(kw)
-      goto 52
- 60   continue
- 100  FORMAT(g30.18,2g30.18,2i3,g30.18,g30.18,2g30.18,2x,a8)
-      WRITE(*,*)
+!       WRITE(*,*)'     TIME      M1       M2   K1 K2        SEP    ECC',  
+!      &          '  R1/ROL1 R2/ROL2  TYPE'
+!  52   j = j + 1
+!       if(bpp(j,1).lt.0.0) goto 60
+!       kstar(1) = INT(bpp(j,4))
+!       kstar(2) = INT(bpp(j,5))
+!       kw = INT(bpp(j,11))
+!       WRITE(*,100)(bpp(j,k),k=1,3),kstar,(bpp(j,k),k=6,9),label(kw)
+!       goto 52
+!  60   continue
+!  100  FORMAT(g30.18,2g30.18,2i3,g30.18,g30.18,2g30.18,2x,a8)
+!       WRITE(*,*)
 *
 ************************************************************************
 *
-      WRITE(*,*) bcm(2,31), bpp(j, 6)
+      ! WRITE(*,*) bcm(2,31), bpp(j, 6)
 
       STOP
       END

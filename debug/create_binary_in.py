@@ -39,7 +39,9 @@ def create_binary_in(mass0, tphysf, tb, kstar, Z, ecc, BSE_settings):
             ['wd_mass_lim', 'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigmadiv', 'bhsigmafrac'],
             ['don_lim', 'acc_lim', 'bdecayfac', 'bconst', 'ck', 'qcflag', 'eddlimflag'],
             ['bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb', 'ST_cr'],
-            ['ST_tide', 'rembar_massloss', 'zsun']
+            ['ST_tide', 'rembar_massloss', 'zsun'],
+            ['natal_kick_1', 'theta_1', 'phi_1', 'mean_anomaly_1', 'randomseed_1'],
+            ['natal_kick_2', 'theta_2', 'phi_2', 'mean_anomaly_2', 'randomseed_2']
         ]
 
         for line in lines:
@@ -59,6 +61,14 @@ def convert_initC_row_to_binary_in(initC_file, bin_num):
     # get binary from initC
     initC = pd.read_hdf(initC_file, key="initC")
     r = initC.loc[bin_num]
+
+    kick_cols = ['natal_kick_1', 'theta_1', 'phi_1', 'mean_anomaly_1', 'randomseed_1',
+                 'natal_kick_2', 'theta_2', 'phi_2', 'mean_anomaly_2', 'randomseed_2']
+    for col in kick_cols:
+        if col not in r:
+            BSE_settings[col] = -100.0 if 'randomseed' not in col else 0.0
+        else:
+            BSE_settings[col] = r[col].astype(float)
 
     # update BSE settings with those in the binary
     BSE_settings['idum'] = r['randomseed'].astype(int)
