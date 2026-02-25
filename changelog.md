@@ -113,3 +113,10 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
 - Documentation:
     - Start new settings gallery in the documentation
     - Tag settings/options with the version they were added in the docs page and auto link them to release
+
+## 3.7.5
+
+- Fixes:
+    - Prevent tides calculations based on NS/BHs
+    - Track mean_anomaly (save to kick_info) array even when a system is disrupted
+    - Throw an error if invalid metallicities are provided for evolution
