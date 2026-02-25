@@ -807,7 +807,8 @@ component.
 *
             dspint(k) = 0.d0
             if(((kstar(k).le.9.and.rad(k).ge.0.01d0*rol(k)).or.
-     &         (kstar(k).ge.10.and.k.eq.j1)).and.tflag.gt.0)then
+     &         (kstar(k).ge.10.and.k.eq.j1.and.kstar(k).le.12))
+     &         .and.tflag.gt.0)then
 *
                raa2 = (rad(k)/sep)**2
                raa6 = raa2**3
