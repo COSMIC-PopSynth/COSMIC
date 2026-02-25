@@ -483,6 +483,12 @@
       call VectorMagnitude(h, h_mag)
       sep = h_mag * h_mag / (G_const * mtot * (1 - ecc_2)) / rsunkm
 
+* Record the mean anomaly in the arrays
+      kick_info(sn,6) = mean_anom * 180 / pi
+      if (using_cmc.eq.0) then
+         natal_kick_array(sn,4) = mean_anom * 180 / pi
+      endif
+
 * ----------------------------------------------------------------------
 * -------- Split based on whether this kick disrupts the system --------
 * ----------------------------------------------------------------------
@@ -585,11 +591,6 @@
 * ----------------------------------------------------------------------
 * The system is still bound
       else
-* Record the mean anomaly in the arrays
-         kick_info(sn,6) = mean_anom * 180 / pi
-         if (using_cmc.eq.0) then
-            natal_kick_array(sn,4) = mean_anom * 180 / pi
-         endif
 
 * Update the total orbital angular momentum (in Msun Rsun^2/yr)
          jorb = m1n * m2 / mtot * h_mag / rsunkm / rsunkm * yearsc
