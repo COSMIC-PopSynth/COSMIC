@@ -49,3 +49,5 @@ jobs:
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
+      with:
+        fail_ci_if_error: false   # don't fail tests from code coverage alone
