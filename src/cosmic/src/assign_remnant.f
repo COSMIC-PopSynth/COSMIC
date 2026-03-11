@@ -4,8 +4,6 @@
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
-      REAL*8 mass_preSN, mHe_preSN, massc_preSN
-      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL*8 fallback
       real*8 zpars(20)
 
