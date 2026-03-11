@@ -567,6 +567,18 @@
                         "name": 3,
                         "description": "Same as 2, but LBV-like mass loss for giants and non-degenerate stars beyond the Humphreys-Davidson limit",
                         "default": true
+                    },
+                    {
+                        "name": 5,
+                        "description": "Same as 3, but multiplied by 0.33"
+                    },
+                    {
+                        "name": 6,
+                        "description": "Bjorklund 2023 https://doi.org/10.1051/0004-6361/202141948"
+                    },
+                    {
+                        "name": 7,
+                        "description": "Kritcka, Kubat, Kritckova 2023 10.48550/arXiv.2311.01257"
                     }
                 ]
             },
@@ -1226,6 +1238,10 @@
                         "name": 6,
                         "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2025A%26A...700A..20M/abstract'>Maltsev+2025</a>, with additions from <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251007573W/abstract'>Willcox+2025</a> for the definition of BH masses.",
                         "version_added": "3.7.0"
+                    },
+                    {
+                        "name": 7,
+                        "description": "Follows Fryer+2022 remnant mass prescription"
                     }
                 ]
             },
@@ -1387,6 +1403,10 @@
                         "name": -4,
                         "description": "Uses the top-down approach from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2022RNAAS...6...25R/abstract'>Renzo+2022</a>, with adjustable parameters from <a class='reference external' href='https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract'>Hendriks+2023</a>",
                         "version_added": "3.7.2"
+                    },
+                    {
+                        "name": -5,
+                        "description": "Uses Belczynski 'weak' PISN pulsations"
                     },
                     {
                         "name": "positive values",

@@ -4,6 +4,8 @@
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
+      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL*8 fallback
       real*8 zpars(20)
 
@@ -11,6 +13,7 @@
       real*8 mc,mcbagb,mass,mt,mc_tot,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 m_proto,m_FeNi,m_fb,bhspin,mrem,mch,dMppi
+      real*8 fmix, mcritnsbh, mtemp1, mtemp2
       integer kw,kidx
 
 * Inputs
@@ -85,6 +88,37 @@
 *
             kw = 15
          else
+* Beginning of supernova block
+*
+* Chris Belczynski Evolutionary Roads Weak PPISN
+* This has to happen before the SNa, because it modifies
+* the properties of the star during explosion
+            if(pisn.eq.-5.and.mt.ge.45d0)then
+              if(mcbagb.ge.65d0) then
+                mt = 0.d0
+                kw = 15
+              else
+* PPISN
+                if(mcbagb.ge.60d0) then
+                  mtemp1 = 938d0 - (14.3d0*mcbagb)
+                elseif(mcbagb.ge.40d0) then
+                  mtemp1 = 55.6d0
+                else
+                  mtemp1 = 6.0d0 + (0.83d0*mcbagb)
+                endif
+* Update mass
+                if(mt.gt.mtemp1) then
+                  mt = mtemp1
+                endif
+                if(mcbagb.gt.mtemp1) then
+                  mcbagb = mtemp1
+                endif
+                if(mc.gt.mtemp1) then
+                  mc = mtemp1
+                endif
+              endif
+            endif
+* Carry on with the Supernovae
 *
 * Use remnant mass given by Hurley+2000
             if(remnantflag.eq.0)then
@@ -217,6 +251,48 @@
             elseif(remnantflag.eq.6)then
                 met = 10**(LOG10(zpars(14))/0.4)
                call assign_remnant_maltsev(mc,mc_tot,met,kidx,kw,mt)
+            elseif(remnantflag.eq.7)then
+*
+* Use the Fryer et al. 2022 SN Prescription
+*
+*                    For this, we just set the proto-core mass to one
+               if(mc.le.3.5d0)then
+                  m_proto = 1.2d0
+               elseif(mc.le.6.d0)then
+                  m_proto = 1.3d0
+               elseif(mc.le.11.d0)then
+                  m_proto = 1.4d0
+               elseif(mc.gt.11.d0)then
+                  m_proto = 1.6d0
+               endif
+
+               if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
+     &              mcbagb.ge.ecsn_mlow)then
+                  mt = 1.38d0   ! ECSN fixed mass, no fallback
+               else
+* Parameters of Fryer2022 model
+                  fmix=1.0
+                  mcritnsbh=5.75
+* We need mt in multiple places, so temp1 will be the working mt
+                  mtemp1=mt
+* mtemp2 is the calculated value of the remnant mass
+                  mtemp2=1.2 + (0.05*fmix) + 
+     &                (0.01*((mc/fmix)**2)) +
+     &                EXP(fmix*(mc-mcritnsbh))
+* We don't care about mtemp2 if it's less than zero
+                  if(mtemp2.lt.0.)then
+                      mtemp1 = 0.
+                      kw=15
+* We only care about mtemp2 if it is less than the total
+*   mass of the star
+                  elseif(mtemp2.lt.mt)then
+                      mtemp1 = mtemp2
+* If mtemp2 is less, we also want to estimate the fallback fraction
+                      fallback=(mtemp1-m_proto) /(mt-m_proto)
+                      mt = m_proto + fallback*(mtemp1 - m_proto)
+                  endif
+               endif
+               mc = mt
             endif
             
 * Assign the BH spin based on the chosen prescription
