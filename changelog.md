@@ -120,3 +120,8 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
     - Prevent tides calculations based on NS/BHs
     - Track mean_anomaly (save to kick_info) array even when a system is disrupted
     - Throw an error if invalid metallicities are provided for evolution
+
+## 3.7.6
+
+- Additions/changes:
+    - Added `pool` and `nproc` parameters to the `independent` sampler. Users can either specify an existing multiprocessing pool or a number of processors to use to create a pool that will be used for the sampling. This offers significant speed-ups for samples larger than 10,000 binaries.
