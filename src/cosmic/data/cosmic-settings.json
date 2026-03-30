@@ -1521,7 +1521,7 @@
                 "name": "gamma",
                 "description": "Angular momentum prescriptions for mass lost during Roche-lobe overflow at super-Eddington mass transfer rates",
                 "type": "number",
-                "options-preface": "",
+                "options-preface": "Note that this is overwritten by the smt_q setting for systems that meet the smt_q condition (set to -1, see below).",
                 "options": [
                     {
                         "name": -1,
@@ -1567,7 +1567,7 @@
                 "name": "acc_lim",
                 "description": "Limits the amount of mass accreted during Roche-lobe overflow",
                 "type": "number",
-                "options-preface": "",
+                "options-preface": "Note that this is overwritten by the smt_q setting for systems that meet the smt_q condition (set to 0.0, see below).",
                 "options": [
                     {
                         "name": -1,
@@ -1593,6 +1593,28 @@
                     {
                         "name": 0.0,
                         "description": "assume all mass is lost from the system (fully nonconservative)"
+                    }
+                ]
+            },
+            {
+                "name": "smt_q",
+                "description": "Mass ratio limit to enforce stable mass transfer following <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251110728O/abstract'>Olejak+25</a>. Systems with Mdon/Macc >= smt_q meet the criteria. This paper argues that extreme mass ratios can lead to stable, non-conservative mass transfer. When this condition is met, mass transfer is assumed to be always stable, fully non-conservative, and that the mass carries away the specific angular momentum of the donor.",
+                "type": "number",
+                "version_added": "3.7.6",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Mass ratio limit to enforce stable mass transfer following Olejak+25. Systems with Mdon/Macc >= smt_q will be forced to have stable, non-conservative mass transfer with specific angular momentum loss from the donor."
+                    },
+                    {
+                        "name": -1,
+                        "description": "Turn off this setting.",
+                        "default": true
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Limiting case where all mass transfer is stable and fully non-conservative with specific angular momentum loss from the donor"
                     }
                 ]
             },
