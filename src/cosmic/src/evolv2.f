@@ -215,7 +215,7 @@
       LOGICAL output
 *
       REAL*8 qc_fixed
-      LOGICAL switchedCE,disrupt
+      LOGICAL switchedCE,disrupt,force_stable
 
 Cf2py intent(in) kstar
 Cf2py intent(in) mass
@@ -2302,7 +2302,12 @@ component.
          qc = qc_fixed
       endif
 
-      if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc)then
+* Store whether we should force stable mass transfer because the smt_q criterion has been met
+*    Either smt_q is negative (i.e. not being used) or the current mass ratio is less than limit of smt_q
+      force_stable = smt_q.gt.-1.d0.and.q(j1).ge.smt_q
+
+      if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc
+     &   .and..not.force_stable)then
 *
 * KB 20 jul 23: This will lead to a merger of the two MS stars.
 * The result is always a single star placed in *2.
@@ -2391,10 +2396,11 @@ component.
 *KB added RRLO_1 flag to send RRLO_1 > 10 into CE for post-MS binaries
 *
       elseif(((kstar(j1).eq.3.or.kstar(j1).eq.5.or.kstar(j1).eq.6.or.
-     &        kstar(j1).eq.8.or.kstar(j1).eq.9)
-     &        .and.(q(j1).gt.qc.or.radx(j1).le.radc(j1))).or.
-     &       (kstar(j1).eq.2.and.q(j1).gt.qc).or.
-     &       (kstar(j1).eq.4.and.q(j1).gt.qc))then
+     &         kstar(j1).eq.8.or.kstar(j1).eq.9)
+     &        .and.((q(j1).gt.qc.and..not.force_stable)
+     &              .or.radx(j1).le.radc(j1))).or.
+     &       (kstar(j1).eq.2.and.q(j1).gt.qc.and..not.force_stable).or.
+     &       (kstar(j1).eq.4.and.q(j1).gt.qc.and..not.force_stable))then
 *
 * Common-envelope evolution.
 *
@@ -2707,7 +2713,7 @@ component.
          tb = (sep/aursun)*SQRT(sep/(aursun*(mass(1)+mass(2))))
          oorb = twopi/tb
       elseif(kstar(j1).ge.10.and.kstar(j1).le.12.and.
-     &       q(j1).gt.qc)then
+     &       q(j1).gt.qc.and..not.force_stable)then
 *
 * Dynamic transfer from a white dwarf.  Secondary will have KW > 9.
 *
@@ -3015,7 +3021,9 @@ component.
 
 
          if(kstar(j2).le.2.or.kstar(j2).eq.4)then
-            if(acc_lim.eq.-1.or.acc_lim.eq.-3)then
+            if(force_stable)then
+               dm2 = 0.0
+            elseif(acc_lim.eq.-1.or.acc_lim.eq.-3)then
                dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
             elseif(acc_lim.eq.-2.or.acc_lim.eq.-4)then
                dm2 = MIN(1.d0,taum/tkh(j2))*dm1
@@ -3028,7 +3036,9 @@ component.
 * or SAGB star unless the primary is also a helium star.
 *
             if(kstar(j1).ge.7)then
-               if(acc_lim.eq.-1.or.acc_lim.eq.-3)then
+               if(force_stable)then
+                  dm2 = 0.0
+               elseif(acc_lim.eq.-1.or.acc_lim.eq.-3)then
                   dm2 = MIN(1.d0,10.d0*taum/tkh(j2))*dm1
                elseif(acc_lim.eq.-2.or.acc_lim.eq.-4)then
                   dm2 = MIN(1.d0,taum/tkh(j2))*dm1
@@ -3036,7 +3046,9 @@ component.
                   dm2 = acc_lim*dm1
                endif
             else
-               if(acc_lim.lt.0.d0)then
+               if(force_stable)then
+                  dm2 = 0.0
+               elseif(acc_lim.lt.0.d0)then
                   dm2 = dm1
                elseif(acc_lim.ge.0.d0)then
                   dm2 = acc_lim*dm1
@@ -3111,7 +3123,9 @@ component.
          elseif(kstar(j2).eq.3.or.kstar(j2).eq.5.or.kstar(j2).eq.6)then
 * We have a giant w/ kstar(j2) = 3,5,6
 *
-            if(acc_lim.eq.-1.or.acc_lim.eq.-2)then
+            if(force_stable)then
+               dm2 = 0.0
+            elseif(acc_lim.eq.-1.or.acc_lim.eq.-2)then
                dm2 = dm1
             elseif(acc_lim.eq.-3)then
                dm2 = MIN(1.d0,10*taum/tkh(j2))*dm1
@@ -3234,20 +3248,21 @@ component.
 * and for novae systems, assume that material is lost from
 * the system as if a wind from the secondary.
 *
-         if(supedd.or.novae.or.int(gamma).eq.-2)then
+         if(supedd.or.novae.or.
+     &      (int(gamma).eq.-2.and..not.force_stable))then
             djorb = djorb + (dm1 - dm22)*mass(j1)*mass(j1)/
      &              (mass(1)+mass(2))**2
 * If gamma == -3: Assume mass is lost through the outer 
 * Lagrangian point, forming a circumbinary disk. See
 * Zapartas+17 Eq. 9 and Artymowicz & Lubow (1994).
 * Set rmin=2a, which is consistent with A&L94 simulations.
-         elseif(int(gamma).eq.-3)then
+         elseif(int(gamma).eq.-3.and..not.force_stable)then
             gammadisc = (mass(1) + mass(2))**2
      &                / (mass(1) * mass(2)) * sqrt(2.d0)
             djorb = djorb + gammadisc * (dm1 - dm2)
 * If gamma == -1 then assume the lost material carries with it
 * the specific angular momentum of the primary and for all
-         elseif(int(gamma).eq.-1) then
+         elseif(int(gamma).eq.-1.or.force_stable) then
             djorb = djorb + (dm1 - dm2)*mass(j2)*mass(j2)/
      &              (mass(1)+mass(2))**2
 * gamma > 0.0 assume that it takes away a fraction gamma of
