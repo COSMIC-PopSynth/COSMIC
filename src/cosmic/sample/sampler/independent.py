@@ -304,7 +304,7 @@ def get_independent_sampler(
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
-    if porb_model == "moe19":
+    if porb_model in ["moe19", "martinez26", "martinez26_ecsn"]:
         porb,aRL_over_a = initconditions.sample_porb(
             mass1_binary, mass2_binary, rad1, rad2, porb_model, met=met, size=mass1_binary.size
         )
