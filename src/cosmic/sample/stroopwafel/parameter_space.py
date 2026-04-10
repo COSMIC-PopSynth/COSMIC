@@ -215,10 +215,18 @@ class ParameterSpace:
     def _sigma_power_law(self, param, values, avg_density):
         """Compute sigma for power-law distributions.
 
-        Handles ``kroupa``, ``sana``, and ``sana_ecc`` samplers by mapping
-        each value to a normalised CDF position, stepping by
-        ``avg_density`` in CDF space, mapping back, and taking the
-        maximum of the two distances.
+        Maps each hit value to its CDF position, steps by ``avg_density``
+        in CDF space, maps back to parameter space, and returns the
+        maximum of the two resulting distances.
+
+        The CDF of a power-law p(x) ∝ x^α on [lo, hi] is
+
+            F(x) = (x^a − lo^a) / (hi^a − lo^a),   a = α + 1
+
+        so the inverse is F⁻¹(u) = (u·(hi^a − lo^a) + lo^a)^{1/a}.
+        All intermediate quantities stay in [lo^a, hi^a], avoiding the
+        catastrophic cancellation that occurred in the previous
+        ``inv_lo``-based formulation when ``lo`` was very small.
 
         Parameters
         ----------
@@ -233,6 +241,12 @@ class ParameterSpace:
         -------
         `numpy.ndarray`
             (K,) array of sigma values.
+
+        Raises
+        ------
+        `ValueError`
+            If ``param.lo <= 0`` (the CDF formula requires a positive
+            lower bound) or if the sampler is not a recognised power law.
         """
         if param.sampler == 'kroupa':
             alpha = ALPHA_IMF
@@ -243,36 +257,29 @@ class ParameterSpace:
         else:
             raise ValueError(f"Unknown power-law sampler: {param.sampler}")
 
-        a = alpha + 1  # e.g., -1.3 for kroupa
-        lo, hi = param.lo, param.hi
-        norm = a / (hi**a - lo**a)
+        if param.lo <= 0:
+            raise ValueError(
+                f"Parameter '{param.name}' has lo={param.lo} <= 0 but uses "
+                f"the '{param.sampler}' power-law sampler.  The CDF formula "
+                f"requires lo > 0.  For 'sana' (period), pass the log10(P) "
+                f"lower bound directly, e.g. min_value=0.15 rather than "
+                f"min_value=np.log10(0.15)."
+            )
 
-        # Step 1: normalized inverse CDF position (matches old code)
-        # inv_X = (norm / X)^(1 / -alpha) for X = value, lo, hi
-        inv_exp = 1.0 / (-alpha)
-        inv_val = np.power(norm / values, inv_exp)
-        inv_lo = np.power(norm / lo, inv_exp)   # scalar
-        inv_hi = np.power(norm / hi, inv_exp)    # scalar
-        inv_normalized = (inv_val - inv_lo) / (inv_hi - inv_lo)
+        a = alpha + 1   # 0.55 for sana_ecc, 0.45 for sana, -1.3 for kroupa
+        lo_a = float(param.lo) ** a
+        hi_a = float(param.hi) ** a
+        range_a = hi_a - lo_a  # always finite; no huge intermediates
 
-        # Step 2: step in CDF space, clamp to [0, 1]
-        inv_right = np.clip(inv_normalized + avg_density, 0, 1)
-        inv_left = np.clip(inv_normalized - avg_density, 0, 1)
+        # --- Forward CDF: F(x) = (x^a - lo_a) / range_a ----------------
+        u = np.clip((np.power(values, a) - lo_a) / range_a, 0.0, 1.0)
 
-        # Step 3: inverse_back maps CDF position back to parameter space
-        # inverse_back(inv) = norm / |inv * (inv_hi - inv_lo) + inv_lo|^(-alpha)
-        inv_range = inv_hi - inv_lo  # scalar
+        # --- Step in CDF space ------------------------------------------
+        u_right = np.clip(u + avg_density, 0.0, 1.0)
+        u_left  = np.clip(u - avg_density, 0.0, 1.0)
 
-        right_arg = np.abs(inv_right * inv_range + inv_lo)
-        left_arg = np.abs(inv_left * inv_range + inv_lo)
+        # --- Inverse CDF: F^{-1}(u) = (u * range_a + lo_a)^{1/a} -------
+        x_right = np.power(u_right * range_a + lo_a, 1.0 / a)
+        x_left  = np.power(u_left  * range_a + lo_a, 1.0 / a)
 
-        # Avoid zero bases which would give inf when raised to -alpha (positive power)
-        right_arg = np.maximum(right_arg, 1e-300)
-        left_arg = np.maximum(left_arg, 1e-300)
-
-        right_vals = norm / np.power(right_arg, -alpha)
-        left_vals = norm / np.power(left_arg, -alpha)
-
-        right_dist = np.abs(right_vals - values)
-        left_dist = np.abs(left_vals - values)
-        return np.maximum(right_dist, left_dist)
+        return np.maximum(np.abs(x_right - values), np.abs(x_left - values))

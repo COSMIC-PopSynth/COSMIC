@@ -12,6 +12,7 @@ from cosmic.evolve import Evolve
 
 from .mixture_model import GaussianMixture
 from .result import STROOPWAFELResult
+from .constants import MIN_ACTIVE_FRACTION
 
 
 class AdaptiveSampler:
@@ -115,7 +116,9 @@ class AdaptiveSampler:
             print(f"  Prior rejection rate: {self.prior_fraction_rejected:.4f}")
 
         while self._should_continue_exploring():
-            n_oversample = int(2 * np.ceil(self.batch_size / (1 - self.prior_fraction_rejected)))
+            n_oversample = int(2 * np.ceil(
+                self.batch_size / max(1.0 - self.prior_fraction_rejected, MIN_ACTIVE_FRACTION)
+            ))
 
             # Sample from prior
             samples, mask = self.param_space.sample(n_oversample, rng=self.rng)
@@ -354,7 +357,7 @@ class AdaptiveSampler:
         N = len(all_samples)
 
         # Prior probabilities
-        pi_norm = 1.0 / (1 - self.prior_fraction_rejected)
+        pi_norm = 1.0 / max(1.0 - self.prior_fraction_rejected, MIN_ACTIVE_FRACTION)
         pi = self.param_space.compute_prior(all_samples) * pi_norm
 
         # Start with the exploration-phase contribution to denominator
@@ -363,7 +366,7 @@ class AdaptiveSampler:
 
         # Add refinement-phase contributions from each generation's mixture
         if self.mixture is not None and not self.mc_only:
-            q_norm = 1.0 / (1 - self.mixture.rejection_rate)
+            q_norm = 1.0 / max(1.0 - self.mixture.rejection_rate, MIN_ACTIVE_FRACTION)
             # Evaluate the mixture PDF incrementally (memory-efficient)
             for k in range(self.mixture.n_components):
                 xPDF_k = multivariate_normal.pdf(

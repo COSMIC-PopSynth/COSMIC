@@ -5,7 +5,7 @@ sampling, PDF evaluation, and EM updates.
 """
 import numpy as np
 from scipy.stats import multivariate_normal, entropy as scipy_entropy
-from .constants import MIN_ENTROPY_CHANGE
+from .constants import MIN_ENTROPY_CHANGE, MIN_ACTIVE_FRACTION
 
 
 class GaussianMixture:
@@ -105,8 +105,9 @@ class GaussianMixture:
 
         for k in range(self.n_components):
             n_k = int(np.ceil(n_total * self.alphas[k]))
-            if consider_rejection and self.rejection_rate < 1.0:
-                n_k = int(2 * np.ceil(n_k / (1 - self.rejection_rate)))
+            if consider_rejection and self.rejection_rate > 0.0:
+                active = max(1.0 - self.rejection_rate, MIN_ACTIVE_FRACTION)
+                n_k = int(2 * np.ceil(n_k / active))
             if n_k <= 0:
                 continue
             s = rng.multivariate_normal(self.means[k], self.covariances[k], size=n_k)
@@ -248,8 +249,8 @@ class GaussianMixture:
             True if the entropy check triggers reversion to the previous
             mixture state.
         """
-        pi_norm = 1.0 / (1 - prior_fraction_rejected)
-        q_norm = 1.0 / (1 - self.rejection_rate)
+        pi_norm = 1.0 / max(1.0 - prior_fraction_rejected, MIN_ACTIVE_FRACTION)
+        q_norm  = 1.0 / max(1.0 - self.rejection_rate,   MIN_ACTIVE_FRACTION)
         pi = prior_probs * pi_norm
         is_hit = np.asarray(is_hit, dtype=float)
 
