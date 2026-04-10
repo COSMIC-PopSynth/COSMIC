@@ -99,7 +99,7 @@ def construct_ini_from_json(config, include_comments=True):
 
 def main():
     # read the config file
-    with open("cosmic-settings.json") as f:
+    with open("../src/cosmic/data/cosmic-settings.json") as f:
         config = json.load(f)
 
     # convert it to an INI file, replace HTML tags and save the output

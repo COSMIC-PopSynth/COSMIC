@@ -1,0 +1,35 @@
+name: Update Params.ini
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  update-params-ini:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Generate Params.ini
+        working-directory: docs
+        run: python create_params_ini.py
+
+      - name: Commit updated Params.ini
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add examples/Params.ini
+          if git diff --staged --quiet; then
+            echo "No changes to Params.ini, skipping commit."
+          else
+            git commit -m "update Params.ini"
+            git push
+          fi

@@ -38,6 +38,15 @@ Cf2py intent(out) rad
 ***
 * Then just loop through everything 
 ***
+
+      if(num.gt.loop) then
+         print *, 'Error in compute_r: num > 100000'
+         stop
+      end if
+      mc_he(1) = 0.d0
+      mc_he(2) = 0.d0
+      mc_co(1) = 0.d0
+      mc_co(2) = 0.d0
       do 10 , k = 1,num
          age = 0.0
          mc = 0.d0 

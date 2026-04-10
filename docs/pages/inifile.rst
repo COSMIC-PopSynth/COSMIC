@@ -17,7 +17,7 @@ The buttons below link to the most recent stable and unstable default inifiles f
 .. raw:: html
 
     <div class="toms-nav-container" style="margin-bottom: 3rem; height: 90px; grid-template-rows: 90px">
-        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/master/examples/Params.ini">Latest stable INIFILE</div>
+        <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/v3.6.1/examples/Params.ini">Latest stable INIFILE</div>
         <div class="box" data-href="https://github.com/COSMIC-PopSynth/COSMIC/blob/develop/examples/Params.ini">Latest development INIFILE</div>
     </div>
 
@@ -39,35 +39,35 @@ Filters
 -------
 
 .. raw:: html
-    :file: config/config_insert_filters.html
+    :file: ../_generated/config_insert_filters.html
 
 
 Sampling
 --------
 
 .. raw:: html
-    :file: config/config_insert_sampling.html
+    :file: ../_generated/config_insert_sampling.html
 
 
 Convergence
 -----------
 
 .. raw:: html
-    :file: config/config_insert_convergence.html
+    :file: ../_generated/config_insert_convergence.html
 
 
 Random Seed
 -----------
 
 .. raw:: html
-    :file: config/config_insert_rand_seed.html
+    :file: ../_generated/config_insert_rand_seed.html
 
 
 Binary physics
 --------------
 
 .. raw:: html
-    :file: config/config_insert_bse.html
+    :file: ../_generated/config_insert_bse.html
 
 
 Generated data
@@ -90,6 +90,10 @@ Use the buttons below to toggle whether to include explanatory comments in the I
 
 Python BSE settings dictionary
 ------------------------------
+
+.. note::
+    
+    Note that the BSE settings dictionary does not include sampling, filtering, convergence, or random seed settings - these are only relevant for the `cosmic-pop` executable.
 
 .. code-block:: python
 

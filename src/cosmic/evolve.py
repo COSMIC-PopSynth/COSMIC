@@ -52,12 +52,13 @@ __all__ = ['Evolve']
 # Make this match the ordering of all_cols in bpp_array.f
 ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
-               'tms_2', 'massc_1', 'massc_2', 'rad_1', 'rad_2', 'mass0_1',
+               'tms_2', 'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2',
+               'rad_1', 'rad_2', 'mass0_1',
                'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2', 'radc_1',
                'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
                'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2', 'tacc_1',
                'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2',
-               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type']
+               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type', 'metallicity']
 
 INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2", "evol_type"]
 
@@ -65,7 +66,7 @@ INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2",
 BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
                'aj_1', 'aj_2', 'tms_1', 'tms_2',
-               'massc_1', 'massc_2', 'rad_1', 'rad_2',
+               'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2', 'rad_1', 'rad_2',
                'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
                'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
@@ -73,9 +74,9 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'bhspin_1', 'bhspin_2']
 
 BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
-               'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
+               'teff_1', 'massc_he_layer_1', 'massc_co_layer_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
                'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
-               'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
+               'lum_2', 'rad_2', 'teff_2', 'massc_he_layer_2', 'massc_co_layer_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
                'porb', 'sep', 'ecc', 'B_1', 'B_2',
                'SN_1', 'SN_2', 'bin_state', 'merger_type']
@@ -95,17 +96,21 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                  'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'rtmsflag',
-                                  'bhflag', 'remnantflag', 'grflag', 'bhms_coll_flag', 'wd_mass_lim',
+                                  'ceflag', 'tflag', 'ifflag', 'wdflag',
+                                  'pisn', 'ppi_co_shift', 'ppi_extra_ml',
+                                  'rtmsflag',
+                                  'bhflag', 'remnantflag', 'fryer_mass_limit',
+                                  'maltsev_mode', 'maltsev_fallback', 'maltsev_pf_prob',
+                                  'grflag', 'bhms_coll_flag', 'wd_mass_lim',
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
                                   'mxns', 'pts1', 'pts2', 'pts3',
                                   'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
-                                  'bhsigmafrac', 'polar_kick_angle',
+                                  'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
                                   'natal_kick_array', 'qcrit_array',
                                   'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 
+                                  'eddfac', 'gamma', 'don_lim', 'acc_lim',
                                   'bdecayfac', 'bconst', 'ck',
-                                  'windflag', 'qcflag', 'eddlimflag',
+                                  'windflag', 'qcflag', 'eddlimflag', 'LBV_flag',
                                   'fprimc_array', 'dtp', 'randomseed',
                                   'bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
                                   'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun', 'kickflag']
@@ -160,7 +165,8 @@ class Evolve(object):
         '''
 
     @classmethod
-    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None, **kwargs):
+    def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None,
+               dt_mass_modifiers=[(40, 70, 0.3), (70, np.inf, 0.1)], **kwargs):
         """After setting a number of initial conditions we evolve the system.
 
         Parameters
@@ -176,6 +182,20 @@ class Evolve(object):
 
         bcm_columns : list, optional, default: None
             Columns to save in the bcm table (detailed evolution table)
+
+        dt_modifiers : list of tuples, optional, default: [(40, 70, 0.3), (70, np.inf, 0.1)]
+            List of tuples specifying the mass ranges and corresponding modifiers for the timestep size.
+            Our recommended default improves the numerical stability at higher masses.
+            Each tuple should be of the form (m_low, m_high, mod) and will modify the default timestep
+            by a factor of mod for systems with a *primary* mass in the range m_low <= mass_1 < m_high.
+            For example, (40, 70, 0.3) would multiply the default timestep size by 0.3 for systems with
+            primary mass between [40, 70) solar masses. We apply the modifier to the pts1, pts2, and pts3
+            parameters which control the timestep size in different evolutionary phases. These changes
+            are logged in the initial conditions table so you can keep track of which systems had their
+            timesteps modified. Avoid overlapping mass ranges for different modifiers as this will result
+            in multiple modifiers being applied in the overlap region.
+            NOTE: these modifiers are only applied to columns which aren't present in the initialbinarytable
+            that is passed in (i.e. they only modify values provided by a BSEDict or params.ini file)
 
         **kwargs:
             There are three ways to tell evolve and thus the fortran
@@ -244,6 +264,8 @@ class Evolve(object):
             bpp_columns = BPP_COLUMNS
         if bcm_columns is None:
             bcm_columns = BCM_COLUMNS
+
+        columns_in_passed_initC = set(initialbinarytable.columns)
 
         # There are three ways to tell evolve and thus the fortran
         # what you want all the flags and other BSE specific
@@ -375,58 +397,77 @@ class Evolve(object):
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine") 
            
-        for k, v in BSEDict.items():
-            if k in initialbinarytable.keys():
-                warnings.warn("The value for {0} in initial binary table is being "
-                              "overwritten by the value of {0} from either the params "
-                              "file or the BSEDict.".format(k))
-            # special columns that need to be handled differently
+        # go through each item in the BSEDict and update the initialbinarytable
+        new_cols = {}
+        n = len(initialbinarytable)
+        idx = initialbinarytable.index
+        for k, v in list(BSEDict.items()):
+            # warn the user if they are overwriting a value
+            if k in initialbinarytable.columns:
+                warnings.warn(
+                    "The value for {0} in initial binary table is being overwritten by the value of {0} "
+                    "from either the params file or the BSEDict.".format(k)
+                )
+
+            # handle special cases where we need to expand arrays into multiple columns
             if k == 'natal_kick_array':
-                assign_natal_kick_array = [BSEDict['natal_kick_array']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(natal_kick_array=assign_natal_kick_array)
-                for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
-                    for sn_idx in range(2):
-                        column_name_sn = column_name + '_{0}'.format(sn_idx + 1)
-                        column_values = pd.Series([BSEDict['natal_kick_array'][sn_idx][idx]] * len(initialbinarytable),
-                                                  index=initialbinarytable.index,
-                                                  name=column_name_sn)
-                        kwargs1 = {column_name_sn: column_values}
-                        initialbinarytable = initialbinarytable.assign(**kwargs1)
+                initialbinarytable["natal_kick_array"] = [BSEDict['natal_kick_array']] * n
+                for j, column_name in enumerate(NATAL_KICK_COLUMNS):
+                    for sn in range(2):
+                        col = f"{column_name}_{sn+1}"
+                        if col in initialbinarytable.columns:
+                            initialbinarytable[col] = BSEDict['natal_kick_array'][sn][j]
+                        else:
+                            new_cols[col] = BSEDict['natal_kick_array'][sn][j]
+
             elif k == 'qcrit_array':
-                initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
-                for kstar in range(0, 16):
-                    columns_values = pd.Series([BSEDict['qcrit_array'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='qcrit_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = columns_values
+                initialbinarytable["qcrit_array"] = [BSEDict['qcrit_array']] * n
+                for kstar in range(16):
+                    col = f"qcrit_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['qcrit_array'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['qcrit_array'][kstar]
+
             elif k == 'fprimc_array':
-                columns_values = [BSEDict['fprimc_array']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(fprimc_array=columns_values)
-                for kstar in range(0, 16):
-                    columns_values = pd.Series([BSEDict['fprimc_array'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='fprimc_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'fprimc_{0}'.format(kstar)] = columns_values
+                initialbinarytable["fprimc_array"] = [BSEDict['fprimc_array']] * n
+                for kstar in range(16):
+                    col = f"fprimc_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['fprimc_array'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['fprimc_array'][kstar]
+                
             elif k == 'alpha1':
-                columns_values = [BSEDict['alpha1']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(alpha1=columns_values)
-                for kstar in range(0, 2):
-                    columns_values = pd.Series([BSEDict['alpha1'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='alpha1_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'alpha1_{0}'.format(kstar)] = columns_values
+                initialbinarytable["alpha1"] = [BSEDict['alpha1']] * n
+                for ii in range(0, 2):
+                    col = f"alpha1_{ii}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['alpha1'][ii]
+                    else:
+                        new_cols[col] = BSEDict['alpha1'][ii]
+                 
             elif k == 'acc_lim':
-                columns_values = [BSEDict['acc_lim']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(acc_lim=columns_values)
+                initialbinarytable["acc_lim"] = [BSEDict['acc_lim']] * n
                 for kstar in range(0,2):
-                    columns_values = pd.Series([BSEDict['acc_lim'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='acc_lim_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'acc_lim_{0}'.format(kstar)] = columns_values
+                    col = f"acc_lim_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['acc_lim'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['acc_lim'][kstar]
             else:
-                # assigning values this way work for most of the parameters.
-                kwargs1 = {k: v}
-                initialbinarytable = initialbinarytable.assign(**kwargs1)
+                # base case: if it's present, overwrite, if not, add to a list of new columns (see below)
+                if k in initialbinarytable.columns:
+                    initialbinarytable[k] = v
+                else:
+                    new_cols[k] = v
+
+        # for columns that are new to the initial binary table, concat once
+        if new_cols:
+            new_df = pd.DataFrame(new_cols, index=idx)
+            initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
+
+
 
         # Here we perform two checks
         # First, if the BSE parameters are not in the initial binary table
@@ -469,9 +510,47 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(acc_lim=initialbinarytable[ACCLIM_COLUMNS].values.tolist())
 
               
+        # update timesteps based on mass modifier
+        mass_modifier_cols = set(['pts1', 'pts2', 'pts3']).difference(columns_in_passed_initC)
+        if dt_mass_modifiers and len(mass_modifier_cols) != 0:
+            # warn the user if their mass ranges overlap
+            for i in range(len(dt_mass_modifiers)):
+                for j in range(i + 1, len(dt_mass_modifiers)):
+                    m_low_i, m_high_i, _ = dt_mass_modifiers[i]
+                    m_low_j, m_high_j, _ = dt_mass_modifiers[j]
+                    if (m_low_i < m_high_j) and (m_low_j < m_high_i):
+                        overlap_range = (max(m_low_i, m_low_j), min(m_high_i, m_high_j))
+                        warnings.warn(
+                            f"Mass ranges for timestep modifiers overlap. You passed {dt_mass_modifiers[i]} "
+                            f"and {dt_mass_modifiers[j]} which have overlapping mass ranges in {overlap_range}. "
+                            f"This will result in *both* timestep modifiers being applied in the overlap region."
+                            "If intentional, separate the overlap region into its own mass range with its "
+                            "own modifier to avoid this warning."
+                        )
+
+            # apply the modifiers to the appropriate systems based on the primary mass, left->right
+            for m_low, m_high, mod in dt_mass_modifiers:
+                if mod <= 0:
+                    raise ValueError(f"Timestep modifiers must be positive. You passed {mod} for the "
+                                     f"mass range {m_low} to {m_high}.")
+                mask = (initialbinarytable['mass_1'] >= m_low) & (initialbinarytable['mass_1'] < m_high)
+                for col in mass_modifier_cols:
+                    initialbinarytable.loc[mask, col] *= mod
+
         # need to ensure that the order of parameters that we pass to BSE
         # is correct
         initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].to_dict('records')
+
+        # ensure that metallicity is in the valid range (Z in [1e-4, 0.03])
+        low_met_mask = (initialbinarytable["metallicity"] < 1e-4)
+        high_met_mask = (initialbinarytable["metallicity"] > 0.03)
+        if any(low_met_mask | high_met_mask):
+            raise ValueError(
+                f"COSMIC only supports metallicities in the range [1e-4, 0.03]. You have {sum(low_met_mask)} "
+                f"systems with metallicity below 1e-4 and {sum(high_met_mask)} systems with metallicity "
+                "above 0.03. Some examples of problematic binaries have the following bin_nums: "
+                f"{initialbinarytable['bin_num'][low_met_mask | high_met_mask].values[:5]}."
+            )
 
         # we use different columns to save the BSE parameters because some
         # of the parameters are list/arrays which we instead save as
@@ -551,10 +630,19 @@ class Evolve(object):
 
         natal_kick_arrays = np.vstack(output[:, 4])
         natal_kick_arrays = natal_kick_arrays.reshape(-1, 1, len(FLATTENED_NATAL_KICK_COLUMNS))
+
+        # update initial table with sampled kicks
+        to_add = {}
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-            # assigning values this way work for most of the parameters.
-            kwargs1 = {column: natal_kick_arrays[:, :, idx]}
-            initialbinarytable = initialbinarytable.assign(**kwargs1)
+            if column not in initialbinarytable.columns:
+                to_add[column] = natal_kick_arrays[:, 0, idx]
+            else:
+                initialbinarytable[column] = natal_kick_arrays[:, 0, idx]
+
+        # if kicks weren't already present, add them
+        if to_add:
+            natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
+            initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                                  columns=KICK_COLUMNS,
@@ -604,8 +692,14 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.flags.wdflag = f["wdflag"]
         _evolvebin.flags.rtmsflag = f["rtmsflag"]
         _evolvebin.snvars.pisn = f["pisn"]
+        _evolvebin.snvars.ppi_co_shift = f["ppi_co_shift"]
+        _evolvebin.snvars.ppi_extra_ml = f["ppi_extra_ml"]
         _evolvebin.flags.bhflag = f["bhflag"]
         _evolvebin.flags.remnantflag = f["remnantflag"]
+        _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
+        _evolvebin.snvars.maltsev_fallback = f["maltsev_fallback"]
+        _evolvebin.snvars.maltsev_pf_prob = f["maltsev_pf_prob"]
+        _evolvebin.snvars.fryer_mass_limit = f["fryer_mass_limit"]
         _evolvebin.ceflags.cekickflag = f["cekickflag"]
         _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
         _evolvebin.ceflags.cehestarflag = f["cehestarflag"]
@@ -634,6 +728,7 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.windvars.epsnov = f["epsnov"]
         _evolvebin.windvars.eddfac = f["eddfac"]
         _evolvebin.windvars.gamma = f["gamma"]
+        _evolvebin.windvars.lbv_flag = f["LBV_flag"]
         _evolvebin.flags.bdecayfac = f["bdecayfac"]
         _evolvebin.magvars.bconst = f["bconst"]
         _evolvebin.magvars.ck = f["ck"]
@@ -652,6 +747,8 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
+        _evolvebin.snvars.mm_mu_ns = f["mm_mu_ns"]
+        _evolvebin.snvars.mm_mu_bh = f["mm_mu_bh"]
         _evolvebin.cmcpass.using_cmc = 0
         
         if f["stellar_engine"] == "sse":

@@ -1,0 +1,165 @@
+name: Flag CMC review for cosmic changes
+
+on:
+  pull_request_target:
+    types: [opened]
+    paths:
+      - 'src/cosmic/evolve.py'
+      - 'src/cosmic/data/cosmic-settings.json'
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  flag-cmc-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: decide whether to flag PR
+        id: decide
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const SETTINGS_PATH = 'src/cosmic/data/cosmic-settings.json';
+
+            // helper: fetch file content at a specific ref (sha/branch)
+            async function fetchText(path, ref) {
+              const res = await github.rest.repos.getContent({ owner, repo, path, ref });
+              if (Array.isArray(res.data) || !res.data.content) {
+                throw new Error(`unexpected content response for ${path} at ${ref}`);
+              }
+              const buff = Buffer.from(res.data.content, res.data.encoding || 'base64');
+              return buff.toString('utf8');
+            }
+
+            // helper: count keys on the object with category === "bse"
+            // json is expected to be an array: [{category: "blah", ...}, {category: "bse", ...}]
+            // counts top-level keys excluding "category"
+            function bseKeyCount(jsonVal) {
+              if (!Array.isArray(jsonVal)) return 0;
+
+              const bseObj = jsonVal.find(
+                (x) => x && typeof x === 'object' && !Array.isArray(x) && x.category === 'bse'
+              );
+
+              if (!bseObj) return 0;
+
+              return Object.keys(bseObj).filter((k) => k === 'settings').length;
+            }
+
+            // list changed files in the PR
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number,
+              per_page: 100,
+            });
+
+            const changed = new Set(files.map(f => f.filename));
+            const changedEvolve = changed.has('src/cosmic/evolve.py');
+            const changedSettings = changed.has(SETTINGS_PATH);
+
+            let shouldFlag = false;
+            let reason = '';
+
+            // if evolve changed, always flag
+            if (changedEvolve) {
+              shouldFlag = true;
+              reason = 'evolve file changed, probably needs CMC review';
+            } else if (changedSettings) {
+              // only flag if bse key-count changes between base and head
+              const baseSha = context.payload.pull_request.base.sha;
+              const headSha = context.payload.pull_request.head.sha;
+
+              try {
+                const baseText = await fetchText(SETTINGS_PATH, baseSha);
+                const headText = await fetchText(SETTINGS_PATH, headSha);
+
+                const baseJson = JSON.parse(baseText);
+                const headJson = JSON.parse(headText);
+
+                const baseCount = bseKeyCount(baseJson);
+                const headCount = bseKeyCount(headJson);
+
+                if (baseCount !== headCount) {
+                  shouldFlag = true;
+                  reason = `bse key count changed (${baseCount} -> ${headCount})`;
+                } else {
+                  shouldFlag = false;
+                  reason = `bse key count unchanged (${baseCount})`;
+                }
+              } catch (err) {
+                // if parsing/fetching fails, be conservative and flag
+                shouldFlag = true;
+                reason = `could not compare bse key count safely (${err.message}); flagging for review`;
+              }
+            }
+
+            core.setOutput('should_flag', shouldFlag ? 'true' : 'false');
+            core.setOutput('reason', reason);
+
+      - name: add "needs-cmc-review" label
+        if: steps.decide.outputs.should_flag == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelName = 'needs-cmc-review';
+
+            // ensure the label exists, or create it
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+              });
+            } catch (error) {
+              if (error.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: labelName,
+                  color: 'fbca04',
+                  description: 'PR touches cosmic core/settings and needs CMC review',
+                });
+              } else {
+                throw error;
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [labelName],
+            });
+
+      - name: comment to request CMC review
+        if: steps.decide.outputs.should_flag == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reason = `${{ toJSON(steps.decide.outputs.reason) }}`.replace(/^"|"$/g, '');
+
+            const body = `
+            🚨 **CMC review requested**
+
+            This pull request modifies one or more of:
+            - \`src/cosmic/evolve.py\`
+            - \`src/cosmic/data/cosmic-settings.json\` (only flagged when \`category: "bse"\` key-count changes)
+
+            **Trigger:** ${reason}
+
+            A CMC developer should review this PR to ensure corresponding changes are propagated upstream as needed.
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

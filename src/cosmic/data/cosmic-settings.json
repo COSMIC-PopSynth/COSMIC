@@ -122,6 +122,14 @@
                         "description": "As <code>raghavan10</code> but with different close binary fractions following <a href='https://ui.adsabs.harvard.edu/abs/2019ApJ...875...61M/abstract'>Moe+2019</a>"
                     },
                     {
+                        "name": "martinez26",
+                        "description": "Uses <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> for binaries with a primary massive enough to undergo an FeCCSN with an upper limit at 3000 days and <code class='docutils literal notranslate'><span class='pre'>raghavan10</span></code> for low mass binaries. The mass threshold is metallicity dependent, and assumes zsun = 0.02, and standard winds. Used in <a href='https://ui.adsabs.harvard.edu/abs/2025arXiv251123285M/abstract'>Martinez+2026</a>."
+                    },
+                    {
+                        "name": "martinez26_ecsn",
+                        "description": "Same as <code class='docutils literal notranslate'><span class='pre'>martinez26</span></code> but with the <code class='docutils literal notranslate'><span class='pre'>sana12</span></code> power law orbital period distribution for primaries massive enough to undergo an ECSN instead of an FeCCSN."
+                    },
+                    {
                         "name": "custom",
                         "description": "Sample from a custom power law. The user provides a dictionary of min, max and slope values for the power law."
                     }
@@ -156,16 +164,20 @@
                 "name": "qmin",
                 "description": "Minimum mass ratio for sampling the secondary mass <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
                 "type": "number",
-                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options-preface": "The assumed mass ratio distribution is flat in \\(q \\equiv m_2 / m_1\\). NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None or 0 respectively.",
                 "options": [
                     {
-                        "name": "values in [0, 1]",
+                        "name": "range [0, 1]",
                         "description": "Sets the minimum mass ratio"
                     },
                     {
                         "name": -1,
                         "description": "Set the minimum mass ratio such that the pre-MS lifetime of the secondary is not longer than the full lifetime of the primary if it were to evolve as a single star",
                         "default": true
+                    },
+                    {
+                        "name": 0,
+                        "description": "Ignore qmin, use m2_min instead"
                     }
                 ]
             },
@@ -173,15 +185,15 @@
                 "name": "m2_min",
                 "description": "Minimum secondary mass for sampling <br><i>[Only used when <code>sampling_method = independent</code>]</i>",
                 "type": "number",
-                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified.",
+                "options-preface": "NOTE: only one of <code>qmin</code> and <code>m2_min</code> should be specified as something other than None or 0 respectively.",
                 "options": [
                     {
                         "name": "positive values",
                         "description": "Sample the secondary mass uniformly between <code>m2_min</code> and <code>mass_1</code>"
                     },
                     {
-                        "name": 0.1,
-                        "description": "Default value",
+                        "name": "None",
+                        "description": "Default value (ignore, use <code>qmin</code>)",
                         "default": true
                     }
                 ]
@@ -201,8 +213,8 @@
                         "description": "Primary mass dependent binary fraction following van Haaften+05"
                     },
                     {
-                        "name": "offner22",
-                        "description": "Primary mass dependent binary fraction following Offner+22"
+                        "name": "offner23",
+                        "description": "Primary mass dependent binary fraction following Offner+23"
                     },
                     {
                         "name": 0.5,
@@ -266,6 +278,23 @@
                         "default": true
                     }
                 ]
+            },
+            {
+                "name": "keep_singles",
+                "description": "Sets whether to keep single stars in the sampled population",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Keep single stars in the sampled population"
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not keep single stars in the sampled population",
+                        "default": true
+                    }
+                ]
             }
         ]
     },
@@ -306,12 +335,12 @@
                         "default": true
                     },
                     {
-                        "name": "massc_1",
-                        "description": "Primary core mass"
+                        "name": "massc_co_layer_1",
+                        "description": "Primary carbon-oxygen core mass"
                     },
                     {
-                        "name": "massc_2",
-                        "description": "Secondary core mass"
+                        "name": "massc_co_layer_2",
+                        "description": "Secondary carbon-oxygen core mass"
                     },
                     {
                         "name": "rad_1",
@@ -335,7 +364,7 @@
                         "default": true
                     },
                     {
-                        "name": "{'mass_1' : [5, 10], 'sep' : [0, 10]}",
+                        "name": "{\"mass_1\" : [5, 10], \"sep\" : [0, 10]}",
                         "description": "For example, this specifies that the primary mass must be between 5 and 10 solar masses, and the separation must be between 0 and 10 Rsun."
                     }
                 ]
@@ -518,6 +547,11 @@
                 "options-preface": "",
                 "options": [
                     {
+                        "name": -1,
+                        "description": "No wind mass loss",
+                        "version_added": "3.7.2"
+                    },
+                    {
                         "name": 0,
                         "description": "Standard SSE/BSE (<a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>)"
                     },
@@ -594,7 +628,7 @@
                 "options-preface": "\\( 10^{-13} {\\rm \\ \\texttt{hewind} \\ } L^{2/3}\\) gives He star mass-loss. Equivalent to \\(1 - \\mu\\) in the last equation on <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000, page 19</a>.",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Sets the helium star mass loss parameter"
                     },
                     {
@@ -632,7 +666,7 @@
                 "options-preface": "Corresponds to \\(\\mu_w\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 11</a>",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Sets the wind accretion efficiency factor"
                     },
                     {
@@ -656,6 +690,28 @@
                         "name": 1.5,
                         "description": "Default value",
                         "default": true
+                    }
+                ]
+            },
+            {
+                "name": "LBV_flag",
+                "description": "Selects the model for Luminous Blue Variable (LBV) mass loss",
+                "type": "dropdown",
+                "options-preface": "",
+                "version_added": "3.7.2",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "No LBV mass loss"
+                    },
+                    {
+                        "name": 1,
+                        "description": "LBV mass loss following <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a>",
+                        "default": true
+                    },
+                    {
+                        "name": 2,
+                        "description": "LBV mass loss following <a href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>"
                     }
                 ]
             },
@@ -694,7 +750,7 @@
                         "default": true
                     },
                     {
-                        "name": -1.0,
+                        "name": "negative values",
                         "description": "Uses a fixed value (i.e. fixes \\( \\lambda \\) to a value of -lambdaf)"
                     }
                 ]
@@ -787,8 +843,7 @@
                     },
                     {
                         "name": 1,
-                        "description": "same as 0 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars",
-                        "default": true
+                        "description": "same as 0 but with <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/1987ApJ...318..794H/abstract'>Hjellming &amp; Webbink 1987</a> for GB/AGB stars"
                     },
                     {
                         "name": 2,
@@ -804,7 +859,8 @@
                     },
                     {
                         "name": 5,
-                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable"
+                        "description": "follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019MNRAS.490.3740N/abstract'>Section 2.3 of Neijssel+2020</a>; mass transfer from stripped stars is always assumed to be dynamically stable",
+                        "default": true
                     }
                 ]
             },
@@ -830,8 +886,7 @@
                 "options": [
                     {
                         "name": 1,
-                        "description": "The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and ECSN/USSN are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>. This setting has additional possible options for <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code> and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>.",
-                        "default": true
+                        "description": "The standard COSMIC kick prescription, where kicks are drawn from a bimodal distribution with standard FeCCSN getting a kick drawn from a Maxwellian distribution with dispersion parameter <code class='docutils literal notranslate'><span class='pre'>sigma</span></code> and ECSN/USSN are drawn according to <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>. This setting has additional possible options for <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code> and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>."
                     },
                     {
                         "name": 2,
@@ -847,11 +902,40 @@
                     },
                     {
                         "name": 5,
-                        "description": "Follows the same prescription as 1, but uses the kick prescription described in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract'>Disberg & Mandel 2025</a> for CCSN."
+                        "description": "Follows the same prescription as 1, but uses the kick prescription described in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2025arXiv250522102D/abstract'>Disberg & Mandel 2025</a> for CCSN.",
+                        "default": true
+                    },
+                    {
+                        "name": 6,
+                        "description": "Follows <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>, where the kick velocity is drawn based on the mass of the formed NS or BH, with scaling parameters that are set with 'mm_mu_ns' and 'mm_mu_bh'."
                     },
                     {
                         "name": "negative values",
-                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work. kickflag=-5 is NOT implemented."
+                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -1,
+                        "description": "As 1, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -2,
+                        "description": "As 2, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -3,
+                        "description": "As 3, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -4,
+                        "description": "As 4, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -5,
+                        "description": "As 5, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                    },
+                    {
+                        "name": -6,
+                        "description": "As 6, but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     }
                 ]
             },
@@ -864,6 +948,10 @@
                     {
                         "name": "positive values",
                         "description": "Sets the dispersion in the Maxwellian for the SN kick velocity in km/s"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "No natal kicks for core-collapse when using Hobbs kicks"
                     },
                     {
                         "name": 265.0,
@@ -904,7 +992,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "values between [0, 1]",
+                        "name": "range (0, 1]",
                         "description": "reduces sigma by bhsigmafrac for BHs"
                     },
                     {
@@ -967,6 +1055,10 @@
                         "description": "sets maximum He-star mass for ECSN; <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>BSE (Hurley+2002)</a> uses ecsn_mlow = 1.6, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>StarTrack (Belczynski+2008)</a> uses ecsn_mlow = 1.85, <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2004ApJ...612.1044P/abstract'>Podsiadlowksi+2004</a> argues that binarity can decrease this to ecsn_mlow = 1.4"
                     },
                     {
+                        "name": 0.0,
+                        "description": "no lower limit on He-star mass for ECSN"
+                    },
+                    {
                         "name": 1.6,
                         "description": "Default choice",
                         "default": true
@@ -1008,42 +1100,13 @@
                 ]
             },
             {
-                "name": "pisn",
-                "description": "Allows for (pulsational) pair instability supernovae and sets either the model to use or the maximum mass of the remnant.",
-                "type": "number",
-                "options-preface": "",
-                "options": [
-                    {
-                        "name": 0,
-                        "description": "no pulsational pair instability SN"
-                    },
-                    {
-                        "name": -1,
-                        "description": " uses the formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4739S/abstract'>Spera &amp; Mapelli 2017</a>"
-                    },
-                    {
-                        "name": -2,
-                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2018arXiv181013412M/abstract'>Table 1 in Marchant+2018</a>",
-                        "default": true
-                    },
-                    {
-                        "name": -3,
-                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract'>Table 5 in Woosley 2019</a>"
-                    },
-                    {
-                        "name": "positive values",
-                        "description": "turns on pulsational pair instability and pair instability SNe, and sets the maximum mass of the allowed remnant (i.e., the bottom of the pair instability mass gap). He core masses between pisn and 65 Msun are assumed to go through pulsational pair instability and limit the He core mass to pisn, while He core masses from 65-135 Msun are assumed have a pair instability SN and leave no remnant."
-                    }
-                ]
-            },
-            {
                 "name": "polar_kick_angle",
                 "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star",
                 "type": "number",
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "values between [0, 90]",
+                        "name": "range [0, 90]",
                         "description": "Sets the opening angle of the SN kick relative to the pole of the exploding star"
                     },
                     {
@@ -1091,9 +1154,45 @@
                 ]
             },
             {
+                "name": "mm_mu_ns",
+                "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6)",
+                "type": "number",
+                "version_added": "3.7.0",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the NS kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
+                    },
+                    {
+                        "name": 400.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "mm_mu_bh",
+                "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription (only relevant if kickflag = 6)",
+                "type": "number",
+                "version_added": "3.7.0",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the BH kick scaling prefactor for the Mandel & Mueller 2020 kick prescription"
+                    },
+                    {
+                        "name": 200.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "settings-section": "Remnant mass",
                 "name": "remnantflag",
-                "description": "Determines the remnant mass prescription used for NSs and BHs.",
+                "description": "Determines the remnant mass prescription used for NSs and BHs. Note that <code class='docutils literal notranslate'><span class='pre'>rembar_massloss</span></code> is only used when <code class='docutils literal notranslate'><span class='pre'>remnantflag</span></code> >= 1.",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
@@ -1117,6 +1216,34 @@
                         "name": 4,
                         "description": "follows the delayed prescription from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2012ApJ...749...91F/abstract'>Fryer+2012</a>. This fills the mass gap between neutron stars and black holes.",
                         "default": true
+                    },
+                    {
+                        "name": 5,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>. The method is stochastic. NOTE: We recommend that this prescription be used in conjunction with the Mandel &amp; Mueller 2020 kick prescription (kickflag = 6) and with mxns set to 2.0 Msun and rembar_massloss set to 0.1 Msun.",
+                        "version_added": "3.7.0"
+                    },
+                    {
+                        "name": 6,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2025A%26A...700A..20M/abstract'>Maltsev+2025</a>, with additions from <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251007573W/abstract'>Willcox+2025</a> for the definition of BH masses.",
+                        "version_added": "3.7.0"
+                    }
+                ]
+            },
+            {
+                "name": "fryer_mass_limit",
+                "description": "Sets the mass limit to use when applying a remnant mass prescription from Fryer+12 (remnantflag=3 or 4).",
+                "type": "dropdown",
+                "version_added": "3.7.2",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Limit remnant mass to the total stellar mass at the time of core collapse",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Limit remnant mass to the total <b>core mass</b> at the time of core collapse"
                     }
                 ]
             },
@@ -1148,7 +1275,7 @@
                         "description": "sets the maximum amount of mass loss, which should be about 10% of the maximum mass of an iron core (\\({\\sim 5 \\mathrm{M}_\\odot}\\) Fryer, private communication)"
                     },
                     {
-                        "name": "values in [-1, 0)",
+                        "name": "range [-1, 0]",
                         "description": "assumes that proto-compact objects lose a constant fraction of their baryonic mass when collapsing to a black hole, such that \\(M_{\\rm rem} = (1 + \\texttt{rembar\\_massloss}) M_{\\rm rem}\\) (e.g., rembar_massloss = -0.1 gives the black hole a gravitational mass that is 90% of the proto-compact object's baryonic mass)"
                     },
                     {
@@ -1171,6 +1298,138 @@
                     {
                         "name": 1,
                         "description": "Apply the limit",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_mode",
+                "description": "Sets the mode to use Maltsev remnant mass prescription (only relevant if remnantflag = 6)",
+                "type": "number",
+                "version_added": "3.7.0",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Extrapolate Maltsev+25 fits to the full range of metallicities",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Extrapolate Maltsev+25 fits only within Z/Zsun = [1/50, 1], use boundary values outside this range"
+                    },
+                    {
+                        "name": 2,
+                        "description": "No extrapolation: use Maltsev+25 fits only within Z/Zsun = [1/10, 1], use boundary values outside this range"
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_fallback",
+                "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription (only relevant if remnantflag = 6). This fallback fraction, \\(f_{\\rm fallback}\\), is used to calculate the remnant mass by calculating \\(M_{\\rm rem} = M_{\\rm NS} + f_{\\rm fallback} (M_{\\rm core, total} - M_{\\rm NS})\\), where this prescription assumes that \\(M_{\\rm NS} = 1.4 \\, \\mathrm{M}_\\odot\\).",
+                "type": "number",
+                "version_added": "3.7.0",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "range [0, 1]",
+                        "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
+                    },
+                    {
+                        "name": 0.5,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "maltsev_pf_prob",
+                "description": "Sets the probability of partial fallback leading to BH formation occurring in the Maltsev remnant mass prescription when the CO core mass is in the partial fallback regime of \\(M_2 \\le M_{\\rm CO} \\le M_3\\) (only relevant if remnantflag = 6)",
+                "type": "number",
+                "version_added": "3.7.0",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "range [0, 1]",
+                        "description": "Sets the probability of partial fallback leading to BH formation in the Maltsev remnant mass prescription"
+                    },
+                    {         
+                        "name": 0.1,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "pisn",
+                "description": "Allows for (pulsational) pair instability supernovae and sets either the model to use or the maximum mass of the remnant.",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "no pulsational pair instability SN"
+                    },
+                    {
+                        "name": -1,
+                        "description": " uses the formulae from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017MNRAS.470.4739S/abstract'>Spera &amp; Mapelli 2017</a>"
+                    },
+                    {
+                        "name": -2,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2018arXiv181013412M/abstract'>Table 1 in Marchant+2018</a>",
+                        "default": true
+                    },
+                    {
+                        "name": -3,
+                        "description": "uses a polynomial fit to <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2019ApJ...878...49W/abstract'>Table 5 in Woosley 2019</a>"
+                    },
+                    {
+                        "name": -4,
+                        "description": "Uses the top-down approach from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2022RNAAS...6...25R/abstract'>Renzo+2022</a>, with adjustable parameters from <a class='reference external' href='https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract'>Hendriks+2023</a>",
+                        "version_added": "3.7.2"
+                    },
+                    {
+                        "name": "positive values",
+                        "description": "turns on pulsational pair instability and pair instability SNe, and sets the maximum mass of the allowed remnant (i.e., the bottom of the pair instability mass gap). He core masses between pisn and 65 Msun are assumed to go through pulsational pair instability and limit the He core mass to pisn, while He core masses from 65-135 Msun are assumed have a pair instability SN and leave no remnant."
+                    }
+                ]
+            },
+            {
+                "name": "ppi_co_shift",
+                "description": "Shifts the CO core mass thresholds for pulsational pair instability and pair instability SNe by a constant amount in COSMIC's implementation of the Renzo+2022/Hendriks+2023 prescription (only relevant if pisn = -4). Default threshold is 38 Msun.",
+                "type": "number",
+                "version_added": "3.7.2",
+                "options-preface": "Note the default threshold is 38 Msun.",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Shifts the CO core mass threshold upwards to higher masses"
+                    },
+                    {
+                        "name": "negative values",
+                        "description": "Shifts the CO core mass threshold downwards to lower masses"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default choice: No change",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "ppi_extra_ml",
+                "description": "Sets the amount of extra mass loss in Msun that is applied to stars that go through pulsational pair instability in COSMIC's implementation of the Renzo+2022/Hendriks+2023 prescription (only relevant if pisn = -4). Default is 0 Msun.",
+                "type": "number",
+                "version_added": "3.7.2",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Extra mass loss reduces the final remnant mass"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "Default choice: No extra mass loss",
                         "default": true
                     }
                 ]
@@ -1204,7 +1463,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Sets either the spin of all BHs or the upper limit of the uniform distribution for BH spins (see bhspinflag)"
                     },
                     {
@@ -1240,17 +1499,21 @@
                 "type": "number",
                 "options": [
                     {
-                        "name": "1",
-                        "description": "mass transfer rate is limited by the Eddington rate following Equation 67 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",
+                        "name": "positive values",
+                        "description": "restrict accretion limit to fraction of Eddington (sub- or super-Eddington accretion)"
+                    },
+                    {
+                        "name": 0,
+                        "description": "no mass transfer onto compact objects"
+                    },
+                    {
+                        "name": 1,
+                        "description": "mass transfer rate is limited by the Eddington rate following Equation 67 in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>"
+                    },
+                    {
+                        "name": 10,
+                        "description": "mass transfer rate is limited to 10x the Eddington rate",
                         "default": true
-                    },
-                    {
-                        "name": "values > 1",
-                        "description": "permit super-Eddington accretion up to value <code>eddfac</code>"
-                    },
-                    {
-                        "name": "values in [0, 1]",
-                        "description": "restrict accretion limit to fraction of Eddington (sub-Eddington accretion)"
                     }
                 ]
             },
@@ -1276,6 +1539,10 @@
                     {
                         "name": "positive values",
                         "description": "assumes that the lost material takes away a fraction <code>gamma</code> of the orbital angular momentum"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "no angular momentum loss from the system due to mass loss"
                     }
                 ]
             },
@@ -1319,8 +1586,12 @@
                         "description": "limited to 1x the thermal rate of the accretor for all stars"
                     },
                     {
-                        "name": ">= 0",
+                        "name": "positive values",
                         "description": "sets overall fraction of donor material that is accreted, with the rest being lost from the system (<code>acc_lim = 0.5</code> assumes 50% accretion efficiency as in <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2008ApJS..174..223B/abstract'>Belczynski+2008</a>)"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "no limit on accretion during Roche-lobe overflow"
                     },
                     {
                         "name": "[-1, -1]",
@@ -1423,7 +1694,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "Retains epsnov fraction of accreted matter"
                     },
                     {
@@ -1493,7 +1764,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive values",
+                        "name": "range [0, 1]",
                         "description": "sets the mixing factor in main sequence star collisions"
                     },
                     {

@@ -1,7 +1,14 @@
 project('cosmic', 
     'c',
     'fortran',
-    version : '4.0.0',
+    version: run_command(
+        'python3',
+        [
+            '-c',
+            'import sys; ns={}; exec(open(sys.argv[1]).read(), ns); print(ns["__version__"])',
+            join_paths(meson.current_source_dir(), 'src', 'cosmic', '_version.py')
+        ]
+    ).stdout().strip(),
     default_options: ['warning_level=0', 'optimization=3'],
 )
 
@@ -37,14 +44,14 @@ lib_source = [
     'src/cosmic/src/mrenv.f',
     'src/cosmic/src/ran3.f',
     'src/cosmic/src/rl.f',
+    'src/cosmic/src/hrdiag.f',
+    'src/cosmic/src/star.f',
     'src/cosmic/src/concatkstars.f',
     'src/cosmic/src/comprad.f',
     'src/cosmic/src/bpp_array.f',
     'src/cosmic/src/checkstate.f',
     'src/cosmic/src/deltat.f',
     'src/cosmic/src/mlwind.f',
-    'src/cosmic/src/hrdiag.f',
-    'src/cosmic/src/star.f',
     'src/cosmic/src/zcnsts.f',
     'src/cosmic/src/SSE/SSE_deltat.f',
     'src/cosmic/src/SSE/SSE_mlwind.f',

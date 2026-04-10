@@ -10,7 +10,7 @@
       INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,windflag,qcflag
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag,rtmsflag
       INTEGER htpmb,ST_cr,ST_tide,bdecayfac,grflag,bhms_coll_flag
-      INTEGER wd_mass_lim
+      INTEGER wd_mass_lim,maltsev_mode
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
@@ -26,21 +26,28 @@
       COMMON /METVARS/ zsun
       REAL*8 neta,bwind,hewind,beta,xi,acc2,epsnov
       REAL*8 eddfac,gamma
+      INTEGER LBV_flag
       COMMON /WINDVARS/ neta,bwind,hewind,beta,xi,acc2,epsnov,
-     &                  eddfac,gamma
+     &                  eddfac,gamma,LBV_flag
       REAL*8 alpha1(2),lambdaf
       REAL*8 qcrit_array(16)
       COMMON /CEVARS/ qcrit_array,alpha1,lambdaf
       REAL*8 bconst,CK
       COMMON /MAGVARS/ bconst,CK
-      INTEGER kickflag
+      INTEGER kickflag,fryer_mass_limit
       REAL*8 sigma,sigmadiv,bhsigmafrac,pisn,mxns
       REAL*8 polar_kick_angle
+      REAL*8 ppi_co_shift,ppi_extra_ml
       REAL*8 ecsn,ecsn_mlow,bhspinmag,rembar_massloss
+      REAL*8 mm_mu_ns, mm_mu_bh, maltsev_fallback,maltsev_pf_prob
       REAL*8 natal_kick_array(2,5)
+      REAL*8 mc_he(2),mc_co(2)
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
      &            polar_kick_angle,pisn,ecsn,ecsn_mlow,
-     &            bhspinmag,mxns,rembar_massloss,kickflag
+     &            bhspinmag,mxns,rembar_massloss,
+     &            mc_he,mc_co,mm_mu_ns,mm_mu_bh,maltsev_fallback,
+     &            maltsev_pf_prob,kickflag,fryer_mass_limit,
+     &            ppi_co_shift,ppi_extra_ml
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac
@@ -55,11 +62,11 @@
       COMMON /TSTEPC/ dmmax,drmax
       REAL*8 scm(50000,14),spp(20,3)
       COMMON /SINGLE/ scm,spp
-      REAL*8 bcm(50000,49),bpp(1000,49)
+      REAL*8 bcm(50000,52),bpp(1000,52)
       COMMON /BINARY/ bcm,bpp
-      INTEGER n_col_bpp, n_col_bcm
-      INTEGER col_inds_bpp(49), col_inds_bcm(49)
-      COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm
+      INTEGER n_col_bpp, n_col_bcm, bpp_ind
+      INTEGER col_inds_bpp(52), col_inds_bcm(52)
+      COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm,bpp_ind
 *
       INTEGER using_metisse, using_sse
       COMMON /SE_FLAGS/ using_metisse, using_sse

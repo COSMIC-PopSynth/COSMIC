@@ -33,6 +33,13 @@ import glob
 import re
 from pathlib import Path
 import h5py as h5
+import re
+
+import sys
+if sys.version_info >= (3, 9):
+    from importlib.resources import files as io_files
+else:
+    from importlib_resources import files as io_files
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -57,8 +64,6 @@ __all__ = [
     "check_initial_conditions",
     "convert_kstar_evol_type",
     "parse_inifile",
-    "save_initC",
-    "load_initC",
     "pop_write",
     "a_from_p",
     "p_from_a",
@@ -74,6 +79,7 @@ __all__ = [
     "read_other_track",
     "read_eep_directory",
     "to_f2py_str_array"
+    "explain_setting",
 ]
 
 
@@ -362,77 +368,6 @@ def conv_select(bcm_save, bpp_save, final_kstar_1, final_kstar_2, method, conv_l
     return conv_save, conv_lims_bin_num
 
 
-def save_initC(filename, initC, key="initC", settings_key="initC_settings", force_save_all=False):
-    """Save an initC table to an HDF5 file.
-
-    Any column where every binary has the same value (setting) is saved separately with only a single copy
-    to save space.
-
-    This will take slightly longer (a few seconds instead of 1 second) to run but will save you around
-    a kilobyte per binary, which adds up!
-
-    Parameters
-    ----------
-    filename : `str`
-        Filename/path to the HDF5 file
-    initC : `pandas.DataFrame`
-        Initial conditions table
-    key : `str`, optional
-        Dataset key to use for main table, by default "initC"
-    settings_key : `str`, optional
-        Dataset key to use for settings table, by default "initC_settings"
-    force_save_all : `bool`, optional
-        If true, force all settings columns to be saved in the main table, by default False
-    """
-
-    # for each column, check if all values are the same
-    uniques = initC.nunique(axis=0)
-    compress_cols = [col for col in initC.columns if uniques[col] == 1]
-
-    if len(compress_cols) == 0 or force_save_all:
-        # nothing to compress, just save the whole table
-        initC.to_hdf(filename, key=key)
-    else:
-        # save the main table without the compressed columns
-        initC.drop(columns=compress_cols).to_hdf(filename, key=key)
-
-        # save the compressed columns separately
-        settings_df = pd.DataFrame([{col: initC[col].iloc[0] for col in compress_cols}])
-        settings_df.to_hdf(filename, key=settings_key)
-
-
-def load_initC(filename, key="initC", settings_key="initC_settings"):
-    """Load an initC table from an HDF5 file.
-
-    If settings were saved separately, they are merged back into the main table.
-
-    Parameters
-    ----------
-    filename : `str`
-        Filename/path to the HDF5 file
-    key : `str`, optional
-        Dataset key to use for main table, by default "initC"
-    settings_key : `str`, optional
-        Dataset key to use for settings table, by default "initC_settings"
-
-    Returns
-    -------
-    initC : `pandas.DataFrame`
-        Initial conditions table
-    """
-
-    with h5.File(filename, 'r') as f:
-        has_settings = settings_key in f.keys()
-
-    initC = pd.read_hdf(filename, key=key)
-
-    if has_settings:
-        settings_df = pd.read_hdf(filename, key=settings_key)
-        initC.loc[:, settings_df.columns] = settings_df.values[0]
-
-    return initC
-
-
 def pop_write(
     dat_store,
     log_file,
@@ -669,7 +604,7 @@ def mass_min_max_select(kstar_1, kstar_2, **kwargs):
     secondary_max = kwargs["m_max"] if "m_max" in kwargs.keys() else 150.0
 
     primary_min = kwargs["m1_min"] if "m1_min" in kwargs.keys() else 0.08
-    secondary_min = kwargs["m2_min"] if "m2_min" in kwargs.keys() else 0.08
+    secondary_min = kwargs["m2_min"] if ("m2_min" in kwargs.keys() and kwargs["m2_min"] is not None) else 0.08
 
     if ((primary_min < 0.08) | (secondary_min < 0.08)):
         warnings.warn("Tread carefully, BSE is not equipped to handle stellar masses less than 0.08 Msun!")
@@ -1298,504 +1233,153 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
             )
                 
     # BSEDict
-    flag = "dtp"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "pts1"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "pts2"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "pts3"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
+    
+    # use the cosmic-settings.json file to define the valid ranges for BSE flags
+    settings_path = io_files("cosmic.data").joinpath('cosmic-settings.json')
+    settings = json.loads(settings_path.read_text(encoding='utf-8'))
 
-    flag = "zsun"
-    if flag in BSEDict.keys():
-        #if BSEDict[flag] != 0.019:
-        #    warnings.warn(
-        #        f"'{flag:s}' is set to a different value than assumed in the mlwind "
-        #        f"prescriptions (you set it to '{BSEDict[flag]:0.3f}' and in mlwind, zsun_wind=0.019)"
-        #    )
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
+    handle_separately = ['qcrit_array', 'natal_kick_array', 'fprimc_array', 'alpha1', 'acc_lim']
 
-    flag = "windflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3, 4]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, 2, or 3, 4 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "rtmsflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "eddlimflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "neta"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "bwind"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "hewind"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
-            raise ValueError(
-                "'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "beta"
-    # --- all numbers are valid
-    flag = "xi"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
-            raise ValueError(
-                "'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "acc2"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
+    # go through the different categories in the settings file
+    for cat in settings:
+        # ignore anything that's not BSE
+        if cat['category'] != "bse":
+            continue
 
-    flag = "alpha1"
-    if flag in BSEDict.keys():
-        for f in BSEDict[flag]:
-            if f <= 0:
-                raise ValueError(
-                    "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                        flag, BSEDict[flag]
-                    )
-                )
-    flag = "lambdaf"
-    # --- all numbers are valid
-    flag = "ceflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "cekickflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "cemergeflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "cehestarflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, or 2 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "grflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "qcflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3, 4, 5]:
-            raise ValueError(
-                "'{0:s}' needs to be set to 0, 1, 2, 3, 4, or 5 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
+        # go through each flag in the settings
+        for flag in cat['settings']:
+            # if the user has provided it
+            if flag['name'] in BSEDict and flag['name'] not in handle_separately:
+                user_val = BSEDict[flag['name']]
 
-    flag = "qcrit_array"
-    if flag in BSEDict.keys():
-        if any(x < 0.0 for x in BSEDict[flag]):
-            raise ValueError(
-                "'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(
-                    flag, *BSEDict[flag]
-                )
-            )
-        if len(BSEDict[flag]) != 16:
-            raise ValueError(
-                "'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(
-                    flag, len(BSEDict[flag])
-                )
-            )
+                # track the valid options and whether the flag has matched any of them
+                options = [o["name"] for o in flag["options"]]
+                flag_is_valid = False
 
-    flag = "kickflag"
-    if flag in BSEDict.keys():
-        if abs(BSEDict[flag]) not in [1, 2, 3, 4, 5]:
-            raise ValueError(
-                "abs('{0:s}') needs to be set to value in 1 - 5 inclusive (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-        if (BSEDict[flag] in [-1, -2]):
-            if (BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6):
-                warnings.warn("You have chosen a kick flag that assumes compact object formation "
-                              "according to Giacobbo & Mapelli 2020, but supplied electron "
-                              "capture SN (ECSN) flags that are inconsistent with this study. "
-                              "To maintain consistency, COSMIC will update your "
-                              "ECSN flags to be ecsn=2.25 and ecsn_mlow=1.6")
-                BSEDict['ecsn'] = 2.25
-                BSEDict['ecsn_mlow'] = 1.6
-    flag = "sigma"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "bhflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, 2, or 3 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ecsn"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ecsn_mlow"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] > BSEDict["ecsn"]) or (BSEDict[flag] < 0.0):
-            raise ValueError(
-                "'{0:s}' needs to be less than 'ecsn', and must be greater than or equal to 0 "
-                "(you set it to '{1:0.2f}')".format(
-                                                    flag, BSEDict[flag]
-                                                   )
-            )
-    flag = "sigmadiv"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] == 0:
-            raise ValueError(
-                "'{0:s}' must be positive or negative (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "aic"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ussn"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "pisn"
-    if flag in BSEDict.keys():
-        if not (
-            (BSEDict[flag] >= 0)
-            or (BSEDict[flag] == -1)
-            or (BSEDict[flag] == -2)
-            or (BSEDict[flag] == -3)
-        ):
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, greater than 0 or equal to -1, -2, or -3 "
-                "(you set it to '{1:0.2f}')".format(
-                                                    flag, BSEDict[flag]
-                                                   )
-            )
-    flag = "bhsigmafrac"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] <= 0) or (BSEDict[flag] > 1):
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 and less than or equal to 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "polar_kick_angle"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) or (BSEDict[flag] > 90):
-            raise ValueError(
-                "'{0:s}' needs to be within the allowed range of [0,90] (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "natal_kick_array"
-    if flag in BSEDict.keys():
-        if np.array(BSEDict[flag]).shape != (2, 5):
-            raise ValueError(
-                "'{0:s}' must have shape (2,5) (you supplied list, or array with shape '{1}')".format(
-                    flag, np.array(BSEDict[flag]).shape
-                )
-            )
+                # check each option
+                for opt in options:
+                    # for strings, we do something more complex
+                    if isinstance(opt, str):
+                        if opt == "positive values" and user_val > 0:
+                            flag_is_valid = True
+                            break
+                        elif opt == "negative values" and user_val < 0:
+                            flag_is_valid = True
+                            break
+                        # for things of the form "range [a,b)"
+                        elif opt.startswith("range"):
+                            # strip to just the brackets
+                            r = opt[5:].strip()
 
-    flag = "remnantflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3, 4]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "mxns"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "rembar_massloss"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < -1:
-            raise ValueError(
-                "'{0:s}' needs to be between [-1,0] or greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
+                            # get the brackets and ensure the format is correct
+                            start_brac, end_brac = r[0], r[-1]
+                            if start_brac not in ["[", "("] or end_brac not in ["]", ")"] or ',' not in r:
+                                raise ValueError(
+                                    f"Range option for {flag['name']} is not formatted correctly."
+                                )
+                            # get the range value and check if the user value is in range
+                            r_lo, r_hi = map(float, r[1:-1].split(","))
+                            lower_ok = user_val > r_lo if start_brac == "(" else user_val >= r_lo
+                            upper_ok = user_val < r_hi if end_brac == ")" else user_val <= r_hi
+                            if lower_ok and upper_ok:
+                                flag_is_valid = True
+                                break
+                    # otherwise, just do a direct comparison
+                    elif user_val == opt:
+                        flag_is_valid = True
+                        break
 
-    flag = "eddfac"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "gamma"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) and (BSEDict[flag] != -1) and (BSEDict[flag] != -2) and (BSEDict[flag] != -3):
-            raise ValueError(
-                "'{0:s}' needs to either be set to -3, -2, -1, or a positive number (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-
-    flag = "tflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to either 0 or 1 (you set it to '{1:d}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ifflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "wdflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] < 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater or equal to 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "epsnov"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
-            raise ValueError(
-                "'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "bhspinflag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2]:
-            raise ValueError(
-                "'{0:s}' needs to be set to 0, 1, or 2 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "bhspinmag"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] < 0) or (BSEDict[flag] > 1):
-            raise ValueError(
-                "'{0:s}' needs to be between 0 and 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "bconst"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ck"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] <= 0:
-            raise ValueError(
-                "'{0:s}' needs to be greater than 0 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-
-    flag = "fprimc_array"
-    if flag in BSEDict.keys():
-        if any(x < 0.0 for x in BSEDict[flag]):
-            raise ValueError(
-                "'{0:s}' values must be greater than or equal to zero (you set them to '[{1:d}]')".format(
-                    flag, *BSEDict[flag]
-                )
-            )
-        if len(BSEDict[flag]) != 16:
-            raise ValueError(
-                "'{0:s}' must be supplied 16 values (you supplied '{1:d}')".format(
-                    flag, len(BSEDict[flag])
-                )
-            )
-    flag = "rejuv_fac"
-    if flag in BSEDict.keys():
-        if (BSEDict[flag] > 1.0) or (BSEDict[flag] < 0.0):
-            raise ValueError(
-                "'{0:s}' must be between 0 and 1 (you set it to '[{1:d}]')".format(
-                    flag, *BSEDict[flag]
-                )
-            )
-    flag = "rejuv_flag"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "htpmb"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [-1, 0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to -1, 0 or 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "bdecayfac"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ST_cr"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "ST_tide"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
-            raise ValueError(
-                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "don_lim"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [-1, -2]:
-            raise ValueError(
-                "'{0:s}' needs to be set to -1 or -2 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
-            )
-    flag = "acc_lim"
-    if flag in BSEDict.keys():
-        for f in BSEDict[flag]:
-            if f not in [-1, -2, -3, -4]:
-                if f < 0.0:
+                # if we didn't find a match, raise an error
+                if not flag_is_valid:
                     raise ValueError(
-                        "'{0:s}' needs to be set to -1, -2, -3, -4 or be >=0 (you set it to '{1:0.2f}')".format(
-                            flag, BSEDict[flag]
-                        )
+                        f"{flag['name']} must be one of {options} (you set it to '{user_val}')"
                     )
-            
-    flag = "wd_mass_lim"
-    if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1]:
+
+    if "dtp" in BSEDict.keys():
+        if BSEDict["dtp"] < 0:
             raise ValueError(
-                "'{0:s}' needs to be set to 0 or 1 (you set it to '{1:0.2f}')".format(
-                    flag, BSEDict[flag]
-                )
+                f"dtp needs to be greater than or equal to 0 (you set it to '{BSEDict['dtp']:0.2f}')"
             )
+
+    if "kickflag" in BSEDict.keys():
+        if BSEDict["kickflag"] in [-1, -2] and ((BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6)):
+            warnings.warn("You have chosen a kick flag that assumes compact object formation "
+                            "according to Giacobbo & Mapelli 2020, but supplied electron "
+                            "capture SN (ECSN) flags that are inconsistent with this study. "
+                            "To maintain consistency, COSMIC will update your "
+                            "ECSN flags to be ecsn=2.25 and ecsn_mlow=1.6")
+            BSEDict['ecsn'] = 2.25
+            BSEDict['ecsn_mlow'] = 1.6
+
+    if "ecsn_mlow" in BSEDict.keys() and "ecsn" in BSEDict.keys():
+        if BSEDict["ecsn_mlow"] > BSEDict["ecsn"]:
+            raise ValueError(
+                f"`ecsn_mlow` needs to be less than `ecsn`, (you set `ecsn_mlow` to {BSEDict['ecsn_mlow']} "
+                f"and `ecsn` to {BSEDict['ecsn']})"
+            )
+    
+    # ensure the natal kick array is the correct shape and each value is in the valid range
+    if "natal_kick_array" in BSEDict.keys():
+        shape = np.array(BSEDict["natal_kick_array"]).shape
+        if shape != (2, 5):
+            raise ValueError(
+                f"'natal_kick_array' must have shape (2,5) (you supplied list, or array with shape '{shape}')"
+            )
+        
+        valid_ranges = [
+            (0, np.inf),        # velocity magnitude
+            (-90, 90),          # polar angle
+            (0, 360),           # azimuthal angle
+            (0, 360),           # mean anomaly
+            (-np.inf, np.inf)   # random seed
+        ]
+
+        for i in range(2):
+            for j in range(5):
+                val = BSEDict["natal_kick_array"][i][j]
+                low, high = valid_ranges[j]
+                if not (low <= val <= high) and val != -100.0:
+                    raise ValueError(
+                        f"Value at position ({i},{j}) in 'natal_kick_array' must be in range [{low}, {high}] "
+                        f"(you set it to '{val}')"
+                    )
+
+
+    if "fprimc_array" in BSEDict.keys():
+        if np.any(np.array(BSEDict["fprimc_array"]) < 0.0) or len(BSEDict["fprimc_array"]) != 16:
+            raise ValueError(
+                f"fprimc_array values must be >= 0 and there must be 16 values "
+                f'(you set them to {BSEDict["fprimc_array"]}], length={len(BSEDict["fprimc_array"])})'
+            )
+        
+    if "qcrit_array" in BSEDict.keys():
+        if np.any(np.array(BSEDict["qcrit_array"]) < 0.0) or len(BSEDict["qcrit_array"]) != 16:
+            raise ValueError(
+                f"qcrit_array values must be >= 0 and there must be 16 values "
+                f'(you set them to {BSEDict["qcrit_array"]}], length={len(BSEDict["qcrit_array"])})'
+            )
+        
+    if "alpha1" in BSEDict.keys():
+        if np.any(np.array(BSEDict["alpha1"]) < 0.0) or len(BSEDict["alpha1"]) != 2:
+            raise ValueError(
+                f"All alpha1 values must be >= 0 (you set them to {BSEDict['alpha1']})"
+            )
+        
+    if "acc_lim" in BSEDict.keys():
+        if len(BSEDict["acc_lim"]) != 2:
+            raise ValueError(
+                f"All acc_lim values must be >= 0 (you set them to {BSEDict['acc_lim']})"
+            )
+        for i in range(2):
+            if BSEDict["acc_lim"][i] > 1.0:
+                raise ValueError(
+                    f"All acc_lim float must be between 0 and 1 (you set them to {BSEDict['acc_lim']})"
+                )
+            elif BSEDict["acc_lim"][i] < 0:
+                if BSEDict["acc_lim"][i] not in [-1, -2, -3, -4]:
+                    raise ValueError(
+                        f"All acc_lim values must be >= 0 or one of the following flags: -1, -2, -3, -4 (you set them to {BSEDict['acc_lim']})"
+                    )
 
     return
 
@@ -2429,6 +2013,43 @@ def to_f2py_str_array(pylist, maxlen=256):
         Array of dtype S{maxlen}
     """
     return np.array(pylist, dtype=f"S{maxlen}")
+
+
+def explain_setting(setting):
+    """Provides explanation for a BSE setting from the cosmic-settings.json file
+
+    Parameters
+    ----------
+    setting : str
+        Name of BSE setting to explain
+    """
+    # use the cosmic-settings.json file to define the valid ranges for BSE flags
+    settings_path = io_files("cosmic.data").joinpath('cosmic-settings.json')
+    settings = json.loads(settings_path.read_text(encoding='utf-8'))
+
+    strip_tags = lambda s: re.sub(r'<[^>]+>', '', s).replace("&amp;", "&")
+
+    BOLD = '\033[1m'
+    GREEN = '\033[92m'
+    END = '\033[0m'
+
+    for cat in settings:
+        # ignore anything that's not BSE
+        if cat['category'] != "bse":
+            continue
+
+        # go through each flag in the settings
+        for flag in cat['settings']:
+            if flag['name'] == setting:
+                print(f"\n{BOLD}{flag['name']}{END}")
+                print("-" * len(flag['name']))
+                print(f"{strip_tags(flag['description'])}")
+                print("\nValid options (default marked in green and with *):")
+                for opt in flag['options']:
+                    print(f"  {f'{GREEN}*' if 'default' in opt else '-'} {opt['name']}: {strip_tags(opt['description'])}{END}")
+                return
+            
+    raise ValueError(f"Unknown setting '{setting}'")
 
 
 class VariableKey(object):

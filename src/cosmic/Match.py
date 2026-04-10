@@ -182,7 +182,7 @@ def perform_convergence(conv_params, conv_1, conv_2, log_file):
             )
             match_all.append(match_compute)
 
-    log_file.write("matches for converging population are are: {0}\n".format(match_all))
+    log_file.write("matches for converging population are: {0}\n".format(match_all))
     log_file.write(
         "Number of binaries in converging population is: {0}\n".format(len(conv_1))
     )

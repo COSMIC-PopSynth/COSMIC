@@ -1,5 +1,5 @@
 scipy >= 0.12.1
-numpy == 1.23.5
+numpy >= 1.26.0
 astropy >= 1.1.1
 configparser
 tqdm >= 4.0
@@ -18,11 +18,11 @@ sphinx_rtd_theme
 coverage
 cpp-coveralls
 importlib-metadata < 5.0
-flake8 < 5
 pytest
 pytest-cov
 wheel
 furo
 sphinx-design
 sphinx-copybutton
+sphinx-gallery
 meson

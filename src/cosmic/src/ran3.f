@@ -42,3 +42,47 @@
       RETURN
       END
 ***
+
+
+
+      SUBROUTINE RandomNormal(mean, sigma, idum, result)
+* Generate a normally distributed random number with given mean and sigma
+* using the Box-Muller transform
+
+      real*8 mean, sigma, result
+      integer idum
+      real*8 u1, u2, Z0
+      
+      u1 = ran3(idum)
+      u2 = ran3(idum)
+      Z0 = SQRT(-2.d0*LOG(u1))*COS(2.d0*3.141592653589793d0*u2)
+      result = Z0 * sigma + mean
+
+      RETURN
+      END
+
+
+      SUBROUTINE RandomTruncatedNormal(mu, sigma, idum, lower, upper, x)
+* Generate a random number from a truncated normal distribution
+* with mean mu, standard deviation sigma, truncated to [lower, upper]
+      IMPLICIT NONE
+      REAL*8 mu, sigma, lower, upper, x
+      INTEGER idum, max_attempts, attempt
+
+      attempt = 0
+      max_attempts = 1000
+
+      do
+          attempt = attempt + 1
+          call RandomNormal(mu, sigma, idum, x)  ! for debugging
+          if (x .GE. lower .AND. x .LE. upper)then
+             exit
+          elseif (attempt.ge.max_attempts) then
+            ! use the midpoint if we exceed max attempts
+            x = 0.5d0 * (lower + upper)
+            exit
+          endif
+      end do
+
+      RETURN
+      END

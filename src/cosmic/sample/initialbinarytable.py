@@ -22,28 +22,14 @@
 import numpy as np
 import math
 import sys
+import astropy.units as u
+import astropy.constants as const
 
 import pandas as pd
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
 __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
 __all__ = ["InitialBinaryTable"]
-
-
-G = 6.67384 * math.pow(10, -11.0)
-c = 2.99792458 * math.pow(10, 8.0)
-parsec = 3.08567758 * math.pow(10, 16)
-Rsun = 6.955 * math.pow(10, 8)
-Msun = 1.9891 * math.pow(10, 30)
-day = 86400.0
-rsun_in_au = 215.0954
-day_in_year = 365.242
-sec_in_day = 86400.0
-sec_in_hour = 3600.0
-hrs_in_day = 24.0
-sec_in_year = 3.15569 * 10 ** 7.0
-Tobs = 3.15569 * 10 ** 7.0
-geo_mass = G / c ** 2
 
 INITIAL_CONDITIONS_COLUMNS = []
 
@@ -184,6 +170,17 @@ class InitialBinaryTable:
         bhspin1 = kwargs.pop("bhspin_1", np.zeros(np.array(m1).size))
         bhspin2 = kwargs.pop("bhspin_2", np.zeros(np.array(m1).size))
         tphys = kwargs.pop("tphys", np.zeros(np.array(m1).size))
+
+        # check for sep, if it's given convert to porb, unless both, then throw error
+        sep = kwargs.pop("sep", None)
+        if sep is not None:
+            if porb is not None:
+                raise ValueError("Cannot set both sep and porb, set porb=None to use sep")
+            porb = 2.0 * np.pi * np.sqrt((sep * u.Rsun)**3 / (const.G * (m1 + m2) * u.Msun)).to(u.day).value
+
+        # actually warn the user if they passed any unexpected kwargs
+        if len(kwargs) > 0:
+            raise TypeError("Unexpected **kwargs: %r" % (kwargs,))
 
         bin_dat = pd.DataFrame(
             np.vstack(

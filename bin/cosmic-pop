@@ -22,10 +22,12 @@ import numpy as np
 import pandas as pd
 from pandas.errors import PerformanceWarning
 import warnings
+import h5py as h5
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
 from cosmic.evolve import Evolve
+from cosmic._version import __version__
 
 from schwimmbad import MPIPool
 from os import sys
@@ -105,9 +107,9 @@ def parse_commandline():
     parser.add_argument("--binary_state", nargs='+', type=int)
     parser.add_argument("--sampling_method")
     parser.add_argument("--primary_model", help="Chooses the initial primary mass function from: salpeter55, kroupa93, kroupa01", type=str)
-    parser.add_argument("--binfrac_model", help="Chooses the binary fraction model from: a float between [0,1], vanHaaften, and offner22", type=binfrac_type)
+    parser.add_argument("--binfrac_model", help="Chooses the binary fraction model from: a float between [0,1], vanHaaften, and offner23", type=binfrac_type)
     parser.add_argument("--ecc_model", help="Chooses the initial eccentricity distribution model from: thermal, uniform, and sana12", type=str)
-    parser.add_argument("--porb_model", help="Chooses the initial orbital period distribution model from: log_uniform and sana12", type=str)
+    parser.add_argument("--porb_model", help="Chooses the initial orbital period distribution model from: log_uniform, sana12, renzo19, raghavan10, moe19, and martinez26", type=str)
     parser.add_argument("--SF_start", help="Sets the time in the past when star formation initiates in Myr", type=float)
     parser.add_argument("--SF_duration", help="Sets the duration of constant star formation in Myr", type=float)
     parser.add_argument("--metallicity", type=float)
@@ -267,18 +269,14 @@ if __name__ == '__main__':
         idx = 0
         log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
 
-    # save configuration settings to output file
-    configuration_settings = {'BSEDict' : BSEDict, 'SSEDict': SSEDict, 'filters' : filters,
-                              'convergence' : convergence, 'sampling' : sampling}
-
-    with warnings.catch_warnings():
-        warnings.simplefilter(action="ignore", category=PerformanceWarning)
-        
-        with pd.HDFStore(dat_store_fname,complib=args.complib,complevel=args.complevel) as dat_store:
-            for k, v in configuration_settings.items():
-                for k1, v1 in v.items():
-                    dat_store.put('config/{0}/{1}/'.format(k, k1), pd.Series(v1))
-            dat_store.put('config/rand_seed/', pd.Series(seed_int))
+    # save configuration settings and COSMIC version to output file
+    with h5.File(dat_store_fname, 'a') as f:
+        # if config already exists, we need to overwrite it
+        if "config" in f:
+            del f["config"]
+        f["config"] = json.dumps({'BSEDict' : BSEDict, 'SSEDict': SSEDict, 'filters' : filters, 
+                                  'convergence' : convergence, 'sampling' : sampling, 'rand_seed': seed_int})
+        f.attrs['COSMIC_version'] = __version__
 
     # Initialize the step counter and convergence array/list
     Nstep = idx - np.mod(idx, args.Nstep)
@@ -293,11 +291,12 @@ if __name__ == '__main__':
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
-        warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
-                      "determine the secondary masses in the initial sample.")
+        if args.qmin is not None and args.m2_min is not None:
+            warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
+                        "determine the secondary masses in the initial sample.")
 
-        log_file.write("You have specified both qmin and m2_min.\n")
-        log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
+            log_file.write("You have specified both qmin and m2_min.\n")
+            log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
 
     if sampling["sampling_method"] == "multidim" and args.Nstep < args.nproc ** 2:
             warnings.warn("`Nstep` is less than the square of `nproc`. You will see repeats with multidim sampling. Consider raising `Nstep`.")
@@ -310,7 +309,8 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if hasattr(args,'qmin') and hasattr(args,'m2_min'):
-                raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
+                if args.qmin != 0.0 and args.m2_min is not None:
+                    raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
             # If qmin is specified, use it to sample the initial binary table
             if hasattr(args,'qmin'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
@@ -451,8 +451,8 @@ if __name__ == '__main__':
             conv_singles_filter = utils.conv_select_singles(bcm_singles, bpp_singles, kstar1_range)
         
         if conv_filter.empty:
-            warnings.warn("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
-            log_file.write("After filtering for desired convegence systems there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
+            warnings.warn("After filtering for desired convergence systems, there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
+            log_file.write("After filtering for desired convergence systems, there were no systems matching your request. It is possible you are suggesting incompatible bin_state choices and pop_select, e.g. bin_state=[0,1], pop_select='disruption'")
 
         bcm_filter = bcm.loc[bcm.bin_num.isin(conv_filter.bin_num)]
         bpp_filter = bpp.loc[bpp.bin_num.isin(conv_filter.bin_num)]
@@ -468,8 +468,8 @@ if __name__ == '__main__':
         # Filter the bin_state based on user specified filters
         bcm_filter, bin_state_nums = utils.filter_bin_state(bcm_filter, bpp_filter, filters, kstar1_range, kstar2_range)
         if bcm_filter.empty:
-            warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep")
-            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up to the number of binaries provessed in each iteration, i.e. Nstep\n")
+            warnings.warn("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up the number of binaries processed in each iteration, i.e. Nstep")
+            log_file.write("After filtering the bcm array for desired systems there were no systems matching your request. It is possible you should up the number of binaries processed in each iteration, i.e. Nstep\n")
         initC_filter = initC_filter.loc[initC_filter.bin_num.isin(bcm_filter.bin_num)]
         kick_info_filter = kick_info_filter.loc[kick_info_filter.bin_num.isin(bcm_filter.bin_num)]
         bpp_filter = bpp_filter.loc[bpp_filter.bin_num.isin(bcm_filter.bin_num)]

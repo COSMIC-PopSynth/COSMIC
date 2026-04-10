@@ -75,33 +75,34 @@ This :class:`pandas.DataFrame` tracks a selection of binary parameters at key ev
 Entries are added with changes in the :ref:`evolve-type-table`.
 All values with a ``_1`` label refer to the primary (i.e., the initially more massive component); the bpp DataFrame also includes the same column for the secondary with ``_1`` replaced by ``_2``
 
-================  =====================================================
-``tphys``         Evolution time [:math:`{\rm{Myr}}`]
-``mass_1``        Primary mass [:math:`{\mathrm{M}_\odot}`]
-``kstar_1``       Evolutionary state of primary (see :ref:`kstar-table`)
-``sep``           Semimajor axis [:math:`{\mathrm{R}_\odot}`]
-``porb``          Orbital period [:math:`{\rm{days}}`]
-``ecc``           Eccentricity
-``RRLO_1``        Primary radius in units of Roche lobe radii
-``evol_type``     Key moment in evolution (see :ref:`evolve-type-table`)
-``aj_1``          Effective age of the primary [:math:`{\rm{Myr}}`]
-``tms_1``         Primary main sequence lifetime [:math:`{\rm{Myr}}`]
-``massc_1``       Primary core mass [:math:`{\mathrm{M}_\odot}`]
-``rad_1``         Primary radius [:math:`{\mathrm{R}_\odot}`]
-``mass0_1``       Previous epoch mass [:math:`{\mathrm{M}_\odot}`]
-``lum_1``         Luminosity of the primary [:math:`{\mathrm{L}_\odot}`]
-``teff_1``        Effective temperature of the primary [:math:`{\mathrm{K}}`]
-``radc_1``        Primary core radius  [:math:`{\mathrm{R}_\odot}`]
-``menv_1``        Mass of the envelope of the primary [:math:`{\mathrm{M}_\odot}`]
-``renv_1``        Radius of the envelope of the primary [:math:`{\mathrm{R}_\odot}`]
-``omega_spin_1``  Angular velocity of the primary [:math:`{\rm{yr}}^{-1}`]
-``B_1``           Neutron star magnetic field [:math:`{\rm{G}}`]
-``bacc_1``        (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion, see Equation 7 in COSMIC paper
-``tacc_1``        Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
-``epoch_1``       Time spent in current evolutionary epoch [:math:`{\rm{Myr}}`]
-``bhspin_1``      Black hole spin magnitude [dimensionless]
-``bin_num``       Unique binary index that is consistent across initial conditions, bcm, bpp, and kick_info DataFrames
-================  =====================================================
+====================  =====================================================
+``tphys``             Evolution time [:math:`{\rm{Myr}}`]
+``mass_1``            Primary mass [:math:`{\mathrm{M}_\odot}`]
+``kstar_1``           Evolutionary state of primary (see :ref:`kstar-table`)
+``sep``               Semimajor axis [:math:`{\mathrm{R}_\odot}`]
+``porb``              Orbital period [:math:`{\rm{days}}`]
+``ecc``               Eccentricity
+``RRLO_1``            Primary radius in units of Roche lobe radii
+``evol_type``         Key moment in evolution (see :ref:`evolve-type-table`)
+``aj_1``              Effective age of the primary [:math:`{\rm{Myr}}`]
+``tms_1``             Primary main sequence lifetime [:math:`{\rm{Myr}}`]
+``massc_he_layer_1``  Primary helium core mass [:math:`{\mathrm{M}_\odot}`]
+``massc_co_layer_1``  Primary carbon-oxygen core mass [:math:`{\mathrm{M}_\odot}`]
+``rad_1``             Primary radius [:math:`{\mathrm{R}_\odot}`]
+``mass0_1``           Previous epoch mass [:math:`{\mathrm{M}_\odot}`]
+``lum_1``             Luminosity of the primary [:math:`{\mathrm{L}_\odot}`]
+``teff_1``            Effective temperature of the primary [:math:`{\mathrm{K}}`]
+``radc_1``            Primary core radius  [:math:`{\mathrm{R}_\odot}`]
+``menv_1``            Mass of the envelope of the primary [:math:`{\mathrm{M}_\odot}`]
+``renv_1``            Radius of the envelope of the primary [:math:`{\mathrm{R}_\odot}`]
+``omega_spin_1``      Angular velocity of the primary [:math:`{\rm{yr}}^{-1}`]
+``B_1``               Neutron star magnetic field [:math:`{\rm{G}}`]
+``bacc_1``            (only for pulsars) :math:`\delta{\mathrm{M}_\odot}` during accretion, see Equation 7 in COSMIC paper
+``tacc_1``            Accretion duration (used for magnetic field decay) [:math:`{\rm{Myr}}`]
+``epoch_1``           Time spent in current evolutionary epoch [:math:`{\rm{Myr}}`]
+``bhspin_1``          Black hole spin magnitude [dimensionless]
+``bin_num``           Unique binary index that is consistent across initial conditions, bcm, bpp, and kick_info DataFrames
+====================  =====================================================
 
 
 
@@ -112,45 +113,46 @@ This :class:`pandas.DataFrame` provides several binary parameters at user-specif
 By default, COSMIC saves only the first and last timestep in the bcm DataFrame.
 All values with a ``_1`` label refer to the primary; the bcm DataFrame also includes the same column for the secondary with ``_1`` replaced by ``_2``
 
-=================  =====================================================
-``tphys``          Evolution time [:math:`\rm{Myr}`]
-``kstar_1``        Evolutionary state of primary (see :ref:`kstar-table`)
-``mass0_1``        Previous evolutionary stage primary mass [:math:`{\mathrm{M}_\odot}`]
-``mass_1``         Primary mass [:math:`{\mathrm{M}_\odot}`]
-``lumin_1``        Primary luminosity [:math:`{\mathrm{L}_\odot}`]
-``rad_1``          Primary radius [:math:`{\mathrm{R}_\odot}`]
-``teff_1``         Primary effective temperature [:math:`{\rm{K}}`]
-``massc_1``        Primary core mass [:math:`{\mathrm{M}_\odot}`]
-``radc_1``         Primary core radius [:math:`{\mathrm{R}_\odot}`]
-``menv_1``         Primary envelope mass [:math:`{\mathrm{M}_\odot}`]
-``renv_1``         Primary envelope radius [:math:`{\mathrm{R}_\odot}`]
-``epoch_1``        Primary epoch [:math:`\rm{Myr}`]
-``omega_spin_1``   Primary spin [:math:`\rm{rad/yr}`]
-``deltam_1``       Primary mass transfer rate [:math:`{\mathrm{M}_\odot/\rm{yr}}`]
-``RRLO_1``         Primary radius in units of Roche lobe radii
-``porb``           Orbital period [:math:`\rm{days}`]
-``sep``            Semimajor axis [:math:`\mathrm{R}_{\odot}`]
-``ecc``            Eccentricity
-``B_1``            Neutron star magnetic field [:math:`{\rm{G}}`]
-``SN_1``           Supernova type:
-
-                    1: Iron core-collapse supernova
-
-                    2: Electron capture supernova
-
-                    3: Ultra-stripped supernova (these happen whenever a He-star undergoes a common envelope with a compact companion)
-
-                    4: Accretion induced collapse supernova
-
-                    5: Merger induced collapse
-
-                    6: Pulsational pair instability
-
-                    7: Pair instability supernova
-``bin_state``      State of the binary: 0 [binary], 1 [merged], 2 [disrupted]
-``merger_type``    String of the kstar's in the merger. For example, two neutron stars that merged will be '1313'. Set to '-001' if binary has not merged. 
-``bin_num``        Unique binary index that is consistent across initial conditions, bcm. bpp, and kick_info DataFrames
-=================  =====================================================
+====================  =====================================================
+``tphys``              Evolution time [:math:`\rm{Myr}`]
+``kstar_1``            Evolutionary state of primary (see :ref:`kstar-table`)
+``mass0_1``            Previous evolutionary stage primary mass [:math:`{\mathrm{M}_\odot}`]
+``mass_1``             Primary mass [:math:`{\mathrm{M}_\odot}`]
+``lumin_1``            Primary luminosity [:math:`{\mathrm{L}_\odot}`]
+``rad_1``              Primary radius [:math:`{\mathrm{R}_\odot}`]
+``teff_1``             Primary effective temperature [:math:`{\rm{K}}`]
+``massc_he_layer_1``  Primary helium core mass [:math:`{\mathrm{M}_\odot}`]
+``massc_co_layer_1``  Primary carbon-oxygen core mass [:math:`{\mathrm{M}_\odot}`]
+``radc_1``             Primary core radius [:math:`{\mathrm{R}_\odot}`]
+``menv_1``             Primary envelope mass [:math:`{\mathrm{M}_\odot}`]
+``renv_1``             Primary envelope radius [:math:`{\mathrm{R}_\odot}`]
+``epoch_1``            Primary epoch [:math:`\rm{Myr}`]
+``omega_spin_1``       Primary spin [:math:`\rm{rad/yr}`]
+``deltam_1``           Primary mass transfer rate [:math:`{\mathrm{M}_\odot/\rm{yr}}`]
+``RRLO_1``             Primary radius in units of Roche lobe radii
+``porb``               Orbital period [:math:`\rm{days}`]
+``sep``                Semimajor axis [:math:`\mathrm{R}_{\odot}`]
+``ecc``                Eccentricity
+``B_1``                Neutron star magnetic field [:math:`{\rm{G}}`]
+``SN_1``               Supernova type:
+    
+                        1: Iron core-collapse supernova
+    
+                        2: Electron capture supernova
+    
+                        3: Ultra-stripped supernova (these happen whenever a He-star undergoes a common envelope with a compact companion)
+    
+                        4: Accretion induced collapse supernova
+    
+                        5: Merger induced collapse
+    
+                        6: Pulsational pair instability
+    
+                        7: Pair instability supernova
+``bin_state``          State of the binary: -1 [single], 0 [binary], 1 [merged], 2 [disrupted]
+``merger_type``        String of the kstar's in the merger. For example, two neutron stars that merged will be '1313'. Set to '-001' if binary has not merged. 
+``bin_num``            Unique binary index that is consistent across initial conditions, bcm. bpp, and kick_info DataFrames
+====================  =====================================================
 
 ``kick_info`` - Table of natal kick information
 -----------------------------------------------
