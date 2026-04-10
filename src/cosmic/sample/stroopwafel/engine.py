@@ -12,7 +12,6 @@ from cosmic.evolve import Evolve
 
 from .mixture_model import GaussianMixture
 from .result import STROOPWAFELResult
-from .constants import KAPPA, NUM_GENERATIONS
 
 
 class AdaptiveSampler:
@@ -44,9 +43,9 @@ class AdaptiveSampler:
     nproc : `int`, optional
         Number of CPU cores for COSMIC, by default 1
     kappa : `float`, optional
-        Gaussian width scaling factor, by default ``KAPPA``
+        Gaussian width scaling factor, by default 1.0
     n_generations : `int`, optional
-        Number of refinement generations, by default ``NUM_GENERATIONS``
+        Number of refinement generations, by default 1
     mc_only : `bool`, optional
         If True, only run exploration (standard Monte Carlo), by default
         False
@@ -56,8 +55,8 @@ class AdaptiveSampler:
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
                  compute_derived, reject_systems, is_interesting,
-                 output_path='output', nproc=1, kappa=KAPPA,
-                 n_generations=NUM_GENERATIONS, mc_only=False, seed=None):
+                 output_path='output', nproc=1, kappa=1.0,
+                 n_generations=1, mc_only=False, seed=None):
         self.param_space = parameter_space
         self.total_systems = total_systems
         self.batch_size = batch_size

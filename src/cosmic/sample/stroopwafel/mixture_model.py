@@ -5,7 +5,7 @@ sampling, PDF evaluation, and EM updates.
 """
 import numpy as np
 from scipy.stats import multivariate_normal, entropy as scipy_entropy
-from .constants import KAPPA, MIN_ENTROPY_CHANGE
+from .constants import MIN_ENTROPY_CHANGE
 
 
 class GaussianMixture:
@@ -38,7 +38,7 @@ class GaussianMixture:
         return self.means.shape[1]
 
     @classmethod
-    def from_hits(cls, hit_samples, param_space, average_density_one_dim, kappa=KAPPA):
+    def from_hits(cls, hit_samples, param_space, average_density_one_dim, kappa=1.0):
         """Create a Gaussian mixture by placing one component at each hit.
 
         Parameters
@@ -51,8 +51,7 @@ class GaussianMixture:
             Characteristic inter-sample spacing,
             ``1 / num_explored ** (1 / D)``.
         kappa : `float`, optional
-            Width scaling factor for the Gaussian covariances, by default
-            ``KAPPA``
+            Width scaling factor for the Gaussian covariances, by default 1.0
 
         Returns
         -------

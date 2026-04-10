@@ -5,7 +5,7 @@ radius, and physical rejection criteria used to discard unphysical binary
 systems prior to evolution.
 """
 import numpy as np
-from .constants import R_COEFF, ZSOL, R_SOL_TO_AU, MINIMUM_SECONDARY_MASS
+from .constants import R_COEFF, ZSOL, R_SOL_TO_AU
 
 
 def get_zams_radius(mass, metallicity):
@@ -68,7 +68,7 @@ def calculate_roche_lobe_radius(mass1, mass2):
 
 
 def default_reject(samples_physical, derived, param_names,
-                   min_secondary_mass=MINIMUM_SECONDARY_MASS):
+                   min_secondary_mass=0.08):
     """Default rejection function for DCO progenitor systems.
 
     Rejects systems where the secondary mass is below the minimum, the
@@ -86,8 +86,7 @@ def default_reject(samples_physical, derived, param_names,
     param_names : `list` of `str`
         Sorted list of parameter names (used to find column indices).
     min_secondary_mass : `float`, optional
-        Minimum allowed secondary mass in solar masses, by default
-        ``MINIMUM_SECONDARY_MASS``
+        Minimum allowed secondary mass in solar masses, by default 0.08
 
     Returns
     -------
