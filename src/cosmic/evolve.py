@@ -198,6 +198,8 @@ class Evolve(object):
 
                 params
 
+            You can also add a progress bar by setting: progress=True
+
         randomseed : `int`, optional, default let numpy choose for you
             If you would like the random seed that the underlying fortran code
             uses to be the same for all of the initial conditions you passed
@@ -236,6 +238,7 @@ class Evolve(object):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
         n_per_block = kwargs.pop('n_per_block', -1)
+        progress = kwargs.pop('progress', False)
 
         if bpp_columns is None:
             bpp_columns = BPP_COLUMNS
@@ -498,6 +501,12 @@ class Evolve(object):
         # evolve one system to get zpars
         _, _, _, _, _, zpars = _evolve_single_system(initial_conditions[0], None)
 
+        # helper to collect results with an optional tqdm progress bar
+        def _collect(pool, func, items, total=None):
+            if progress:
+                return list(tqdm.tqdm(pool.imap(func, items), total=total, desc='Evolving', unit='sys'))
+            return list(pool.map(func, items))
+
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
@@ -511,10 +520,12 @@ class Evolve(object):
                         itr_next = np.min([n_tot, itr_block+n_per_block])
                         initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                         itr_block = itr_next
-                    output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+                    output = _collect(pool, _evolve_multi_system, initial_conditions_blocked,
+                                      total=len(initial_conditions_blocked))
                 else:
                     evolve_args = partial(_evolve_single_system, zpars=zpars)
-                    output = list(pool.map(evolve_args, initial_conditions))
+                    output = _collect(pool, evolve_args, initial_conditions,
+                                      total=len(initial_conditions))
         else:
             # evolve systems
             if n_per_block > 0:
@@ -526,10 +537,12 @@ class Evolve(object):
                     itr_next = np.min([n_tot, itr_block+n_per_block])
                     initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                     itr_block = itr_next
-                output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+                output = _collect(pool, _evolve_multi_system, initial_conditions_blocked,
+                                  total=len(initial_conditions_blocked))
             else:
                 evolve_args = partial(_evolve_single_system, zpars=zpars)
-                output = list(pool.map(evolve_args, initial_conditions))
+                output = _collect(pool, evolve_args, initial_conditions,
+                                  total=len(initial_conditions))
 
         output = np.array(output, dtype=object)
         bpp_arrays = np.vstack(output[:, 1])
@@ -870,7 +883,7 @@ def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
     track_list = utils.read_eep_directory(
                 met_dict_keep['eep_tracks_dir'],
                 fmt_dict_keep)
-    _ = populate_tracks(track_list,is_he)
+    _ = populate_tracks(track_list, is_he)
     return
 
 
