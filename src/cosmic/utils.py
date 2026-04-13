@@ -1266,6 +1266,20 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 f"qcrit_array values must be >= 0 and there must be 16 values "
                 f'(you set them to {BSEDict["qcrit_array"]}], length={len(BSEDict["qcrit_array"])})'
             )
+    
+    if "alpah1" in BSEDict.keys():
+        if np.any(np.array(BSEDict["alpha1"]) < 0.0):
+            raise ValueError(
+                f"alpha1 values must be >= 0"
+                f'(you set them to {BSEDict["alpha1"]}])'
+            )
+        
+    if "acc_lim" in BSEDict.keys():
+        if np.any(np.array(BSEDict["acc_lim"]) not in [-1, -2, -3, -4]) or np.any(np.array(BSEDict["acc_lim"]) < 0.0):
+            raise ValueError(
+                f"acc_lim values must be set to -1, -2, -3, -4 or be >=0 "
+                f'(you set them to {BSEDict["acc_lim"]}])'
+            )
 
     return
 
