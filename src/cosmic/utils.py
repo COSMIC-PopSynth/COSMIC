@@ -1146,7 +1146,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     settings_path = io_files("cosmic.data").joinpath('cosmic-settings.json')
     settings = json.loads(settings_path.read_text(encoding='utf-8'))
 
-    handle_separately = ['qcrit_array', 'natal_kick_array', 'fprimc_array']
+    handle_separately = ['qcrit_array', 'natal_kick_array', 'fprimc_array', 'alpha1', 'acc_lim']
 
     # go through the different categories in the settings file
     for cat in settings:
@@ -1267,7 +1267,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 f'(you set them to {BSEDict["qcrit_array"]}], length={len(BSEDict["qcrit_array"])})'
             )
     
-    if "alpah1" in BSEDict.keys():
+    if "alpha1" in BSEDict.keys():
         if np.any(np.array(BSEDict["alpha1"]) < 0.0):
             raise ValueError(
                 f"alpha1 values must be >= 0"
@@ -1275,11 +1275,13 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
             )
         
     if "acc_lim" in BSEDict.keys():
-        if np.any(np.array(BSEDict["acc_lim"]) not in [-1, -2, -3, -4]) or np.any(np.array(BSEDict["acc_lim"]) < 0.0):
-            raise ValueError(
-                f"acc_lim values must be set to -1, -2, -3, -4 or be >=0 "
-                f'(you set them to {BSEDict["acc_lim"]}])'
-            )
+        for f in BSEDict["acc_lim"]:
+            if f not in [-1, -2, -3, -4]:
+                if f < 0.0:
+                    raise ValueError(
+                        f"acc_lim values must be set to -1, -2, -3, -4 or be >=0 "
+                        f'(you set them to {BSEDict["acc_lim"]})'
+                    )
 
     return
 
