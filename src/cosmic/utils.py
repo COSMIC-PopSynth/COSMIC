@@ -1270,8 +1270,8 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
     if "alpha1" in BSEDict.keys():
         if np.any(np.array(BSEDict["alpha1"]) < 0.0):
             raise ValueError(
-                f"alpha1 values must be >= 0"
-                f'(you set them to {BSEDict["alpha1"]}])'
+                f"alpha1 values must be >= 0 "
+                f'(you set them to {BSEDict["alpha1"]})'
             )
         
     if "acc_lim" in BSEDict.keys():
