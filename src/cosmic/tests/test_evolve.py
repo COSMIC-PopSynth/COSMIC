@@ -20,7 +20,9 @@ TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 PARAMS_INI = os.path.join(TEST_DATA_DIR,'Params.ini')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
 KICK_INITC = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'kick_initial_conditions.h5'), key='initC')
-
+KICK_INITC['maltsev_mode'] = 0
+KICK_INITC['maltsev_fallback'] = 0.5
+KICK_INITC['maltsev_pf_prob'] = 0.1
 init_conds_columns = initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL
 INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
@@ -38,6 +40,9 @@ BSEDict['acc_lim'] = [-1, -1]
 BSEDict['wd_mass_lim'] = 0
 SSEDict = {'stellar_engine': 'sse'}
 BSEDict['kickflag'] = -1
+BSEDict['maltsev_mode'] = 0
+BSEDict['maltsev_fallback'] = 0.5
+BSEDict['maltsev_pf_prob'] = 0.1
 
 class TestEvolve(unittest.TestCase):
     """`TestCase` for the cosmic

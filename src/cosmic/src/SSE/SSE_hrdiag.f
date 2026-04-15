@@ -54,7 +54,7 @@
       real*8 rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
       real*8 rgbf,rminf,ragbf,rzahbf,rzhef,rhehgf,rhegbf,rpertf
       real*8 mctmsf,mcgbtf,mcgbf,mcheif,mcagbf,lzahbf
-*      real*8 mrem
+      logical stripped_during_hrdiag
       external thookf,tblf
       external lalphf,lbetaf,lnetaf,lhookf,lgbtf,lmcgbf,lzhef,lpertf
       external rzamsf,rtmsf,ralphf,rbetaf,rgammf,rhookf
@@ -81,6 +81,8 @@
 *
 * Make evolutionary changes to stars that have not reached KW > 5.
 *
+      ! track whether a star stripped during hrdiag
+      stripped_during_hrdiag = .false.
       mch = 1.44d0 !set here owing to AIC ECSN model.
 *
       mass0 = mass
@@ -109,6 +111,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *           Main sequence star.
 *
             mc = 0.d0
+            mc_he(kidx) = 0.d0
+            mc_co(kidx) = 0.d0
             tau = aj/tm
             thook = thookf(mass)*tscls(1)
             zeta = 0.01d0
@@ -178,8 +182,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             endif
             eta = mctmsf(mass)
             tau = (aj - tm)/thg
+            
             mc = ((1.d0 - tau)*eta + tau)*mc
             mc = MAX(mc,mcx)
+
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
 *
 * Test whether core mass has reached total mass.
 *
@@ -190,14 +198,21 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium star
 *
                   mc = 0.d0
+                  mc_he(kidx) = 0.d0
+                  mc_co(kidx) = 0.d0
                   mass = mt
                   kw = 7
                   CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+
+                  ! flag to return so that bpp logs the stellar type change
+                  stripped_during_hrdiag = .true.
                else
 *
 * Zero-age helium white dwarf.
 *
                   mc = mt
+                  mc_he(kidx) = 0.d0
+                  mc_co(kidx) = 0.d0
                   mass = mt
                   kw = 10
                endif
@@ -235,6 +250,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mass.le.zpars(2))then
 * Star has a degenerate He core which grows on the GB
             mc = mcgbf(lum,GB,lums(6))
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
          else
 * Star has a non-degenerate He core which may grow, but
 * only slightly, on the GB
@@ -242,6 +259,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(9))
             mcy = mcheif(mass,zpars(2),zpars(10))
             mc = mcx + (mcy - mcx)*tau
+
+            mc_he(kidx) = mc
+            mc_co(kidx) = 0.0
          endif
          r = rgbf(mt,lum)
          rg = r
@@ -252,14 +272,21 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Zero-age helium star
 *
                mc = 0.d0
+               mc_he(kidx) = mc
+               mc_co(kidx) = 0.0
                mass = mt
                kw = 7
                CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
+
+               ! flag to return so that bpp logs the stellar type change
+               stripped_during_hrdiag = .true.
             else
 *
 * Zero-age helium white dwarf.
 *
                mc = mt
+               mc_he(kidx) = mc
+               mc_co(kidx) = 0.0
                mass = mt
                kw = 10
             endif
@@ -280,7 +307,10 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mcx = mcheif(mass,zpars(2),zpars(10))
          endif
          tau = (aj - tscls(2))/tscls(3)
+*        here, mcx is the helium core mass at helium ignition
          mc = mcx + (mcagbf(mass) - mcx)*tau
+         mc_he(kidx) = mc
+         mc_co(kidx) = 0.0
 *
          if(mass.le.zpars(2))then
             lx = lums(5)
@@ -383,6 +413,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             mass = mt
             CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
             aj = xx*tm
+
+            ! flag to return so that bpp logs the stellar type change
+            stripped_during_hrdiag = .true.
          else
             kw = 4
          endif
@@ -401,6 +434,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(aj.lt.tscls(13))then
             mcx = mcgbtf(aj,GB(8),GB,tscls(7),tscls(8),tscls(9))
             mc = mcbagb
+            mc_co(kidx) = mcx
+            mc_he(kidx) = mc - mcx
             lum = lmcgbf(mcx,GB)
             if(mt.le.mc)then
 *
@@ -412,6 +447,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mt = mc
                mass = mt
                mc = mcx
+               mc_co(kidx) = mc
+               mc_he(kidx) = mt - mc
                CALL SSE_star(kw,mass,mt,tm,tn,tscls,lums,GB,zpars)
                if(mc.le.GB(7))then
                   aj = tscls(4) - (1.d0/((GB(5)-1.d0)*GB(8)*GB(4)))*
@@ -421,6 +458,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
      &                            (mc**(1.d0-GB(6)))
                endif
                aj = MAX(aj,tm)
+               ! flag to return so that bpp logs the stellar type change
+               stripped_during_hrdiag = .true.
                goto 90
             else
                kw = 5
@@ -433,11 +472,17 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 * Approximate 3rd Dredge-up on AGB by limiting Mc.
 *
             lambdahrdiag = MIN(0.9d0,0.3d0+0.001d0*mass**5)
+* Tau is the time at the start of the TP-AGB
             tau = tscls(13)
+* mcx is M_c,DU in the equation *between* 73 and 74 of Hurley et al. 2000
             mcx = mcgbtf(tau,GB(2),GB,tscls(10),tscls(11),tscls(12))
+* mcy is M_c' in the same equation; it is defined in line 464 above for the current age. 
             mcy = mc
-            mc = mc - lambdahrdiag*(mcy-mcx)
+* The current core mass is then M_c' - lambda*(M_c' - M_c,DU)  
+            mc = mcy - lambdahrdiag*(mcy-mcx)
             mcx = mc
+            mc_co(kidx) = mc
+            mc_he(kidx) = 0.0
             mcmax = MIN(mt,mcmax)
          endif
          r = ragbf(mt,lum,zpars(2))
@@ -448,8 +493,12 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
          if(mcmax-mcx.lt.tiny)then
             aj = 0.d0
+            
+            ! adjust core masses in case we overshot the maximum allowed core mass
             mc = mcmax
-            call assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
+            mc_co(kidx) = mc
+            call assign_remnant(zpars,mc,mcbagb,mass,
+     &                          mt,kw,bhspin,kidx)
          endif
 *
       endif
@@ -468,15 +517,18 @@ C      if(mt0.gt.100.d0) mt = 100.d0
 *
             kw = 7
             tau = aj/tm
+
+*   TW: Linearly increase the core mass of HeMS stars from zero at the start of HeMS
+*       to the core mass at the start of HeHG
+            lum = lgbtf(tm,GB(8),GB,tscls(4),tscls(5),tscls(6))
+            mc = tau * mcgbf(lum,GB,lums(6))
+
             am = MAX(0.d0,0.85d0-0.08d0*mass)
             lum = lums(1)*(1.d0+0.45d0*tau+am*tau**2)
             am = MAX(0.d0,0.4d0-0.22d0*LOG10(mt))
             r = rx*(1.d0+am*(tau-tau**6))
             rg = rx
-* Star has no core mass and hence no memory of its past
-* which is why we subject mass and mt to mass loss for
-* this phase.
-            mc = 0.d0
+
             if(mt.lt.zpars(10)) kw = 10
          else
 *
@@ -491,17 +543,37 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                r = rg
             endif
             mc = mcgbf(lum,GB,lums(6))
-            mtc = MIN(mt,1.45d0*mt-0.31d0)
-            mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
-            if(mcmax-mc.lt.tiny)then
-               aj = 0.d0
-               mc = mcmax
-               mcbagb = mass
-               call assign_remnant(zpars,mc,mcbagb,mass,
-     &          mt,kw,bhspin,kidx)
+         endif
+*
+*KB: helium core mass is remaining total mass for all He stars
+*
+         mc_he(kidx) = mt - mc
+         mc_co(kidx) = mc
+
+         if(stripped_during_hrdiag)then
+            return
+         endif
+
+         ! core mass for a He star to become a COWD (Hurley 2000, Eq. 89)
+         mtc = MIN(mt,1.45d0*mt-0.31d0)
+
+         ! core mass for He to result in a SN (Hurley 2000, Eq. 75)
+         mcmax = MIN(mtc,MAX(mch,0.773d0*mass-0.35d0))
+         if(mcmax-mc.lt.tiny)then
+            aj = 0.d0
+
+
+            ! adjust core masses if we overshot the maximum allowed core mass
+            mc = mcmax
+            mc_he(kidx) = mt - mc
+            mc_co(kidx) = mc
+
+            ! He stars use the mass at start of HeMS instead of McBAGB (Hurley 2000, just before Eq. 89)
+            mcbagb = mass
+            call assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
                
-               if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
-            endif
+            ! TW: This seems to be an adjustment for COWD based on Hurley Eq. 89, I don't fully understand though, seems to be potentially adding envelope mass?
+            if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
          endif
       endif
 *
