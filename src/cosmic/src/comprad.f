@@ -61,9 +61,9 @@ Cf2py intent(out) rad
          bhspin = 0.d0
          rc = 0.d0
          dtm = 0.d0
-         CALL star(kstar,mass0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
+         CALL star(kstar,mass0,mt,tm,tn,tscls,lums,GB,zpars,dtm,1)
          CALL hrdiag(mass0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rad(k),lum,kstar,mc,rc,me,re,k2,bhspin,k)
+     &               rad(k),lum,kstar,mc,rc,me,re,k2,bhspin,1)
          
   10  continue
   

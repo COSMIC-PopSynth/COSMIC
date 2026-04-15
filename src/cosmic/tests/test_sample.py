@@ -73,6 +73,8 @@ REFF_TEST_ARRAY = np.array([3.94190562, 5.99895482])
 SINGLES_CMC_FITS, BINARIES_CMC_FITS = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.fits"))
 SINGLES_CMC_HDF5, BINARIES_CMC_HDF5 = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.hdf5"))
 
+SSEDict = {'stellar_engine': 'sse'}
+
 def power_law_fit(data, n_bins=100, return_intercept=False):
     def line(x, a, b):
         return x*a + b
@@ -237,7 +239,7 @@ class TestSample(unittest.TestCase):
         test_fracs = []
         test_errs = []
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
-        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner22')
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
         for i in range(len(OFFNER_MASS_RANGES)):
             low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
             offner_value = OFFNER_DATA[i]
@@ -252,7 +254,7 @@ class TestSample(unittest.TestCase):
         test_fracs = []
         test_errs = []
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
-        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner22')
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
         for i in range(len(OFFNER_MASS_RANGES)):
             low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
             offner_value = OFFNER_DATA[i]

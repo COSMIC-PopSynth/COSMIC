@@ -224,7 +224,7 @@ def get_independent_sampler(
     if pool is None:
         return _independent_sampler_worker(
             final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-            binfrac_model, met, size=size, total_mass=total_mass, sampling_target=sampling_target,
+            binfrac_model, met, SSEDict=SSEDict, size=size, total_mass=total_mass, sampling_target=sampling_target,
             trim_extra_samples=trim_extra_samples, q_power_law=q_power_law, kwargs=kwargs
         )
 
@@ -248,7 +248,7 @@ def get_independent_sampler(
         # set up the arguments for each chunk
         chunk_args = [(
             final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-            binfrac_model, met, chunk if sampling_target == "size" else None,
+            binfrac_model, met, SSEDict, chunk if sampling_target == "size" else None,
             chunk if sampling_target == "total_mass" else np.inf, sampling_target, trim_extra_samples,
             q_power_law, kwargs
         ) for chunk in chunk_sizes]
@@ -274,11 +274,16 @@ def get_independent_sampler(
 
 def _independent_sampler_worker(
     final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-    binfrac_model, met, size=None, total_mass=np.inf, sampling_target="size",
+    binfrac_model, met, SSEDict=None, size=None, total_mass=np.inf, sampling_target="size",
     trim_extra_samples=False, q_power_law=0, kwargs={}
 ):
     """Worker function for the independent sampler. This is where the actual sampling happens, and is
     called either directly by `get_independent_sampler` or in parallel across a multiprocessing pool."""
+    if SSEDict is not None:
+        stellar_engine = SSEDict.get("stellar_engine", "sse")
+    else:
+        stellar_engine = "sse"
+
     primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
         final_kstar1, final_kstar2, **kwargs)
     initconditions = Sample()
