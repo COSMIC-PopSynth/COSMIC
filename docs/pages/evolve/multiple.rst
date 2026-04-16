@@ -14,7 +14,7 @@ Let's start by importing the necessary modules:
 
 And use the same SSE and BSE dictionaries as before:
 
-.. ipython::
+.. ipython:: python
 
     SSEDict = {'stellar_engine': 'sse'}
 

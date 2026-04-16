@@ -28,7 +28,7 @@ def get_default_BSE_settings(to_python=False):
 
     if to_python:
         # ensure array settings are converted from strings to lists
-        for setting in ["qcrit_array", "natal_kick_array", "fprimc_array"]:
+        for setting in ["qcrit_array", "natal_kick_array", "alpha1", "acc_lim", "fprimc_array"]:
             # this one requires special handling because of the fractions
             if setting == "fprimc_array":
                 parts = defaults[setting].strip("[]").split(",")

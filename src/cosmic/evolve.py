@@ -296,6 +296,10 @@ class Evolve(object):
                                  "path to the inifile.")
             BSEDict, SSEDict, _, _, _, _ = utils.parse_inifile(params)
 
+        # default to SSE when no SSEDict is provided
+        if BSEDict and not SSEDict:
+            SSEDict = {'stellar_engine': 'sse'}
+
         # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
         # then we will temporarily create a dictionary
@@ -364,10 +368,10 @@ class Evolve(object):
                 _evolvebin.se_flags.using_sse = 1
                 _evolvebin.se_flags.using_metisse = 0
             
-        elif initialbinarytable['stellar_engine'].iloc[0] == 'sse':
+        elif 'stellar_engine' in initialbinarytable.columns and initialbinarytable['stellar_engine'].iloc[0] == 'sse':
             _evolvebin.se_flags.using_sse = 1
             _evolvebin.se_flags.using_metisse = 0
-        elif initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
+        elif 'stellar_engine' in initialbinarytable.columns and initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
             _evolvebin.se_flags.using_metisse = 1
             _evolvebin.se_flags.using_sse = 0
 
@@ -395,7 +399,9 @@ class Evolve(object):
             
 
         else:
-            raise ValueError("Use either 'sse' or 'metisse' as stellar engine") 
+            # default to SSE if no stellar engine is specified
+            _evolvebin.se_flags.using_sse = 1
+            _evolvebin.se_flags.using_metisse = 0
            
         # go through each item in the BSEDict and update the initialbinarytable
         new_cols = {}
