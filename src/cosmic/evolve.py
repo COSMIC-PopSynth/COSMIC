@@ -880,31 +880,6 @@ def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
                          "in the initial binary table. Please check the metallicity "
                          "and supply one that is in this list: {0}".format(mets))
 
-    # PA: it's not needed since metisse is not reading files at all
-
-    # Convert Python lists to fixed-length NumPy arrays
-    # h_eep_np = []
-    # he_eep_np = []
-    # for ls in h_eep_tracks:
-    #     h_eep_np.append(utils.to_f2py_str_array(ls))
-    # for ls in he_eep_tracks:
-    #     he_eep_np.append(utils.to_f2py_str_array(ls))
-    # met_np = utils.to_f2py_str_array(met_files)
-    # met_he_np = utils.to_f2py_str_array(met_files_he)
-    # z_list_h = utils.to_f2py_str_array(met_dict_keep['Z_files'])
-    # z_list_he = utils.to_f2py_str_array(met_dict_he_keep['Z_files'])
-
-    # # Set the metallicity lists in Fortran
-    # _evolvebin.c_m_interface.set_mets(z_list_h, z_list_he)
-
-    # # Then pass to Fortran; note that f2py seems to get the number files on its own?
-    # _evolvebin.c_m_interface.set_file_lists(
-    #     met_np,       # met_files
-    #     met_he_np,    # met_he_files
-    #     h_eep_np[Z_idx],     # h_tracks
-    #     he_eep_np[Z_idx_he]    # he_tracks
-    # )
-
     assert fmt_dict_keep is not None 
 
 
