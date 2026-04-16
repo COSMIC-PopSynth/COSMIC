@@ -725,10 +725,10 @@
                 "options": [
                     {
                         "name": "positive values",
-                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\)"
+                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\), for each binary component"
                     },
                     {
-                        "name": 1.0,
+                        "name": "[1.0, 1.0]",
                         "description": "Default value",
                         "default": true
                     }
@@ -1565,14 +1565,13 @@
             },
             {
                 "name": "acc_lim",
-                "description": "Limits the amount of mass accreted during Roche-lobe overflow",
+                "description": "Limits the amount of mass accreted during Roche-lobe overflow where each binary component must have its own limit specified in a list",
                 "type": "number",
                 "options-preface": "",
                 "options": [
                     {
                         "name": -1,
-                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars",
-                        "default": true
+                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
                         "name": -2,
@@ -1593,7 +1592,13 @@
                     {
                         "name": 0.0,
                         "description": "assume all mass is lost from the system (fully nonconservative)"
+                    },
+                    {
+                        "name": "[-1, -1]",
+                        "description": "Default choice",
+                        "default": true
                     }
+
                 ]
             },
             {
