@@ -18,6 +18,10 @@ warnings.filterwarnings("ignore")
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
+INIT_CONDITIONS['alpha1_1'] = 1.0
+INIT_CONDITIONS['alpha1_2'] = 1.0
+INIT_CONDITIONS['acc_lim_1'] = -1
+INIT_CONDITIONS['acc_lim_2'] = -1
 BSEFlag_columns = list(set(INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(INITIAL_CONDITIONS_COLUMNS_ALL))
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
@@ -27,8 +31,9 @@ BSEDict['fprimc_array'] = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
                            2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0]
 BSEDict['grflag'] = 1
 BSEDict['don_lim'] = -1
-BSEDict['acc_lim'] = -1
+BSEDict['acc_lim'] = [-1, -1]
 BSEDict['wd_mass_lim'] = 0
+BSEDict['alpha1'] = [1.0, 1.0]
 
 # avoid using the same randomseed
 del BSEDict["bin_num"], BSEDict["randomseed"]
