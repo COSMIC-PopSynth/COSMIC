@@ -1281,6 +1281,40 @@
                 ]
             },
             {
+                "name": "fryer_fmix",
+                "description": "Sets the mixing fraction for the Fryer+2022 SN model",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive_values",
+                        "description": "Sets the mixing fraction for the Fryer+2022 SN remnant mass model"
+                    },
+                    {
+                        "name":1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fryer_mcrit_nsbh",
+                "description": "Sets the critical core mass for the Fryer+2022 SN model",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive_values",
+                        "description": "Sets the critical NS/BH core mass forthe Fryer+2022 SN remnant mass model (solar masses)"
+                    },
+                    {
+                        "name":5.75,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
                 "name": "rembar_massloss",
                 "description": "Determines the prescriptions for mass conversion due to neutrino emission during the collapse of the proto-compact object",
                 "type": "number",

@@ -11,7 +11,7 @@
       real*8 mc,mcbagb,mass,mt,mc_tot,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 m_proto,m_FeNi,m_fb,bhspin,mrem,mch,dMppi
-      real*8 fmix, mcritnsbh, mtemp1, mtemp2
+      real*8 mtemp1, mtemp2
       integer kw,kidx
 
 * Inputs
@@ -268,15 +268,12 @@
      &              mcbagb.ge.ecsn_mlow)then
                   mt = 1.38d0   ! ECSN fixed mass, no fallback
                else
-* Parameters of Fryer2022 model
-                  fmix=1.0
-                  mcritnsbh=5.75
 * We need mt in multiple places, so temp1 will be the working mt
                   mtemp1=mt
 * mtemp2 is the calculated value of the remnant mass
-                  mtemp2=1.2 + (0.05*fmix) + 
-     &                (0.01*((mc/fmix)**2)) +
-     &                EXP(fmix*(mc-mcritnsbh))
+                  mtemp2=1.2 + (0.05*fryer_fmix) + 
+     &                (0.01*((mc/fryer_fmix)**2)) +
+     &                EXP(fryer_fmix*(mc-fryer_mcrit_nsbh))
 * We don't care about mtemp2 if it's less than zero
                   if(mtemp2.lt.0.)then
                       mtemp1 = 0.
