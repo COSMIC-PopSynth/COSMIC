@@ -59,7 +59,11 @@ def convert_initC_row_to_binary_in(initC_file, bin_num):
         The binary number to convert
     """
     # get binary from initC
-    initC = pd.read_hdf(initC_file, key="initC")
+    if initC_file.endswith('.csv'):
+        initC = pd.read_csv(initC_file)
+    elif initC_file.endswith('.h5'):
+        initC = pd.read_hdf(initC_file, key="initC")
+
     r = initC.loc[bin_num]
 
     kick_cols = ['natal_kick_1', 'theta_1', 'phi_1', 'mean_anomaly_1', 'randomseed_1',
