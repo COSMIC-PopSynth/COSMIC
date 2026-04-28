@@ -125,3 +125,8 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
 
 - Additions/changes:
     - Added `pool` and `nproc` parameters to the `independent` sampler. Users can either specify an existing multiprocessing pool or a number of processors to use to create a pool that will be used for the sampling. This offers significant speed-ups for samples larger than 10,000 binaries.
+
+## 3.7.7
+
+- Additions/changes:
+    - Added `smt_q` flag. This is a mass ratio limit to enforce stable mass transfer following <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251110728O/abstract'>Olejak+25</a>. Systems with Mdon/Macc >= smt_q meet the criteria. This paper argues that extreme mass ratios can lead to stable, non-conservative mass transfer. When this condition is met, mass transfer is assumed to be always stable, fully non-conservative, and that the mass carries away the specific angular momentum of the donor.
