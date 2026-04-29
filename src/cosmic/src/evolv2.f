@@ -1866,9 +1866,11 @@ component.
  7    km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
       
-* Check for collision at periastron for a stable RLOF 
-      pd = sep*(1.d0 - ecc)
-      if(pd.lt.(rad(1)+rad(2))) goto 130
+* Check for collision at periastron for a stable RLOF
+      if(smt_periastron_check.eq.1)then
+         pd = sep*(1.d0 - ecc)
+         if(pd.lt.(rad(1)+rad(2))) goto 130
+      endif
       
 *      
 * Force co-rotation of primary and orbit to ensure that the tides do not
@@ -3713,8 +3715,11 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
-         pd = sep*(1.d0 - ecc)
-         if(pd.lt.(rad(1)+rad(2))) goto 130
+
+         if (smt_periastron_check.eq.1) then
+            pd = sep*(1.d0 - ecc)
+            if(pd.lt.(rad(1)+rad(2))) goto 130
+         endif
 
 
      

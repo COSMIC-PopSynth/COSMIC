@@ -1597,6 +1597,23 @@
                 ]
             },
             {
+                "name": "smt_periastron_check",
+                "description": "Determines whether to check for contact at periastron for binaries that are undergoing stable mass transfer.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not check for contact at periastron for binaries that are undergoing stable mass transfer",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Check for contact at periastron for binaries that are undergoing stable mass transfer"
+                    }
+                ]
+            },
+            {
                 "settings-section": "Tides",
                 "name": "tflag",
                 "description": "Activates tidal circularization following <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002</a>",

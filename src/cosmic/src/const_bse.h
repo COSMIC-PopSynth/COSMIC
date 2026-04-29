@@ -16,7 +16,8 @@
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
      &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_mode
       REAL*8 don_lim,acc_lim,Mbh_initial
-      COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial
+      INTEGER smt_periastron_check
+      COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial,smt_periastron_check
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
