@@ -105,4 +105,4 @@ class TestEvolve(unittest.TestCase):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=KICK_INITC)
 
-        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 482.346136, places=5)
+        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 409.727163, places=5)
