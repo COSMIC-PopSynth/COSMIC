@@ -1601,6 +1601,7 @@
                 "description": "Determines whether to check for contact at periastron for binaries that are undergoing stable mass transfer.",
                 "type": "dropdown",
                 "options-preface": "",
+                "version_added": "3.7.7",
                 "options": [
                     {
                         "name": 0,
