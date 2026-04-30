@@ -1287,7 +1287,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive_values",
+                        "name": "positive values",
                         "description": "Sets the mixing fraction for the Fryer+2022 SN remnant mass model"
                     },
                     {
@@ -1304,7 +1304,7 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": "positive_values",
+                        "name": "positive values",
                         "description": "Sets the critical NS/BH core mass forthe Fryer+2022 SN remnant mass model (solar masses)"
                     },
                     {
