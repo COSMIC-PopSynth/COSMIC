@@ -26,10 +26,16 @@ init_conds_columns = initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL
 INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
 BCM_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bcm')
+
 INIT_CONDITIONS['alpha1_1'] = 1.0
 INIT_CONDITIONS['alpha1_2'] = 1.0
 INIT_CONDITIONS['acc_lim_1'] = -1
 INIT_CONDITIONS['acc_lim_2'] = -1
+KICK_INITC['alpha1_1'] = 1.0
+KICK_INITC['alpha1_2'] = 1.0
+KICK_INITC['acc_lim_1'] = -1
+KICK_INITC['acc_lim_2'] = -1
+
 BSEFlag_columns = list(set(evolve.INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL)) 
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
@@ -43,6 +49,7 @@ BSEDict['acc_lim'] = [-1, -1]
 BSEDict['wd_mass_lim'] = 0
 BSEDict['kick_flag'] = -1
 BSEDict['alpha1'] = [1.0, 1.0]
+
 
 class TestEvolve(unittest.TestCase):
     """`TestCase` for the cosmic
@@ -109,5 +116,5 @@ class TestEvolve(unittest.TestCase):
     def test_ejection_velocity_pfahl(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=KICK_INITC)
-
+        
         self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 482.346136, places=5)
