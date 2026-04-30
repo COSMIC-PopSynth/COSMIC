@@ -101,6 +101,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                                   'grflag', 'bhms_coll_flag', 'wd_mass_lim',
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
                                   'mxns', 'pts1', 'pts2', 'pts3',
+                                  "fryer_fmix", "fryer_mcrit_nsbh",
                                   'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
                                   'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
                                   'natal_kick_array', 'qcrit_array',
@@ -569,6 +570,8 @@ def _evolve_single_system(f):
         _evolvebin.points.pts1 = f["pts1"]
         _evolvebin.points.pts2 = f["pts2"]
         _evolvebin.points.pts3 = f["pts3"]
+        _evolvebin.snvars.fryer_fmix = f["fryer_fmix"]
+        _evolvebin.snvars.fryer_mcrit_nsbh = f["fryer_mcrit_nsbh"]
         _evolvebin.snvars.ecsn = f["ecsn"]
         _evolvebin.snvars.ecsn_mlow = f["ecsn_mlow"]
         _evolvebin.flags.aic = f["aic"]
