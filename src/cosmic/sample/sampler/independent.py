@@ -22,6 +22,7 @@
 import numpy as np
 import warnings
 import pandas as pd
+from multiprocessing import Pool
 
 from cosmic import utils
 
@@ -50,6 +51,8 @@ def get_independent_sampler(
     sampling_target="size",
     trim_extra_samples=False,
     q_power_law=0,
+    pool=None,
+    nproc=1,
     **kwargs
 ):
     """Generates an initial binary sample according to user specified models
@@ -151,6 +154,13 @@ def get_independent_sampler(
         Exponent for the mass ratio distribution power law, default is 0 (flat in q). Note that
         q_power_law cannot be exactly -1, as this would result in a divergent distribution.
 
+    pool : `multiprocessing.Pool`
+        Optional multiprocessing pool to use for parallelizing the sampling.
+        If None, no multiprocessing is used. Default is None.
+
+    nproc : `int`
+        Number of processes to use for multiprocessing if `pool` is None. Default is 1 (no multiprocessing).
+        If `pool` is not None, this argument is ignored.
 
     Returns
     -------
@@ -187,6 +197,73 @@ def get_independent_sampler(
 
     final_kstar1 = [final_kstar1] if isinstance(final_kstar1, (int, float)) else final_kstar1
     final_kstar2 = [final_kstar2] if isinstance(final_kstar2, (int, float)) else final_kstar2
+
+    # check whether a pool already existed (used to know whether to close it at the end)
+    pool_existed_already = pool is not None
+
+    # if no pool was passed in, but nproc > 1, create a pool
+    if not pool_existed_already and nproc > 1:
+        pool = Pool(nproc)
+
+    # if there's no pool, simply pass the arguments to the worker
+    if pool is None:
+        return _independent_sampler_worker(
+            final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
+            binfrac_model, met, size=size, total_mass=total_mass, sampling_target=sampling_target,
+            trim_extra_samples=trim_extra_samples, q_power_law=q_power_law, kwargs=kwargs
+        )
+
+    # otherwise, we need to split up the sampling into chunks and parallelize across the pool
+    else:
+        # decide on the number of chunks based on the number of processes and the size of the sample
+        # we ideally never want a chunk to sampler fewer than 1000 binaries, or 15000 Msun in total mass
+        # otherwise the overhead of parallelization will dominate the runtime
+        if sampling_target == "size":
+            MIN_BINARIES_PER_CHUNK = 1000
+            n_chunks = min(pool._processes, max(1, size // MIN_BINARIES_PER_CHUNK))
+
+            # divide into chunks (the last one might need to be different since these are integers)
+            chunk_sizes = [size // n_chunks] * n_chunks
+            chunk_sizes[-1] += size % n_chunks
+        else:
+            MIN_MASS_PER_CHUNK = 15000
+            n_chunks = min(pool._processes, max(1, int(total_mass) // MIN_MASS_PER_CHUNK))
+            chunk_sizes = [total_mass / n_chunks] * n_chunks
+
+        # set up the arguments for each chunk
+        chunk_args = [(
+            final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
+            binfrac_model, met, chunk if sampling_target == "size" else None,
+            chunk if sampling_target == "total_mass" else np.inf, sampling_target, trim_extra_samples,
+            q_power_law, kwargs
+        ) for chunk in chunk_sizes]
+
+        # map the worker function across the pool
+        results = pool.starmap(_independent_sampler_worker, chunk_args)
+
+        # combine the results from each chunk
+        binary_tables, mass_singles_list, mass_binaries_list, n_singles_list, n_binaries_list = zip(*results)
+        binary_table = pd.concat(binary_tables, ignore_index=True)
+        mass_singles = sum(mass_singles_list)
+        mass_binaries = sum(mass_binaries_list)
+        n_singles = sum(n_singles_list)
+        n_binaries = sum(n_binaries_list)
+
+        # if we created the pool in this function, we should close it
+        if not pool_existed_already:
+            pool.close()
+            pool.join()
+
+        return binary_table, mass_singles, mass_binaries, n_singles, n_binaries
+
+
+def _independent_sampler_worker(
+    final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
+    binfrac_model, met, size=None, total_mass=np.inf, sampling_target="size",
+    trim_extra_samples=False, q_power_law=0, kwargs={}
+):
+    """Worker function for the independent sampler. This is where the actual sampling happens, and is
+    called either directly by `get_independent_sampler` or in parallel across a multiprocessing pool."""
     primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
         final_kstar1, final_kstar2, **kwargs)
     initconditions = Sample()
