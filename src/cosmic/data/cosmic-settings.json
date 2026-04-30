@@ -1443,7 +1443,8 @@
                     },
                     {
                         "name": -5,
-                        "description": "Uses Belczynski 'weak' PISN pulsations"
+                        "description": "Uses Belczynski 'weak' PISN pulsations",
+                        "version_added": "3.7.7"
                     },
                     {
                         "name": "positive values",
