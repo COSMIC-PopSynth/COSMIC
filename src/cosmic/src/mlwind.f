@@ -116,7 +116,8 @@
          endif
 *
          mlwind = dms
-      elseif(windflag.eq.2.or.windflag.eq.3)then
+      elseif(windflag.eq.2.or.windflag.eq.3.or.windflag.eq.5
+     &        .or.windflag.eq.6.or.windflag.eq.7)then
 * Vink winds etc according to as implemented following
 * Belczynski, Bulik, Fryer, Ruiter, Valsecchi, Vink & Hurley 2010.
 *
@@ -159,22 +160,47 @@
          endif
 * Apply Vink, de Koter & Lamers (2001) OB star winds.
 * Next check if hot massive H-rich O/B star in appropriate temperature ranges.
-         if(teff.ge.12500.and.teff.le.25000)then
-            if(eddlimflag.eq.0) alpha = 0.85d0
-            if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
-            dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
-     &            1.339d0*LOG10(mt/30.d0) - 1.601d0*LOG10(1.3d0/2.d0) +
-     &            alpha*LOG10(z/zsun) + 1.07d0*LOG10(teff/2.0d+04)
-            dms = 10.d0**dms
-         elseif(teff.gt.25000.)then
-*        Although Vink et al. formulae  are only defined until Teff=50000K,
-*        we follow the Dutch prescription of MESA, and extend to higher Teff
-             dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
-     &            1.313d0*LOG10(mt/30.d0) - 1.226d0*LOG10(2.6d0/2.d0) +
-     &            alpha*LOG10(z/zsun) +0.933d0*LOG10(teff/4.0d+04) -
-     &            10.92d0*(LOG10(teff/4.0d+04)**2)
-       dms = 10.d0**dms
+         if (windflag.eq.2.or.windflag.eq.3.or.windflag.eq.5) then
+             if(teff.ge.12500.and.teff.le.25000)then
+                if(eddlimflag.eq.0) alpha = 0.85d0
+                if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
+                dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
+     &                1.339d0*LOG10(mt/30.d0) -
+     &                1.601d0*LOG10(1.3d0/2.d0) +
+     &                alpha*LOG10(z/zsun) + 1.07d0*LOG10(teff/2.0d+04)
+                dms = 10.d0**dms
+            elseif(teff.gt.25000.)then
+*           Although Vink et al. formulae  are only defined until Teff=50000K,
+*           we follow the Dutch prescription of MESA, and extend to higher Teff
+                 dms = -6.697d0 + 2.194d0*LOG10(lum/1.0d+05) -
+     &              1.313d0*LOG10(mt/30.d0) -
+     &              1.226d0*LOG10(2.6d0/2.d0) +
+     &              alpha*LOG10(z/zsun) +0.933d0*LOG10(teff/4.0d+04) -
+     &              10.92d0*(LOG10(teff/4.0d+04)**2)
+           dms = 10.d0**dms
+             endif
+*        Apply fwind cut
+            if (windflag.eq.5) then
+                dms = dms*0.33
+            endif
          endif
+* Bjorklund 2023 https://doi.org/10.1051/0004-6361/202141948
+         if (windflag.eq.6) then
+            dms = -5.52d0 + 2.39d0*LOG10(lum/1.0d+06) +
+     &          1.48*LOG10(mt/45.0d0) + 2.12d0 *LOG10(teff/4.5d+04) + 
+     &          (0.75d+0 - 1.87d0*LOG10(teff/4.5d+04))*LOG10(z/0.014d0)
+            dms = 10.0d0**dms
+         endif
+* Kritcka, Kubat, Kritckova 2023 10.48550/arXiv.2311.01257
+         if (windflag.eq.7) then
+            dms = -13.82d0 + 0.358d0*LOG10(z/0.0134d0) + 
+     &          (1.52d0 - 0.11d0*LOG10(z/0.0134d0))*LOG10(lum/1.0d+06) +
+     &          13.82d0*LOG10((1.0d0 + 0.73*LOG10(z/0.0134d0))*EXP(
+     &          -1.0d0 * (teff - 1.416d+4)**2 / (3.58d+3)**2) +
+     &          3.84d0*EXP(-1.0d0*(teff-3.790d+04)**2 / (5.65d+04)**2))
+            dms = 10.0d0**dms
+         endif
+* 
 
          if((windflag.eq.3.or.kw.ge.2).and.kw.le.6)then
 * LBV-like mass loss beyond the Humphreys-Davidson limit.

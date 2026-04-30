@@ -236,7 +236,7 @@ new settings. For example, let's say we want to see how changing the common enve
 .. ipython:: python
 
     ce_alpha_10 = output.rerun_with_settings(
-        new_settings={'alpha1': 10}, inplace=False
+        new_settings={'alpha1_0': 10, 'alpha1_1': 10}, inplace=False
     )
     n_merger_original = len(output.final_bpp[output.final_bpp["sep"] == 0.0])
     n_merger_ce_alpha_10 = len(ce_alpha_10.final_bpp[ce_alpha_10.final_bpp["sep"] == 0.0])
