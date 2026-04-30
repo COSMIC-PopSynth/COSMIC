@@ -18,10 +18,10 @@ warnings.filterwarnings("ignore")
 
 TEST_DATA_DIR = os.path.join(os.path.split(__file__)[0], 'data')
 INIT_CONDITIONS = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'initial_conditions_for_testing.hdf5'), key='initC')
+INIT_CONDITIONS['alpha1_0'] = 1.0
 INIT_CONDITIONS['alpha1_1'] = 1.0
-INIT_CONDITIONS['alpha1_2'] = 1.0
+INIT_CONDITIONS['acc_lim_0'] = -1
 INIT_CONDITIONS['acc_lim_1'] = -1
-INIT_CONDITIONS['acc_lim_2'] = -1
 BSEFlag_columns = list(set(INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(INITIAL_CONDITIONS_COLUMNS_ALL))
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]

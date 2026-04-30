@@ -27,14 +27,14 @@ INIT_CONDITIONS_NO_BSE_COLUMNS = INIT_CONDITIONS[init_conds_columns]
 BPP_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bpp')
 BCM_DF = pd.read_hdf(os.path.join(TEST_DATA_DIR, 'unit_tests_results.hdf5'), key='bcm')
 
+INIT_CONDITIONS['alpha1_0'] = 1.0
 INIT_CONDITIONS['alpha1_1'] = 1.0
-INIT_CONDITIONS['alpha1_2'] = 1.0
+INIT_CONDITIONS['acc_lim_0'] = -1
 INIT_CONDITIONS['acc_lim_1'] = -1
-INIT_CONDITIONS['acc_lim_2'] = -1
+KICK_INITC['alpha1_0'] = 1.0
 KICK_INITC['alpha1_1'] = 1.0
-KICK_INITC['alpha1_2'] = 1.0
+KICK_INITC['acc_lim_0'] = -1
 KICK_INITC['acc_lim_1'] = -1
-KICK_INITC['acc_lim_2'] = -1
 
 BSEFlag_columns = list(set(evolve.INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL)) 
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]

@@ -140,8 +140,8 @@ for sn_idx in range(2):
 
 QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0, 16)]
 FPRIMC_COLUMNS = ['fprimc_{0}'.format(kstar) for kstar in range(0, 16)]
-ALPHA_COLUMNS = ['alpha1_{0}'.format(star) for star in range(1, 3)]
-ACCLIM_COLUMNS = ['acc_lim_{0}'.format(star) for star in range(1, 3)]
+ALPHA_COLUMNS = ['alpha1_{0}'.format(star) for star in range(0, 2)]
+ACCLIM_COLUMNS = ['acc_lim_{0}'.format(star) for star in range(0, 2)]
 
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_NATAL_KICK_COLUMNS)
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
