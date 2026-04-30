@@ -1241,7 +1241,8 @@
                     },
                     {
                         "name": 7,
-                        "description": "Follows Fryer+2022 remnant mass prescription"
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a>; NS/BH delineated by fryer_mcrit_nsbh so mxns is not used",
+                        "version_added": "3.7.7"
                     }
                 ]
             },
@@ -1282,13 +1283,14 @@
             },
             {
                 "name": "fryer_fmix",
-                "description": "Sets the mixing fraction for the Fryer+2022 SN model",
+                "description": "Sets the mixing fraction for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN model (remnantflag=7)",
                 "type": "number",
+                "version_added": "3.7.7",
                 "options-preface": "",
                 "options": [
                     {
                         "name": "positive values",
-                        "description": "Sets the mixing fraction for the Fryer+2022 SN remnant mass model"
+                        "description": "Sets the mixing fraction for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN remnant mass model"
                     },
                     {
                         "name":1.0,
@@ -1299,13 +1301,14 @@
             },
             {
                 "name": "fryer_mcrit_nsbh",
-                "description": "Sets the critical core mass for the Fryer+2022 SN model",
+                "description": "Sets the critical core mass for delineating between NS and BHs with the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN model (remnantflag=7)",
                 "type": "number",
                 "options-preface": "",
+                "version_added": "3.7.7",
                 "options": [
                     {
                         "name": "positive values",
-                        "description": "Sets the critical NS/BH core mass forthe Fryer+2022 SN remnant mass model (solar masses)"
+                        "description": "Sets the critical NS/BH core mass for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN remnant mass model (solar masses)"
                     },
                     {
                         "name":5.75,
