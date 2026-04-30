@@ -22,6 +22,8 @@ INIT_CONDITIONS['alpha1_0'] = 1.0
 INIT_CONDITIONS['alpha1_1'] = 1.0
 INIT_CONDITIONS['acc_lim_0'] = -1
 INIT_CONDITIONS['acc_lim_1'] = -1
+INIT_CONDITIONS['fryer_fmix'] = 1.0
+INIT_CONDITIONS['fryer_mcrit_nsbh'] = 5.75
 BSEFlag_columns = list(set(INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(INITIAL_CONDITIONS_COLUMNS_ALL))
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
 BSEDict['qcrit_array'] = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
@@ -34,6 +36,8 @@ BSEDict['don_lim'] = -1
 BSEDict['acc_lim'] = [-1, -1]
 BSEDict['wd_mass_lim'] = 0
 BSEDict['alpha1'] = [1.0, 1.0]
+BSEDict['fryer_fmix'] = 1.0
+BSEDict['fryer_mcrit_nsbh'] = 5.75
 
 # avoid using the same randomseed
 del BSEDict["bin_num"], BSEDict["randomseed"]
