@@ -736,15 +736,15 @@
                 "settings-section-description": "Note: there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer. In the following cases, a common envelope occurs regardless of the choices below:<ul><li><b>contact</b>: the stellar radii go into contact (common for similar ZAMS systems)</li><li><b>periapse contact</b>: the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)</li><li><b>core Roche overflow</b>: either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)</li></ul>",
                 "name": "alpha1",
                 "description": "Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
-                "type": "number",
+                "type": "string",
                 "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
                 "options": [
                     {
                         "name": "positive values",
-                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\)"
+                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\), for each binary component"
                     },
                     {
-                        "name": 1.0,
+                        "name": "[1.0, 1.0]",
                         "description": "Default value",
                         "default": true
                     }
@@ -1627,14 +1627,13 @@
             },
             {
                 "name": "acc_lim",
-                "description": "Limits the amount of mass accreted during Roche-lobe overflow",
-                "type": "number",
+                "description": "Limits the amount of mass accreted during Roche-lobe overflow where each binary component must have its own limit specified in a list",
+                "type": "string",
                 "options-preface": "",
                 "options": [
                     {
                         "name": -1,
-                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars",
-                        "default": true
+                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
                         "name": -2,
@@ -1655,7 +1654,13 @@
                     {
                         "name": 0.0,
                         "description": "assume all mass is lost from the system (fully nonconservative)"
+                    },
+                    {
+                        "name": "[-1, -1]",
+                        "description": "Default choice",
+                        "default": true
                     }
+
                 ]
             },
             {
