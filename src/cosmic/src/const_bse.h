@@ -42,12 +42,13 @@
       REAL*8 mm_mu_ns, mm_mu_bh, maltsev_fallback,maltsev_pf_prob
       REAL*8 natal_kick_array(2,5)
       REAL*8 mc_he(2),mc_co(2)
+      REAL*8 fryer_fmix,fryer_mcrit_nsbh
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
      &            polar_kick_angle,pisn,ecsn,ecsn_mlow,
      &            bhspinmag,mxns,rembar_massloss,
      &            mc_he,mc_co,mm_mu_ns,mm_mu_bh,maltsev_fallback,
      &            maltsev_pf_prob,kickflag,fryer_mass_limit,
-     &            ppi_co_shift,ppi_extra_ml
+     &            ppi_co_shift,ppi_extra_ml,fryer_fmix,fryer_mcrit_nsbh
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac
