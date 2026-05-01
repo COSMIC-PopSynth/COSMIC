@@ -35,6 +35,10 @@ KICK_INITC['alpha1_0'] = 1.0
 KICK_INITC['alpha1_1'] = 1.0
 KICK_INITC['acc_lim_0'] = -1
 KICK_INITC['acc_lim_1'] = -1
+INIT_CONDITIONS['fryer_fmix'] = 1.0
+INIT_CONDITIONS['fryer_mcrit_nsbh'] = 5.75
+KICK_INITC['fryer_fmix'] = 1.0
+KICK_INITC['fryer_mcrit_nsbh'] = 5.75
 
 BSEFlag_columns = list(set(evolve.INITIAL_BINARY_TABLE_SAVE_COLUMNS) - set(initialbinarytable.INITIAL_CONDITIONS_COLUMNS_ALL)) 
 BSEDict = INIT_CONDITIONS[BSEFlag_columns].to_dict(orient='index')[0]
@@ -49,6 +53,9 @@ BSEDict['acc_lim'] = [-1, -1]
 BSEDict['wd_mass_lim'] = 0
 BSEDict['kick_flag'] = -1
 BSEDict['alpha1'] = [1.0, 1.0]
+BSEDict['fryer_fmix'] = 1.0
+BSEDict['fryer_mcrit_nsbh'] = 5.75
+
 
 
 class TestEvolve(unittest.TestCase):
@@ -116,5 +123,4 @@ class TestEvolve(unittest.TestCase):
     def test_ejection_velocity_pfahl(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=KICK_INITC)
-        
-        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 482.346136, places=5)
+        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 409.727163, places=5)        

@@ -125,3 +125,8 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
 
 - Additions/changes:
     - Added `pool` and `nproc` parameters to the `independent` sampler. Users can either specify an existing multiprocessing pool or a number of processors to use to create a pool that will be used for the sampling. This offers significant speed-ups for samples larger than 10,000 binaries.
+
+## 3.7.7
+
+- Additions/changes:
+    - Added `smt_periastron_check` setting, which allows the user to toggle whether to check for periastron collision during stable mass transfer. By default, we set this off, which changes the behaviour of previous versions since 3.6.0 (PR #694) which did check for contact at periastron during stable mass transfer. We set this to off as the radial expansion from SSE is likely overestimated, once we connect with COSMIC-METISSE this should likely be set to 1.

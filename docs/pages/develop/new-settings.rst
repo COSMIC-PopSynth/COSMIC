@@ -117,25 +117,24 @@ Finally, we need to update the test data to include our new setting. This is imp
 - ``src/cosmic/tests/data/kick_initial_conditions.h5``
 - ``src/cosmic/tests/data/Params.ini``
 
-For the params.ini file, add a new entry for the new setting with a reasonable default value.
-
-.. code-block:: ini
-    
-    lbv_flag = 1
-
-For the initial conditions files, we need to add a new column for the new setting and fill it with reasonable values. You'll want to read in the initC files in Python, add the new column, fill it with values, and then write the files back out.
+For the params.ini file, add a new entry for the new setting with a reasonable default value. For the initial conditions files, we need to add a new column for the new setting and fill it with reasonable values. You'll want to read in the initC files in Python, add the new column, fill it with values, and then write the files back out. Here's a quick helper function that does that for you
 
 .. code-block:: python
     
     import pandas as pd
     
-    # load existing file
-    initC = pd.read_hdf('src/cosmic/tests/data/initial_conditions_for_testing.hdf5', key="initC")
+    def add_setting_to_test_files(setting_name, setting_value):
+        initC = pd.read_hdf("src/cosmic/tests/data/initial_conditions_for_testing.hdf5", key="initC")
+        initC[setting_name] = setting_value
+        initC.to_hdf("src/cosmic/tests/data/initial_conditions_for_testing.hdf5", key="initC", mode="a")
 
-    # add new column(s) with reasonable values
-    initC['lbv_flag'] = 1
+        initC = pd.read_hdf("src/cosmic/tests/data/kick_initial_conditions.h5", key="initC")
+        initC[setting_name] = setting_value
+        initC.to_hdf("src/cosmic/tests/data/kick_initial_conditions.h5", key="initC", mode="a")
 
-    # write back out
-    initC.to_hdf('src/cosmic/tests/data/initial_conditions_for_testing.hdf5', key="initC", mode='w')
+        with open("src/cosmic/tests/data/Params.ini", "a") as f:
+            f.write(f"\n\n{setting_name} = {setting_value}\n\n")
+
+    add_setting_to_test_files("lbv_flag", 1)
 
 And that's it! You've added a new setting to COSMIC. Now you should absolutely run the tests to make sure everything is working properly! Better yet, add more tests that specifically test the new setting to make sure it's working as expected.

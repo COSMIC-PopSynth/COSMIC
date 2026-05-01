@@ -106,7 +106,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                                   'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
                                   'natal_kick_array', 'qcrit_array',
                                   'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim',
+                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 'smt_periastron_check',
                                   'bdecayfac', 'bconst', 'ck',
                                   'windflag', 'qcflag', 'eddlimflag', 'LBV_flag',
                                   'fprimc_array', 'dtp', 'randomseed',
@@ -610,6 +610,7 @@ def _evolve_single_system(f):
         _evolvebin.cevars.qcrit_array = f["qcrit_array"]
         _evolvebin.mtvars.don_lim = f["don_lim"]
         _evolvebin.mtvars.acc_lim = f["acc_lim"]
+        _evolvebin.mtvars.smt_periastron_check = f["smt_periastron_check"]
         _evolvebin.windvars.beta = f["beta"]
         _evolvebin.windvars.xi = f["xi"]
         _evolvebin.windvars.acc2 = f["acc2"]
