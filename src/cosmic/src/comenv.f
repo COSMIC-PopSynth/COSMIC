@@ -56,8 +56,6 @@
       REAL*8 bhspin1,bhspin2
       REAL*8 deltam_1,deltam_2
       common /fall/fallback
-      REAL*8 mass_preSN, mHe_preSN, massc_preSN
-      COMMON mass_preSN, mHe_preSN, massc_preSN
       INTEGER formation1,formation2
       REAL*8 sigmahold
       REAL*8 AURSUN,K3
@@ -77,6 +75,7 @@
       REAL*8 KW1_TEMP, KW2_TEMP
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
+      REAL*8 ALPHA_CE
 *
 * Initialize
 *
@@ -154,7 +153,12 @@
 *
 * Calculate the final orbital energy without coalescence.
 *
-      EORBF = EORBI + EBINDI/ALPHA1
+      IF(switchedCE)THEN 
+         ALPHA_CE = ALPHA1(2)
+      ELSE
+         ALPHA_CE = ALPHA1(1)
+      ENDIF
+      EORBF = EORBI + EBINDI/ALPHA_CE
 *
 * If the secondary is on the main sequence see if it fills its Roche lobe.
 *
@@ -205,7 +209,12 @@
 * Coalescence - calculate final binding energy.
 *
             EORBF = MAX(MC1*M2/(2.D0*SEPL),EORBI)
-            EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            IF(switchedCE)THEN 
+               ALPHA_CE = ALPHA1(2)
+            ELSE
+               ALPHA_CE = ALPHA1(1)
+            ENDIF
+            EBINDF = EBINDI - ALPHA_CE*(EORBF - EORBI)
             KW1_TEMP = KW
             KW2_TEMP = 15
          ELSE
@@ -323,9 +332,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M02,mass_preSN,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -343,9 +353,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M02,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -441,7 +452,12 @@
 * Calculate the final envelope binding energy.
 *
             EORBF = MAX(MC1*MC2/(2.D0*SEPL),EORBI)
-            EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            IF(switchedCE)THEN 
+               ALPHA_CE = ALPHA1(2)
+            ELSE
+               ALPHA_CE = ALPHA1(1)
+            ENDIF
+            EBINDF = EBINDI - ALPHA_CE*(EORBF - EORBI)
             if(output) write(*,*)'In dg or giant 1:',M01,M1,R1,M02,M2,
      & R2,MC1,MC2,MC3,KW1,KW2,KW,EORBF,EBINDF
 *
@@ -632,9 +648,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M02,mass_preSN,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -652,9 +669,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M02,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -805,9 +823,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M01,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -825,9 +844,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M01,mass_preSN,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -1041,9 +1061,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M02,mass_preSN,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -1061,9 +1082,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M02,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -1115,8 +1137,9 @@
      &      jp,tphys,11.d0,M1,M2,KW1,KW2,-1.d0,-1.d0,-1.d0,0.d0,
      &      0.d0,aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,mc_he(1),
      &      mc_he(2),mc_co(1),mc_co(2),rad(1),rad(2),M01,M02,lumin(1),
-     &      lumin(2),teff1,teff2,RC1,RC2,MENV,mHe_preSN,renv_bpp(1),
-     &      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),bacc(1),bacc(2),
+     &      lumin(2),teff1,teff2,RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &      renv_bpp(1),renv_bpp(2),
+     &      OSPIN1,OSPIN2,B_0(1),B_0(2),bacc(1),bacc(2),
      &      tacc(1),tacc(2),epoch(1),epoch(2),bhspin1,bhspin2,
      &      deltam_1,deltam_2,formation1,formation2,2,-1,
      &      zpars(14)**2.d5,'bpp')
