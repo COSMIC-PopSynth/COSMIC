@@ -120,7 +120,7 @@ def parse_commandline():
                                              " to select the subpopulation of interest from the evolved population")
     parser.add_argument("--match", type=float, help="provides the tolerance for the convergence calculation")
     parser.add_argument("--apply_convergence_limits", type=str2bool, nargs='?',
-                        const=True, default=False, help="filters the evolved binary population to contain"
+                        const=True, help="filters the evolved binary population to contain"
                                                         " only the binaries that satsify the convergence limits")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--verbose", action="store_true", default=False,
