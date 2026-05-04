@@ -15,7 +15,7 @@
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
      &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_mode
-      REAL*8 don_lim,acc_lim(2),Mbh_initial,
+      REAL*8 don_lim,acc_lim(2),Mbh_initial
       REAL*8 smt_periastron_check,smt_q
       COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial,
      &                smt_periastron_check,smt_q
