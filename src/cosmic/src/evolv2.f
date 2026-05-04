@@ -213,7 +213,7 @@
       LOGICAL output
 *
       REAL*8 qc_fixed
-      LOGICAL switchedCE,disrupt,force_stable
+      LOGICAL switchedCE,disrupt,force_stable,continue_stable
 
 
 Cf2py intent(in) kstar
@@ -291,6 +291,9 @@ Cf2py intent(out) kick_info_out
       sigmahold = sigma
 *memory for wind mass loss factor
       betahold = beta
+
+* track whether we're currently in a mass transfer phase that is forced to be stable (e.g. due to smt_q crit being hit)
+      continue_stable = .false.
 
 ** SET PULSAR VALUES HERE**
 * PDK
@@ -2311,9 +2314,18 @@ component.
          qc = qc_fixed
       endif
 
+* If we're already in a forced state of stability, continue
+      if (continue_stable) then
+         force_stable = .true.
+      else
+
 * Store whether we should force stable mass transfer because the smt_q criterion has been met
 *    Either smt_q is negative (i.e. not being used) or the current mass ratio is less than limit of smt_q
-      force_stable = smt_q.gt.-1.d0.and.q(j1).ge.smt_q
+         force_stable = smt_q.gt.-1.d0.and.q(j1).ge.smt_q
+         if (force_stable) then
+            continue_stable = .true.
+         endif
+      endif
 
       if((kstar(j1).le.1.or.kstar(j1).eq.7).and.q(j1).gt.qc
      &   .and..not.force_stable)then
@@ -4036,6 +4048,7 @@ component.
          goto 8
       else
          evolve_type = 4.0
+         continue_stable = .false.
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4372,6 +4385,7 @@ component.
 *
 
          evolve_type = 4.0
+         continue_stable = .false.
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
