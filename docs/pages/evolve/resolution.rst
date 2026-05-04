@@ -44,9 +44,6 @@ First, print all time steps during mass transfer
 
 .. include:: ../../_generated/default_bsedict.rst
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict,
-                                                SSEDict=SSEDict, timestep_conditions=timestep_conditions)
-
 .. ipython:: python
     :okwarning:
 
@@ -54,7 +51,7 @@ First, print all time steps during mass transfer
     timestep_conditions = [['RRLO_1>=1', 'dtp=0.0'], ['RRLO_2>=1', 'dtp=0.0']]
 
     bpp, bcm, initC, kick_info = Evolve.evolve(
-        initialbinarytable=single_binary, BSEDict=BSEDict,
+        initialbinarytable=single_binary, BSEDict=BSEDict, SSEDict=SSEDict,
         timestep_conditions=timestep_conditions
     )
     print(bcm[['tphys', 'kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'RRLO_1', 'RRLO_2']])

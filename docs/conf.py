@@ -161,6 +161,8 @@ todo_include_todos = False
 plot_pre_code = """
 from generate_default_bsedict import get_default_BSE_settings
 default_BSEDict = get_default_BSE_settings(to_python=True)
+default_SSEDict = {'stellar_engine': 'sse'}
+
 """
 
 
