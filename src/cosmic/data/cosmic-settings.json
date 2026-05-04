@@ -567,6 +567,22 @@
                         "name": 3,
                         "description": "Same as 2, but LBV-like mass loss for giants and non-degenerate stars beyond the Humphreys-Davidson limit",
                         "default": true
+                    },
+                    {
+                        "name": 5,
+                        "description": "Same as 3, but multiplied by 0.33",
+                        "version added": "3.7.7"
+                    },
+                    {
+                        "name": 6,
+                        "description": "<a href='https://scixplorer.org/abs/2023A%26A...676A.109B/abstract'>Bjorklund+2023</a>",
+                        "version added": "3.7.7"
+                    },
+                    {
+                        "name": 7,
+                        "description": "<a href='https://scixplorer.org/abs/2024A%26A...681A..29K/abstract'>Kritcka, Kubat &amp; Kritckova 2024"
+                        ,
+                        "version added": "3.7.7"
                     }
                 ]
             },
@@ -1226,6 +1242,11 @@
                         "name": 6,
                         "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2025A%26A...700A..20M/abstract'>Maltsev+2025</a>, with additions from <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251007573W/abstract'>Willcox+2025</a> for the definition of BH masses.",
                         "version_added": "3.7.0"
+                    },
+                    {
+                        "name": 7,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a>; NS/BH delineated by fryer_mcrit_nsbh so mxns is not used",
+                        "version_added": "3.7.7"
                     }
                 ]
             },
@@ -1259,6 +1280,42 @@
                     },
                     {
                         "name": 3.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fryer_fmix",
+                "description": "Sets the mixing fraction for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN model (remnantflag=7)",
+                "type": "number",
+                "version_added": "3.7.7",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the mixing fraction for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN remnant mass model"
+                    },
+                    {
+                        "name":1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fryer_mcrit_nsbh",
+                "description": "Sets the critical core mass for delineating between NS and BHs with the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN model (remnantflag=7)",
+                "type": "number",
+                "options-preface": "",
+                "version_added": "3.7.7",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the critical NS/BH core mass for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN remnant mass model (solar masses)"
+                    },
+                    {
+                        "name":5.75,
                         "description": "Default choice",
                         "default": true
                     }
@@ -1387,6 +1444,11 @@
                         "name": -4,
                         "description": "Uses the top-down approach from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2022RNAAS...6...25R/abstract'>Renzo+2022</a>, with adjustable parameters from <a class='reference external' href='https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract'>Hendriks+2023</a>",
                         "version_added": "3.7.2"
+                    },
+                    {
+                        "name": -5,
+                        "description": "Uses Belczynski 'weak' PISN pulsations",
+                        "version_added": "3.7.7"
                     },
                     {
                         "name": "positive values",
@@ -1591,12 +1653,31 @@
                     },
                     {
                         "name": 0.0,
-                        "description": "no limit on accretion during Roche-lobe overflow"
+                        "description": "assume all mass is lost from the system (fully nonconservative)"
                     },
                     {
                         "name": "[-1, -1]",
                         "description": "Default choice",
                         "default": true
+                    }
+
+                ]
+            },
+            {
+                "name": "smt_periastron_check",
+                "description": "Determines whether to check for contact at periastron for binaries that are undergoing stable mass transfer.",
+                "type": "dropdown",
+                "options-preface": "",
+                "version_added": "3.7.8",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not check for contact at periastron for binaries that are undergoing stable mass transfer",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Check for contact at periastron for binaries that are undergoing stable mass transfer"
                     }
                 ]
             },

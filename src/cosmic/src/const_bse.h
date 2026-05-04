@@ -15,8 +15,9 @@
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
      &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_mode
-      REAL*8 don_lim,acc_lim(2),Mbh_initial
-      COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial
+
+      REAL*8 don_lim,acc_lim(2),Mbh_initial,smt_periastron_check
+      COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial,smt_periastron_check
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
@@ -42,12 +43,13 @@
       REAL*8 mm_mu_ns, mm_mu_bh, maltsev_fallback,maltsev_pf_prob
       REAL*8 natal_kick_array(2,5)
       REAL*8 mc_he(2),mc_co(2)
+      REAL*8 fryer_fmix,fryer_mcrit_nsbh
       COMMON /SNVARS/ natal_kick_array,sigma,sigmadiv,bhsigmafrac,
      &            polar_kick_angle,pisn,ecsn,ecsn_mlow,
      &            bhspinmag,mxns,rembar_massloss,
      &            mc_he,mc_co,mm_mu_ns,mm_mu_bh,maltsev_fallback,
      &            maltsev_pf_prob,kickflag,fryer_mass_limit,
-     &            ppi_co_shift,ppi_extra_ml
+     &            ppi_co_shift,ppi_extra_ml,fryer_fmix,fryer_mcrit_nsbh
       REAL*8 fprimc_array(16)
       COMMON /TIDALVARS/ fprimc_array
       REAL*8 rejuv_fac
@@ -60,7 +62,7 @@
       COMMON /POINTS/ pts1,pts2,pts3
       REAL*8 dmmax,drmax
       COMMON /TSTEPC/ dmmax,drmax
-      REAL*8 scm(50000,14),spp(20,3)
+      REAL*8 scm(50000,16),spp(25,20)
       COMMON /SINGLE/ scm,spp
       REAL*8 bcm(50000,52),bpp(1000,52)
       COMMON /BINARY/ bcm,bpp
