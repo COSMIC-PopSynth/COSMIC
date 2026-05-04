@@ -10,6 +10,7 @@ env:
   CIBW_ARCHS_LINUX: "x86_64"
   CIBW_SKIP: "*-win32 *musllinux*"
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+  CIBW_ARCHS_MACOS: "x86_64 arm64"
   CIBW_BEFORE_BUILD: pip install numpy --config-settings=setup-args="-Dallow-noblas=true"
   CIBW_BUILD_VERBOSITY: "1"
   CIBW_BEFORE_ALL_LINUX: yum install -y gcc-gfortran
@@ -28,15 +29,16 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
-    # this step only uses a single python version since cibuildwheel
-    # builds multiple versions in one go on linux
+        submodules: recursive
+    - name: Switch METISSE submodule to track develop branch
+      run: |
+        git submodule set-branch --branch develop src/cosmic/src/METISSE
+        git submodule update --remote src/cosmic/src/METISSE
     - uses: actions/setup-python@v5
       name: Install Python
       with:
         python-version: "3.12"
-
-    - name: Install hdf5 (macOS)
+    - name: link gfortran and hdf5
       if: runner.os == 'macOS'
       run: |
         brew install hdf5

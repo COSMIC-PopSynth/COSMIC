@@ -72,7 +72,7 @@ def parse_commandline():
 
     defaults = {}
     if not (args.inifile is None and (('-h' in remaining_argv) or ('--help' in remaining_argv))):
-        BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+        BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
         defaults.update(sampling)
         defaults.update(filters)
         defaults.update(convergence)
@@ -169,8 +169,9 @@ if __name__ == '__main__':
     pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
     if isinstance(pool, MPIPool):
         if not pool.is_master():
+            from sys import exit
             pool.wait()
-            sys.exit(0)
+            exit(0)
         nproc = len(pool.workers)
     else:
         nproc = args.nproc
@@ -181,7 +182,7 @@ if __name__ == '__main__':
 
     # READ AND PARSE INIFILE
     ###########################################################################
-    BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+    BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
 
     # we now overwrite the inifile values with what was specified from the command line
     # (which could mean not overwriting anything at all because they are populated
@@ -217,8 +218,8 @@ if __name__ == '__main__':
                               "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
                 seed_int = getattr(args, argument)
 
-    # Check that the values in BSEDict, filters, and convergence are valid
-    utils.error_check(BSEDict, filters, convergence, sampling)
+    # Check that the values in BSEDict, SSEDict, filters, and convergence are valid
+    utils.error_check(BSEDict, SSEDict, filters, convergence, sampling)
 
     if seed_int != 0:
         np.random.seed(seed_int)
@@ -273,8 +274,8 @@ if __name__ == '__main__':
         # if config already exists, we need to overwrite it
         if "config" in f:
             del f["config"]
-        f["config"] = json.dumps({'BSEDict' : BSEDict, 'filters' : filters, 'convergence' : convergence,
-                                  'sampling' : sampling, 'rand_seed': seed_int})
+        f["config"] = json.dumps({'BSEDict' : BSEDict, 'SSEDict': SSEDict, 'filters' : filters, 
+                                  'convergence' : convergence, 'sampling' : sampling, 'rand_seed': seed_int})
         f.attrs['COSMIC_version'] = __version__
 
     # Initialize the step counter and convergence array/list
@@ -296,6 +297,9 @@ if __name__ == '__main__':
 
             log_file.write("You have specified both qmin and m2_min.\n")
             log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
+
+    if sampling["sampling_method"] == "multidim" and args.Nstep < args.nproc ** 2:
+            warnings.warn("`Nstep` is less than the square of `nproc`. You will see repeats with multidim sampling. Consider raising `Nstep`.")
 
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']) & ((time.time() - start_time) < args.max_wall_time):
         # Set random seed such that each iteration gets a unique, determinable seed
@@ -322,8 +326,8 @@ if __name__ == '__main__':
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
                                                             qmin = args.qmin,
-                                                            params = args.inifile)
-            # if m2_min is specified, use it to sample the initial binary table
+                                                            params = args.inifile,
+                                                            SSEDict = SSEDict)
             elif hasattr(args,'m2_min'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
@@ -338,7 +342,8 @@ if __name__ == '__main__':
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
                                                             m2_min = args.m2_min,
-                                                            params = args.inifile)
+                                                            params = args.inifile,
+                                                            SSEDict = SSEDict)
             else:
                 raise ValueError("You must specify either qmin or m2_min in the",
                                  " inifile if you are using the independent sampler")
@@ -389,6 +394,7 @@ if __name__ == '__main__':
         bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
                                                       pool=pool,
                                                       BSEDict=BSEDict,
+                                                      SSEDict=SSEDict,
                                                       idx=idx,
                                                       dtp=dtp,
                                                       timestep_conditions=filters['timestep_conditions'])

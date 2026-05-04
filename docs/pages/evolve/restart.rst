@@ -25,13 +25,15 @@ started from the beginning and three different points in the evolution:
         tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002
     )
     
+    SSEDict = {'stellar_engine': 'sse'}
+    
 .. include:: ../../_generated/default_bsedict.rst
 
 .. ipython:: python
     :okwarning:
     
     # evolve the binary
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict, SSEDict=SSEDict)
     print("From beginning")
     print(bpp)
     
@@ -82,7 +84,7 @@ restart the evolution after the mass transfer would occur. We can do this by usi
         tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014*0.6
     )
     bpp, bcm, initC, kick_info = Evolve.evolve(
-        initialbinarytable=single_binary, BSEDict=BSEDict
+        initialbinarytable=single_binary, BSEDict=BSEDict, SSEDict=SSEDict
     )
 
     for column in bpp.columns:
@@ -98,7 +100,7 @@ restart the evolution after the mass transfer would occur. We can do this by usi
     initC['bin_num'] = np.linspace(0, 1000, 1000)
 
     bpp_restart, bcm_restart, initC_restart, kick_info_restart = Evolve.evolve(
-        initialbinarytable=initC, BSEDict={}
+        initialbinarytable=initC, BSEDict=BSEDict, SSEDict=SSEDict
     )
 
     bpp_BH = bpp_restart.loc[

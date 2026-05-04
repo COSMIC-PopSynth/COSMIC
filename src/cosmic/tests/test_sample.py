@@ -73,6 +73,8 @@ REFF_TEST_ARRAY = np.array([3.94190562, 5.99895482])
 SINGLES_CMC_FITS, BINARIES_CMC_FITS = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.fits"))
 SINGLES_CMC_HDF5, BINARIES_CMC_HDF5 = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.hdf5"))
 
+SSEDict = {'stellar_engine': 'sse'}
+
 def power_law_fit(data, n_bins=100, return_intercept=False):
     def line(x, a, b):
         return x*a + b
@@ -206,6 +208,16 @@ class TestSample(unittest.TestCase):
             fit_slope = power_law_fit(q)
             self.assertEqual(np.round(fit_slope, 1), slope)
 
+    def test_sample_q(self):
+        """Test you can sample different mass ratio distributions"""
+        np.random.seed(2)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=10000000)
+        for slope in [0, 1, 2]:
+            mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, q_power_law=slope, qmin=0.0)
+            q = mass2 / mass1
+            fit_slope = power_law_fit(q)
+            self.assertEqual(np.round(fit_slope, 1), slope)
+
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
@@ -224,6 +236,34 @@ class TestSample(unittest.TestCase):
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
+        test_fracs = []
+        test_errs = []
+        primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
+        for i in range(len(OFFNER_MASS_RANGES)):
+            low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
+            offner_value = OFFNER_DATA[i]
+            offner_error = OFFNER_ERRORS[i]
+            bins_count = len(m1_b[(m1_b >= low) & (m1_b <= high)])
+            singles_count = len(m1_s[(m1_s >= low) & (m1_s <= high)])
+            bin_frac = bins_count / (bins_count + singles_count)
+            error = abs(offner_value - bin_frac)
+            self.assertLess(error, offner_error)
+        
+
+        test_fracs = []
+        test_errs = []
+        primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
+        for i in range(len(OFFNER_MASS_RANGES)):
+            low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
+            offner_value = OFFNER_DATA[i]
+            offner_error = OFFNER_ERRORS[i]
+            bins_count = len(m1_b[(m1_b >= low) & (m1_b <= high)])
+            singles_count = len(m1_s[(m1_s >= low) & (m1_s <= high)])
+            bin_frac = bins_count / (bins_count + singles_count)
+            error = abs(offner_value - bin_frac)
+            self.assertLess(error, offner_error)
 
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
@@ -265,6 +305,7 @@ class TestSample(unittest.TestCase):
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
         rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
+        print(rad1,rad2)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )

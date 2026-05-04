@@ -34,9 +34,11 @@ periods spaced evenly in log space.
         metallicity=np.ones(n_grid)*0.005
     )
 
+    SSEDict = {'stellar_engine': 'sse'}
+
     print(binary_grid)
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary_grid, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary_grid, BSEDict=BSEDict, SSEDict=SSEDict)
 
     print(bpp)
 

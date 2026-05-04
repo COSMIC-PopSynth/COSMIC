@@ -44,6 +44,31 @@ InitialBinaryTable class. Each initialized binary requires the following paramet
     print(single_binary)
 
 
+There are two available methods for evaluating the evolution of each star in the binary:
+
+* SSE - the single star evolution fitting formulae from `Hurley+2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_
+
+* METISSE - a new stellar evolution package that uses interpolation of detailed stellar models supplied by the user. 
+
+You can learn more these choices by consulting the `METISSE documentation <https://metisse.readthedocs.io/en/latest/>`_.
+
+If you have a grid of detailed stellar models and want to use METISSE, you can specify the
+SSEDict as follows: 
+
+.. ipython::
+
+    In [3]: SSEDict = {'stellar_engine': 'metisse',
+       ...:             'path_to_tracks': 'path/to/your/hydrogen/rich/stellar/models/',
+       ...:             'path_to_he_tracks': 'path/to/your/helium/stellar/models/'}
+
+
+For now, we will use the default SSE method for evolving single stars in binaries. 
+To do this, we specify the SSEDict which tells COSMIC to use the Hurley fitting formulae.
+
+.. ipython::
+
+    In [3]: SSEDict = {'stellar_engine': 'sse'} 
+
 (Binary) stellar physics assumptions
 ====================================
 
@@ -52,9 +77,10 @@ Each flag is saved in the BSEDict dictionary. Note that the BSEDict
 only needs to be specified the first time a binary is evolved with COSMIC or
 if you need to change the binary evolution prescriptions.
 
-If you are unfamiliar with these prescriptions, it is highly
+If you are unfamiliar with these prescriptions, it is 
 advised to run the defaults from the COSMIC install which are consistent
-with `Breivik+2020 <https://ui.adsabs.harvard.edu/abs/2019arXiv191100903B/abstract>`_
+with `Breivik+2020 <https://ui.adsabs.harvard.edu/abs/2019arXiv191100903B/abstract>`_,
+though we don't promise that these are the most up-to-date prescriptions.
 
 .. include:: ../../_generated/default_bsedict.rst
 
@@ -68,7 +94,7 @@ the Evolve class, which calls the evolv2.f subroutine in the BSE source code.
 .. ipython:: python
     :okwarning:
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=single_binary, BSEDict=BSEDict, SSEDict=SSEDict)
 
 
 Output
@@ -150,14 +176,15 @@ You can also use the built-in plotting function to see how the system evolves:
     :okwarning:
 
     from cosmic.plotting import evolve_and_plot
-    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=BSEDict, sys_obs={})
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=BSEDict, SSEDict=SSEDict, sys_obs={})
 
 .. plot::
 
     from cosmic.sample.initialbinarytable import InitialBinaryTable
     from cosmic.plotting import evolve_and_plot
     single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
-    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=default_BSEDict, sys_obs={})
+    SSEDict = {'stellar_engine': 'sse'}
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=default_BSEDict, SSEDict=SSEDict, sys_obs={})
 
 
 In this case, all the action happens in the first few Myr, so let's specify a t_max:
@@ -165,11 +192,12 @@ In this case, all the action happens in the first few Myr, so let's specify a t_
 .. ipython:: python
     :okwarning:
     
-    fig = evolve_and_plot(initC, t_min=None, t_max=6.0, BSEDict=BSEDict, sys_obs={})
+    fig = evolve_and_plot(initC, t_min=None, t_max=6.0, BSEDict=BSEDict, SSEDict=SSEDict, sys_obs={})
 
 .. plot::
 
     from cosmic.sample.initialbinarytable import InitialBinaryTable
     from cosmic.plotting import evolve_and_plot
     single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
-    fig = evolve_and_plot(single_binary, t_min=None, t_max=6.0, BSEDict=default_BSEDict, sys_obs={})
+    SSEDict = {'stellar_engine': 'sse'}
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=6.0, BSEDict=default_BSEDict, SSEDict=SSEDict, sys_obs={})

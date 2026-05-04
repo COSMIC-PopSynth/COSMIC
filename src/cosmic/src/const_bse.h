@@ -70,3 +70,14 @@
       INTEGER col_inds_bpp(52), col_inds_bcm(52)
       COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm,bpp_ind
 *
+      INTEGER using_metisse, using_sse
+      COMMON /SE_FLAGS/ using_metisse, using_sse
+      CHARACTER*256 path_to_tracks,path_to_he_tracks
+      real*8 z_match_limit
+      LOGICAL METISSE_verbose
+      COMMON/ METISSEVARS/ path_to_tracks,path_to_he_tracks,
+     &            z_match_limit, METISSE_verbose
+      LOGICAL bcm_err
+      COMMON/ ER_FLAGS/ bcm_err
+      
+*

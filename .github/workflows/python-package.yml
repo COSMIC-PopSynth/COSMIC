@@ -15,7 +15,15 @@ jobs:
         python-version: ['3.10', '3.11', '3.12', '3.13']
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository with submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0  # needed for full submodule history
+    - name: Switch METISSE submodule to track develop branch
+      run: |
+        git submodule set-branch --branch develop src/cosmic/src/METISSE
+        git submodule update --remote src/cosmic/src/METISSE
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:

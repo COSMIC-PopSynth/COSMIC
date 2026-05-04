@@ -122,6 +122,11 @@
          kstar(2) = ABS(kstar(2))
       else
 
+      WRITE(*,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
+      WRITE(*,*)neta,bwind,hewind,alpha1,lambdaf,windflag,rtmsflag
+      WRITE(*,*)ceflag,tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
+      WRITE(*,*)pts1,pts2,pts3
+      WRITE(*,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
 *
 * Initialize the parameters.
 * Set the initial spin of the stars. If ospin is zero (actually < 0.001)
@@ -154,13 +159,50 @@
 * They should really be included in binary.in and copied from an initC
 * file. This is a temporary measure until the input file is updated.
 *
+         pisn = 45.d0
+         cekickflag = 2
+         cehestarflag = 0
+         grflag = 1
+         bhms_coll_flag = 0
+         wd_mass_lim = 1
+         ecsn = 2.25
+         ecsn_mlow = 1.6
+         aic = 1
+         ussn = 0
+         sigmadiv = -20
+         bhsigmafrac = 1.0
+         polar_kick_angle = 90
+         do i = 1,4
+            do j = 1,2
+               natal_kick_array(j, i) = -100.d0
+            enddo
+        enddo
+        natal_kick_array(1,5) = 0.0
+        natal_kick_array(2,5) = 0.0
         polar_kick_angle = 90
         do i = 1,8
             qcrit_array(i) = 0.0
         enddo
+        don_lim = -1
+        acc_lim = -1
+        bdecayfac = 1
+        bconst = 3000
+        ck = 1000
+        qcflag = 5
+        eddlimflag = 0
         do i = 1,16
             fprimc_array(i) = 2.0/21.0
         enddo
+        bhspinflag = 0
+        bhspinmag = 0.0
+        rejuv_fac = 1.0
+        rejuvflag = 0
+        htpmb = 1
+        st_cr = 1
+        st_tide = 1
+        rembar_massloss = 0.5
+        zsun = 0.014
+        kickflag = -1
         using_cmc = 0
 
 

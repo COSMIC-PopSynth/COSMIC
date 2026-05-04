@@ -737,7 +737,7 @@
                 "name": "alpha1",
                 "description": "Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
                 "type": "string",
-                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>. A list is supplied such that the primary and secondary can be assigned different values for \\(\\alpha\\).",
                 "options": [
                     {
                         "name": "positive values",
@@ -753,7 +753,7 @@
             {
                 "name": "lambdaf",
                 "description": "Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \\(1 / \\lambda\\). See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 69</a>.",
-                "type": "number",
+                "type": "string",
                 "options-preface": "",
                 "options": [
                     {
@@ -1632,19 +1632,19 @@
                 "options-preface": "",
                 "options": [
                     {
-                        "name": -1,
+                        "name": "-1",
                         "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
-                        "name": -2,
+                        "name": "-2",
                         "description": "limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
-                        "name": -3,
+                        "name": "-3",
                         "description": "limited to 10x the thermal rate of the accretor for all stars"   
                     },
                     {
-                        "name": -4,
+                        "name": "-4",
                         "description": "limited to 1x the thermal rate of the accretor for all stars"
                     },
                     {

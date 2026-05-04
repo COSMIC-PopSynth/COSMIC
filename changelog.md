@@ -129,4 +129,10 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
 ## 3.7.7
 
 - Additions/changes:
+    - Split out alpha1 and acc_lim to have parameters specified for each component in the binary
+    - added several prescriptions for winds and compact object formation
+
+## 3.7.8
+
+- Additions/changes:
     - Added `smt_periastron_check` setting, which allows the user to toggle whether to check for periastron collision during stable mass transfer. By default, we set this off, which changes the behaviour of previous versions since 3.6.0 (PR #694) which did check for contact at periastron during stable mass transfer. We set this to off as the radial expansion from SSE is likely overestimated, once we connect with COSMIC-METISSE this should likely be set to 1.
