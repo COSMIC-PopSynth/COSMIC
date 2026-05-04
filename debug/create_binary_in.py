@@ -48,7 +48,7 @@ def create_binary_in(mass0, tphysf, tb, kstar, Z, ecc, BSE_settings):
             f.write(' '.join([str(BSE_settings[key]) for key in line]) + '\n')
 
 
-def convert_initC_row_to_binary_in(initC_file, bin_num):
+def convert_initC_row_to_binary_in(initC_file, bin_num=None):
     """Convert a row from an initC file to a binary.in file
 
     Parameters
@@ -63,6 +63,9 @@ def convert_initC_row_to_binary_in(initC_file, bin_num):
         initC = pd.read_csv(initC_file)
     elif initC_file.endswith('.h5'):
         initC = pd.read_hdf(initC_file, key="initC")
+
+    if bin_num is None:
+        bin_num = initC.index.values[0]
 
     r = initC.loc[bin_num]
 
