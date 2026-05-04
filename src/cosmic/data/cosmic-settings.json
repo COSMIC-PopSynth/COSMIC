@@ -1685,7 +1685,7 @@
                 "name": "smt_q",
                 "description": "Mass ratio limit to enforce stable mass transfer following <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251110728O/abstract'>Olejak+25</a>. Systems with Mdon/Macc >= smt_q meet the criteria. This paper argues that extreme mass ratios can lead to stable, non-conservative mass transfer. When this condition is met, mass transfer is assumed to be always stable, fully non-conservative, and that the mass carries away the specific angular momentum of the donor.",
                 "type": "number",
-                "version_added": "3.7.7",
+                "version_added": "3.7.9",
                 "options-preface": "",
                 "options": [
                     {
