@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -42,6 +44,7 @@ jobs:
         sudo apt-get install gfortran swig libhdf5-serial-dev
         pip install -r requirements.txt
         pip install meson numpy
+        
         python -m pip install .
 
     - name: Make dependencies

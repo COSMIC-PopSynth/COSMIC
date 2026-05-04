@@ -460,6 +460,100 @@
         ]
     },
     {
+        "category": "sse", 
+        "category_label": "Single star evolution",
+        "category_description": "Settings that control the single star evolution in the simulation",
+        "docs-colour": "lightsteelblue",
+        "settings": [
+            {
+                "name": "stellar_engine",
+                "description": "Select which stellar evolution engine to use for single star evolution",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "sse",
+                        "description": "Use SSE for single star evolution which will apply the fitting formulae from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a> for the single star evolution",
+                        "default": true
+
+                    },
+                    {
+                        "name": "metisse",
+                        "description": "Use METISSE for single star evolution, must supply <code>path_to_tracks</code> and <code>path_to_he_tracks</code>"
+                    }
+                ]
+            }, 
+            {
+                "name": "path_to_tracks",
+                "description": "Path to the METISSE tracks for single star evolution. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "path/to/tracks",
+                        "description": "This specifies the absolute path to the EEP tracks for single star evolution. Leave the string empty if not using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "",
+                        "description": "Default value (not using METISSE for single star evolution)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "path_to_he_tracks",
+                "description": "Path to the METISSE tracks for helium star evolution. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "path/to/he_tracks",
+                        "description": "This specifies the absolute path to the EEP tracks for helium star evolution. Leave the string empty if not using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "",
+                        "description": "Default value (not using METISSE for single star evolution)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "z_accuracy_limit",
+                "description": "Sets the maximum allowed relative difference between the supplied metallicity and the tracks used by METISSE. If cosmic throws an error due to metallicity, increasing this slightly may help. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Minimum metallicity"
+                    },
+                    {
+                        "name": 0.01,
+                        "description": "Recommended value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "metisse_verbose",
+                "description": "Whether to print verbose output from METISSE when using METISSE for single star evolution.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Print verbose output from METISSE when using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not print verbose output from METISSE when using METISSE for single star evolution.",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "category": "bse",
         "category_label": "Binary physics",
         "category_description": "Settings that control the binary physics in the simulation",

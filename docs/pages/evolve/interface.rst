@@ -30,12 +30,14 @@ samples ~100 binaries and evolving them.
 
 .. ipython:: python
 
+    SSEDict = {'stellar_engine': 'sse'}
+
     InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(
         'independent', [13, 14], [13, 14], binfrac_model=0.5, primary_model='kroupa01',
         ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0,
         met=0.002, size=1000)
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict, SSEDict=SSEDict)
 
 Now we can create a ``COSMICOutput`` object quite easily (with an optional label):
 

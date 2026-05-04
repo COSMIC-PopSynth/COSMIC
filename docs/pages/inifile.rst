@@ -63,6 +63,13 @@ Random Seed
     :file: ../_generated/config_insert_rand_seed.html
 
 
+Single star evolution
+---------------------
+
+.. raw:: html
+    :file: ../_generated/config_insert_sse.html
+
+
 Binary physics
 --------------
 

@@ -183,8 +183,7 @@ You can also use the built-in plotting function to see how the system evolves:
     from cosmic.sample.initialbinarytable import InitialBinaryTable
     from cosmic.plotting import evolve_and_plot
     single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
-    SSEDict = {'stellar_engine': 'sse'}
-    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=default_BSEDict, SSEDict=SSEDict, sys_obs={})
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=None, BSEDict=default_BSEDict, SSEDict=default_SSEDict, sys_obs={})
 
 
 In this case, all the action happens in the first few Myr, so let's specify a t_max:
@@ -199,5 +198,4 @@ In this case, all the action happens in the first few Myr, so let's specify a t_
     from cosmic.sample.initialbinarytable import InitialBinaryTable
     from cosmic.plotting import evolve_and_plot
     single_binary = InitialBinaryTable.InitialBinaries(m1=85.543645, m2=84.99784, porb=446.795757, ecc=0.448872, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.002)
-    SSEDict = {'stellar_engine': 'sse'}
-    fig = evolve_and_plot(single_binary, t_min=None, t_max=6.0, BSEDict=default_BSEDict, SSEDict=SSEDict, sys_obs={})
+    fig = evolve_and_plot(single_binary, t_min=None, t_max=6.0, BSEDict=default_BSEDict, SSEDict=default_SSEDict, sys_obs={})
