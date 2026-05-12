@@ -296,12 +296,16 @@ class GaussianMixture:
         old_covs = self.covariances[keep]
         new_covs = np.empty_like(old_covs)
         for k in range(K_new):
-            distance = (new_means[k] - samples)[:, :, None]  # (N, D, 1)
-            matrix = np.einsum('nij,nji->nij', distance, distance)  # (N, D, D)
-            factor = weights_normalized[:, 0] * rho[:, k]  # (N,)
-            new_covs[k] = np.sum(factor[:, None, None] * matrix, axis=0) / new_alphas[k]
+            diff = samples - new_means[k]                      # (N, D)
+            outer = np.einsum('ni,nj->nij', diff, diff)        # (N, D, D)
+            factor = weights_normalized[:, 0] * rho[:, k]     # (N,)
+            new_covs[k] = np.sum(factor[:, None, None] * outer, axis=0) / new_alphas[k]
 
-        # Entropy check
+        # Normalised effective sample size: exp(H(w)) / N, where H is the
+        # Shannon entropy of the normalised importance weights.  Ranges from
+        # 1/N (all weight on one sample) to 1 (uniform weights).  We revert
+        # if this metric changes by less than MIN_ENTROPY_CHANGE between
+        # generations, which indicates the mixture has stopped improving.
         entropy_change = np.exp(scipy_entropy(weights_normalized[:, 0])) / N
         if entropies is not None:
             if len(entropies) >= 1 and entropy_change - entropies[-1] < MIN_ENTROPY_CHANGE:
