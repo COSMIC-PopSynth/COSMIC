@@ -216,10 +216,20 @@ def test_mixture_sample():
 # ====================================================================
 
 def test_result_hit_rate():
-    result = STROOPWAFELResult()
-    result.weights = np.ones(100)
-    result.is_hit = np.zeros(100, dtype=bool)
-    result.is_hit[:10] = True
+    weights = np.ones(100)
+    is_hit = np.zeros(100, dtype=bool)
+    is_hit[:10] = True
+    result = STROOPWAFELResult(
+        samples=np.zeros((100, 1)),
+        param_names=['mass_1'],
+        weights=weights,
+        is_hit=is_hit,
+        generation=np.zeros(100, dtype=int),
+        gaussian_idx=np.full(100, -1, dtype=int),
+        num_explored=100,
+        num_hits=10,
+        fraction_explored=1.0,
+    )
     assert abs(result.hit_rate - 0.1) < 1e-10
 
 
