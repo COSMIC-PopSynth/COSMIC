@@ -6,7 +6,7 @@
      &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &                  lumin,B_0,bacc,tacc,epoch,menv_bpp,renv_bpp,
-     &                  bkick,deltam_1,deltam_2)
+     &                  bkick,deltam_1,deltam_2,dtm)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -53,11 +53,9 @@
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
       REAL*8 kick_info(2,18),fallback,M1i,M2i
       REAL*8 bkick(20)
-      REAL*8 bhspin1,bhspin2
+      REAL*8 bhspin1,bhspin2,dtm
       REAL*8 deltam_1,deltam_2
       common /fall/fallback
-      REAL*8 mass_preSN, mHe_preSN, massc_preSN
-      COMMON mass_preSN, mHe_preSN, massc_preSN
       INTEGER formation1,formation2
       REAL*8 sigmahold
       REAL*8 AURSUN,K3
@@ -77,6 +75,7 @@
       REAL*8 KW1_TEMP, KW2_TEMP
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
+      REAL*8 ALPHA_CE
 *
 * Initialize
 *
@@ -106,20 +105,24 @@
 * Obtain the core masses and radii.
 *
       KW = KW1
-      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &            bhspin1,star1)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
-      RZAMS = RZAMSF(M01)
 *
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      IF (using_METISSE.eq.1) THEN
+        CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,LAMB1)
+      ELSEIF (using_SSE.eq.1) THEN
+        RZAMS = RZAMSF(M01)
+        LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      ENDIF
       KW = KW2
-      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &            bhspin2,star2)
@@ -134,8 +137,12 @@
 *
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
-         RZAMS = RZAMSF(M02)
-         LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+         IF (using_METISSE.eq.1) THEN
+            CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,LAMB2)
+         ELSEIF (using_SSE.eq.1) THEN
+            RZAMS = RZAMSF(M02)
+            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+         ENDIF
          EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
 * Calculate the initial orbital energy
@@ -154,7 +161,12 @@
 *
 * Calculate the final orbital energy without coalescence.
 *
-      EORBF = EORBI + EBINDI/ALPHA1
+      IF(switchedCE)THEN 
+         ALPHA_CE = ALPHA1(2)
+      ELSE
+         ALPHA_CE = ALPHA1(1)
+      ENDIF
+      EORBF = EORBI + EBINDI/ALPHA_CE
 *
 * If the secondary is on the main sequence see if it fills its Roche lobe.
 *
@@ -205,7 +217,12 @@
 * Coalescence - calculate final binding energy.
 *
             EORBF = MAX(MC1*M2/(2.D0*SEPL),EORBI)
-            EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            IF(switchedCE)THEN 
+               ALPHA_CE = ALPHA1(2)
+            ELSE
+               ALPHA_CE = ALPHA1(1)
+            ENDIF
+            EBINDF = EBINDI - ALPHA_CE*(EORBF - EORBI)
             KW1_TEMP = KW
             KW2_TEMP = 15
          ELSE
@@ -231,7 +248,7 @@
                M_postCE=MC1
             ENDIF
 
-            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &                  bhspin1,star1)
@@ -323,9 +340,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M02,mass_preSN,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -343,9 +361,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M02,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -441,7 +460,12 @@
 * Calculate the final envelope binding energy.
 *
             EORBF = MAX(MC1*MC2/(2.D0*SEPL),EORBI)
-            EBINDF = EBINDI - ALPHA1*(EORBF - EORBI)
+            IF(switchedCE)THEN 
+               ALPHA_CE = ALPHA1(2)
+            ELSE
+               ALPHA_CE = ALPHA1(1)
+            ENDIF
+            EBINDF = EBINDI - ALPHA_CE*(EORBF - EORBI)
             if(output) write(*,*)'In dg or giant 1:',M01,M1,R1,M02,M2,
      & R2,MC1,MC2,MC3,KW1,KW2,KW,EORBF,EBINDF
 *
@@ -541,7 +565,7 @@
                 endif
             ENDIF
 
-            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &                  bhspin1,star1)
@@ -632,9 +656,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M02,mass_preSN,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -652,9 +677,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M02,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -712,7 +738,7 @@
                M_postCE=MC2
             ENDIF
 
-            CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+            CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &                  bhspin2,star2)
@@ -805,9 +831,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M01,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -825,9 +852,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M01,mass_preSN,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -926,17 +954,20 @@
          if(output) write(*,*)'coel 2 1:',KW,KW1,KW2,M1,M2,MF,MC22,
      & TB,OORB
          IF(KW.EQ.2)THEN
-            CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+            if (using_METISSE.eq.1) call set_star_type(star1)
+            CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star1)
             IF(GB(9).GE.MC1)THEN
                M01 = M1
                AJ1 = TM2 + (TSCLS2(1) - TM2)*(AJ1-TM1)/(TSCLS1(1) - TM1)
-               CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+               CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+     &          dtm,star1)
             ENDIF
             if(output) write(*,*)'coel 2 2:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
          ELSEIF(KW.EQ.7)THEN
             M01 = M1
-            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            if (using_METISSE.eq.1) call set_star_type(star1)
+            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             AJ1 = TM1*(FAGE1*MC1 + FAGE2*MC22)/(MC1 + MC22)
             if(output) write(*,*)'coel 2 3:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
@@ -947,8 +978,8 @@
 *
 * Obtain a new age for the giant.
 *
-            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1)
-            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1,star1)
+            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             if(output) write(*,*)'coel 2 4:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
          ENDIF
@@ -962,7 +993,7 @@
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
-            if(KW.eq.13.and.ecsn.gt.0.d0)then
+            if(KW1.eq.13.and.ecsn.gt.0.d0)then
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1041,9 +1072,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       M02,mass_preSN,lumin(1),lumin(2),
+     &                       M02,M01,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC2,RC1,menv_bpp(1),mHe_preSN,renv_bpp(1),
+     &                       RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
@@ -1061,9 +1093,10 @@
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
      &                       rad1_bpp,rad2_bpp,
-     &                       mass_preSN,M02,lumin(1),lumin(2),
+     &                       M01,M02,lumin(1),lumin(2),
      &                       teff1,teff2,
-     &                       RC1,RC2,mHe_preSN,menv_bpp(2),renv_bpp(1),
+     &                       RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &                       renv_bpp(1),
      &                       renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
@@ -1115,8 +1148,9 @@
      &      jp,tphys,11.d0,M1,M2,KW1,KW2,-1.d0,-1.d0,-1.d0,0.d0,
      &      0.d0,aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,mc_he(1),
      &      mc_he(2),mc_co(1),mc_co(2),rad(1),rad(2),M01,M02,lumin(1),
-     &      lumin(2),teff1,teff2,RC1,RC2,MENV,mHe_preSN,renv_bpp(1),
-     &      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),bacc(1),bacc(2),
+     &      lumin(2),teff1,teff2,RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &      renv_bpp(1),renv_bpp(2),
+     &      OSPIN1,OSPIN2,B_0(1),B_0(2),bacc(1),bacc(2),
      &      tacc(1),tacc(2),epoch(1),epoch(2),bhspin1,bhspin2,
      &      deltam_1,deltam_2,formation1,formation2,2,-1,
      &      zpars(14)**2.d5,'bpp')

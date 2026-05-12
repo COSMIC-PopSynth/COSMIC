@@ -29,6 +29,9 @@ import operator
 import json
 import itertools
 import os.path
+import glob
+import re
+from pathlib import Path
 import h5py as h5
 import re
 
@@ -69,6 +72,13 @@ __all__ = [
     "get_binfrac_of_Z",
     "get_porb_norm",
     "get_met_dep_binfrac",
+    "get_METISSE_metallicity_files",
+    "read_metallicity_file",
+    "read_format_file",
+    "read_MIST_track",
+    "read_other_track",
+    "read_eep_directory",
+    "to_f2py_str_array"
     "explain_setting",
 ]
 
@@ -978,11 +988,14 @@ def get_met_dep_binfrac(met):
 
     return float(np.round(binfrac, 2))
 
-def error_check(BSEDict, filters=None, convergence=None, sampling=None):
-    """Checks that values in BSEDict, filters, and convergence are viable"""
+def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None):
+    """Checks that values in BSEDict, SSEDict,filters, and convergence are viable"""
     if not isinstance(BSEDict, dict):
         raise ValueError("BSE flags must be supplied via a dictionary")
 
+    if not isinstance(SSEDict, dict):
+        raise ValueError("SSE flags must be supplied via a dictionary")
+    
     if filters is not None:
         if not isinstance(filters, dict):
             raise ValueError("Filters criteria must be supplied via a dictionary")
@@ -1142,11 +1155,90 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 )
             )
 
+    # SSEDict
+    flag = "stellar_engine"
+    acceptable_stellar_engines = ["sse", "metisse"]
+    if flag in SSEDict.keys():
+        if SSEDict[flag] not in acceptable_stellar_engines:
+            raise ValueError(
+                "{0} needs to be one of 'sse', 'metisse' (you set it to {1})".format(
+                flag, SSEDict[flag]
+                )
+            )
+            
+    flag = "path_to_tracks"
+    if "stellar_engine" in SSEDict.keys():
+        if SSEDict["stellar_engine"] == "metisse":
+            if SSEDict[flag] == '':
+                raise ValueError(
+                    "If you want to use METISSE as the stellar engine, {0} needs to be a non-empty string".format (
+                    flag
+                    )
+                )
+            elif SSEDict[flag] == None:
+                raise ValueError(
+                    "If you want to use METISSE as the stellar engine, {0} needs to be a non-empty string".format (
+                    flag
+                    )
+                )
+            else:
+                path = Path(SSEDict[flag])
+                metallicity_file = list(path.glob('[!.]*_metallicity.in'))
+                if metallicity_file == []:
+                    raise ValueError(
+                        "No metallicity file found in {0}. Make sure that {1} is valid".format (
+                        SSEDict[flag], flag
+                        )
+                    )
+        
+    flag = "path_to_he_tracks"
+    if "stellar_engine" in SSEDict.keys():
+        if SSEDict["stellar_engine"] == "metisse":
+            if SSEDict[flag] == '':
+                warnings.warn(
+                    "If you want to use METISSE as the stellar engine,{0} needs to be a non-empty string, otheriwse SSE formulae will be used for helium stars".format (
+                    flag
+                )
+            )
+            elif SSEDict[flag] == None:
+                raise ValueError(
+                    "If you want to use METISSE as the stellar engine, {0} needs to be a non-empty string".format (
+                    flag
+                    )
+                )
+            else:
+                path = Path(SSEDict[flag])
+                metallicity_file = list(path.glob('[!.]*_metallicity.in'))
+                if metallicity_file == []:
+                    raise ValueError(
+                        "No metallicity file for helium star tracks found in {0}. Make sure that {1} is valid".format (
+                        SSEDict[flag], flag
+                    )
+                )
+    flag = "z_accuracy_limit"
+    if flag in SSEDict.keys():
+        if not isinstance(SSEDict[flag], float):
+            raise ValueError(
+                "`z_accuracy_limit` must be of type `float`. You supplied {0}, which is of type {1}".format(
+                    SSEDict[flag], type(SSEDict[flag])
+                )
+            )
+    flag = "metisse_verbose"
+    if flag in SSEDict.keys():
+        if not isinstance(SSEDict[flag], bool):
+            raise ValueError(
+                "`metisse_verbose` must be of type `bool`. You supplied {0}, which is of type {1}".format(
+                    SSEDict[flag], type(SSEDict[flag])
+                )
+            )
+                
+    # BSEDict
+    
     # use the cosmic-settings.json file to define the valid ranges for BSE flags
     settings_path = io_files("cosmic.data").joinpath('cosmic-settings.json')
     settings = json.loads(settings_path.read_text(encoding='utf-8'))
 
-    handle_separately = ['qcrit_array', 'natal_kick_array', 'fprimc_array']
+    handle_separately = ['qcrit_array', 'natal_kick_array', 'fprimc_array', 'alpha1', 'acc_lim']
 
     # go through the different categories in the settings file
     for cat in settings:
@@ -1266,6 +1358,28 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
                 f"qcrit_array values must be >= 0 and there must be 16 values "
                 f'(you set them to {BSEDict["qcrit_array"]}], length={len(BSEDict["qcrit_array"])})'
             )
+        
+    if "alpha1" in BSEDict.keys():
+        if np.any(np.array(BSEDict["alpha1"]) < 0.0) or len(BSEDict["alpha1"]) != 2:
+            raise ValueError(
+                f"All alpha1 values must be >= 0 (you set them to {BSEDict['alpha1']})"
+            )
+        
+    if "acc_lim" in BSEDict.keys():
+        if len(BSEDict["acc_lim"]) != 2:
+            raise ValueError(
+                f"All acc_lim values must be >= 0 (you set them to {BSEDict['acc_lim']})"
+            )
+        for i in range(2):
+            if BSEDict["acc_lim"][i] > 1.0:
+                raise ValueError(
+                    f"All acc_lim float must be between 0 and 1 (you set them to {BSEDict['acc_lim']})"
+                )
+            elif BSEDict["acc_lim"][i] < 0:
+                if BSEDict["acc_lim"][i] not in [-1, -2, -3, -4]:
+                    raise ValueError(
+                        f"All acc_lim values must be >= 0 or one of the following flags: -1, -2, -3, -4 (you set them to {BSEDict['acc_lim']})"
+                    )
 
     return
 
@@ -1276,7 +1390,8 @@ def check_initial_conditions(full_initial_binary_table):
     Only warning provided right now is if star begins in Roche lobe
     overflow
     """
-
+    #from cosmic import _evolvebin
+    
     def rzamsf(m):
         """A function to evaluate Rzams
         ( from Tout et al., 1996, MNRAS, 281, 257 ).
@@ -1306,7 +1421,7 @@ def check_initial_conditions(full_initial_binary_table):
     else:
         rzams1 = rzamsf(mass1)
         rzams2 = rzamsf(mass2)
-
+        
         # assume some time step in order to calculate sep
         yeardy = 365.24
         aursun = 214.95
@@ -1381,7 +1496,8 @@ def convert_kstar_evol_type(bpp):
         14: "blue straggler",
         15: "supernova of primary",
         16: "supernova of secondary",
-       100: "RLOF interpolation timeout error"
+       100: "RLOF interpolation timeout error",
+       101: "METISSE error"
     }
 
     evolve_type_string_to_int_dict = {
@@ -1496,6 +1612,8 @@ def parse_inifile(inifile):
                 dictionary["convergence"] = 0
             if "sampling" not in dictionary.keys():
                 dictionary["sampling"] = 0
+            if "sse" not in dictionary.keys():
+                dictionary["sse"] = 0
             continue
         dictionary[section] = {}
         for option in cp.options(section):
@@ -1511,14 +1629,390 @@ def parse_inifile(inifile):
             finally:
                 if option not in dictionary[section].keys():
                     raise ValueError("We have detected an error in your inifile. The folloiwng parameter failed to be read correctly: {0}".format(option))
-
+                    
+    SSEDict = dictionary["sse"]
     BSEDict = dictionary["bse"]
     seed_int = int(dictionary["rand_seed"]["seed"])
     filters = dictionary["filters"]
     convergence = dictionary["convergence"]
     sampling = dictionary["sampling"]
 
-    return BSEDict, seed_int, filters, convergence, sampling
+    return BSEDict, SSEDict, seed_int, filters, convergence, sampling
+
+def get_METISSE_metallicity_files(path_to_tracks):
+    """Returns the path to the METISSE files
+    
+    Parameters
+    ----------
+    path_to_tracks : str
+        Path to the directory containing the METISSE metallicity file(s) for hydrogen/helium tracks
+    
+    Returns
+    -------
+    met_files : list
+        List of paths to the METISSE metallicity files for hydrogen/helium tracks
+    """
+    import os
+
+    path_to_tracks = Path(path_to_tracks)
+
+    # Next also get the Metallicity files
+    met_files = [os.path.join(path_to_tracks, f) for f in os.listdir(path_to_tracks) if f.endswith("metallicity.in")]
+
+    if len(met_files) == 0:
+        raise ValueError("No METISSE metallicity files found in the specified path: {0}".format(path_to_tracks))
+
+    return met_files
+
+
+def read_metallicity_file(met_file_path):
+    """
+    Read a metallicity namelist 
+
+    Parameters
+    ----------
+    met_file_path : str or Path
+        Path to the metallicity file (*.in).
+
+    Returns
+    -------
+    met_dict : dict
+        Dictionary containing metallicity options, e.g., 
+        'eep_tracks_dir', 'Z_files', 'format_file', etc. Paths are converted to Path objects.
+
+    Notes
+    -----
+    - Booleans (.true./.false.) are converted to Python True/False.
+    - Fortran-style scientific notation with 'd' (e.g., 1.23d-04) is converted to float.
+    - Strings in quotes are stripped of the quotes.
+    - Stops parsing at the Fortran namelist terminator '/'.
+    """
+    met_file_path = Path(met_file_path)
+    
+    # --- Read metallicity file ---
+    met_dict = {
+    "eep_tracks_dir": "",
+    "Z_files": -1.0,
+    "format_file": "",
+    "Y_files": -1.0,
+    "Mhook": -1.0,
+    "Mhef": -1.0,
+    "Mfgb": -1.0,
+    "Mup": -1.0,
+    "Mec": -1.0,
+    "Mextra": -1.0
+    }
+
+    with open(met_file_path, 'r') as f:
+        for line in f:
+            line = line.split('!')[0].strip()  # remove comments
+            if not line:
+                continue
+            if line == '/':
+                break
+            m = re.match(r'(\w+)\s*=\s*(.*)', line)
+            if m:
+                key, value = m.groups()
+                value = value.strip()
+                # Convert numbers
+                try:
+                    value_num = float(value.replace('d','e').replace('D','e'))
+                    met_dict[key] = value_num
+                except ValueError:
+                    met_dict[key] = value.strip("'\"")  # keep strings
+    
+    # Check if the paths exist
+    if 'eep_tracks_dir' in met_dict:
+        if os.path.exists(met_dict['eep_tracks_dir']) is False:
+            # Otherwise convert paths to Path objects relative to metallicity file
+            # met_dict['eep_tracks_dir'] = os.path.join(met_file_path.parent,met_dict['eep_tracks_dir'])
+            met_dict['eep_tracks_dir'] = met_file_path.parent / met_dict['eep_tracks_dir']
+    else:
+        raise ValueError("eep_tracks_dir not found in {0}".format (met_file_path))
+    if 'format_file' in met_dict:
+        if os.path.exists(met_dict['format_file']) is False:
+            met_dict['format_file'] = met_file_path.parent / met_dict['format_file']
+    else:
+        raise ValueError("format_file not found in {0}".format (met_file_path))
+    
+    met_dict = {k.lower(): v for k, v in met_dict.items()}
+
+    return met_dict
+
+def read_format_file(format_file_path):
+    """
+    Read the format file associated with the metallicity namelist 
+
+    Parameters
+    ----------
+    format_file_path : str or Path
+        Path to the format file.
+
+    Returns
+    -------
+    fmt_dict : dict
+        Dictionary containing format file options, e.g., column names, EEP stages, flags.
+
+    Notes
+    -----
+    - Booleans (.true./.false.) are converted to Python True/False.
+    - Fortran-style scientific notation with 'd' (e.g., 1.23d-04) is converted to float.
+    - Strings in quotes are stripped of the quotes.
+    - Stops parsing at the Fortran namelist terminator '/'.
+    """
+
+# --- Read format file ---
+    fmt_dict = {
+    "read_eep_files": False,
+    "file_extension": "",
+    "header_location": -1,
+    "extra_char": "",
+    "column_name_file": "",
+    "total_cols": -1,
+    "age_colname": "",
+    "mass_colname": "",
+    "log_L_colname": "",
+    "Lum_colname": "",
+    "log_R_colname": "",
+    "Radius_colname": "",
+    "he_core_mass": "",
+    "co_core_mass": "",
+    "binding_energy_colname": "",
+    "he_core_radius": "",
+    "co_core_radius": "",
+    "mass_conv_envelope": "",
+    "radius_conv_envelope": "",
+    "log_T_colname": "",
+    "Teff_colname": "",
+    "log_Tc": "",
+    "he4_mass_frac": "",
+    "c12_mass_frac": "",
+    "o16_mass_frac": "",
+    "PreMS_EEP": -1,
+    "ZAMS_EEP": -1,
+    "IAMS_EEP": -1,
+    "TAMS_EEP": -1,
+    "BGB_EEP": -1,
+    "cHeIgnition_EEP": -1,
+    "cHeBurn_EEP": -1,
+    "TA_cHeB_EEP": -1,
+    "TPAGB_EEP": -1,
+    "cCBurn_EEP": -1,
+    "post_AGB_EEP": -1,
+    "Initial_EEP": -1,
+    "Final_EEP": -1,
+    "Extra_EEP1": -1,
+    "Extra_EEP2": -1,
+    "Extra_EEP3": -1,
+    "low_mass_final_eep": -1,
+    "high_mass_final_eep": -1,
+    "fix_track": True,
+    "lookup_index": 1.0
+    }
+
+    with open(format_file_path, 'r') as f:
+        for line in f:
+            line = line.split('!')[0].strip()
+            if not line:
+                continue
+            if line == '/':
+                break
+            m = re.match(r'(\w+)\s*=\s*(.*)', line)
+            if m:
+                key, value = m.groups()
+                value = value.strip()
+                
+                # Booleans
+                if value.lower() == '.true.':
+                    fmt_dict[key] = True
+                elif value.lower() == '.false.':
+                    fmt_dict[key] = False
+                # Strings in quotes
+                elif (value.startswith("'") and value.endswith("'")) or \
+                     (value.startswith('"') and value.endswith('"')):
+                    fmt_dict[key] = value[1:-1]
+                else:
+                    # Numeric: convert Fortran 'd' notation to float
+                    try:
+                        fmt_dict[key] = float(value.replace('d','e').replace('D','e'))
+                        # convert integer-looking floats to int
+                        if fmt_dict[key].is_integer():
+                            fmt_dict[key] = int(fmt_dict[key])
+                    except ValueError:
+                        fmt_dict[key] = value  # fallback
+    
+    # Convert all keys in fmt_dict_keep to lowercase
+    fmt_dict = {k.lower(): v for k, v in fmt_dict.items()}
+
+    return fmt_dict
+
+
+
+def read_MIST_track(eep_path):
+    track = {}
+    track['filename'] = str(eep_path)
+
+    with eep_path.open() as f:
+        # Read lines sequentially to mimic Fortran
+        version_line = f.readline()
+        track['version_string'] = version_line[25:33].strip()  # 25x,a8
+
+        rev_line = f.readline()
+        track['MESA_revision_number'] = int(rev_line[25:33].strip())  # 25x,i8
+
+        f.readline()  # comment line
+        f.readline()  # comment line
+
+        # Composition line
+        comp_line = f.readline()
+        values = comp_line.split()
+        track['initial_Y'] = float(values[1])
+        track['initial_Z'] = float(values[2])
+        track['Fe_div_H'] = float(values[3])
+        track['alpha_div_Fe'] = float(values[4])
+        track['v_div_vcrit'] = float(values[5])
+
+        f.readline()  # comment line
+        f.readline()  # comment line
+
+        # Track info line
+        info_line = f.readline()
+        track['initial_mass'] = float(info_line[2:18].strip())
+        track['ntrack'] = int(info_line[18:26].strip())
+        track['ncol'] = int(info_line[34:42].strip())
+        # track['phase_info'] = info_line[42:50].strip()
+        track['type_label'] = info_line[50:65].strip()
+
+        # EEP lines
+        eep_line = f.readline()
+        track['eep'] = np.array([int(x) for x in eep_line.split()[2:]], dtype=int)
+        track['neep'] = len(track['eep'])
+
+        f.readline()  # comment line
+        f.readline()  # column numbers line
+
+        # Column names line
+        cols_line = f.readline()
+        track['cols'] = cols_line.split()[1:]  # list of strings start at 1 to skip # symbol
+
+        # track data
+        # tr = np.zeros((track['ncol'], track['ntrack']), dtype=float)
+        # for j in range(track['ntrack']):
+        #     data_line = f.readline()
+        #     values = [float(x) for x in data_line.split()]
+        #     tr[:, j] = values[:track['ncol']]
+        # track['tr'] = tr
+        # track data
+        track['tr'] = np.loadtxt(eep_path, skiprows = 11,dtype=float) 
+        track['tr'] = np.transpose(track['tr'])
+        if len(track['tr'].shape) < 2:
+            track['tr'] = track['tr'].reshape((-1, 1))
+        track['ncol'], track['ntrack'] = track['tr'].shape
+    return track
+
+def read_other_track(eep_path,fmt):
+    track = {}
+    track['filename'] = str(eep_path)
+    header = fmt['header_location']
+
+    # track data
+    track['tr'] = np.loadtxt(eep_path, skiprows = header, dtype=float) 
+    track['tr'] = np.transpose(track['tr']) 
+    track['ncol'], track['ntrack'] = track['tr'].shape
+    # Set the following values to defaults
+    # they are either not relevant at this point 
+    # or are assigned later within METISSE
+    track['initial_mass'] = -1.0
+    track['initial_Y'] = -1.0
+    track['initial_Z'] = -1.0
+    track['Fe_div_H'] = -1.0
+    track['alpha_div_Fe'] = -1.0
+    track['v_div_vcrit'] = -1.0
+    track['neep'] = 0
+
+    with eep_path.open() as f:
+        # Read lines sequentially to mimic Fortran
+        if header>0:
+            for i in range(header-1):
+                f.readline()
+            # Column names line
+            track['cols'] = f.readline().strip().split() 
+            # remove any extra chracter (such as #) if present
+            track['cols'] = [c for c in track['cols'] if c != fmt['extra_char']]
+        else:
+            if os.path.exists(fmt["column_name_file"]):
+                #read the column name file
+                with open(fmt["column_name_file"], "r") as f:
+                    track['cols'] = [line.strip() for line in f if line.strip()]
+                    if (len(track['cols']) != track['ncol']):
+                        raise ValueError(
+                            "Total columns {0} in the column_name_file do not match the number of columns {1} in the eep file".format(
+                                len(track['cols']), track['ncol'])
+                            )
+            else:
+                raise ValueError(
+                        "Check if header location {0} and column_name_file {1} are correct".format(
+                            header, fmt["column_name_file"])
+                            )
+
+    return track
+
+def read_eep_directory(eep_dir,fmt_dict):
+    """
+    Read all EEP files in a directory matching the given pattern 
+
+    Parameters
+    ----------
+    eep_dir : str or Path
+        Directory containing the EEP files.
+
+    fmt_dict : dict
+        Dictionary containing format file options, e.g., column names, EEP stages, flags.
+
+    Returns
+    -------
+    tracks : list of dict
+        List of track dictionaries, each as returned by `read_eep_file`
+    """
+
+    eep_dir = Path(eep_dir)
+
+
+    if fmt_dict['read_eep_files']:
+        pattern="*.eep"
+    else:
+        pattern = "*"+fmt_dict['file_extension']
+
+    eep_files = list(eep_dir.glob(pattern))
+
+    if len(eep_files) == 0:
+        raise ValueError("No eep tracks found in the specified path: {0}".format(eep_dir))
+
+    if fmt_dict['read_eep_files']:
+        tracks = [read_MIST_track(f) for f in eep_files]
+    else:
+        tracks = [read_other_track(f,fmt_dict) for f in eep_files]
+    return tracks
+
+
+def to_f2py_str_array(pylist, maxlen=256):
+    """
+    Convert Python list of strings to NumPy array of fixed-length strings
+    for F2PY.
+
+    Parameters
+    ----------
+    pylist : list of str
+        Strings to convert.
+    maxlen : int
+        Max length for Fortran strings.
+
+    Returns
+    -------
+    np.ndarray
+        Array of dtype S{maxlen}
+    """
+    return np.array(pylist, dtype=f"S{maxlen}")
 
 
 def explain_setting(setting):

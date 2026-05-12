@@ -5,7 +5,13 @@ About
 #####
 COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code) is a rapid binary population synthesis suite with a special focus of generating compact binary populations. 
 
-COSMIC currently implements stellar evolution using SSE (`Hurley, Pols, and Tout 2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_) and binary interactions using BSE (`Hurley, Tout, and Pols 2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_). Several modifications have been applied to BSE to account for recent updates to binary evolution especially important to compact binary formation (e.g. metallicity-dependent stellar winds or black hole natal kick strengths). For a detailed discussion of these modifications, see `Breivik et al. 2020 <https://ui.adsabs.harvard.edu/abs/2019arXiv191100903B/abstract>`_.
+COSMIC implements stellar evolution using the fitting formulae described in
+SSE (`Hurley, Pols, and Tout 2000 <https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract>`_) 
+or METISSE which uses pre-computed detailed single star grids that follow the MIST-style equivalent 
+evolutionary phase (EEP) format. For more details on METISSE see the `METISSE documentation <https://cosmic-popsynth.github.io/Metisse/>`_. 
+
+Binary interactions are implemented based on the BSE algorithm (`Hurley, Tout, and Pols 2002 <https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract>`_). 
+Several modifications have been applied to BSE to account for recent updates to binary evolution especially important to compact binary formation (e.g. metallicity-dependent stellar winds or black hole natal kick strengths). For a detailed discussion of these modifications, see `Breivik et al. 2020 <https://ui.adsabs.harvard.edu/abs/2019arXiv191100903B/abstract>`_.
 
 ************
 Using COSMIC

@@ -40,9 +40,9 @@ First, print all time steps during mass transfer
         ecc=0.601408, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.02
     )
 
+    SSEDict = {'stellar_engine': 'sse'}
 
 .. include:: ../../_generated/default_bsedict.rst
-
 
 .. ipython:: python
     :okwarning:
@@ -51,7 +51,7 @@ First, print all time steps during mass transfer
     timestep_conditions = [['RRLO_1>=1', 'dtp=0.0'], ['RRLO_2>=1', 'dtp=0.0']]
 
     bpp, bcm, initC, kick_info = Evolve.evolve(
-        initialbinarytable=single_binary, BSEDict=BSEDict,
+        initialbinarytable=single_binary, BSEDict=BSEDict, SSEDict=SSEDict,
         timestep_conditions=timestep_conditions
     )
     print(bcm[['tphys', 'kstar_1', 'kstar_2', 'mass_1', 'mass_2', 'RRLO_1', 'RRLO_2']])
@@ -67,7 +67,8 @@ Second, pick a certain resolution for the bcm array until the system merges or i
     timestep_conditions = [['binstate=0', 'dtp=1.0']]
 
     bpp, bcm, initC, kick_info = Evolve.evolve(
-        initialbinarytable=single_binary, BSEDict=BSEDict,
+        initialbinarytable=single_binary, 
+        BSEDict=BSEDict, SSEDict=SSEDict, 
         timestep_conditions=timestep_conditions
     )
 
@@ -90,7 +91,8 @@ Finally, we show how to print a fine resolution only during the HMXB stage of th
     timestep_conditions = [['kstar_1=14', 'kstar_2<10','dtp=0.1'], ['kstar_2=14', 'kstar_1<10','dtp=0.1']]
 
     bpp, bcm, initC, kick_info = Evolve.evolve(
-        initialbinarytable=single_binary, BSEDict=BSEDict,
+        initialbinarytable=single_binary, 
+        BSEDict=BSEDict, SSEDict=SSEDict,
         timestep_conditions=timestep_conditions
     )
 

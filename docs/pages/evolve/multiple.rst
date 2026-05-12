@@ -12,7 +12,11 @@ Let's start by importing the necessary modules:
     from cosmic.evolve import Evolve
 
 
-And use the same BSE dict as before:
+And use the same SSE and BSE dictionaries as before:
+
+.. ipython:: python
+
+    SSEDict = {'stellar_engine': 'sse'}
 
 .. include:: ../../_generated/default_bsedict.rst
 
@@ -35,7 +39,7 @@ Below is an example for systems that could form GW150914 and GW170817 - like bin
 
     np.random.seed(5)
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary_set, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary_set, BSEDict=BSEDict, SSEDict=SSEDict)
 
 As before, bpp, bcm, and initC are returned as pandas DataFrames which assign an
 index to each binary system we evolve. We can access each binary as follows:
@@ -59,7 +63,7 @@ progenitor, we expect most of the evolution to take place in the first ~60 Myr.
     :okexcept:
 
     from cosmic.plotting import evolve_and_plot
-    fig = evolve_and_plot(binary_set, t_min=None, t_max=[6.0, 60.0], BSEDict=BSEDict, sys_obs={})
+    fig = evolve_and_plot(binary_set, t_min=None, t_max=[6.0, 60.0], BSEDict=BSEDict, SSEDict=SSEDict, sys_obs={})
 
 
 .. plot::
@@ -69,5 +73,5 @@ progenitor, we expect most of the evolution to take place in the first ~60 Myr.
     import numpy as np
     np.random.seed(5)
     binary_set = InitialBinaryTable.InitialBinaries(m1=[85.543645, 11.171469], m2=[84.99784, 9.67305], porb=[446.795757, 370.758343], ecc=[0.448872, 0.370], tphysf=[13700.0, 13700.0], kstar1=[1, 1], kstar2=[1, 1], metallicity=[0.002, 0.02])
-    fig = evolve_and_plot(binary_set, t_min=None, t_max=[6.0, 60.0], BSEDict=default_BSEDict, sys_obs={})
+    fig = evolve_and_plot(binary_set, t_min=None, t_max=[6.0, 60.0], BSEDict=default_BSEDict, SSEDict=default_SSEDict, sys_obs={})
 

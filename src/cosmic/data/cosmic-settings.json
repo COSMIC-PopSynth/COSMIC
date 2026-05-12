@@ -460,6 +460,100 @@
         ]
     },
     {
+        "category": "sse", 
+        "category_label": "Single star evolution",
+        "category_description": "Settings that control the single star evolution in the simulation",
+        "docs-colour": "lightsteelblue",
+        "settings": [
+            {
+                "name": "stellar_engine",
+                "description": "Select which stellar evolution engine to use for single star evolution",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "sse",
+                        "description": "Use SSE for single star evolution which will apply the fitting formulae from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a> for the single star evolution",
+                        "default": true
+
+                    },
+                    {
+                        "name": "metisse",
+                        "description": "Use METISSE for single star evolution, must supply <code>path_to_tracks</code> and <code>path_to_he_tracks</code>"
+                    }
+                ]
+            }, 
+            {
+                "name": "path_to_tracks",
+                "description": "Path to the METISSE tracks for single star evolution. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "path/to/tracks",
+                        "description": "This specifies the absolute path to the EEP tracks for single star evolution. Leave the string empty if not using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "",
+                        "description": "Default value (not using METISSE for single star evolution)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "path_to_he_tracks",
+                "description": "Path to the METISSE tracks for helium star evolution. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "path/to/he_tracks",
+                        "description": "This specifies the absolute path to the EEP tracks for helium star evolution. Leave the string empty if not using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "",
+                        "description": "Default value (not using METISSE for single star evolution)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "z_accuracy_limit",
+                "description": "Sets the maximum allowed relative difference between the supplied metallicity and the tracks used by METISSE. If cosmic throws an error due to metallicity, increasing this slightly may help. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Minimum metallicity"
+                    },
+                    {
+                        "name": 0.01,
+                        "description": "Recommended value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "metisse_verbose",
+                "description": "Whether to print verbose output from METISSE when using METISSE for single star evolution.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Print verbose output from METISSE when using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not print verbose output from METISSE when using METISSE for single star evolution.",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "category": "bse",
         "category_label": "Binary physics",
         "category_description": "Settings that control the binary physics in the simulation",
@@ -567,6 +661,22 @@
                         "name": 3,
                         "description": "Same as 2, but LBV-like mass loss for giants and non-degenerate stars beyond the Humphreys-Davidson limit",
                         "default": true
+                    },
+                    {
+                        "name": 5,
+                        "description": "Same as 3, but multiplied by 0.33",
+                        "version added": "3.7.7"
+                    },
+                    {
+                        "name": 6,
+                        "description": "<a href='https://scixplorer.org/abs/2023A%26A...676A.109B/abstract'>Bjorklund+2023</a>",
+                        "version added": "3.7.7"
+                    },
+                    {
+                        "name": 7,
+                        "description": "<a href='https://scixplorer.org/abs/2024A%26A...681A..29K/abstract'>Kritcka, Kubat &amp; Kritckova 2024"
+                        ,
+                        "version added": "3.7.7"
                     }
                 ]
             },
@@ -720,15 +830,15 @@
                 "settings-section-description": "Note: there are cases where a common envelope is forced regardless of the critical mass ratio for unstable mass transfer. In the following cases, a common envelope occurs regardless of the choices below:<ul><li><b>contact</b>: the stellar radii go into contact (common for similar ZAMS systems)</li><li><b>periapse contact</b>: the periapse distance is smaller than either of the stellar radii (common for highly eccentric systems)</li><li><b>core Roche overflow</b>: either of the stellar radii overflow their component's Roche radius (in this case, mass transfer from the convective core is always dynamically unstable)</li></ul>",
                 "name": "alpha1",
                 "description": "Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
-                "type": "number",
-                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "type": "string",
+                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>. A list is supplied such that the primary and secondary can be assigned different values for \\(\\alpha\\).",
                 "options": [
                     {
                         "name": "positive values",
-                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\)"
+                        "description": "Sets the common-envelope efficiency parameter, \\(\\alpha\\), for each binary component"
                     },
                     {
-                        "name": 1.0,
+                        "name": "[1.0, 1.0]",
                         "description": "Default value",
                         "default": true
                     }
@@ -737,7 +847,7 @@
             {
                 "name": "lambdaf",
                 "description": "Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \\(1 / \\lambda\\). See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 69</a>.",
-                "type": "number",
+                "type": "string",
                 "options-preface": "",
                 "options": [
                     {
@@ -1226,6 +1336,11 @@
                         "name": 6,
                         "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2025A%26A...700A..20M/abstract'>Maltsev+2025</a>, with additions from <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251007573W/abstract'>Willcox+2025</a> for the definition of BH masses.",
                         "version_added": "3.7.0"
+                    },
+                    {
+                        "name": 7,
+                        "description": "follows the prescription from <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a>; NS/BH delineated by fryer_mcrit_nsbh so mxns is not used",
+                        "version_added": "3.7.7"
                     }
                 ]
             },
@@ -1259,6 +1374,42 @@
                     },
                     {
                         "name": 3.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fryer_fmix",
+                "description": "Sets the mixing fraction for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN model (remnantflag=7)",
+                "type": "number",
+                "version_added": "3.7.7",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the mixing fraction for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN remnant mass model"
+                    },
+                    {
+                        "name":1.0,
+                        "description": "Default choice",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "fryer_mcrit_nsbh",
+                "description": "Sets the critical core mass for delineating between NS and BHs with the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN model (remnantflag=7)",
+                "type": "number",
+                "options-preface": "",
+                "version_added": "3.7.7",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Sets the critical NS/BH core mass for the <a class='reference external' href='https://scixplorer.org/abs/2022ApJ...931...94F/abstract'>Fryer+2022</a> SN remnant mass model (solar masses)"
+                    },
+                    {
+                        "name":5.75,
                         "description": "Default choice",
                         "default": true
                     }
@@ -1387,6 +1538,11 @@
                         "name": -4,
                         "description": "Uses the top-down approach from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2022RNAAS...6...25R/abstract'>Renzo+2022</a>, with adjustable parameters from <a class='reference external' href='https://scixplorer.org/abs/2023MNRAS.526.4130H/abstract'>Hendriks+2023</a>",
                         "version_added": "3.7.2"
+                    },
+                    {
+                        "name": -5,
+                        "description": "Uses Belczynski 'weak' PISN pulsations",
+                        "version_added": "3.7.7"
                     },
                     {
                         "name": "positive values",
@@ -1565,25 +1721,24 @@
             },
             {
                 "name": "acc_lim",
-                "description": "Limits the amount of mass accreted during Roche-lobe overflow",
-                "type": "number",
+                "description": "Limits the amount of mass accreted during Roche-lobe overflow where each binary component must have its own limit specified in a list",
+                "type": "string",
                 "options-preface": "",
                 "options": [
                     {
-                        "name": -1,
-                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars",
-                        "default": true
+                        "name": "-1",
+                        "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
-                        "name": -2,
+                        "name": "-2",
                         "description": "limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
-                        "name": -3,
+                        "name": "-3",
                         "description": "limited to 10x the thermal rate of the accretor for all stars"   
                     },
                     {
-                        "name": -4,
+                        "name": "-4",
                         "description": "limited to 1x the thermal rate of the accretor for all stars"
                     },
                     {
@@ -1593,6 +1748,30 @@
                     {
                         "name": 0.0,
                         "description": "assume all mass is lost from the system (fully nonconservative)"
+                    },
+                    {
+                        "name": "[-1, -1]",
+                        "description": "Default choice",
+                        "default": true
+                    }
+
+                ]
+            },
+            {
+                "name": "smt_periastron_check",
+                "description": "Determines whether to check for contact at periastron for binaries that are undergoing stable mass transfer.",
+                "type": "dropdown",
+                "options-preface": "",
+                "version_added": "3.7.8",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Do not check for contact at periastron for binaries that are undergoing stable mass transfer",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Check for contact at periastron for binaries that are undergoing stable mass transfer"
                     }
                 ]
             },

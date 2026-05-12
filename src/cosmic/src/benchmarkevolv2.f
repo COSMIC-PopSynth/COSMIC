@@ -16,7 +16,12 @@
         REAL*8 kick_info_out(2,18)
         INTEGER bpp_index_out,bcm_index_out
 
-
+        using_METISSE = 0
+        using_SSE = 1
+        path_to_tracks = ''
+        path_to_he_tracks = ''
+        z_match_limit = 1d-2
+        METISSE_verbose = .false.
         kstar(1) = 0.0; kstar(2) = 0.0
         mass(1) = 0.5
         mass(2) = 0.5

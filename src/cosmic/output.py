@@ -167,6 +167,7 @@ class COSMICOutput:
         """
         # merge new settings with existing initC
         updated_initC = self.initC.copy()
+
         for key, value in new_settings.items():
             if key in updated_initC.columns:
                 updated_initC[key] = value

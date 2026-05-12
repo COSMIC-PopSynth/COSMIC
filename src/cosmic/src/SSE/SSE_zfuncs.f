@@ -24,7 +24,7 @@
 ***
       real*8 FUNCTION lzamsf(m)
       IMPLICIT NONE
-      INCLUDE 'const_bse.h'
+      INCLUDE '../const_bse.h'
       real*8 m,mx,a(200)
       common /MSCFF/ a
 *
@@ -260,7 +260,7 @@
 
       real*8 FUNCTION rtmsf(m, met)
       implicit none
-      INCLUDE 'const_bse.h'
+      INCLUDE '../const_bse.h'
       real*8 m,met,Rtms200,Rtms199,slope
       real*8 rtmssse, rtmsBoost, rtmsBpass
       external rtmssse

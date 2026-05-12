@@ -24,11 +24,14 @@ First, let's evolve a binary and save the initC table.
 
 .. ipython:: python
 
+
+    SSEDict = {'stellar_engine': 'sse'}
+
     binary = InitialBinaryTable.InitialBinaries(
         m1=20, m2=15, porb=100, ecc=0.1, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.02
     )
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=binary, BSEDict=BSEDict, SSEDict=SSEDict)
 
 We can check some of the output for this binary so that we can see it's identical after we re-run it.
 
@@ -74,7 +77,7 @@ pass in a BSEDict this time, since we are modifying the physics assumptions dire
 
     # modify alpha1 in the initC table
     initC_modified = initC.copy()
-    initC_modified['alpha1'] = 10
+    initC_modified['alpha1_0'] = 10
 
     # re-run the binary with modified physics
     bpp_rerun_mod, bcm_rerun_mod, initC_rerun_mod, kick_info_rerun_mod = Evolve.evolve(
@@ -107,7 +110,7 @@ very small sigma value for both regular core-collapse supernovae and electron-ca
 
     # modify alpha1 in the initC table
     initC_modified_kick = initC.copy()
-    initC_modified_kick['alpha1'] = 10
+    initC_modified_kick['alpha1_0'] = 10
     initC_modified_kick['sigma'] = 1.0
     initC_modified_kick['sigmadiv'] = -1.0
     initC_modified_kick['kickflag'] = 1

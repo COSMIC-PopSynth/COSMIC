@@ -30,12 +30,14 @@ samples ~100 binaries and evolving them.
 
 .. ipython:: python
 
+    SSEDict = {'stellar_engine': 'sse'}
+
     InitialBinaries, mass_singles, mass_binaries, n_singles, n_binaries = InitialBinaryTable.sampler(
         'independent', [13, 14], [13, 14], binfrac_model=0.5, primary_model='kroupa01',
         ecc_model='sana12', porb_model='sana12', qmin=-1, SF_start=13700.0, SF_duration=0.0,
         met=0.002, size=1000)
 
-    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict)
+    bpp, bcm, initC, kick_info = Evolve.evolve(initialbinarytable=InitialBinaries, BSEDict=BSEDict, SSEDict=SSEDict)
 
 Now we can create a ``COSMICOutput`` object quite easily (with an optional label):
 
@@ -236,7 +238,7 @@ new settings. For example, let's say we want to see how changing the common enve
 .. ipython:: python
 
     ce_alpha_10 = output.rerun_with_settings(
-        new_settings={'alpha1': 10}, inplace=False
+        new_settings={'alpha1_0': 10, 'alpha1_1': 10}, inplace=False
     )
     n_merger_original = len(output.final_bpp[output.final_bpp["sep"] == 0.0])
     n_merger_ce_alpha_10 = len(ce_alpha_10.final_bpp[ce_alpha_10.final_bpp["sep"] == 0.0])
