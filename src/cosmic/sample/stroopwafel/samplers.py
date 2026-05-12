@@ -81,14 +81,19 @@ def kroupa(n, lo, hi, rng=None):
 def sana(n, lo, hi, rng=None):
     """Inverse CDF sampling from the Sana orbital period distribution.
 
+    The Sana et al. (2012) distribution is a power law in log10(period),
+    so this sampler operates entirely in log10(period / days) space.
+    ``lo`` and ``hi`` must therefore be given as log10 values (e.g.
+    ``lo=0.15, hi=5.5`` spans ~1.4 d to ~316 000 d).
+
     Parameters
     ----------
     n : `int`
         Number of samples to draw.
     lo : `float`
-        Lower bound (in log10 space).
+        Lower bound in log10(period / days).
     hi : `float`
-        Upper bound (in log10 space).
+        Upper bound in log10(period / days).
     rng : `numpy.random.Generator`, optional
         Random number generator, by default None
 

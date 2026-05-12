@@ -22,9 +22,16 @@ class Parameter:
     name : `str`
         Name of the parameter (used for column ordering).
     min_value : `float`
-        Lower bound in physical space.
+        Lower bound.  For most samplers this is in physical space (e.g.
+        solar masses for ``'kroupa'``, eccentricity for ``'sana_ecc'``).
+
+        **Exception:** ``'sana'`` (orbital period) operates in
+        log10(period / days) internally, so ``min_value`` and
+        ``max_value`` must be passed in log10 space.  For example, to
+        span periods from ~1.4 d to ~316 000 d use
+        ``min_value=0.15, max_value=5.5`` (i.e. log10 of those values).
     max_value : `float`
-        Upper bound in physical space.
+        Upper bound (same unit convention as ``min_value``).
     sampler : `str`, optional
         Name of the sampling distribution, by default ``'uniform'``
     prior : `str`, optional
