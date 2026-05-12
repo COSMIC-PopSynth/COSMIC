@@ -273,13 +273,14 @@ class AdaptiveSampler:
                 phys = phys[keep]
                 derived = {k: v[keep] for k, v in derived.items()}
 
-                # Trim to batch size
-                self.rng.shuffle(np.arange(len(valid_samples)))
+                # Trim to batch size with randomisation
+                indices = np.arange(len(valid_samples))
+                self.rng.shuffle(indices)
                 n_take = min(len(valid_samples), self.batch_size)
-                batch_samples = valid_samples[:n_take]
-                batch_phys = phys[:n_take]
-                batch_gauss_idx = valid_gauss_idx[:n_take]
-                batch_derived = {k: v[:n_take] for k, v in derived.items()}
+                batch_samples = valid_samples[indices[:n_take]]
+                batch_phys = phys[indices[:n_take]]
+                batch_gauss_idx = valid_gauss_idx[indices[:n_take]]
+                batch_derived = {k: v[indices[:n_take]] for k, v in derived.items()}
 
                 # Evolve with COSMIC
                 n_hits, hit_bin_nums, bpp, initC, kick_info = self._evolve_batch(
