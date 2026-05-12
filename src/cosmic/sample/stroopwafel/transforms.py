@@ -29,6 +29,9 @@ def to_sampling_space(values, sampler_type):
     elif sampler_type == 'uniform_in_sine':
         return np.sin(values)
     elif sampler_type == 'uniform_in_cosine':
+        # Angles are measured from –π/2 to π/2 (e.g. declination-like
+        # coordinates), so the sampling variable is cos(θ + π/2) = –sin(θ).
+        # The round-trip is exact for θ ∈ [–π/2, π/2].
         return np.cos(values + np.pi / 2)
     return values
 
@@ -54,6 +57,7 @@ def to_physical_space(values, sampler_type):
     elif sampler_type == 'uniform_in_sine':
         return np.arcsin(values)
     elif sampler_type == 'uniform_in_cosine':
+        # Inverse of cos(θ + π/2): arccos(u) – π/2
         return np.arccos(values) - np.pi / 2
     return values
 
@@ -83,5 +87,8 @@ def transform_bounds(lo, hi, sampler_type):
         return -1.0, 1.0
     elif sampler_type == 'uniform_in_cosine':
         return -1.0, 1.0
-    # sana, sana_ecc, kroupa, uniform: bounds stay as-is
+    # kroupa, uniform: bounds are already in physical space.
+    # sana, sana_ecc: bounds are passed by the caller in the native
+    # sampling space (log10(period) for sana, eccentricity for sana_ecc),
+    # so no further transformation is needed here.
     return lo, hi
