@@ -19,7 +19,9 @@
       REAL*8 don_lim,acc_lim(2),Mbh_initial,smt_periastron_check
       COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial,smt_periastron_check
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
+      INTEGER ce2stageflag
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
+      COMMON /CEFLAGS/ ce2stageflag
       INTEGER pisn_track(2)
       COMMON /TRACKERS/ pisn_track
 *

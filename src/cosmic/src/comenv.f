@@ -76,6 +76,7 @@
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
       REAL*8 ALPHA_CE
+      REAL*8 m1endstage1,m2endstage1
 *
 * Initialize
 *
@@ -102,80 +103,207 @@
       snp = 0
       output = .false.
 *
+* Standard energy formalism
+*
+      IF(CE2STAGEFLAG.EQ.0)THEN
+*
 * Obtain the core masses and radii.
 *
-      KW = KW1
-      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
-      CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
-     &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &            bhspin1,star1)
-      OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
-      MENVD = MENV/(M1-MC1)
+         KW = KW1
+         CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
+         CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+     &               R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
+     &               bhspin1,star1)
+         OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
+         MENVD = MENV/(M1-MC1)
 *
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      IF (using_METISSE.eq.1) THEN
-        CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,LAMB1)
-      ELSEIF (using_SSE.eq.1) THEN
-        RZAMS = RZAMSF(M01)
-        LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
-      ENDIF
-      KW = KW2
-      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
-      CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
-     &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
-     &            bhspin2,star2)
-      OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
+         IF (using_METISSE.eq.1) THEN
+           CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,
+     &               LAMB1)
+         ELSEIF (using_SSE.eq.1) THEN
+           RZAMS = RZAMSF(M01)
+           LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+         ENDIF
+         KW = KW2
+         CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
+         CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
+     &               R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
+     &               bhspin2,star2)
+         OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
 *
-      EBINDI = M1*(M1-MC1)/(LAMB1*R1)
+         EBINDI = M1*(M1-MC1)/(LAMB1*R1)
 *
 * If the secondary star is also giant-like add its envelopes energy.
 * Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
-      IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
-         MENVD = MENV/(M2-MC2)
-         IF (using_METISSE.eq.1) THEN
-            CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,LAMB2)
-         ELSEIF (using_SSE.eq.1) THEN
-            RZAMS = RZAMSF(M02)
-            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
-         ENDIF
-         EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
+         IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
+            MENVD = MENV/(M2-MC2)
+            IF (using_METISSE.eq.1) THEN
+               CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,
+     &               LAMB2)
+            ELSEIF (using_SSE.eq.1) THEN
+               RZAMS = RZAMSF(M02)
+               LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+            ENDIF
+            EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
 * Calculate the initial orbital energy
 *
-         IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
-         IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
-      ELSE
-         IF(CEFLAG.EQ.0) EORBI = MC1*M2/(2.D0*SEP)
-         IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
-      ENDIF
-      if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,EORBI
+            IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
+            IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
+         ELSE
+            IF(CEFLAG.EQ.0) EORBI = MC1*M2/(2.D0*SEP)
+            IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
+         ENDIF
+         if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,
+     &         EORBI
 *
 * Allow for an eccentric orbit.
 *
-      ECIRC = EORBI/(1.D0 - ECC*ECC)
+         ECIRC = EORBI/(1.D0 - ECC*ECC)
 *
 * Calculate the final orbital energy without coalescence.
 *
-      IF(switchedCE)THEN 
-         ALPHA_CE = ALPHA1(2)
+         IF(switchedCE)THEN 
+            ALPHA_CE = ALPHA1(2)
+         ELSE
+            ALPHA_CE = ALPHA1(1)
+         ENDIF
+         EORBF = EORBI + EBINDI/ALPHA_CE
+*
+* Calculate Roche lobes if the secondary is on the main sequence.
+*
+         IF(KW2.LE.1.OR.KW2.EQ.7)THEN
+            SEPF = MC1*M2/(2.D0*EORBF)
+            Q1 = MC1/M2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+*
+* Calculate Roche lobes if degenerate or giant secondary.
+*
+         ELSE
+            SEPF = MC1*MC2/(2.D0*EORBF)
+            Q1 = MC1/MC2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+         ENDIF
+*
+* Two-stage common envelope formalism (Hirai & Mandel 2022)
+*
       ELSE
-         ALPHA_CE = ALPHA1(1)
+*
+* Obtain the core masses and radii.
+*
+         KW = KW1
+         CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
+         CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+     &               R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
+     &               bhspin1,star1)
+         OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
+         MENVD = MENV/(M1-MC1)
+*
+* Decide which CE prescription to use based on LAMBDA flag
+* MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
+*
+         IF (using_METISSE.eq.1) THEN
+           CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,
+     &               LAMB1)
+         ELSEIF (using_SSE.eq.1) THEN
+           RZAMS = RZAMSF(M01)
+           LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+         ENDIF
+* if > 8 Msun, the envelope participating in the first stage is only the convective one
+* if < 2 Msun, the entire envelope participates in the first stage
+* linear interpolation in between
+         IF(M1.GE.8.0d0)THEN
+            m1endstage1 = M1-MENV
+         ELSEIF(M1.LT.2.0d0)THEN
+            m1endstage1 = MC1
+         ELSE
+            m1endstage1 = MC1 + (M1-MC1 - MENV) * (M1-2.0d0) /6.0d0
+         ENDIF
+         KW = KW2
+         CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
+         CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
+     &               R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
+     &               bhspin2,star2)
+         OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
+*
+* Calculate the binding energy of the giant envelope (multiplied by lambda).
+*
+         EBINDI = M1*(M1-m1endstage1)/(LAMB1*R1)
+*
+* If the secondary star is also giant-like add its envelopes energy.
+* Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
+*
+         m2endstage1 = M2
+         IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
+            MENVD = MENV/(M2-MC2)
+            IF (using_METISSE.eq.1) THEN
+               CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,
+     &               LAMB2)
+            ELSEIF (using_SSE.eq.1) THEN
+               RZAMS = RZAMSF(M02)
+               LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+            ENDIF
+* if > 8 Msun, the envelope participating in the first stage is only the convective one
+* if < 2 Msun, the entire envelope participates in the first stage
+* linear interpolation in between
+            IF(M2.GE.8.0d0)THEN
+               m2endstage1 = M2-MENV
+            ELSEIF(M2.LT.2.0d0)THEN
+               m2endstage1 = M2
+            ELSE
+               m2endstage1 = M2 + (M2-MC2 - MENV) * (M2-2.0d0) /6.0d0
+            ENDIF
+            EBINDI = EBINDI + M2*(M2-m2endstage1)/(LAMB2*R2)
+         ENDIF
+*
+* Calculate the initial orbital energy
+*
+         EORBI = M1*M2/(2.D0*SEP)
+         if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,
+     &         EORBI
+*
+* Allow for an eccentric orbit.
+*
+         ECIRC = EORBI/(1.D0 - ECC*ECC)
+*
+* Calculate the final orbital energy without coalescence.
+*
+         IF(switchedCE)THEN
+            ALPHA_CE = ALPHA1(2)
+         ELSE
+            ALPHA_CE = ALPHA1(1)
+         ENDIF
+         EORBF = EORBI + EBINDI/ALPHA_CE
+         SEPF = m1endstage1*m2endstage1/(2.D0*EORBF)
+*
+* Second stage: stable mass transfer of the radiative intershell
+* Binary hardening formula from Picker, Hirai & Mandel 2024
+*
+         IF(m1endstage1.GT.MC1)THEN
+            SEPF = SEPF*((m1endstage1+m2endstage1)/(MC1+m2endstage1))
+     &          *(m1endstage1/MC1)**2
+     &          *EXP(-2*(m1endstage1-MC1)/m2endstage1)
+            EORBF = MC1*m2endstage1/(2.D0*SEPF)
+         ENDIF
+         Q1 = MC1/m2endstage1
+         Q2 = 1.D0/Q1
+         RL1 = RL(Q1)
+         RL2 = RL(Q2)
       ENDIF
-      EORBF = EORBI + EBINDI/ALPHA_CE
 *
 * If the secondary is on the main sequence see if it fills its Roche lobe.
 *
       IF(KW2.LE.1.OR.KW2.EQ.7)THEN
-         SEPF = MC1*M2/(2.D0*EORBF)
-         Q1 = MC1/M2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE
@@ -393,16 +521,11 @@
                IF(ECC.GT.1.D0) GOTO 30
             ENDIF
          ENDIF
-      ELSE
 *
 * Degenerate or giant secondary. Check if the least massive core fills its
 * Roche lobe.
 *
-         SEPF = MC1*MC2/(2.D0*EORBF)
-         Q1 = MC1/MC2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
+      ELSE
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE

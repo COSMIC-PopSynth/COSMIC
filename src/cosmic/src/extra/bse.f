@@ -96,6 +96,7 @@
       READ(22,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
       READ(22,*)neta,bwind,hewind,alpha1,lambda,windflag,rtmsflag
       READ(22,*)ceflag,tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
+      READ(22,*)ce2stageflag
       READ(22,*)pts1,pts2,pts3
       READ(22,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
       if(kstar(1).lt.0.or.kstar(2).lt.0)then

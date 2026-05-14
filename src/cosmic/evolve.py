@@ -96,7 +96,7 @@ else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
 INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                  'ceflag', 'tflag', 'ifflag', 'wdflag',
+                                  'ce2stageflag', 'ceflag', 'tflag', 'ifflag', 'wdflag',
                                   'pisn', 'ppi_co_shift', 'ppi_extra_ml',
                                   'rtmsflag',
                                   'bhflag', 'remnantflag', 'fryer_mass_limit',
@@ -690,6 +690,7 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.windvars.hewind = f["hewind"]
         _evolvebin.cevars.alpha1 = f["alpha1"]
         _evolvebin.cevars.lambdaf = f["lambdaf"]
+        _evolvebin.ceflags.ce2stageflag = f["ce2stageflag"]
         _evolvebin.ceflags.ceflag = f["ceflag"]
         _evolvebin.flags.tflag = f["tflag"]
         _evolvebin.flags.ifflag = f["ifflag"]
