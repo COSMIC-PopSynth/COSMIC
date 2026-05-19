@@ -5,7 +5,8 @@ and ``lo``/``hi`` are the bounds in the sampling (transformed) space, and
 returns an (N,) ndarray of prior probability densities.
 """
 import numpy as np
-from .constants import ALPHA_IMF, SANA_G, SANA_ECC
+from scipy.stats import norm as _scipy_norm
+from .constants import ALPHA_IMF, SANA_G, SANA_ECC, NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA
 
 
 def uniform(values, lo, hi):
@@ -159,6 +160,35 @@ def uniform_in_cosine(values, lo, hi):
     return np.full(len(values), 1.0 / (hi - lo))
 
 
+def log_normal(values, lo, hi):
+    """Normal PDF in ln-space for a (truncated) log-normal natal kick prior.
+
+    The kick magnitude v [km/s] follows LogNormal(``NATAL_KICK_LOG_MU``,
+    ``NATAL_KICK_LOG_SIGMA``), so the sampling-space variable ``x = ln(v)``
+    has a (truncated) normal distribution.  The returned density is the
+    normal PDF evaluated at ``values``, normalised so that it integrates to 1
+    over the sampling-space interval ``[lo, hi]``.
+
+    Parameters
+    ----------
+    values : `numpy.ndarray`
+        (N,) array of sample values in ``ln(v / km s⁻¹)`` space.
+    lo : `float`
+        Lower bound in ``ln(v / km s⁻¹)`` space.
+    hi : `float`
+        Upper bound in ``ln(v / km s⁻¹)`` space.
+
+    Returns
+    -------
+    `numpy.ndarray`
+        (N,) array of prior probability densities.
+    """
+    p_lo = _scipy_norm.cdf(lo, loc=NATAL_KICK_LOG_MU, scale=NATAL_KICK_LOG_SIGMA)
+    p_hi = _scipy_norm.cdf(hi, loc=NATAL_KICK_LOG_MU, scale=NATAL_KICK_LOG_SIGMA)
+    norm_factor = p_hi - p_lo   # probability mass within bounds
+    return _scipy_norm.pdf(values, loc=NATAL_KICK_LOG_MU, scale=NATAL_KICK_LOG_SIGMA) / norm_factor
+
+
 # Registry mapping string names to functions
 PRIORS = {
     'uniform': uniform,
@@ -168,4 +198,5 @@ PRIORS = {
     'sana_ecc': sana_ecc,
     'uniform_in_sine': uniform_in_sine,
     'uniform_in_cosine': uniform_in_cosine,
+    'log_normal': log_normal,
 }

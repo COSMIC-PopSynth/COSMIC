@@ -401,6 +401,18 @@ class AdaptiveSampler:
     # ------------------------------------------------------------------
     # COSMIC interface
     # ------------------------------------------------------------------
+
+    # Natal kick parameters that can be sampled in the ParameterSpace and
+    # injected as per-binary columns in the InitialBinaryTable.  When all
+    # eight are present, ``natal_kick_array`` is stripped from the BSEDict
+    # so COSMIC reads the per-binary values instead of global defaults.
+    # The ``randomseed`` columns required by COSMIC are filled with zeros
+    # (COSMIC ignores them when the kick values are already provided).
+    _KICK_PARAM_NAMES = (
+        'natal_kick_1', 'phi_1', 'theta_1', 'mean_anomaly_1',
+        'natal_kick_2', 'phi_2', 'theta_2', 'mean_anomaly_2',
+    )
+
     def _evolve_batch(self, samples_physical, derived):
         """Evolve a batch of binaries with COSMIC and identify hits.
 
@@ -440,9 +452,26 @@ class AdaptiveSampler:
             metallicity=derived['metallicity_1'],
         )
 
+        # If natal kick parameters were sampled, inject them as per-binary
+        # columns and omit the global natal_kick_array from the BSEDict.
+        # COSMIC uses per-binary values when all FLATTENED_NATAL_KICK_COLUMNS
+        # are present in the table AND natal_kick_array is absent from BSEDict.
+        param_names_set = set(self.param_space.names)
+        if all(k in param_names_set for k in self._KICK_PARAM_NAMES):
+            for col in self._KICK_PARAM_NAMES:
+                batch_initial[col] = samples_physical[:, idx[col]]
+            # randomseed columns are required by COSMIC's reshape but unused
+            # when kick values are provided directly.
+            batch_initial['randomseed_1'] = 0
+            batch_initial['randomseed_2'] = 0
+            bse_dict_run = {k: v for k, v in self.bse_dict.items()
+                            if k != 'natal_kick_array'}
+        else:
+            bse_dict_run = self.bse_dict
+
         bpp, bcm, initC, kick_info = Evolve.evolve(
             initialbinarytable=batch_initial,
-            BSEDict=self.bse_dict,
+            BSEDict=bse_dict_run,
             nproc=self.nproc,
         )
 

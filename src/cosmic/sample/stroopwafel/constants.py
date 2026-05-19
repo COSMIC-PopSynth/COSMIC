@@ -3,6 +3,13 @@ ALPHA_IMF = -2.3
 SANA_G = -0.55
 SANA_ECC = -0.45
 
+# Log-normal natal kick distribution.
+# The kick magnitude v [km/s] follows LogNormal(mu, sigma), meaning
+# ln(v) ~ Normal(NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA).
+# With mu=5.67, sigma=0.59 the median kick is exp(5.67) ≈ 291 km/s.
+NATAL_KICK_LOG_MU    = 5.67   # mean of ln(v_kick / km s⁻¹)
+NATAL_KICK_LOG_SIGMA = 0.59   # std dev of ln(v_kick / km s⁻¹)
+
 R_COEFF = [
     [1.71535900,    0.62246212,     -0.92557761,    -1.16996966,    -0.30631491],
     [6.59778800,    -0.42450044,    -12.13339427,   -10.73509484,   -2.51487077],

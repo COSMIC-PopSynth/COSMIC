@@ -33,6 +33,9 @@ def to_sampling_space(values, sampler_type):
         # coordinates), so the sampling variable is cos(θ + π/2) = –sin(θ).
         # The round-trip is exact for θ ∈ [–π/2, π/2].
         return np.cos(values + np.pi / 2)
+    elif sampler_type == 'log_normal':
+        # Sampling space is ln(v); physical space is v [km/s].
+        return np.log(values)
     return values
 
 
@@ -59,6 +62,9 @@ def to_physical_space(values, sampler_type):
     elif sampler_type == 'uniform_in_cosine':
         # Inverse of cos(θ + π/2): arccos(u) – π/2
         return np.arccos(values) - np.pi / 2
+    elif sampler_type == 'log_normal':
+        # Inverse of ln: exp(x) gives v [km/s].
+        return np.exp(values)
     return values
 
 
@@ -87,6 +93,9 @@ def transform_bounds(lo, hi, sampler_type):
         return -1.0, 1.0
     elif sampler_type == 'uniform_in_cosine':
         return -1.0, 1.0
+    elif sampler_type == 'log_normal':
+        # Physical bounds [lo, hi] in km/s → sampling bounds in ln(km/s).
+        return np.log(lo), np.log(hi)
     # kroupa, uniform: bounds are already in physical space.
     # sana, sana_ecc: bounds are passed by the caller in the native
     # sampling space (log10(period) for sana, eccentricity for sana_ecc),
