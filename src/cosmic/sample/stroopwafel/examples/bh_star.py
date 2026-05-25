@@ -92,41 +92,38 @@ BSEDict = {
 # Parameter space
 #
 # Orbital / stellar parameters (5 dimensions)
-# mass_1        : primary mass [Msun], Kroupa IMF
-# q             : mass ratio m2/m1 ∈ [0.01, 1], uniform
-# porb          : log10(orbital period / days), Sana power law
-#                 bounds 0.15 to 5.5 → periods ~1.4 d to ~316 000 d
-# ecc           : eccentricity, Sana power law
-# metallicity   : metallicity, log-uniform
+# mass_1       : primary mass [Msun], Kroupa IMF
+# q            : mass ratio m2/m1 ∈ [0.01, 1], uniform
+# porb         : log10(orbital period / days), Sana power law
+#                bounds 0.15 to 5.5 → periods ~1.4 d to ~316 000 d
+# ecc          : eccentricity, Sana power law
+# metallicity  : metallicity, log-uniform
 #
-# Natal kick parameters (8 dimensions, 4 per star)
-# natal_kick_N  : kick speed [km/s], log-normal (mu=5.67, sigma=0.59 in ln-space)
-#                 physical bounds [0.1, 5000] km/s; median ≈ 291 km/s
-# phi_N         : kick elevation angle [degrees], uniform ∈ [−90, 90]
-# theta_N       : kick azimuthal angle [degrees], uniform ∈ [0, 360]
-# mean_anomaly_N: orbital phase at kick [degrees], uniform ∈ [0, 360]
+# Primary natal kick magnitude (1 dimension)
+# natal_kick_1 : kick speed [km/s], log-normal (mu=5.67, sigma=0.59 in ln-space)
+#                physical bounds [0.1, 5000] km/s; median ≈ 291 km/s
 #
-# Total: 13-dimensional parameter space.
+# Total: 6-dimensional parameter space.
+#
+# Kick angles (phi_1, theta_1, mean_anomaly_1) and the secondary kick are
+# intentionally excluded.  Angles have flat hit-probability across their full
+# range so they contribute no information to the mixture model while each
+# extra dimension widens the Gaussians by N^(1/D_old - 1/D_new).  The engine
+# fills all omitted kick columns with the -100 sentinel so COSMIC draws those
+# components from its own prescription (kickflag=5 / sigma=265 km/s).
+#
 # Note: ParameterSpace sorts parameters alphabetically, so the internal
 # column order is fixed and independent of the order given here.
 # ------------------------------------------------------------------
 params = ParameterSpace([
     # --- orbital / stellar ---
-    Parameter('mass_1',        5.0,    150.0,      sampler='kroupa',     prior='kroupa'),
-    Parameter('q',             0.01,   1.0,        sampler='uniform',    prior='uniform'),
-    Parameter('porb',          0.15,   5.5,        sampler='sana',       prior='sana'),
-    Parameter('ecc',           1e-9,   0.99999999, sampler='sana_ecc',   prior='sana_ecc'),
-    Parameter('metallicity',   0.0001, 0.03,       sampler='flat_in_log', prior='flat_in_log'),
-    # --- natal kick: star 1 ---
-    Parameter('natal_kick_1',  0.1,    5000.0,     sampler='log_normal', prior='log_normal'),
-    Parameter('phi_1',        -90.0,   90.0,       sampler='uniform',    prior='uniform'),
-    Parameter('theta_1',       0.0,    360.0,      sampler='uniform',    prior='uniform'),
-    Parameter('mean_anomaly_1', 0.0,   360.0,      sampler='uniform',    prior='uniform'),
-    # --- natal kick: star 2 ---
-    Parameter('natal_kick_2',  0.1,    5000.0,     sampler='log_normal', prior='log_normal'),
-    Parameter('phi_2',        -90.0,   90.0,       sampler='uniform',    prior='uniform'),
-    Parameter('theta_2',       0.0,    360.0,      sampler='uniform',    prior='uniform'),
-    Parameter('mean_anomaly_2', 0.0,   360.0,      sampler='uniform',    prior='uniform'),
+    Parameter('mass_1',       5.0,    150.0,      sampler='kroupa',      prior='kroupa'),
+    Parameter('q',            0.01,   1.0,        sampler='uniform',     prior='uniform'),
+    Parameter('porb',         0.15,   5.5,        sampler='sana',        prior='sana'),
+    Parameter('ecc',          1e-9,   0.99999999, sampler='sana_ecc',    prior='sana_ecc'),
+    Parameter('metallicity',  0.0001, 0.03,       sampler='flat_in_log', prior='flat_in_log'),
+    # --- primary natal kick magnitude only ---
+    # Parameter('natal_kick_1', 0.1,    100.0,     sampler='log_normal',  prior='log_normal'),
 ])
 
 # ------------------------------------------------------------------

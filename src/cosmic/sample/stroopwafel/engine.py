@@ -402,16 +402,20 @@ class AdaptiveSampler:
     # COSMIC interface
     # ------------------------------------------------------------------
 
-    # Natal kick parameters that can be sampled in the ParameterSpace and
-    # injected as per-binary columns in the InitialBinaryTable.  When all
-    # eight are present, ``natal_kick_array`` is stripped from the BSEDict
-    # so COSMIC reads the per-binary values instead of global defaults.
-    # The ``randomseed`` columns required by COSMIC are filled with zeros
-    # (COSMIC ignores them when the kick values are already provided).
-    _KICK_PARAM_NAMES = (
+    # All natal kick columns that COSMIC accepts as per-binary overrides.
+    # Any subset may appear in the ParameterSpace; columns that are absent
+    # receive ``_KICK_SENTINEL`` (-100), which tells COSMIC to draw that
+    # component from its own prescription (kickflag / sigma in BSEDict).
+    # This lets you sample only the parameters that actually discriminate
+    # hits (e.g. natal_kick_1 for binary survival) while leaving irrelevant
+    # dimensions (angles, secondary kick) out of the parameter space
+    # entirely, avoiding the dimensionality cost they would otherwise impose
+    # on the mixture model.
+    _ALL_KICK_COLUMNS = frozenset([
         'natal_kick_1', 'phi_1', 'theta_1', 'mean_anomaly_1',
         'natal_kick_2', 'phi_2', 'theta_2', 'mean_anomaly_2',
-    )
+    ])
+    _KICK_SENTINEL = -100.0
 
     def _evolve_batch(self, samples_physical, derived):
         """Evolve a batch of binaries with COSMIC and identify hits.
@@ -452,22 +456,29 @@ class AdaptiveSampler:
             metallicity=derived['metallicity_1'],
         )
 
-        # If natal kick parameters were sampled, inject them as per-binary
-        # columns and omit the global natal_kick_array from the BSEDict.
-        # COSMIC uses per-binary values when all FLATTENED_NATAL_KICK_COLUMNS
-        # are present in the table AND natal_kick_array is absent from BSEDict.
+        # If any natal kick columns were sampled, activate the per-binary
+        # injection path.  Each column present in the ParameterSpace gets its
+        # sampled value; every other kick column gets _KICK_SENTINEL (-100)
+        # so COSMIC draws that component from its built-in prescription.
+        # natal_kick_array is stripped from the BSEDict copy so COSMIC reads
+        # the per-binary columns instead of the global default.
         param_names_set = set(self.param_space.names)
-        if all(k in param_names_set for k in self._KICK_PARAM_NAMES):
-            for col in self._KICK_PARAM_NAMES:
-                batch_initial[col] = samples_physical[:, idx[col]]
-            # randomseed columns are required by COSMIC's reshape but unused
-            # when kick values are provided directly.
+        sampled_kick_cols = self._ALL_KICK_COLUMNS & param_names_set
+
+        if sampled_kick_cols:
+            for col in self._ALL_KICK_COLUMNS:
+                batch_initial[col] = (samples_physical[:, idx[col]]
+                                      if col in sampled_kick_cols
+                                      else self._KICK_SENTINEL)
             batch_initial['randomseed_1'] = 0
             batch_initial['randomseed_2'] = 0
             bse_dict_run = {k: v for k, v in self.bse_dict.items()
                             if k != 'natal_kick_array'}
         else:
             bse_dict_run = self.bse_dict
+            if "natal_kick_array" not in bse_dict_run:
+                bse_dict_run['natal_kick_array'] = np.array([[-100, -100, -100, -100, 0],
+                                                             [-100, -100, -100, -100, 0]])
 
         bpp, bcm, initC, kick_info = Evolve.evolve(
             initialbinarytable=batch_initial,
