@@ -3,7 +3,7 @@
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,kick_info,
-     \ bpp_index_out,bcm_index_out,kick_info_out)
+     \ bpp_index_out,bcm_index_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       INCLUDE 'checkstate.h'
@@ -168,7 +168,6 @@
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
       REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,18)
-      REAL*8 kick_info_out(2,18)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
@@ -242,7 +241,6 @@ Cf2py intent(in,out) zpars
 Cf2py intent(in) kick_info
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
-Cf2py intent(out) kick_info_out
 
 
       if(using_cmc.eq.0)then
@@ -324,7 +322,6 @@ component.
       if(using_cmc.eq.0)then
           bcm_index_out = 0
           bpp_index_out = 0
-          kick_info_out = 0.d0
       endif
 
 
@@ -4900,7 +4897,6 @@ component.
       if(using_cmc.eq.0)then
           bcm_index_out = ip
           bpp_index_out = bpp_ind
-          kick_info_out = kick_info
       endif
       if (using_METISSE.eq.1) call dealloc_track()      
 *

@@ -37,7 +37,6 @@
 *
       integer i,kw,kw2,kstar(2),j,k,time,idum
       integer bpp_index_out, bcm_index_out
-      real*8 kick_info_out(2,17)
 *
       real*8 mass0(2),mass(2),z,zpars(20),vs(3),kick_info(2,18)
       real*8 epoch(2),tms(2),tphys,tphysf,dtp,aj
@@ -266,7 +265,7 @@
       CALL evolv2(kstar,mass,tb,ecc,z,tphysf,dtp,mass0,rad,lum,
      &            massc,radc,menv,renv,ospin,B_0,bacc,tacc,
      &            epoch,tms,bhspin,tphys,zpars,kick_info,
-     &            bcm_index_out,bpp_index_out,kick_info_out)
+     &            bcm_index_out,bpp_index_out)
 *
 ************************************************************************
 * Output:
