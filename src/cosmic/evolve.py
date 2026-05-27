@@ -548,9 +548,9 @@ class Evolve(object):
         # ensure that metallicity is in the valid range (Z in [1e-4, 0.03])
         low_met_mask = (initialbinarytable["metallicity"] < 1e-4)
         high_met_mask = (initialbinarytable["metallicity"] > 0.03)
-        if any(low_met_mask | high_met_mask):
+        if any(low_met_mask | high_met_mask) and not SSEDict["stellar_engine"] == "metisse":
             raise ValueError(
-                f"COSMIC only supports metallicities in the range [1e-4, 0.03]. You have {sum(low_met_mask)} "
+                f"COSMIC-SSE only supports metallicities in the range [1e-4, 0.03]. You have {sum(low_met_mask)} "
                 f"systems with metallicity below 1e-4 and {sum(high_met_mask)} systems with metallicity "
                 "above 0.03. Some examples of problematic binaries have the following bin_nums: "
                 f"{initialbinarytable['bin_num'][low_met_mask | high_met_mask].values[:5]}."
