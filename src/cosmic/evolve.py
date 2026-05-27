@@ -557,12 +557,13 @@ class Evolve(object):
             )
         
         # ensure that the initial masses are in the valid range for the loaded tracks
-        low_mass_mask = (initialbinarytable["mass_1"] < m_min) | (initialbinarytable["mass_2"] < m_min)
-        high_mass_mask = (initialbinarytable["mass_1"] > m_max) | (initialbinarytable["mass_2"] > m_max)
-        if any(low_mass_mask | high_mass_mask) and SSEDict["stellar_engine"] == "metisse":
-            raise ValueError(
-                f"COSMIC-METISSE only supports initial masses in the range specified by the loaded tracks [{m_min}, {m_max}]. You have {sum(low_mass_mask)} "
-                f"systems with mass below {m_min} and {sum(high_mass_mask)} systems with mass above {m_max}. "
+        if SSEDict["stellar_engine"] == "metisse":
+            low_mass_mask = (initialbinarytable["mass_1"] < m_min) | (initialbinarytable["mass_2"] < m_min)
+            high_mass_mask = (initialbinarytable["mass_1"] > m_max) | (initialbinarytable["mass_2"] > m_max)
+            if any(low_mass_mask | high_mass_mask):
+                raise ValueError(
+                    f"COSMIC-METISSE only supports initial masses in the range specified by the loaded tracks [{m_min}, {m_max}]. You have {sum(low_mass_mask)} "
+                    f"systems with mass below {m_min} and {sum(high_mass_mask)} systems with mass above {m_max}. "
                 "Some examples of problematic binaries have the following bin_nums: "
                 f"{initialbinarytable['bin_num'][low_mass_mask | high_mass_mask].values[:5]}."
             )
