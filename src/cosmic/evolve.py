@@ -345,7 +345,7 @@ class Evolve(object):
                                      "must be the same if you are using the METISSE stellar engine. ")
             
                 # load in the METISSE files
-                _ = read_tracks_for_METISSE(
+                m_min, m_max = read_tracks_for_METISSE(
                     path_to_tracks = SSEDict['path_to_tracks'], 
                     IBT_Z = initialbinarytable['metallicity'].iloc[0],
                     z_accuracy_limit = z_accuracy_limit,
@@ -863,7 +863,10 @@ def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
         Indicates whether the tracks are helium-enriched.
     Returns
     -------
-        None
+    m_min : float
+        Minimum mass in the tracks that were loaded in
+    m_max : float
+        Maximum mass in the tracks that were loaded in
     
     """
 
@@ -962,8 +965,8 @@ def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
     track_list = utils.read_eep_directory(
                 met_dict_keep['eep_tracks_dir'],
                 fmt_dict_keep)
-    _ = populate_tracks(track_list, is_he)
-    return
+    m_min, m_max = populate_tracks(track_list, is_he)
+    return m_min, m_max
 
 
 def populate_tracks(track_list, is_he=False):
@@ -994,7 +997,9 @@ def populate_tracks(track_list, is_he=False):
 
     Returns
     -------
-    None
+    tuple of float
+        The minimum and maximum initial masses from the track list.
+
         The function calls the Fortran subroutine `_evolvebin.c_m_interface.set_tracks_from_python`
         and populates the Fortran-side track arrays. The Python-side arrays are used only
         as temporary buffers for the call.
@@ -1046,7 +1051,7 @@ def populate_tracks(track_list, is_he=False):
         eep_data, tr_data, col_names, is_he
     )
 
-    return None 
+    return np.min(initial_mass), np.max(initial_mass) 
 
 
     
