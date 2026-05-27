@@ -118,7 +118,7 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
-INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','path_to_tracks','path_to_he_tracks']
+INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','path_to_tracks','path_to_he_tracks','z_accuracy_limit']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
@@ -323,58 +323,30 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
+        # ensure SSEDict keys are unique in the initial binary table and warn otherwise
+        for col in INITIAL_CONDITIONS_SSE_COLUMN:
+            if col in initialbinarytable.columns and initialbinarytable[col].nunique() > 1:
+                raise ValueError(f"The value for {col} in the initial binary table is not unique. "
+                                 f"Please make sure that the value for {col} is the same for all rows in the initial binary table.")
+
+        # if user passed an SSEDict, we may need to update the initial binary table
         if SSEDict:
-            z_accuracy_limit = SSEDict.get("z_accuracy_limit", 1e-2)
-            if SSEDict['stellar_engine'] == 'metisse':
-                for k, v in SSEDict.items():
-                    if k in initialbinarytable.keys():
-                        warnings.warn("The value for {0} in initial binary table is being "
-                                    "overwritten by the value of {0} from either the params "
-                                    "file or the SSEDict.".format(k))
-                    # assigning values this way work for most of the parameters.:
-
-                    kwargs1 = {k: v}
-                    initialbinarytable = initialbinarytable.assign(**kwargs1)
-                _evolvebin.se_flags.using_metisse = 1
-                _evolvebin.se_flags.using_sse = 0
-
-                #check if the metallicity for the initialbinarytable changes
-                # raise an error if all the metallicities are not the same
-                if initialbinarytable['metallicity'].nunique() > 1:
-                    raise ValueError("All the metallicities in the initial binary table "
-                                     "must be the same if you are using the METISSE stellar engine. ")
-            
-                # load in the METISSE files
-                m_min, m_max = read_tracks_for_METISSE(
-                    path_to_tracks = SSEDict['path_to_tracks'], 
-                    IBT_Z = initialbinarytable['metallicity'].iloc[0],
-                    z_accuracy_limit = z_accuracy_limit,
-                    is_he = False
-                    )
-
-                if (SSEDict['path_to_he_tracks'] != ''):
-                    _ = read_tracks_for_METISSE(
-                        path_to_tracks = SSEDict['path_to_he_tracks'],
-                        IBT_Z = initialbinarytable['metallicity'].iloc[0], 
-                        z_accuracy_limit = z_accuracy_limit,
-                        is_he = True
-                        )
-
-            elif SSEDict['stellar_engine'] == 'sse':    
-                kwargs1 = {'stellar_engine': 'sse'}
+            for k, v in SSEDict.items():
+                if k in initialbinarytable.keys():
+                    warnings.warn(f"The value for {k} in initial binary table is being "
+                                  f"overwritten by the value of {k} from either the params "
+                                  f"file or the SSEDict.")
+                kwargs1 = {k: v}
                 initialbinarytable = initialbinarytable.assign(**kwargs1)
-                for col in ['path_to_tracks', 'path_to_he_tracks']:
-                    kwargs1 = {col: ''}
-                    initialbinarytable = initialbinarytable.assign(**kwargs1)
-                _evolvebin.se_flags.using_sse = 1
-                _evolvebin.se_flags.using_metisse = 0
-            
-        elif 'stellar_engine' in initialbinarytable.columns and initialbinarytable['stellar_engine'].iloc[0] == 'sse':
-            _evolvebin.se_flags.using_sse = 1
-            _evolvebin.se_flags.using_metisse = 0
-        elif 'stellar_engine' in initialbinarytable.columns and initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
+
+        # if the user wants to use METISSE then we need to load the necessary tracks
+        if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
             _evolvebin.se_flags.using_metisse = 1
             _evolvebin.se_flags.using_sse = 0
+
+            # make sure all of the SSE columns are there
+            if not set(['path_to_tracks', 'path_to_he_tracks', 'z_accuracy_limit']).issubset(initialbinarytable.columns):
+                raise ValueError("If you want to use the METISSE stellar engine, you must provide the following in the SSEDict, initial binary table, or params file: path_to_tracks, path_to_he_tracks, z_accuracy_limit.")
 
             #check if the metallicity for the initialbinarytable changes
             # raise an error if all the metallicities are not the same
@@ -383,24 +355,23 @@ class Evolve(object):
                                  "must be the same if you are using the METISSE stellar engine. ")
             
             # load in the METISSE files
-            _ = read_tracks_for_METISSE(
-                path_to_tracks = initialbinarytable['path_to_tracks'].iloc[0], 
-                IBT_Z = initialbinarytable['metallicity'].iloc[0],
-                z_accuracy_limit = 1e-2,
-                is_he = False
-                )
+            m_min, m_max = read_tracks_for_METISSE(
+                path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
+                IBT_Z=initialbinarytable['metallicity'].iloc[0],
+                z_accuracy_limit=initialbinarytable['z_accuracy_limit'].iloc[0],
+                is_he=False
+            )
 
             if (initialbinarytable['path_to_he_tracks'].iloc[0] != ''):
-                _ = read_tracks_for_METISSE(
-                    path_to_tracks = initialbinarytable['path_to_he_tracks'].iloc[0],
-                    IBT_Z = initialbinarytable['metallicity'].iloc[0], 
-                    z_accuracy_limit = 1e-2,
-                    is_he = True
-                    )
-            
+                read_tracks_for_METISSE(
+                    path_to_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
+                    IBT_Z=initialbinarytable['metallicity'].iloc[0], 
+                    z_accuracy_limit=initialbinarytable['z_accuracy_limit'].iloc[0],
+                    is_he=True
+                )
 
         else:
-            # default to SSE if no stellar engine is specified
+            # default to SSE if stellar engine is SSE or no stellar engine is specified
             _evolvebin.se_flags.using_sse = 1
             _evolvebin.se_flags.using_metisse = 0
            
@@ -548,7 +519,7 @@ class Evolve(object):
         # ensure that metallicity is in the valid range (Z in [1e-4, 0.03])
         low_met_mask = (initialbinarytable["metallicity"] < 1e-4)
         high_met_mask = (initialbinarytable["metallicity"] > 0.03)
-        if any(low_met_mask | high_met_mask) and not SSEDict["stellar_engine"] == "metisse":
+        if any(low_met_mask | high_met_mask) and not initialbinarytable["stellar_engine"].values[0]:
             raise ValueError(
                 f"COSMIC-SSE only supports metallicities in the range [1e-4, 0.03]. You have {sum(low_met_mask)} "
                 f"systems with metallicity below 1e-4 and {sum(high_met_mask)} systems with metallicity "
@@ -557,7 +528,7 @@ class Evolve(object):
             )
         
         # ensure that the initial masses are in the valid range for the loaded tracks
-        if SSEDict["stellar_engine"] == "metisse":
+        if initialbinarytable["stellar_engine"].values[0] == "metisse":
             low_mass_mask = (initialbinarytable["mass_1"] < m_min) | (initialbinarytable["mass_2"] < m_min)
             high_mass_mask = (initialbinarytable["mass_1"] > m_max) | (initialbinarytable["mass_2"] > m_max)
             if any(low_mass_mask | high_mass_mask):
