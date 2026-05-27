@@ -1,5 +1,5 @@
       SUBROUTINE kick(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                r2,fallback,sigmahold,kick_info,disrupt)
+     &                r2,fallback,sigmahold,kick_info,disrupt,tphys)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -38,7 +38,7 @@
 
       integer kw,sn
       real*8 m1,m2,m1c,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19),tphys
       logical disrupt
 
 * Use one of the two kick prescriptions based on the kickflag
@@ -51,6 +51,9 @@
          call kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
      &                   r2,fallback,sigmahold,kick_info,disrupt)
       end if
+
+      kick_info(sn,19) = tphys
+
       RETURN
       END
 
@@ -124,7 +127,7 @@
 * Output
       logical output,disrupt,collide
 *
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19)
       real ran3,xx
       external ran3
       external RandomTruncatedNormal
@@ -797,7 +800,7 @@
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19)
       real ran3,xx
       external ran3
 *
