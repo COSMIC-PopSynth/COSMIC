@@ -44,7 +44,7 @@
       real*8 rad(2),lum(2),ospin(2)
       real*8 massc(2),radc(2),menv(2),renv(2)
       real*8 tb,ecc,yearsc
-      real*8 B_0(2),bacc(2),tacc(2),bhspin(2),bkick(20)
+      real*8 B_0(2),bacc(2),tacc(2),bhspin(2)
       PARAMETER(yearsc=3.1557d+07)
       CHARACTER*8 label(16)
 *
@@ -204,11 +204,6 @@
         zsun = 0.014
         kickflag = -1
         using_cmc = 0
-
-
-         do i=1,20
-            bkick(i) = 0.d0
-         enddo 
          
 
       endif
@@ -270,7 +265,7 @@
 * 
       CALL evolv2(kstar,mass,tb,ecc,z,tphysf,dtp,mass0,rad,lum,
      &            massc,radc,menv,renv,ospin,B_0,bacc,tacc,
-     &            epoch,tms,bhspin,tphys,zpars,bkick,kick_info,
+     &            epoch,tms,bhspin,tphys,zpars,kick_info,
      &            bcm_index_out,bpp_index_out,kick_info_out)
 *
 ************************************************************************
