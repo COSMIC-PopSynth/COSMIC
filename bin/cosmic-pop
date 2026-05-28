@@ -26,7 +26,7 @@ import h5py as h5
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
-from cosmic.evolve import Evolve
+from cosmic.evolve import Evolve, read_tracks_for_METISSE
 from cosmic._version import __version__
 
 from schwimmbad import MPIPool
@@ -206,15 +206,22 @@ if __name__ == '__main__':
 
     # Check masses
     if SSEDict["stellar_engine"] == "metisse":
+        # load in the METISSE files
+        metisse_m_min, metisse_m_max = read_tracks_for_METISSE(
+             path_to_tracks=SSEDict["path_to_tracks"], 
+             IBT_Z=sampling["metallicity"],
+             z_accuracy_limit=SSEDict['z_accuracy_limit'],
+             is_he=False
+        )
         # Check m1_min
-        if args.m1_min < 0.1:
-            m1_min = 0.1
+        if args.m1_min < metisse_m_min:
+            m1_min = metisse_m_min
         else:
             m1_min = args.m1_min
         # Check m2_min
         if hasattr(args, "m2_min") and (args.m2_min is not None):
-            if args.m2_min < 0.1:
-                args.m2_min = 0.1
+            if args.m2_min < metisse_m_min:
+                args.m2_min = metisse_m_min
         elif sampling["m2_min"] is not None:
             args.m2_min = sampling["m2_min"]
     else:
