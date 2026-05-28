@@ -101,8 +101,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -184,8 +184,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -267,8 +267,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -350,8 +350,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -433,8 +433,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -516,8 +516,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -599,8 +599,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -682,8 +682,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -765,8 +765,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -848,8 +848,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -931,8 +931,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1014,8 +1014,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1097,8 +1097,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1180,8 +1180,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1263,8 +1263,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1346,8 +1346,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1429,8 +1429,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1512,8 +1512,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1595,8 +1595,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1678,8 +1678,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1761,8 +1761,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1844,8 +1844,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -1927,8 +1927,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -2010,8 +2010,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -2093,8 +2093,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -2176,8 +2176,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -2259,8 +2259,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -2342,8 +2342,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -2425,8 +2425,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -2508,8 +2508,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -2591,8 +2591,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -2674,8 +2674,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -2757,8 +2757,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -2840,8 +2840,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -2923,8 +2923,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3006,8 +3006,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3089,8 +3089,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3172,8 +3172,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3255,8 +3255,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3338,8 +3338,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3421,8 +3421,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3504,8 +3504,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3587,8 +3587,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3670,8 +3670,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3753,8 +3753,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3836,8 +3836,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -3919,8 +3919,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4002,8 +4002,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -4085,8 +4085,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -4168,8 +4168,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -4251,8 +4251,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -4334,8 +4334,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -4417,8 +4417,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4500,8 +4500,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4583,8 +4583,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4666,8 +4666,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4749,8 +4749,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4832,8 +4832,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4915,8 +4915,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -4998,8 +4998,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5081,8 +5081,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5164,8 +5164,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5247,8 +5247,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5330,8 +5330,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5413,8 +5413,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5496,8 +5496,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5579,8 +5579,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5662,8 +5662,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5745,8 +5745,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5828,8 +5828,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5911,8 +5911,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -5994,8 +5994,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6077,8 +6077,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -6160,8 +6160,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -6243,8 +6243,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -6326,8 +6326,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -6409,8 +6409,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -6492,8 +6492,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6575,8 +6575,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6658,8 +6658,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6741,8 +6741,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6824,8 +6824,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6907,8 +6907,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -6990,8 +6990,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7073,8 +7073,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7156,8 +7156,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7239,8 +7239,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7322,8 +7322,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7405,8 +7405,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7488,8 +7488,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7571,8 +7571,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7654,8 +7654,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7737,8 +7737,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7820,8 +7820,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7903,8 +7903,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -7986,8 +7986,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8069,8 +8069,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -8152,8 +8152,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -8235,8 +8235,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -8318,8 +8318,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -8401,8 +8401,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -8484,8 +8484,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8567,8 +8567,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8650,8 +8650,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8733,8 +8733,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8816,8 +8816,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8899,8 +8899,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -8982,8 +8982,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9065,8 +9065,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9148,8 +9148,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9231,8 +9231,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9314,8 +9314,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9397,8 +9397,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9480,8 +9480,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9563,8 +9563,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9646,8 +9646,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9729,8 +9729,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9812,8 +9812,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9895,8 +9895,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -9978,8 +9978,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10061,8 +10061,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -10144,8 +10144,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -10227,8 +10227,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -10310,8 +10310,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -10393,8 +10393,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -10476,8 +10476,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10559,8 +10559,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10642,8 +10642,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10725,8 +10725,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10808,8 +10808,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10891,8 +10891,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -10974,8 +10974,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11057,8 +11057,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11140,8 +11140,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11223,8 +11223,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11306,8 +11306,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11389,8 +11389,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11472,8 +11472,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11555,8 +11555,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11638,8 +11638,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11721,8 +11721,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11804,8 +11804,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11887,8 +11887,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -11970,8 +11970,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -12053,8 +12053,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -12136,8 +12136,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -12219,8 +12219,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -12302,8 +12302,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -12385,8 +12385,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12468,8 +12468,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12551,8 +12551,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12634,8 +12634,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12717,8 +12717,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12800,8 +12800,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12883,8 +12883,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -12966,8 +12966,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13049,8 +13049,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13132,8 +13132,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13215,8 +13215,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13298,8 +13298,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13381,8 +13381,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13464,8 +13464,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13547,8 +13547,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13630,8 +13630,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13713,8 +13713,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13796,8 +13796,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13879,8 +13879,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -13962,8 +13962,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14045,8 +14045,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -14128,8 +14128,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -14211,8 +14211,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -14294,8 +14294,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -14377,8 +14377,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -14460,8 +14460,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14543,8 +14543,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14626,8 +14626,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14709,8 +14709,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14792,8 +14792,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14875,8 +14875,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -14958,8 +14958,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15041,8 +15041,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15124,8 +15124,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15207,8 +15207,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15290,8 +15290,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15373,8 +15373,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15456,8 +15456,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15539,8 +15539,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15622,8 +15622,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15705,8 +15705,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15788,8 +15788,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15871,8 +15871,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -15954,8 +15954,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16037,8 +16037,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16120,8 +16120,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -16203,8 +16203,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -16286,8 +16286,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -16369,8 +16369,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -16452,8 +16452,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -16535,8 +16535,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16618,8 +16618,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16701,8 +16701,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16784,8 +16784,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16867,8 +16867,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -16950,8 +16950,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17033,8 +17033,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17116,8 +17116,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17199,8 +17199,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17282,8 +17282,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17365,8 +17365,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17448,8 +17448,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17531,8 +17531,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17614,8 +17614,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17697,8 +17697,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17780,8 +17780,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17863,8 +17863,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -17946,8 +17946,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18029,8 +18029,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18112,8 +18112,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18195,8 +18195,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -18278,8 +18278,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -18361,8 +18361,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -18444,8 +18444,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -18527,8 +18527,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 0.0
@@ -18610,8 +18610,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18693,8 +18693,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18776,8 +18776,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18859,8 +18859,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -18942,8 +18942,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19025,8 +19025,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19108,8 +19108,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19191,8 +19191,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19274,8 +19274,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19357,8 +19357,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19440,8 +19440,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19523,8 +19523,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19606,8 +19606,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19689,8 +19689,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19772,8 +19772,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19855,8 +19855,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -19938,8 +19938,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -20021,8 +20021,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -20104,8 +20104,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -20187,8 +20187,8 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
     
         kstar(1) = 1.0; kstar(2) = 1.0
@@ -20270,7 +20270,7 @@
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
      & dtptmp,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     & bhspin,tphys,zpars,bkick,kick_info,
-     & bpp_index_out,bcm_index_out,kick_info_out)
+     & bhspin,tphys,zpars,kick_info,
+     & bpp_index_out,bcm_index_out)
 
             END PROGRAM benchmarkevolv2
