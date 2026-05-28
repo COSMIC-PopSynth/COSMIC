@@ -121,3 +121,4 @@ savefig/
 _generated/
 docs/auto_examples/
 sg_execution_times.rst
+*_commit_hash.py
