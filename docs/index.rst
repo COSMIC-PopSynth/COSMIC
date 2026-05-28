@@ -27,6 +27,7 @@ COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code) is a rapid 
     pages/multiprocessing
     pages/cite
     pages/developers
+    _generated/whats_new
 
 *****************
 API documentation
