@@ -84,7 +84,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
                 'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
                 'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
-                'theta_euler', 'phi_euler', 'psi_euler', 'randomseed', 'bin_num']
+                'theta_euler', 'phi_euler', 'psi_euler', 'randomseed', 'tphys', 'bin_num']
 
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
@@ -512,8 +512,22 @@ class Evolve(object):
                 for col in mass_modifier_cols:
                     initialbinarytable.loc[mask, col] *= mod
 
-        # need to ensure that the order of parameters that we pass to BSE
-        # is correct
+        # if stellar engine is METISSE then check all of the SSE columns are present and if not raise an error
+        if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
+            if not set(INITIAL_CONDITIONS_SSE_COLUMN).issubset(initialbinarytable.columns):
+                raise ValueError("If you want to use the METISSE stellar engine, you must provide the following in the SSEDict, initial binary table, or params file: path_to_tracks, path_to_he_tracks, z_accuracy_limit.")
+        else:
+            # if not using METISSE, set default values for the SSE columns if they are not present in the initial binary table
+            if 'stellar_engine' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(stellar_engine='sse')
+            if 'path_to_tracks' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(path_to_tracks='')
+            if 'path_to_he_tracks' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(path_to_he_tracks='')
+            if 'z_accuracy_limit' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(z_accuracy_limit=1e-2)
+
+        # need to ensure that the order of parameters that we pass to BSE is correct
         initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].to_dict('records')
 
         # ensure that metallicity is in the valid range (Z in [1e-4, 0.03])
@@ -746,14 +760,14 @@ def _evolve_single_system(f, zpars=None):
             _evolvebin.se_flags.using_metisse = 0
             _evolvebin.metissevars.path_to_tracks = ""
             _evolvebin.metissevars.path_to_he_tracks = ""
-            _evolvebin.metissevars.z_match_limit = 1e-2
+            _evolvebin.metissevars.z_match_limit = f["z_accuracy_limit"]
             _evolvebin.metissevars.METISSE_verbose = False
         elif f["stellar_engine"] == "metisse":
             _evolvebin.se_flags.using_metisse = 1
             _evolvebin.se_flags.using_sse = 0
             _evolvebin.metissevars.path_to_tracks = f["path_to_tracks"]
             _evolvebin.metissevars.path_to_he_tracks = f["path_to_he_tracks"]
-            _evolvebin.metissevars.z_match_limit = 1e-2
+            _evolvebin.metissevars.z_match_limit = f["z_accuracy_limit"]
             _evolvebin.metissevars.METISSE_verbose = False
         else:
             raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
@@ -763,7 +777,7 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.col.n_col_bcm = f["n_col_bcm"]
         _evolvebin.col.col_inds_bcm = f["col_inds_bcm"]
 
-        [zpars, bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
+        [zpars, kick_info, bpp_index, bcm_index] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 
                                                               f["tphysf"], f["dtp"],
@@ -783,9 +797,7 @@ def _evolve_single_system(f, zpars=None):
                                                               [f["bhspin_1"], f["bhspin_2"]],
                                                               f["tphys"],
                                                               zpars,
-                                                              np.zeros(20),
                                                               f["kick_info"])
-                                                              
         if bpp_index<0:
             raise ValueError("Failed in METISSE_zcnsts")
         else:
