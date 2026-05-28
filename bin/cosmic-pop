@@ -215,8 +215,8 @@ if __name__ == '__main__':
         if hasattr(args, "m2_min") and (args.m2_min is not None):
             if args.m2_min < 0.1:
                 args.m2_min = 0.1
-        else:
-            args.m2_min = BSEDict["m2_min"]
+        elif sampling["m2_min"] is not None:
+            args.m2_min = sampling["m2_min"]
     else:
         # Check m1_min
         m1_min = args.m1_min
@@ -346,7 +346,7 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if hasattr(args,'qmin') and hasattr(args,'m2_min'):
-                if args.qmin != 0.0 and args.m2_min is not None:
+                if not (args.qmin == 0.0 or args.qmin is None) and args.m2_min is not None:
                     raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
             # If qmin is specified, use it to sample the initial binary table
             if hasattr(args,'qmin') and args.qmin != 0.:
