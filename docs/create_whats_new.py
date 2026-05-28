@@ -56,7 +56,7 @@ def generate_rst(parsed_sections, output_path):
             f.write("\n")
 
 if __name__ == "__main__":
-    changelog_path = Path("../CHANGELOG.md")
+    changelog_path = Path("../changelog.md")
     output_path = Path("_generated/whats_new.rst")
 
     parsed_sections = parse_changelog(changelog_path)

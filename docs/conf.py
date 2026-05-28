@@ -185,9 +185,9 @@ html_theme_options = {
         "color-brand-visited": "#3f95e1",
     },
     "dark_css_variables": {
-        "color-brand-primary": "#f08c33",
-        "color-brand-content": "#f08c33",
-        "color-brand-visited": "#f08c33"
+        "color-brand-primary": "#e193ca",
+        "color-brand-content": "#e193ca",
+        "color-brand-visited": "#e193ca"
     },
     "sidebar_hide_name": False,
     "footer_icons": [
@@ -212,12 +212,12 @@ html_title = f"<span class='hide-me'>COSMIC </span>v{cosmic_version}"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "https://cosmic-popsynth.github.io/images/cosmic-popsynth_1200.png"
+html_logo = "_static/cosmic-colour.png"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16
 # or 32x32 pixels large.
-# html_favicon = None
+html_favicon = "_static/cosmic-favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
