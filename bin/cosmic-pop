@@ -194,7 +194,7 @@ if __name__ == '__main__':
 
     ## Check engine
     # Check arguments
-    if (args.path_to_tracks is not None) and hasattr(args.path_to_he_tracks is not None):
+    if (args.path_to_tracks is not None) and (args.path_to_he_tracks is not None):
         warnings.warn("path_to_tracks and path_to_he_tracks specified; overwriting stellar_engine with metisse")
         SSEDict["stellar_engine"] = "metisse"
         SSEDict["path_to_tracks"] = args.path_to_tracks
