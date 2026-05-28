@@ -429,14 +429,25 @@ if __name__ == '__main__':
                 pass
             filters['timestep_conditions'] = []
 
-        # Create a pool
-        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
-                                                      pool=pool,
-                                                      BSEDict=BSEDict,
-                                                      SSEDict=SSEDict,
-                                                      idx=idx,
-                                                      dtp=dtp,
-                                                      timestep_conditions=filters['timestep_conditions'])
+        # For MPI, pass the pool directly; for local multiprocessing, pass nproc so
+        # Evolve.evolve creates a fresh pool whose workers fork after Fortran globals
+        # (checkstate, dtp_state) have been initialized, avoiding a deadlock.
+        if isinstance(pool, MPIPool):
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          pool=pool,
+                                                          BSEDict=BSEDict,
+                                                          SSEDict=SSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'])
+        else:
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          nproc=nproc,
+                                                          BSEDict=BSEDict,
+                                                          SSEDict=SSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'])
 
         # extract single stars
 
