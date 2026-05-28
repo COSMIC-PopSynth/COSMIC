@@ -57,6 +57,7 @@ clean:
 html: apidoc
 	python generate_default_bsedict.py
 	python create_settings_html.py
+	python create_whats_new.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
