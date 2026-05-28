@@ -131,7 +131,7 @@ def parse_commandline():
         help="HDFStore compression level")
     parser.add_argument("--m1_min", default=0.08,type=float,
         help="Minimum mass")
-    parser.add_argument("--m2_min", default=0.08,type=float,
+    parser.add_argument("--m2_min", default=None,type=float,
         help="Minimum mass")
     parser.add_argument("--path-to-tracks", default=None, type=str,
         help="Path to Hydrogen Metisse tracks")
