@@ -512,8 +512,22 @@ class Evolve(object):
                 for col in mass_modifier_cols:
                     initialbinarytable.loc[mask, col] *= mod
 
-        # need to ensure that the order of parameters that we pass to BSE
-        # is correct
+        # if stellar engine is METISSE then check all of the SSE columns are present and if not raise an error
+        if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
+            if not set(INITIAL_CONDITIONS_SSE_COLUMN).issubset(initialbinarytable.columns):
+                raise ValueError("If you want to use the METISSE stellar engine, you must provide the following in the SSEDict, initial binary table, or params file: path_to_tracks, path_to_he_tracks, z_accuracy_limit.")
+        else:
+            # if not using METISSE, set default values for the SSE columns if they are not present in the initial binary table
+            if 'stellar_engine' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(stellar_engine='sse')
+            if 'path_to_tracks' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(path_to_tracks='')
+            if 'path_to_he_tracks' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(path_to_he_tracks='')
+            if 'z_accuracy_limit' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(z_accuracy_limit=1e-2)
+
+        # need to ensure that the order of parameters that we pass to BSE is correct
         initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].to_dict('records')
 
         # ensure that metallicity is in the valid range (Z in [1e-4, 0.03])
