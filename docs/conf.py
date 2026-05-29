@@ -47,8 +47,8 @@ extensions = [
     'sphinx_automodapi.smart_resolver',
     'sphinxcontrib.programoutput',
     'matplotlib.sphinxext.plot_directive',
-    #'IPython.sphinxext.ipython_console_highlighting',
-    #'IPython.sphinxext.ipython_directive',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
     'numpydoc',
     'sphinx_design',
     'sphinx_copybutton',
@@ -382,8 +382,6 @@ def linkcode_resolve(domain, info):
         for name in names:
             func = getattr(func, name)
 
-        print(names, func)
-        
         source_code, line_num = inspect.getsourcelines(func)
 
         # get the file name from the module
@@ -403,6 +401,5 @@ def linkcode_resolve(domain, info):
 
     # if you can't find it in the file then just link to the correct file
     except Exception as e:
-        print(e)
         filename = info['module'].replace('.', '/') + '.py'
     return f"https://github.com/COSMIC-popsynth/COSMIC/blob/develop/src/{filename}"
