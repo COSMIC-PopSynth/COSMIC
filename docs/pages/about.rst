@@ -3,6 +3,11 @@
 #####
 About
 #####
+
+.. figure:: /_static/cosmic-colour.png
+   :alt: COSMIC logo
+   :align: center
+
 COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code) is a rapid binary population synthesis suite with a special focus of generating compact binary populations. 
 
 COSMIC implements stellar evolution using the fitting formulae described in
