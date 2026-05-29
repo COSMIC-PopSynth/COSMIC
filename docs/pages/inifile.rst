@@ -31,6 +31,17 @@ How to use this page
 **Interactive config generator** - it can also be used interactively to generate your very own configuration file or BSE settings dictionary for use in running COSMIC.
 In each of the following sections you can edit the values of the parameter and the files at the end of the page will update in turn for you to copy. Enjoy configuring COSMIC!
 
+.. tip::
+
+    If you've forgotten what a parameter does and don't want to open the docs, you can always use the ``explain_setting`` function in the ``utils`` module to get a quick refresher on what a parameter does and what values it can take
+
+    .. code-block:: python
+
+        from cosmic.utils import explain_setting
+
+        explain_setting("kickflag")
+
+
 All available settings
 ======================
 
