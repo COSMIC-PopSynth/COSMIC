@@ -46,7 +46,7 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
                'Michael Zevin <zevin@northwestern.edu>',
                'digman.12@osu.edu',
                'Tom Wagg <tomjwagg@gmail.com>']
-__all__ = ['Evolve', 'read_tracks_for_METISSE']
+__all__ = ['Evolve', 'read_tracks_for_METISSE', 'populate_tracks']
 
 
 # Make this match the ordering of all_cols in bpp_array.f
