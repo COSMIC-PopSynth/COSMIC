@@ -281,6 +281,25 @@
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
              vk = alphakick * ((m1-m1n)/m1n) + betakick
              vk2 = vk*vk
+          elseif(abskickflag.eq.7)then
+* Asymmetric ejecta / neutrino-driven kick prescription
+* Gravitational remnant mass = m1n
+* Star mass pre-collapse = m1
+* Ejecta mass = m1 - m1n --> update this
+* Baseline values assumed: epsilon_5 = 1.0, f_kin = 0.1, beta_nu = 0.1
+             epsilon_5 = 1.0d0
+             f_kin = 0.1d0
+             beta_nu = 0.1d0
+             alpha_ej = 0.01d0
+             vk = 21.d0 * SQRT(epsilon_5 * f_kin * beta_nu) * (alpha_ej / 0.01d0) * ((m1 - m1n) / 0.1d0) * (1.5d0 / m1n)  
+             vk2 = vk*vk
+          elseif(abskickflag.eq.8)then
+* From Richardson et al.
+* Calibrated against single pulsars, double neutron stars, low kick velocities of ultra stripped supernova
+             alpha = 115.0d0
+             beta = 15.0d0
+             vk = alpha * ((m1c - m1n) / m1n) + beta
+             vk2 = vk*vk
           endif
 
 * If a massless remnant is produced then artificially set the kick to
