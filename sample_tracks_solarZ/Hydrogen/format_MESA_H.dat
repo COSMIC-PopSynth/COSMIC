@@ -1,0 +1,66 @@
+
+&format_controls
+
+    !-------FILE DETAILS-------------
+
+    read_eep_files = .true.
+    
+    !-------COLUMN NAMES---------------------------------
+
+    !name of essential columns
+
+    age_colname = 'star_age'                  !age in years
+    mass_colname = 'star_mass'             !mass of the star in solar units
+
+    log_L_colname = 'log_L'                    !log of luminosity
+ 
+    log_R_colname = 'log_R'                  !log of radius
+    
+    he_core_mass = 'he_core_mass'        !mass of He enriched/H depleted core in solar units
+    co_core_mass = 'c_core_mass'             !mass of C enriched/He depleted core in solar units
+    
+    log_T_colname = 'log_Teff'               !log of surface temperature
+
+    !columns required for determining Mup and Mhook
+    
+    he_core_radius = 'he_core_radius'       !in solar units
+    co_core_radius = 'c_core_radius'        !in solar units
+    
+    mass_conv_envelope = 'mass_conv_envelope'    !in solar units
+    radius_conv_envelope = 'rad_conv_envelope'    !in solar units
+    
+    log_Tc = 'log_center_T'                      !central temperature in log units
+    He4_mass_frac = 'center_he4'
+    c12_mass_frac = 'center_c12'            !c12 mass fraction at centre
+    o16_mass_frac = 'center_o16'            !o16 mass fraction at centre
+    
+    !-------EEP DETAILS for Hydrogen stars-------------
+
+    PreMS_EEP = 1
+    ZAMS_EEP = 202
+    IAMS_EEP = 353
+    TAMS_EEP = 454
+    BGB_EEP = 554
+    cHeIgnition_EEP = 605
+    cHeBurn_EEP = 631
+    TA_cHeB_EEP = 707
+
+    TPAGB_EEP = 808
+    cCBurn_EEP = 808
+    post_AGB_EEP = 1409
+
+    Initial_EEP = 202       !files will be read from this line number
+    Final_EEP = 808        !to this line
+
+    !--- HOW TO DEAL WITH INCOMPLETE TRACKS--------
+
+    fix_track = .true.
+    
+    !for M<Mec
+    low_mass_final_eep = 808
+    !for stars M>=Mec
+    high_mass_final_eep = 808
+
+    
+
+/

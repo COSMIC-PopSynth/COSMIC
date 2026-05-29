@@ -182,8 +182,10 @@ velocity after both supernovae).
 ``kick_info[i,12]: delta_vsysy_2``          change in 3D velocity of the star=2 if system is disrupted (y-component)
 ``kick_info[i,13]: delta_vsysz_2``          change in 3D velocity of the star=2 if system is disrupted (z-component)
 ``kick_info[i,14]: vsys_2_total``           magnitude of velocity of star=2 if disrupted, accounting for both SNe [:math:`{\rm{km/s}}`]
-``kick_info[i,15]: delta_theta_total``      angular change in orbital plane due to supernovae, relative to the pre-SN1 orbital plane [:math:`{\rm{degrees}}`]
-``kick_info[i,16]: omega``                  azimuthal angle of the orbital plane w.r.t. spins [:math:`{\rm{degrees}}`]
-``kick_info[i,17]: randomseed``             random seed at the start of call to kick.f
+``kick_info[i,15]: theta_euler``            First Euler angle of rotation of orbital plane after each SN
+``kick_info[i,16]: phi_euler``              Second Euler angle of rotation of orbital plane after each SN
+``kick_info[i,17]: psi_euler``              Third Euler angle of rotation of orbital plane after each SN
+``kick_info[i,18]: randomseed``             random seed at the start of call to kick.f
+``kick_info[i,19]: tphys``                  time of the supernova in Myr
 
 ==========================================  ========================================================================================================================================

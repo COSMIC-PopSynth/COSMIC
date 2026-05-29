@@ -1,0 +1,26 @@
+
+! Make sure to ADD a new line at the end (after / symbol)
+
+&metallicity_controls
+    ! Location of the folder containing input files for a given metallicity
+
+    eep_tracks_dir = './folder_Z0020000/eeps'
+
+    ! Metallicity of input tracks
+    ! It is only used to cross-check 
+    ! against input Z to avoid mistakes
+    
+    Z_files = 0.020000
+
+    ! Details about the file structure (see format_defaults.dat)
+    ! Empty string will raise an error
+
+    format_file = './format_MESA_H.dat'
+
+
+
+/
+
+
+
+

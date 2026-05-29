@@ -14,8 +14,8 @@ from cosmic import __version__ as cosmic_version
 
 # how many versions in the past should we show as badges for when options were added?
 VERSION_CUTOFFS = {
-    "major": 0,
-    "minor": 3,
+    "major": 1000,
+    "minor": 1000,
     "patch": 1000
 }
 
