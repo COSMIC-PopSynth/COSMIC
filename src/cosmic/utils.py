@@ -78,7 +78,7 @@ __all__ = [
     "read_MIST_track",
     "read_other_track",
     "read_eep_directory",
-    "to_f2py_str_array"
+    "to_f2py_str_array",
     "explain_setting",
 ]
 
