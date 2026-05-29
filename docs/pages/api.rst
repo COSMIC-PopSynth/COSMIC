@@ -11,3 +11,6 @@ each module in detail
 
     ../modules/evolve
     ../modules/sample
+    ../modules/output
+    ../modules/plotting
+    ../modules/utils

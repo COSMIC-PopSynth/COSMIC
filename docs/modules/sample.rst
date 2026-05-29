@@ -38,7 +38,9 @@ CMC related functions
 
 .. automodapi:: cosmic.sample.cmc.elson
     :no-inheritance-diagram:
+    :no-heading:
 
 .. automodapi:: cosmic.sample.cmc.king
     :no-inheritance-diagram:
+    :no-heading:
 
