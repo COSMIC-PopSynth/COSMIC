@@ -79,6 +79,14 @@ html[data-theme="dark"] .sd-card {
     transform: scale(0.9);
     background-color: var(--color-brand-primary);
 }
+.toms-nav-container .box.toms-nav-box-blue:hover, .toms-nav-box.toms-nav-box-blue:hover {
+    transform: scale(0.9);
+    background-color: #a5c1dc;
+}
+.toms-nav-container .box.toms-nav-box-pink:hover, .toms-nav-box.toms-nav-box-pink:hover {
+    transform: scale(0.9);
+    background-color: #e193ca;
+}
 
 #installation h2 {
     font-size: 1.2rem;

@@ -8,10 +8,10 @@ COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code) is a rapid 
 .. raw:: html
 
     <div class="toms-nav-container" style="margin-bottom:50px;">
-        <div class="box" data-href="pages/install.html">Install COSMIC</div>
-        <div class="box" data-href="pages/reference_material.html">Configurations and outputs</div>
-        <div class="box" data-href="pages/runpop.html">Sampling populations</div>
-        <div class="box" data-href="pages/examples.html">Evolving binaries</div>
+        <div class="box toms-nav-box-blue" data-href="pages/install.html">Install COSMIC</div>
+        <div class="box toms-nav-box-pink" data-href="pages/reference_material.html">Configurations and outputs</div>
+        <div class="box toms-nav-box-blue" data-href="pages/runpop.html">Sampling populations</div>
+        <div class="box toms-nav-box-pink" data-href="pages/examples.html">Evolving binaries</div>
     </div>
 
 .. toctree::
@@ -27,6 +27,7 @@ COSMIC (Compact Object Synthesis and Monte Carlo Investigation Code) is a rapid 
     pages/multiprocessing
     pages/cite
     pages/developers
+    _generated/whats_new
 
 *****************
 API documentation
