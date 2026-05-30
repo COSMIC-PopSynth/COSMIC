@@ -89,10 +89,6 @@ First, let's plot the initial mass distribution of the primary stars in our bina
     @savefig initial_mass_distribution.png
     plt.show()
 
-.. image:: initial_mass_distribution.png
-    :alt:
-    :width: 100%
-
 We could also compare this to the final mass distribution of the primary stars after evolution.
 
 .. ipython:: python
@@ -102,10 +98,6 @@ We could also compare this to the final mass distribution of the primary stars a
     output.plot_distribution(x_col="mass_1", when="final", show=False);
     @savefig final_mass_distribution.png
     plt.show()
-
-.. image:: final_mass_distribution.png
-    :alt:
-    :width: 100%
 
 In addition to histograms, you can create scatter plots to visualize relationships between different parameters.
 
@@ -120,13 +112,9 @@ In addition to histograms, you can create scatter plots to visualize relationshi
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.invert_xaxis()
-    
+
     @savefig hrd.png
     plt.show()
-
-.. image:: hrd.png
-    :alt:
-    :width: 100%
 
 And we also can colour the points by the stellar type of the primary star at the end of evolution and get a custom
 colour map for these ones.
@@ -141,13 +129,9 @@ colour map for these ones.
     );
     ax.set_xscale("log")
     ax.set_yscale("log")
-    
+
     @savefig m1_porb_kstar.png
     plt.show()
-
-.. image:: m1_porb_kstar.png
-    :alt:
-    :width: 100%
 
 Any column name from the ``bpp`` (or ``initC`` for initial conditions) DataFrames can be used for the x, y, and colour col names.
 
@@ -204,10 +188,6 @@ Now clearly staring at the DataFrame isn't very helpful, so let's plot the evolu
     @savefig detailed_bh.png
     plt.show()
 
-.. image:: detailed_bh.png
-    :alt:
-    :width: 100%
-
 This shows the full evolution, but we can ignore any time a while after the binary forms a BH
 by setting a maximum time for the x-axis.
 
@@ -222,10 +202,6 @@ by setting a maximum time for the x-axis.
                                         t_max=t_max, show=False);
     @savefig detailed_bh_limited.png
     plt.show()
-
-.. image:: detailed_bh_limited.png
-    :alt:
-    :width: 100%
 
 
 Re-running with new physics settings
