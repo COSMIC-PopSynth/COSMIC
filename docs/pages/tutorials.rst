@@ -1,5 +1,11 @@
+:html_theme.sidebar_secondary.items: []
+
 Tutorials
 =========
+
+.. rst-class:: center
+
+This page contains of tutorials that show you how to use ``COSMIC`` and become an expert in its various features! The tutorials are split into different categories, which you can navigate to using the links below.
 
 .. grid:: 1 1 2 2
     :gutter: 3
@@ -68,6 +74,10 @@ Tutorials
             .. rst-class:: tutorial-card-link
 
             :ref:`rerun_rerun`
+
+            .. rst-class:: tutorial-card-link
+
+            :ref:`rerun_restart`
 
     .. grid-item-card::
 
