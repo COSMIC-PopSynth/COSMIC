@@ -6,6 +6,5 @@ These tutorials will cover how to easily analyse your ``COSMIC`` output data wit
 
 .. toctree::
     :maxdepth: 2
-    :hidden:
     
     analysis/interface

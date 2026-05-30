@@ -6,6 +6,5 @@ Converged populations
 
 .. toctree::
     :maxdepth: 2
-    :hidden:
     
     convergence/cosmic_pop

@@ -6,7 +6,6 @@ Timesteps and resolution
 
 .. toctree::
     :maxdepth: 2
-    :hidden:
     
     timesteps/resolution
     timesteps/modifiers

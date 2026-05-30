@@ -7,7 +7,6 @@ Evolving binaries
 
 .. toctree::
     :maxdepth: 2
-    :hidden:
     
     evolve/single
     evolve/multiple
