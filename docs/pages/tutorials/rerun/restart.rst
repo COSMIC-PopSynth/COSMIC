@@ -27,7 +27,7 @@ started from the beginning and three different points in the evolution:
     
     SSEDict = {'stellar_engine': 'sse'}
     
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 .. ipython:: python
     :okwarning:

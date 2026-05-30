@@ -23,17 +23,14 @@ Welcome to COSMIC!
     :alt: COSMIC logo
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :hidden:
     
     pages/about
     pages/install
     pages/reference_material
-    pages/examples
-    pages/runpop
-    pages/fixedpop
-    pages/multiprocessing
-    pages/cite
-    pages/developers
-    _generated/whats_new
+    pages/tutorials
     pages/api
+    pages/cite
+    _generated/whats_new
+    pages/developers

@@ -34,7 +34,7 @@ about the independent sampler in the :ref:`independent` page.
 And finally, we can evolve the initial binary population using the Evolve class as we've done in the previous
 guides:
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 .. ipython:: python
     :okwarning:

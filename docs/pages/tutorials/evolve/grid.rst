@@ -12,7 +12,7 @@ setting up the BSEDict settings as we've done in the previous examples.
 
     from cosmic.evolve import Evolve
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 
 Here we evolve the same system that produces a GW150914-like binary, but run over several initial orbital

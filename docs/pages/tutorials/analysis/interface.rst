@@ -26,7 +26,7 @@ samples ~100 binaries and evolving them.
     import matplotlib.pyplot as plt
     import numpy as np
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 .. ipython:: python
 
