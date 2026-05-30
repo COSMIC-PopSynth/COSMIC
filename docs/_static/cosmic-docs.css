@@ -88,6 +88,17 @@ html[data-theme="dark"] .sd-card {
     background-color: #e193ca;
 }
 
+@media (max-width: 720px) {
+    .toms-nav-container {
+        width: 100%;
+        height: auto;
+        grid-template-columns: 100%;
+        grid-template-rows: auto;
+        grid-column-gap: 0;
+        grid-row-gap: 20px;
+    }
+}
+
 #installation h2 {
     font-size: 1.2rem;
 }
