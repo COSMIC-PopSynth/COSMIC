@@ -11,6 +11,7 @@
 
 import re
 from pathlib import Path
+from os.path import exists
 
 def parse_changelog(changelog_path):
     with open(changelog_path, 'r') as f:
@@ -37,23 +38,30 @@ def parse_changelog(changelog_path):
     return parsed_sections
 
 def generate_rst(parsed_sections, output_path):
-    with open(output_path, 'w') as f:
-        f.write("What's New in COSMIC\n")
-        f.write("====================\n\n")
+    lines = ["What's New in COSMIC\n====================\n"]
 
-        for heading, features in parsed_sections:
+    for heading, features in parsed_sections:
+        lines.append(f"v{heading}\n{'-' * (len(heading) + 1)}\n")
 
-            f.write(f"v{heading}\n")
-            f.write(f"{'-' * (len(heading) + 1)}\n\n")
+        # Check if the heading is a version number (e.g., "4.1.0")
+        if re.match(r'^\d+\.\d+\.\d+$', heading):
+            github_link = f"https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v{heading}"
+            lines.append(f"`GitHub release <{github_link}>`_\n")
 
-            # Check if the heading is a version number (e.g., "4.1.0")
-            if re.match(r'^\d+\.\d+\.\d+$', heading):
-                github_link = f"https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v{heading}"
-                f.write(f"`GitHub release <{github_link}>`_\n\n")
+        for feature in features:
+            lines.append(feature)
+        lines.append("")
 
-            for feature in features:
-                f.write(feature + "\n")
-            f.write("\n")
+    content = "\n".join(lines)
+    if exists(output_path):
+        with open(output_path) as f:
+            if f.read() == content:
+                print(f"  No changes to {output_path}, skipping write.")
+                return
+
+    print(f"  Writing 'What's New' content to {output_path}...")
+    with open(output_path, "w") as f:
+        f.write(content)
 
 if __name__ == "__main__":
     changelog_path = Path("../changelog.md")
@@ -61,5 +69,3 @@ if __name__ == "__main__":
 
     parsed_sections = parse_changelog(changelog_path)
     generate_rst(parsed_sections, output_path)
-
-    print(f"Generated {output_path} from {changelog_path}")
