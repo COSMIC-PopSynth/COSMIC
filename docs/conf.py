@@ -117,7 +117,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'cosmic'
-copyright = u'2021, Katie Breivik'
+copyright = u'2019-2026, Katie Breivik, Tom Wagg'
 author = u'Katie Breivik'
 
 # The version info for the project you're documenting, acts as replacement for
