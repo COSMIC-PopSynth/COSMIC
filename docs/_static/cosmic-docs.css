@@ -553,3 +553,29 @@ select.form-control {
 .link-white {
     color: white!important;
 }
+
+.tutorial-card {
+    text-align: center!important;
+}
+
+.tutorial-card-title {
+    font-size: 2rem!important;
+    font-weight: bold!important;
+    margin-bottom: 0.5rem!important;
+}
+
+.tutorial-card-link {
+    display: block;
+    padding: .25rem;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    transition: 300ms;
+    margin: 0 !important;
+}
+
+.tutorial-card-link:hover {
+    background-color: var(--color-brand-primary);
+}
+.tutorial-card-link:hover, .tutorial-card-link:hover a {
+    color: white!important;
+}

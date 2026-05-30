@@ -1,3 +1,5 @@
+.. _evolve_grid:
+
 *********************************
 Evolving a fixed grid of binaries
 *********************************

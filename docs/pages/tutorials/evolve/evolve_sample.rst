@@ -1,6 +1,9 @@
+.. _evolve_sample:
+
 *****************************************
 Evolving a Monte-Carlo sampled population
 *****************************************
+
 Once an initial binary population is sampled, it can be evolved using the ``Evolve`` class just as we've done so far.
 You can read more about sampling initial binary populations in the :ref:`runpop` page.
 

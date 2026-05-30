@@ -1,3 +1,5 @@
+.. _evolve_single:
+
 ************************
 Evolving a single binary
 ************************

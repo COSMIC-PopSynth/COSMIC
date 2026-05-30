@@ -1,3 +1,5 @@
+.. _rerun_rerun:
+
 *******************
 Re-running binaries
 *******************

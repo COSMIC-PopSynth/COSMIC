@@ -1,3 +1,5 @@
+.. _rerun_restart:
+
 *******************
 Restarting a binary
 *******************

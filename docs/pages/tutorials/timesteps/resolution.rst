@@ -1,3 +1,5 @@
+.. _timesteps_resolution:
+
 ***********************
 Dynamic time resolution
 ***********************

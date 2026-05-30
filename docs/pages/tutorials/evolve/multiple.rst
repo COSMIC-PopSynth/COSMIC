@@ -1,3 +1,5 @@
+.. _evolve_multiple:
+
 **************************
 Evolving multiple binaries
 **************************
