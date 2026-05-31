@@ -76,6 +76,9 @@ sphinx_gallery_conf = {
     'remove_config_comments': True,
 }
 
+import matplotlib
+matplotlib.rcParams["savefig.dpi"] = 300
+
 # -- autosummary --------------------------------
 
 autosummary_generate = True
