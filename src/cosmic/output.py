@@ -10,7 +10,8 @@ import numpy as np
 import warnings
 
 
-__all__ = ['COSMICOutput', 'COSMICPopOutput', 'COSMICStroopOutput', 'save_initC', 'load_initC']
+__all__ = ['COSMICOutput', 'COSMICPopOutput', 'COSMICStroopOutput',
+           'STROOPWAFELCheckpoint', 'save_initC', 'load_initC']
 
 
 kstar_translator = [
@@ -518,6 +519,198 @@ class COSMICStroopOutput(COSMICOutput):
             num_explored=num_explored, num_hits=num_hits,
             fraction_explored=fraction_explored,
             label=cosmic.label if label is None else label,
+        )
+
+
+class STROOPWAFELCheckpoint:
+    """Serialisable snapshot of `AdaptiveSampler` state after exploration.
+
+    Saving this to disk decouples the exploration + adaptation phases from
+    the (typically more expensive) refinement phase, which is the key
+    enabler for multi-job SLURM workflows:
+
+    .. code-block:: bash
+
+        # Job 1 - exploration (embarrassingly parallel within the job)
+        python run_explore.py          # writes  checkpoint.h5
+
+        # Job 2 - refinement (can be a larger allocation)
+        python run_refine.py           # reads checkpoint.h5, writes result.h5
+
+    Parameters
+    ----------
+    mixture : `GaussianMixture` or None
+        Gaussian mixture fitted to exploration hits.  ``None`` if no hits
+        were found or adaptation has not been run yet.
+    samples : `numpy.ndarray`
+        (N, D) array of explored samples in **sampling space** (the
+        internal transformed space used by the mixture model).  Convert
+        to physical space with ``param_space.to_physical(samples)``.
+    is_hit, generation, gaussian_idx : `numpy.ndarray`
+        Per-sample flags and bookkeeping arrays (shapes (N,)).
+    bpp, bcm, initC, kick_info : `pandas.DataFrame`
+        COSMIC output from exploration, indexed by globally unique
+        ``bin_num`` so that ``samples[bin_num]`` gives the corresponding
+        physical parameters.
+    param_names : `list` of `str`
+        Parameter names for the D columns of ``samples``.
+    num_explored : `int`
+        Systems evolved during exploration.
+    num_hits : `int`
+        Raw hit count from exploration.
+    num_hits_exploratory : `int`
+        Same as ``num_hits`` (stored separately for use in ``_refine``).
+    fraction_explored : `float`
+        Adaptive fraction of total budget used for exploration.
+    prior_fraction_rejected : `float`
+        Estimated fraction of prior samples that fail physical rejection.
+    total_systems : `int`
+        Full system budget (exploration + refinement combined).
+    n_generations : `int`
+        Number of refinement generations originally requested.
+    """
+
+    def __init__(self, mixture, samples, is_hit, generation, gaussian_idx,
+                 bpp, bcm, initC, kick_info, param_names,
+                 num_explored, num_hits, num_hits_exploratory,
+                 fraction_explored, prior_fraction_rejected,
+                 total_systems, n_generations):
+        self.mixture            = mixture
+        self.samples            = np.asarray(samples)
+        self.is_hit             = np.asarray(is_hit, dtype=bool)
+        self.generation         = np.asarray(generation, dtype=int)
+        self.gaussian_idx       = np.asarray(gaussian_idx, dtype=int)
+        self.bpp                = bpp
+        self.bcm                = bcm
+        self.initC              = initC
+        self.kick_info          = kick_info
+        self.param_names        = list(param_names)
+        self.num_explored       = int(num_explored)
+        self.num_hits           = int(num_hits)
+        self.num_hits_exploratory = int(num_hits_exploratory)
+        self.fraction_explored  = float(fraction_explored)
+        self.prior_fraction_rejected = float(prior_fraction_rejected)
+        self.total_systems      = int(total_systems)
+        self.n_generations      = int(n_generations)
+
+    def __repr__(self):
+        adapted = self.mixture is not None
+        return (
+            f'<STROOPWAFELCheckpoint: {self.num_explored} explored, '
+            f'{self.num_hits} hits, '
+            f'adapted={adapted}>'
+        )
+
+    # ------------------------------------------------------------------
+    # I/O
+    # ------------------------------------------------------------------
+
+    def save(self, path):
+        """Save to an HDF5 file.
+
+        Parameters
+        ----------
+        path : `str`
+            File path to create or overwrite.
+        """
+        # COSMIC tables — use the same helpers as COSMICOutput so the file
+        # is readable by ordinary COSMIC tooling if needed.
+        self.bpp.reset_index(drop=True).to_hdf(path, key='bpp', mode='w')
+        self.bcm.reset_index(drop=True).to_hdf(path, key='bcm', mode='a')
+        save_initC(path, self.initC.reset_index(drop=True),
+                   key='initC', settings_key='initC_settings')
+        self.kick_info.reset_index(drop=True).to_hdf(path, key='kick_info', mode='a')
+
+        with h5.File(path, 'a') as f:
+            # Sample arrays
+            f.create_dataset('samples',      data=self.samples)
+            f.create_dataset('is_hit',       data=self.is_hit)
+            f.create_dataset('generation',   data=self.generation)
+            f.create_dataset('gaussian_idx', data=self.gaussian_idx)
+
+            # Mixture model (optional)
+            if self.mixture is not None:
+                mg = f.create_group('mixture')
+                mg.create_dataset('means',       data=self.mixture.means)
+                mg.create_dataset('covariances', data=self.mixture.covariances)
+                mg.create_dataset('alphas',      data=self.mixture.alphas)
+                mg.attrs['rejection_rate']       = self.mixture.rejection_rate
+
+            # Scalar metadata
+            meta = f.require_group('meta')
+            meta.attrs['param_names']            = self.param_names
+            meta.attrs['num_explored']           = self.num_explored
+            meta.attrs['num_hits']               = self.num_hits
+            meta.attrs['num_hits_exploratory']   = self.num_hits_exploratory
+            meta.attrs['fraction_explored']      = self.fraction_explored
+            meta.attrs['prior_fraction_rejected'] = self.prior_fraction_rejected
+            meta.attrs['total_systems']          = self.total_systems
+            meta.attrs['n_generations']          = self.n_generations
+
+    @classmethod
+    def from_file(cls, path):
+        """Load a checkpoint previously written by :meth:`save`.
+
+        Parameters
+        ----------
+        path : `str`
+            File path to read.
+
+        Returns
+        -------
+        `STROOPWAFELCheckpoint`
+        """
+        # COSMIC tables
+        bpp       = pd.read_hdf(path, key='bpp')
+        bcm       = pd.read_hdf(path, key='bcm')
+        initC     = load_initC(path, key='initC', settings_key='initC_settings')
+        kick_info = pd.read_hdf(path, key='kick_info')
+
+        with h5.File(path, 'r') as f:
+            samples      = f['samples'][:]
+            is_hit       = f['is_hit'][:]
+            generation   = f['generation'][:]
+            gaussian_idx = f['gaussian_idx'][:]
+
+            # Mixture (may be absent)
+            mixture = None
+            if 'mixture' in f:
+                from cosmic.sample.stroopwafel.mixture_model import GaussianMixture
+                mg = f['mixture']
+                mixture = GaussianMixture(
+                    means=mg['means'][:],
+                    covariances=mg['covariances'][:],
+                    alphas=mg['alphas'][:],
+                    rejection_rate=float(mg.attrs['rejection_rate']),
+                )
+
+            meta = f['meta']
+            param_names            = list(meta.attrs['param_names'])
+            num_explored           = int(meta.attrs['num_explored'])
+            num_hits               = int(meta.attrs['num_hits'])
+            num_hits_exploratory   = int(meta.attrs['num_hits_exploratory'])
+            fraction_explored      = float(meta.attrs['fraction_explored'])
+            prior_fraction_rejected = float(meta.attrs['prior_fraction_rejected'])
+            total_systems          = int(meta.attrs['total_systems'])
+            n_generations          = int(meta.attrs['n_generations'])
+
+        # Re-apply the bin_num index so the same invariant holds as
+        # when the checkpoint was created.
+        for df in (bpp, bcm, initC, kick_info):
+            if 'bin_num' in df.columns:
+                df.set_index('bin_num', drop=False, inplace=True)
+
+        return cls(
+            mixture=mixture,
+            samples=samples, is_hit=is_hit,
+            generation=generation, gaussian_idx=gaussian_idx,
+            bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
+            param_names=param_names,
+            num_explored=num_explored, num_hits=num_hits,
+            num_hits_exploratory=num_hits_exploratory,
+            fraction_explored=fraction_explored,
+            prior_fraction_rejected=prior_fraction_rejected,
+            total_systems=total_systems, n_generations=n_generations,
         )
 
 

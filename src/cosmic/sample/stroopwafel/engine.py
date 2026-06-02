@@ -10,7 +10,7 @@ from scipy.stats import multivariate_normal
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic.evolve import Evolve
-from cosmic.output import COSMICStroopOutput
+from cosmic.output import COSMICStroopOutput, STROOPWAFELCheckpoint
 
 from .mixture_model import GaussianMixture
 from .constants import MIN_ACTIVE_FRACTION
@@ -53,12 +53,21 @@ class AdaptiveSampler:
         False
     seed : `int` or None, optional
         Random seed for reproducibility, by default None
+    only_save_hit_tables : `bool`, optional
+        If True, only rows corresponding to hit systems are kept in the
+        accumulated ``bpp``, ``bcm``, ``initC``, and ``kick_info`` tables.
+        Non-hit rows are discarded immediately after each batch, reducing
+        peak memory proportionally to the miss rate.  The ``samples``,
+        ``weights``, and ``is_hit`` arrays are unaffected — all systems
+        are retained there for correct importance-weight calculation.
+        By default False.
     """
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
                  compute_derived, reject_systems, is_interesting,
                  output_path='output', nproc=1, kappa=1.0,
-                 n_generations=1, mc_only=False, seed=None):
+                 n_generations=1, mc_only=False, seed=None,
+                 only_save_hit_tables=False):
         self.param_space = parameter_space
         self.total_systems = total_systems
         self.batch_size = batch_size
@@ -71,6 +80,7 @@ class AdaptiveSampler:
         self.kappa = kappa
         self.n_generations = n_generations
         self.mc_only = mc_only
+        self.only_save_hit_tables = only_save_hit_tables
         self.rng = np.random.default_rng(seed)
 
         # State
@@ -94,7 +104,10 @@ class AdaptiveSampler:
         self._all_kick_info = []
 
     def run(self):
-        """Run the full STROOPWAFEL pipeline.
+        """Run the full STROOPWAFEL pipeline in a single call.
+
+        For multi-job workflows (e.g. SLURM) use :meth:`run_exploration`
+        and :meth:`run_refinement` instead.
 
         Returns
         -------
@@ -110,8 +123,230 @@ class AdaptiveSampler:
             self._adapt()
             self._refine()
 
-        result = self._compute_weights()
-        return result
+        return self._compute_weights()
+
+    # ------------------------------------------------------------------
+    # Multi-job entry points
+    # ------------------------------------------------------------------
+
+    def run_exploration(self):
+        """Run the exploration and adaptation phases and return a checkpoint.
+
+        Suitable as the first SLURM job in a two-stage workflow::
+
+            # job_explore.py
+            sampler = AdaptiveSampler(params, total_systems=500_000, ...)
+            ckpt = sampler.run_exploration()
+            ckpt.save('checkpoint.h5')
+
+        Returns
+        -------
+        `STROOPWAFELCheckpoint`
+            Serialisable snapshot containing the fitted mixture model,
+            all exploration samples, and COSMIC output.  Pass to
+            :meth:`run_refinement` (or :meth:`from_checkpoint`) to
+            continue on a different node or job.
+        """
+        os.makedirs(self.output_path, exist_ok=True)
+        self._explore()
+        if not self.mc_only and self.num_hits > 0:
+            self._adapt()
+        return self._make_checkpoint()
+
+    def run_refinement(self):
+        """Run the refinement phase and return the final result.
+
+        Must be called after :meth:`run_exploration` **or** after
+        :meth:`from_checkpoint` has restored exploration state.  Suitable
+        as the second SLURM job::
+
+            # job_refine.py
+            sampler = AdaptiveSampler.from_checkpoint(
+                'checkpoint.h5',
+                parameter_space=params, batch_size=1000,
+                BSEDict=BSEDict, compute_derived=compute_derived,
+                reject_systems=default_reject, is_interesting=is_bh_star,
+            )
+            result = sampler.run_refinement()
+            result.save('result.h5')
+
+        Returns
+        -------
+        `COSMICStroopOutput`
+        """
+        if not self.mc_only and self.num_hits > 0 and self.mixture is not None:
+            self._refine()
+        return self._compute_weights()
+
+    @classmethod
+    def from_checkpoint(cls, checkpoint, parameter_space, batch_size, BSEDict,
+                        compute_derived, reject_systems, is_interesting,
+                        output_path='output', nproc=1, seed=None,
+                        total_systems=None, n_generations=None,
+                        only_save_hit_tables=False):
+        """Create a sampler pre-loaded with state from a :class:`STROOPWAFELCheckpoint`.
+
+        The callable arguments (``BSEDict``, ``compute_derived``, etc.) are
+        not stored in the checkpoint and must be supplied again.  All other
+        state — explored samples, COSMIC output, mixture model, scalar
+        counters — is restored from the checkpoint.
+
+        Parameters
+        ----------
+        checkpoint : `STROOPWAFELCheckpoint` or `str`
+            A checkpoint object or path to an HDF5 file written by
+            :meth:`STROOPWAFELCheckpoint.save`.
+        parameter_space : `ParameterSpace`
+            Must use the same parameter names as when the checkpoint was
+            created; a `ValueError` is raised if they differ.
+        batch_size : `int`
+            Systems per COSMIC call for the refinement phase.
+        BSEDict : `dict`
+            COSMIC binary stellar evolution parameters.
+        compute_derived : `callable`
+            Same signature as for the original sampler.
+        reject_systems : `callable`
+            Same signature as for the original sampler.
+        is_interesting : `callable`
+            Same signature as for the original sampler.
+        output_path : `str`, optional
+            Directory for output files, by default ``'output'``
+        nproc : `int`, optional
+            CPU cores for COSMIC, by default 1
+        seed : `int` or None, optional
+            RNG seed for refinement sampling, by default None
+        total_systems : `int`, optional
+            Override the total system budget stored in the checkpoint.
+        n_generations : `int`, optional
+            Override the number of refinement generations stored in the
+            checkpoint.
+
+        Returns
+        -------
+        `AdaptiveSampler`
+            Ready to call :meth:`run_refinement`.
+
+        Raises
+        ------
+        ValueError
+            If ``parameter_space.names`` does not match the checkpoint's
+            ``param_names``.
+        """
+        if isinstance(checkpoint, (str, os.PathLike)):
+            checkpoint = STROOPWAFELCheckpoint.from_file(checkpoint)
+
+        if list(parameter_space.names) != list(checkpoint.param_names):
+            raise ValueError(
+                f"Parameter space mismatch.\n"
+                f"  checkpoint : {checkpoint.param_names}\n"
+                f"  provided   : {list(parameter_space.names)}"
+            )
+
+        ts = total_systems  if total_systems  is not None else checkpoint.total_systems
+        ng = n_generations  if n_generations  is not None else checkpoint.n_generations
+
+        sampler = cls(
+            parameter_space=parameter_space,
+            total_systems=ts,
+            batch_size=batch_size,
+            BSEDict=BSEDict,
+            compute_derived=compute_derived,
+            reject_systems=reject_systems,
+            is_interesting=is_interesting,
+            output_path=output_path,
+            nproc=nproc,
+            n_generations=ng,
+            mc_only=False,
+            seed=seed,
+            only_save_hit_tables=only_save_hit_tables,
+        )
+        sampler._load_checkpoint(checkpoint)
+        return sampler
+
+    def _make_checkpoint(self):
+        """Package current engine state into a `STROOPWAFELCheckpoint`."""
+        all_samples      = np.vstack(self._all_samples)
+        all_is_hit       = np.concatenate(self._all_is_hit)
+        all_generation   = np.concatenate(self._all_generation)
+        all_gaussian_idx = np.concatenate(self._all_gaussian_idx)
+        bpp, bcm, initC, kick_info = self._build_cosmic_output()
+
+        return STROOPWAFELCheckpoint(
+            mixture=self.mixture,
+            samples=all_samples,
+            is_hit=all_is_hit,
+            generation=all_generation,
+            gaussian_idx=all_gaussian_idx,
+            bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
+            param_names=self.param_space.names,
+            num_explored=self.num_explored,
+            num_hits=self.num_hits,
+            num_hits_exploratory=getattr(self, 'num_hits_exploratory', self.num_hits),
+            fraction_explored=self.fraction_explored,
+            prior_fraction_rejected=self.prior_fraction_rejected,
+            total_systems=self.total_systems,
+            n_generations=self.n_generations,
+        )
+
+    def _load_checkpoint(self, checkpoint):
+        """Restore engine state from a `STROOPWAFELCheckpoint`.
+
+        The checkpoint's samples, COSMIC output, and mixture are treated
+        as a single exploration "super-batch" with globally assigned
+        bin_nums (0..N_explore-1).  Refinement batches added afterward
+        will receive bin_nums starting from N_explore.
+        """
+        self.num_explored            = checkpoint.num_explored
+        self.num_hits                = checkpoint.num_hits
+        self.num_hits_exploratory    = checkpoint.num_hits_exploratory
+        self.fraction_explored       = checkpoint.fraction_explored
+        self.prior_fraction_rejected = checkpoint.prior_fraction_rejected
+        self.finished                = checkpoint.num_explored
+        self.mixture                 = checkpoint.mixture
+
+        # Treat the full checkpoint as a single pre-computed batch so that
+        # _build_cosmic_output() can extend it cleanly with refinement batches.
+        self._all_samples      = [checkpoint.samples]
+        self._all_is_hit       = [checkpoint.is_hit]
+        self._all_generation   = [checkpoint.generation]
+        self._all_gaussian_idx = [checkpoint.gaussian_idx]
+        # The COSMIC tables already have globally assigned bin_nums from
+        # when the checkpoint was created; _build_cosmic_output() will add
+        # offset=0 for this "batch", leaving them unchanged.
+        self._all_bpp       = [checkpoint.bpp]
+        self._all_bcm       = [checkpoint.bcm]
+        self._all_initC     = [checkpoint.initC]
+        self._all_kick_info = [checkpoint.kick_info]
+
+    def _filter_tables(self, bpp, bcm, initC, kick_info, hit_bin_nums):
+        """Return COSMIC tables filtered to hit systems when requested.
+
+        When ``only_save_hit_tables`` is False the tables are returned
+        unchanged.  When True, only rows whose ``bin_num`` appears in
+        ``hit_bin_nums`` are kept; all other rows are discarded immediately,
+        reducing peak memory proportional to the miss rate.
+
+        Parameters
+        ----------
+        bpp, bcm, initC, kick_info : `pandas.DataFrame`
+            Raw per-batch COSMIC output with local (0-indexed) bin_nums.
+        hit_bin_nums : `numpy.ndarray`
+            Local bin_num values of the hit systems in this batch.
+
+        Returns
+        -------
+        bpp, bcm, initC, kick_info : `pandas.DataFrame`
+            Possibly filtered DataFrames.
+        """
+        if not self.only_save_hit_tables:
+            return bpp, bcm, initC, kick_info
+        mask = hit_bin_nums  # already local bin_num values
+        return (
+            bpp[bpp['bin_num'].isin(mask)],
+            bcm[bcm['bin_num'].isin(mask)],
+            initC[initC['bin_num'].isin(mask)],
+            kick_info[kick_info['bin_num'].isin(mask)],
+        )
 
     # ------------------------------------------------------------------
     # Exploration
@@ -160,6 +395,9 @@ class AdaptiveSampler:
             is_hit[hit_bin_nums] = True
 
             # Accumulate samples and COSMIC output
+            bpp, bcm, initC, kick_info = self._filter_tables(
+                bpp, bcm, initC, kick_info, hit_bin_nums
+            )
             self._all_samples.append(batch_samples)
             self._all_is_hit.append(is_hit)
             self._all_generation.append(np.zeros(len(selected), dtype=int))
@@ -303,6 +541,9 @@ class AdaptiveSampler:
                 is_hit[hit_bin_nums] = True
 
                 # Accumulate samples and COSMIC output
+                bpp, bcm, initC, kick_info = self._filter_tables(
+                    bpp, bcm, initC, kick_info, hit_bin_nums
+                )
                 self._all_samples.append(batch_samples)
                 self._all_is_hit.append(is_hit)
                 self._all_generation.append(np.full(n_take, gen + 1, dtype=int))
