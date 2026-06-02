@@ -733,9 +733,7 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
             bhspin = 0.0d0
          endif
       endif
-
-      WRITE(*,*) 'Assigned BH spin = ', bhspin
-
+      
       end
 
       integer function first_mt_type_as_donor(star)
