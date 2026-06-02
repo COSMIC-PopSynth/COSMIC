@@ -211,6 +211,12 @@
 * was passed.
       if(natal_kick_array(sn,1).ge.0.d0)then
           vk = natal_kick_array(sn,1)
+
+          if(kw.eq.14.and.bhflag.eq.4)then
+            fallback = MIN(fallback,1.d0)
+            vk = MAX((1.d0-fallback)*vk,0.d0)
+          endif
+
           vk2 = vk*vk
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
@@ -261,7 +267,7 @@
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
                 vk = 0.d0
-             elseif(kw.eq.14.and.bhflag.eq.1)then
+             elseif(kw.eq.14.and.(bhflag.eq.1.or.bhflag.eq.4))then
                  fallback = MIN(fallback,1.d0)
                  vk = MAX((1.d0-fallback)*vk,0.d0)
                  vk2 = vk*vk

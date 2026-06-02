@@ -1092,6 +1092,11 @@
                     {
                         "name": 3,
                         "description": "BH natal kicks are not decreased compared to NS kicks and are drawn from the same Maxwellian distribution with dispersion = <code>sigma</code> set above"
+                    },
+                    {
+                        "name": 4,
+                        "description": "Same as 1, but is also applied if the kick is provided directly in natal_kick_array",
+                        "version_added": "4.1.0"
                     }
                 ]
             },
