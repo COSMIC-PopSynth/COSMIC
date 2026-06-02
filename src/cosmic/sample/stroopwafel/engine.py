@@ -446,8 +446,9 @@ class AdaptiveSampler:
             # as a column too, so filtering via df['bin_num'].isin(...) still
             # works).  For bpp/bcm the index is non-unique (multiple timestep
             # rows per system); for initC/kick_info it is unique.
-            return (pd.concat(frames, ignore_index=True)
-                    .set_index('bin_num', drop=False))
+            df = pd.concat(frames, ignore_index=True)
+            df.index = df['bin_num'].values
+            return df
 
         return (
             _concat(bpp_list),
