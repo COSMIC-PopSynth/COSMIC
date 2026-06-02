@@ -5,13 +5,14 @@ using vectorized operations throughout. No Location objects are created.
 """
 import os
 import numpy as np
+import pandas as pd
 from scipy.stats import multivariate_normal
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic.evolve import Evolve
+from cosmic.output import COSMICStroopOutput
 
 from .mixture_model import GaussianMixture
-from .result import STROOPWAFELResult
 from .constants import MIN_ACTIVE_FRACTION
 
 
@@ -80,19 +81,26 @@ class AdaptiveSampler:
         self.prior_fraction_rejected = 0.0
         self.mixture = None
 
-        # Accumulators for all samples (in sampling space)
+        # Accumulators for all samples (in sampling space) and COSMIC output.
+        # One entry per batch; _build_cosmic_output() renumbers bin_nums
+        # globally so that samples[bin_num] == the system with that bin_num.
         self._all_samples = []
         self._all_is_hit = []
         self._all_generation = []
         self._all_gaussian_idx = []
+        self._all_bpp = []
+        self._all_bcm = []
+        self._all_initC = []
+        self._all_kick_info = []
 
     def run(self):
         """Run the full STROOPWAFEL pipeline.
 
         Returns
         -------
-        `STROOPWAFELResult`
-            Container holding all samples, weights, and metadata.
+        `COSMICStroopOutput`
+            Container holding all samples, weights, COSMIC output tables,
+            and associated metadata.
         """
         os.makedirs(self.output_path, exist_ok=True)
 
@@ -143,7 +151,7 @@ class AdaptiveSampler:
             batch_derived = {k: v[selected] for k, v in derived.items()}
 
             # Evolve with COSMIC
-            n_hits, hit_bin_nums, bpp, initC, kick_info = self._evolve_batch(
+            n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(
                 batch_samples_phys, batch_derived
             )
 
@@ -151,11 +159,15 @@ class AdaptiveSampler:
             is_hit = np.zeros(len(selected), dtype=bool)
             is_hit[hit_bin_nums] = True
 
-            # Accumulate
+            # Accumulate samples and COSMIC output
             self._all_samples.append(batch_samples)
             self._all_is_hit.append(is_hit)
             self._all_generation.append(np.zeros(len(selected), dtype=int))
             self._all_gaussian_idx.append(np.full(len(selected), -1, dtype=int))
+            self._all_bpp.append(bpp)
+            self._all_bcm.append(bcm)
+            self._all_initC.append(initC)
+            self._all_kick_info.append(kick_info)
 
             self.num_hits += n_hits
             self.finished += len(selected)
@@ -283,18 +295,22 @@ class AdaptiveSampler:
                 batch_derived = {k: v[indices[:n_take]] for k, v in derived.items()}
 
                 # Evolve with COSMIC
-                n_hits, hit_bin_nums, bpp, initC, kick_info = self._evolve_batch(
+                n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(
                     batch_phys, batch_derived
                 )
 
                 is_hit = np.zeros(n_take, dtype=bool)
                 is_hit[hit_bin_nums] = True
 
-                # Accumulate
+                # Accumulate samples and COSMIC output
                 self._all_samples.append(batch_samples)
                 self._all_is_hit.append(is_hit)
                 self._all_generation.append(np.full(n_take, gen + 1, dtype=int))
                 self._all_gaussian_idx.append(batch_gauss_idx)
+                self._all_bpp.append(bpp)
+                self._all_bcm.append(bcm)
+                self._all_initC.append(initC)
+                self._all_kick_info.append(kick_info)
 
                 gen_samples_list.append(batch_samples)
                 gen_is_hit_list.append(is_hit)
@@ -338,18 +354,18 @@ class AdaptiveSampler:
     # Weight calculation
     # ------------------------------------------------------------------
     def _compute_weights(self):
-        """Compute importance sampling weights for all samples.
+        """Compute importance sampling weights and assemble the final result.
 
-        Builds the final ``STROOPWAFELResult`` using the formula
-        ``w(x) = π(x) / Q(x)`` where
+        Uses the formula ``w(x) = π(x) / Q(x)`` where
         ``Q = f_e·π + (1 − f_e)·q`` is a mixture of the prior and the
         Gaussian proposal.
 
         Returns
         -------
-        `STROOPWAFELResult`
-            Container holding all samples, importance weights, and
-            associated metadata.
+        `COSMICStroopOutput`
+            All samples, importance weights, COSMIC output tables, and
+            associated metadata.  ``samples[bin_num]`` corresponds to
+            the COSMIC table row(s) with that ``bin_num``.
         """
         all_samples = np.vstack(self._all_samples)
         all_is_hit = np.concatenate(self._all_is_hit)
@@ -379,8 +395,11 @@ class AdaptiveSampler:
 
         weights = pi / den
 
-        # Build result
-        result = STROOPWAFELResult(
+        # Concatenate COSMIC output with globally unique bin_nums
+        bpp, bcm, initC, kick_info = self._build_cosmic_output()
+
+        result = COSMICStroopOutput(
+            bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
             samples=self.param_space.to_physical(all_samples),
             param_names=self.param_space.names,
             weights=weights,
@@ -397,6 +416,45 @@ class AdaptiveSampler:
         print(f"Weighted hit rate: {result.hit_rate:.8f} +/- {result.hit_rate_uncertainty:.8f}")
 
         return result
+
+    def _build_cosmic_output(self):
+        """Concatenate per-batch COSMIC tables with globally unique bin_nums.
+
+        Batch k receives bin_nums ``offset_k .. offset_k + N_k − 1`` where
+        ``offset_k = N_0 + … + N_{k-1}``.  This ensures
+        ``samples[bin_num]`` and ``is_hit[bin_num]`` directly index the
+        system with that bin_num in the concatenated COSMIC tables.
+
+        Returns
+        -------
+        bpp, bcm, initC, kick_info : `pandas.DataFrame`
+        """
+        offset = 0
+        bpp_list, bcm_list, initC_list, kick_info_list = [], [], [], []
+        for batch_samples, bpp, bcm, initC, kick_info in zip(
+            self._all_samples,
+            self._all_bpp, self._all_bcm, self._all_initC, self._all_kick_info,
+        ):
+            n = len(batch_samples)
+            bpp_list.append(bpp.assign(bin_num=bpp['bin_num'] + offset))
+            bcm_list.append(bcm.assign(bin_num=bcm['bin_num'] + offset))
+            initC_list.append(initC.assign(bin_num=initC['bin_num'] + offset))
+            kick_info_list.append(kick_info.assign(bin_num=kick_info['bin_num'] + offset))
+            offset += n
+        def _concat(frames):
+            # Concatenate and set bin_num as the index (drop=False keeps it
+            # as a column too, so filtering via df['bin_num'].isin(...) still
+            # works).  For bpp/bcm the index is non-unique (multiple timestep
+            # rows per system); for initC/kick_info it is unique.
+            return (pd.concat(frames, ignore_index=True)
+                    .set_index('bin_num', drop=False))
+
+        return (
+            _concat(bpp_list),
+            _concat(bcm_list),
+            _concat(initC_list),
+            _concat(kick_info_list),
+        )
 
     # ------------------------------------------------------------------
     # COSMIC interface
@@ -437,6 +495,8 @@ class AdaptiveSampler:
             are hits.
         bpp : `pandas.DataFrame`
             COSMIC binary population parameters output.
+        bcm : `pandas.DataFrame`
+            COSMIC user-timestep output.
         initC : `pandas.DataFrame`
             COSMIC initial conditions output.
         kick_info : `pandas.DataFrame`
@@ -489,7 +549,7 @@ class AdaptiveSampler:
         # Apply user's hit identification
         n_hits, hit_bin_nums = self.is_interesting_fn(bpp)
 
-        return n_hits, hit_bin_nums, bpp, initC, kick_info
+        return n_hits, hit_bin_nums, bpp, bcm, initC, kick_info
 
     # ------------------------------------------------------------------
     # Utilities

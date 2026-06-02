@@ -14,6 +14,5 @@ Example
 """
 from .engine import AdaptiveSampler
 from .parameter_space import ParameterSpace, Parameter
-from .result import STROOPWAFELResult
 
-__all__ = ['AdaptiveSampler', 'ParameterSpace', 'Parameter', 'STROOPWAFELResult']
+__all__ = ['AdaptiveSampler', 'ParameterSpace', 'Parameter']
