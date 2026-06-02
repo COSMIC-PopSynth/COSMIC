@@ -712,8 +712,10 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 
-      real*8 ran3, mc, bhspin
+      real  ran3
       EXTERNAL ran3
+
+      real*8 mc, bhspin
 
 * Set all BH spins equal to bhspinmag
       if(bhspinflag.eq.0)then
@@ -731,6 +733,8 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
             bhspin = 0.0d0
          endif
       endif
+
+      WRITE(*,*) 'Assigned BH spin = ', bhspin
 
       end
 
