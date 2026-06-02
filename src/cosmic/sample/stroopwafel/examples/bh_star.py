@@ -61,7 +61,7 @@ args = parser.parse_args()
 # BSE physics
 # ------------------------------------------------------------------
 BSEDict = {
-    'xi': 1.0, 'bhflag': 1, 'neta': 0.5, 'windflag': 3, 'wdflag': 1,
+    'xi': 1.0, 'bhflag': 4, 'neta': 0.5, 'windflag': 3, 'wdflag': 1,
     'alpha1': [1.0, 1.0], 'pts1': 0.001, 'pts3': 0.02, 'pts2': 0.01,
     'epsnov': 0.001, 'hewind': 0.5, 'ck': 1000, 'bwind': 0.0,
     'lambdaf': 0.0, 'mxns': 3.0, 'beta': -1.0, 'tflag': 1, 'acc2': 1.5,
@@ -123,7 +123,7 @@ params = ParameterSpace([
     Parameter('ecc',          1e-9,   0.99999999, sampler='sana_ecc',    prior='sana_ecc'),
     Parameter('metallicity',  0.0001, 0.03,       sampler='flat_in_log', prior='flat_in_log'),
     # --- primary natal kick magnitude only ---
-    # Parameter('natal_kick_1', 0.1,    100.0,     sampler='log_normal',  prior='log_normal'),
+    Parameter('natal_kick_1', 0.1,    100.0,     sampler='log_normal',  prior='log_normal'),
 ])
 
 # ------------------------------------------------------------------
@@ -285,12 +285,12 @@ if __name__ == '__main__':
     if not args.sw_only:
         mc_result, mc_elapsed = run_sampler(mc_only=True,  seed=args.seed)
         print_summary("Monte Carlo", mc_result, mc_elapsed)
-        swio.save_result(os.path.join(args.output_dir, 'mc_result.h5'), mc_result)
+        mc_result.save(os.path.join(args.output_dir, 'mc_result.h5'))
 
     if not args.mc_only:
         sw_result, sw_elapsed = run_sampler(mc_only=False, seed=args.seed + 1)
         print_summary("STROOPWAFEL", sw_result, sw_elapsed)
-        swio.save_result(os.path.join(args.output_dir, 'sw_result.h5'), sw_result)
+        sw_result.save(os.path.join(args.output_dir, 'sw_result.h5'))
 
     if mc_result is not None and sw_result is not None:
         print_comparison(mc_result, mc_elapsed, sw_result, sw_elapsed)
