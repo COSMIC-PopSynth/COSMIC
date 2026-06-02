@@ -1,6 +1,12 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.2.0
+
+- Additions/changes
+    - Adaptive importance sampling is now available through the STROOPWAFEL algorithm (https://arxiv.org/abs/1905.00910)
+        - This is accessed through ``cosmic.sample.stroopwafel.AdaptiveSampler``
+
 ## 4.1.0
 
 - Additions/changes
