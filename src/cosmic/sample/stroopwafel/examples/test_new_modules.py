@@ -16,7 +16,7 @@ from stroopwafel.priors import PRIORS
 from stroopwafel.transforms import to_sampling_space, to_physical_space, transform_bounds
 from stroopwafel.mixture_model import GaussianMixture
 from stroopwafel.rejection import get_zams_radius, calculate_roche_lobe_radius, default_reject
-from stroopwafel.result import STROOPWAFELResult
+from cosmic.output import COSMICStroopOutput
 from stroopwafel.constants import (
     R_COEFF, ZSOL, R_SOL_TO_AU, ALPHA_IMF, SANA_G, SANA_ECC
 )
@@ -216,17 +216,24 @@ def test_mixture_sample():
 # ====================================================================
 
 def test_result_hit_rate():
-    weights = np.ones(100)
-    is_hit = np.zeros(100, dtype=bool)
+    import pandas as pd
+    N = 100
+    weights = np.ones(N)
+    is_hit = np.zeros(N, dtype=bool)
     is_hit[:10] = True
-    result = STROOPWAFELResult(
-        samples=np.zeros((100, 1)),
+    bin_nums = np.arange(N)
+    result = COSMICStroopOutput(
+        bpp=pd.DataFrame({'bin_num': bin_nums}),
+        bcm=pd.DataFrame({'bin_num': bin_nums}),
+        initC=pd.DataFrame({'bin_num': bin_nums}),
+        kick_info=pd.DataFrame({'bin_num': bin_nums}),
+        samples=np.zeros((N, 1)),
         param_names=['mass_1'],
         weights=weights,
         is_hit=is_hit,
-        generation=np.zeros(100, dtype=int),
-        gaussian_idx=np.full(100, -1, dtype=int),
-        num_explored=100,
+        generation=np.zeros(N, dtype=int),
+        gaussian_idx=np.full(N, -1, dtype=int),
+        num_explored=N,
         num_hits=10,
         fraction_explored=1.0,
     )
