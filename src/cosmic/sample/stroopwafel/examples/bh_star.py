@@ -30,7 +30,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 from stroopwafel import AdaptiveSampler, ParameterSpace, Parameter
 from stroopwafel.rejection import default_reject
-from stroopwafel import io as swio
 
 # ------------------------------------------------------------------
 # CLI
@@ -123,7 +122,7 @@ params = ParameterSpace([
     Parameter('ecc',          1e-9,   0.99999999, sampler='sana_ecc',    prior='sana_ecc'),
     Parameter('metallicity',  0.0001, 0.03,       sampler='flat_in_log', prior='flat_in_log'),
     # --- primary natal kick magnitude only ---
-    Parameter('natal_kick_1', 0.1,    100.0,     sampler='log_normal',  prior='log_normal'),
+    Parameter('natal_kick_1', 0.1,    5000.0,     sampler='log_normal',  prior='log_normal'),
 ])
 
 # ------------------------------------------------------------------
