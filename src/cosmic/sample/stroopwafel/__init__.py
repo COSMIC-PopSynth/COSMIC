@@ -7,10 +7,6 @@ Gaussian components at discovered hits, then importance-samples from
 the resulting mixture to concentrate compute budget on interesting
 regions of parameter space.
 
-Example
--------
->>> from cosmic.sample.stroopwafel import AdaptiveSampler, ParameterSpace, Parameter
->>> from cosmic.sample.stroopwafel.presets import merging_dco
 """
 from .engine import AdaptiveSampler
 from .parameter_space import ParameterSpace, Parameter

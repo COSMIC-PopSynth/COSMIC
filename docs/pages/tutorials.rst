@@ -141,8 +141,9 @@ This page contains of tutorials that show you how to use ``COSMIC`` and become a
     
     tutorials/evolve
     tutorials/sample
-    tutorials/convergence
     tutorials/rerun
     tutorials/timesteps
+    tutorials/convergence
     tutorials/analysis
+    tutorials/adaptive
     tutorials/misc

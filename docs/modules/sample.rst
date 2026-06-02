@@ -33,6 +33,7 @@ Adaptive importance sampler
 ---------------------------
 
 .. automodapi:: cosmic.sample.stroopwafel
+    :no-inheritance-diagram:
     :no-heading:
 
 CMC related functions

@@ -97,46 +97,7 @@ sampling distribution, and a prior distribution.
         Parameter('metallicity', 0.0001, 0.03,   sampler='flat_in_log',prior='flat_in_log'),
     ])
 
-The available samplers and corresponding prior names are:
-
-.. list-table::
-    :header-rows: 1
-    :widths: 20 45 35
-
-    * - Sampler name
-      - Distribution
-      - Typical use
-    * - ``'uniform'``
-      - Uniform between bounds
-      - Mass ratio, any flat prior
-    * - ``'kroupa'``
-      - Kroupa (2001) power law (:math:`dN/dm_1 \propto m_1^{-2.3}`)
-      - Primary mass
-    * - ``'sana'``
-      - Sana et al. (2012) period distribution
-        (:math:`dN/d\!\log P \propto (\log P)^{-0.55}`)
-      - Orbital period
-    * - ``'sana_ecc'``
-      - Sana et al. (2012) eccentricity distribution
-        (:math:`dN/de \propto e^{-0.45}`)
-      - Orbital eccentricity
-    * - ``'flat_in_log'``
-      - Uniform in :math:`\log_{10}` (Öpik's law)
-      - Metallicity, semi-major axis
-
-.. note::
-
-    The ``'sana'`` sampler operates in :math:`\log_{10}(P/\text{days})` space.  The bounds
-    you supply are :math:`\log_{10}` values directly — **not** periods in days.  The
-    Sana et al. (2012) fit is valid over :math:`\log_{10}(P) \in [0.15,\, 5.5]`,
-    corresponding to periods of roughly 1.4 to 316,000 days.
-
-    The lower bound **must be positive** (i.e. :math:`\log_{10}(P_\text{min}) > 0`,
-    so :math:`P_\text{min} > 1` day).  Do **not** pass ``np.log10(P_min)`` when that
-    value would be negative.
-
-Parameters are stored and returned in alphabetical order by name.  Use
-``params.names`` to inspect the column ordering of any sample array.
+Parameters are stored and returned in alphabetical order by name. Use ``params.names`` to check the order and ``params.index('param_name')`` to get the index of a particular parameter.
 
 
 Define any derived quantities
@@ -180,7 +141,7 @@ array of physical-space samples and a sorted list of parameter names into a dict
 Choose a rejection function
 ---------------------------
 
-Before a batch is passed to COSMIC, unphysical systems are filtered out: stars already
+Before a batch is passed to ``COSMIC``, unphysical systems are filtered out: stars already
 overflowing their Roche lobes at ZAMS, binaries whose components are in contact, and
 systems below the hydrogen-burning limit for the secondary.  The built-in
 :func:`~cosmic.sample.stroopwafel.rejection.default_reject` function performs all of these
@@ -208,11 +169,11 @@ Identify what constitutes a hit
 -------------------------------
 
 The ``is_interesting`` argument identifies which evolved systems count as hits.  It receives
-the COSMIC ``bpp`` DataFrame for the current batch and must return a tuple
+the ``COSMIC`` ``bpp`` DataFrame for the current batch and must return a tuple
 ``(n_hits, hit_bin_nums)`` where ``hit_bin_nums`` is an integer array of ``bin_num`` values
 (0-indexed within the batch).
 
-STROOPWAFEL ships two preset factory functions in
+The ``STROOPWAFEL`` sampler comes with two preset functions in
 :mod:`cosmic.sample.stroopwafel.presets`.
 
 ``any_dco(kstar_1, kstar_2)``
@@ -236,22 +197,18 @@ STROOPWAFEL ships two preset factory functions in
 
 See :ref:`kstar-table` for the full list of stellar type codes.
 
-You can also write a fully custom hit function.  For example, to find BH + stellar
-companion systems (``kstar_2 ∈ 0–9``) that remain bound for at least 100 Myr after the
-BH forms:
+You can also write a fully custom hit function.  For example, to find BH + stellar companion systems that remain bound for at least 100 Myr after the BH forms:
 
 .. code-block:: python
 
     import numpy as np
 
-    _STELLAR_TYPES = set(range(10))   # kstar 0–9: MS through He-giant branch
-
     def bh_star_100myr(bpp):
         """Hit: BH with a stellar companion bound for at least 100 Myr."""
         bh_star = bpp.loc[
             (
-                ((bpp['kstar_1'] == 14) & bpp['kstar_2'].isin(_STELLAR_TYPES))
-                | ((bpp['kstar_2'] == 14) & bpp['kstar_1'].isin(_STELLAR_TYPES))
+                ((bpp['kstar_1'] == 14) & (bpp['kstar_2'] < 10))
+                | ((bpp['kstar_2'] == 14) & (bpp['kstar_1'] < 10))
             )
             & (bpp['sep'] > 0)
         ]
@@ -267,15 +224,21 @@ BH forms:
 Running the sampler
 ===================
 
+With all the pieces in place, you can run the sampler with :class:`~cosmic.sample.stroopwafel.AdaptiveSampler`.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE physics settings, the derived quantity function, the rejection function, and the hit function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
+
+The examples below demonstrate how you could go about this.
+
 Examples
-========
+--------
 
 Bound BH + BH binaries
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 The following end-to-end example samples all bound BH-BH systems (no merger time
 restriction) using a five-dimensional parameter space covering primary mass, mass ratio,
 orbital period, eccentricity, and metallicity.
+
+.. include:: ../../../_generated/default_bsedict.rst
 
 .. code-block:: python
 
@@ -283,29 +246,6 @@ orbital period, eccentricity, and metallicity.
     from cosmic.sample.stroopwafel import AdaptiveSampler, ParameterSpace, Parameter
     from cosmic.sample.stroopwafel.presets import any_dco
     from cosmic.sample.stroopwafel.rejection import default_reject
-
-    # ------------------------------------------------------------------
-    # BSE physics settings
-    # ------------------------------------------------------------------
-    BSEDict = {
-        "pts1": 0.001, "pts2": 0.01, "pts3": 0.02, "zsun": 0.014,
-        "windflag": 3, "neta": 0.5, "bwind": 0.0, "hewind": 0.5,
-        "beta": 0.125, "xi": 0.5, "acc2": 1.5, "LBV_flag": 1,
-        "alpha1": 1.0, "lambdaf": 0.0, "ceflag": 1, "cekickflag": 2,
-        "cemergeflag": 1, "cehestarflag": 0, "qcflag": 5,
-        "qcrit_array": [0.0] * 16,
-        "kickflag": 5, "sigma": 265.0, "bhflag": 1, "bhsigmafrac": 1.0,
-        "sigmadiv": -20.0, "ecsn": 2.25, "ecsn_mlow": 1.6, "aic": 1,
-        "ussn": 1, "polar_kick_angle": 90.0,
-        "natal_kick_array": [[-100.0]*5, [-100.0]*5],
-        "remnantflag": 4, "mxns": 3.0, "rembar_massloss": 0.5,
-        "wd_mass_lim": 1, "grflag": 1, "eddfac": 10, "tflag": 1,
-        "ST_tide": 1, "ifflag": 1, "wdflag": 1, "epsnov": 0.001,
-        "bdecayfac": 1, "bconst": 3000, "ck": 1000, "htpmb": 1,
-        "ST_cr": 1, "rtmsflag": 0,
-        "fprimc_array": [2.0 / 21.0] * 16,
-        "mm_mu_ns": 400.0, "mm_mu_bh": 200.0, "pisn": -2,
-    }
 
     # ------------------------------------------------------------------
     # Parameter space
@@ -349,7 +289,7 @@ orbital period, eccentricity, and metallicity.
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
         output_path='output/bhbh',
         nproc=4,
-        n_generations=3,
+        n_generations=1,
         seed=42,
     )
 
@@ -360,11 +300,11 @@ orbital period, eccentricity, and metallicity.
 
 
 BH + star binaries surviving 100 Myr
-------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For outcomes that are less extreme but still rare — such as persistent BH + star systems —
 STROOPWAFEL provides substantial efficiency gains over flat Monte Carlo.  Using the same
-parameter space, ``compute_derived``, and ``BSEDict`` as Example 1:
+parameter space, ``compute_derived``, and ``BSEDict`` as the previous examples, we can simply swap out the hit function to find BH + star systems that remain bound for at least 100 Myr after the BH forms:
 
 .. code-block:: python
 
@@ -372,34 +312,17 @@ parameter space, ``compute_derived``, and ``BSEDict`` as Example 1:
     from cosmic.sample.stroopwafel import AdaptiveSampler
     from cosmic.sample.stroopwafel.rejection import default_reject
 
-    _STELLAR_TYPES = set(range(10))   # kstar 0–9: MS through He-giant
-
-    def bh_star_100myr(bpp):
-        """Hit: BH + stellar companion bound for at least 100 Myr."""
-        bh_star = bpp.loc[
-            (
-                ((bpp['kstar_1'] == 14) & bpp['kstar_2'].isin(_STELLAR_TYPES))
-                | ((bpp['kstar_2'] == 14) & bpp['kstar_1'].isin(_STELLAR_TYPES))
-            )
-            & (bpp['sep'] > 0)
-        ]
-        if bh_star.empty:
-            return 0, np.array([], dtype=int)
-        span = bh_star.groupby('bin_num')['tphys'].agg(lambda t: t.max() - t.min())
-        hits = span.index[span >= 100.0].values
-        return len(hits), hits
-
     sampler = AdaptiveSampler(
-        parameter_space=params,          # reuse from Example 1
+        parameter_space=params,          # reuse from BHBH example
         total_systems=20_000,
         batch_size=500,
-        BSEDict=BSEDict,                 # reuse from Example 1
-        compute_derived=compute_derived, # reuse from Example 1
+        BSEDict=BSEDict,                 # reuse from BHBH example
+        compute_derived=compute_derived, # reuse from BHBH example
         reject_systems=default_reject,
-        is_interesting=bh_star_100myr,
+        is_interesting=bh_star_100myr,   # we defined this earlier
         output_path='output/bh_star',
         nproc=4,
-        n_generations=2,
+        n_generations=1,
         seed=42,
     )
 
@@ -422,35 +345,19 @@ Choosing ``total_systems``, ``batch_size``, and ``n_generations`` is something o
 
 * Aim for ``batch_size`` to be a multiple of ``nproc`` so that COSMIC distributes work
   evenly across cores.
-* Values of 200–1000 are typical.  Batches smaller than ~50 increase Python overhead per
+* Values of 200-1000 are typical.  Batches smaller than ~50 increase Python overhead per
   call; batches larger than ~5000 may cause memory pressure on the output DataFrames.
-* A practical starting point is ``batch_size = 100 * nproc``.
 
 ``total_systems``
 -----------------
 
-This is the total number of binary evolutions across all phases.
-
-* For **very rare events** (hit rate ≲ 10\ :sup:`−4`, e.g. merging BH-BH at near-solar
-  metallicity), start with ``total_systems`` in the range 100,000–500,000.  The exploration
-  phase will find tens to hundreds of hits; refinement then multiplies that count many-fold.
-* For **moderately rare events** (hit rate ~ 10\ :sup:`−3` to 10\ :sup:`−2`, e.g. any bound
-  BH-BH or long-lived BH + star), 20,000–50,000 systems is usually sufficient.
-* As a rule of thumb, aim for at least ~30 hits during exploration before the adaptation
-  phase begins — fewer hits lead to a poorly-constrained Gaussian mixture.  If exploration
-  ends with very few hits, increase ``total_systems`` and re-run.
+This is the total number of binary evolutions across all phases. It's hard to know how many you'll need without knowing the rarity of the target population. As a rule of thumb, aim for at least ~30 hits during exploration before the adaptation phase begins — fewer hits lead to a poorly-constrained Gaussian mixture.  If exploration ends with very few hits, increase ``total_systems`` and re-run.
 
 ``n_generations``
 -----------------
 
 Each refinement generation uses an equal share of the remaining budget after exploration.
-The EM step between generations can improve the mixture, but with diminishing returns:
-
-* ``n_generations = 1`` (the default) uses the mixture as constructed from exploration
-  hits, with no EM updates.  This is a good starting point for any new target population.
-* ``n_generations = 3`` gives a noticeable improvement for very rare populations with
-  complex progenitor structure.
-* Beyond 5 generations the returns diminish rapidly.
+The EM step between generations can improve the mixture, but with diminishing returns. You are probably safe with just 1 generation unless you have a very rare population.
 
 .. tip::
 
@@ -459,8 +366,13 @@ The EM step between generations can improve the mixture, but with diminishing re
     prior only, and importance weights will equal the prior density divided by itself
     (i.e. all weights are equal).
 
-
 Saving your results
 ===================
 
-TODO
+Once you have your samples, you can save them to disk as an HDF5 file with the :meth:`~cosmic.output.COSMICSTROOPWAFELResult.save` method.  This saves the parameter samples, derived quantities, and hit information in a compact format that can be loaded later for analysis.
+
+.. code-block:: python
+
+    result.save('bhbh_samples.h5')
+
+We'll talk more about how to load and analyse these results in the :ref:`adaptive_outputs` tutorial next!

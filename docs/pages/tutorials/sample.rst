@@ -31,16 +31,6 @@ We consider both cases in the guides below.
     sample/independent
     sample/multidim
 
-For rare outcomes such as merging double black holes or persistent X-ray binary
-systems, COSMIC also provides an adaptive importance sampler based on the
-STROOPWAFEL algorithm that concentrates the simulation budget on progenitor
-regions of parameter space.
-
-.. toctree::
-    :maxdepth: 1
-
-    sample/adaptive
-
 You can also use COSMIC to sample the initial conditions for a Globular Cluster (GC) using the ClusterMonteCarlo (CMC) software package.
 Check out the guide below for more information.
 
