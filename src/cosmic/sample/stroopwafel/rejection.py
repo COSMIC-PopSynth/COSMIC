@@ -6,6 +6,7 @@ systems prior to evolution.
 """
 import numpy as np
 from .constants import R_COEFF, ZSOL, R_SOL_TO_AU
+from cosmic.utils import calc_Roche_radius
 
 
 def get_zams_radius(mass, metallicity):
@@ -42,29 +43,6 @@ def get_zams_radius(mass, metallicity):
               + mass**18.5 + rc[8] * mass**19.5)
 
     return (top / bottom) * R_SOL_TO_AU
-
-
-def calculate_roche_lobe_radius(mass1, mass2):
-    """Compute Roche lobe radius using the Eggleton (1983) approximation.
-
-    Parameters
-    ----------
-    mass1 : `numpy.ndarray`
-        (N,) array of masses of the star filling its Roche lobe.
-    mass2 : `numpy.ndarray`
-        (N,) array of companion masses.
-
-    Returns
-    -------
-    `numpy.ndarray`
-        (N,) array of Roche lobe radii (dimensionless, in units of
-        orbital separation).
-    """
-    mass1 = np.asarray(mass1, dtype=float)
-    mass2 = np.asarray(mass2, dtype=float)
-    q = mass1 / mass2
-    q_cbrt = np.power(q, 1.0 / 3.0)
-    return 0.49 / (0.6 + np.power(q, -2.0 / 3.0) * np.log(1.0 + q_cbrt))
 
 
 def default_reject(samples_physical, derived, param_names,
@@ -108,8 +86,8 @@ def default_reject(samples_physical, derived, param_names,
 
     # Roche lobe radii at periastron
     peri_sep = separation * (1 - ecc)
-    rl_1 = peri_sep * calculate_roche_lobe_radius(mass_1, mass_2)
-    rl_2 = peri_sep * calculate_roche_lobe_radius(mass_2, mass_1)
+    rl_1 = calc_Roche_radius(mass_1, mass_2, peri_sep)
+    rl_2 = calc_Roche_radius(mass_2, mass_1, peri_sep)
 
     roche_tracker_1 = radius_1 / rl_1
     roche_tracker_2 = radius_2 / rl_2

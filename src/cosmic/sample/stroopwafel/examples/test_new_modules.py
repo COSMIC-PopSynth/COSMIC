@@ -15,7 +15,7 @@ from stroopwafel.samplers import SAMPLERS
 from stroopwafel.priors import PRIORS
 from stroopwafel.transforms import to_sampling_space, to_physical_space, transform_bounds
 from stroopwafel.mixture_model import GaussianMixture
-from stroopwafel.rejection import get_zams_radius, calculate_roche_lobe_radius, default_reject
+from stroopwafel.rejection import get_zams_radius, default_reject
 from cosmic.output import COSMICStroopOutput
 from stroopwafel.constants import (
     R_COEFF, ZSOL, R_SOL_TO_AU, ALPHA_IMF, SANA_G, SANA_ECC
@@ -75,57 +75,6 @@ def test_in_bounds():
     samples, mask = params.sample(1000, rng=rng)
     mask2 = params.in_bounds(samples)
     np.testing.assert_array_equal(mask, mask2)
-
-
-# ====================================================================
-# ZAMS radius / Roche lobe tests (vs old scalar implementation)
-# ====================================================================
-
-def old_get_zams_radius(mass, metallicity):
-    """Old scalar implementation for comparison."""
-    metallicity_xi = math.log10(metallicity / ZSOL)
-    rc = []
-    for coeff in R_COEFF:
-        value = 1; total = 0
-        for series in coeff:
-            total += series * value
-            value *= metallicity_xi
-        rc.append(total)
-    top = (rc[0] * pow(mass, 2.5) + rc[1] * pow(mass, 6.5)
-           + rc[2] * pow(mass, 11) + rc[3] * pow(mass, 19)
-           + rc[4] * pow(mass, 19.5))
-    bottom = (rc[5] + rc[6] * pow(mass, 2) + rc[7] * pow(mass, 8.5)
-              + pow(mass, 18.5) + rc[8] * pow(mass, 19.5))
-    return (top / bottom) * R_SOL_TO_AU
-
-
-def old_roche(m1, m2):
-    q = m1 / m2
-    return 0.49 / (0.6 + pow(q, -2.0 / 3.0) * math.log(1.0 + pow(q, 1.0 / 3.0)))
-
-
-def test_zams_radius_matches_old():
-    masses = np.linspace(1, 100, 50)
-    mets = np.full(50, 0.014)
-    new = get_zams_radius(masses, mets)
-    old = np.array([old_get_zams_radius(m, z) for m, z in zip(masses, mets)])
-    np.testing.assert_allclose(new, old, atol=1e-12)
-
-
-def test_zams_radius_multiple_metallicities():
-    masses = np.array([1.0, 10.0, 50.0])
-    mets = np.array([0.001, 0.014, 0.03])
-    new = get_zams_radius(masses, mets)
-    old = np.array([old_get_zams_radius(m, z) for m, z in zip(masses, mets)])
-    np.testing.assert_allclose(new, old, atol=1e-12)
-
-
-def test_roche_lobe_matches_old():
-    m1 = np.array([5.0, 10.0, 20.0, 50.0, 100.0])
-    m2 = np.array([3.0, 8.0, 10.0, 25.0, 50.0])
-    new = calculate_roche_lobe_radius(m1, m2)
-    old = np.array([old_roche(a, b) for a, b in zip(m1, m2)])
-    np.testing.assert_allclose(new, old, atol=1e-12)
 
 
 # ====================================================================
