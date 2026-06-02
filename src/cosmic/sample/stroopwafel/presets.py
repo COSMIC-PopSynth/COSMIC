@@ -26,7 +26,12 @@ def merging_dco(kstar_1, kstar_2, max_merge_time=13.7):
         where ``bpp`` is a `pandas.DataFrame` and ``hit_bin_nums`` is a
         `numpy.ndarray` of bin_num values.
     """
-    from legwork import evol
+    # check whether the user has LEGWORK installed, if not tell them they need it for this preset
+    try:
+        from legwork import evol
+    except ImportError:
+        raise ImportError("The 'merging_dco' preset requires the LEGWORK package. "
+                          "Please install it with 'pip install legwork' to use this preset.")
     import astropy.units as u
 
     k1_set = set(kstar_1)
