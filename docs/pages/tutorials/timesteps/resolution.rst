@@ -1,3 +1,5 @@
+.. _timesteps_resolution:
+
 ***********************
 Dynamic time resolution
 ***********************
@@ -42,7 +44,7 @@ First, print all time steps during mass transfer
 
     SSEDict = {'stellar_engine': 'sse'}
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 .. ipython:: python
     :okwarning:
