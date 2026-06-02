@@ -1,3 +1,5 @@
+.. _multidim:
+
 ******************************
 Multidimensional distributions
 ******************************

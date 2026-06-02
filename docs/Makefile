@@ -228,6 +228,6 @@ pseudoxml:
 
 .PHONY: apidoc
 apidoc:
-	sphinx-apidoc -o api/ ../src/cosmic ../src/cosmic/tests --no-toc --separate --no-headings --force
+	sphinx-apidoc -o api/ ../src/cosmic ../src/cosmic/tests --no-toc --separate --no-headings
 	@echo
 	@echo "APIdoc run is complete."

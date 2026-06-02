@@ -1,3 +1,5 @@
+.. _evolve_single:
+
 ************************
 Evolving a single binary
 ************************
@@ -82,7 +84,7 @@ advised to run the defaults from the COSMIC install which are consistent
 with `Breivik+2020 <https://ui.adsabs.harvard.edu/abs/2019arXiv191100903B/abstract>`_,
 though we don't promise that these are the most up-to-date prescriptions.
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 
 Running a binary

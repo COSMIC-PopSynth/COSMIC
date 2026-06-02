@@ -1,3 +1,5 @@
+.. _evolve_multiple:
+
 **************************
 Evolving multiple binaries
 **************************
@@ -18,7 +20,7 @@ And use the same SSE and BSE dictionaries as before:
 
     SSEDict = {'stellar_engine': 'sse'}
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 Below is an example for systems that could form GW150914 and GW170817 - like binaries.
 
