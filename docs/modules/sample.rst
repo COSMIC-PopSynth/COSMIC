@@ -29,6 +29,12 @@ Multidimensional sampler
     :no-inheritance-diagram:
     :no-heading:
 
+Adaptive importance sampler
+---------------------------
+
+.. automodapi:: cosmic.sample.stroopwafel
+    :no-heading:
+
 CMC related functions
 ---------------------
 

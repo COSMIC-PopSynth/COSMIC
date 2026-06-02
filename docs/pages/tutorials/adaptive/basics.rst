@@ -1,21 +1,20 @@
-.. _adaptive:
+.. _adaptive_basics:
 
-**********************************************
+*********************************************
 Adaptive importance sampling for rare systems
-**********************************************
+*********************************************
 
 The standard :ref:`independent <independent>` and :ref:`multidimensional <multidim>`
-samplers draw binary parameters from their prior distributions and evolve each system with
-COSMIC.  For most stellar outcomes this works well: common-envelope episodes, mass-transferring
+samplers draw binary initial parameters from distributions that are defined for each sampler. These samples can then be evolved with COSMIC to find the final population. For many scenarios this works well: common-envelope episodes, mass-transferring
 binaries, and white dwarf systems all occur frequently enough that thousands of random draws
 yield a workable sample.
 
-Some outcomes are extremely rare.  Double black holes that merge within the Hubble time
-form at rates of order 1-in-10,000 per binary evolved (or far less at high metallicity).
-Sampling such populations with a flat Monte Carlo requires tens of millions of COSMIC calls
-to accumulate even a few hundred systems — prohibitive for any serious parameter survey.
+However, some outcomes are extremely rare. Binary black holes that merge within the Hubble time
+form at very low rates (even more so for NS + NS mergers, especially at high metallicity).
+Sampling such populations with regular Monte Carlo draws may require tens of millions of COSMIC calls
+to accumulate even a few hundred systems — which may end up being prohibitive for a large parameter survey.
 
-COSMIC includes a vectorised implementation of the STROOPWAFEL algorithm
+``COSMIC`` includes a vectorised implementation of the ``STROOPWAFEL`` algorithm
 (`Broekgaarden et al. 2019 <https://doi.org/10.1093/mnras/stz2558>`_) that solves this
 problem using *adaptive importance sampling*.  The sampler first explores parameter space
 to locate the progenitor regions of the target population, then concentrates its simulation
@@ -25,30 +24,25 @@ distribution.
 
 
 When should I use this?
-========================
+=======================
 
-Use STROOPWAFEL whenever you need a statistically representative sample of a rare binary
+Use ``STROOPWAFEL`` whenever you need a statistically representative sample of a rare binary
 outcome and cannot afford the total binary count that flat Monte Carlo would require.
-Typical use cases include:
+Example use cases include:
 
 * Double black holes (or neutron stars) merging within the Hubble time (GW sources)
-* BH + stellar-companion systems, such as X-ray binaries or Be/X-ray binaries
-* Short-period post-common-envelope binaries that survive to become AM CVn systems
-* Any binary channel with a formation efficiency ≲ 10\ :sup:`−3` per prior draw
+* Long lived BH + stellar-companion systems
 
-If your target population is common (≳ 1 % of all binaries evolving as the target), the
-plain independent sampler is simpler and fast enough.  The break-even point is roughly
-where collecting 100 hits would require more than ~10,000 total evolutions.
+If your target population is common the plain independent sampler is simpler and fast enough.
 
+How it works: think Battleships
+===============================
 
-How it works: the battleships analogy
-======================================
-
-STROOPWAFEL works in three phases that map neatly onto the board game Battleships.
+``STROOPWAFEL`` works in three phases that you can think of as a game of Battleships. You wouldn't continue to shoot randomly at the grid after you find a ship — instead, you would concentrate your fire around the hit location to sink it. Similarly, ``STROOPWAFEL`` first explores parameter space with random draws, then adapts a proposal distribution based on the hits it finds, and finally concentrates its sampling from that proposal.
 
 **Exploration — random fire**
-    Binaries are drawn at random from the prior distributions and evolved with COSMIC.
-    Every binary that produces the desired outcome is recorded as a *hit*.  An adaptive
+    Binaries are drawn at random from the prior distributions and evolved with ``COSMIC``.
+    Every binary that produces the desired outcome is recorded as a *hit*. An adaptive
     stopping criterion (based on the observed hit rate) decides when the remaining budget
     is better spent on refinement than on further random exploration.
 
@@ -56,7 +50,7 @@ STROOPWAFEL works in three phases that map neatly onto the board game Battleship
     One multivariate Gaussian component is placed at each hit location in parameter space.
     The width of each Gaussian is derived from the local density of the prior (via the CDF
     of the prior distribution) so that the proposal is appropriately broad regardless of
-    the parameter's scale.  Together the Gaussians form a *mixture model* — a coarse map of
+    the parameter's scale. Together the Gaussians form a *mixture model* — a coarse map of
     where progenitors live.
 
 **Refinement — concentrate fire**
@@ -76,12 +70,14 @@ STROOPWAFEL works in three phases that map neatly onto the board game Battleship
 
     where :math:`\pi(x)` is the prior probability density, :math:`q(x)` is the Gaussian
     mixture density, and :math:`f_e` is the fraction of systems drawn from the prior
-    during exploration.  Using these weights, any statistic computed on the hit population
+    during exploration. Using these weights, any statistic computed on the hit population
     is an unbiased estimator of the corresponding prior-weighted quantity.
 
+Setup
+=====
 
-Setting up the parameter space
-================================
+Define the parameter space
+--------------------------
 
 The :class:`~cosmic.sample.stroopwafel.ParameterSpace` class defines which binary
 parameters are sampled and their distributions.  Each
@@ -143,8 +139,8 @@ Parameters are stored and returned in alphabetical order by name.  Use
 ``params.names`` to inspect the column ordering of any sample array.
 
 
-Defining derived quantities
-============================
+Define any derived quantities
+-----------------------------
 
 COSMIC requires ``mass_2``, ``separation``, and ``metallicity`` in addition to the
 directly-sampled parameters.  The ``compute_derived`` callback converts a ``(N, D)``
@@ -181,8 +177,8 @@ array of physical-space samples and a sorted list of parameter names into a dict
     supply a custom rejection function you are free to use different key names.
 
 
-Defining the rejection function
-================================
+Choose a rejection function
+---------------------------
 
 Before a batch is passed to COSMIC, unphysical systems are filtered out: stars already
 overflowing their Roche lobes at ZAMS, binaries whose components are in contact, and
@@ -208,8 +204,8 @@ imposing a minimum primary mass — you can wrap it:
         return base_mask
 
 
-Defining the hit criterion
-============================
+Identify what constitutes a hit
+-------------------------------
 
 The ``is_interesting`` argument identifies which evolved systems count as hits.  It receives
 the COSMIC ``bpp`` DataFrame for the current batch and must return a tuple
@@ -268,8 +264,14 @@ BH forms:
         return len(hits), hits
 
 
-Example 1: Bound BH + BH binaries
-====================================
+Running the sampler
+===================
+
+Examples
+========
+
+Bound BH + BH binaries
+----------------------
 
 The following end-to-end example samples all bound BH-BH systems (no merger time
 restriction) using a five-dimensional parameter space covering primary mass, mass ratio,
@@ -357,8 +359,8 @@ orbital period, eccentricity, and metallicity.
     print(f"Weighted hit rate: {result.hit_rate:.4e} ± {result.hit_rate_uncertainty:.4e}")
 
 
-Example 2: BH + star binaries surviving 100 Myr
-==================================================
+BH + star binaries surviving 100 Myr
+------------------------------------
 
 For outcomes that are less extreme but still rare — such as persistent BH + star systems —
 STROOPWAFEL provides substantial efficiency gains over flat Monte Carlo.  Using the same
@@ -407,9 +409,10 @@ Because BH + star systems are more common than merging BH-BH pairs, a smaller to
 is needed and fewer refinement generations are required before the mixture model is
 well-constrained.
 
+Rules of thumb
+==============
 
-Choosing ``total_systems``, ``batch_size``, and ``n_generations``
-===================================================================
+Choosing ``total_systems``, ``batch_size``, and ``n_generations`` is something of an art but there are some rules of thumb to get you started.  The optimal settings depend on the rarity and complexity of the target population, the dimensionality of the parameter space, and your computational resources.
 
 ``batch_size``
 --------------
@@ -457,83 +460,7 @@ The EM step between generations can improve the mixture, but with diminishing re
     (i.e. all weights are equal).
 
 
-Working with results
-======================
+Saving your results
+===================
 
-:meth:`~cosmic.sample.stroopwafel.engine.AdaptiveSampler.run` returns a
-:class:`~cosmic.sample.stroopwafel.result.STROOPWAFELResult` object containing all
-simulated systems, their importance weights, and summary statistics:
-
-.. code-block:: python
-
-    import numpy as np
-
-    # Shape of sample array and column ordering
-    print(result.samples.shape)   # (N_total, D)
-    print(result.param_names)     # sorted alphabetically, e.g.
-                                  # ['ecc', 'mass_1', 'metallicity', 'porb', 'q']
-
-    # Extract hits and their weights
-    hit_samples = result.samples[result.is_hit]        # (N_hits, D)
-    hit_weights = result.weights[result.is_hit]        # (N_hits,)
-
-    # Normalise weights for the hit population
-    hit_weights_norm = hit_weights / hit_weights.sum()
-
-    # Importance-weighted primary mass histogram
-    m1_col = result.param_names.index('mass_1')
-    m1_hits = hit_samples[:, m1_col]
-    hist, edges = np.histogram(m1_hits, bins=20, weights=hit_weights_norm)
-
-    # Importance-weighted hit rate (fraction of prior draws producing a hit)
-    print(f"Hit rate: {result.hit_rate:.4e} ± {result.hit_rate_uncertainty:.4e}")
-
-    # How the budget was spent
-    print(f"Explored: {result.num_explored}   Total hits: {result.num_hits}")
-
-.. note::
-
-    ``result.samples`` stores samples in **physical space** (masses in M\ :sub:`☉`,
-    periods in days, etc.) in the alphabetically-sorted column order defined by
-    ``ParameterSpace``.  Always use ``result.param_names`` to map column indices to
-    parameter names rather than relying on the order in which you defined the parameters.
-
-
-Saving and loading results
-============================
-
-The full result can be saved to HDF5 for later analysis:
-
-.. code-block:: python
-
-    from cosmic.sample.stroopwafel import io as swio
-
-    swio.save_result('bhbh_result.h5', result)
-
-The file stores the sample array, importance weights, hit flags, generation labels, and
-summary statistics as HDF5 datasets and attributes.
-
-To reload the data in a later session without re-running the sampler:
-
-.. code-block:: python
-
-    import h5py
-    import numpy as np
-
-    with h5py.File('bhbh_result.h5', 'r') as f:
-        samples     = f['samples'][:]
-        weights     = f['weights'][:]
-        is_hit      = f['is_hit'][:]
-        param_names = list(f.attrs['param_names'])
-        num_hits    = f.attrs['num_hits']
-
-    hits = samples[is_hit]
-    m1   = hits[:, param_names.index('mass_1')]
-    w    = weights[is_hit]
-    print(f"Weighted mean BH primary mass: {np.average(m1, weights=w):.1f} M_sun")
-
-.. note::
-
-    The HDF5 file does **not** store the raw COSMIC ``bpp`` output tables.  If you need
-    the evolutionary histories of the hit systems, re-evolve them with COSMIC using the
-    hit sample coordinates from ``result.samples[result.is_hit]`` and the same ``BSEDict``.
+TODO

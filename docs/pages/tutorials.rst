@@ -52,18 +52,6 @@ This page contains of tutorials that show you how to use ``COSMIC`` and become a
 
             :ref:`cmc_sampling`
 
-
-    .. grid-item-card::
-
-        .. container:: tutorial-card
-
-            .. rubric:: Converged populations
-                :class: tutorial-card-title
-
-            .. rst-class:: tutorial-card-link
-
-            :ref:`fixedpop`
-
     .. grid-item-card::
 
         .. container:: tutorial-card
@@ -94,6 +82,18 @@ This page contains of tutorials that show you how to use ``COSMIC`` and become a
 
             :ref:`timesteps_modifiers`
 
+
+    .. grid-item-card::
+
+        .. container:: tutorial-card
+
+            .. rubric:: Converged populations
+                :class: tutorial-card-title
+
+            .. rst-class:: tutorial-card-link
+
+            :ref:`fixedpop`
+
     .. grid-item-card::
 
         .. container:: tutorial-card
@@ -104,6 +104,25 @@ This page contains of tutorials that show you how to use ``COSMIC`` and become a
             .. rst-class:: tutorial-card-link
 
             :ref:`analysis_interface`
+
+    .. grid-item-card::
+
+        .. container:: tutorial-card
+
+            .. rubric:: Adaptive importance sampling
+                :class: tutorial-card-title
+
+            .. rst-class:: tutorial-card-link
+                
+            :ref:`adaptive_basics`
+
+            .. rst-class:: tutorial-card-link
+
+            :ref:`adaptive_outputs`
+
+            .. rst-class:: tutorial-card-link
+
+            :ref:`adaptive_checkpoint`
 
     .. grid-item-card::
 
