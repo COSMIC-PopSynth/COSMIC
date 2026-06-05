@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/cosmic/evolve.py'
       - 'src/cosmic/data/cosmic-settings.json'
+      - 'src/cosmic/src/ran3.f'
 
 permissions:
   pull-requests: write
