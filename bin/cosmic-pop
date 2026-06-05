@@ -222,10 +222,11 @@ if __name__ == '__main__':
         if hasattr(args, "m2_min") and (args.m2_min is not None):
             if args.m2_min < metisse_m_min:
                 args.m2_min = metisse_m_min
-        elif sampling["m2_min"] is not None:
-            args.m2_min = sampling["m2_min"]
-        if args.m2_min > m1_min:
-            args.m2_min = m1_min
+        elif "m2_min" in sampling:
+            if sampling["m2_min"] is not None:
+                args.m2_min = sampling["m2_min"]
+                if args.m2_min > m1_min:
+                    args.m2_min = m1_min
     else:
         # Check m1_min
         m1_min = args.m1_min
