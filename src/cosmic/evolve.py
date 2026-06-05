@@ -46,7 +46,7 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
                'Michael Zevin <zevin@northwestern.edu>',
                'digman.12@osu.edu',
                'Tom Wagg <tomjwagg@gmail.com>']
-__all__ = ['Evolve']
+__all__ = ['Evolve', 'read_tracks_for_METISSE', 'populate_tracks']
 
 
 # Make this match the ordering of all_cols in bpp_array.f
@@ -543,14 +543,22 @@ class Evolve(object):
         
         # ensure that the initial masses are in the valid range for the loaded tracks
         if initialbinarytable["stellar_engine"].values[0] == "metisse":
-            low_mass_mask = (initialbinarytable["mass_1"] < m_min) | (initialbinarytable["mass_2"] < m_min)
-            high_mass_mask = (initialbinarytable["mass_1"] > m_max) | (initialbinarytable["mass_2"] > m_max)
-            if any(low_mass_mask | high_mass_mask):
+	
+            low_mass_mask_1 = (initialbinarytable["mass_1"] < m_min)
+            high_mass_mask_1 = (initialbinarytable["mass_1"] > m_max)
+            low_mass_mask_2 = (initialbinarytable["mass_2"] < m_min)
+            high_mass_mask_2 = (initialbinarytable["mass_2"] > m_max)
+            massless_mask_1 = initialbinarytable["mass_1"] == 0e0
+            massless_mask_2 = initialbinarytable["mass_2"] == 0e0
+            if any(
+                ((low_mass_mask_1 & ~massless_mask_1) | high_mass_mask_1) | \
+                  ((low_mass_mask_2 & ~massless_mask_2) | high_mass_mask_2)):
                 raise ValueError(
-                    f"COSMIC-METISSE only supports initial masses in the range specified by the loaded tracks [{m_min}, {m_max}]. You have {sum(low_mass_mask)} "
-                    f"systems with mass below {m_min} and {sum(high_mass_mask)} systems with mass above {m_max}. "
+                    f"COSMIC-METISSE only supports initial masses in the range specified by the loaded tracks [{m_min}, {m_max}].\
+                    You have {sum(low_mass_mask_1 | low_mass_mask_2)} "
+                    f"systems with mass below {m_min} and {sum(high_mass_mask_1 | high_mass_mask_2)} systems with mass above {m_max}. "
                 "Some examples of problematic binaries have the following bin_nums: "
-                f"{initialbinarytable['bin_num'][low_mass_mask | high_mass_mask].values[:5]}."
+                f"{initialbinarytable['bin_num'][(low_mass_mask_1 | low_mass_mask_2) | (high_mass_mask_1 | high_mass_mask_2)].values[:5]}."
             )
 
         # we use different columns to save the BSE parameters because some
