@@ -27,15 +27,6 @@ from cosmic import __version__ as cosmic_version
 sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
-# This is the expected signature of the handler for this event, cf doc
-def autodoc_skip_member_handler(app, what, name, obj, skip, options):
-    # Basic approach; you might want a regex instead
-    return name.startswith("test_")
-
-# Automatically called by sphinx at startup
-def setup(app):
-    # Connect the autodoc-skip-member event from apidoc to the callback
-    app.connect('autodoc-skip-member', autodoc_skip_member_handler)
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # needs_sphinx = '1.0'
@@ -44,17 +35,16 @@ def setup(app):
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
-    'sphinx.ext.autosummary',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.linkcode',
     'sphinx.ext.ifconfig',
     'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver',
     'sphinxcontrib.programoutput',
     'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_console_highlighting',
@@ -74,8 +64,8 @@ copybutton_copy_empty_lines = False
 
 # -- autodoc ------------------------------------
 
-autoclass_content = 'class'
-autodoc_default_flags = ['show-inheritance', 'members', 'inherited-members']
+autoclass_content = 'both'
+autodoc_default_flags = ['members', 'inherited-members', 'no-heading', 'no-inheritance-diagram']
 
 # -- sphinx_gallery -----------------------------
 
@@ -85,6 +75,9 @@ sphinx_gallery_conf = {
     'download_all_examples': False,
     'remove_config_comments': True,
 }
+
+import matplotlib
+matplotlib.rcParams["savefig.dpi"] = 300
 
 # -- autosummary --------------------------------
 
@@ -127,7 +120,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'cosmic'
-copyright = u'2021, Katie Breivik'
+copyright = u'2019-2026, Katie Breivik, Tom Wagg'
 author = u'Katie Breivik'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -183,11 +176,15 @@ html_theme_options = {
         "color-brand-primary": "#3f95e1",
         "color-brand-content": "#3f95e1",
         "color-brand-visited": "#3f95e1",
+        "color-api-name": "#3f95e1",
+        "color-api-pre-name": "#3f95e1",
     },
     "dark_css_variables": {
-        "color-brand-primary": "#f08c33",
-        "color-brand-content": "#f08c33",
-        "color-brand-visited": "#f08c33"
+        "color-brand-primary": "#e193ca",
+        "color-brand-content": "#e193ca",
+        "color-brand-visited": "#e193ca",
+        "color-api-name": "#e193ca",
+        "color-api-pre-name": "#e193ca",
     },
     "sidebar_hide_name": False,
     "footer_icons": [
@@ -212,12 +209,12 @@ html_title = f"<span class='hide-me'>COSMIC </span>v{cosmic_version}"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "https://cosmic-popsynth.github.io/images/cosmic-popsynth_1200.png"
+html_logo = "_static/cosmic-colour.png"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16
 # or 32x32 pixels large.
-# html_favicon = None
+html_favicon = "_static/cosmic-favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -377,57 +374,35 @@ intersphinx_mapping = {
 # -- linkcode -----------------------------------------------------------------
 
 def linkcode_resolve(domain, info):
-    """Determine the URL corresponding to Python object
+    """function for linkcode sphinx extension"""
+    def find_func():
+        # find the installed module in sys module
+        sys_mod = sys.modules[info["module"]]
 
-    This code is stolen with thanks from the scipy team.
-    """
-    if domain != 'py':
+        # use inspect to find the source code and starting line number
+        names = info["fullname"].split(".")
+        func = sys_mod
+        for name in names:
+            func = getattr(func, name)
+
+        source_code, line_num = inspect.getsourcelines(func)
+
+        # get the file name from the module
+        file = info["module"].split(".")[-1]
+
+        return file, line_num, line_num + len(source_code) - 1
+
+    # ensure it has the proper domain and has a module
+    if domain != 'py' or not info['module']:
         return None
 
-    modname = info['module']
-    fullname = info['fullname']
-
-    submod = sys.modules.get(modname)
-    if submod is None:
-        return None
-
-    obj = submod
-    for part in fullname.split('.'):
-        try:
-            obj = getattr(obj, part)
-        except:
-            return None
-    # try and sneak past a decorator
+    # attempt to cleverly locate the function in the file
     try:
-        obj = obj.im_func.func_closure[0].cell_contents
-    except (AttributeError, TypeError):
-        pass
+        file, start, end = find_func()
+        # stitch together a github link with specific lines
+        filename = "cosmic/{}.py#L{}-L{}".format(file, start, end)
 
-    try:
-        fn = inspect.getsourcefile(obj)
-    except:
-        fn = None
-    if not fn:
-        try:
-            fn = inspect.getsourcefile(sys.modules[obj.__module__])
-        except:
-            fn = None
-    if not fn:
-        return None
-
-    try:
-        source, lineno = inspect.findsource(obj)
-    except:
-        lineno = None
-
-    if lineno:
-        linespec = "#L%d" % (lineno + 1)
-    else:
-        linespec = ""
-
-    fn = os.path.relpath(fn, start=os.path.dirname(cosmic.__file__))
-    if fn.startswith(os.path.pardir):
-        return None
-
-    return ("http://github.com/COSMIC-PopSynth/COSMIC/tree/%s/COSMIC/%s%s"
-            % (GWPY_VERSION['full-revisionid'], fn, linespec))
+    # if you can't find it in the file then just link to the correct file
+    except Exception as e:
+        filename = info['module'].replace('.', '/') + '.py'
+    return f"https://github.com/COSMIC-popsynth/COSMIC/blob/develop/src/{filename}"

@@ -26,7 +26,7 @@ import h5py as h5
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
-from cosmic.evolve import Evolve
+from cosmic.evolve import Evolve, read_tracks_for_METISSE
 from cosmic._version import __version__
 
 from schwimmbad import MPIPool
@@ -129,6 +129,14 @@ def parse_commandline():
         help="HDFStore compression library")
     parser.add_argument("--complevel",type=int,default=0,
         help="HDFStore compression level")
+    parser.add_argument("--m1_min", default=0.08,type=float,
+        help="Minimum mass")
+    parser.add_argument("--m2_min", default=None,type=float,
+        help="Minimum mass")
+    parser.add_argument("--path-to-tracks", default=None, type=str,
+        help="Path to Hydrogen Metisse tracks")
+    parser.add_argument("--path-to-he-tracks", default=None, type=str,
+        help="Path to Helium Metisse tracks")
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-n", "--nproc",
@@ -183,6 +191,47 @@ if __name__ == '__main__':
     # READ AND PARSE INIFILE
     ###########################################################################
     BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+
+    ## Check engine
+    # Check arguments
+    if (args.path_to_tracks is not None) and (args.path_to_he_tracks is not None):
+        warnings.warn("path_to_tracks and path_to_he_tracks specified; overwriting stellar_engine with metisse")
+        SSEDict["stellar_engine"] = "metisse"
+        SSEDict["path_to_tracks"] = args.path_to_tracks
+        SSEDict["path_to_he_tracks"] = args.path_to_he_tracks
+    elif args.path_to_tracks is not None:
+        SSEDict["path_to_tracks"] = args.path_to_tracks
+    elif args.path_to_he_tracks is not None:
+        SSEDict["path_to_he_tracks"] = args.path_to_he_tracks
+
+    # Check masses
+    if SSEDict["stellar_engine"] == "metisse":
+        # load in the METISSE files
+        metisse_m_min, metisse_m_max = read_tracks_for_METISSE(
+             path_to_tracks=SSEDict["path_to_tracks"], 
+             IBT_Z=sampling["metallicity"],
+             z_accuracy_limit=SSEDict['z_accuracy_limit'],
+             is_he=False
+        )
+        # Check m1_min
+        if args.m1_min < metisse_m_min:
+            m1_min = metisse_m_min
+        else:
+            m1_min = args.m1_min
+        # Check m2_min
+        if hasattr(args, "m2_min") and (args.m2_min is not None):
+            if args.m2_min < metisse_m_min:
+                args.m2_min = metisse_m_min
+        elif sampling["m2_min"] is not None:
+            args.m2_min = sampling["m2_min"]
+        if args.m2_min > m1_min:
+            args.m2_min = m1_min
+    else:
+        # Check m1_min
+        m1_min = args.m1_min
+        if hasattr(args, "m2_min") and (args.m2_min is not None):
+            if args.m2_min > m1_min:
+                args.m2_min = m1_min
 
     # we now overwrite the inifile values with what was specified from the command line
     # (which could mean not overwriting anything at all because they are populated
@@ -309,10 +358,10 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if hasattr(args,'qmin') and hasattr(args,'m2_min'):
-                if args.qmin != 0.0 and args.m2_min is not None:
+                if not (args.qmin == 0.0 or args.qmin is None) and args.m2_min is not None:
                     raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
             # If qmin is specified, use it to sample the initial binary table
-            if hasattr(args,'qmin'):
+            if hasattr(args,'qmin') and args.qmin != 0.:
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
                                                             final_kstar2 = kstar2_range,
@@ -327,6 +376,7 @@ if __name__ == '__main__':
                                                             size = args.Nstep,
                                                             qmin = args.qmin,
                                                             params = args.inifile,
+                                                            m1_min = m1_min,
                                                             SSEDict = SSEDict)
             elif hasattr(args,'m2_min'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
@@ -341,6 +391,7 @@ if __name__ == '__main__':
                                                             SF_duration = sampling['SF_duration'],
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
+                                                            m1_min = m1_min,
                                                             m2_min = args.m2_min,
                                                             params = args.inifile,
                                                             SSEDict = SSEDict)
@@ -390,14 +441,25 @@ if __name__ == '__main__':
                 pass
             filters['timestep_conditions'] = []
 
-        # Create a pool
-        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
-                                                      pool=pool,
-                                                      BSEDict=BSEDict,
-                                                      SSEDict=SSEDict,
-                                                      idx=idx,
-                                                      dtp=dtp,
-                                                      timestep_conditions=filters['timestep_conditions'])
+        # For MPI, pass the pool directly; for local multiprocessing, pass nproc so
+        # Evolve.evolve creates a fresh pool whose workers fork after Fortran globals
+        # (checkstate, dtp_state) have been initialized, avoiding a deadlock.
+        if isinstance(pool, MPIPool):
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          pool=pool,
+                                                          BSEDict=BSEDict,
+                                                          SSEDict=SSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'])
+        else:
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          nproc=nproc,
+                                                          BSEDict=BSEDict,
+                                                          SSEDict=SSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'])
 
         # extract single stars
 
