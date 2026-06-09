@@ -224,7 +224,7 @@
          ELSEIF (using_SSE.eq.1) THEN
 * Estimate the mass of the convective envelope 
 * from the fits in Picker, Hirai, & Mandel 2024
-           met = 10**(LOG10(ZPARS(14))/0.4)
+           met = 10**(LOG10(zpars(14))/0.4)
            reagb = ragbf(M1,LUMS(7),zpars(2))
            tmin = 1000.d0*((1130.d0*LUMS(7)/
      &                       (reagb**2.d0))**(1.d0/4.d0))
@@ -268,7 +268,7 @@
             ELSEIF (using_SSE.eq.1) THEN
 * Estimate the mass of the convective envelope 
 * from the fits in Picker, Hirai, & Mandel 2024
-               met = 10**(LOG10(ZPARS(14))/0.4)
+               met = 10**(LOG10(zpars(14))/0.4)
                reagb = ragbf(M2,LUMS(7),zpars(2))
                tmin = 1000.d0*((1130.d0*LUMS(7)/
      &                       (reagb**2.d0))**(1.d0/4.d0))
