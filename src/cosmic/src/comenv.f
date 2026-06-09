@@ -76,6 +76,12 @@
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
       REAL*8 ALPHA_CE
+
+      REAL*8 met,reagb,tmin,tset,mconvmax
+      REAL*8 ragbf,menvmax,mconvenv,CELAMHE,tonset
+      EXTERNAL ragbf,menvmax,mconvenv,CELAMHE,tonset
+      REAL*8 mcgbtf,lmcgbf
+      EXTERNAL mcgbtf,lmcgbf
       REAL*8 m1endstage1,m2endstage1
 *
 * Initialize
@@ -216,8 +222,18 @@
            CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,
      &               LAMB1)
          ELSEIF (using_SSE.eq.1) THEN
-           RZAMS = RZAMSF(M01)
-           LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+* Estimate the mass of the convective envelope 
+* from the fits in Picker, Hirai, & Mandel 2024
+           met = 10**(LOG10(ZPARS(14))/0.4)
+           reagb = ragbf(M1,LUMS(7),zpars(2))
+           tmin = 1000.d0*((1130.d0*LUMS(7)/
+     &                       (reagb**2.d0))**(1.d0/4.d0))
+           tset = tonset(tmin,met)
+           teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
+           MENV = mconvenv(KW,M1,met,teff1,tmin,tset,AJ1,TM1)
+           mconvmax = menvmax(KW,M1,met)
+           LAMB1 = CELAMHE(M1,met,MENV,mconvmax)
          ENDIF
 * if > 8 Msun, the envelope participating in the first stage is only the convective one
 * if < 2 Msun, the entire envelope participates in the first stage
@@ -250,8 +266,18 @@
                CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,
      &               LAMB2)
             ELSEIF (using_SSE.eq.1) THEN
-               RZAMS = RZAMSF(M02)
-               LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+* Estimate the mass of the convective envelope 
+* from the fits in Picker, Hirai, & Mandel 2024
+               met = 10**(LOG10(ZPARS(14))/0.4)
+               reagb = ragbf(M2,LUMS(7),zpars(2))
+               tmin = 1000.d0*((1130.d0*LUMS(7)/
+     &                       (reagb**2.d0))**(1.d0/4.d0))
+               tset = tonset(tmin,met)
+               teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
+               MENV = mconvenv(KW,M2,met,teff2,tmin,tset,AJ2,TM2)
+               mconvmax = menvmax(KW,M2,met)
+               LAMB2 = CELAMHE(M2,met,MENV,mconvmax)
             ENDIF
 * if > 8 Msun, the envelope participating in the first stage is only the convective one
 * if < 2 Msun, the entire envelope participates in the first stage
@@ -259,9 +285,9 @@
             IF(M2.GE.8.0d0)THEN
                m2endstage1 = M2-MENV
             ELSEIF(M2.LT.2.0d0)THEN
-               m2endstage1 = M2
+               m2endstage1 = MC2
             ELSE
-               m2endstage1 = M2 + (M2-MC2 - MENV) * (M2-2.0d0) /6.0d0
+               m2endstage1 = MC2 + (M2-MC2 - MENV) * (M2-2.0d0) /6.0d0
             ENDIF
             EBINDI = EBINDI + M2*(M2-m2endstage1)/(LAMB2*R2)
          ENDIF

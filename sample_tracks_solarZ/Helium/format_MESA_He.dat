@@ -43,14 +43,14 @@
     post_AGB_EEP = 854
     
     Initial_EEP = 1
-    Final_EEP = 253
+    Final_EEP = 854
     
     !--- HOW TO DEAL WITH INCOMPLETE TRACKS--------
 
     fix_track = .true.
     
     !for M<Mec
-    low_mass_final_eep = 253
+    low_mass_final_eep = 854
     !for stars M>=Mec
     high_mass_final_eep = 253
 /

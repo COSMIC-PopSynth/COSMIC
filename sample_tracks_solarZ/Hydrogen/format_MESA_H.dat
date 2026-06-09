@@ -50,14 +50,14 @@
     post_AGB_EEP = 1409
 
     Initial_EEP = 202       !files will be read from this line number
-    Final_EEP = 808        !to this line
+    Final_EEP = 1409        !to this line
 
     !--- HOW TO DEAL WITH INCOMPLETE TRACKS--------
 
     fix_track = .true.
     
     !for M<Mec
-    low_mass_final_eep = 808
+    low_mass_final_eep = 1409
     !for stars M>=Mec
     high_mass_final_eep = 808
 
