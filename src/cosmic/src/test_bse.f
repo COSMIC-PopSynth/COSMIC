@@ -96,16 +96,16 @@
 *
       OPEN(22,file='binary.in', status='old')
       READ(22,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
-      READ(22,*)neta,bwind,hewind,alpha1,lambdaf,windflag,rtmsflag
-      READ(22,*)ce2stageflag,ceflag
-      READ(22,*)tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
-      READ(22,*)pts1,pts2,pts3
+      READ(22,*)neta,bwind,hewind,alpha1(1),alpha1(2),lambdaf,windflag
+      READ(22,*)rtmsflag,ce2stageflag,ceflag
+      READ(22,*)tflag,ifflag,wdflag,bhflag,remnantflag
+      READ(22,*)mxns,idum,pts1,pts2,pts3
       READ(22,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma,kickflag
       READ(22,*)pisn,cekickflag,cehestarflag,grflag,bhms_coll_flag
       READ(22,*)wd_mass_lim,ecsn,ecsn_mlow,aic,ussn,sigmadiv,bhsigmafrac
-      READ(22,*)don_lim,acc_lim,bdecayfac,bconst,ck,qcflag,eddlimflag
-      READ(22,*)bhspinflag,bhspinmag,rejuv_fac,rejuvflag,htpmb,st_cr
-      READ(22,*)st_tide,rembar_massloss,zsun
+      READ(22,*)don_lim,acc_lim(1),acc_lim(2),bdecayfac,bconst,ck,qcflag
+      READ(22,*)eddlimflag,bhspinflag,bhspinmag,rejuv_fac,rejuvflag
+      READ(22,*)htpmb,st_cr,st_tide,rembar_massloss,zsun
       READ(22,*)natal_kick_array(1,1),natal_kick_array(1,2),
      &natal_kick_array(1,3),natal_kick_array(1,4),natal_kick_array(1,5)
       READ(22,*)natal_kick_array(2,1),natal_kick_array(2,2),
@@ -123,9 +123,9 @@
       else
 
       WRITE(*,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
-      WRITE(*,*)neta,bwind,hewind,alpha1,lambdaf,windflag,rtmsflag
-      WRITE(*,*)ceflag,tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
-      WRITE(*,*)pts1,pts2,pts3
+      WRITE(*,*)neta,bwind,hewind,alpha1(1),alpha1(2),lambdaf,windflag
+      WRITE(*,*)rtmsflag,ceflag,tflag,ifflag,wdflag,bhflag,remnantflag
+      WRITE(*,*)mxns,idum,pts1,pts2,pts3
       WRITE(*,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
 *
 * Initialize the parameters.
@@ -204,6 +204,8 @@
         zsun = 0.014
         kickflag = -1
         using_cmc = 0
+        using_SSE = 1
+        using_METISSE = 0
          
 
       endif
