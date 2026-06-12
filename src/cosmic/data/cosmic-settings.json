@@ -865,6 +865,23 @@
                     }
                 ]
             }, 
+	    {
+                "name": "ce2stageflag",
+                "description": "Sets whether to use the standard energy formalism or the two-stage CE formalism from Hirai & Mandel 2022",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the standard energy formalism",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the two-stage CE formalism from Hirai & Mandel 2022"
+                    }
+                ]
+            },
             {
                 "name": "ceflag",
                 "description": "Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)",
