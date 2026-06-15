@@ -520,6 +520,9 @@ class COSMICStroopOutput(COSMICOutput):
             fraction_explored=fraction_explored,
             label=cosmic.label if label is None else label,
         )
+    
+    def draw_representative_sample(self, sample_size):
+        raise NotImplementedError
 
 
 class STROOPWAFELCheckpoint:
