@@ -338,6 +338,15 @@ if __name__ == '__main__':
     bcm_filter_match = pd.DataFrame()
     bpp_filter_match = pd.DataFrame()
     initC_filter_match = pd.DataFrame()
+    conv_filter_match = pd.DataFrame()
+    kick_info_filter_match = pd.DataFrame()
+    
+    if (args.keep_singles == True):
+        conv_singles_filter_match = pd.DataFrame()
+        bpp_singles_filter_match = pd.DataFrame()
+        bcm_singles_filter_match = pd.DataFrame()
+        initC_filter_singles_match = pd.DataFrame()
+        kick_info_singles_filter_match = pd.DataFrame()
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
@@ -555,7 +564,7 @@ if __name__ == '__main__':
             conv_singles_filter_match = pd.concat([conv_singles_filter_match, conv_singles_filter])
             bpp_singles_filter_match = pd.concat([bpp_singles_filter_match, bpp_singles_filter])
             bcm_singles_filter_match = pd.concat([bcm_singles_filter_match, bcm_singles_filter])
-            initC_filter_singles_match = pd.concat([initC_singles_filter_match, initC_singles_filter])
+            initC_filter_singles_match = pd.concat([initC_filter_singles_match, initC_singles_filter])
             kick_info_singles_filter_match = pd.concat([kick_info_singles_filter_match, kick_info_singles_filter])          
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
@@ -594,17 +603,17 @@ if __name__ == '__main__':
                                 bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
-            bcm_filter_match = []
-            bpp_filter_match = [] 
-            initC_filter_match = []
-            conv_filter_match = []
-            kick_info_filter_match = []
+            bcm_filter_match = pd.DataFrame()
+            bpp_filter_match = pd.DataFrame()
+            initC_filter_match = pd.DataFrame()
+            conv_filter_match = pd.DataFrame()
+            kick_info_filter_match = pd.DataFrame()
             if (args.keep_singles==True):
-                conv_singles_filter_match = []
-                bpp_singles_filter_match = []
-                bcm_singles_filter_match = []
-                initC_filter_singles_match = []
-                kick_info_singles_filter_match = []
+                conv_singles_filter_match = pd.DataFrame()
+                bpp_singles_filter_match = pd.DataFrame()
+                bcm_singles_filter_match = pd.DataFrame()
+                initC_filter_singles_match = pd.DataFrame()
+                kick_info_singles_filter_match = pd.DataFrame()
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
