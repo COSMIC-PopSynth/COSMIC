@@ -15,6 +15,7 @@ from cosmic.sample.cmc import elson
 from cosmic.sample.initialcmctable import InitialCMCTable
 from scipy.optimize import curve_fit
 from cosmic.utils import a_from_p, get_porb_norm
+import tempfile
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
@@ -671,15 +672,16 @@ class TestCMCSample(unittest.TestCase):
         np.testing.assert_allclose(REFF_TEST_ARRAY, reff)
 
     def test_cmc_sampler(self):
-        np.random.seed(2)
-        # Test generating CMC initial conditions and test saving the output to files
-        Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
-        InitialCMCTable.write(Singles, Binaries, filename="input.hdf5")
-        InitialCMCTable.write(Singles, Binaries, filename="input.fits")
-        Singles, Binaries = InitialCMCTable.read(filename="input.fits")
-        # read the test files and compare to the static unit tests files
-        pd.testing.assert_frame_equal(Singles, SINGLES_CMC_FITS)
-        pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_FITS)
-        Singles, Binaries = InitialCMCTable.read(filename="input.hdf5")
-        pd.testing.assert_frame_equal(Singles, SINGLES_CMC_HDF5)
-        pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_HDF5)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            np.random.seed(2)
+            # Test generating CMC initial conditions and test saving the output to files
+            Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
+            InitialCMCTable.write(Singles, Binaries, filename=f"{tmpdirname}/input.hdf5")
+            InitialCMCTable.write(Singles, Binaries, filename=f"{tmpdirname}/input.fits")
+            Singles, Binaries = InitialCMCTable.read(filename=f"{tmpdirname}/input.fits")
+            # read the test files and compare to the static unit tests files
+            pd.testing.assert_frame_equal(Singles, SINGLES_CMC_FITS)
+            pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_FITS)
+            Singles, Binaries = InitialCMCTable.read(filename=f"{tmpdirname}/input.hdf5")
+            pd.testing.assert_frame_equal(Singles, SINGLES_CMC_HDF5)
+            pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_HDF5)
