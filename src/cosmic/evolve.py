@@ -61,13 +61,13 @@ else:
 # construct BSE columns from flattened GROUPED_SETTINGS
 INITIAL_CONDITIONS_BSE_COLUMNS = [col for group in GROUPED_SETTINGS.values() for col in group]
 
-INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
+INITIAL_CONDITIONS_MISC_COLUMNS = ['bin_num', 'dtp']
 
 INITIAL_CONDITIONS_SSE_COLUMNS = ['stellar_engine', 'path_to_tracks', 'path_to_he_tracks', 'z_accuracy_limit']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
-INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMNS)
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMNS)
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
