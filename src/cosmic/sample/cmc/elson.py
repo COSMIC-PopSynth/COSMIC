@@ -30,6 +30,10 @@ from scipy.stats import maxwell
 __author__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
 __credits__ = "Carl Rodriguez <carllouisrodriguez@gmail.com>"
 
+__all__ = ["M_enclosed", "phi_r", "rho_r", "virial_radius_analytic", "find_rmax_vir", "find_sigma_sqr",
+           "get_positions", "get_velocities", "get_velocities_plummer", "get_velocities_old",
+           "scale_pos_and_vel", "draw_r_vr_vt"]
+
 
 def M_enclosed(r, gamma, rho_0):
     """

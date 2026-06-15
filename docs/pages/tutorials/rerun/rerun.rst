@@ -1,3 +1,5 @@
+.. _rerun_rerun:
+
 *******************
 Re-running binaries
 *******************
@@ -20,7 +22,7 @@ First, let's evolve a binary and save the initC table.
     from cosmic.sample.initialbinarytable import InitialBinaryTable
     from cosmic.evolve import Evolve
 
-.. include:: ../../_generated/default_bsedict.rst
+.. include:: ../../../_generated/default_bsedict.rst
 
 .. ipython:: python
 

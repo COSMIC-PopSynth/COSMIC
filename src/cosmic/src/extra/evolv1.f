@@ -67,7 +67,6 @@ c-------------------------------------------------------------c
       REAL*8 dtj,evolve_type
       REAL*8 omdot,sigmahold,sn,bhspin,s
       REAL*8 djtx,djspint,jspbru,Kconst
-      REAL*8 bkick(20)
 *
       REAL ran3
       EXTERNAL ran3
@@ -450,7 +449,7 @@ c-------------------------------------------------------------c
                endif
                CALL kick(kw,mass,mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                   0.d0,fallback,sigmahold,kick_info,
-     &                   disrupt,bkick)
+     &                   disrupt)
             endif
 *
 * Force new NS or BH to have a birth spin peirod and magnetic field.

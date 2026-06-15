@@ -1,3 +1,5 @@
+.. _cmc_sampling:
+
 **************************
 ClusterMonteCarlo Sampling
 **************************

@@ -37,14 +37,13 @@
 *
       integer i,kw,kw2,kstar(2),j,k,time,idum
       integer bpp_index_out, bcm_index_out
-      real*8 kick_info_out(2,17)
 *
-      real*8 mass0(2),mass(2),z,zpars(20),vs(3),kick_info(2,18)
+      real*8 mass0(2),mass(2),z,zpars(20),vs(3),kick_info(2,19)
       real*8 epoch(2),tms(2),tphys,tphysf,dtp,aj
       real*8 rad(2),lum(2),ospin(2)
       real*8 massc(2),radc(2),menv(2),renv(2)
       real*8 tb,ecc,yearsc
-      real*8 B_0(2),bacc(2),tacc(2),bhspin(2),bkick(20)
+      real*8 B_0(2),bacc(2),tacc(2),bhspin(2)
       PARAMETER(yearsc=3.1557d+07)
       CHARACTER*8 label(16)
 *
@@ -97,15 +96,15 @@
 *
       OPEN(22,file='binary.in', status='old')
       READ(22,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
-      READ(22,*)neta,bwind,hewind,alpha1,lambdaf,windflag,rtmsflag
-      READ(22,*)ceflag,tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
-      READ(22,*)pts1,pts2,pts3
+      READ(22,*)neta,bwind,hewind,alpha1(1),alpha1(2),lambdaf,windflag
+      READ(22,*)rtmsflag,ceflag,tflag,ifflag,wdflag,bhflag,remnantflag
+      READ(22,*)mxns,idum,pts1,pts2,pts3
       READ(22,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma,kickflag
       READ(22,*)pisn,cekickflag,cehestarflag,grflag,bhms_coll_flag
       READ(22,*)wd_mass_lim,ecsn,ecsn_mlow,aic,ussn,sigmadiv,bhsigmafrac
-      READ(22,*)don_lim,acc_lim,bdecayfac,bconst,ck,qcflag,eddlimflag
-      READ(22,*)bhspinflag,bhspinmag,rejuv_fac,rejuvflag,htpmb,st_cr
-      READ(22,*)st_tide,rembar_massloss,zsun
+      READ(22,*)don_lim,acc_lim(1),acc_lim(2),bdecayfac,bconst,ck,qcflag
+      READ(22,*)eddlimflag,bhspinflag,bhspinmag,rejuv_fac,rejuvflag
+      READ(22,*)htpmb,st_cr,st_tide,rembar_massloss,zsun
       READ(22,*)natal_kick_array(1,1),natal_kick_array(1,2),
      &natal_kick_array(1,3),natal_kick_array(1,4),natal_kick_array(1,5)
       READ(22,*)natal_kick_array(2,1),natal_kick_array(2,2),
@@ -123,9 +122,9 @@
       else
 
       WRITE(*,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
-      WRITE(*,*)neta,bwind,hewind,alpha1,lambdaf,windflag,rtmsflag
-      WRITE(*,*)ceflag,tflag,ifflag,wdflag,bhflag,remnantflag,mxns,idum
-      WRITE(*,*)pts1,pts2,pts3
+      WRITE(*,*)neta,bwind,hewind,alpha1(1),alpha1(2),lambdaf,windflag
+      WRITE(*,*)rtmsflag,ceflag,tflag,ifflag,wdflag,bhflag,remnantflag
+      WRITE(*,*)mxns,idum,pts1,pts2,pts3
       WRITE(*,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
 *
 * Initialize the parameters.
@@ -204,11 +203,8 @@
         zsun = 0.014
         kickflag = -1
         using_cmc = 0
-
-
-         do i=1,20
-            bkick(i) = 0.d0
-         enddo 
+        using_SSE = 1
+        using_METISSE = 0
          
 
       endif
@@ -270,8 +266,8 @@
 * 
       CALL evolv2(kstar,mass,tb,ecc,z,tphysf,dtp,mass0,rad,lum,
      &            massc,radc,menv,renv,ospin,B_0,bacc,tacc,
-     &            epoch,tms,bhspin,tphys,zpars,bkick,kick_info,
-     &            bcm_index_out,bpp_index_out,kick_info_out)
+     &            epoch,tms,bhspin,tphys,zpars,kick_info,
+     &            bcm_index_out,bpp_index_out)
 *
 ************************************************************************
 * Output:
