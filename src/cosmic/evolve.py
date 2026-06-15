@@ -21,6 +21,7 @@
 
 from cosmic import _evolvebin
 from . import utils
+from .consts import ALL_COLUMNS, INTEGER_COLUMNS, BPP_COLUMNS, BCM_COLUMNS, KICK_COLUMNS, GROUPED_SETTINGS
 from .sample import initialbinarytable
 from .checkstate import set_checkstates
 
@@ -48,44 +49,6 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
                'Tom Wagg <tomjwagg@gmail.com>']
 __all__ = ['Evolve', 'read_tracks_for_METISSE', 'populate_tracks']
 
-
-# Make this match the ordering of all_cols in bpp_array.f
-ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
-               'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
-               'tms_2', 'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2',
-               'rad_1', 'rad_2', 'mass0_1',
-               'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2', 'radc_1',
-               'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
-               'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2', 'tacc_1',
-               'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2',
-               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type', 'metallicity']
-
-INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2", "evol_type"]
-
-
-BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
-               'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
-               'aj_1', 'aj_2', 'tms_1', 'tms_2',
-               'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2', 'rad_1', 'rad_2',
-               'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
-               'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-               'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
-               'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
-               'bhspin_1', 'bhspin_2']
-
-BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
-               'teff_1', 'massc_he_layer_1', 'massc_co_layer_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
-               'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
-               'lum_2', 'rad_2', 'teff_2', 'massc_he_layer_2', 'massc_co_layer_2', 'radc_2', 'menv_2',
-               'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
-               'porb', 'sep', 'ecc', 'B_1', 'B_2',
-               'SN_1', 'SN_2', 'bin_state', 'merger_type']
-
-KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
-                'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
-                'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
-                'theta_euler', 'phi_euler', 'psi_euler', 'randomseed', 'tphys', 'bin_num']
-
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
 # we also send this in a specific order so this help ensures that the list that
@@ -95,35 +58,17 @@ if sys.version_info.major == 2 and sys.version_info.minor == 7:
 else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
-INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                  'ceflag', 'tflag', 'ifflag', 'wdflag',
-                                  'pisn', 'ppi_co_shift', 'ppi_extra_ml',
-                                  'rtmsflag',
-                                  'bhflag', 'remnantflag', 'fryer_mass_limit',
-                                  'maltsev_mode', 'maltsev_fallback', 'maltsev_pf_prob',
-                                  'grflag', 'bhms_coll_flag', 'wd_mass_lim',
-                                  'cekickflag', 'cemergeflag', 'cehestarflag',
-                                  'mxns', 'pts1', 'pts2', 'pts3',
-                                  "fryer_fmix", "fryer_mcrit_nsbh",
-                                  'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
-                                  'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
-                                  'natal_kick_array', 'qcrit_array',
-                                  'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 'smt_periastron_check',
-                                  'bdecayfac', 'bconst', 'ck',
-                                  'windflag', 'qcflag', 'eddlimflag', 'LBV_flag',
-                                  'fprimc_array', 'dtp', 'randomseed',
-                                  'bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
-                                  'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun', 'kickflag']
+# construct BSE columns from flattened GROUPED_SETTINGS
+INITIAL_CONDITIONS_BSE_COLUMNS = [col for group in GROUPED_SETTINGS.values() for col in group]
 
 INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
 
-INITIAL_CONDITIONS_SSE_COLUMN = ['stellar_engine','path_to_tracks','path_to_he_tracks','z_accuracy_limit']
+INITIAL_CONDITIONS_SSE_COLUMNS = ['stellar_engine', 'path_to_tracks', 'path_to_he_tracks', 'z_accuracy_limit']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
-INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMN)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMNS)
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
@@ -133,11 +78,7 @@ else:
 for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array', 'alpha1', 'acc_lim']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
-NATAL_KICK_COLUMNS = ['natal_kick',
-                      'phi',
-                      'theta',
-                      'mean_anomaly',
-                      'randomseed']
+NATAL_KICK_COLUMNS = ['natal_kick', 'phi', 'theta', 'mean_anomaly', 'randomseed']
 
 FLATTENED_NATAL_KICK_COLUMNS = []
 for sn_idx in range(2):
@@ -324,7 +265,7 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
         # ensure SSEDict keys are unique in the initial binary table and warn otherwise
-        for col in INITIAL_CONDITIONS_SSE_COLUMN:
+        for col in INITIAL_CONDITIONS_SSE_COLUMNS:
             if col in initialbinarytable.columns and initialbinarytable[col].nunique() > 1:
                 raise ValueError(f"The value for {col} in the initial binary table is not unique. "
                                  f"Please make sure that the value for {col} is the same for all rows in the initial binary table.")
@@ -514,7 +455,7 @@ class Evolve(object):
 
         # if stellar engine is METISSE then check all of the SSE columns are present and if not raise an error
         if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
-            if not set(INITIAL_CONDITIONS_SSE_COLUMN).issubset(initialbinarytable.columns):
+            if not set(INITIAL_CONDITIONS_SSE_COLUMNS).issubset(initialbinarytable.columns):
                 raise ValueError("If you want to use the METISSE stellar engine, you must provide the following in the SSEDict, initial binary table, or params file: path_to_tracks, path_to_he_tracks, z_accuracy_limit.")
         else:
             # if not using METISSE, set default values for the SSE columns if they are not present in the initial binary table
@@ -688,78 +629,17 @@ def _evolve_single_system(f, zpars=None):
         # determine if we already have a compact object, if yes than one SN has already occured
         if (f["kstar_1"] in range(10, 15)) or (f["kstar_2"] in range(10, 15)):
             f["kick_info"][0, 0] = 1
-        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-        _evolvebin.windvars.neta = f["neta"]
-        _evolvebin.windvars.bwind = f["bwind"]
-        _evolvebin.windvars.hewind = f["hewind"]
-        _evolvebin.cevars.alpha1 = f["alpha1"]
-        _evolvebin.cevars.lambdaf = f["lambdaf"]
-        _evolvebin.ceflags.ceflag = f["ceflag"]
-        _evolvebin.flags.tflag = f["tflag"]
-        _evolvebin.flags.ifflag = f["ifflag"]
-        _evolvebin.flags.wdflag = f["wdflag"]
-        _evolvebin.flags.rtmsflag = f["rtmsflag"]
-        _evolvebin.snvars.pisn = f["pisn"]
-        _evolvebin.snvars.ppi_co_shift = f["ppi_co_shift"]
-        _evolvebin.snvars.ppi_extra_ml = f["ppi_extra_ml"]
-        _evolvebin.flags.bhflag = f["bhflag"]
-        _evolvebin.flags.remnantflag = f["remnantflag"]
-        _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
-        _evolvebin.snvars.maltsev_fallback = f["maltsev_fallback"]
-        _evolvebin.snvars.maltsev_pf_prob = f["maltsev_pf_prob"]
-        _evolvebin.snvars.fryer_mass_limit = f["fryer_mass_limit"]
-        _evolvebin.ceflags.cekickflag = f["cekickflag"]
-        _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
-        _evolvebin.ceflags.cehestarflag = f["cehestarflag"]
-        _evolvebin.flags.grflag = f["grflag"]
-        _evolvebin.flags.bhms_coll_flag = f["bhms_coll_flag"]
-        _evolvebin.flags.wd_mass_lim = f["wd_mass_lim"]
-        _evolvebin.snvars.mxns = f["mxns"]
-        _evolvebin.points.pts1 = f["pts1"]
-        _evolvebin.points.pts2 = f["pts2"]
-        _evolvebin.points.pts3 = f["pts3"]
-        _evolvebin.snvars.fryer_fmix = f["fryer_fmix"]
-        _evolvebin.snvars.fryer_mcrit_nsbh = f["fryer_mcrit_nsbh"]
-        _evolvebin.snvars.ecsn = f["ecsn"]
-        _evolvebin.snvars.ecsn_mlow = f["ecsn_mlow"]
-        _evolvebin.flags.aic = f["aic"]
-        _evolvebin.ceflags.ussn = f["ussn"]
-        _evolvebin.snvars.sigma = f["sigma"]
-        _evolvebin.snvars.sigmadiv = f["sigmadiv"]
-        _evolvebin.snvars.bhsigmafrac = f["bhsigmafrac"]
-        _evolvebin.snvars.polar_kick_angle = f["polar_kick_angle"]
-        _evolvebin.snvars.natal_kick_array = f["natal_kick_array"]
-        _evolvebin.cevars.qcrit_array = f["qcrit_array"]
-        _evolvebin.mtvars.don_lim = f["don_lim"]
-        _evolvebin.mtvars.acc_lim = f["acc_lim"]
-        _evolvebin.mtvars.smt_periastron_check = f["smt_periastron_check"]
-        _evolvebin.windvars.beta = f["beta"]
-        _evolvebin.windvars.xi = f["xi"]
-        _evolvebin.windvars.acc2 = f["acc2"]
-        _evolvebin.windvars.epsnov = f["epsnov"]
-        _evolvebin.windvars.eddfac = f["eddfac"]
-        _evolvebin.windvars.gamma = f["gamma"]
-        _evolvebin.windvars.lbv_flag = f["LBV_flag"]
-        _evolvebin.flags.bdecayfac = f["bdecayfac"]
-        _evolvebin.magvars.bconst = f["bconst"]
-        _evolvebin.magvars.ck = f["ck"]
-        _evolvebin.flags.windflag = f["windflag"]
-        _evolvebin.flags.qcflag = f["qcflag"]
-        _evolvebin.flags.eddlimflag = f["eddlimflag"]
-        _evolvebin.tidalvars.fprimc_array = f["fprimc_array"]
-        _evolvebin.rand1.idum1 = f["randomseed"]
-        _evolvebin.flags.bhspinflag = f["bhspinflag"]
-        _evolvebin.snvars.bhspinmag = f["bhspinmag"]
-        _evolvebin.mixvars.rejuv_fac = f["rejuv_fac"]
-        _evolvebin.flags.rejuvflag = f["rejuvflag"]
-        _evolvebin.flags.htpmb = f["htpmb"]
-        _evolvebin.flags.st_cr = f["ST_cr"]
-        _evolvebin.flags.st_tide = f["ST_tide"]
-        _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
-        _evolvebin.metvars.zsun = f["zsun"]
-        _evolvebin.snvars.kickflag = f["kickflag"]
-        _evolvebin.snvars.mm_mu_ns = f["mm_mu_ns"]
-        _evolvebin.snvars.mm_mu_bh = f["mm_mu_bh"]
+
+        # you can GROUPED_SETTINGS find this in consts.py
+        for group, settings in GROUPED_SETTINGS:
+            for setting in settings:
+                # special case: we call randomseed idum1 in the fortran (because why make it simple?)
+                if setting == "idum1":
+                    _evolvebin.rand1.idum1 = f["randomseed"]
+
+                # otherwise just set the value in the fortran module
+                else:
+                    setattr(getattr(_evolvebin, group), setting, f[setting])
         _evolvebin.cmcpass.using_cmc = 0
         
         if f["stellar_engine"] == "sse":
