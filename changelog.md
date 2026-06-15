@@ -9,8 +9,9 @@
 - Code cleanup
     - Function signature for kick() and evolv2() in the fortran changed to remove ``bkick`` entirely
     - Also removed ``kick_info_out``. Both of these can be reconstructed from ``kick_info``
+    - [Just for developers] Created ``consts.py`` which ``evolve.py`` now draws from, loops over GROUPED_SETTINGS instead of giant chunk of assignments
 
-- Bug fixes: c
+- Bug fixes:
     - corrected mass sign in bjorklund wind routine in SSE_mlwind.f
     - fixed bug in ``bhspinmag`` assignment in ``assign_remnant.f``
 
