@@ -5,6 +5,7 @@ on:
     types: [opened]
     paths:
       - 'src/cosmic/evolve.py'
+      - 'src/cosmic/consts.py'
       - 'src/cosmic/data/cosmic-settings.json'
       - 'src/cosmic/src/ran3.f'
 
