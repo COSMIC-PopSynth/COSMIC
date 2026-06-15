@@ -639,7 +639,7 @@ def _evolve_single_system(f, zpars=None):
 
                 # otherwise just set the value in the fortran module
                 else:
-                    setattr(getattr(_evolvebin, group), setting, f[setting])
+                    setattr(getattr(_evolvebin, group), setting.lower(), f[setting])
         _evolvebin.cmcpass.using_cmc = 0
         
         if f["stellar_engine"] == "sse":
