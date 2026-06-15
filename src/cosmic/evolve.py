@@ -631,10 +631,10 @@ def _evolve_single_system(f, zpars=None):
             f["kick_info"][0, 0] = 1
 
         # you can GROUPED_SETTINGS find this in consts.py
-        for group, settings in GROUPED_SETTINGS:
+        for group, settings in GROUPED_SETTINGS.items():
             for setting in settings:
                 # special case: we call randomseed idum1 in the fortran (because why make it simple?)
-                if setting == "idum1":
+                if setting == "randomseed":
                     _evolvebin.rand1.idum1 = f["randomseed"]
 
                 # otherwise just set the value in the fortran module

@@ -62,5 +62,5 @@ GROUPED_SETTINGS = {
     "tidalvars": ["fprimc_array"],
     "mixvars": ["rejuv_fac"],
     "metvars": ["zsun"],
-    "rand1": ["idum1"]
+    "rand1": ["randomseed"]
 }
