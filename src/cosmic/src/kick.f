@@ -1,5 +1,5 @@
       SUBROUTINE kick(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                r2,fallback,sigmahold,kick_info,disrupt,tphys)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -29,8 +29,6 @@
 *    Original sigma value for the kick
 * kick_info: real*8
 *    Array with information about the supernova kicks (details below)
-* bkick: real*8
-*    Array with information about the kicks for CMC (details below)
 * jorb: real*8, output
 *    Total orbital angular momentum of the binary
 * vk: real*8, output
@@ -40,25 +38,28 @@
 
       integer kw,sn
       real*8 m1,m2,m1c,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
-      real*8 kick_info(2,18), bkick(20)
+      real*8 kick_info(2,19),tphys
       logical disrupt
 
 * Use one of the two kick prescriptions based on the kickflag
       if(kickflag.lt.0)then
 * Original Kiel & Hurley 2009 prescription
          call kick_kiel(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                  r2,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                  r2,fallback,sigmahold,kick_info,disrupt)
       else
 * New Pfahl et al. 2002 prescription
          call kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                   r2,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                   r2,fallback,sigmahold,kick_info,disrupt)
       end if
+
+      kick_info(sn,19) = tphys
+
       RETURN
       END
 
 
       SUBROUTINE kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,r2,
-     &                      fallback,sigmahold,kick_info,disrupt,bkick)
+     &                      fallback,sigmahold,kick_info,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -106,7 +107,7 @@
       real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
-      real*8 bkick(20),r2,jorb
+      real*8 r2,jorb
       real*8 ecc_prev,a_prev,mtot,mtot_prev
       real*8 natal_kick(3), sep_vec(3), v_rel(3), v_rel_prev(3)
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
@@ -128,7 +129,7 @@
 * Output
       logical output,disrupt,collide
 *
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19)
       real ran3,xx
       external ran3
       external RandomTruncatedNormal
@@ -559,15 +560,6 @@
             kick_info(sn,11) = v_comp_rot(1)
             kick_info(sn,12) = v_comp_rot(2)
             kick_info(sn,13) = v_comp_rot(3)
-
-            bkick(1) = float(sn)
-            bkick(2) = kick_info(sn,7)
-            bkick(3) = kick_info(sn,8)
-            bkick(4) = kick_info(sn,9)
-            bkick(5) = float(sn)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
 *
          elseif(sn.eq.2)then
             kick_info(sn,11) = v_sn_rot(1)
@@ -576,15 +568,6 @@
             kick_info(sn,7) = v_comp_rot(1)
             kick_info(sn,8) = v_comp_rot(2)
             kick_info(sn,9) = v_comp_rot(3)
-
-            bkick(5) = float(sn)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-            bkick(9) = float(sn)
-            bkick(10) = kick_info(sn,7)
-            bkick(11) = kick_info(sn,8)
-            bkick(12) = kick_info(sn,9)
          endif
 
 * lastly, check if this supernova results in a collision between stars
@@ -598,12 +581,6 @@
             kick_info(sn,11) = 0.d0
             kick_info(sn,12) = 0.d0
             kick_info(sn,13) = 0.d0
-            bkick(6) = v_sn_rot(1)
-            bkick(7) = v_sn_rot(2)
-            bkick(8) = v_sn_rot(3)
-            bkick(10) = 0.d0
-            bkick(11) = 0.d0
-            bkick(12) = 0.d0
             m2 = -1.d0*m2
          endif
 
@@ -634,26 +611,6 @@
          kick_info(sn,12) = 0
          kick_info(sn,13) = 0
 
-* 1st time with kick.
-         if(bkick(1).le.0.d0)then
-            bkick(1) = float(sn)
-            bkick(2) = v_cm_rot(1)
-            bkick(3) = v_cm_rot(2)
-            bkick(4) = v_cm_rot(3)
-* 2nd time with kick.
-         elseif(bkick(5).le.0.d0)then
-            bkick(5) = float(sn)
-            bkick(6) = v_cm_rot(1)
-            bkick(7) = v_cm_rot(2)
-            bkick(8) = v_cm_rot(3)
-* 2nd time with kick if already disrupted.
-* MJZ - would this if statement ever be hit?
-         elseif(bkick(5).gt.0.d0)then
-            bkick(9) = float(sn)
-            bkick(10) = v_cm_rot(1)
-            bkick(11) = v_cm_rot(2)
-            bkick(12) = v_cm_rot(3)
-         endif
 * In the impossible chance that the system is exactly parabolic...
          if(ecc.eq.1.d0.and.sn.eq.1)then
             kick_info(sn,7) = v_cm_rot(1)
@@ -662,14 +619,6 @@
             kick_info(sn,11) = -v_cm_rot(1)
             kick_info(sn,12) = -v_cm_rot(2)
             kick_info(sn,13) = -v_cm_rot(3)
-            bkick(1) = float(sn)
-            bkick(2) = v_cm_rot(1)
-            bkick(3) = v_cm_rot(2)
-            bkick(4) = v_cm_rot(3)
-            bkick(5) = float(sn)
-            bkick(6) = -v_cm_rot(1)
-            bkick(7) = -v_cm_rot(2)
-            bkick(8) = -v_cm_rot(3)
          elseif(ecc.eq.1.d0.and.sn.eq.2)then
             kick_info(sn,7) = -v_cm_rot(1)
             kick_info(sn,8) = -v_cm_rot(2)
@@ -677,14 +626,6 @@
             kick_info(sn,11) = v_cm_rot(1)
             kick_info(sn,12) = v_cm_rot(2)
             kick_info(sn,13) = v_cm_rot(3)
-            bkick(5) = float(sn)
-            bkick(6) = v_cm_rot(1)
-            bkick(7) = v_cm_rot(2)
-            bkick(8) = v_cm_rot(3)
-            bkick(9) = float(sn)
-            bkick(10) = -v_cm_rot(1)
-            bkick(11) = -v_cm_rot(2)
-            bkick(12) = -v_cm_rot(3)
          endif
 
 * Update the Euler angles for the orbital plane rotation
@@ -797,7 +738,7 @@
 * ======================================================================
 ***
       SUBROUTINE kick_kiel(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,r2,
-     &                     fallback,sigmahold,kick_info,disrupt,bkick)
+     &                     fallback,sigmahold,kick_info,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -879,11 +820,10 @@
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
-      real*8 bkick(20)
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19)
       real ran3,xx
       external ran3
 *
@@ -915,9 +855,6 @@
       if(using_cmc.eq.0)then
           if(kick_info(1,1).eq.0) sn=1
           if(kick_info(1,1).gt.0) sn=2
-      else
-          if(bkick(1).eq.0) sn=1
-          if(bkick(1).gt.0) sn=2
       endif
 
       if(using_cmc.eq.0)then
@@ -1323,15 +1260,6 @@
 *
             kick_info(sn,13) = (m1n/mbf)*vk*sphi
 
-            bkick(1) = float(snstar)
-            bkick(2) = kick_info(sn,7)
-            bkick(3) = kick_info(sn,8)
-            bkick(4) = kick_info(sn,9)
-            bkick(5) = float(snstar)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
                   kick_info(sn,7) = vs(1)
@@ -1340,12 +1268,6 @@
                   kick_info(sn,11) = 0.d0
                   kick_info(sn,12) = 0.d0
                   kick_info(sn,13) = 0.d0
-                  bkick(2) = vs(1)
-                  bkick(3) = vs(2)
-                  bkick(4) = vs(3)
-                  bkick(6) = 0.d0
-                  bkick(7) = 0.d0
-                  bkick(8) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -1371,15 +1293,6 @@
 *
             kick_info(sn,9) = (m1n/mbf)*vk*sphi
 
-            bkick(5) = float(snstar)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-            bkick(9) = float(snstar)
-            bkick(10) = kick_info(sn,7)
-            bkick(11) = kick_info(sn,8)
-            bkick(12) = kick_info(sn,9)
-
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
                   kick_info(sn,7) = vs(1)
@@ -1388,12 +1301,6 @@
                   kick_info(sn,11) = 0.d0
                   kick_info(sn,12) = 0.d0
                   kick_info(sn,13) = 0.d0
-                  bkick(6) = vs(1)
-                  bkick(7) = vs(2)
-                  bkick(8) = vs(3)
-                  bkick(10) = 0.d0
-                  bkick(11) = 0.d0
-                  bkick(12) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -1413,30 +1320,6 @@
          kick_info(sn,13) = 0
       endif
 
-      if(ecc.lt.1.d0)then
-*         if(ecc.eq.1.d0.or.ecc.lt.0.d0) m2 = -1.d0 * m2
-* 1st time with kick.
-         if(bkick(1).le.0.d0)then
-            bkick(1) = float(snstar)
-            bkick(2) = vs(1)
-            bkick(3) = vs(2)
-            bkick(4) = vs(3)
-* 2nd time with kick.
-         elseif(bkick(5).le.0.d0)then
-            bkick(5) = float(snstar)
-            bkick(6) = vs(1)
-            bkick(7) = vs(2)
-            bkick(8) = vs(3)
-* 2nd time with kick if already disrupted.
-* MJZ - would this if statement ever be hit?
-         elseif(bkick(5).gt.0.d0)then
-            bkick(9) = float(snstar)
-            bkick(10) = vs(1)
-            bkick(11) = vs(2)
-            bkick(12) = vs(3)
-         endif
-      endif
-
 * In the impossible chance that the system is exactly parabolic...
       if(ecc.eq.1.d0.and.snstar.eq.1)then
          kick_info(sn,7) = vs(1)
@@ -1445,14 +1328,6 @@
          kick_info(sn,11) = -vs(1)
          kick_info(sn,12) = -vs(2)
          kick_info(sn,13) = -vs(3)
-         bkick(1) = float(snstar)
-         bkick(2) = vs(1)
-         bkick(3) = vs(2)
-         bkick(4) = vs(3)
-         bkick(5) = float(snstar)
-         bkick(6) = -vs(1)
-         bkick(7) = -vs(2)
-         bkick(8) = -vs(3)
       elseif(ecc.eq.1.d0.and.snstar.eq.2)then
          kick_info(sn,7) = -vs(1)
          kick_info(sn,8) = -vs(2)
@@ -1460,14 +1335,6 @@
          kick_info(sn,11) = vs(1)
          kick_info(sn,12) = vs(2)
          kick_info(sn,13) = vs(3)
-         bkick(5) = float(snstar)
-         bkick(6) = vs(1)
-         bkick(7) = vs(2)
-         bkick(8) = vs(3)
-         bkick(9) = float(snstar)
-         bkick(10) = -vs(1)
-         bkick(11) = -vs(2)
-         bkick(12) = -vs(3)
       endif
 
 * Uncomment to randomly rotate system velocities
