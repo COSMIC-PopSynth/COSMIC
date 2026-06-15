@@ -335,9 +335,9 @@ if __name__ == '__main__':
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
-    bcm_filter_match = []
-    bpp_filter_match = []
-    initC_filter_match = []
+    bcm_filter_match = pd.DataFrame()
+    bpp_filter_match = pd.DataFrame()
+    initC_filter_match = pd.DataFrame()
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
@@ -546,17 +546,17 @@ if __name__ == '__main__':
         conv_filter = conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)]
 
         # Filter the bcm and bpp arrays according to user specified filters
-        bcm_filter_match = bcm_filter.copy()
-        bpp_filter_match = bpp_filter.copy()
-        initC_filter_match = initC_filter.copy()
-        conv_filter_match = conv_filter.copy()
-        kick_info_filter_match = kick_info_filter.copy()
+        bcm_filter_match = pd.concat([bcm_filter_match, bcm_filter])
+        bpp_filter_match = pd.concat([bpp_filter_match, bpp_filter])
+        initC_filter_match = pd.concat([initC_filter_match, initC_filter])
+        conv_filter_match = pd.concat([conv_filter_match, conv_filter])
+        kick_info_filter_match = pd.concat([kick_info_filter_match, kick_info_filter])
         if (args.keep_singles==True):
-            conv_singles_filter_match = conv_singles_filter.copy()
-            bpp_singles_filter_match = bpp_singles_filter.copy()
-            bcm_singles_filter_match = bcm_singles_filter.copy()
-            initC_filter_singles_match = initC_singles_filter.copy()
-            kick_info_singles_filter_match = kick_info_singles_filter.copy()          
+            conv_singles_filter_match = pd.concat([conv_singles_filter_match, conv_singles_filter])
+            bpp_singles_filter_match = pd.concat([bpp_singles_filter_match, bpp_singles_filter])
+            bcm_singles_filter_match = pd.concat([bcm_singles_filter_match, bcm_singles_filter])
+            initC_filter_singles_match = pd.concat([initC_singles_filter_match, initC_singles_filter])
+            kick_info_singles_filter_match = pd.concat([kick_info_singles_filter_match, kick_info_singles_filter])          
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
             conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
