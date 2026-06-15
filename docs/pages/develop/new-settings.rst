@@ -13,9 +13,7 @@ This page guides you through adding an entirely new setting to COSMIC. If you ju
     
     - ``src/cosmic/src/const_bse.h``: Initialise a new variable and add it to the relevant common block
     - ``src/cosmic/data/cosmic-settings.json``: Add the setting to the JSON file, with a description and default value
-    - ``src/cosmic/evolve.py``
-         - Add variable to ``INITIAL_CONDITIONS_BSE_COLUMNS``
-         - Add variable in ``_evolve_single_system()`` list
+    - ``src/cosmic/consts.py`` - Add settings to correct group in ``GROUPED_SETTINGS`` dict
     - ``src/cosmic/tests/data``: Update initC files and params.ini with new setting
          - ``src/cosmic/tests/data/initial_conditions_for_testing.hdf5``
          - ``src/cosmic/tests/data/kick_initial_conditions.h5``
@@ -25,7 +23,7 @@ This page guides you through adding an entirely new setting to COSMIC. If you ju
 
 Adding a new setting to ``COSMIC`` is a little more involved than just adding an options. Settings are stored in common blocks in the Fortran code so that they can be accessed anywhere in the code. Let's do it step by step.
 
-Throughout this example, let's say we want to add a new setting called ``lbv_flag`` that sets the prescription for luminous blue variable mass loss.
+Throughout this example, let's say we want to add a new setting called ``LBV_flag`` that sets the prescription for luminous blue variable mass loss.
 
 Add new setting to a common block
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -55,7 +53,7 @@ In ``src/cosmic/data/cosmic-settings.json``, we add a new entry for our setting:
 
 .. code-block:: json
     
-    "name": "lbv_flag",
+    "name": "LBV_flag",
     "description": "Flag for luminous blue variable wind mass loss prescription.",
     "type": "dropdown",
     "options-preface": "",
@@ -83,22 +81,15 @@ In ``src/cosmic/data/cosmic-settings.json``, we add a new entry for our setting:
 Pass the setting from evolve() to the Fortran code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now we need to pass the setting from the Python code in ``evolve.py`` to the Fortran code. This is done in the ``_evolve_single_system()`` function in ``src/cosmic/evolve.py``. But first, we need to add the new setting to the list of columns in the initial binary table. This is done by adding it to the ``INITIAL_CONDITIONS_BSE_COLUMNS`` list at the top of ``src/cosmic/evolve.py``:
+Now we need to pass the setting from the Python code in ``evolve.py`` to the Fortran code. This is actually handled in ``src/cosmic/consts.py``, where we have a dictionary called ``GROUPED_SETTINGS`` that groups settings by the common block they belong to. We need to add our new setting to the correct group in this dictionary:
 
 .. code-block:: python
     
-    # dots are representing the existing columns
-    INITIAL_CONDITIONS_BSE_COLUMNS = [..., 'lbv_flag']
-
-Now we change the ``_evolve_single_system()`` function to pass the new setting to the Fortran code. In the list of flags that is passed to the Fortran code, we add our new setting:
-
-.. code-block:: python
-    
-    _evolvebin.windvars.lbv_flag = f["lbv_flag"]
-
-.. warning::
-
-    Make sure you use the right common block here (``windvars`` in this case) otherwise the setting won't get properly passed but will also not throw an error which can be very confusing to debug! (I have made this mistake before and it was not fun to figure out what was going wrong)
+    GROUPED_SETTINGS = {
+        ...,
+        "windvars": [..., "LBV_flag"],
+        ...
+    }
 
 Use the new setting in the Fortran code
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -135,6 +126,6 @@ For the params.ini file, add a new entry for the new setting with a reasonable d
         with open("src/cosmic/tests/data/Params.ini", "a") as f:
             f.write(f"\n\n{setting_name} = {setting_value}\n\n")
 
-    add_setting_to_test_files("lbv_flag", 1)
+    add_setting_to_test_files("LBV_flag", 1)
 
 And that's it! You've added a new setting to COSMIC. Now you should absolutely run the tests to make sure everything is working properly! Better yet, add more tests that specifically test the new setting to make sure it's working as expected.
