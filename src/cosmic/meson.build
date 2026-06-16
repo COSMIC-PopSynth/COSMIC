@@ -3,6 +3,7 @@ python_sources = [
   '_commit_hash.py',
   '_version.py',
   'checkstate.py',
+  'consts.py',
   'evolve.py',
   'filter.py',
   'get_commit_hash.py',
