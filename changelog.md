@@ -10,9 +10,10 @@
     - Function signature for kick() and evolv2() in the fortran changed to remove ``bkick`` entirely
     - Also removed ``kick_info_out``. Both of these can be reconstructed from ``kick_info``
 
-- Bug fixes: c
+- Bug fixes:
     - corrected mass sign in bjorklund wind routine in SSE_mlwind.f
     - fixed bug in ``bhspinmag`` assignment in ``assign_remnant.f``
+    - fixed issue added in v3.7.6 where sample fails if you have total_mass as your sampling target and use multiprocessing
 
 ## 4.0.1
 
