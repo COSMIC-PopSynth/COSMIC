@@ -31,6 +31,7 @@ from cosmic._version import __version__
 
 from schwimmbad import MPIPool
 from os import sys
+import pdb
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -254,18 +255,18 @@ if __name__ == '__main__':
             if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
                for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
                     if (model not in sampling.keys()) and not (getattr(args, model)):
-                        raise ValueError("You have selected the {0} sampler "
-                                         "but not specified a model for {1} "
-                                         "in the inifile or command line".format(sampling[argument], model)) 
+                        raise ValueError("You have selected the {sampler} sampler "
+                                         "but not specified a model for {model} "
+                                         "in the inifile or command line".format(sampler=sampling[argument], model=model)) 
             if sampling[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, sampling[argument], getattr(args, argument)))
+                warnings.warn("You are overriding the inifile value of {arg}={ini} "
+                              "with {arg}={cmd} from the commandline".format(arg=argument, ini=sampling[argument], cmd=getattr(args, argument)))
                 sampling[argument] = getattr(args, argument)
 
         if argument == 'seed':
             if getattr(args, argument) != seed_int:
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
+                warnings.warn("You are overriding the inifile value of {arg}={ini} "
+                              "with {arg}={cmd} from the commandline".format(arg=argument, ini=seed_int, cmd=getattr(args, argument)))
                 seed_int = getattr(args, argument)
 
     # Check that the values in BSEDict, SSEDict, filters, and convergence are valid
@@ -471,6 +472,7 @@ if __name__ == '__main__':
                                                           dtp=dtp,
                                                           timestep_conditions=filters['timestep_conditions'])
 
+        pdb.set_trace()
         # extract single stars
 
         if (args.keep_singles==True):
@@ -617,7 +619,18 @@ if __name__ == '__main__':
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
-    
+
+# Print the reason the while loop ended. 
+# This is not really necessary because you could just check the match value in the log file
+    if (Nstep >= args.Niter):
+        log_file.write('Reason for termination: Niter reached. An additional run is recommended.')
+        log_file.write('\n')
+    if (np.max(match) <= convergence['match']):
+        log_file.write('Reason for termination: converged to given match')
+        log_file.write('\n')
+    if ((time.time() - start_time) >= args.max_wall_time):
+        log_file.write('Reason for termination: max wall time reached. An additional run is recommended.')
+        log_file.write('\n')
     # close the log file and print the final message
     log_file.write('All done friend!')
     log_file.close()
