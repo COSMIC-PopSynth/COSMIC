@@ -248,7 +248,7 @@ def get_independent_sampler(
         # set up the arguments for each chunk
         chunk_args = [(
             final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-            binfrac_model, met, SSEDict, chunk if sampling_target == "size" else None,
+            binfrac_model, met, SSEDict, chunk if sampling_target == "size" else size // n_chunks,
             chunk if sampling_target == "total_mass" else np.inf, sampling_target, trim_extra_samples,
             q_power_law, kwargs
         ) for chunk in chunk_sizes]
@@ -290,6 +290,10 @@ def _independent_sampler_worker(
 
     # set up multiplier if the mass sampling is inefficient
     multiplier = 1
+
+    # if size is passed as None, default to assuming a mean mass of 0.5 Msun (Kroupa IMF between 0.08, 150)
+    if size is None:
+        size = int(total_mass / 0.5)
 
     # track samples to actually return (after masks)
     mass1_singles = []
