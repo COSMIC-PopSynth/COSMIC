@@ -31,7 +31,6 @@ from cosmic._version import __version__
 
 from schwimmbad import MPIPool
 from os import sys
-import pdb
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -472,7 +471,6 @@ if __name__ == '__main__':
                                                           dtp=dtp,
                                                           timestep_conditions=filters['timestep_conditions'])
 
-        pdb.set_trace()
         # extract single stars
 
         if (args.keep_singles==True):
