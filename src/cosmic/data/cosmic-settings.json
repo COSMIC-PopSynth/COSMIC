@@ -1021,11 +1021,11 @@
                     },
                     {
                         "name": 7,
-                        "description": "Draws natal kick magnitudes following the gravitational tug-boat mechanism in asymmetric core-collapse explosions from Janka (2017) [https://ui.adsabs.harvard.edu/abs/2017ApJ...837...84J/abstract], with the exact form as in Eq. 2 of Chattaraj et al. (2026) [https://ui.adsabs.harvard.edu/abs/2026ApJ...997...52C/abstract], which is observationally 'calibrated' to the Galactic (field) double neutron star population."
+                        "description": "Draws natal kick magnitudes following the gravitational tug-boat mechanism in asymmetric core-collapse explosions from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017ApJ...837...84J/abstract'>Janka (2017)</a>, with the exact form as in Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2026ApJ...997...52C/abstract'>Chattaraj et al. (2026)</a>, which is observationally 'calibrated' to the Galactic (field) double neutron star population."
                     },
                     {
                         "name": 8,
-                        "description": "Follows Richards et al. (2023) [https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.3972R/abstract], which constrains the natal kicks on neutron stars from a combination of observations and the double neutron star merger rate."
+                        "description": "Follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.3972R/abstract'>Richards et al. (2023)</a>, which constrains the natal kicks on neutron stars from a combination of observations and the double neutron star merger rate."
                     },
                     {
                         "name": "negative values",
