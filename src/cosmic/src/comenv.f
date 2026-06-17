@@ -175,6 +175,7 @@
 * If the secondary star is also giant-like add its envelopes energy.
 * Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
+      m2endstage1 = M2
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
          IF (using_METISSE.eq.1) THEN
@@ -268,6 +269,29 @@
 *
       IF(CE2STAGEFLAG.EQ.1)THEN
          SEPF = m1endstage1*m2endstage1/(2.D0*EORBF)
+* log end of the first stage with evolve_type=3
+         q1_bpp = m1endstage1/m2endstage1
+         q2_bpp = 1.d0/q1_bpp
+         rrl1_bpp = RC1/(RL(q1_bpp)*SEP_postCE)
+         rrl2_bpp = R2/(RL(q2_bpp)*SEP_postCE)
+         TB = (SEPF/AURSUN)*
+     &        SQRT(SEPF/(AURSUN*(m1endstage1+m2endstage1)))
+         CALL writetab(jp,tphys,3.d0,
+     &        m1endstage1,m2endstage1,KW1,KW2,
+     &        SEPF,TB,ECC,
+     &        rrl1_bpp,rrl2_bpp,
+     &        AJ1,AJ2,tms1_bpp,tms2_bpp,
+     &        mc_he(1),mc_he(2),mc_co(1),mc_co(2),
+     &        rad1_bpp,rad2_bpp,
+     &        M02,M01,lumin(1),lumin(2),
+     &        teff1,teff2,
+     &        RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &        renv_bpp(1),
+     &        renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &        epoch(2),bhspin2,bhspin1,
+     &        deltam_2,deltam_1,formation2,formation1,
+     &        binstate,mergertype,zpars(14)**2.d5,'bpp')
 *
 * Second stage: stable mass transfer of the radiative intershell
 * Binary hardening formula from Picker, Hirai & Mandel 2024
