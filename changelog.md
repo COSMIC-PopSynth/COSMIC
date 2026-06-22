@@ -1,6 +1,17 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.1.1
+
+- Additions/changes
+    -
+
+- Code cleanup
+    - 
+
+- Bug fixes
+    - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
+
 ## 4.1.0
 
 - Additions/changes
