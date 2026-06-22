@@ -644,6 +644,21 @@ class TestSample(unittest.TestCase):
             it_fails = True
         self.assertFalse(it_fails)
 
+    def test_samples_unique(self):
+        # ensure that samples are unique, both serial and parallel
+        np.random.seed(2)
+
+        for nproc in [1, 2]:
+            ibt = InitialBinaryTable.sampler(
+                'independent', range(16), range(16),
+                binfrac_model=1.0, primary_model='kroupa01',
+                ecc_model='sana12', porb_model='sana12',
+                qmin=-1, SF_start=13700.0, SF_duration=0.0,
+                met=0.02, size=10_000, nproc=nproc
+            )[0]
+
+            self.assertTrue(len(ibt) == len(ibt.drop_duplicates()))
+
 class TestCMCSample(unittest.TestCase):
     def test_plummer_profile(self):
         np.random.seed(2)
