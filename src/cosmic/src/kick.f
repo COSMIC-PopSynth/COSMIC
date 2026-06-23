@@ -156,9 +156,6 @@
 * Set values for mean NS mass and mean ejecta as in Giacobbo & Mapelli 2020
       mean_mns = 1.2d0
       mean_mej = 9.0d0
-* Set values for alpha and beta as in Bray & Eldridge 2016
-      alphakick = 70.0d0
-      betakick = 120.0d0
 
       if(using_cmc.eq.0)then
 * check if we have supplied a randomseed for this SN from kick_info
@@ -281,6 +278,8 @@
              vk2 = vk*vk
           elseif(abskickflag.eq.4)then
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
+             alphakick = 70.0d0
+             betakick = 120.0d0
              vk = alphakick * ((m1-m1n)/m1n) + betakick
              vk2 = vk*vk
           elseif(abskickflag.eq.7)then
@@ -298,11 +297,11 @@
      &            (1.5d0 / m1n)
              vk2 = vk*vk
           elseif(abskickflag.eq.8)then
-* From Richardson et al.
+* From Richards+2023, Eq 1 (improvement upon Bray & Eldridge 2016)
 * Calibrated against single pulsars, double neutron stars, low kick velocities of ultra stripped supernova
-             alpha = 115.0d0
-             beta = 15.0d0
-             vk = alpha * ((m1c - m1n) / m1n) + beta
+             alphakick = 115.0d0
+             betakick = 15.0d0
+             vk = alphakick * ((m1-m1n)/m1n) + betakick * (1.4d0/m1n)
              vk2 = vk*vk
           endif
 
