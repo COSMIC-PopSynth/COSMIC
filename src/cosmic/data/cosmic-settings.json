@@ -1025,7 +1025,7 @@
                     },
                     {
                         "name": 8,
-                        "description": "Follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.3972R/abstract'>Richards et al. (2023)</a>, which constrains the natal kicks on neutron stars from a combination of observations and the double neutron star merger rate."
+                        "description": "Follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.3972R/abstract'>Richards et al. (2023)</a> Eq. 1, which constrains the natal kicks on neutron stars from a combination of observations and the double neutron star merger rate. Similar to kickflag==4, but with different parameters."
                     },
                     {
                         "name": "negative values",
