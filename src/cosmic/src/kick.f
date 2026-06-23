@@ -122,8 +122,7 @@
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
       real*8 mu_mm
-      real*8 mean_mns, mean_mej, alphakick, betakick
-      real*8 epsilon_5, f_kin, beta_nu, alpha_ej, alpha, beta 
+      real*8 epsilon_5, f_kin, beta_nu, alpha_ej
       integer i
       logical ECSN_or_USSN
 * Output
