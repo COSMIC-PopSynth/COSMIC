@@ -254,18 +254,18 @@ if __name__ == '__main__':
             if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
                for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
                     if (model not in sampling.keys()) and not (getattr(args, model)):
-                        raise ValueError("You have selected the {0} sampler "
-                                         "but not specified a model for {1} "
-                                         "in the inifile or command line".format(sampling[argument], model)) 
+                        raise ValueError("You have selected the {sampler} sampler "
+                                         "but not specified a model for {model} "
+                                         "in the inifile or command line".format(sampler=sampling[argument], model=model)) 
             if sampling[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, sampling[argument], getattr(args, argument)))
+                warnings.warn("You are overriding the inifile value of {arg}={ini} "
+                              "with {arg}={cmd} from the commandline".format(arg=argument, ini=sampling[argument], cmd=getattr(args, argument)))
                 sampling[argument] = getattr(args, argument)
 
         if argument == 'seed':
             if getattr(args, argument) != seed_int:
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
+                warnings.warn("You are overriding the inifile value of {arg}={ini} "
+                              "with {arg}={cmd} from the commandline".format(arg=argument, ini=seed_int, cmd=getattr(args, argument)))
                 seed_int = getattr(args, argument)
 
     # Check that the values in BSEDict, SSEDict, filters, and convergence are valid
@@ -335,9 +335,18 @@ if __name__ == '__main__':
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
-    bcm_filter_match = []
-    bpp_filter_match = []
-    initC_filter_match = []
+    bcm_filter_match = pd.DataFrame()
+    bpp_filter_match = pd.DataFrame()
+    initC_filter_match = pd.DataFrame()
+    conv_filter_match = pd.DataFrame()
+    kick_info_filter_match = pd.DataFrame()
+    
+    if (args.keep_singles == True):
+        conv_singles_filter_match = pd.DataFrame()
+        bpp_singles_filter_match = pd.DataFrame()
+        bcm_singles_filter_match = pd.DataFrame()
+        initC_filter_singles_match = pd.DataFrame()
+        kick_info_singles_filter_match = pd.DataFrame()
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
@@ -546,17 +555,17 @@ if __name__ == '__main__':
         conv_filter = conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)]
 
         # Filter the bcm and bpp arrays according to user specified filters
-        bcm_filter_match = bcm_filter.copy()
-        bpp_filter_match = bpp_filter.copy()
-        initC_filter_match = initC_filter.copy()
-        conv_filter_match = conv_filter.copy()
-        kick_info_filter_match = kick_info_filter.copy()
+        bcm_filter_match = pd.concat([bcm_filter_match, bcm_filter])
+        bpp_filter_match = pd.concat([bpp_filter_match, bpp_filter])
+        initC_filter_match = pd.concat([initC_filter_match, initC_filter])
+        conv_filter_match = pd.concat([conv_filter_match, conv_filter])
+        kick_info_filter_match = pd.concat([kick_info_filter_match, kick_info_filter])
         if (args.keep_singles==True):
-            conv_singles_filter_match = conv_singles_filter.copy()
-            bpp_singles_filter_match = bpp_singles_filter.copy()
-            bcm_singles_filter_match = bcm_singles_filter.copy()
-            initC_filter_singles_match = initC_singles_filter.copy()
-            kick_info_singles_filter_match = kick_info_singles_filter.copy()          
+            conv_singles_filter_match = pd.concat([conv_singles_filter_match, conv_singles_filter])
+            bpp_singles_filter_match = pd.concat([bpp_singles_filter_match, bpp_singles_filter])
+            bcm_singles_filter_match = pd.concat([bcm_singles_filter_match, bcm_singles_filter])
+            initC_filter_singles_match = pd.concat([initC_filter_singles_match, initC_singles_filter])
+            kick_info_singles_filter_match = pd.concat([kick_info_singles_filter_match, kick_info_singles_filter])          
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
             conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
@@ -594,21 +603,32 @@ if __name__ == '__main__':
                                 bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
-            bcm_filter_match = []
-            bpp_filter_match = [] 
-            initC_filter_match = []
-            conv_filter_match = []
-            kick_info_filter_match = []
+            bcm_filter_match = pd.DataFrame()
+            bpp_filter_match = pd.DataFrame()
+            initC_filter_match = pd.DataFrame()
+            conv_filter_match = pd.DataFrame()
+            kick_info_filter_match = pd.DataFrame()
             if (args.keep_singles==True):
-                conv_singles_filter_match = []
-                bpp_singles_filter_match = []
-                bcm_singles_filter_match = []
-                initC_filter_singles_match = []
-                kick_info_singles_filter_match = []
+                conv_singles_filter_match = pd.DataFrame()
+                bpp_singles_filter_match = pd.DataFrame()
+                bcm_singles_filter_match = pd.DataFrame()
+                initC_filter_singles_match = pd.DataFrame()
+                kick_info_singles_filter_match = pd.DataFrame()
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
-    
+
+# Print the reason the while loop ended. 
+# This is not really necessary because you could just check the match value in the log file
+    if (Nstep >= args.Niter):
+        log_file.write('Reason for termination: Niter reached. An additional run is recommended.')
+        log_file.write('\n')
+    if (np.max(match) <= convergence['match']):
+        log_file.write('Reason for termination: converged to given match')
+        log_file.write('\n')
+    if ((time.time() - start_time) >= args.max_wall_time):
+        log_file.write('Reason for termination: max wall time reached. An additional run is recommended.')
+        log_file.write('\n')
     # close the log file and print the final message
     log_file.write('All done friend!')
     log_file.close()
