@@ -1,6 +1,6 @@
 """
-Comparing Natal Kick Velocity Prescriptions
-===========================================
+kickflag
+========
 
 This example demonstrates how changing the `kickflag` parameter can affect the natal kick velocity distributions of compact objects.
 We separate this into neutron stars and black holes.
