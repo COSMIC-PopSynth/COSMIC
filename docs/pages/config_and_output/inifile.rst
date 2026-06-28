@@ -50,42 +50,42 @@ Filters
 -------
 
 .. raw:: html
-    :file: ../_generated/config_insert_filters.html
+    :file: ../../_generated/config_insert_filters.html
 
 
 Sampling
 --------
 
 .. raw:: html
-    :file: ../_generated/config_insert_sampling.html
+    :file: ../../_generated/config_insert_sampling.html
 
 
 Convergence
 -----------
 
 .. raw:: html
-    :file: ../_generated/config_insert_convergence.html
+    :file: ../../_generated/config_insert_convergence.html
 
 
 Random Seed
 -----------
 
 .. raw:: html
-    :file: ../_generated/config_insert_rand_seed.html
+    :file: ../../_generated/config_insert_rand_seed.html
 
 
 Single star evolution
 ---------------------
 
 .. raw:: html
-    :file: ../_generated/config_insert_sse.html
+    :file: ../../_generated/config_insert_sse.html
 
 
 Binary physics
 --------------
 
 .. raw:: html
-    :file: ../_generated/config_insert_bse.html
+    :file: ../../_generated/config_insert_bse.html
 
 
 Generated data
@@ -127,4 +127,4 @@ Python BSE settings dictionary
 
 .. raw:: html
 
-    <script src="../_static/settings.js"></script>
+    <script src="../../_static/settings.js"></script>

@@ -1075,7 +1075,7 @@ component.
       do 504 , k = kmin,kmax
 *
          dms(k) = (dmr(k) - dmt(k))*dt
-         if(kstar(k).lt.10)then
+         if(using_METISSE.eq.0.and.kstar(k).lt.10)then
             dml = mass(k) - massc(k)
             if(dml.lt.dms(k))then
                dml = MAX(dml,2.d0*tiny)
