@@ -61,11 +61,11 @@ BSEDict = fiducial  # extend with model variants as needed
 # Define parameter space
 # ------------------------------------------------------------------
 params = ParameterSpace([
-    Parameter('mass_1', 5.0, 150.0, sampler='kroupa', prior='kroupa'),
-    Parameter('q', 0.0, 1.0, sampler='uniform', prior='uniform'),
-    Parameter('porb', 0.15, 5.5, sampler='sana', prior='sana'),
-    Parameter('ecc', 1e-9, 0.99999999, sampler='sana_ecc', prior='sana_ecc'),
-    Parameter('metallicity', 0.0001, 0.03, sampler='flat_in_log', prior='flat_in_log'),
+    Parameter('mass_1', 5.0, 150.0, dist='kroupa'),
+    Parameter('q', 0.0, 1.0, dist='uniform'),
+    Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),   # ~1.4 d to ~316 000 d
+    Parameter('ecc', 1e-9, 0.99999999, dist='sana_ecc'),
+    Parameter('metallicity', 0.0001, 0.03, dist='flat_in_log'),
 ])
 
 # ------------------------------------------------------------------
