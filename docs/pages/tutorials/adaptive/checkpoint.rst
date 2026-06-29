@@ -13,13 +13,13 @@ Why split a run in two?
 
 A call to :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run` performs all three phases
 back to back: exploration, adaptation, and refinement.  Splitting the run lets you stop
-after adaptation — once the Gaussian mixture has been fitted to the exploration hits — and
-resume the (usually much larger) refinement phase separately.  This is useful when you want
+after adaptation — once the Gaussian mixture has been fit to the exploration hits — and
+resume the (usually much larger) refinement phase separately. This is useful when you want
 to
 
 * run exploration and refinement as **separate cluster jobs**, perhaps with different
   walltimes or allocations;
-* fan a single adapted mixture out across **several refinement jobs** on different nodes; or
+* spread a single adapted mixture out across **several refinement jobs** on different nodes; or
 * simply **inspect** the mixture before committing compute to refinement.
 
 Instead of :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run`, you use the two
@@ -40,7 +40,6 @@ call :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_exploration` instead 
 
     from cosmic.sample.stroopwafel import AdaptiveSampler, ParameterSpace, Parameter
     from cosmic.sample.stroopwafel.presets import any_dco
-    from cosmic.sample.stroopwafel.rejection import default_reject
 
     params = ParameterSpace([
         Parameter('mass_1',      5.0,        150.0,      dist='kroupa'),
@@ -60,8 +59,7 @@ call :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_exploration` instead 
         BSEDict=BSEDict,
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
         derive_params=derive_params,
-        reject_systems=default_reject,
-        output_path='output/explore',
+        reject_systems="default",
         nproc=4,
         seed=42,
     )
@@ -82,8 +80,7 @@ Stage 2 — load the checkpoint and refine
 
 In a second script (or cluster job) rebuild the sampler with
 :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint`, then call
-:meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_refinement`.  The checkpoint is
-**self-contained**, so this needs nothing but the file:
+:meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_refinement`.
 
 .. code-block:: python
 
@@ -101,12 +98,12 @@ exploration), pass it as a keyword override:
 .. code-block:: python
 
     sampler = AdaptiveSampler.from_checkpoint(
-        'checkpoint.h5', nproc=16, total_systems=1_000_000,
+        'checkpoint.h5', nproc=16
     )
 
 Any :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` constructor argument may be
 overridden this way (``parameter_space``, ``BSEDict``, ``derive_params``,
-``reject_systems``, ``is_interesting``, ``batch_size``, ``output_path``, ``nproc``,
+``reject_systems``, ``is_interesting``, ``batch_size``, ``nproc``,
 ``kappa``, ``n_generations``, ``only_save_hit_tables``, ``seed``).
 
 The ``result`` is an ordinary :class:`~cosmic.output.COSMICStroopOutput` — identical in form
@@ -130,10 +127,8 @@ A checkpoint is a complete snapshot — it stores both the exploration *results*
   the ``derive_params`` / ``reject_systems`` / ``is_interesting`` callables, the remaining
   scalar settings, and the live RNG state.
 
-The callables and parameter space are serialised with :mod:`dill` (a dependency COSMIC
-already ships), so lambdas and closures — such as the ``is_interesting`` returned by
-``any_dco(...)`` — round-trip correctly.  Because the RNG state is stored too, refinement
-continues the random stream seamlessly rather than restarting it (pass ``seed=`` to
+The callables and parameter space are serialised with :mod:`dill` so it lets you use general functions.
+Because the RNG state is stored too, refinement continues the random stream seamlessly rather than restarting it (pass ``seed=`` to
 ``from_checkpoint`` if you instead want a fresh stream).
 
 
@@ -142,8 +137,16 @@ Reusing one checkpoint for several refinement jobs
 
 Because :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint` reads the
 checkpoint without modifying it, you can launch any number of independent refinement jobs
-from the same ``checkpoint.h5`` — for example with different ``seed`` values on different
-nodes — and each will draw a fresh, independent refinement sample from the shared mixture.
+from the same ``checkpoint.h5`` and each will draw a fresh, independent refinement sample from the shared mixture.
 You can also override the budget stored in the checkpoint by passing ``total_systems`` or
 ``n_generations`` to :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint`.
 
+.. warning::
+
+    You should make sure that you change the ``seed`` when you launch multiple refinement jobs from the same checkpoint, otherwise they will all draw the same random numbers and produce identical results. The simplest way to do this is to pass ``seed=None`` to :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint`, which will seed the RNG from the system clock.
+
+
+Wrap-up
+=======
+
+And that's all on adaptive sampling folks! You should now know everything you need to run an adaptive importance sampling simulation in ``COSMIC`` - enjoy exploring those rare populations!

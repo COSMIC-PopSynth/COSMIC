@@ -203,6 +203,9 @@ transforms are :class:`~cosmic.sample.stroopwafel.distributions.Identity`,
         def to_physical(self, values):
             return values ** 2
 
+Wrap-up
+=======
+
 And that's everything you need to know about distributions and transforms in ``COSMIC``'s implementation of '``STROOPWAFEL``.
 You can now define your own custom priors and use them in your adaptive sampling runs.
 
