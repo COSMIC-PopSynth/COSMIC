@@ -27,7 +27,7 @@ When should I use this?
 =======================
 
 Use ``STROOPWAFEL`` whenever you need a statistically representative sample of a rare binary
-outcome and cannot afford the total binary count that flat Monte Carlo would require.
+outcome and cannot afford the total binary count that a flat Monte Carlo draw would require.
 Example use cases include:
 
 * Double black holes (or neutron stars) merging within the Hubble time (GW sources)
@@ -81,8 +81,9 @@ Define the parameter space
 
 The :class:`~cosmic.sample.stroopwafel.ParameterSpace` class defines which binary
 parameters are sampled and their distributions.  Each
-:class:`~cosmic.sample.stroopwafel.Parameter` specifies a name, physical-space bounds, a
-sampling distribution, and a prior distribution.
+:class:`~cosmic.sample.stroopwafel.Parameter` specifies a name, physical-space bounds, and
+a distribution.  The distribution sets both how the parameter is drawn and its prior
+probability density — in importance sampling these are one and the same.
 
 .. code-block:: python
 
@@ -90,14 +91,22 @@ sampling distribution, and a prior distribution.
     from cosmic.sample.stroopwafel import ParameterSpace, Parameter
 
     params = ParameterSpace([
-        Parameter('mass_1',      5.0,    150.0,  sampler='kroupa',     prior='kroupa'),
-        Parameter('q',           0.01,   1.0,    sampler='uniform',    prior='uniform'),
-        Parameter('porb',        0.15,   5.5,    sampler='sana',       prior='sana'),
-        Parameter('ecc',         1e-9,   0.9999, sampler='sana_ecc',   prior='sana_ecc'),
-        Parameter('metallicity', 0.0001, 0.03,   sampler='flat_in_log',prior='flat_in_log'),
+        Parameter('mass_1',      5.0,        150.0,      dist='kroupa'),
+        Parameter('q',           0.01,       1.0,        dist='uniform'),
+        Parameter('porb',        10**(0.15), 10**(5.5),  dist='sana'),
+        Parameter('ecc',         1e-9,       0.9999,     dist='sana_ecc'),
+        Parameter('metallicity', 0.0001,     0.03,       dist='flat_in_log'),
     ])
 
-Parameters are stored and returned in alphabetical order by name. Use ``params.names`` to check the order and ``params.index('param_name')`` to get the index of a particular parameter.
+The ``dist`` argument names one of the built-in distributions. Several common initial-distribution choices are available by default - the Kroupa IMF, Sana orbital periods and eccentricities, flat-in-log metallicity, and more — and lets you define your own just as easily.  See :ref:`adaptive_distributions` for the full list and how to add custom distributions.
+
+Parameters are stored and returned in the order you provide them, which sets the column order of every sample array. Use ``params.names`` to check the order and ``params.idx('param_name')`` to get the index of a particular parameter.
+
+.. note::
+
+    Bounds are always given in **physical** space.  The ``'sana'`` period is sampled in
+    :math:`\log_{10}(P / \mathrm{day})`, so the example writes its bounds as ``10**(0.15)``
+    and ``10**(5.5)`` - the distribution applies the :math:`\log_{10}` transform internally.
 
 
 Define any derived quantities
@@ -105,8 +114,8 @@ Define any derived quantities
 
 COSMIC requires ``mass_2``, ``separation``, and ``metallicity`` in addition to the
 directly-sampled parameters.  The ``compute_derived`` callback converts a ``(N, D)``
-array of physical-space samples and a sorted list of parameter names into a dictionary of
-``(N,)`` arrays:
+array of physical-space samples and the list of parameter names (in column order) into a
+dictionary of ``(N,)`` arrays:
 
 .. code-block:: python
 
@@ -251,11 +260,11 @@ orbital period, eccentricity, and metallicity.
     # Parameter space
     # ------------------------------------------------------------------
     params = ParameterSpace([
-        Parameter('mass_1',      5.0,    150.0,  sampler='kroupa',     prior='kroupa'),
-        Parameter('q',           0.01,   1.0,    sampler='uniform',    prior='uniform'),
-        Parameter('porb',        0.15,   5.5,    sampler='sana',       prior='sana'),
-        Parameter('ecc',         1e-9,   0.9999, sampler='sana_ecc',   prior='sana_ecc'),
-        Parameter('metallicity', 0.0001, 0.03,   sampler='flat_in_log',prior='flat_in_log'),
+        Parameter('mass_1',      5.0,        150.0,      dist='kroupa'),
+        Parameter('q',           0.01,       1.0,        dist='uniform'),
+        Parameter('porb',        10**(0.15), 10**(5.5),  dist='sana'),
+        Parameter('ecc',         1e-9,       0.9999,     dist='sana_ecc'),
+        Parameter('metallicity', 0.0001,     0.03,       dist='flat_in_log'),
     ])
 
     # ------------------------------------------------------------------
@@ -369,7 +378,7 @@ The EM step between generations can improve the mixture, but with diminishing re
 Saving your results
 ===================
 
-Once you have your samples, you can save them to disk as an HDF5 file with the :meth:`~cosmic.output.COSMICSTROOPWAFELResult.save` method.  This saves the parameter samples, derived quantities, and hit information in a compact format that can be loaded later for analysis.
+Once you have your samples, you can save them to disk as an HDF5 file with the :meth:`~cosmic.output.COSMICStroopOutput.save` method.  This saves the parameter samples, derived quantities, and hit information in a compact format that can be loaded later for analysis.
 
 .. code-block:: python
 

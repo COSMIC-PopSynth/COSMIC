@@ -55,15 +55,38 @@ The class also stores other metadata that you may find useful. These include:
 - ``num_hits``, which is the total raw hit count across all phases
 - ``fraction_explored``, which is the fraction of total systems used for exploration.
 
+In addition, two derived properties summarise the weighted population:
+
+- ``hit_rate``, the importance-weighted hit rate (an unbiased estimate of the true rate)
+- ``hit_rate_uncertainty``, the standard error on that rate
+
 
 How to interpret adaptive sampling weights
 ==========================================
 
 So now for the important intuition part. ``COSMIC`` and ``STROOPWAFEL`` have now provided you with a sample of a rare population by preferentially sampling the parameter space that you've specified. However, we of course want to account for the fact that this *is* a rare population. This is where the weights come in. Each sample is assigned an adaptive importance sampling weight, which tells you how rare this sample is (smaller weights are rarer).
 
-.. admonition:: TODO
+Concretely, each system :math:`x` is assigned an importance weight
 
-    Add maths
+.. math::
+
+    w(x) = \frac{\pi(x)}{Q(x)}, \qquad
+    Q(x) = f_e\,\pi(x) + (1 - f_e)\,q(x),
+
+where :math:`\pi(x)` is the prior (astrophysical) probability density, :math:`q(x)` is the
+density of the adapted Gaussian mixture, and :math:`f_e` is the fraction of the budget spent
+on exploration.  The denominator :math:`Q(x)` is therefore the *actual* density from which
+the system was drawn — a blend of the broad prior (during exploration) and the concentrated
+mixture (during refinement).
+
+In words, the weight is the ratio of how often a system *should* appear under the prior to
+how often it *actually* appeared under the combined sampling scheme.  A hit discovered deep
+inside an oversampled region picks up a small weight (we drew far more of them than nature
+would), while a system drawn straight from the prior has a weight close to one.  Summed over
+the population these weights turn any statistic into an unbiased estimator of the
+corresponding prior-weighted quantity; for example ``sum(weights[is_hit]) / N`` is an
+unbiased estimate of the true hit rate, which is exactly what
+:attr:`~cosmic.output.COSMICStroopOutput.hit_rate` returns.
 
 This means that if you want to plot a true distribution of your sampled systems -- let's say the primary mass -- you need to use the weights in your plotting.
 
@@ -87,3 +110,39 @@ This means that if you want to plot a true distribution of your sampled systems 
 
 Drawing a representative sample from your simulation
 ====================================================
+
+Applying weights at plot time is the right approach for visualising distributions, but
+sometimes you want an actual *set of systems* that is representative of the underlying
+population — for example to pass a fixed number of binaries into a downstream calculation.
+Because the simulation deliberately oversamples the rare region, you cannot take the hits at
+face value; you need to resample them in proportion to their weights.
+
+This is a standard weighted bootstrap: draw indices from the hit population with probability
+proportional to their weights, with replacement.
+
+.. code-block:: python
+
+    import numpy as np
+    from cosmic.output import COSMICStroopOutput
+
+    results = COSMICStroopOutput.from_file("YOUR_SIMULATION.h5")
+
+    # Restrict to hits and normalise their weights into probabilities
+    hit_idx = np.where(results.is_hit)[0]
+    probs = results.weights[hit_idx] / results.weights[hit_idx].sum()
+
+    # Draw a representative sample of, say, 5000 systems
+    rng = np.random.default_rng(42)
+    chosen = rng.choice(hit_idx, size=5000, replace=True, p=probs)
+
+    representative = results.samples[chosen]   # (5000, D), in physical space
+
+The resulting ``representative`` array is distributed according to the true (prior-weighted)
+population, so it can be histogrammed or analysed **without** any further weighting.  Because
+the draw is made with replacement, the same underlying system can appear more than once —
+this is expected, and is the price of turning a weighted sample into an unweighted one.
+
+.. note::
+
+    A :meth:`~cosmic.output.COSMICStroopOutput.draw_representative_sample` convenience method
+    that wraps this resampling is planned; until it lands, use the weighted bootstrap above.

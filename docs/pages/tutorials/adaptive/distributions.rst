@@ -1,0 +1,207 @@
+.. _adaptive_distributions:
+
+*********************************
+Distributions and custom priors
+*********************************
+
+This tutorial assumes that you've already gone through :ref:`adaptive_basics`.
+
+Every :class:`~cosmic.sample.stroopwafel.Parameter` is given a *distribution*, which does
+three jobs: it draws samples, it evaluates the prior probability density, and it defines
+the adaptive-sampling kernel width used during refinement.  ``COSMIC`` provides a small set
+of built-in distributions covering the usual initial-condition choices, and a simple,
+composable interface for defining your own.
+
+
+Built-in distributions
+=======================
+
+Pass any of the following names as the ``dist`` argument to a
+:class:`~cosmic.sample.stroopwafel.Parameter`:
+
+.. list-table::
+    :header-rows: 1
+    :widths: 18 22 60
+
+    * - Name
+      - Sampled as
+      - Description
+    * - ``'uniform'``
+      - uniform
+      - Flat between the bounds.  Good default for mass ratio, etc.
+    * - ``'flat_in_log'``
+      - uniform in :math:`\log_{10}`
+      - Flat in the log of the parameter (e.g. metallicity).
+    * - ``'kroupa'``
+      - power law, :math:`\alpha = -2.3`
+      - Kroupa initial mass function for the primary mass.
+    * - ``'sana'``
+      - power law in :math:`\log_{10} P`, :math:`\alpha = -0.55`
+      - Sana et al. (2012) orbital-period distribution.
+    * - ``'sana_ecc'``
+      - power law, :math:`\alpha = -0.45`
+      - Sana et al. (2012) eccentricity distribution.
+    * - ``'uniform_in_sine'``
+      - uniform in :math:`\sin\theta`
+      - Isotropic angle (e.g. inclination-like coordinates).
+    * - ``'uniform_in_cosine'``
+      - uniform in :math:`\cos\theta`
+      - Isotropic angle for declination-like coordinates.
+    * - ``'log_normal'``
+      - log-normal
+      - Natal-kick magnitude, :math:`\ln v \sim \mathcal{N}(5.67, 0.59)`.
+
+The full registry is available programmatically as
+:data:`cosmic.sample.stroopwafel.distributions.DISTRIBUTIONS`.
+
+
+How distributions are built
+===========================
+
+Internally each distribution is a **base distribution** composed with a **coordinate
+transform**:
+
+* the base distribution (:class:`~cosmic.sample.stroopwafel.distributions.Uniform`,
+  :class:`~cosmic.sample.stroopwafel.distributions.PowerLaw`, or
+  :class:`~cosmic.sample.stroopwafel.distributions.TruncatedNormal`) handles sampling and
+  the density in the *sampling space*; and
+* the transform (:class:`~cosmic.sample.stroopwafel.distributions.Log10`,
+  :class:`~cosmic.sample.stroopwafel.distributions.Ln`, etc.) maps between the physical
+  space you specify bounds in and that sampling space.
+
+This is why, for example, ``'flat_in_log'`` is just a uniform distribution paired with a
+:math:`\log_{10}` transform, and ``'sana'`` is a power law paired with the same transform.
+You can build the same objects yourself:
+
+.. code-block:: python
+
+    from cosmic.sample.stroopwafel.distributions import (
+        Uniform, PowerLaw, TruncatedNormal, Log10,
+    )
+
+    Uniform(transform=Log10())          # equivalent to 'flat_in_log'
+    PowerLaw(-0.55, transform=Log10())  # equivalent to 'sana'
+    PowerLaw(-2.3)                       # equivalent to 'kroupa'
+
+Bounds are always given to a :class:`~cosmic.sample.stroopwafel.Parameter` in **physical**
+space; the transform converts them into sampling space automatically (and round-trips
+samples back to physical space before they are evolved by ``COSMIC``).
+
+
+Defining your own distribution
+==============================
+
+There are three ways to use a custom distribution, in increasing order of effort.
+
+1. Pass a distribution instance directly
+----------------------------------------
+
+The quickest option is to tweak one of the built-in base distributions and hand the
+instance straight to a :class:`~cosmic.sample.stroopwafel.Parameter` via ``dist``.  No
+registration required:
+
+.. code-block:: python
+
+    from cosmic.sample.stroopwafel import Parameter
+    from cosmic.sample.stroopwafel.distributions import PowerLaw
+
+    # A steeper-than-Kroupa IMF for the primary mass
+    Parameter('mass_1', 5.0, 150.0, dist=PowerLaw(-2.7))
+
+
+2. Register a named distribution
+--------------------------------
+
+If you want to reuse a distribution across several parameter spaces — or simply refer to it
+by a memorable name — register it once with
+:func:`~cosmic.sample.stroopwafel.distributions.register`:
+
+.. code-block:: python
+
+    from cosmic.sample.stroopwafel import Parameter
+    from cosmic.sample.stroopwafel.distributions import register, PowerLaw
+
+    register('imf_steep', PowerLaw(-2.7))
+
+    # ... anywhere later
+    Parameter('mass_1', 5.0, 150.0, dist='imf_steep')
+
+
+3. Write a new distribution class
+---------------------------------
+
+For a genuinely new functional form, subclass
+:class:`~cosmic.sample.stroopwafel.distributions.Distribution` and implement two methods:
+
+``sample(n, lo, hi, rng)``
+    Draw ``n`` samples in **sampling space**, restricted to ``[lo, hi]``.
+
+``pdf(values, lo, hi)``
+    Return the prior density at ``values``, normalised over ``[lo, hi]`` in sampling space.
+
+Both ``lo`` and ``hi`` are bounds in sampling space — the parameter space has already
+applied the transform, so you do not need to worry about it here.  The example below
+implements a truncated exponential distribution:
+
+.. code-block:: python
+
+    import numpy as np
+    from cosmic.sample.stroopwafel import Parameter
+    from cosmic.sample.stroopwafel.distributions import Distribution
+
+    class Exponential(Distribution):
+        """p(x) ∝ exp(-x / scale), truncated to [lo, hi]."""
+
+        def __init__(self, scale, transform=None):
+            super().__init__(transform)
+            self.scale = scale
+
+        def sample(self, n, lo, hi, rng=None):
+            rng = rng or np.random.default_rng()
+            u = rng.uniform(0, 1, n)
+            c_lo, c_hi = np.exp(-lo / self.scale), np.exp(-hi / self.scale)
+            return -self.scale * np.log(c_lo - u * (c_lo - c_hi))   # inverse CDF
+
+        def pdf(self, values, lo, hi):
+            norm = self.scale * (np.exp(-lo / self.scale) - np.exp(-hi / self.scale))
+            return np.exp(-values / self.scale) / norm
+
+    Parameter('some_param', 0.0, 10.0, dist=Exponential(scale=2.0))
+
+That is all that is required — your distribution now works everywhere the built-ins do, and
+can be combined with any transform (``dist=Exponential(2.0, transform=Log10())``).
+
+.. note::
+
+    During refinement, ``STROOPWAFEL`` places a Gaussian kernel at each hit whose width is
+    set by :meth:`~cosmic.sample.stroopwafel.distributions.Distribution.sigma`.  The default
+    implementation, ``avg_density / pdf``, is appropriate for almost all distributions and
+    is inherited automatically — you only need to override it if you have an exact
+    closed-form CDF you would rather step through (as
+    :class:`~cosmic.sample.stroopwafel.distributions.PowerLaw` does).
+
+
+Custom transforms
+=================
+
+Transforms are just as extensible.  A transform implements ``to_sampling`` (physical →
+sampling) and ``to_physical`` (sampling → physical); the corresponding bound conversion is
+derived automatically and handles decreasing maps by swapping the endpoints.  The built-in
+transforms are :class:`~cosmic.sample.stroopwafel.distributions.Identity`,
+:class:`~cosmic.sample.stroopwafel.distributions.Log10`,
+:class:`~cosmic.sample.stroopwafel.distributions.Ln`,
+:class:`~cosmic.sample.stroopwafel.distributions.Sin`, and
+:class:`~cosmic.sample.stroopwafel.distributions.CosShift`.  To add your own, subclass
+:class:`~cosmic.sample.stroopwafel.distributions.Transform`:
+
+.. code-block:: python
+
+    import numpy as np
+    from cosmic.sample.stroopwafel.distributions import Transform
+
+    class Sqrt(Transform):
+        def to_sampling(self, values):
+            return np.sqrt(values)
+
+        def to_physical(self, values):
+            return values ** 2
