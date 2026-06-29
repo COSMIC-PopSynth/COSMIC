@@ -181,9 +181,7 @@ class GaussianMixture:
             Parameter space for bounds checking and coordinate transforms.
         reject_mask_fn : `callable`
             Function ``(samples_physical) -> bool_mask`` returning True for
-            physically rejected systems.  The engine supplies one that
-            assembles binary parameters and applies the user's rejection
-            function.
+            physically rejected systems.
         n_per_component : `int`, optional
             Number of samples per component for the estimate, by default
             10000

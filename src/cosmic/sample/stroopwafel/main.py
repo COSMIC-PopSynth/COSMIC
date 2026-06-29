@@ -1,8 +1,3 @@
-"""AdaptiveSampler: the main STROOPWAFEL engine.
-
-Orchestrates the explore -> adapt -> refine -> weight calculation pipeline
-using vectorized operations throughout. No Location objects are created.
-"""
 import os
 import numpy as np
 import pandas as pd
@@ -14,6 +9,7 @@ from cosmic.output import COSMICStroopOutput, STROOPWAFELCheckpoint
 
 from .mixture_model import GaussianMixture
 from .constants import MIN_ACTIVE_FRACTION
+from .rejection import default_reject
 
 
 class AdaptiveSampler:
@@ -46,8 +42,9 @@ class AdaptiveSampler:
         physically unacceptable systems, where ``binary_params`` is the
         assembled dict of binary parameters (sampled columns merged with the
         output of ``derive_params``).  See
-        :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.  By
-        default None (no physical rejection).
+        :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.
+        By default uses :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.
+        Pass None to skip physical rejection entirely.
     output_path : `str`, optional
         Directory for output files, by default ``'output'``
     nproc : `int`, optional
@@ -77,7 +74,7 @@ class AdaptiveSampler:
     REQUIRED_PARAMS = ('mass_1', 'mass_2', 'porb', 'ecc', 'metallicity')
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
-                 is_interesting, derive_params=None, reject_systems=None,
+                 is_interesting, derive_params=None, reject_systems="default",
                  output_path='output', nproc=1, kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False):
@@ -86,7 +83,7 @@ class AdaptiveSampler:
         self.batch_size = batch_size
         self.bse_dict = BSEDict
         self.derive_fn = derive_params
-        self.reject_fn = reject_systems
+        self.reject_fn = reject_systems if reject_systems != "default" else default_reject
         self.is_interesting_fn = is_interesting
         self.output_path = output_path
         self.nproc = nproc
@@ -280,7 +277,7 @@ class AdaptiveSampler:
         return sampler
 
     def _make_checkpoint(self):
-        """Package current engine state into a `STROOPWAFELCheckpoint`."""
+        """Package current state into a `STROOPWAFELCheckpoint`."""
         all_samples      = np.vstack(self._all_samples)
         all_is_hit       = np.concatenate(self._all_is_hit)
         all_generation   = np.concatenate(self._all_generation)
@@ -305,7 +302,7 @@ class AdaptiveSampler:
         )
 
     def _load_checkpoint(self, checkpoint):
-        """Restore engine state from a `STROOPWAFELCheckpoint`.
+        """Restore state from a `STROOPWAFELCheckpoint`.
 
         The checkpoint's samples, COSMIC output, and mixture are treated
         as a single exploration "super-batch" with globally assigned

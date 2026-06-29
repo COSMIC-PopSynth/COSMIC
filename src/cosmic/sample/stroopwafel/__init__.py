@@ -8,7 +8,7 @@ the resulting mixture to concentrate compute budget on interesting
 regions of parameter space.
 
 """
-from .engine import AdaptiveSampler
+from .main import AdaptiveSampler
 from .parameter_space import ParameterSpace, Parameter
 
 __all__ = ['AdaptiveSampler', 'ParameterSpace', 'Parameter']

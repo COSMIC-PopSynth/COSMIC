@@ -2,7 +2,7 @@ python_sources = [
   '__init__.py',
   'constants.py',
   'distributions.py',
-  'engine.py',
+  'main.py',
   'mixture_model.py',
   'parameter_space.py',
   'presets.py',
