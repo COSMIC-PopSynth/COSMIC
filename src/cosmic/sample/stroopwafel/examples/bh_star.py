@@ -87,6 +87,9 @@ BSEDict = {
     "fryer_fmix": 0.5, "fryer_mcrit_nsbh": 5.0, "smt_periastron_check": 0
 }
 
+# COSMIC v4+ single stellar evolution settings (sse engine; swap for METISSE)
+SSEDict = {'stellar_engine': 'sse'}
+
 # ------------------------------------------------------------------
 # Parameter space
 #
@@ -198,6 +201,7 @@ def run_sampler(mc_only, seed):
         total_systems=args.num_systems,
         batch_size=args.batch_size,
         BSEDict=BSEDict,
+        SSEDict=SSEDict,
         is_interesting=is_bh_star,
         derive_params=derive_params,
         reject_systems=default_reject,

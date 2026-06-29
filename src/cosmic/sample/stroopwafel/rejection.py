@@ -8,7 +8,7 @@ from cosmic.sample.sampler.independent import Sample
 from cosmic.utils import calc_Roche_radius, a_from_p
 
 
-def default_reject(binary_params, min_secondary_mass=0.08):
+def default_reject(binary_params, SSEDict=None, min_secondary_mass=0.08):
     """Default rejection function for DCO progenitor systems.
 
     Rejects systems where the secondary mass is below the minimum, the
@@ -23,6 +23,14 @@ def default_reject(binary_params, min_secondary_mass=0.08):
         Assembled binary parameters with keys ``'mass_1'``, ``'mass_2'``
         (solar masses), ``'porb'`` (days), ``'ecc'``, and ``'metallicity'``,
         each an (N,) array.
+    SSEDict : `dict`, optional
+        COSMIC single stellar evolution settings.  The ZAMS radii are
+        obtained from ``Sample.set_reff``, which depends on the stellar
+        engine (e.g. ``sse`` vs ``METISSE``); passing the same ``SSEDict``
+        used for evolution ensures the rejection radii are computed
+        consistently.  By default None (COSMIC's ``sse`` engine).
+        :class:`~cosmic.sample.stroopwafel.main.AdaptiveSampler` wires its
+        own ``SSEDict`` into this argument automatically.
     min_secondary_mass : `float`, optional
         Minimum allowed secondary mass in solar masses, by default 0.08
 
@@ -40,10 +48,10 @@ def default_reject(binary_params, min_secondary_mass=0.08):
     # compute separation from periods and masses
     separation = a_from_p(p=porb, m1=mass_1, m2=mass_2)
 
-    # get stellar radii at ZAMS
+    # get stellar radii at ZAMS (depends on the stellar engine in SSEDict)
     sampler = Sample()
-    radius_1 = sampler.set_reff(mass=mass_1, metallicity=metallicity)
-    radius_2 = sampler.set_reff(mass=mass_2, metallicity=metallicity)
+    radius_1 = sampler.set_reff(mass=mass_1, metallicity=metallicity, SSEDict=SSEDict)
+    radius_2 = sampler.set_reff(mass=mass_2, metallicity=metallicity, SSEDict=SSEDict)
 
     # roche lobe radii at periastron
     peri_sep = separation * (1 - ecc)

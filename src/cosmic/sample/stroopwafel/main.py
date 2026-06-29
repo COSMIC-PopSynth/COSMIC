@@ -1,4 +1,5 @@
 import os
+from functools import partial
 import numpy as np
 import pandas as pd
 from scipy.stats import multivariate_normal
@@ -27,6 +28,13 @@ class AdaptiveSampler:
     is_interesting : `callable`
         Function with signature ``(bpp) -> (n_hits, hit_bin_nums)``
         identifying systems of interest from COSMIC output.
+    SSEDict : `dict`, optional
+        COSMIC single stellar evolution settings (required by COSMIC v4+;
+        e.g. selecting the ``sse`` or ``METISSE`` stellar engine).  Passed to
+        every COSMIC evolution and, when ``reject_systems='default'``, wired
+        into :func:`~cosmic.sample.stroopwafel.rejection.default_reject` so the
+        ZAMS radii it computes via ``set_reff`` use the same engine.  By
+        default None (COSMIC's ``sse`` engine).
     derive_params : `callable`, optional
         Function ``(sampled) -> dict`` that supplies any binary parameters
         not drawn from ``parameter_space``.  ``sampled`` is a dict mapping
@@ -81,8 +89,8 @@ class AdaptiveSampler:
     REQUIRED_PARAMS = ('mass_1', 'mass_2', 'porb', 'ecc', 'metallicity')
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
-                 is_interesting, derive_params=None, reject_systems="default",
-                 nproc=1, kappa=1.0,
+                 is_interesting, SSEDict=None, derive_params=None,
+                 reject_systems="default", nproc=1, kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False,
                  min_active_fraction=0.01, min_entropy_change=0.01):
@@ -90,8 +98,18 @@ class AdaptiveSampler:
         self.total_systems = total_systems
         self.batch_size = batch_size
         self.bse_dict = BSEDict
+        self.sse_dict = SSEDict
         self.derive_fn = derive_params
-        self.reject_fn = reject_systems if reject_systems != "default" else default_reject
+        # Keep the original spec so a checkpoint can rebind the default to the
+        # (possibly overridden) SSEDict on reload.
+        self._reject_spec = reject_systems
+        # The default rejection uses set_reff, which depends on the stellar
+        # engine, so bind this run's SSEDict into it -- whether requested via
+        # the "default" sentinel or by passing default_reject explicitly.
+        if reject_systems == "default" or reject_systems is default_reject:
+            self.reject_fn = partial(default_reject, SSEDict=SSEDict)
+        else:
+            self.reject_fn = reject_systems
         self.is_interesting_fn = is_interesting
         self.nproc = nproc
         self.kappa = kappa
@@ -194,7 +212,7 @@ class AdaptiveSampler:
 
     #: Constructor arguments that may be overridden in :meth:`from_checkpoint`.
     _OVERRIDABLE = frozenset({
-        'parameter_space', 'total_systems', 'batch_size', 'BSEDict',
+        'parameter_space', 'total_systems', 'batch_size', 'BSEDict', 'SSEDict',
         'is_interesting', 'derive_params', 'reject_systems',
         'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
         'min_active_fraction', 'min_entropy_change',
@@ -277,9 +295,12 @@ class AdaptiveSampler:
             'total_systems':        self.total_systems,
             'batch_size':           self.batch_size,
             'BSEDict':              self.bse_dict,
+            'SSEDict':              self.sse_dict,
             'is_interesting':       self.is_interesting_fn,
             'derive_params':        self.derive_fn,
-            'reject_systems':       self.reject_fn,
+            # store the original spec ('default'/callable/None) so reload can
+            # rebind 'default' to the (possibly overridden) SSEDict.
+            'reject_systems':       self._reject_spec,
             'nproc':                self.nproc,
             'kappa':                self.kappa,
             'n_generations':        self.n_generations,
@@ -874,6 +895,7 @@ class AdaptiveSampler:
         bpp, bcm, initC, kick_info = Evolve.evolve(
             initialbinarytable=batch_initial,
             BSEDict=bse_dict_run,
+            SSEDict=self.sse_dict,
             nproc=self.nproc,
         )
 

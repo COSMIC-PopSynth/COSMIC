@@ -57,6 +57,7 @@ call :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_exploration` instead 
         total_systems=500_000,
         batch_size=1000,
         BSEDict=BSEDict,
+        SSEDict={'stellar_engine': 'sse'},
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
         derive_params=derive_params,
         reject_systems="default",
@@ -90,8 +91,8 @@ In a second script (or cluster job) rebuild the sampler with
     result = sampler.run_refinement()
     result.save('result.h5')
 
-You do not need to re-import or re-specify the parameter space, ``BSEDict``, or any of the
-callables — they were all saved into the checkpoint.  If you *want* to change something for
+You do not need to re-import or re-specify the parameter space, ``BSEDict``, ``SSEDict``, or
+any of the callables — they were all saved into the checkpoint.  If you *want* to change something for
 the refinement phase (a common one is running on more cores, or with a larger budget than
 exploration), pass it as a keyword override:
 
@@ -102,7 +103,7 @@ exploration), pass it as a keyword override:
     )
 
 Any :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` constructor argument may be
-overridden this way (``parameter_space``, ``BSEDict``, ``derive_params``,
+overridden this way (``parameter_space``, ``BSEDict``, ``SSEDict``, ``derive_params``,
 ``reject_systems``, ``is_interesting``, ``batch_size``, ``nproc``,
 ``kappa``, ``n_generations``, ``only_save_hit_tables``, ``seed``).
 
@@ -124,8 +125,8 @@ A checkpoint is a complete snapshot — it stores both the exploration *results*
 * the scalar counters needed to compute unbiased weights later (``num_explored``,
   ``fraction_explored``, ``prior_fraction_rejected``, ...); and
 * the full configuration needed to rebuild the sampler: the parameter space, ``BSEDict``,
-  the ``derive_params`` / ``reject_systems`` / ``is_interesting`` callables, the remaining
-  scalar settings, and the live RNG state.
+  ``SSEDict``, the ``derive_params`` / ``reject_systems`` / ``is_interesting`` callables, the
+  remaining scalar settings, and the live RNG state.
 
 The callables and parameter space are serialised with :mod:`dill` so it lets you use general functions.
 Because the RNG state is stored too, refinement continues the random stream seamlessly rather than restarting it (pass ``seed=`` to

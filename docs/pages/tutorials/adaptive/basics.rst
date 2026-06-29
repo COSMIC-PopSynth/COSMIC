@@ -236,7 +236,7 @@ You can also write a fully custom hit function.  For example, to find BH + stell
 Running the sampler
 ===================
 
-Now we can put it all together! You can run the sampler with the main :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` class.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE physics settings, the hit function, the ``derive_params`` function (if needed), and the rejection function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
+Now we can put it all together! You can run the sampler with the main :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` class.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE and SSE physics settings, the hit function, the ``derive_params`` function (if needed), and the rejection function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
 
 Let's try this out with a few examples.
 
@@ -257,6 +257,13 @@ First we can import the necessary parts from the ``cosmic.sample.stroopwafel`` m
     from cosmic.sample.stroopwafel.presets import any_dco
 
 .. include:: ../../../_generated/default_bsedict.rst
+
+COSMIC v4+ also expects an ``SSEDict`` of single stellar evolution settings (which selects
+the stellar engine).  We'll use the default ``sse`` engine here, you can swap in METISSE too if you like!
+
+.. code-block:: python
+
+    SSEDict = {'stellar_engine': 'sse'}
 
 Then we can define a simple parameter space, where we avoid sampling low-mass primaries since we know they
 cannot produce a BH.
@@ -288,6 +295,7 @@ And then it's just a matter of setting it going!
         total_systems=50_000,           # adjust this for more samples
         batch_size=500,                 # adjust this to sample more or fewer systems per call to COSMIC
         BSEDict=BSEDict,
+        SSEDict=SSEDict,
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
         derive_params=derive_params,
         reject_systems="default",
@@ -317,6 +325,7 @@ Now let's repeat that whole scenario, but instead of BH + BH binaries we want to
         total_systems=50_000,
         batch_size=500,
         BSEDict=BSEDict,                 # reuse from BHBH example
+        SSEDict=SSEDict,                 # reuse from BHBH example
         is_interesting=bh_star_100myr,   # we defined this earlier
         derive_params=derive_params,     # reuse from BHBH example
         reject_systems="default",

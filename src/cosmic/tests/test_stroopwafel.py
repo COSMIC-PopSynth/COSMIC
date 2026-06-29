@@ -467,6 +467,58 @@ class TestBinaryModel(unittest.TestCase):
 
 
 # ==========================================================================
+# SSEDict wiring
+# ==========================================================================
+class TestSSEDict(unittest.TestCase):
+
+    SSE = {'stellar_engine': 'sse'}
+
+    def _make(self, reject_systems):
+        params = ParameterSpace([
+            Parameter('mass_1', 5.0, 150.0, dist='kroupa'),
+            Parameter('mass_2', 1.0, 100.0, dist='uniform'),
+            Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),
+            Parameter('ecc', 1e-9, 0.99, dist='sana_ecc'),
+            Parameter('metallicity', 1e-4, 0.03, dist='flat_in_log'),
+        ])
+        return AdaptiveSampler(
+            parameter_space=params, total_systems=10, batch_size=5, BSEDict={},
+            SSEDict=self.SSE,
+            is_interesting=lambda bpp: (0, np.array([], dtype=int)),
+            reject_systems=reject_systems,
+        )
+
+    def test_sse_dict_stored(self):
+        self.assertEqual(self._make("default").sse_dict, self.SSE)
+
+    def test_sse_dict_bound_into_default_reject_via_sentinel(self):
+        sampler = self._make("default")
+        self.assertEqual(getattr(sampler.reject_fn, 'keywords', {}).get('SSEDict'),
+                         self.SSE)
+
+    def test_sse_dict_bound_when_default_reject_passed_explicitly(self):
+        sampler = self._make(default_reject)
+        self.assertEqual(getattr(sampler.reject_fn, 'keywords', {}).get('SSEDict'),
+                         self.SSE)
+
+    def test_custom_reject_not_rebound(self):
+        my_reject = lambda binary_params: np.zeros(len(binary_params['mass_1']), bool)
+        sampler = self._make(my_reject)
+        self.assertIs(sampler.reject_fn, my_reject)   # left untouched
+
+    def test_default_reject_accepts_ssedict_kwarg(self):
+        # default_reject runs with an explicit SSEDict and returns a mask.
+        bp = {
+            'mass_1': np.array([20.0]), 'mass_2': np.array([10.0]),
+            'porb': np.array([1000.0]), 'ecc': np.array([0.1]),
+            'metallicity': np.array([0.014]),
+        }
+        mask = default_reject(bp, SSEDict=self.SSE)
+        self.assertEqual(mask.shape, (1,))
+        self.assertFalse(bool(mask[0]))   # a wide, detached binary survives
+
+
+# ==========================================================================
 # Gaussian mixture model
 # ==========================================================================
 class TestGaussianMixture(unittest.TestCase):
@@ -519,6 +571,7 @@ class TestCheckpoint(unittest.TestCase):
             'is_interesting': lambda bpp: (0, np.array([], dtype=int)),
             'derive_params': lambda s: {'mass_2': s['mass_1'] * 0.5,
                                         'ecc': 0.0, 'metallicity': 0.02},
+            'SSEDict': {'stellar_engine': 'sse'},
             'reject_systems': None, 'nproc': 2,
             'kappa': 1.0, 'n_generations': 1, 'only_save_hit_tables': False,
             'min_active_fraction': 0.01, 'min_entropy_change': 0.01,
