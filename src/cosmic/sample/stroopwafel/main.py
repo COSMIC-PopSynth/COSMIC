@@ -44,8 +44,6 @@ class AdaptiveSampler:
         :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.
         By default uses :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.
         Pass None to skip physical rejection entirely.
-    output_path : `str`, optional
-        Directory for output files, by default ``'output'``
     nproc : `int`, optional
         Number of CPU cores for COSMIC, by default 1
     kappa : `float`, optional
@@ -84,7 +82,7 @@ class AdaptiveSampler:
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
                  is_interesting, derive_params=None, reject_systems="default",
-                 output_path='output', nproc=1, kappa=1.0,
+                 nproc=1, kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False,
                  min_active_fraction=0.01, min_entropy_change=0.01):
@@ -95,7 +93,6 @@ class AdaptiveSampler:
         self.derive_fn = derive_params
         self.reject_fn = reject_systems if reject_systems != "default" else default_reject
         self.is_interesting_fn = is_interesting
-        self.output_path = output_path
         self.nproc = nproc
         self.kappa = kappa
         self.n_generations = n_generations
@@ -140,8 +137,6 @@ class AdaptiveSampler:
             Container holding all samples, weights, COSMIC output tables,
             and associated metadata.
         """
-        os.makedirs(self.output_path, exist_ok=True)
-
         self._explore()
 
         if not self.mc_only and self.num_hits > 0:
@@ -172,7 +167,6 @@ class AdaptiveSampler:
             :meth:`run_refinement` (or :meth:`from_checkpoint`) to
             continue on a different node or job.
         """
-        os.makedirs(self.output_path, exist_ok=True)
         self._explore()
         if not self.mc_only and self.num_hits > 0:
             self._adapt()
@@ -201,7 +195,7 @@ class AdaptiveSampler:
     #: Constructor arguments that may be overridden in :meth:`from_checkpoint`.
     _OVERRIDABLE = frozenset({
         'parameter_space', 'total_systems', 'batch_size', 'BSEDict',
-        'is_interesting', 'derive_params', 'reject_systems', 'output_path',
+        'is_interesting', 'derive_params', 'reject_systems',
         'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
     })
 
@@ -235,7 +229,7 @@ class AdaptiveSampler:
             Any :class:`AdaptiveSampler` constructor argument
             (``parameter_space``, ``total_systems``, ``batch_size``,
             ``BSEDict``, ``is_interesting``, ``derive_params``,
-            ``reject_systems``, ``output_path``, ``nproc``, ``kappa``,
+            ``reject_systems``, ``nproc``, ``kappa``,
             ``n_generations``, ``only_save_hit_tables``, ``seed``).  Passing
             ``seed`` starts a fresh RNG instead of restoring the stored state.
 
@@ -285,7 +279,6 @@ class AdaptiveSampler:
             'is_interesting':       self.is_interesting_fn,
             'derive_params':        self.derive_fn,
             'reject_systems':       self.reject_fn,
-            'output_path':          self.output_path,
             'nproc':                self.nproc,
             'kappa':                self.kappa,
             'n_generations':        self.n_generations,
@@ -652,7 +645,9 @@ class AdaptiveSampler:
                 gen_finished += n_take
                 self._print_progress()
 
-            # EM update (if not the last generation)
+            # Expectation-maximization (EM) update: re-fit the mixture to this
+            # generation's hits before the next one (skipped after the final
+            # generation, since there is no subsequent generation to use it).
             if gen < self.n_generations - 1 and len(gen_samples_list) > 0:
                 gen_samples = np.vstack(gen_samples_list)
                 gen_is_hit = np.concatenate(gen_is_hit_list)
@@ -676,7 +671,8 @@ class AdaptiveSampler:
 
                 if should_revert:
                     self.mixture = saved_mixture
-                    print("  EM update reverted (insufficient entropy change)")
+                    print("  Expectation-maximization (EM) update reverted "
+                          "(insufficient entropy change)")
 
         n_refined = self.total_systems - self.num_explored
         if n_refined > 0:

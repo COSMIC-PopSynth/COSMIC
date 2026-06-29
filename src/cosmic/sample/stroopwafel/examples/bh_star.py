@@ -201,7 +201,6 @@ def run_sampler(mc_only, seed):
         is_interesting=is_bh_star,
         derive_params=derive_params,
         reject_systems=default_reject,
-        output_path=os.path.join(args.output_dir, 'mc' if mc_only else 'sw'),
         nproc=args.num_cores,
         n_generations=args.n_generations,
         mc_only=mc_only,

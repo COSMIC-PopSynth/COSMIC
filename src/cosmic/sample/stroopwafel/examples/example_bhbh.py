@@ -97,7 +97,6 @@ if __name__ == '__main__':
         is_interesting=is_interesting,
         derive_params=derive_params,
         reject_systems=default_reject,
-        output_path=args.output_dir,
         nproc=args.num_cores,
         mc_only=args.mc_only,
         seed=args.seed,

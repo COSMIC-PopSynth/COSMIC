@@ -522,8 +522,34 @@ class COSMICStroopOutput(COSMICOutput):
             label=cosmic.label if label is None else label,
         )
     
-    def draw_representative_sample(self, sample_size):
-        raise NotImplementedError
+    def draw_representative_sample(self, sample_size, rng=None):
+        """Draw a representative sample of hits from the explored systems.
+
+        Parameters
+        ----------
+        sample_size : `int`
+            Number of hits to draw.
+        rng : `numpy.random.Generator`, optional
+            Random number generator to use for sampling. If None, a new default generator is created.
+        
+        Returns
+        -------
+        representative_sample : `numpy.ndarray`
+            Array of shape (sample_size, D) containing the drawn samples in physical space.
+        bin_nums : `numpy.ndarray`
+            Array of shape (sample_size,) containing the corresponding bin numbers for the drawn samples.
+        """
+        # restrict to hits and normalise their weights into probabilities
+        hit_idx = np.where(self.is_hit)[0]
+        probs = self.weights[hit_idx] / self.weights[hit_idx].sum()
+
+        # draw a representative sample with replacement
+        rng = rng or np.random.default_rng()
+        chosen = rng.choice(hit_idx, size=sample_size, replace=True, p=probs)
+
+        representative_sample = self.samples[chosen]
+        bin_nums = self.initC['bin_num'].iloc[chosen].values
+        return representative_sample, bin_nums
 
 
 class STROOPWAFELCheckpoint:

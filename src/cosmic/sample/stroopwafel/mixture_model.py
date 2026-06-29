@@ -1,7 +1,7 @@
 """Vectorized Gaussian Mixture Model for adaptive importance sampling.
 
 Stores all mixture components as numpy arrays and provides vectorized
-sampling, PDF evaluation, and EM updates.
+sampling, PDF evaluation, and expectation-maximization (EM) updates.
 """
 import numpy as np
 from scipy.stats import multivariate_normal, entropy as scipy_entropy
@@ -228,7 +228,24 @@ class GaussianMixture:
 
     def update_em(self, samples, is_hit, prior_probs, prior_fraction_rejected,
                   tolerance=1e-10, entropies=None):
-        """Perform one EM-like update of the mixture parameters.
+        """Perform one (importance-weighted) expectation-maximization (EM) update.
+
+        EM is the standard algorithm for fitting a mixture model.  It alternates
+        an **E-step** -- computing each component's *responsibility* for every
+        sample (the posterior probability that the sample was drawn from that
+        component) -- with an **M-step** that re-estimates every component's
+        weight, mean, and covariance as the responsibility-weighted moments of
+        the samples.  Here the samples additionally carry importance weights
+        (``prior_probs * is_hit / q``), so productive components (those near many
+        hits) gain weight and recentre on where the hits actually are; components
+        whose weight falls below ``tolerance`` are dropped.
+
+        The update is only worth keeping if it improves the proposal.  This is
+        measured by the normalised effective sample size ``exp(H(w)) / N`` (with
+        ``H`` the Shannon entropy of the normalised weights): if it fails to
+        increase by at least ``min_entropy_change`` over the previous generation,
+        the method signals a revert (see Returns) -- STROOPWAFEL's indication
+        that the mixture has stopped improving.
 
         Parameters
         ----------
