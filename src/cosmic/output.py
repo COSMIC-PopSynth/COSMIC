@@ -522,22 +522,29 @@ class COSMICStroopOutput(COSMICOutput):
             label=cosmic.label if label is None else label,
         )
     
-    def draw_representative_sample(self, sample_size, rng=None):
+    def draw_representative_sample(self, n_samples, rng=None):
         """Draw a representative sample of hits from the explored systems.
+
+        Performs a weighted bootstrap: hits are drawn with replacement in
+        proportion to their importance weights, yielding a set of systems
+        distributed according to the true (prior-weighted) population that
+        can be analysed without any further weighting.
 
         Parameters
         ----------
-        sample_size : `int`
+        n_samples : `int`
             Number of hits to draw.
         rng : `numpy.random.Generator`, optional
             Random number generator to use for sampling. If None, a new default generator is created.
-        
+
         Returns
         -------
         representative_sample : `numpy.ndarray`
-            Array of shape (sample_size, D) containing the drawn samples in physical space.
+            Array of shape (n_samples, D) containing the drawn samples in physical space.
         bin_nums : `numpy.ndarray`
-            Array of shape (sample_size,) containing the corresponding bin numbers for the drawn samples.
+            Array of shape (n_samples,) containing the corresponding bin numbers, so the
+            full evolution history of each drawn system can be recovered from the
+            ``bpp``/``bcm``/``initC``/``kick_info`` tables (e.g. ``self.initC.loc[bin_num]``).
         """
         # restrict to hits and normalise their weights into probabilities
         hit_idx = np.where(self.is_hit)[0]
@@ -545,10 +552,12 @@ class COSMICStroopOutput(COSMICOutput):
 
         # draw a representative sample with replacement
         rng = rng or np.random.default_rng()
-        chosen = rng.choice(hit_idx, size=sample_size, replace=True, p=probs)
+        bin_nums = rng.choice(hit_idx, size=n_samples, replace=True, p=probs)
 
-        representative_sample = self.samples[chosen]
-        bin_nums = self.initC['bin_num'].iloc[chosen].values
+        # `samples` is indexed by bin_num (samples[bin_num] is the system with that
+        # bin_num), so the drawn indices are themselves the bin numbers — use them to
+        # label the systems and to look rows up in the COSMIC tables via `.loc`.
+        representative_sample = self.samples[bin_nums]
         return representative_sample, bin_nums
 
 

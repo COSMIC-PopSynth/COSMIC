@@ -519,8 +519,9 @@ class TestCheckpoint(unittest.TestCase):
             'is_interesting': lambda bpp: (0, np.array([], dtype=int)),
             'derive_params': lambda s: {'mass_2': s['mass_1'] * 0.5,
                                         'ecc': 0.0, 'metallicity': 0.02},
-            'reject_systems': None, 'output_path': 'out', 'nproc': 2,
+            'reject_systems': None, 'nproc': 2,
             'kappa': 1.0, 'n_generations': 1, 'only_save_hit_tables': False,
+            'min_active_fraction': 0.01, 'min_entropy_change': 0.01,
             'rng': rng,
         }
         N = 20
@@ -593,6 +594,79 @@ class TestStroopOutput(unittest.TestCase):
             num_explored=N, num_hits=10, fraction_explored=1.0,
         )
         self.assertAlmostEqual(result.hit_rate, 0.1)
+
+
+# ==========================================================================
+# draw_representative_sample
+# ==========================================================================
+class TestDrawRepresentativeSample(unittest.TestCase):
+
+    PARAM_NAMES = ['mass_1', 'porb', 'ecc', 'metallicity']
+
+    def _make_output(self):
+        """Build an output whose initC holds ONLY the hit rows, in shuffled
+        order (as ``only_save_hit_tables=True`` produces).  This makes the
+        initC row *position* differ from the ``bin_num``, so the test exercises
+        label-based (not positional) lookup of the returned bin numbers.
+        """
+        N = 12
+        # Each system gets uniquely identifiable physical parameters.
+        samples = np.column_stack([
+            10.0 + np.arange(N),          # mass_1
+            100.0 + np.arange(N),         # porb
+            0.01 * np.arange(N),          # ecc
+            0.001 + 0.001 * np.arange(N), # metallicity
+        ])
+        is_hit = np.zeros(N, dtype=bool)
+        is_hit[[1, 3, 5, 7, 9, 11]] = True
+        weights = np.linspace(0.1, 2.0, N)
+
+        hit_bins = np.where(is_hit)[0]
+        order = hit_bins.copy()
+        np.random.default_rng(0).shuffle(order)   # initC rows out of bin_num order
+        initC = pd.DataFrame({
+            'bin_num':     order,
+            'mass_1':      samples[order, 0],
+            'porb':        samples[order, 1],
+            'ecc':         samples[order, 2],
+            'metallicity': samples[order, 3],
+            'mass_2':      samples[order, 0] * 0.5,   # an extra IC column
+        }).set_index('bin_num', drop=False)
+        minimal = pd.DataFrame({'bin_num': order})
+
+        out = COSMICStroopOutput(
+            bpp=minimal, bcm=minimal, initC=initC, kick_info=minimal,
+            samples=samples, param_names=self.PARAM_NAMES, weights=weights,
+            is_hit=is_hit, generation=np.zeros(N, dtype=int),
+            gaussian_idx=np.full(N, -1, dtype=int),
+            num_explored=N, num_hits=len(hit_bins), fraction_explored=1.0,
+        )
+        return out, samples
+
+    def test_bin_nums_reference_matching_initial_conditions(self):
+        out, samples = self._make_output()
+        rep, bin_nums = out.draw_representative_sample(50, rng=np.random.default_rng(3))
+
+        self.assertEqual(rep.shape, (50, len(self.PARAM_NAMES)))
+        self.assertEqual(bin_nums.shape, (50,))
+        # Only hits may be drawn.
+        self.assertTrue(np.all(out.is_hit[bin_nums]))
+
+        for params, b in zip(rep, bin_nums):
+            # Returned parameters are the sample row for that bin_num.
+            np.testing.assert_array_equal(params, samples[b])
+            # The initC row for that bin_num has identical initial conditions.
+            ic = out.initC.loc[b]
+            for col in self.PARAM_NAMES:
+                self.assertEqual(ic[col], params[self.PARAM_NAMES.index(col)])
+
+    def test_draws_are_importance_weighted(self):
+        # With all weight on a single hit, every draw should be that system.
+        out, _ = self._make_output()
+        out.weights = np.zeros(len(out.weights))
+        out.weights[7] = 1.0          # bin_num 7 is a hit
+        _, bin_nums = out.draw_representative_sample(100, rng=np.random.default_rng(1))
+        self.assertTrue(np.all(bin_nums == 7))
 
 
 if __name__ == '__main__':

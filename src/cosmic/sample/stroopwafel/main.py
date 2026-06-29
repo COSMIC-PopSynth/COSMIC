@@ -197,6 +197,7 @@ class AdaptiveSampler:
         'parameter_space', 'total_systems', 'batch_size', 'BSEDict',
         'is_interesting', 'derive_params', 'reject_systems',
         'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
+        'min_active_fraction', 'min_entropy_change',
     })
 
     @classmethod
@@ -283,6 +284,8 @@ class AdaptiveSampler:
             'kappa':                self.kappa,
             'n_generations':        self.n_generations,
             'only_save_hit_tables': self.only_save_hit_tables,
+            'min_active_fraction':  self.min_active_fraction,
+            'min_entropy_change':   self.min_entropy_change,
             'rng':                  self.rng,
         }
 

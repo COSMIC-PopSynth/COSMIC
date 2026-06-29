@@ -134,7 +134,7 @@ We provide a convenience method for this in :class:`~cosmic.output.COSMICStroopO
     results = COSMICStroopOutput.from_file("YOUR_SIMULATION.h5")
     representative_sample, bin_nums = results.draw_representative_sample(n_samples=1000)
 
-The resulting ``representative_sample`` array provides a set of 1000 systems with their parameters drawn from the underlying population, and ``bin_nums`` provides the corresponding indices into the original hit population so that you can access the full evolution history if you need it.
+The resulting ``representative_sample`` array provides a set of 1000 systems with their parameters drawn from the underlying population, and ``bin_nums`` provides the corresponding indices into the original population so that you can access the full evolution history if you need it.
 
 Wrap-up
 =======
