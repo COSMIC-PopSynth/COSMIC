@@ -1,6 +1,5 @@
 python_sources = [
   '__init__.py',
-  'constants.py',
   'distributions.py',
   'main.py',
   'mixture_model.py',

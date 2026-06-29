@@ -5,7 +5,6 @@ sampling, PDF evaluation, and EM updates.
 """
 import numpy as np
 from scipy.stats import multivariate_normal, entropy as scipy_entropy
-from .constants import MIN_ENTROPY_CHANGE, MIN_ACTIVE_FRACTION
 
 
 class GaussianMixture:
@@ -23,11 +22,14 @@ class GaussianMixture:
         Fraction of samples that fall outside bounds, by default 0.0
     """
 
-    def __init__(self, means, covariances, alphas, rejection_rate=0.0):
+    def __init__(self, means, covariances, alphas, rejection_rate=0.0,
+                 min_active_fraction=0.01, min_entropy_change=0.01):
         self.means = np.asarray(means)
         self.covariances = np.asarray(covariances)
         self.alphas = np.asarray(alphas, dtype=float)
         self.rejection_rate = rejection_rate
+        self.min_active_fraction = min_active_fraction
+        self.min_entropy_change = min_entropy_change
 
     @property
     def n_components(self):
@@ -38,7 +40,8 @@ class GaussianMixture:
         return self.means.shape[1]
 
     @classmethod
-    def from_hits(cls, hit_samples, param_space, average_density_one_dim, kappa=1.0):
+    def from_hits(cls, hit_samples, param_space, average_density_one_dim, kappa=1.0,
+                  min_active_fraction=0.01, min_entropy_change=0.01):
         """Create a Gaussian mixture by placing one component at each hit.
 
         Parameters
@@ -52,6 +55,12 @@ class GaussianMixture:
             ``1 / num_explored ** (1 / D)``.
         kappa : `float`, optional
             Width scaling factor for the Gaussian covariances, by default 1.0
+        min_active_fraction : `float`, optional
+            Minimum value of (1 - rejection_rate) used in oversampling and
+            normalisation calculations, by default 0.01
+        min_entropy_change : `float`, optional
+            Minimum change in normalised effective sample size (entropy) to
+            avoid reverting to the previous mixture state, by default 0.01
 
         Returns
         -------
@@ -72,7 +81,8 @@ class GaussianMixture:
         # Equal mixture weights
         alphas = np.full(K, 1.0 / K)
 
-        return cls(hit_samples.copy(), covariances, alphas)
+        return cls(hit_samples.copy(), covariances, alphas,
+                   min_active_fraction=min_active_fraction, min_entropy_change=min_entropy_change)
 
     def sample(self, n_total, param_space, consider_rejection=False, rng=None):
         """Sample from the mixture distribution.
@@ -106,7 +116,7 @@ class GaussianMixture:
         for k in range(self.n_components):
             n_k = int(np.ceil(n_total * self.alphas[k]))
             if consider_rejection and self.rejection_rate > 0.0:
-                active = max(1.0 - self.rejection_rate, MIN_ACTIVE_FRACTION)
+                active = max(1.0 - self.rejection_rate, self.min_active_fraction)
                 n_k = int(2 * np.ceil(n_k / active))
             if n_k <= 0:
                 continue
@@ -242,8 +252,8 @@ class GaussianMixture:
             True if the entropy check triggers reversion to the previous
             mixture state.
         """
-        pi_norm = 1.0 / max(1.0 - prior_fraction_rejected, MIN_ACTIVE_FRACTION)
-        q_norm  = 1.0 / max(1.0 - self.rejection_rate,   MIN_ACTIVE_FRACTION)
+        pi_norm = 1.0 / max(1.0 - prior_fraction_rejected, self.min_active_fraction)
+        q_norm  = 1.0 / max(1.0 - self.rejection_rate, self.min_active_fraction)
         pi = prior_probs * pi_norm
         is_hit = np.asarray(is_hit, dtype=float)
 
@@ -301,7 +311,7 @@ class GaussianMixture:
         # generations, which indicates the mixture has stopped improving.
         entropy_change = np.exp(scipy_entropy(weights_normalized[:, 0])) / N
         if entropies is not None:
-            if len(entropies) >= 1 and entropy_change - entropies[-1] < MIN_ENTROPY_CHANGE:
+            if len(entropies) >= 1 and entropy_change - entropies[-1] < self.min_entropy_change:
                 return True  # Signal to revert
             entropies.append(entropy_change)
 
