@@ -69,25 +69,14 @@ params = ParameterSpace([
 ])
 
 # ------------------------------------------------------------------
-# Define derived quantities (vectorized)
+# Provide binary parameters not sampled directly (vectorized)
+#
+# A binary is defined by {mass_1, mass_2, porb, ecc, metallicity}.  All but
+# mass_2 are sampled, so derive mass_2 from the sampled mass ratio.
 # ------------------------------------------------------------------
-def compute_derived(samples_physical, param_names):
-    """Compute derived quantities from sampled parameters."""
-    idx = {name: i for i, name in enumerate(param_names)}
-    m1 = samples_physical[:, idx['mass_1']]
-    q = samples_physical[:, idx['q']]
-    porb = samples_physical[:, idx['porb']]
-    z = samples_physical[:, idx['metallicity']]
-
-    mass_2 = m1 * q
-    separation = ((porb ** 2) * (m1 + mass_2)) ** (1.0 / 3.0)
-
-    return {
-        'mass_2': mass_2,
-        'metallicity_1': z,
-        'metallicity_2': z,
-        'separation': separation,
-    }
+def derive_params(sampled):
+    """Return the one required parameter (mass_2) not sampled directly."""
+    return {'mass_2': sampled['mass_1'] * sampled['q']}
 
 # ------------------------------------------------------------------
 # Hit definition: merging BH-BH binaries within Hubble time
@@ -105,9 +94,9 @@ if __name__ == '__main__':
         total_systems=args.num_systems,
         batch_size=args.num_per_core,
         BSEDict=BSEDict,
-        compute_derived=compute_derived,
-        reject_systems=default_reject,
         is_interesting=is_interesting,
+        derive_params=derive_params,
+        reject_systems=default_reject,
         output_path=args.output_dir,
         nproc=args.num_cores,
         mc_only=args.mc_only,

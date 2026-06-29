@@ -109,42 +109,44 @@ Parameters are stored and returned in the order you provide them, which sets the
     and ``10**(5.5)`` - the distribution applies the :math:`\log_{10}` transform internally.
 
 
-Define any derived quantities
------------------------------
+Complete the binary definition
+------------------------------
 
-COSMIC requires ``mass_2``, ``separation``, and ``metallicity`` in addition to the
-directly-sampled parameters.  The ``compute_derived`` callback converts a ``(N, D)``
-array of physical-space samples and the list of parameter names (in column order) into a
-dictionary of ``(N,)`` arrays:
+Every binary handed to ``COSMIC`` is defined by **five** parameters: ``mass_1``,
+``mass_2``, ``porb``, ``ecc``, and ``metallicity``.
+
+Each one must be provided in **exactly one** of two ways: either it is sampled (a
+:class:`~cosmic.sample.stroopwafel.Parameter` with that name in your ``ParameterSpace``) or
+it is returned by an optional ``derive_params`` function.  If any of the five is neither
+sampled nor derived, :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` raises an error as soon as it is constructed.
+
+In the parameter space above we sampled ``mass_1``, ``porb``, ``ecc``, and ``metallicity``
+directly, but sampled the mass *ratio* ``q`` rather than ``mass_2``.  ``derive_params``
+fills in the gap.  It receives a dictionary mapping each sampled name to its ``(N,)`` array
+of physical values and returns a dictionary of the remaining parameters (a scalar is
+broadcast to all ``N`` binaries):
 
 .. code-block:: python
 
-    def compute_derived(samples_physical, param_names):
-        """Convert sampled parameters to COSMIC inputs."""
-        idx = {name: i for i, name in enumerate(param_names)}
+    def derive_params(sampled):
+        """Provide binary parameters not drawn from the ParameterSpace."""
+        return {'mass_2': sampled['mass_1'] * sampled['q']}
 
-        mass_1 = samples_physical[:, idx['mass_1']]
-        q      = samples_physical[:, idx['q']]
-        porb   = samples_physical[:, idx['porb']]   # physical days after 10^x transform
-        z      = samples_physical[:, idx['metallicity']]
+This design makes it easy to adaptively sample in just a few dimensions while holding the
+rest fixed.  For instance, to explore *only* orbital period you would sample ``porb`` and
+fix everything else:
 
-        mass_2 = mass_1 * q
+.. code-block:: python
 
-        # Kepler's third law: a [AU] from P [yr] and M [M_sun]; then convert to AU
-        separation = ((porb / 365.25) ** 2 * (mass_1 + mass_2)) ** (1.0 / 3.0)
+    params = ParameterSpace([
+        Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),
+    ])
 
-        return {
-            'mass_2':        mass_2,
-            'metallicity_1': z,
-            'metallicity_2': z,
-            'separation':    separation,   # AU, required by default_reject
-        }
+    def derive_params(sampled):
+        return {'mass_1': 30.0, 'mass_2': 25.0, 'ecc': 0.0, 'metallicity': 0.02}
 
-.. note::
-
-    The keys ``'mass_2'``, ``'metallicity_1'``, ``'metallicity_2'``, and ``'separation'``
-    are expected by :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.  If you
-    supply a custom rejection function you are free to use different key names.
+If all five parameters are sampled directly, ``derive_params`` is unnecessary and can be
+omitted entirely.
 
 
 Choose a rejection function
@@ -160,18 +162,22 @@ checks:
 
     from cosmic.sample.stroopwafel.rejection import default_reject
 
-It expects the arrays produced by ``compute_derived`` and returns a boolean mask where
-``True`` means the system is rejected.  For most use cases this default is appropriate.
-If you need extra cuts — for example, discarding systems with very low metallicity or
-imposing a minimum primary mass — you can wrap it:
+It receives the assembled binary parameters as a dictionary (``mass_1``, ``mass_2``,
+``porb``, ``ecc``, ``metallicity``) and returns a boolean mask where ``True`` means the
+system is rejected; the orbital separation is computed internally from ``porb``.  For most
+use cases this default is appropriate.  If you need extra cuts — for example imposing a
+minimum secondary mass — you can wrap it:
 
 .. code-block:: python
 
-    def my_reject(samples_physical, derived, param_names):
-        base_mask = default_reject(samples_physical, derived, param_names)
+    def my_reject(binary_params):
+        base_mask = default_reject(binary_params)
         # additionally reject secondaries below 1 M_sun
-        base_mask |= (derived['mass_2'] < 1.0)
+        base_mask |= (binary_params['mass_2'] < 1.0)
         return base_mask
+
+Passing ``reject_systems`` is optional; omit it (or pass ``None``) to skip physical
+rejection entirely.
 
 
 Identify what constitutes a hit
@@ -233,7 +239,7 @@ You can also write a fully custom hit function.  For example, to find BH + stell
 Running the sampler
 ===================
 
-With all the pieces in place, you can run the sampler with :class:`~cosmic.sample.stroopwafel.AdaptiveSampler`.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE physics settings, the derived quantity function, the rejection function, and the hit function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
+With all the pieces in place, you can run the sampler with :class:`~cosmic.sample.stroopwafel.AdaptiveSampler`.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE physics settings, the hit function, the ``derive_params`` function (if needed), and the rejection function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
 
 The examples below demonstrate how you could go about this.
 
@@ -268,22 +274,10 @@ orbital period, eccentricity, and metallicity.
     ])
 
     # ------------------------------------------------------------------
-    # Derived quantities
+    # Complete the binary definition (mass_2 from the sampled mass ratio)
     # ------------------------------------------------------------------
-    def compute_derived(samples_physical, param_names):
-        idx = {name: i for i, name in enumerate(param_names)}
-        mass_1 = samples_physical[:, idx['mass_1']]
-        q      = samples_physical[:, idx['q']]
-        porb   = samples_physical[:, idx['porb']]
-        z      = samples_physical[:, idx['metallicity']]
-        mass_2     = mass_1 * q
-        separation = ((porb / 365.25) ** 2 * (mass_1 + mass_2)) ** (1.0 / 3.0)
-        return {
-            'mass_2':        mass_2,
-            'metallicity_1': z,
-            'metallicity_2': z,
-            'separation':    separation,
-        }
+    def derive_params(sampled):
+        return {'mass_2': sampled['mass_1'] * sampled['q']}
 
     # ------------------------------------------------------------------
     # Run
@@ -293,9 +287,9 @@ orbital period, eccentricity, and metallicity.
         total_systems=50_000,
         batch_size=500,
         BSEDict=BSEDict,
-        compute_derived=compute_derived,
-        reject_systems=default_reject,
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
+        derive_params=derive_params,
+        reject_systems=default_reject,
         output_path='output/bhbh',
         nproc=4,
         n_generations=1,
@@ -313,7 +307,7 @@ BH + star binaries surviving 100 Myr
 
 For outcomes that are less extreme but still rare — such as persistent BH + star systems —
 STROOPWAFEL provides substantial efficiency gains over flat Monte Carlo.  Using the same
-parameter space, ``compute_derived``, and ``BSEDict`` as the previous examples, we can simply swap out the hit function to find BH + star systems that remain bound for at least 100 Myr after the BH forms:
+parameter space, ``derive_params``, and ``BSEDict`` as the previous examples, we can simply swap out the hit function to find BH + star systems that remain bound for at least 100 Myr after the BH forms:
 
 .. code-block:: python
 
@@ -326,9 +320,9 @@ parameter space, ``compute_derived``, and ``BSEDict`` as the previous examples, 
         total_systems=20_000,
         batch_size=500,
         BSEDict=BSEDict,                 # reuse from BHBH example
-        compute_derived=compute_derived, # reuse from BHBH example
-        reject_systems=default_reject,
         is_interesting=bh_star_100myr,   # we defined this earlier
+        derive_params=derive_params,     # reuse from BHBH example
+        reject_systems=default_reject,
         output_path='output/bh_star',
         nproc=4,
         n_generations=1,

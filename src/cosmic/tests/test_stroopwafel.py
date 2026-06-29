@@ -14,7 +14,7 @@ import pandas as pd
 from scipy.stats import norm, kstest
 from scipy.integrate import trapezoid
 
-from cosmic.sample.stroopwafel import ParameterSpace, Parameter
+from cosmic.sample.stroopwafel import ParameterSpace, Parameter, AdaptiveSampler
 from cosmic.sample.stroopwafel.distributions import (
     DISTRIBUTIONS, register, get_distribution,
     Distribution, Uniform, PowerLaw, TruncatedNormal,
@@ -314,8 +314,6 @@ class TestParameterSpace(unittest.TestCase):
 # ==========================================================================
 class TestRejection(unittest.TestCase):
 
-    PARAM_NAMES = ['ecc', 'mass_1', 'metallicity', 'porb', 'q']
-
     def test_get_zams_radius_positive_finite(self):
         masses = np.array([1.0, 10.0, 30.0, 100.0])
         mets = np.array([0.02, 0.02, 0.001, 0.014])
@@ -324,26 +322,85 @@ class TestRejection(unittest.TestCase):
         self.assertTrue(np.all(r > 0) and np.all(np.isfinite(r)))
 
     def test_wide_binary_not_rejected(self):
-        samples = np.array([[0.1, 20.0, 0.014, 100.0, 0.5]])
-        derived = {
+        binary_params = {
+            'mass_1': np.array([20.0]),
             'mass_2': np.array([10.0]),
-            'metallicity_1': np.array([0.014]),
-            'metallicity_2': np.array([0.014]),
-            'separation': np.array([50.0]),
+            'porb': np.array([1000.0]),     # days -> several AU, well detached
+            'ecc': np.array([0.1]),
+            'metallicity': np.array([0.014]),
         }
-        rejected = default_reject(samples, derived, self.PARAM_NAMES)
-        self.assertFalse(rejected[0])
+        self.assertFalse(default_reject(binary_params)[0])
 
     def test_low_mass_secondary_rejected(self):
-        samples = np.array([[0.1, 20.0, 0.014, 100.0, 0.001]])
-        derived = {
-            'mass_2': np.array([0.02]),   # below the 0.08 Msun minimum
-            'metallicity_1': np.array([0.014]),
-            'metallicity_2': np.array([0.014]),
-            'separation': np.array([50.0]),
+        binary_params = {
+            'mass_1': np.array([20.0]),
+            'mass_2': np.array([0.02]),     # below the 0.08 Msun minimum
+            'porb': np.array([1000.0]),
+            'ecc': np.array([0.1]),
+            'metallicity': np.array([0.014]),
         }
-        rejected = default_reject(samples, derived, self.PARAM_NAMES)
-        self.assertTrue(rejected[0])
+        self.assertTrue(default_reject(binary_params)[0])
+
+    def test_contact_binary_rejected(self):
+        # A 0.5-day orbit puts two massive stars in contact at ZAMS.
+        binary_params = {
+            'mass_1': np.array([30.0]),
+            'mass_2': np.array([25.0]),
+            'porb': np.array([0.5]),
+            'ecc': np.array([0.0]),
+            'metallicity': np.array([0.014]),
+        }
+        self.assertTrue(default_reject(binary_params)[0])
+
+
+# ==========================================================================
+# Binary-parameter model (sampled + derived coverage)
+# ==========================================================================
+class TestBinaryModel(unittest.TestCase):
+
+    def _make(self, params, derive_params=None):
+        return AdaptiveSampler(
+            parameter_space=params, total_systems=10, batch_size=5, BSEDict={},
+            is_interesting=lambda bpp: (0, np.array([], dtype=int)),
+            derive_params=derive_params, reject_systems=None,
+        )
+
+    def test_missing_required_params_raise_at_construction(self):
+        # Only porb is sampled; mass_1/mass_2/ecc/metallicity are undefined.
+        params = ParameterSpace([Parameter('porb', 10**(0.15), 10**(5.5), dist='sana')])
+        with self.assertRaisesRegex(ValueError, 'mass_1'):
+            self._make(params)
+
+    def test_derive_params_fills_missing_with_scalars(self):
+        # Sample only porb; fix the rest via scalar returns (broadcast to N).
+        params = ParameterSpace([Parameter('porb', 10**(0.15), 10**(5.5), dist='sana')])
+        sampler = self._make(params, derive_params=lambda s: {
+            'mass_1': 30.0, 'mass_2': 25.0, 'ecc': 0.0, 'metallicity': 0.02,
+        })
+        phys = params.to_physical(params.sample(4, rng=np.random.default_rng(0))[0])
+        bp = sampler._binary_params(phys)
+        for key in AdaptiveSampler.REQUIRED_PARAMS:
+            self.assertEqual(bp[key].shape, (4,))
+        np.testing.assert_array_equal(bp['mass_1'], np.full(4, 30.0))
+
+    def test_all_required_sampled_needs_no_derive(self):
+        params = ParameterSpace([
+            Parameter('mass_1', 5.0, 150.0, dist='kroupa'),
+            Parameter('mass_2', 1.0, 100.0, dist='uniform'),
+            Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),
+            Parameter('ecc', 1e-9, 0.99, dist='sana_ecc'),
+            Parameter('metallicity', 1e-4, 0.03, dist='flat_in_log'),
+        ])
+        self._make(params)   # must not raise
+
+    def test_derive_params_wrong_length_raises(self):
+        params = ParameterSpace([Parameter('porb', 10**(0.15), 10**(5.5), dist='sana')])
+        sampler_factory = lambda: self._make(params, derive_params=lambda s: {
+            'mass_1': np.array([30.0]),   # wrong length vs the 2-row probe
+            'mass_2': 25.0, 'ecc': 0.0, 'metallicity': 0.02,
+        })
+        with self.assertRaisesRegex(ValueError, 'length'):
+            sampler_factory()
 
 
 # ==========================================================================

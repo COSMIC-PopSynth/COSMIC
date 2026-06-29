@@ -29,17 +29,25 @@ class AdaptiveSampler:
         Number of systems evolved per COSMIC call.
     BSEDict : `dict`
         COSMIC binary stellar evolution parameters.
-    compute_derived : `callable`
-        Function with signature
-        ``(samples_physical, param_names) -> dict`` that computes
-        derived quantities (e.g., ``'mass_2'``, ``'separation'``).
-    reject_systems : `callable`
-        Function with signature
-        ``(samples_physical, derived, param_names) -> bool_mask``
-        returning True for physically unacceptable systems.
     is_interesting : `callable`
         Function with signature ``(bpp) -> (n_hits, hit_bin_nums)``
         identifying systems of interest from COSMIC output.
+    derive_params : `callable`, optional
+        Function ``(sampled) -> dict`` that supplies any binary parameters
+        not drawn from ``parameter_space``.  ``sampled`` is a dict mapping
+        each sampled parameter name to its (N,) array of physical values;
+        the returned dict provides the remaining members of
+        :attr:`REQUIRED_PARAMS` (a scalar is broadcast to all N binaries,
+        e.g. ``{'mass_1': 30.0}``).  Every required parameter must be either
+        sampled or returned here.  May be ``None`` when all of them are
+        sampled directly.  By default None.
+    reject_systems : `callable`, optional
+        Function ``(binary_params) -> bool_mask`` returning True for
+        physically unacceptable systems, where ``binary_params`` is the
+        assembled dict of binary parameters (sampled columns merged with the
+        output of ``derive_params``).  See
+        :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.  By
+        default None (no physical rejection).
     output_path : `str`, optional
         Directory for output files, by default ``'output'``
     nproc : `int`, optional
@@ -63,8 +71,13 @@ class AdaptiveSampler:
         By default False.
     """
 
+    #: The parameters that fully define a binary for COSMIC.  Each must be
+    #: either sampled (a Parameter in ``parameter_space``) or returned by
+    #: ``derive_params``.
+    REQUIRED_PARAMS = ('mass_1', 'mass_2', 'porb', 'ecc', 'metallicity')
+
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
-                 compute_derived, reject_systems, is_interesting,
+                 is_interesting, derive_params=None, reject_systems=None,
                  output_path='output', nproc=1, kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False):
@@ -72,7 +85,7 @@ class AdaptiveSampler:
         self.total_systems = total_systems
         self.batch_size = batch_size
         self.bse_dict = BSEDict
-        self.compute_derived_fn = compute_derived
+        self.derive_fn = derive_params
         self.reject_fn = reject_systems
         self.is_interesting_fn = is_interesting
         self.output_path = output_path
@@ -102,6 +115,9 @@ class AdaptiveSampler:
         self._all_bcm = []
         self._all_initC = []
         self._all_kick_info = []
+
+        # Fail fast if the binary model is under-specified.
+        self._validate_param_coverage()
 
     def run(self):
         """Run the full STROOPWAFEL pipeline in a single call.
@@ -164,8 +180,8 @@ class AdaptiveSampler:
             sampler = AdaptiveSampler.from_checkpoint(
                 'checkpoint.h5',
                 parameter_space=params, batch_size=1000,
-                BSEDict=BSEDict, compute_derived=compute_derived,
-                reject_systems=default_reject, is_interesting=is_bh_star,
+                BSEDict=BSEDict, is_interesting=is_bh_star,
+                derive_params=derive_params, reject_systems=default_reject,
             )
             result = sampler.run_refinement()
             result.save('result.h5')
@@ -180,13 +196,13 @@ class AdaptiveSampler:
 
     @classmethod
     def from_checkpoint(cls, checkpoint, parameter_space, batch_size, BSEDict,
-                        compute_derived, reject_systems, is_interesting,
+                        is_interesting, derive_params=None, reject_systems=None,
                         output_path='output', nproc=1, seed=None,
                         total_systems=None, n_generations=None,
                         only_save_hit_tables=False):
         """Create a sampler pre-loaded with state from a :class:`STROOPWAFELCheckpoint`.
 
-        The callable arguments (``BSEDict``, ``compute_derived``, etc.) are
+        The callable arguments (``BSEDict``, ``derive_params``, etc.) are
         not stored in the checkpoint and must be supplied again.  All other
         state — explored samples, COSMIC output, mixture model, scalar
         counters — is restored from the checkpoint.
@@ -203,11 +219,11 @@ class AdaptiveSampler:
             Systems per COSMIC call for the refinement phase.
         BSEDict : `dict`
             COSMIC binary stellar evolution parameters.
-        compute_derived : `callable`
-            Same signature as for the original sampler.
-        reject_systems : `callable`
-            Same signature as for the original sampler.
         is_interesting : `callable`
+            Same signature as for the original sampler.
+        derive_params : `callable`, optional
+            Same signature as for the original sampler.
+        reject_systems : `callable`, optional
             Same signature as for the original sampler.
         output_path : `str`, optional
             Directory for output files, by default ``'output'``
@@ -250,9 +266,9 @@ class AdaptiveSampler:
             total_systems=ts,
             batch_size=batch_size,
             BSEDict=BSEDict,
-            compute_derived=compute_derived,
-            reject_systems=reject_systems,
             is_interesting=is_interesting,
+            derive_params=derive_params,
+            reject_systems=reject_systems,
             output_path=output_path,
             nproc=nproc,
             n_generations=ng,
@@ -318,6 +334,84 @@ class AdaptiveSampler:
         self._all_initC     = [checkpoint.initC]
         self._all_kick_info = [checkpoint.kick_info]
 
+    # ------------------------------------------------------------------
+    # Binary-parameter assembly
+    # ------------------------------------------------------------------
+
+    def _binary_params(self, samples_physical):
+        """Assemble the full set of binary parameters for a batch.
+
+        Merges the sampled columns with whatever ``derive_params`` returns,
+        then checks that every member of :attr:`REQUIRED_PARAMS` is present.
+
+        Parameters
+        ----------
+        samples_physical : `numpy.ndarray`
+            (N, D) array of sampled values in physical space.
+
+        Returns
+        -------
+        `dict`
+            Maps parameter name to an (N,) array.  Guaranteed to contain
+            every name in :attr:`REQUIRED_PARAMS`, plus any sampled extras
+            (e.g. natal-kick columns) or additional keys from
+            ``derive_params``.
+
+        Raises
+        ------
+        `ValueError`
+            If a required parameter is neither sampled nor returned by
+            ``derive_params``, or if ``derive_params`` returns an array of
+            the wrong length.
+        """
+        n = len(samples_physical)
+        params = {name: samples_physical[:, i]
+                  for i, name in enumerate(self.param_space.names)}
+
+        derived_keys = []
+        if self.derive_fn is not None:
+            for key, value in self.derive_fn(params).items():
+                value = np.asarray(value, dtype=float)
+                if value.ndim == 0:
+                    value = np.full(n, value)        # broadcast fixed values
+                elif len(value) != n:
+                    raise ValueError(
+                        f"derive_params returned '{key}' with length "
+                        f"{len(value)}, but the batch has {n} binaries."
+                    )
+                params[key] = value
+                derived_keys.append(key)
+
+        missing = [p for p in self.REQUIRED_PARAMS if p not in params]
+        if missing:
+            raise ValueError(
+                f"Each binary must be defined by {list(self.REQUIRED_PARAMS)}, "
+                f"but {missing} were neither sampled nor returned by "
+                f"derive_params.\n"
+                f"  sampled by ParameterSpace : {self.param_space.names}\n"
+                f"  returned by derive_params : {derived_keys}\n"
+                f"Add each missing parameter to the ParameterSpace, or return "
+                f"it from derive_params (a fixed value is fine, "
+                f"e.g. {{'mass_1': 30.0}})."
+            )
+        return params
+
+    def _physical_reject_mask(self, samples_physical):
+        """Boolean mask of physically rejected systems for a set of samples."""
+        if self.reject_fn is None:
+            return np.zeros(len(samples_physical), dtype=bool)
+        return self.reject_fn(self._binary_params(samples_physical))
+
+    def _validate_param_coverage(self):
+        """Fail fast (at construction) if the binary model is under-specified.
+
+        Runs the sampled-plus-derived assembly on a couple of probe draws so
+        that a missing required parameter raises immediately rather than after
+        COSMIC evolution has already begun.
+        """
+        probe, _ = self.param_space.sample(2, rng=np.random.default_rng(0))
+        self._binary_params(self.param_space.to_physical(probe))
+
     def _filter_tables(self, bpp, bcm, initC, kick_info, hit_bin_nums):
         """Return COSMIC tables filtered to hit systems when requested.
 
@@ -366,12 +460,11 @@ class AdaptiveSampler:
             # Sample from prior
             samples, mask = self.param_space.sample(n_oversample, rng=self.rng)
 
-            # Transform to physical space for rejection checking
+            # Assemble binary parameters (sampled + derived) and reject
             samples_phys = self.param_space.to_physical(samples)
-            derived = self.compute_derived_fn(samples_phys, self.param_space.names)
-
-            # Physical rejection
-            phys_rejected = self.reject_fn(samples_phys, derived, self.param_space.names)
+            binary_params = self._binary_params(samples_phys)
+            phys_rejected = (self.reject_fn(binary_params) if self.reject_fn is not None
+                             else np.zeros(n_oversample, dtype=bool))
 
             # Combined mask: in bounds AND not physically rejected
             valid = mask & ~phys_rejected
@@ -382,13 +475,10 @@ class AdaptiveSampler:
             selected = valid_indices[:self.batch_size]
 
             batch_samples = samples[selected]
-            batch_samples_phys = samples_phys[selected]
-            batch_derived = {k: v[selected] for k, v in derived.items()}
+            batch_params = {k: v[selected] for k, v in binary_params.items()}
 
             # Evolve with COSMIC
-            n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(
-                batch_samples_phys, batch_derived
-            )
+            n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(batch_params)
 
             # Record which are hits
             is_hit = np.zeros(len(selected), dtype=bool)
@@ -439,9 +529,7 @@ class AdaptiveSampler:
         valid_samples = samples[mask]
         if len(valid_samples) > 0:
             phys = self.param_space.to_physical(valid_samples)
-            derived = self.compute_derived_fn(phys, self.param_space.names)
-            phys_rejected = self.reject_fn(phys, derived, self.param_space.names)
-            rejected += np.sum(phys_rejected)
+            rejected += np.sum(self._physical_reject_mask(phys))
 
         return rejected / n_test
 
@@ -490,7 +578,7 @@ class AdaptiveSampler:
         for gen in range(self.n_generations):
             # Estimate rejection rate for current mixture
             dist_rejection_rate = self.mixture.compute_rejection_rate(
-                self.param_space, self.compute_derived_fn, self.reject_fn,
+                self.param_space, self._physical_reject_mask,
                 n_per_component=10000, rng=self.rng
             )
 
@@ -514,28 +602,25 @@ class AdaptiveSampler:
                     continue
 
                 phys = self.param_space.to_physical(valid_samples)
-                derived = self.compute_derived_fn(phys, self.param_space.names)
-                phys_rejected = self.reject_fn(phys, derived, self.param_space.names)
+                binary_params = self._binary_params(phys)
+                phys_rejected = (self.reject_fn(binary_params) if self.reject_fn is not None
+                                 else np.zeros(len(phys), dtype=bool))
 
                 keep = ~phys_rejected
                 valid_samples = valid_samples[keep]
                 valid_gauss_idx = valid_gauss_idx[keep]
-                phys = phys[keep]
-                derived = {k: v[keep] for k, v in derived.items()}
+                binary_params = {k: v[keep] for k, v in binary_params.items()}
 
                 # Trim to batch size with randomisation
                 indices = np.arange(len(valid_samples))
                 self.rng.shuffle(indices)
                 n_take = min(len(valid_samples), self.batch_size)
                 batch_samples = valid_samples[indices[:n_take]]
-                batch_phys = phys[indices[:n_take]]
                 batch_gauss_idx = valid_gauss_idx[indices[:n_take]]
-                batch_derived = {k: v[indices[:n_take]] for k, v in derived.items()}
+                batch_params = {k: v[indices[:n_take]] for k, v in binary_params.items()}
 
                 # Evolve with COSMIC
-                n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(
-                    batch_phys, batch_derived
-                )
+                n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(batch_params)
 
                 is_hit = np.zeros(n_take, dtype=bool)
                 is_hit[hit_bin_nums] = True
@@ -717,16 +802,15 @@ class AdaptiveSampler:
     ])
     _KICK_SENTINEL = -100.0
 
-    def _evolve_batch(self, samples_physical, derived):
+    def _evolve_batch(self, binary_params):
         """Evolve a batch of binaries with COSMIC and identify hits.
 
         Parameters
         ----------
-        samples_physical : `numpy.ndarray`
-            (N, D) array of binary parameters in physical space.
-        derived : `dict`
-            Dictionary with keys ``'mass_2'``, ``'metallicity_1'``, etc.,
-            each mapping to an (N,) array.
+        binary_params : `dict`
+            Assembled binary parameters (see :meth:`_binary_params`).  Must
+            contain :attr:`REQUIRED_PARAMS`; any natal-kick columns present
+            are injected per-binary.  Each value is an (N,) array.
 
         Returns
         -------
@@ -744,33 +828,31 @@ class AdaptiveSampler:
         kick_info : `pandas.DataFrame`
             COSMIC natal kick information output.
         """
-        n = len(samples_physical)
-        idx = {name: i for i, name in enumerate(self.param_space.names)}
+        n = len(binary_params['mass_1'])
 
         batch_initial = InitialBinaryTable.InitialBinaries(
-            m1=samples_physical[:, idx['mass_1']],
-            m2=derived['mass_2'],
-            porb=samples_physical[:, idx['porb']],
-            ecc=samples_physical[:, idx['ecc']],
+            m1=binary_params['mass_1'],
+            m2=binary_params['mass_2'],
+            porb=binary_params['porb'],
+            ecc=binary_params['ecc'],
             tphysf=np.full(n, 13700.0),
             kstar1=np.full(n, 1),
             kstar2=np.full(n, 1),
-            metallicity=derived['metallicity_1'],
+            metallicity=binary_params['metallicity'],
         )
 
-        # If any natal kick columns were sampled, activate the per-binary
-        # injection path.  Each column present in the ParameterSpace gets its
-        # sampled value; every other kick column gets _KICK_SENTINEL (-100)
-        # so COSMIC draws that component from its built-in prescription.
-        # natal_kick_array is stripped from the BSEDict copy so COSMIC reads
-        # the per-binary columns instead of the global default.
-        param_names_set = set(self.param_space.names)
-        sampled_kick_cols = self._ALL_KICK_COLUMNS & param_names_set
+        # If any natal kick columns are present (sampled or derived), activate
+        # the per-binary injection path.  Each column present gets its value;
+        # every other kick column gets _KICK_SENTINEL (-100) so COSMIC draws
+        # that component from its built-in prescription.  natal_kick_array is
+        # stripped from the BSEDict copy so COSMIC reads the per-binary columns
+        # instead of the global default.
+        present_kick_cols = self._ALL_KICK_COLUMNS & set(binary_params)
 
-        if sampled_kick_cols:
+        if present_kick_cols:
             for col in self._ALL_KICK_COLUMNS:
-                batch_initial[col] = (samples_physical[:, idx[col]]
-                                      if col in sampled_kick_cols
+                batch_initial[col] = (binary_params[col]
+                                      if col in present_kick_cols
                                       else self._KICK_SENTINEL)
             batch_initial['randomseed_1'] = 0
             batch_initial['randomseed_2'] = 0

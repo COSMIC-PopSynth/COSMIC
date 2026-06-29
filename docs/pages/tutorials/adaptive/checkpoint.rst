@@ -50,25 +50,17 @@ call :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_exploration` instead 
         Parameter('metallicity', 0.0001,     0.03,       dist='flat_in_log'),
     ])
 
-    def compute_derived(samples_physical, param_names):
-        idx = {name: i for i, name in enumerate(param_names)}
-        mass_1 = samples_physical[:, idx['mass_1']]
-        q      = samples_physical[:, idx['q']]
-        porb   = samples_physical[:, idx['porb']]
-        z      = samples_physical[:, idx['metallicity']]
-        mass_2     = mass_1 * q
-        separation = ((porb / 365.25) ** 2 * (mass_1 + mass_2)) ** (1.0 / 3.0)
-        return {'mass_2': mass_2, 'metallicity_1': z,
-                'metallicity_2': z, 'separation': separation}
+    def derive_params(sampled):
+        return {'mass_2': sampled['mass_1'] * sampled['q']}
 
     sampler = AdaptiveSampler(
         parameter_space=params,
         total_systems=500_000,
         batch_size=1000,
         BSEDict=BSEDict,
-        compute_derived=compute_derived,
-        reject_systems=default_reject,
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
+        derive_params=derive_params,
+        reject_systems=default_reject,
         output_path='output/explore',
         nproc=4,
         seed=42,
@@ -98,7 +90,7 @@ In a second script (or cluster job) rebuild the sampler with
     from cosmic.sample.stroopwafel.presets import any_dco
     from cosmic.sample.stroopwafel.rejection import default_reject
 
-    # `params`, `compute_derived`, and `BSEDict` must be available again here —
+    # `params`, `derive_params`, and `BSEDict` must be available again here —
     # in practice, import them from a shared module used by both jobs.
 
     sampler = AdaptiveSampler.from_checkpoint(
@@ -106,9 +98,9 @@ In a second script (or cluster job) rebuild the sampler with
         parameter_space=params,
         batch_size=1000,
         BSEDict=BSEDict,
-        compute_derived=compute_derived,
-        reject_systems=default_reject,
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
+        derive_params=derive_params,
+        reject_systems=default_reject,
         output_path='output/refine',
         nproc=4,
         seed=7,
@@ -135,7 +127,7 @@ A checkpoint stores everything that is *derived from running COSMIC*:
   ``fraction_explored``, ``prior_fraction_rejected``, ``total_systems``, ...).
 
 It deliberately does **not** store your Python callables or physics settings — the
-``BSEDict``, ``compute_derived``, ``reject_systems``, and ``is_interesting`` functions are
+``BSEDict``, ``derive_params``, ``reject_systems``, and ``is_interesting`` functions are
 not serialisable in general, so you must supply them again to
 :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint`.  Only the parameter
 **names** are stored, and they are checked against the ``parameter_space`` you provide; a

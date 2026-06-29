@@ -126,39 +126,24 @@ params = ParameterSpace([
 # ------------------------------------------------------------------
 # Derived quantities
 # ------------------------------------------------------------------
-def compute_derived(samples_physical, param_names):
-    """Compute mass_2, metallicities, and orbital separation from samples.
+def derive_params(sampled):
+    """Provide the secondary mass from the sampled primary mass and mass ratio.
+
+    A binary is defined by {mass_1, mass_2, porb, ecc, metallicity}.  Here
+    mass_1, porb, ecc, and metallicity are sampled directly, so only mass_2
+    needs deriving.
 
     Parameters
     ----------
-    samples_physical : numpy.ndarray
-        (N, D) array of samples in physical space.
-    param_names : list of str
-        Column labels for each dimension.
+    sampled : dict
+        Maps each sampled parameter name to its (N,) array of physical values.
 
     Returns
     -------
     dict
-        Keys: 'mass_2', 'metallicity_1', 'metallicity_2', 'separation'.
+        ``{'mass_2': ...}`` -- the one required parameter not sampled here.
     """
-    idx = {name: i for i, name in enumerate(param_names)}
-    m1   = samples_physical[:, idx['mass_1']]
-    q    = samples_physical[:, idx['q']]
-    porb = samples_physical[:, idx['porb']]   # days (sana sampler output)
-    z    = samples_physical[:, idx['metallicity']]
-
-    mass_2 = m1 * q
-
-    # Kepler's third law: a³ [AU³] = (P [yr])² · M [Msun]
-    # Convert period from days to years before applying.
-    separation = ((porb / 365.25) ** 2 * (m1 + mass_2)) ** (1.0 / 3.0)
-
-    return {
-        'mass_2':        mass_2,
-        'metallicity_1': z,
-        'metallicity_2': z,
-        'separation':    separation,
-    }
+    return {'mass_2': sampled['mass_1'] * sampled['q']}
 
 # ------------------------------------------------------------------
 # Hit definition: BH (kstar=14) + normal star (kstar 0–9), still bound
@@ -213,9 +198,9 @@ def run_sampler(mc_only, seed):
         total_systems=args.num_systems,
         batch_size=args.batch_size,
         BSEDict=BSEDict,
-        compute_derived=compute_derived,
-        reject_systems=default_reject,
         is_interesting=is_bh_star,
+        derive_params=derive_params,
+        reject_systems=default_reject,
         output_path=os.path.join(args.output_dir, 'mc' if mc_only else 'sw'),
         nproc=args.num_cores,
         n_generations=args.n_generations,

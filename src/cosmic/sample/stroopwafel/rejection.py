@@ -45,24 +45,21 @@ def get_zams_radius(mass, metallicity):
     return (top / bottom) * R_SOL_TO_AU
 
 
-def default_reject(samples_physical, derived, param_names,
-                   min_secondary_mass=0.08):
+def default_reject(binary_params, min_secondary_mass=0.08):
     """Default rejection function for DCO progenitor systems.
 
     Rejects systems where the secondary mass is below the minimum, the
     stars are in contact at ZAMS, or either star overflows its Roche lobe
-    at periastron.
+    at periastron.  The orbital separation is computed from the orbital
+    period via Kepler's third law, and both stars share the binary
+    metallicity.
 
     Parameters
     ----------
-    samples_physical : `numpy.ndarray`
-        (N, D) array of samples in physical space.
-    derived : `dict`
-        Dictionary with keys ``'mass_2'``, ``'metallicity_1'``,
-        ``'metallicity_2'``, and ``'separation'``, each mapping to an
-        (N,) array.
-    param_names : `list` of `str`
-        Parameter names in column order (used to find column indices).
+    binary_params : `dict`
+        Assembled binary parameters with keys ``'mass_1'``, ``'mass_2'``
+        (solar masses), ``'porb'`` (days), ``'ecc'``, and ``'metallicity'``,
+        each an (N,) array.
     min_secondary_mass : `float`, optional
         Minimum allowed secondary mass in solar masses, by default 0.08
 
@@ -71,32 +68,30 @@ def default_reject(samples_physical, derived, param_names,
     `numpy.ndarray`
         (N,) boolean mask where True indicates a rejected system.
     """
-    idx = {name: i for i, name in enumerate(param_names)}
+    mass_1 = binary_params['mass_1']
+    mass_2 = binary_params['mass_2']
+    porb = binary_params['porb']
+    ecc = binary_params['ecc']
+    metallicity = binary_params['metallicity']
 
-    mass_1 = samples_physical[:, idx['mass_1']]
-    mass_2 = derived['mass_2']
-    met_1 = derived['metallicity_1']
-    met_2 = derived['metallicity_2']
-    separation = derived['separation']
-    ecc = samples_physical[:, idx['ecc']]
+    # Semi-major axis [AU] from Kepler's third law (porb in days, masses in
+    # solar masses): a^3 [AU^3] = (P [yr])^2 * M [Msun].
+    separation = ((porb / 365.25) ** 2 * (mass_1 + mass_2)) ** (1.0 / 3.0)
 
-    # Compute ZAMS radii
-    radius_1 = get_zams_radius(mass_1, met_1)
-    radius_2 = get_zams_radius(mass_2, met_2)
+    # ZAMS radii [AU] (both stars share the binary metallicity)
+    radius_1 = get_zams_radius(mass_1, metallicity)
+    radius_2 = get_zams_radius(mass_2, metallicity)
 
     # Roche lobe radii at periastron
     peri_sep = separation * (1 - ecc)
     rl_1 = calc_Roche_radius(mass_1, mass_2, peri_sep)
     rl_2 = calc_Roche_radius(mass_2, mass_1, peri_sep)
 
-    roche_tracker_1 = radius_1 / rl_1
-    roche_tracker_2 = radius_2 / rl_2
-
     rejected = (
         (mass_2 < min_secondary_mass)
         | (separation <= (radius_1 + radius_2))
-        | (roche_tracker_1 > 1)
-        | (roche_tracker_2 > 1)
+        | (radius_1 / rl_1 > 1)
+        | (radius_2 / rl_2 > 1)
     )
 
     return rejected

@@ -168,7 +168,7 @@ class GaussianMixture:
             )
         return xPDF
 
-    def compute_rejection_rate(self, param_space, compute_derived_fn, reject_fn,
+    def compute_rejection_rate(self, param_space, reject_mask_fn,
                                n_per_component=10000, rng=None):
         """Estimate the rejection rate of the mixture.
 
@@ -179,14 +179,11 @@ class GaussianMixture:
         ----------
         param_space : `ParameterSpace`
             Parameter space for bounds checking and coordinate transforms.
-        compute_derived_fn : `callable`
-            Function with signature
-            ``(samples_physical, param_names) -> dict`` that computes
-            derived quantities.
-        reject_fn : `callable`
-            Function with signature
-            ``(samples_physical, derived, param_names) -> bool_mask``
-            returning True for rejected systems.
+        reject_mask_fn : `callable`
+            Function ``(samples_physical) -> bool_mask`` returning True for
+            physically rejected systems.  The engine supplies one that
+            assembles binary parameters and applies the user's rejection
+            function.
         n_per_component : `int`, optional
             Number of samples per component for the estimate, by default
             10000
@@ -214,9 +211,7 @@ class GaussianMixture:
             s_valid = s[bounds_mask]
             if len(s_valid) > 0:
                 s_physical = param_space.to_physical(s_valid)
-                derived = compute_derived_fn(s_physical, param_space.names)
-                phys_rejected = reject_fn(s_physical, derived, param_space.names)
-                rejected += np.sum(phys_rejected)
+                rejected += np.sum(reject_mask_fn(s_physical))
 
             fractional_rejected += rejected * self.alphas[k] / n
 
