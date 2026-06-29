@@ -10,9 +10,10 @@ about a parameter's prior, which used to be spread across ``samplers.py``,
 * the **transform** between physical and sampling space.
 
 Each distribution is a *base distribution* (:class:`Uniform`,
-:class:`PowerLaw`, :class:`TruncatedNormal`) composed with a *transform*
-(:class:`Identity`, :class:`Log10`, :class:`Ln`, :class:`Sin`,
-:class:`CosShift`).  The base operates entirely in sampling space; the
+:class:`PowerLaw`, :class:`BrokenPowerLaw`, :class:`TruncatedNormal`) composed
+with a *transform* (:class:`Identity`, :class:`Log10`, :class:`Ln`,
+:class:`Sin`, :class:`CosShift`).  The base operates entirely in sampling
+space; the
 transform maps to and from the physical space the user specifies bounds in
 and the simulation consumes.  For example ``flat_in_log`` is
 ``Uniform(transform=Log10())`` and ``sana`` is
@@ -29,10 +30,6 @@ All array-valued methods take and return (N,) ndarrays.
 """
 import numpy as np
 from scipy.stats import norm as _scipy_norm
-
-from .constants import (
-    ALPHA_IMF, SANA_G, SANA_ECC, NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA,
-)
 
 
 # ---------------------------------------------------------------------------
@@ -323,6 +320,99 @@ class PowerLaw(Distribution):
         return np.maximum(np.abs(x_right - values), np.abs(x_left - values))
 
 
+class BrokenPowerLaw(Distribution):
+    r"""Continuous broken power law: ``p(x) \propto x^alpha`` with ``alpha``
+    changing at fixed breakpoints.
+
+    The density is continuous across every breakpoint.  With the default
+    :class:`Identity` transform this gives the Kroupa IMF
+    (``breaks=[0.5]``, ``alphas=[-1.3, -2.3]``): shallower below 0.5 Msun,
+    steeper above.  Over any window that contains no breakpoint it reduces
+    exactly to :class:`PowerLaw`, so sampling masses above 0.5 Msun behaves
+    identically to a single power law.
+
+    Sampling and ``sigma`` use a piecewise inverse CDF; the normalisation,
+    sampling, and density are all computed over the requested ``[lo, hi]``
+    window only (segments outside it are ignored).
+
+    Parameters
+    ----------
+    breaks : sequence of `float`
+        Internal breakpoints in sampling space, strictly increasing.  The
+        distribution has ``len(breaks) + 1`` segments.
+    alphas : sequence of `float`
+        Power-law exponent for each segment (``len(breaks) + 1`` of them);
+        ``alphas[i]`` applies below ``breaks[i]`` and ``alphas[-1]`` above the
+        final break.  None may equal exactly -1.
+    transform : `Transform`, optional
+        Map between physical and sampling space, by default :class:`Identity`.
+    """
+
+    def __init__(self, breaks, alphas, transform=None):
+        super().__init__(transform)
+        self.breaks = np.asarray(breaks, dtype=float)
+        self.alphas = np.asarray(alphas, dtype=float)
+        if self.alphas.shape != (self.breaks.size + 1,):
+            raise ValueError("alphas must have exactly one more entry than breaks.")
+        if np.any(np.diff(self.breaks) <= 0):
+            raise ValueError("breaks must be strictly increasing.")
+        if np.any(self.alphas == -1.0):
+            raise ValueError("BrokenPowerLaw does not support an exponent of exactly -1.")
+        # Per-segment continuity coefficients (the lowest segment is 1).
+        coeffs = np.ones(self.alphas.size)
+        for i in range(self.breaks.size):
+            coeffs[i + 1] = coeffs[i] * self.breaks[i] ** (self.alphas[i] - self.alphas[i + 1])
+        self.coeffs = coeffs
+
+    def _segments(self, lo, hi):
+        """Decompose ``[lo, hi]`` into segments split at the in-range breaks.
+
+        Returns the segment edges and, per segment, the exponent, continuity
+        coefficient, and cumulative unnormalised integral (``cum[-1]`` is the
+        normalisation constant ``Z``).
+        """
+        interior = self.breaks[(self.breaks > lo) & (self.breaks < hi)]
+        edges = np.concatenate(([lo], interior, [hi]))
+        piece = np.searchsorted(self.breaks, edges[:-1], side='right')
+        alpha = self.alphas[piece]
+        coeff = self.coeffs[piece]
+        a = alpha + 1.0
+        seg_int = coeff * (edges[1:] ** a - edges[:-1] ** a) / a
+        cum = np.concatenate(([0.0], np.cumsum(seg_int)))
+        return edges, alpha, coeff, cum
+
+    def pdf(self, values, lo, hi):
+        edges, alpha, coeff, cum = self._segments(lo, hi)
+        s = np.clip(np.searchsorted(edges, values, side='right') - 1, 0, alpha.size - 1)
+        return coeff[s] * np.power(values, alpha[s]) / cum[-1]
+
+    def sample(self, n, lo, hi, rng=None):
+        rng = rng or np.random.default_rng()
+        return self._ppf(rng.uniform(0, 1, n), lo, hi)
+
+    def sigma(self, values, lo, hi, avg_density):
+        """CDF-space step, identical in spirit to :meth:`PowerLaw.sigma`."""
+        u = self._cdf(values, lo, hi)
+        x_right = self._ppf(np.clip(u + avg_density, 0.0, 1.0), lo, hi)
+        x_left = self._ppf(np.clip(u - avg_density, 0.0, 1.0), lo, hi)
+        return np.maximum(np.abs(x_right - values), np.abs(x_left - values))
+
+    def _cdf(self, values, lo, hi):
+        edges, alpha, coeff, cum = self._segments(lo, hi)
+        s = np.clip(np.searchsorted(edges, values, side='right') - 1, 0, alpha.size - 1)
+        a = alpha[s] + 1.0
+        partial = coeff[s] * (np.power(values, a) - np.power(edges[s], a)) / a
+        return (cum[s] + partial) / cum[-1]
+
+    def _ppf(self, u, lo, hi):
+        edges, alpha, coeff, cum = self._segments(lo, hi)
+        target = np.clip(u, 0.0, 1.0) * cum[-1]
+        s = np.clip(np.searchsorted(cum, target, side='right') - 1, 0, alpha.size - 1)
+        a = alpha[s] + 1.0
+        partial = target - cum[s]
+        return np.power(partial * a / coeff[s] + np.power(edges[s], a), 1.0 / a)
+
+
 class TruncatedNormal(Distribution):
     """Normal distribution truncated to ``[lo, hi]`` in sampling space.
 
@@ -369,10 +459,10 @@ DISTRIBUTIONS = {
     'flat_in_log': Uniform(transform=Log10()),
     'uniform_in_sine': Uniform(transform=Sin()),
     'uniform_in_cosine': Uniform(transform=CosShift()),
-    'kroupa': PowerLaw(ALPHA_IMF),
-    'sana': PowerLaw(SANA_G, transform=Log10()),
-    'sana_ecc': PowerLaw(SANA_ECC),
-    'log_normal': TruncatedNormal(NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA, transform=Ln()),
+    'kroupa': BrokenPowerLaw(breaks=[0.5], alphas=[-1.3, -2.3]),
+    'sana': PowerLaw(-0.55, transform=Log10()),
+    'sana_ecc': PowerLaw(-0.45),
+    'disberg': TruncatedNormal(5.67, 0.59, transform=Ln()),
 }
 
 
