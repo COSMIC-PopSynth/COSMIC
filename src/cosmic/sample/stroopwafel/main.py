@@ -8,7 +8,6 @@ from cosmic.evolve import Evolve
 from cosmic.output import COSMICStroopOutput, STROOPWAFELCheckpoint
 
 from .mixture_model import GaussianMixture
-from .constants import MIN_ACTIVE_FRACTION
 from .rejection import default_reject
 
 
@@ -66,6 +65,16 @@ class AdaptiveSampler:
         ``weights``, and ``is_hit`` arrays are unaffected — all systems
         are retained there for correct importance-weight calculation.
         By default False.
+    min_active_fraction : `float`, optional
+        Minimum value of (1 - rejection_rate) used in every oversampling and
+        normalisation calculation.  Caps the oversampling multiplier at ×200
+        (= 2 / 0.01) and prevents near-zero denominators from producing
+        astronomical (yes that was purposeful) array sizes or overflowing float64
+        normalisation constants.
+        By default 0.01.
+    min_entropy_change : `float`, optional
+        Minimum change in entropy required for a generation to be considered
+        as having made progress.  By default 0.01.
     """
 
     #: The parameters that fully define a binary for COSMIC.  Each must be
@@ -77,7 +86,8 @@ class AdaptiveSampler:
                  is_interesting, derive_params=None, reject_systems="default",
                  output_path='output', nproc=1, kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
-                 only_save_hit_tables=False):
+                 only_save_hit_tables=False,
+                 min_active_fraction=0.01, min_entropy_change=0.01):
         self.param_space = parameter_space
         self.total_systems = total_systems
         self.batch_size = batch_size
@@ -92,6 +102,8 @@ class AdaptiveSampler:
         self.mc_only = mc_only
         self.only_save_hit_tables = only_save_hit_tables
         self.rng = np.random.default_rng(seed)
+        self.min_active_fraction = min_active_fraction
+        self.min_entropy_change = min_entropy_change
 
         # State
         self.num_explored = 0
@@ -173,13 +185,8 @@ class AdaptiveSampler:
         :meth:`from_checkpoint` has restored exploration state.  Suitable
         as the second SLURM job::
 
-            # job_refine.py
-            sampler = AdaptiveSampler.from_checkpoint(
-                'checkpoint.h5',
-                parameter_space=params, batch_size=1000,
-                BSEDict=BSEDict, is_interesting=is_bh_star,
-                derive_params=derive_params, reject_systems=default_reject,
-            )
+            # job_refine.py  (the checkpoint is self-contained)
+            sampler = AdaptiveSampler.from_checkpoint('checkpoint.h5')
             result = sampler.run_refinement()
             result.save('result.h5')
 
@@ -191,88 +198,72 @@ class AdaptiveSampler:
             self._refine()
         return self._compute_weights()
 
-    @classmethod
-    def from_checkpoint(cls, checkpoint, parameter_space, batch_size, BSEDict,
-                        is_interesting, derive_params=None, reject_systems=None,
-                        output_path='output', nproc=1, seed=None,
-                        total_systems=None, n_generations=None,
-                        only_save_hit_tables=False):
-        """Create a sampler pre-loaded with state from a :class:`STROOPWAFELCheckpoint`.
+    #: Constructor arguments that may be overridden in :meth:`from_checkpoint`.
+    _OVERRIDABLE = frozenset({
+        'parameter_space', 'total_systems', 'batch_size', 'BSEDict',
+        'is_interesting', 'derive_params', 'reject_systems', 'output_path',
+        'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
+    })
 
-        The callable arguments (``BSEDict``, ``derive_params``, etc.) are
-        not stored in the checkpoint and must be supplied again.  All other
-        state — explored samples, COSMIC output, mixture model, scalar
-        counters — is restored from the checkpoint.
+    @classmethod
+    def from_checkpoint(cls, checkpoint, **overrides):
+        """Rebuild a sampler from a checkpoint, ready for :meth:`run_refinement`.
+
+        The checkpoint is self-contained: by default **every** constructor
+        argument — the parameter space, ``BSEDict``, the
+        ``derive_params``/``reject_systems``/``is_interesting`` callables, the
+        scalar settings, and the RNG state — is restored from the file, so no
+        re-specification is needed::
+
+            sampler = AdaptiveSampler.from_checkpoint('checkpoint.h5')
+            result = sampler.run_refinement()
+
+        Any constructor argument can be overridden by passing it as a keyword,
+        which is useful for e.g. running refinement with more cores or a larger
+        budget than exploration::
+
+            sampler = AdaptiveSampler.from_checkpoint(
+                'checkpoint.h5', nproc=16, total_systems=1_000_000,
+            )
 
         Parameters
         ----------
         checkpoint : `STROOPWAFELCheckpoint` or `str`
             A checkpoint object or path to an HDF5 file written by
             :meth:`STROOPWAFELCheckpoint.save`.
-        parameter_space : `ParameterSpace`
-            Must use the same parameter names as when the checkpoint was
-            created; a `ValueError` is raised if they differ.
-        batch_size : `int`
-            Systems per COSMIC call for the refinement phase.
-        BSEDict : `dict`
-            COSMIC binary stellar evolution parameters.
-        is_interesting : `callable`
-            Same signature as for the original sampler.
-        derive_params : `callable`, optional
-            Same signature as for the original sampler.
-        reject_systems : `callable`, optional
-            Same signature as for the original sampler.
-        output_path : `str`, optional
-            Directory for output files, by default ``'output'``
-        nproc : `int`, optional
-            CPU cores for COSMIC, by default 1
-        seed : `int` or None, optional
-            RNG seed for refinement sampling, by default None
-        total_systems : `int`, optional
-            Override the total system budget stored in the checkpoint.
-        n_generations : `int`, optional
-            Override the number of refinement generations stored in the
-            checkpoint.
+        **overrides
+            Any :class:`AdaptiveSampler` constructor argument
+            (``parameter_space``, ``total_systems``, ``batch_size``,
+            ``BSEDict``, ``is_interesting``, ``derive_params``,
+            ``reject_systems``, ``output_path``, ``nproc``, ``kappa``,
+            ``n_generations``, ``only_save_hit_tables``, ``seed``).  Passing
+            ``seed`` starts a fresh RNG instead of restoring the stored state.
 
         Returns
         -------
         `AdaptiveSampler`
             Ready to call :meth:`run_refinement`.
-
-        Raises
-        ------
-        ValueError
-            If ``parameter_space.names`` does not match the checkpoint's
-            ``param_names``.
         """
         if isinstance(checkpoint, (str, os.PathLike)):
             checkpoint = STROOPWAFELCheckpoint.from_file(checkpoint)
 
-        if list(parameter_space.names) != list(checkpoint.param_names):
-            raise ValueError(
-                f"Parameter space mismatch.\n"
-                f"  checkpoint : {checkpoint.param_names}\n"
-                f"  provided   : {list(parameter_space.names)}"
+        unknown = set(overrides) - cls._OVERRIDABLE
+        if unknown:
+            raise TypeError(
+                f"Unknown from_checkpoint override(s): {sorted(unknown)}.  "
+                f"Allowed: {sorted(cls._OVERRIDABLE)}."
             )
 
-        ts = total_systems  if total_systems  is not None else checkpoint.total_systems
-        ng = n_generations  if n_generations  is not None else checkpoint.n_generations
+        # Start from the stored config, apply overrides; refinement is never mc_only.
+        kwargs = dict(checkpoint.config)
+        stored_rng = kwargs.pop('rng', None)
+        kwargs.update(overrides)
+        kwargs['mc_only'] = False
 
-        sampler = cls(
-            parameter_space=parameter_space,
-            total_systems=ts,
-            batch_size=batch_size,
-            BSEDict=BSEDict,
-            is_interesting=is_interesting,
-            derive_params=derive_params,
-            reject_systems=reject_systems,
-            output_path=output_path,
-            nproc=nproc,
-            n_generations=ng,
-            mc_only=False,
-            seed=seed,
-            only_save_hit_tables=only_save_hit_tables,
-        )
+        sampler = cls(**kwargs)
+        # Restore the exact RNG stream unless the caller asked for a new seed.
+        if 'seed' not in overrides and stored_rng is not None:
+            sampler.rng = stored_rng
         sampler._load_checkpoint(checkpoint)
         return sampler
 
@@ -284,21 +275,37 @@ class AdaptiveSampler:
         all_gaussian_idx = np.concatenate(self._all_gaussian_idx)
         bpp, bcm, initC, kick_info = self._build_cosmic_output()
 
+        # Everything needed to rebuild the sampler for refinement, so that
+        # from_checkpoint() needs nothing but the file.
+        config = {
+            'parameter_space':      self.param_space,
+            'total_systems':        self.total_systems,
+            'batch_size':           self.batch_size,
+            'BSEDict':              self.bse_dict,
+            'is_interesting':       self.is_interesting_fn,
+            'derive_params':        self.derive_fn,
+            'reject_systems':       self.reject_fn,
+            'output_path':          self.output_path,
+            'nproc':                self.nproc,
+            'kappa':                self.kappa,
+            'n_generations':        self.n_generations,
+            'only_save_hit_tables': self.only_save_hit_tables,
+            'rng':                  self.rng,
+        }
+
         return STROOPWAFELCheckpoint(
+            config=config,
             mixture=self.mixture,
             samples=all_samples,
             is_hit=all_is_hit,
             generation=all_generation,
             gaussian_idx=all_gaussian_idx,
             bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
-            param_names=self.param_space.names,
             num_explored=self.num_explored,
             num_hits=self.num_hits,
             num_hits_exploratory=getattr(self, 'num_hits_exploratory', self.num_hits),
             fraction_explored=self.fraction_explored,
             prior_fraction_rejected=self.prior_fraction_rejected,
-            total_systems=self.total_systems,
-            n_generations=self.n_generations,
         )
 
     def _load_checkpoint(self, checkpoint):
@@ -451,7 +458,7 @@ class AdaptiveSampler:
 
         while self._should_continue_exploring():
             n_oversample = int(2 * np.ceil(
-                self.batch_size / max(1.0 - self.prior_fraction_rejected, MIN_ACTIVE_FRACTION)
+                self.batch_size / max(1.0 - self.prior_fraction_rejected, self.min_active_fraction)
             ))
 
             # Sample from prior
@@ -697,7 +704,7 @@ class AdaptiveSampler:
         N = len(all_samples)
 
         # Prior probabilities
-        pi_norm = 1.0 / max(1.0 - self.prior_fraction_rejected, MIN_ACTIVE_FRACTION)
+        pi_norm = 1.0 / max(1.0 - self.prior_fraction_rejected, self.min_active_fraction)
         pi = self.param_space.compute_prior(all_samples) * pi_norm
 
         # Start with the exploration-phase contribution to denominator
@@ -706,7 +713,7 @@ class AdaptiveSampler:
 
         # Add refinement-phase contributions from each generation's mixture
         if self.mixture is not None and not self.mc_only:
-            q_norm = 1.0 / max(1.0 - self.mixture.rejection_rate, MIN_ACTIVE_FRACTION)
+            q_norm = 1.0 / max(1.0 - self.mixture.rejection_rate, self.min_active_fraction)
             # Evaluate the mixture PDF incrementally (memory-efficient)
             for k in range(self.mixture.n_components):
                 xPDF_k = multivariate_normal.pdf(

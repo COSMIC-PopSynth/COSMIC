@@ -1,4 +1,5 @@
 import json
+import dill
 import pandas as pd
 import h5py as h5
 from cosmic.evolve import Evolve
@@ -540,8 +541,22 @@ class STROOPWAFELCheckpoint:
         # Job 2 - refinement (can be a larger allocation)
         python run_refine.py           # reads checkpoint.h5, writes result.h5
 
+    A checkpoint is **self-contained**: alongside the exploration data it
+    stores everything needed to rebuild the sampler — the parameter space,
+    ``BSEDict``, the ``derive_params``/``reject_systems``/``is_interesting``
+    callables, the remaining scalar settings, and the live RNG state — so
+    :meth:`AdaptiveSampler.from_checkpoint` needs nothing but the file.  The
+    callables and parameter space are serialised with :mod:`dill`.
+
     Parameters
     ----------
+    config : `dict`
+        Everything needed to reconstruct the :class:`AdaptiveSampler` for the
+        refinement phase: the constructor keyword arguments (``parameter_space``,
+        ``total_systems``, ``batch_size``, ``BSEDict``, ``is_interesting``,
+        ``derive_params``, ``reject_systems``, ``output_path``, ``nproc``,
+        ``kappa``, ``n_generations``, ``only_save_hit_tables``) plus the live
+        ``rng``.
     mixture : `GaussianMixture` or None
         Gaussian mixture fitted to exploration hits.  ``None`` if no hits
         were found or adaptation has not been run yet.
@@ -555,8 +570,6 @@ class STROOPWAFELCheckpoint:
         COSMIC output from exploration, indexed by globally unique
         ``bin_num`` so that ``samples[bin_num]`` gives the corresponding
         physical parameters.
-    param_names : `list` of `str`
-        Parameter names for the D columns of ``samples``.
     num_explored : `int`
         Systems evolved during exploration.
     num_hits : `int`
@@ -567,17 +580,13 @@ class STROOPWAFELCheckpoint:
         Adaptive fraction of total budget used for exploration.
     prior_fraction_rejected : `float`
         Estimated fraction of prior samples that fail physical rejection.
-    total_systems : `int`
-        Full system budget (exploration + refinement combined).
-    n_generations : `int`
-        Number of refinement generations originally requested.
     """
 
-    def __init__(self, mixture, samples, is_hit, generation, gaussian_idx,
-                 bpp, bcm, initC, kick_info, param_names,
+    def __init__(self, config, mixture, samples, is_hit, generation, gaussian_idx,
+                 bpp, bcm, initC, kick_info,
                  num_explored, num_hits, num_hits_exploratory,
-                 fraction_explored, prior_fraction_rejected,
-                 total_systems, n_generations):
+                 fraction_explored, prior_fraction_rejected):
+        self.config             = dict(config)
         self.mixture            = mixture
         self.samples            = np.asarray(samples)
         self.is_hit             = np.asarray(is_hit, dtype=bool)
@@ -587,14 +596,16 @@ class STROOPWAFELCheckpoint:
         self.bcm                = bcm
         self.initC              = initC
         self.kick_info          = kick_info
-        self.param_names        = list(param_names)
         self.num_explored       = int(num_explored)
         self.num_hits           = int(num_hits)
         self.num_hits_exploratory = int(num_hits_exploratory)
         self.fraction_explored  = float(fraction_explored)
         self.prior_fraction_rejected = float(prior_fraction_rejected)
-        self.total_systems      = int(total_systems)
-        self.n_generations      = int(n_generations)
+
+        # Convenience views derived from the stored config.
+        self.param_names   = list(config['parameter_space'].names)
+        self.total_systems = int(config['total_systems'])
+        self.n_generations = int(config['n_generations'])
 
     def __repr__(self):
         adapted = self.mixture is not None
@@ -639,16 +650,21 @@ class STROOPWAFELCheckpoint:
                 mg.create_dataset('alphas',      data=self.mixture.alphas)
                 mg.attrs['rejection_rate']       = self.mixture.rejection_rate
 
-            # Scalar metadata
+            # Full reconstruction config (parameter space, BSEDict, callables,
+            # RNG, scalar settings) serialised with dill so closures/lambdas
+            # survive the round-trip.
+            blob = np.frombuffer(dill.dumps(self.config), dtype=np.uint8)
+            if 'config' in f:
+                del f['config']
+            f.create_dataset('config', data=blob)
+
+            # Progress-state metadata (everything else lives in `config`).
             meta = f.require_group('meta')
-            meta.attrs['param_names']            = self.param_names
             meta.attrs['num_explored']           = self.num_explored
             meta.attrs['num_hits']               = self.num_hits
             meta.attrs['num_hits_exploratory']   = self.num_hits_exploratory
             meta.attrs['fraction_explored']      = self.fraction_explored
             meta.attrs['prior_fraction_rejected'] = self.prior_fraction_rejected
-            meta.attrs['total_systems']          = self.total_systems
-            meta.attrs['n_generations']          = self.n_generations
 
     @classmethod
     def from_file(cls, path):
@@ -687,15 +703,14 @@ class STROOPWAFELCheckpoint:
                     rejection_rate=float(mg.attrs['rejection_rate']),
                 )
 
+            config = dill.loads(f['config'][:].tobytes())
+
             meta = f['meta']
-            param_names            = list(meta.attrs['param_names'])
             num_explored           = int(meta.attrs['num_explored'])
             num_hits               = int(meta.attrs['num_hits'])
             num_hits_exploratory   = int(meta.attrs['num_hits_exploratory'])
             fraction_explored      = float(meta.attrs['fraction_explored'])
             prior_fraction_rejected = float(meta.attrs['prior_fraction_rejected'])
-            total_systems          = int(meta.attrs['total_systems'])
-            n_generations          = int(meta.attrs['n_generations'])
 
         # Re-apply the bin_num index so the same invariant holds as
         # when the checkpoint was created.
@@ -704,16 +719,15 @@ class STROOPWAFELCheckpoint:
                 df.set_index('bin_num', drop=False, inplace=True)
 
         return cls(
+            config=config,
             mixture=mixture,
             samples=samples, is_hit=is_hit,
             generation=generation, gaussian_idx=gaussian_idx,
             bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
-            param_names=param_names,
             num_explored=num_explored, num_hits=num_hits,
             num_hits_exploratory=num_hits_exploratory,
             fraction_explored=fraction_explored,
             prior_fraction_rejected=prior_fraction_rejected,
-            total_systems=total_systems, n_generations=n_generations,
         )
 
 

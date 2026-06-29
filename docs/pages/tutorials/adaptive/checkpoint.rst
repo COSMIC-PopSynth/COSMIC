@@ -82,56 +82,59 @@ Stage 2 — load the checkpoint and refine
 
 In a second script (or cluster job) rebuild the sampler with
 :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint`, then call
-:meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_refinement`.
+:meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run_refinement`.  The checkpoint is
+**self-contained**, so this needs nothing but the file:
 
 .. code-block:: python
 
     from cosmic.sample.stroopwafel import AdaptiveSampler
-    from cosmic.sample.stroopwafel.presets import any_dco
-    from cosmic.sample.stroopwafel.rejection import default_reject
 
-    # `params`, `derive_params`, and `BSEDict` must be available again here —
-    # in practice, import them from a shared module used by both jobs.
-
-    sampler = AdaptiveSampler.from_checkpoint(
-        'checkpoint.h5',
-        parameter_space=params,
-        batch_size=1000,
-        BSEDict=BSEDict,
-        is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
-        derive_params=derive_params,
-        reject_systems=default_reject,
-        output_path='output/refine',
-        nproc=4,
-        seed=7,
-    )
-
+    sampler = AdaptiveSampler.from_checkpoint('checkpoint.h5')
     result = sampler.run_refinement()
     result.save('result.h5')
+
+You do not need to re-import or re-specify the parameter space, ``BSEDict``, or any of the
+callables — they were all saved into the checkpoint.  If you *want* to change something for
+the refinement phase (a common one is running on more cores, or with a larger budget than
+exploration), pass it as a keyword override:
+
+.. code-block:: python
+
+    sampler = AdaptiveSampler.from_checkpoint(
+        'checkpoint.h5', nproc=16, total_systems=1_000_000,
+    )
+
+Any :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` constructor argument may be
+overridden this way (``parameter_space``, ``BSEDict``, ``derive_params``,
+``reject_systems``, ``is_interesting``, ``batch_size``, ``output_path``, ``nproc``,
+``kappa``, ``n_generations``, ``only_save_hit_tables``, ``seed``).
 
 The ``result`` is an ordinary :class:`~cosmic.output.COSMICStroopOutput` — identical in form
 to what a single :meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.run` would have produced —
 so you can analyse it exactly as described in :ref:`adaptive_outputs`.
 
 
-What is and isn't stored in a checkpoint
-========================================
+What is stored in a checkpoint
+==============================
 
-A checkpoint stores everything that is *derived from running COSMIC*:
+A checkpoint is a complete snapshot — it stores both the exploration *results* and the full
+*configuration*, so refinement can resume with no further input:
 
-* the fitted Gaussian mixture model,
-* every exploration sample (in the internal sampling space) and its hit/bookkeeping flags,
+* the fitted Gaussian mixture model;
+* every exploration sample (in the internal sampling space) and its hit/bookkeeping flags;
 * the COSMIC output tables (``bpp``, ``bcm``, ``initC``, ``kick_info``) for the explored
-  systems, and
+  systems;
 * the scalar counters needed to compute unbiased weights later (``num_explored``,
-  ``fraction_explored``, ``prior_fraction_rejected``, ``total_systems``, ...).
+  ``fraction_explored``, ``prior_fraction_rejected``, ...); and
+* the full configuration needed to rebuild the sampler: the parameter space, ``BSEDict``,
+  the ``derive_params`` / ``reject_systems`` / ``is_interesting`` callables, the remaining
+  scalar settings, and the live RNG state.
 
-It deliberately does **not** store your Python callables or physics settings — the
-``BSEDict``, ``derive_params``, ``reject_systems``, and ``is_interesting`` functions are
-not serialisable in general, so you must supply them again to
-:meth:`~cosmic.sample.stroopwafel.AdaptiveSampler.from_checkpoint`.  Only the parameter
-**names** are stored, and they are checked against the ``parameter_space`` you provide; a
-mismatch raises a ``ValueError`` to stop you from refining against the wrong setup.
+The callables and parameter space are serialised with :mod:`dill` (a dependency COSMIC
+already ships), so lambdas and closures — such as the ``is_interesting`` returned by
+``any_dco(...)`` — round-trip correctly.  Because the RNG state is stored too, refinement
+continues the random stream seamlessly rather than restarting it (pass ``seed=`` to
+``from_checkpoint`` if you instead want a fresh stream).
 
 
 Reusing one checkpoint for several refinement jobs

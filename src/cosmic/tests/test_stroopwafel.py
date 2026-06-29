@@ -501,6 +501,79 @@ class TestGaussianMixture(unittest.TestCase):
 
 
 # ==========================================================================
+# Checkpoint (self-contained restore)
+# ==========================================================================
+class TestCheckpoint(unittest.TestCase):
+
+    def _build(self):
+        from cosmic.output import STROOPWAFELCheckpoint
+        ps = ParameterSpace([
+            Parameter('mass_1', 5.0, 150.0, dist='kroupa'),
+            Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),
+        ])
+        rng = np.random.default_rng(123)
+        rng.uniform(size=10)   # advance the stream (as exploration would)
+        config = {
+            'parameter_space': ps, 'total_systems': 1000, 'batch_size': 50,
+            'BSEDict': {'foo': 1},
+            'is_interesting': lambda bpp: (0, np.array([], dtype=int)),
+            'derive_params': lambda s: {'mass_2': s['mass_1'] * 0.5,
+                                        'ecc': 0.0, 'metallicity': 0.02},
+            'reject_systems': None, 'output_path': 'out', 'nproc': 2,
+            'kappa': 1.0, 'n_generations': 1, 'only_save_hit_tables': False,
+            'rng': rng,
+        }
+        N = 20
+        frame = pd.DataFrame({'bin_num': np.arange(N)})
+        ckpt = STROOPWAFELCheckpoint(
+            config=config, mixture=None,
+            samples=np.zeros((N, ps.ndim)), is_hit=np.zeros(N, dtype=bool),
+            generation=np.zeros(N, dtype=int), gaussian_idx=np.full(N, -1),
+            bpp=frame, bcm=frame, initC=frame, kick_info=frame,
+            num_explored=N, num_hits=0, num_hits_exploratory=0,
+            fraction_explored=1.0, prior_fraction_rejected=0.0,
+        )
+        return ckpt, config
+
+    def test_restores_config_and_state(self):
+        ckpt, config = self._build()
+        sampler = AdaptiveSampler.from_checkpoint(ckpt)
+        self.assertIs(sampler.param_space, config['parameter_space'])
+        self.assertIs(sampler.derive_fn, config['derive_params'])
+        self.assertEqual(sampler.nproc, 2)
+        self.assertEqual(sampler.batch_size, 50)
+        self.assertEqual(sampler.num_explored, 20)      # progress state restored
+        self.assertIs(sampler.rng, config['rng'])        # RNG stream restored
+
+    def test_overrides_win(self):
+        ckpt, _ = self._build()
+        sampler = AdaptiveSampler.from_checkpoint(ckpt, nproc=16, total_systems=5000)
+        self.assertEqual(sampler.nproc, 16)
+        self.assertEqual(sampler.total_systems, 5000)
+
+    def test_seed_override_starts_fresh_rng(self):
+        ckpt, config = self._build()
+        sampler = AdaptiveSampler.from_checkpoint(ckpt, seed=7)
+        self.assertIsNot(sampler.rng, config['rng'])
+
+    def test_unknown_override_raises(self):
+        ckpt, _ = self._build()
+        with self.assertRaises(TypeError):
+            AdaptiveSampler.from_checkpoint(ckpt, not_a_real_arg=1)
+
+    def test_config_survives_dill_roundtrip(self):
+        # save()/from_file() rely on dill for the callables + RNG.
+        import dill
+        _, config = self._build()
+        restored = dill.loads(dill.dumps(config))
+        out = restored['derive_params']({'mass_1': np.array([10.0])})
+        self.assertAlmostEqual(out['mass_2'][0], 5.0)
+        np.testing.assert_array_equal(
+            restored['rng'].uniform(size=3), config['rng'].uniform(size=3)
+        )
+
+
+# ==========================================================================
 # COSMICStroopOutput
 # ==========================================================================
 class TestStroopOutput(unittest.TestCase):
