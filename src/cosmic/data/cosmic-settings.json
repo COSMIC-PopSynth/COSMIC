@@ -1095,8 +1095,8 @@
                     },
                     {
                         "name": 4,
-                        "description": "Same as 1, but is also applied if the kick is provided directly in natal_kick_array",
-                        "version_added": "4.1.0"
+                        "description": "Same as 1, but is also applied if the kick is provided directly in natal_kick_array (motivated by adaptive importance sampling)",
+                        "version_added": "4.2.0"
                     }
                 ]
             },
