@@ -566,7 +566,9 @@ class AdaptiveSampler:
         average_density_one_dim = 1.0 / np.power(self.num_explored, 1.0 / self.param_space.ndim)
 
         self.mixture = GaussianMixture.from_hits(
-            hit_samples, self.param_space, average_density_one_dim, kappa=self.kappa
+            hit_samples, self.param_space, average_density_one_dim, kappa=self.kappa,
+            min_active_fraction=self.min_active_fraction,
+            min_entropy_change=self.min_entropy_change
         )
 
         print(f"  Created {self.mixture.n_components} Gaussian components")
@@ -658,10 +660,12 @@ class AdaptiveSampler:
 
                 # Save current state in case we need to revert
                 saved_mixture = GaussianMixture(
-                    self.mixture.means.copy(),
-                    self.mixture.covariances.copy(),
-                    self.mixture.alphas.copy(),
-                    self.mixture.rejection_rate
+                    means=self.mixture.means.copy(),
+                    covariances=self.mixture.covariances.copy(),
+                    alphas=self.mixture.alphas.copy(),
+                    rejection_rate=self.mixture.rejection_rate,
+                    min_active_fraction=self.mixture.min_active_fraction,
+                    min_entropy_change=self.mixture.min_entropy_change
                 )
 
                 should_revert = self.mixture.update_em(
