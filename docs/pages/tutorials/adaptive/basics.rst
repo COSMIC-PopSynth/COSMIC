@@ -262,6 +262,7 @@ Then we can define a simple parameter space, where we avoid sampling low-mass pr
 cannot produce a BH.
 
 .. code-block:: python
+
     params = ParameterSpace([
         Parameter('mass_1',      5.0,        150.0,      dist='kroupa'),
         Parameter('q',           0.01,       1.0,        dist='uniform'),
@@ -273,6 +274,7 @@ cannot produce a BH.
 Since we only sampled the mass ratio ``q``, we need to derive the secondary mass from the primary mass and ``q``:
 
 .. code-block:: python
+
     def derive_params(sampled):
         return {'mass_2': sampled['mass_1'] * sampled['q']}
 
@@ -280,6 +282,7 @@ Since we only sampled the mass ratio ``q``, we need to derive the secondary mass
 And then it's just a matter of setting it going!
 
 .. code-block:: python
+
     sampler = AdaptiveSampler(
         parameter_space=params,
         total_systems=50_000,           # adjust this for more samples

@@ -17,7 +17,7 @@ space; the
 transform maps to and from the physical space the user specifies bounds in
 and the simulation consumes.  For example ``flat_in_log`` is
 ``Uniform(transform=Log10())`` and ``sana`` is
-``PowerLaw(SANA_G, transform=Log10())``.
+``PowerLaw(-0.55, transform=Log10())``.
 
 To add a distribution, build an instance and either pass it straight to a
 :class:`~cosmic.sample.stroopwafel.parameter_space.Parameter` or register it
@@ -416,7 +416,7 @@ class BrokenPowerLaw(Distribution):
 class TruncatedNormal(Distribution):
     """Normal distribution truncated to ``[lo, hi]`` in sampling space.
 
-    Combined with :class:`Ln` this gives the ``log_normal`` natal-kick prior:
+    Combined with :class:`Ln` this gives the ``'disberg'`` natal-kick prior:
     the kick magnitude ``v`` follows ``LogNormal(mu, scale)`` so ``ln(v)`` is
     normally distributed, and sampling space is ``ln(v)``.
 

@@ -20,7 +20,7 @@ class Parameter:
         Name of the parameter (used for column ordering).
     min_value : `float`
         Lower bound, always in physical space (e.g. solar masses for
-        ``'kroupa'``, days for ``'sana'``, km/s for ``'log_normal'``).  The
+        ``'kroupa'``, days for ``'sana'``, km/s for ``'disberg'``).  The
         parameter's distribution maps this into sampling space via its
         transform.
     max_value : `float`

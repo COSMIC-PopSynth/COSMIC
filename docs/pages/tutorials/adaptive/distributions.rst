@@ -33,8 +33,10 @@ Pass any of the following names as the ``dist`` argument to a
       - uniform in :math:`\log_{10}`
       - Flat in the log of the parameter (e.g. metallicity).
     * - ``'kroupa'``
-      - power law, :math:`\alpha = -2.3`
-      - Kroupa initial mass function for the primary mass.
+      - broken power law (:math:`\alpha = -1.3` for :math:`m < 0.5\,M_\odot`,
+        :math:`-2.3` above)
+      - Kroupa initial mass function for the primary mass.  Use a lower bound of
+        :math:`\geq 0.08\,M_\odot` (COSMIC cannot evolve lower-mass stars).
     * - ``'sana'``
       - power law in :math:`\log_{10} P`, :math:`\alpha = -0.55`
       - Sana et al. (2012) orbital-period distribution.
@@ -47,7 +49,7 @@ Pass any of the following names as the ``dist`` argument to a
     * - ``'uniform_in_cosine'``
       - uniform in :math:`\cos\theta`
       - Isotropic angle for declination-like coordinates.
-    * - ``'log_normal'``
+    * - ``'disberg'``
       - log-normal
       - Natal-kick magnitude, :math:`\ln v \sim \mathcal{N}(5.67, 0.59)`.
 
@@ -62,7 +64,8 @@ Internally each distribution is a **base distribution** composed with a **coordi
 transform**:
 
 * the base distribution (:class:`~cosmic.sample.stroopwafel.distributions.Uniform`,
-  :class:`~cosmic.sample.stroopwafel.distributions.PowerLaw`, or
+  :class:`~cosmic.sample.stroopwafel.distributions.PowerLaw`,
+  :class:`~cosmic.sample.stroopwafel.distributions.BrokenPowerLaw`, or
   :class:`~cosmic.sample.stroopwafel.distributions.TruncatedNormal`) handles sampling and
   the density in the *sampling space*; and
 * the transform (:class:`~cosmic.sample.stroopwafel.distributions.Log10`,
@@ -76,12 +79,12 @@ You can build the same objects yourself:
 .. code-block:: python
 
     from cosmic.sample.stroopwafel.distributions import (
-        Uniform, PowerLaw, TruncatedNormal, Log10,
+        Uniform, PowerLaw, BrokenPowerLaw, TruncatedNormal, Log10,
     )
 
-    Uniform(transform=Log10())          # equivalent to 'flat_in_log'
-    PowerLaw(-0.55, transform=Log10())  # equivalent to 'sana'
-    PowerLaw(-2.3)                       # equivalent to 'kroupa'
+    Uniform(transform=Log10())                        # equivalent to 'flat_in_log'
+    PowerLaw(-0.55, transform=Log10())                # equivalent to 'sana'
+    BrokenPowerLaw(breaks=[0.5], alphas=[-1.3, -2.3])  # equivalent to 'kroupa'
 
 Bounds are always given to a :class:`~cosmic.sample.stroopwafel.Parameter` in **physical**
 space; the transform converts them into sampling space automatically (and round-trips

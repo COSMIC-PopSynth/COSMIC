@@ -120,7 +120,7 @@ params = ParameterSpace([
     Parameter('ecc',          1e-9,       0.99999999, dist='sana_ecc'),
     Parameter('metallicity',  0.0001,     0.03,       dist='flat_in_log'),
     # --- primary natal kick magnitude only ---
-    Parameter('natal_kick_1', 0.1,        5000.0,     dist='log_normal'),
+    Parameter('natal_kick_1', 0.1,        5000.0,     dist='disberg'),
 ])
 
 # ------------------------------------------------------------------

@@ -17,15 +17,18 @@ from scipy.integrate import trapezoid
 from cosmic.sample.stroopwafel import ParameterSpace, Parameter, AdaptiveSampler
 from cosmic.sample.stroopwafel.distributions import (
     DISTRIBUTIONS, register, get_distribution,
-    Distribution, Uniform, PowerLaw, TruncatedNormal,
+    Distribution, Uniform, PowerLaw, BrokenPowerLaw, TruncatedNormal,
     Identity, Log10, Ln, Sin, CosShift,
 )
 from cosmic.sample.stroopwafel.mixture_model import GaussianMixture
-from cosmic.sample.stroopwafel.rejection import get_zams_radius, default_reject
-from cosmic.sample.stroopwafel.constants import (
-    ALPHA_IMF, SANA_G, SANA_ECC, NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA,
-)
+from cosmic.sample.stroopwafel.rejection import default_reject
+from scipy.integrate import cumulative_trapezoid
 from cosmic.output import COSMICStroopOutput
+
+# Built-in distribution parameters, kept in sync with the DISTRIBUTIONS registry.
+KROUPA_BREAK, KROUPA_ALPHA_LOW, KROUPA_ALPHA_HIGH = 0.5, -1.3, -2.3
+SANA_G, SANA_ECC = -0.55, -0.45
+DISBERG_MU, DISBERG_SIGMA = 5.67, 0.59
 
 HALF_PI = np.pi / 2
 KS_PVALUE_MIN = 0.01   # samplers must not be rejected against their own CDF
@@ -56,7 +59,7 @@ def canonical_space():
         Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),
         Parameter('ecc', 1e-9, 0.99999999, dist='sana_ecc'),
         Parameter('metallicity', 1e-4, 0.03, dist='flat_in_log'),
-        Parameter('natal_kick_1', 0.1, 5000.0, dist='log_normal'),
+        Parameter('natal_kick_1', 0.1, 5000.0, dist='disberg'),
     ])
 
 
@@ -128,19 +131,21 @@ class TestDistributions(unittest.TestCase):
         self.assertEqual(
             set(DISTRIBUTIONS),
             {'uniform', 'flat_in_log', 'uniform_in_sine', 'uniform_in_cosine',
-             'kroupa', 'sana', 'sana_ecc', 'log_normal'},
+             'kroupa', 'sana', 'sana_ecc', 'disberg'},
         )
 
     def test_builtin_compositions(self):
-        self.assertIsInstance(DISTRIBUTIONS['kroupa'], PowerLaw)
+        self.assertIsInstance(DISTRIBUTIONS['kroupa'], BrokenPowerLaw)
         self.assertIsInstance(DISTRIBUTIONS['kroupa'].transform, Identity)
+        np.testing.assert_array_equal(DISTRIBUTIONS['kroupa'].breaks, [KROUPA_BREAK])
+        np.testing.assert_array_equal(DISTRIBUTIONS['kroupa'].alphas,
+                                      [KROUPA_ALPHA_LOW, KROUPA_ALPHA_HIGH])
         self.assertIsInstance(DISTRIBUTIONS['sana'], PowerLaw)
         self.assertIsInstance(DISTRIBUTIONS['sana'].transform, Log10)
         self.assertIsInstance(DISTRIBUTIONS['flat_in_log'], Uniform)
         self.assertIsInstance(DISTRIBUTIONS['flat_in_log'].transform, Log10)
-        self.assertIsInstance(DISTRIBUTIONS['log_normal'], TruncatedNormal)
-        self.assertIsInstance(DISTRIBUTIONS['log_normal'].transform, Ln)
-        self.assertEqual(DISTRIBUTIONS['kroupa'].alpha, ALPHA_IMF)
+        self.assertIsInstance(DISTRIBUTIONS['disberg'], TruncatedNormal)
+        self.assertIsInstance(DISTRIBUTIONS['disberg'].transform, Ln)
         self.assertEqual(DISTRIBUTIONS['sana'].alpha, SANA_G)
         self.assertEqual(DISTRIBUTIONS['sana_ecc'].alpha, SANA_ECC)
 
@@ -150,7 +155,7 @@ class TestDistributions(unittest.TestCase):
         np.testing.assert_allclose(d.pdf(vals, 2.0, 8.0), 1.0 / 6.0)
 
     def test_powerlaw_pdf_matches_closed_form(self):
-        for alpha, lo, hi in [(ALPHA_IMF, 5.0, 150.0),
+        for alpha, lo, hi in [(KROUPA_ALPHA_HIGH, 5.0, 150.0),
                               (SANA_G, 0.15, 5.5),
                               (SANA_ECC, 1e-9, 0.999)]:
             vals = np.linspace(lo * 1.01, hi * 0.99, 100)
@@ -160,13 +165,13 @@ class TestDistributions(unittest.TestCase):
             np.testing.assert_allclose(got, expected, rtol=1e-12)
 
     def test_powerlaw_pdf_normalised(self):
-        d = PowerLaw(ALPHA_IMF)
+        d = PowerLaw(KROUPA_ALPHA_HIGH)
         lo, hi = 5.0, 150.0
         x = np.linspace(lo, hi, 200000)
         self.assertAlmostEqual(trapezoid(d.pdf(x, lo, hi), x), 1.0, places=4)
 
     def test_truncnorm_pdf_normalised(self):
-        d = TruncatedNormal(NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA)
+        d = TruncatedNormal(DISBERG_MU, DISBERG_SIGMA)
         lo, hi = 2.0, 9.0
         x = np.linspace(lo, hi, 200000)
         self.assertAlmostEqual(trapezoid(d.pdf(x, lo, hi), x), 1.0, places=4)
@@ -179,7 +184,7 @@ class TestDistributions(unittest.TestCase):
         self.assertGreater(p, KS_PVALUE_MIN)
 
     def test_powerlaw_sampler_ks(self):
-        for alpha, lo, hi, seed in [(ALPHA_IMF, 5.0, 150.0, 1),
+        for alpha, lo, hi, seed in [(KROUPA_ALPHA_HIGH, 5.0, 150.0, 1),
                                     (SANA_G, 0.15, 5.5, 2),
                                     (SANA_ECC, 1e-9, 0.999, 3)]:
             rng = np.random.default_rng(seed)
@@ -190,7 +195,7 @@ class TestDistributions(unittest.TestCase):
 
     def test_truncnorm_sampler_ks(self):
         rng = np.random.default_rng(4)
-        mu, scale, lo, hi = NATAL_KICK_LOG_MU, NATAL_KICK_LOG_SIGMA, 2.0, 9.0
+        mu, scale, lo, hi = DISBERG_MU, DISBERG_SIGMA, 2.0, 9.0
         s = TruncatedNormal(mu, scale).sample(20000, lo, hi, rng=rng)
         self.assertTrue(np.all((s >= lo) & (s <= hi)))
         p = kstest(s, lambda v: _truncnorm_cdf(v, mu, scale, lo, hi)).pvalue
@@ -205,12 +210,77 @@ class TestDistributions(unittest.TestCase):
         )
 
     def test_powerlaw_sigma_positive_and_raises_on_nonpositive_lo(self):
-        d = PowerLaw(ALPHA_IMF)
+        d = PowerLaw(KROUPA_ALPHA_HIGH)
         vals = np.linspace(6.0, 140.0, 100)
         sig = d.sigma(vals, 5.0, 150.0, 0.05)
         self.assertTrue(np.all(sig > 0) and np.all(np.isfinite(sig)))
         with self.assertRaises(ValueError):
             d.sigma(vals, 0.0, 150.0, 0.05)
+
+
+# ==========================================================================
+# Broken power law (Kroupa IMF)
+# ==========================================================================
+class TestBrokenPowerLaw(unittest.TestCase):
+
+    KROUPA = BrokenPowerLaw(breaks=[KROUPA_BREAK], alphas=[KROUPA_ALPHA_LOW, KROUPA_ALPHA_HIGH])
+
+    def test_input_validation(self):
+        with self.assertRaises(ValueError):
+            BrokenPowerLaw(breaks=[0.5], alphas=[-2.3])              # wrong length
+        with self.assertRaises(ValueError):
+            BrokenPowerLaw(breaks=[0.5, 0.3], alphas=[-1, -2, -3])   # not increasing
+        with self.assertRaises(ValueError):
+            BrokenPowerLaw(breaks=[0.5], alphas=[-1.0, -2.3])        # exponent -1
+
+    def test_pdf_continuous_at_break(self):
+        lo, hi = 0.08, 100.0
+        below = self.KROUPA.pdf(np.array([KROUPA_BREAK - 1e-6]), lo, hi)[0]
+        above = self.KROUPA.pdf(np.array([KROUPA_BREAK + 1e-6]), lo, hi)[0]
+        self.assertAlmostEqual(below, above, places=4)
+
+    def test_pdf_normalised_across_break(self):
+        lo, hi = 0.08, 100.0
+        x = np.geomspace(lo, hi, 200000)
+        self.assertAlmostEqual(trapezoid(self.KROUPA.pdf(x, lo, hi), x), 1.0, places=3)
+
+    def test_slope_changes_at_break(self):
+        # Local log-log slope should match the segment exponents.
+        lo, hi = 0.08, 100.0
+        def local_slope(x0):
+            x = np.array([x0 * 0.999, x0 * 1.001])
+            p = self.KROUPA.pdf(x, lo, hi)
+            return np.diff(np.log(p))[0] / np.diff(np.log(x))[0]
+        self.assertAlmostEqual(local_slope(0.2), KROUPA_ALPHA_LOW, places=2)
+        self.assertAlmostEqual(local_slope(5.0), KROUPA_ALPHA_HIGH, places=2)
+
+    def test_reduces_to_powerlaw_above_break(self):
+        # With no break in range the example regime (m1 > 5) is unchanged.
+        lo, hi = 5.0, 150.0
+        pl = PowerLaw(KROUPA_ALPHA_HIGH)
+        vals = np.linspace(lo * 1.01, hi * 0.99, 200)
+        np.testing.assert_allclose(self.KROUPA.pdf(vals, lo, hi),
+                                   pl.pdf(vals, lo, hi), rtol=1e-10)
+        a = self.KROUPA.sample(2000, lo, hi, rng=np.random.default_rng(0))
+        b = pl.sample(2000, lo, hi, rng=np.random.default_rng(0))
+        np.testing.assert_allclose(a, b, rtol=1e-10)
+
+    def test_sampler_follows_pdf(self):
+        # KS test against the (independently integrated) pdf, across the break.
+        lo, hi = 0.08, 50.0
+        s = self.KROUPA.sample(40000, lo, hi, rng=np.random.default_rng(7))
+        self.assertTrue(np.all((s >= lo) & (s <= hi)))
+        grid = np.geomspace(lo, hi, 40000)
+        cdf_vals = cumulative_trapezoid(self.KROUPA.pdf(grid, lo, hi), grid, initial=0)
+        cdf_vals /= cdf_vals[-1]
+        pvalue = kstest(s, lambda v: np.interp(v, grid, cdf_vals)).pvalue
+        self.assertGreater(pvalue, KS_PVALUE_MIN)
+
+    def test_sigma_positive_finite_across_break(self):
+        lo, hi = 0.08, 100.0
+        vals = np.array([0.1, 0.3, 0.5, 1.0, 10.0, 80.0])
+        sig = self.KROUPA.sigma(vals, lo, hi, 0.02)
+        self.assertTrue(np.all(sig > 0) and np.all(np.isfinite(sig)))
 
 
 # ==========================================================================
@@ -313,13 +383,6 @@ class TestParameterSpace(unittest.TestCase):
 # Rejection
 # ==========================================================================
 class TestRejection(unittest.TestCase):
-
-    def test_get_zams_radius_positive_finite(self):
-        masses = np.array([1.0, 10.0, 30.0, 100.0])
-        mets = np.array([0.02, 0.02, 0.001, 0.014])
-        r = get_zams_radius(masses, mets)
-        self.assertEqual(r.shape, (4,))
-        self.assertTrue(np.all(r > 0) and np.all(np.isfinite(r)))
 
     def test_wide_binary_not_rejected(self):
         binary_params = {
