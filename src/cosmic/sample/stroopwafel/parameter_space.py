@@ -53,19 +53,19 @@ class Parameter:
 class ParameterSpace:
     """An ordered collection of Parameters with vectorized operations.
 
-    All methods operate on (N, D) numpy arrays where columns are ordered
-    alphabetically by parameter name.
+    All methods operate on (N, D) numpy arrays whose columns follow the order
+    in which the parameters were supplied.
 
     Parameters
     ----------
     params : `list` of `Parameter`
-        List of parameter definitions. They will be sorted by name
-        internally.
+        List of parameter definitions. The column order of every (N, D) array
+        produced by this class matches the order of this list.
     """
 
     def __init__(self, params):
-        # Sort by name for deterministic column ordering (same as old code)
-        self.params = sorted(params, key=lambda p: p.name)
+        # Columns follow the order the user supplied (no reordering).
+        self.params = list(params)
         self.names = [p.name for p in self.params]
         self._name_to_idx = {p.name: i for i, p in enumerate(self.params)}
         self.ndim = len(self.params)

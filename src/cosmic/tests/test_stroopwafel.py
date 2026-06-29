@@ -261,10 +261,6 @@ class TestParameterSpace(unittest.TestCase):
     def setUp(self):
         self.ps = canonical_space()
 
-    def test_names_sorted_and_ndim(self):
-        self.assertEqual(self.ps.names, sorted(self.ps.names))
-        self.assertEqual(self.ps.ndim, 6)
-
     def test_idx(self):
         for i, name in enumerate(self.ps.names):
             self.assertEqual(self.ps.idx(name), i)

@@ -111,8 +111,6 @@ BSEDict = {
 # fills all omitted kick columns with the -100 sentinel so COSMIC draws those
 # components from its own prescription (kickflag=5 / sigma=265 km/s).
 #
-# Note: ParameterSpace sorts parameters alphabetically, so the internal
-# column order is fixed and independent of the order given here.
 # ------------------------------------------------------------------
 params = ParameterSpace([
     # --- orbital / stellar ---

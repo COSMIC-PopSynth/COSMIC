@@ -62,7 +62,7 @@ def default_reject(samples_physical, derived, param_names,
         ``'metallicity_2'``, and ``'separation'``, each mapping to an
         (N,) array.
     param_names : `list` of `str`
-        Sorted list of parameter names (used to find column indices).
+        Parameter names in column order (used to find column indices).
     min_secondary_mass : `float`, optional
         Minimum allowed secondary mass in solar masses, by default 0.08
 
