@@ -158,10 +158,6 @@ systems below the hydrogen-burning limit for the secondary.  The built-in
 :func:`~cosmic.sample.stroopwafel.rejection.default_reject` function performs all of these
 checks:
 
-.. code-block:: python
-
-    from cosmic.sample.stroopwafel.rejection import default_reject
-
 It receives the assembled binary parameters as a dictionary (``mass_1``, ``mass_2``,
 ``porb``, ``ecc``, ``metallicity``) and returns a boolean mask where ``True`` means the
 system is rejected; the orbital separation is computed internally from ``porb``.  For most
@@ -176,8 +172,7 @@ minimum secondary mass — you can wrap it:
         base_mask |= (binary_params['mass_2'] < 1.0)
         return base_mask
 
-Passing ``reject_systems`` is optional; omit it (or pass ``None``) to skip physical
-rejection entirely.
+Passing ``reject_systems`` is optional; you can instead pass ``None`` to skip physical rejection entirely.
 
 
 Identify what constitutes a hit
@@ -188,17 +183,20 @@ the ``COSMIC`` ``bpp`` DataFrame for the current batch and must return a tuple
 ``(n_hits, hit_bin_nums)`` where ``hit_bin_nums`` is an integer array of ``bin_num`` values
 (0-indexed within the batch).
 
-The ``STROOPWAFEL`` sampler comes with two preset functions in
-:mod:`cosmic.sample.stroopwafel.presets`.
+The ``STROOPWAFEL`` sampler comes with two preset functions in :mod:`cosmic.sample.stroopwafel.presets`.
+These functions focus on double compact objects (DCOs) and are suitable for gravitational-wave source studies:
 
 ``any_dco(kstar_1, kstar_2)``
     Selects all bound double compact objects whose stellar types match the supplied lists,
-    regardless of merger time.  Use this for populations where you care about the DCO
-    existing rather than merging within the Hubble time.
+    regardless of merger time.
 
 ``merging_dco(kstar_1, kstar_2, max_merge_time=13.7)``
-    Like ``any_dco`` but additionally requires the merger time (computed via LEGWORK) to be
-    less than ``max_merge_time`` Gyr.  Suitable for gravitational-wave source studies.
+    Like ``any_dco`` but additionally requires the merger time to be
+    less than ``max_merge_time`` Gyr.
+
+.. note::
+
+    The ``merging_dco`` function requires the `LEGWORK python package <https://legwork.readthedocs.io/en/latest/>`_ to compute the merger time.  If you do not have LEGWORK installed, ``merging_dco`` will raise an error.
 
 .. code-block:: python
 
@@ -207,10 +205,9 @@ The ``STROOPWAFEL`` sampler comes with two preset functions in
     # All bound BH-BH systems, no merger time cut
     is_interesting = any_dco(kstar_1=[14], kstar_2=[14])
 
-    # Only BH-BH systems merging within the Hubble time
-    is_interesting_merging = merging_dco(kstar_1=[14], kstar_2=[14], max_merge_time=13.7)
+    # Only NS-NS systems merging within the Hubble time
+    is_interesting_merging = merging_dco(kstar_1=[13], kstar_2=[13], max_merge_time=13.7)
 
-See :ref:`kstar-table` for the full list of stellar type codes.
 
 You can also write a fully custom hit function.  For example, to find BH + stellar companion systems that remain bound for at least 100 Myr after the BH forms:
 
@@ -239,9 +236,9 @@ You can also write a fully custom hit function.  For example, to find BH + stell
 Running the sampler
 ===================
 
-With all the pieces in place, you can run the sampler with :class:`~cosmic.sample.stroopwafel.AdaptiveSampler`.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE physics settings, the hit function, the ``derive_params`` function (if needed), and the rejection function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
+Now we can put it all together! You can run the sampler with the main :class:`~cosmic.sample.stroopwafel.AdaptiveSampler` class.  The most important arguments are the parameter space, the total number of systems to evolve, the batch size, the BSE physics settings, the hit function, the ``derive_params`` function (if needed), and the rejection function. See the API documentation (:class:`~cosmic.sample.stroopwafel.AdaptiveSampler`) for a full list of options.
 
-The examples below demonstrate how you could go about this.
+Let's try this out with a few examples.
 
 Examples
 --------
@@ -249,22 +246,22 @@ Examples
 Bound BH + BH binaries
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The following end-to-end example samples all bound BH-BH systems (no merger time
-restriction) using a five-dimensional parameter space covering primary mass, mass ratio,
-orbital period, eccentricity, and metallicity.
+Let's imagine we want to sample the population of bound BH + BH binaries. We can use the same parameter space and ``derive_params`` function as above, and the built-in ``any_dco`` hit function to select all bound BH + BH systems. We can sample over a five-dimensional parameter space covering primary mass, mass ratio, orbital period, eccentricity, and metallicity.
 
-.. include:: ../../../_generated/default_bsedict.rst
+First we can import the necessary parts from the ``cosmic.sample.stroopwafel`` module, the preset hit function, and setup a BSEDict.
 
 .. code-block:: python
 
     import numpy as np
     from cosmic.sample.stroopwafel import AdaptiveSampler, ParameterSpace, Parameter
     from cosmic.sample.stroopwafel.presets import any_dco
-    from cosmic.sample.stroopwafel.rejection import default_reject
 
-    # ------------------------------------------------------------------
-    # Parameter space
-    # ------------------------------------------------------------------
+.. include:: ../../../_generated/default_bsedict.rst
+
+Then we can define a simple parameter space, where we avoid sampling low-mass primaries since we know they
+cannot produce a BH.
+
+.. code-block:: python
     params = ParameterSpace([
         Parameter('mass_1',      5.0,        150.0,      dist='kroupa'),
         Parameter('q',           0.01,       1.0,        dist='uniform'),
@@ -273,29 +270,29 @@ orbital period, eccentricity, and metallicity.
         Parameter('metallicity', 0.0001,     0.03,       dist='flat_in_log'),
     ])
 
-    # ------------------------------------------------------------------
-    # Complete the binary definition (mass_2 from the sampled mass ratio)
-    # ------------------------------------------------------------------
+Since we only sampled the mass ratio ``q``, we need to derive the secondary mass from the primary mass and ``q``:
+
+.. code-block:: python
     def derive_params(sampled):
         return {'mass_2': sampled['mass_1'] * sampled['q']}
 
-    # ------------------------------------------------------------------
-    # Run
-    # ------------------------------------------------------------------
+
+And then it's just a matter of setting it going!
+
+.. code-block:: python
     sampler = AdaptiveSampler(
         parameter_space=params,
-        total_systems=50_000,
-        batch_size=500,
+        total_systems=50_000,           # adjust this for more samples
+        batch_size=500,                 # adjust this to sample more or fewer systems per call to COSMIC
         BSEDict=BSEDict,
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
         derive_params=derive_params,
-        reject_systems=default_reject,
+        reject_systems="default",
         output_path='output/bhbh',
         nproc=4,
         n_generations=1,
         seed=42,
     )
-
     result = sampler.run()
 
     print(f"Total hits:        {result.num_hits}")
@@ -305,9 +302,7 @@ orbital period, eccentricity, and metallicity.
 BH + star binaries surviving 100 Myr
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For outcomes that are less extreme but still rare — such as persistent BH + star systems —
-STROOPWAFEL provides substantial efficiency gains over flat Monte Carlo.  Using the same
-parameter space, ``derive_params``, and ``BSEDict`` as the previous examples, we can simply swap out the hit function to find BH + star systems that remain bound for at least 100 Myr after the BH forms:
+Now let's repeat that whole scenario, but instead of BH + BH binaries we want to sample BH + stellar companion systems that remain bound for at least 100 Myr after the BH forms. We can use the same parameter space and ``derive_params`` function as above, but this time we will use the custom ``bh_star_100myr`` hit function defined earlier.
 
 .. code-block:: python
 
@@ -317,23 +312,19 @@ parameter space, ``derive_params``, and ``BSEDict`` as the previous examples, we
 
     sampler = AdaptiveSampler(
         parameter_space=params,          # reuse from BHBH example
-        total_systems=20_000,
+        total_systems=50_000,
         batch_size=500,
         BSEDict=BSEDict,                 # reuse from BHBH example
         is_interesting=bh_star_100myr,   # we defined this earlier
         derive_params=derive_params,     # reuse from BHBH example
-        reject_systems=default_reject,
+        reject_systems="default",
         output_path='output/bh_star',
         nproc=4,
         n_generations=1,
         seed=42,
     )
-
     result = sampler.run()
 
-Because BH + star systems are more common than merging BH-BH pairs, a smaller total budget
-is needed and fewer refinement generations are required before the mixture model is
-well-constrained.
 
 Rules of thumb
 ==============
@@ -343,13 +334,12 @@ Choosing ``total_systems``, ``batch_size``, and ``n_generations`` is something o
 ``batch_size``
 --------------
 
-``batch_size`` sets how many systems are passed to
-:meth:`~cosmic.evolve.Evolve.evolve` per call.
+``batch_size`` sets how many systems are passed to :meth:`~cosmic.evolve.Evolve.evolve` per call.
 
 * Aim for ``batch_size`` to be a multiple of ``nproc`` so that COSMIC distributes work
   evenly across cores.
 * Values of 200-1000 are typical.  Batches smaller than ~50 increase Python overhead per
-  call; batches larger than ~5000 may cause memory pressure on the output DataFrames.
+  call; batches larger than ~5000 may cause memory pressure from the output DataFrames.
 
 ``total_systems``
 -----------------
@@ -372,10 +362,10 @@ The EM step between generations can improve the mixture, but with diminishing re
 Saving your results
 ===================
 
-Once you have your samples, you can save them to disk as an HDF5 file with the :meth:`~cosmic.output.COSMICStroopOutput.save` method.  This saves the parameter samples, derived quantities, and hit information in a compact format that can be loaded later for analysis.
+Once you have your samples, you can save them to disk as an HDF5 file with the :meth:`~cosmic.output.COSMICStroopOutput.save` method.  This saves the parameter samples, derived quantities, and hit information that can be loaded later for analysis.
 
 .. code-block:: python
 
     result.save('bhbh_samples.h5')
 
-We'll talk more about how to load and analyse these results in the :ref:`adaptive_outputs` tutorial next!
+We'll talk more about how to load and analyse these results in the :ref:`adaptive_outputs` tutorial! But first, let's look at how to define custom distributions for your parameters in the next tutorial :ref:`adaptive_distributions`.
