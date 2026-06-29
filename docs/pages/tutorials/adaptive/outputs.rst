@@ -6,10 +6,14 @@ Handling outputs from adaptive sampling
 
 This tutorial assumes that you've already gone through :ref:`adaptive_basics`.
 
+In this tutorial we're going to cover how to read in and interpret the outputs from an adaptive sampling run.
+We'll also cover how to draw a representative sample from your simulation, and how to use the weights that are generated during the adaptive sampling process.
+
 Reading your results from a file
 ================================
 
-After you've finished running your adaptive sampling simulation, you will now have some results stored as :class:`~cosmic.output.COSMICStroopOutput` object. If you saved these results to a file, then you can reload them by running
+After you've finished running your adaptive sampling simulation, you will now have some results stored as :class:`~cosmic.output.COSMICStroopOutput` object.
+If you saved these results to a file, then you can reload them by running
 
 .. code-block:: python
 
@@ -20,7 +24,8 @@ After you've finished running your adaptive sampling simulation, you will now ha
 Understanding your outputs
 ==========================
 
-The :class:`~cosmic.output.COSMICStroopOutput` class stores all of the information you need to analyse your simulation. Let's step through some of the different attributes that you will need, and assume for the purposes of this guide that you have ``N`` samples, in ``D`` dimensions, with ``H`` hits.
+The :class:`~cosmic.output.COSMICStroopOutput` class stores all of the information you need to analyse your simulation.
+Let's step through some of the different attributes that you will need, and assume for the purposes of this guide that you have ``N`` samples, in ``D`` dimensions, with ``H`` hits.
 
 Sample information
 ------------------
@@ -34,7 +39,8 @@ Each :class:`~cosmic.output.COSMICStroopOutput` object contains a full record of
 Hit details
 -----------
 
-For the actual hits (i.e. the samples that you most care about), this class also stores the full evolution history. In particular, ``bpp``, ``bcm``, ``initC``, and ``kick_info`` all contain the usual ``COSMIC`` evolution tables (see :ref:`evolve_single` if you're not familiar).
+For the actual hits (i.e. the samples that you most care about), this class also stores the full evolution history.
+In particular, ``bpp``, ``bcm``, ``initC``, and ``kick_info`` all contain the usual ``COSMIC`` evolution tables (see :ref:`evolve_single` if you're not familiar).
 
 .. tip::
 
@@ -44,7 +50,8 @@ For the actual hits (i.e. the samples that you most care about), this class also
 
         just_hits = results[results.is_hit]
 
-    which masks the class just like you would with a :class:`~cosmic.output.COSMICOutput`. Be aware you likely still need the full population for access to the weights (we'll cover weights below).
+    which masks the class just like you would with a :class:`~cosmic.output.COSMICOutput` (see :ref:`analysis_interface` if you're not familiar).
+    Be aware you likely still need the full population for access to the weights (we'll cover weights below).
 
 General metadata
 ----------------
@@ -113,12 +120,11 @@ Drawing a representative sample from your simulation
 
 Applying weights at plot time is the right approach for visualising distributions, but
 sometimes you want an actual *set of systems* that is representative of the underlying
-population — for example to pass a fixed number of binaries into a downstream calculation.
+population. For example, you may want a fixed number of binaries for further analysis that don't require any weights.
 Because the simulation deliberately oversamples the rare region, you cannot take the hits at
 face value; you need to resample them in proportion to their weights.
 
-This is a standard weighted bootstrap: draw indices from the hit population with probability
-proportional to their weights, with replacement.
+We provide a convenience method for this in :class:`~cosmic.output.COSMICStroopOutput`, but the underlying procedure is simple. It is a standard weighted bootstrap: draw indices from the hit population with probability proportional to their weights, with replacement.
 
 .. code-block:: python
 
@@ -126,23 +132,13 @@ proportional to their weights, with replacement.
     from cosmic.output import COSMICStroopOutput
 
     results = COSMICStroopOutput.from_file("YOUR_SIMULATION.h5")
+    representative_sample, bin_nums = results.draw_representative_sample(n_samples=1000)
 
-    # Restrict to hits and normalise their weights into probabilities
-    hit_idx = np.where(results.is_hit)[0]
-    probs = results.weights[hit_idx] / results.weights[hit_idx].sum()
+The resulting ``representative_sample`` array provides a set of 1000 systems with their parameters drawn from the underlying population, and ``bin_nums`` provides the corresponding indices into the original hit population so that you can access the full evolution history if you need it.
 
-    # Draw a representative sample of, say, 5000 systems
-    rng = np.random.default_rng(42)
-    chosen = rng.choice(hit_idx, size=5000, replace=True, p=probs)
+Wrap-up
+=======
 
-    representative = results.samples[chosen]   # (5000, D), in physical space
+And that's everything you need to know about working with the outputs from your adaptive sampling run. You can now read in your results, understand the weights, and draw a representative sample from your simulation.
 
-The resulting ``representative`` array is distributed according to the true (prior-weighted)
-population, so it can be histogrammed or analysed **without** any further weighting.  Because
-the draw is made with replacement, the same underlying system can appear more than once —
-this is expected, and is the price of turning a weighted sample into an unweighted one.
-
-.. note::
-
-    A :meth:`~cosmic.output.COSMICStroopOutput.draw_representative_sample` convenience method
-    that wraps this resampling is planned; until it lands, use the weighted bootstrap above.
+Finally, we're going to look at how to checkpoint your adaptive sampling run so that you can resume it later in :ref:`adaptive_checkpoint` - see you there!

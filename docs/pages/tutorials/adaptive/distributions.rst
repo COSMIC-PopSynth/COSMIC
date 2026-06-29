@@ -6,18 +6,16 @@ Distributions and custom priors
 
 This tutorial assumes that you've already gone through :ref:`adaptive_basics`.
 
-Every :class:`~cosmic.sample.stroopwafel.Parameter` is given a *distribution*, which does
-three jobs: it draws samples, it evaluates the prior probability density, and it defines
-the adaptive-sampling kernel width used during refinement.  ``COSMIC`` provides a small set
-of built-in distributions covering the usual initial-condition choices, and a simple,
-composable interface for defining your own.
+When using adaptive sampling you need to define a distribution to use for each :class:`~cosmic.sample.stroopwafel.Parameter` that you sample.
+The distribution performs three operations: it draws samples, it evaluates the prior probability density, and it defines
+the adaptive-sampling kernel width used during refinement.
 
+In this tutorial we'll cover the built-in distributions and show how to define your own custom distributions and transforms.
 
 Built-in distributions
 =======================
 
-Pass any of the following names as the ``dist`` argument to a
-:class:`~cosmic.sample.stroopwafel.Parameter`:
+You can select any of the following distributions as the ``dist`` argument to a :class:`~cosmic.sample.stroopwafel.Parameter`:
 
 .. list-table::
     :header-rows: 1
@@ -53,15 +51,13 @@ Pass any of the following names as the ``dist`` argument to a
       - log-normal
       - Natal-kick magnitude, :math:`\ln v \sim \mathcal{N}(5.67, 0.59)`.
 
-The full registry is available programmatically as
-:data:`cosmic.sample.stroopwafel.distributions.DISTRIBUTIONS`.
+If you ever want to access this, you can get the full list of registered distributions with :data:`cosmic.sample.stroopwafel.distributions.DISTRIBUTIONS`.
 
 
 How distributions are built
 ===========================
 
-Internally each distribution is a **base distribution** composed with a **coordinate
-transform**:
+Under the hood, we set each distribution up as a combination of a base distribution and a coordinate transform. This allows you to mix and match options:
 
 * the base distribution (:class:`~cosmic.sample.stroopwafel.distributions.Uniform`,
   :class:`~cosmic.sample.stroopwafel.distributions.PowerLaw`,
@@ -82,33 +78,31 @@ You can build the same objects yourself:
         Uniform, PowerLaw, BrokenPowerLaw, TruncatedNormal, Log10,
     )
 
-    Uniform(transform=Log10())                        # equivalent to 'flat_in_log'
-    PowerLaw(-0.55, transform=Log10())                # equivalent to 'sana'
+    Uniform(transform=Log10())                         # equivalent to 'flat_in_log'
+    PowerLaw(-0.55, transform=Log10())                 # equivalent to 'sana'
     BrokenPowerLaw(breaks=[0.5], alphas=[-1.3, -2.3])  # equivalent to 'kroupa'
 
 Bounds are always given to a :class:`~cosmic.sample.stroopwafel.Parameter` in **physical**
-space; the transform converts them into sampling space automatically (and round-trips
-samples back to physical space before they are evolved by ``COSMIC``).
+space; the transform converts them into sampling space automatically.
 
 
 Defining your own distribution
 ==============================
 
-There are three ways to use a custom distribution, in increasing order of effort.
+Now let's say that you want to define your own distribution. You can do this in three ways - let's take a look at them in order of increasing complexity.
 
 1. Pass a distribution instance directly
 ----------------------------------------
 
-The quickest option is to tweak one of the built-in base distributions and hand the
-instance straight to a :class:`~cosmic.sample.stroopwafel.Parameter` via ``dist``.  No
-registration required:
+The quickest option is to tweak one of the built-in base distributions like we did above and hand the
+instance straight to a :class:`~cosmic.sample.stroopwafel.Parameter` via ``dist``.
 
 .. code-block:: python
 
     from cosmic.sample.stroopwafel import Parameter
     from cosmic.sample.stroopwafel.distributions import PowerLaw
 
-    # A steeper-than-Kroupa IMF for the primary mass
+    # a steeper-than-Kroupa IMF for the primary mass
     Parameter('mass_1', 5.0, 150.0, dist=PowerLaw(-2.7))
 
 
@@ -116,8 +110,8 @@ registration required:
 --------------------------------
 
 If you want to reuse a distribution across several parameter spaces — or simply refer to it
-by a memorable name — register it once with
-:func:`~cosmic.sample.stroopwafel.distributions.register`:
+by a memorable name — you can register it once with
+:func:`~cosmic.sample.stroopwafel.distributions.register`. This then allows you to refer to it by name in any :class:`~cosmic.sample.stroopwafel.Parameter`:
 
 .. code-block:: python
 
@@ -133,7 +127,7 @@ by a memorable name — register it once with
 3. Write a new distribution class
 ---------------------------------
 
-For a genuinely new functional form, subclass
+For a genuinely new functional form, you'll need to create a new class that subclasses off
 :class:`~cosmic.sample.stroopwafel.distributions.Distribution` and implement two methods:
 
 ``sample(n, lo, hi, rng)``
@@ -171,7 +165,7 @@ implements a truncated exponential distribution:
 
     Parameter('some_param', 0.0, 10.0, dist=Exponential(scale=2.0))
 
-That is all that is required — your distribution now works everywhere the built-ins do, and
+And this class defines everything we need, our distribution now works everywhere the built-ins do, and
 can be combined with any transform (``dist=Exponential(2.0, transform=Log10())``).
 
 .. note::
@@ -208,3 +202,8 @@ transforms are :class:`~cosmic.sample.stroopwafel.distributions.Identity`,
 
         def to_physical(self, values):
             return values ** 2
+
+And that's everything you need to know about distributions and transforms in ``COSMIC``'s implementation of '``STROOPWAFEL``.
+You can now define your own custom priors and use them in your adaptive sampling runs.
+
+Next, we'll look at how to analyse the outputs of an adaptive sampling run in :ref:`adaptive_outputs`.

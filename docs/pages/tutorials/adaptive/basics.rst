@@ -291,7 +291,6 @@ And then it's just a matter of setting it going!
         is_interesting=any_dco(kstar_1=[14], kstar_2=[14]),
         derive_params=derive_params,
         reject_systems="default",
-        output_path='output/bhbh',
         nproc=4,
         n_generations=1,
         seed=42,
@@ -321,7 +320,6 @@ Now let's repeat that whole scenario, but instead of BH + BH binaries we want to
         is_interesting=bh_star_100myr,   # we defined this earlier
         derive_params=derive_params,     # reuse from BHBH example
         reject_systems="default",
-        output_path='output/bh_star',
         nproc=4,
         n_generations=1,
         seed=42,
