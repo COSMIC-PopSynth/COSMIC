@@ -74,7 +74,7 @@ class COSMICOutput:
             self.bpp = pd.read_hdf(file, key=f'bpp{file_key_suffix}')
             self.bcm = pd.read_hdf(file, key=f'bcm{file_key_suffix}')
             self.initC = load_initC(file, key=f'initC{file_key_suffix}',
-                                    settings_key=f'initC_{file_key_suffix}_settings')
+                                    settings_key=f'initC{file_key_suffix}_settings')
             self.kick_info = pd.read_hdf(file, key=f'kick_info{file_key_suffix}')
             with h5.File(file, 'r') as f:
                 file_version = f.attrs.get('COSMIC_version', 'unknown')
