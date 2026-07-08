@@ -24,6 +24,7 @@ import warnings
 import pandas as pd
 import warnings
 from multiprocessing import Pool
+import os
 
 from cosmic import utils
 
@@ -218,7 +219,7 @@ def get_independent_sampler(
 
     # if no pool was passed in, but nproc > 1, create a pool
     if not pool_existed_already and nproc > 1:
-        pool = Pool(nproc)
+        pool = Pool(nproc, initializer=_init_worker)
 
     # if there's no pool, simply pass the arguments to the worker
     if pool is None:
@@ -478,6 +479,11 @@ def _independent_sampler_worker(
         n_singles,
         n_binaries
     )
+
+def _init_worker():
+    """Ensure that each worker process has a different random seed."""
+    np.random.seed(np.random.get_state()[1][0] + os.getpid())
+
 
 
 register_sampler(
