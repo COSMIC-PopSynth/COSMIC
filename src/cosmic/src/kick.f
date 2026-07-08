@@ -122,6 +122,7 @@
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
       real*8 mu_mm
+      real*8 epsilon_5, f_kin, beta_nu, alpha_ej
       integer i
       logical ECSN_or_USSN
 * Output
@@ -155,9 +156,6 @@
 * Set values for mean NS mass and mean ejecta as in Giacobbo & Mapelli 2020
       mean_mns = 1.2d0
       mean_mej = 9.0d0
-* Set values for alpha and beta as in Bray & Eldridge 2016
-      alphakick = 70.0d0
-      betakick = 120.0d0
 
       if(using_cmc.eq.0)then
 * check if we have supplied a randomseed for this SN from kick_info
@@ -280,7 +278,30 @@
              vk2 = vk*vk
           elseif(abskickflag.eq.4)then
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
+             alphakick = 70.0d0
+             betakick = 120.0d0
              vk = alphakick * ((m1-m1n)/m1n) + betakick
+             vk2 = vk*vk
+          elseif(abskickflag.eq.7)then
+* Asymmetric ejecta / neutrino-driven kick prescription
+* Gravitational remnant mass = m1n
+* Star mass pre-collapse = m1
+* Ejecta mass = m1 - m1n --> update this maybe?
+* Baseline values assumed: epsilon_5 = 1.0, f_kin = 0.1, beta_nu = 0.1
+             epsilon_5 = 1.0d0
+             f_kin = 0.1d0
+             beta_nu = 0.1d0
+             alpha_ej = 0.01d0
+             vk = 21.d0 * SQRT(epsilon_5 * f_kin * beta_nu) *
+     &            (alpha_ej / 0.01d0) * ((m1 - m1n) / 0.1d0) *
+     &            (1.5d0 / m1n)
+             vk2 = vk*vk
+          elseif(abskickflag.eq.8)then
+* From Richards+2023, Eq 1 (improvement upon Bray & Eldridge 2016)
+* Calibrated against single pulsars, double neutron stars, low kick velocities of ultra stripped supernova
+             alphakick = 115.0d0
+             betakick = 15.0d0
+             vk = alphakick * ((m1-m1n)/m1n) + betakick * (1.4d0/m1n)
              vk2 = vk*vk
           endif
 
