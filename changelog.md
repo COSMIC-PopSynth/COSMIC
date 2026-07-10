@@ -1,6 +1,17 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.1.1
+
+- Additions/changes
+    -
+
+- Code cleanup
+    - 
+
+- Bug fixes
+    - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
+
 ## 4.1.0
 
 - Additions/changes
@@ -9,10 +20,12 @@
 - Code cleanup
     - Function signature for kick() and evolv2() in the fortran changed to remove ``bkick`` entirely
     - Also removed ``kick_info_out``. Both of these can be reconstructed from ``kick_info``
+    - [Just for developers] Created ``consts.py`` which ``evolve.py`` now draws from, loops over GROUPED_SETTINGS instead of giant chunk of assignments
 
-- Bug fixes: c
+- Bug fixes:
     - corrected mass sign in bjorklund wind routine in SSE_mlwind.f
     - fixed bug in ``bhspinmag`` assignment in ``assign_remnant.f``
+    - fixed issue added in v3.7.6 where sample fails if you have total_mass as your sampling target and use multiprocessing
 
 ## 4.0.1
 

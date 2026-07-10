@@ -24,6 +24,7 @@ import warnings
 import pandas as pd
 import warnings
 from multiprocessing import Pool
+import os
 
 from cosmic import utils
 
@@ -218,7 +219,7 @@ def get_independent_sampler(
 
     # if no pool was passed in, but nproc > 1, create a pool
     if not pool_existed_already and nproc > 1:
-        pool = Pool(nproc)
+        pool = Pool(nproc, initializer=_init_worker)
 
     # if there's no pool, simply pass the arguments to the worker
     if pool is None:
@@ -248,7 +249,7 @@ def get_independent_sampler(
         # set up the arguments for each chunk
         chunk_args = [(
             final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-            binfrac_model, met, SSEDict, chunk if sampling_target == "size" else None,
+            binfrac_model, met, SSEDict, chunk if sampling_target == "size" else size // n_chunks,
             chunk if sampling_target == "total_mass" else np.inf, sampling_target, trim_extra_samples,
             q_power_law, kwargs
         ) for chunk in chunk_sizes]
@@ -290,6 +291,10 @@ def _independent_sampler_worker(
 
     # set up multiplier if the mass sampling is inefficient
     multiplier = 1
+
+    # if size is passed as None, default to assuming a mean mass of 0.5 Msun (Kroupa IMF between 0.08, 150)
+    if size is None:
+        size = int(total_mass / 0.5)
 
     # track samples to actually return (after masks)
     mass1_singles = []
@@ -474,6 +479,11 @@ def _independent_sampler_worker(
         n_singles,
         n_binaries
     )
+
+def _init_worker():
+    """Ensure that each worker process has a different random seed."""
+    np.random.seed(np.random.get_state()[1][0] + os.getpid())
+
 
 
 register_sampler(

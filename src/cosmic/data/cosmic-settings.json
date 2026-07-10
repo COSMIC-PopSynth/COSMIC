@@ -1020,6 +1020,14 @@
                         "description": "Follows <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>, where the kick velocity is drawn based on the mass of the formed NS or BH, with scaling parameters that are set with 'mm_mu_ns' and 'mm_mu_bh'."
                     },
                     {
+                        "name": 7,
+                        "description": "Draws natal kick magnitudes following the gravitational tug-boat mechanism in asymmetric core-collapse explosions from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017ApJ...837...84J/abstract'>Janka (2017)</a>, with the exact form as in Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2026ApJ...997...52C/abstract'>Chattaraj et al. (2026)</a>, which is observationally 'calibrated' to the Galactic (field) double neutron star population."
+                    },
+                    {
+                        "name": 8,
+                        "description": "Follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.3972R/abstract'>Richards et al. (2023)</a> Eq. 1, which constrains the natal kicks on neutron stars from a combination of observations and the double neutron star merger rate. Similar to kickflag==4, but with different parameters."
+                    },
+                    {
                         "name": "negative values",
                         "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     },
