@@ -27,6 +27,15 @@ from cosmic.sample import InitialBinaryTable
 
 BSEDict = generate_default_bsedict.get_default_BSE_settings(to_python=True)
 plt.style.use("../_static/gallery.mplstyle")
+plt.rcParams.update({
+    "font.size": 9,
+    "axes.titlesize": 11,
+    "axes.labelsize": 10,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+    "legend.fontsize": 8,
+    "legend.title_fontsize": 8,
+})
 
 
 neta_values = [0.01, 0.25, 0.5, 1.0, 2.0]
@@ -115,7 +124,7 @@ zoom = summaries[
     & (summaries["initial_mass_1"] <= 1.5)
 ]
 
-fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
+fig, axes = plt.subplots(1, 2, figsize=(10, 4.0))
 
 plot_final_mass(
     axes[0],
@@ -128,7 +137,6 @@ plot_final_mass(
     "Full mass grid",
 )
 
-fig.suptitle("Effect of Reimers wind coefficient neta")
 plt.tight_layout()
 plt.savefig("neta_flagtest.png", dpi=150)
 plt.show()

@@ -134,7 +134,6 @@ plot_final_mass_panel(
     "Zoomed Final Mass Near Sensitive Region",
 )
 
-fig.suptitle("pts1, pts2, pts3 timestep convergence test", fontsize=14)
 plt.tight_layout()
 plt.savefig("pts_flagtest.png", dpi=150)
 plt.show()

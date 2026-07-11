@@ -26,6 +26,15 @@ from cosmic.sample import InitialBinaryTable
 
 BSEDict = generate_default_bsedict.get_default_BSE_settings(to_python=True)
 plt.style.use("../_static/gallery.mplstyle")
+plt.rcParams.update({
+    "font.size": 9,
+    "axes.titlesize": 11,
+    "axes.labelsize": 10,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+    "legend.fontsize": 8,
+    "legend.title_fontsize": 8,
+})
 
 
 hewind_values = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -93,7 +102,7 @@ helium_grid = make_helium_star_grid()
 summaries = evolve_hewind_grid(helium_grid, windflag=0, dtp=2.0)
 baseline = summaries[summaries["hewind"].eq(0.5)].set_index("initial_he_mass_1")
 
-fig, axes = plt.subplots(1, 2, figsize=(13, 4.8), sharex=True, constrained_layout=True)
+fig, axes = plt.subplots(1, 2, figsize=(10, 4.0), sharex=True, constrained_layout=True)
 
 for hewind in hewind_values:
     subset = summaries[summaries["hewind"].eq(hewind)].sort_values(
@@ -128,6 +137,5 @@ for ax in axes:
     ax.legend(title="hewind", fontsize=8, title_fontsize=9, markerscale=1.2)
     ax.grid(True, alpha=0.3)
 
-fig.suptitle("Effect of hewind on naked helium stars, windflag=0")
 plt.savefig("hewind_flagtest.png", dpi=150)
 plt.show()
