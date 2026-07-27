@@ -4,13 +4,14 @@
 ## 4.1.1
 
 - Additions/changes
-    -
+    - Added some new example figures
 
 - Code cleanup
     - 
 
 - Bug fixes
     - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
+    - Fixed Roche radius calculation
 
 ## 4.1.0
 
