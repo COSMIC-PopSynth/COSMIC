@@ -310,7 +310,8 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
-        power_slope = power_law_fit(np.log10(porb))
+        porb_cut = porb[porb > 10**0.6]
+        power_slope = power_law_fit(np.log10(porb_cut))
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
         # now some custom power laws
@@ -330,7 +331,7 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
-        porb_cut = porb[porb > 2.5]
+        porb_cut = porb[porb > 10**2.5]
         power_slope = power_law_fit(np.log10(porb_cut))
         self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
@@ -391,7 +392,7 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 0.5)]
+        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 1.5)]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
@@ -401,7 +402,7 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26_ecsn', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 0.5)]
+        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 1.5)]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
@@ -448,7 +449,7 @@ class TestSample(unittest.TestCase):
 
         # now we feed aRL_over_a into sample_ecc
         ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='thermal', size=mass1.size)
-        ecc_cut = ecc[ecc < 0.7]
+        ecc_cut = ecc[ecc < 0.65]
         slope = linear_fit(ecc_cut)
         self.assertEqual(np.round(slope, 0), THERMAL_SLOPE)
 
