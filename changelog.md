@@ -3,7 +3,7 @@
 
 ## 4.2.0
 
-This version, among other thins, introduces adaptive importance sampling to COSMIC.
+This version, among other things, introduces adaptive importance sampling to COSMIC.
 
 - Additions/changes
     - **Adaptive importance sampling via the STROOPWAFEL algorithm** ([Broekgaarden et al. 2019](https://arxiv.org/abs/1905.00910)) — a new vectorised module for efficiently sampling rare binary outcomes (e.g. merging double compact objects), where flat Monte Carlo would need millions of evolutions to collect a handful of systems. Lives in ``cosmic.sample.stroopwafel``:
@@ -19,6 +19,17 @@ This version, among other thins, introduces adaptive importance sampling to COSM
 
 - Documentation:
     - New "Adaptive importance sampling" tutorial series under ``docs/pages/tutorials/adaptive/``: getting started (``basics``), defining and customising distributions (``distributions``), interpreting outputs and weights (``outputs``), and saving/resuming runs (``checkpoint``).
+
+## 4.1.1
+
+- Additions/changes
+    - Add `kickflag` 7 and 8
+
+- Code cleanup
+    - Added a license
+
+- Bug fixes
+    - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
 
 ## 4.1.0
 
