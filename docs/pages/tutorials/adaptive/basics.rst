@@ -22,6 +22,8 @@ budget on those regions, and finally corrects the biased sampling with importanc
 that any weighted statistic remains an unbiased estimator of the true prior-weighted
 distribution.
 
+This implementation is based on the implementation designed by Lokesh Khandelwal, Floris Kummer, and Stephen Justham, which built upon the original STROOPWAFEL algorithm.
+
 
 When should I use this?
 =======================
