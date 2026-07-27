@@ -5,6 +5,7 @@
 
 - Additions/changes
     - Added some new example figures
+    - New kick model from @astroabishek (thank you!)
 
 - Code cleanup
     - 
