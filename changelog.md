@@ -23,13 +23,16 @@ This version, among other things, introduces adaptive importance sampling to COS
 ## 4.1.1
 
 - Additions/changes
-    - Add `kickflag` 7 and 8
+    - Add `kickflag` 7 and 8 from @astroabishek (thank you!)
 
 - Code cleanup
     - Added a license
+    - Added some new example figures
+    - Pin versions to more specific values for a more reproducible environment.
 
 - Bug fixes
     - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
+    - Fixed Roche radius calculation
 
 ## 4.1.0
 
