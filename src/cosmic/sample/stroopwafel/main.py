@@ -54,6 +54,8 @@ class AdaptiveSampler:
         Pass None to skip physical rejection entirely.
     nproc : `int`, optional
         Number of CPU cores for COSMIC, by default 1
+    timestep_conditions : `dict`, optional
+        Dictionary of timestep conditions to pass to COSMIC, by default None.
     kappa : `float`, optional
         Gaussian width scaling factor, by default 1.0
     n_generations : `int`, optional
@@ -90,7 +92,7 @@ class AdaptiveSampler:
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
                  is_interesting, SSEDict=None, derive_params=None,
-                 reject_systems="default", nproc=1, kappa=1.0,
+                 reject_systems="default", nproc=1, timestep_conditions=None, kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False,
                  min_active_fraction=0.01, min_entropy_change=0.01):
@@ -119,6 +121,10 @@ class AdaptiveSampler:
         self.rng = np.random.default_rng(seed)
         self.min_active_fraction = min_active_fraction
         self.min_entropy_change = min_entropy_change
+
+        if timestep_conditions is not None:
+            raise NotImplementedError("timestep_conditions cannot yet be used with STROOPWAFEL, "
+                                      "must be None until future version")
 
         # State
         self.num_explored = 0
