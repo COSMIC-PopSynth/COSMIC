@@ -8,7 +8,7 @@
     - New kick model from @astroabishek (thank you!)
 
 - Code cleanup
-    - 
+    - Pin versions to more specific values for a more reproducible environment.
 
 - Bug fixes
     - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
