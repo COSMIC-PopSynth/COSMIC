@@ -21,9 +21,41 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
 ]
-dependencies = ["numpy", "scipy", "astropy", "configparser",
-                "tqdm", "pandas", "tables", "h5py", "schwimmbad",
-                "matplotlib"]
+dependencies = [
+    "numpy >= 2.0, < 2.3",
+    "scipy >= 0.12.1",
+    "astropy >= 1.1.1",
+    "configparser",
+    "tqdm >= 4.0",
+    "pandas >= 0.24",
+    "tables > 3.5.0",
+    "h5py >= 3.7.0",
+    "schwimmbad >= 0.3.1",
+    "matplotlib >= 2.0.0",
+]
+
+[project.optional-dependencies]
+doc = [
+    "sphinx >= 1.6.1",
+    "numpydoc >= 0.8.0",
+    "sphinx-bootstrap-theme >= 0.6",
+    "sphinxcontrib-programoutput",
+    "sphinx-automodapi",
+    "ipython",
+    "sphinx_rtd_theme",
+    "furo",
+    "sphinx-design",
+    "sphinx-copybutton",
+    "sphinx-gallery",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "cpp-coveralls",
+    "importlib-metadata < 5.0",
+    "wheel",
+]
 
 [build-system]
 build-backend = 'mesonpy'
