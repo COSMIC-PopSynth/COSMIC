@@ -23,15 +23,15 @@ classifiers = [
 ]
 dependencies = [
     "numpy >= 2.0, < 2.3",
-    "scipy >= 0.12.1",
-    "astropy >= 1.1.1",
-    "configparser",
-    "tqdm >= 4.0",
-    "pandas >= 0.24",
-    "tables > 3.5.0",
-    "h5py >= 3.7.0",
+    "scipy >= 1.14.1, <1.16",
+    "pandas >= 2.2.3, < 3.1",
+    "astropy >= 6.1, < 9.0",
+    "matplotlib >= 3.9, < 4.0",
+    "tables >= 3.10.1, < 4.0",
+    "h5py >= 3.12.0, < 4.0",
     "schwimmbad >= 0.3.1",
-    "matplotlib >= 2.0.0",
+    "tqdm >= 4.0",
+    "configparser",
 ]
 
 [project.optional-dependencies]
@@ -56,6 +56,7 @@ test = [
     "importlib-metadata < 5.0",
     "wheel",
 ]
+all = ["cosmic-popsynth[doc, test]"]
 
 [build-system]
 build-backend = 'mesonpy'
