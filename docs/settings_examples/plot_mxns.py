@@ -1,10 +1,28 @@
+"""
+mxns
+====
+
+This example tests ``mxns``, which sets the highest mass a neutron star is
+allowed to have. Any remnant that would end up heavier than ``mxns`` is
+turned into a black hole instead of a neutron star.
+
+Raising ``mxns`` lets more of the heavier remnants stay classified as
+neutron stars rather than black holes, so a higher ``mxns`` means more
+neutron stars and fewer black holes come out of the same underlying
+population of stars.
+
+A grid of single stars is evolved once for each of several ``mxns`` values,
+from 1.5 up to 7.0 solar masses, and the number of stars ending up as a
+neutron star versus a black hole is counted and plotted as a bar chart for
+each value.
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic.evolve import Evolve
 
-"""This it the mxns parameter. It sets """
 
 n_grid = 30
 masses = np.linspace(5.0, 50.0, n_grid)
