@@ -1,0 +1,922 @@
+import os
+from functools import partial
+import numpy as np
+import pandas as pd
+from scipy.stats import multivariate_normal
+
+from cosmic.sample.initialbinarytable import InitialBinaryTable
+from cosmic.evolve import Evolve
+from cosmic.output import COSMICStroopOutput, STROOPWAFELCheckpoint
+
+from .mixture_model import GaussianMixture
+from .rejection import default_reject
+
+
+class AdaptiveSampler:
+    """Adaptive importance sampler for binary population synthesis with COSMIC.
+
+    Parameters
+    ----------
+    parameter_space : `ParameterSpace`
+        Defines the sampling dimensions and their distributions.
+    total_systems : `int`
+        Total number of systems to simulate across all phases.
+    batch_size : `int`
+        Number of systems evolved per COSMIC call.
+    BSEDict : `dict`
+        COSMIC binary stellar evolution parameters.
+    is_interesting : `callable`
+        Function with signature ``(bpp) -> (n_hits, hit_bin_nums)``
+        identifying systems of interest from COSMIC output.
+    SSEDict : `dict`, optional
+        COSMIC single stellar evolution settings (required by COSMIC v4+;
+        e.g. selecting the ``sse`` or ``METISSE`` stellar engine).  Passed to
+        every COSMIC evolution and, when ``reject_systems='default'``, wired
+        into :func:`~cosmic.sample.stroopwafel.rejection.default_reject` so the
+        ZAMS radii it computes via ``set_reff`` use the same engine.  By
+        default None (COSMIC's ``sse`` engine).
+    derive_params : `callable`, optional
+        Function ``(sampled) -> dict`` that supplies any binary parameters
+        not drawn from ``parameter_space``.  ``sampled`` is a dict mapping
+        each sampled parameter name to its (N,) array of physical values;
+        the returned dict provides the remaining members of
+        :attr:`REQUIRED_PARAMS` (a scalar is broadcast to all N binaries,
+        e.g. ``{'mass_1': 30.0}``).  Every required parameter must be either
+        sampled or returned here.  May be ``None`` when all of them are
+        sampled directly.  By default None.
+    reject_systems : `callable`, optional
+        Function ``(binary_params) -> bool_mask`` returning True for
+        physically unacceptable systems, where ``binary_params`` is the
+        assembled dict of binary parameters (sampled columns merged with the
+        output of ``derive_params``).  See
+        :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.
+        By default uses :func:`~cosmic.sample.stroopwafel.rejection.default_reject`.
+        Pass None to skip physical rejection entirely.
+    nproc : `int`, optional
+        Number of CPU cores for COSMIC, by default 1
+    timestep_conditions : `dict`, optional
+        Dictionary of timestep conditions to pass to COSMIC, by default None.
+    kappa : `float`, optional
+        Gaussian width scaling factor, by default 1.0
+    n_generations : `int`, optional
+        Number of refinement generations, by default 1
+    mc_only : `bool`, optional
+        If True, only run exploration (standard Monte Carlo), by default
+        False
+    seed : `int` or None, optional
+        Random seed for reproducibility, by default None
+    only_save_hit_tables : `bool`, optional
+        If True, only rows corresponding to hit systems are kept in the
+        accumulated ``bpp``, ``bcm``, ``initC``, and ``kick_info`` tables.
+        Non-hit rows are discarded immediately after each batch, reducing
+        peak memory proportionally to the miss rate.  The ``samples``,
+        ``weights``, and ``is_hit`` arrays are unaffected — all systems
+        are retained there for correct importance-weight calculation.
+        By default False.
+    min_active_fraction : `float`, optional
+        Minimum value of (1 - rejection_rate) used in every oversampling and
+        normalisation calculation.  Caps the oversampling multiplier at ×200
+        (= 2 / 0.01) and prevents near-zero denominators from producing
+        astronomical (yes that was purposeful) array sizes or overflowing float64
+        normalisation constants.
+        By default 0.01.
+    min_entropy_change : `float`, optional
+        Minimum change in entropy required for a generation to be considered
+        as having made progress.  By default 0.01.
+    """
+
+    #: The parameters that fully define a binary for COSMIC.  Each must be
+    #: either sampled (a Parameter in ``parameter_space``) or returned by
+    #: ``derive_params``.
+    REQUIRED_PARAMS = ('mass_1', 'mass_2', 'porb', 'ecc', 'metallicity')
+
+    def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
+                 is_interesting, SSEDict=None, derive_params=None,
+                 reject_systems="default", nproc=1, timestep_conditions=None, kappa=1.0,
+                 n_generations=1, mc_only=False, seed=None,
+                 only_save_hit_tables=False,
+                 min_active_fraction=0.01, min_entropy_change=0.01):
+        self.param_space = parameter_space
+        self.total_systems = total_systems
+        self.batch_size = batch_size
+        self.bse_dict = BSEDict
+        self.sse_dict = SSEDict
+        self.derive_fn = derive_params
+        # Keep the original spec so a checkpoint can rebind the default to the
+        # (possibly overridden) SSEDict on reload.
+        self._reject_spec = reject_systems
+        # The default rejection uses set_reff, which depends on the stellar
+        # engine, so bind this run's SSEDict into it -- whether requested via
+        # the "default" sentinel or by passing default_reject explicitly.
+        if reject_systems == "default" or reject_systems is default_reject:
+            self.reject_fn = partial(default_reject, SSEDict=SSEDict)
+        else:
+            self.reject_fn = reject_systems
+        self.is_interesting_fn = is_interesting
+        self.nproc = nproc
+        self.kappa = kappa
+        self.n_generations = n_generations
+        self.mc_only = mc_only
+        self.only_save_hit_tables = only_save_hit_tables
+        self.rng = np.random.default_rng(seed)
+        self.min_active_fraction = min_active_fraction
+        self.min_entropy_change = min_entropy_change
+
+        if timestep_conditions is not None:
+            raise NotImplementedError("timestep_conditions cannot yet be used with STROOPWAFEL, "
+                                      "must be None until future version")
+
+        # State
+        self.num_explored = 0
+        self.num_hits = 0
+        self.fraction_explored = 1.0
+        self.finished = 0
+        self.prior_fraction_rejected = 0.0
+        self.mixture = None
+
+        # Accumulators for all samples (in sampling space) and COSMIC output.
+        # One entry per batch; _build_cosmic_output() renumbers bin_nums
+        # globally so that samples[bin_num] == the system with that bin_num.
+        self._all_samples = []
+        self._all_is_hit = []
+        self._all_generation = []
+        self._all_gaussian_idx = []
+        self._all_bpp = []
+        self._all_bcm = []
+        self._all_initC = []
+        self._all_kick_info = []
+
+        # Fail fast if the binary model is under-specified.
+        self._validate_param_coverage()
+
+    def run(self):
+        """Run the full STROOPWAFEL pipeline in a single call.
+
+        For multi-job workflows (e.g. SLURM) use :meth:`run_exploration`
+        and :meth:`run_refinement` instead.
+
+        Returns
+        -------
+        `COSMICStroopOutput`
+            Container holding all samples, weights, COSMIC output tables,
+            and associated metadata.
+        """
+        self._explore()
+
+        if not self.mc_only and self.num_hits > 0:
+            self._adapt()
+            self._refine()
+
+        return self._compute_weights()
+
+    # ------------------------------------------------------------------
+    # Multi-job entry points
+    # ------------------------------------------------------------------
+
+    def run_exploration(self):
+        """Run the exploration and adaptation phases and return a checkpoint.
+
+        Suitable as the first SLURM job in a two-stage workflow::
+
+            # job_explore.py
+            sampler = AdaptiveSampler(params, total_systems=500_000, ...)
+            ckpt = sampler.run_exploration()
+            ckpt.save('checkpoint.h5')
+
+        Returns
+        -------
+        `STROOPWAFELCheckpoint`
+            Serialisable snapshot containing the fitted mixture model,
+            all exploration samples, and COSMIC output.  Pass to
+            :meth:`run_refinement` (or :meth:`from_checkpoint`) to
+            continue on a different node or job.
+        """
+        self._explore()
+        if not self.mc_only and self.num_hits > 0:
+            self._adapt()
+        return self._make_checkpoint()
+
+    def run_refinement(self):
+        """Run the refinement phase and return the final result.
+
+        Must be called after :meth:`run_exploration` **or** after
+        :meth:`from_checkpoint` has restored exploration state.  Suitable
+        as the second SLURM job::
+
+            # job_refine.py  (the checkpoint is self-contained)
+            sampler = AdaptiveSampler.from_checkpoint('checkpoint.h5')
+            result = sampler.run_refinement()
+            result.save('result.h5')
+
+        Returns
+        -------
+        `COSMICStroopOutput`
+        """
+        if not self.mc_only and self.num_hits > 0 and self.mixture is not None:
+            self._refine()
+        return self._compute_weights()
+
+    #: Constructor arguments that may be overridden in :meth:`from_checkpoint`.
+    _OVERRIDABLE = frozenset({
+        'parameter_space', 'total_systems', 'batch_size', 'BSEDict', 'SSEDict',
+        'is_interesting', 'derive_params', 'reject_systems',
+        'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
+        'min_active_fraction', 'min_entropy_change',
+    })
+
+    @classmethod
+    def from_checkpoint(cls, checkpoint, **overrides):
+        """Rebuild a sampler from a checkpoint, ready for :meth:`run_refinement`.
+
+        The checkpoint is self-contained: by default **every** constructor
+        argument — the parameter space, ``BSEDict``, the
+        ``derive_params``/``reject_systems``/``is_interesting`` callables, the
+        scalar settings, and the RNG state — is restored from the file, so no
+        re-specification is needed::
+
+            sampler = AdaptiveSampler.from_checkpoint('checkpoint.h5')
+            result = sampler.run_refinement()
+
+        Any constructor argument can be overridden by passing it as a keyword,
+        which is useful for e.g. running refinement with more cores or a larger
+        budget than exploration::
+
+            sampler = AdaptiveSampler.from_checkpoint(
+                'checkpoint.h5', nproc=16, total_systems=1_000_000,
+            )
+
+        Parameters
+        ----------
+        checkpoint : `STROOPWAFELCheckpoint` or `str`
+            A checkpoint object or path to an HDF5 file written by
+            :meth:`STROOPWAFELCheckpoint.save`.
+        **overrides
+            Any :class:`AdaptiveSampler` constructor argument
+            (``parameter_space``, ``total_systems``, ``batch_size``,
+            ``BSEDict``, ``is_interesting``, ``derive_params``,
+            ``reject_systems``, ``nproc``, ``kappa``,
+            ``n_generations``, ``only_save_hit_tables``, ``seed``).  Passing
+            ``seed`` starts a fresh RNG instead of restoring the stored state.
+
+        Returns
+        -------
+        `AdaptiveSampler`
+            Ready to call :meth:`run_refinement`.
+        """
+        if isinstance(checkpoint, (str, os.PathLike)):
+            checkpoint = STROOPWAFELCheckpoint.from_file(checkpoint)
+
+        unknown = set(overrides) - cls._OVERRIDABLE
+        if unknown:
+            raise TypeError(
+                f"Unknown from_checkpoint override(s): {sorted(unknown)}.  "
+                f"Allowed: {sorted(cls._OVERRIDABLE)}."
+            )
+
+        # Start from the stored config, apply overrides; refinement is never mc_only.
+        kwargs = dict(checkpoint.config)
+        stored_rng = kwargs.pop('rng', None)
+        kwargs.update(overrides)
+        kwargs['mc_only'] = False
+
+        sampler = cls(**kwargs)
+        # Restore the exact RNG stream unless the caller asked for a new seed.
+        if 'seed' not in overrides and stored_rng is not None:
+            sampler.rng = stored_rng
+        sampler._load_checkpoint(checkpoint)
+        return sampler
+
+    def _make_checkpoint(self):
+        """Package current state into a `STROOPWAFELCheckpoint`."""
+        all_samples      = np.vstack(self._all_samples)
+        all_is_hit       = np.concatenate(self._all_is_hit)
+        all_generation   = np.concatenate(self._all_generation)
+        all_gaussian_idx = np.concatenate(self._all_gaussian_idx)
+        bpp, bcm, initC, kick_info = self._build_cosmic_output()
+
+        # Everything needed to rebuild the sampler for refinement, so that
+        # from_checkpoint() needs nothing but the file.
+        config = {
+            'parameter_space':      self.param_space,
+            'total_systems':        self.total_systems,
+            'batch_size':           self.batch_size,
+            'BSEDict':              self.bse_dict,
+            'SSEDict':              self.sse_dict,
+            'is_interesting':       self.is_interesting_fn,
+            'derive_params':        self.derive_fn,
+            # store the original spec ('default'/callable/None) so reload can
+            # rebind 'default' to the (possibly overridden) SSEDict.
+            'reject_systems':       self._reject_spec,
+            'nproc':                self.nproc,
+            'kappa':                self.kappa,
+            'n_generations':        self.n_generations,
+            'only_save_hit_tables': self.only_save_hit_tables,
+            'min_active_fraction':  self.min_active_fraction,
+            'min_entropy_change':   self.min_entropy_change,
+            'rng':                  self.rng,
+        }
+
+        return STROOPWAFELCheckpoint(
+            config=config,
+            mixture=self.mixture,
+            samples=all_samples,
+            is_hit=all_is_hit,
+            generation=all_generation,
+            gaussian_idx=all_gaussian_idx,
+            bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
+            num_explored=self.num_explored,
+            num_hits=self.num_hits,
+            num_hits_exploratory=getattr(self, 'num_hits_exploratory', self.num_hits),
+            fraction_explored=self.fraction_explored,
+            prior_fraction_rejected=self.prior_fraction_rejected,
+        )
+
+    def _load_checkpoint(self, checkpoint):
+        """Restore state from a `STROOPWAFELCheckpoint`.
+
+        The checkpoint's samples, COSMIC output, and mixture are treated
+        as a single exploration "super-batch" with globally assigned
+        bin_nums (0..N_explore-1).  Refinement batches added afterward
+        will receive bin_nums starting from N_explore.
+        """
+        self.num_explored            = checkpoint.num_explored
+        self.num_hits                = checkpoint.num_hits
+        self.num_hits_exploratory    = checkpoint.num_hits_exploratory
+        self.fraction_explored       = checkpoint.fraction_explored
+        self.prior_fraction_rejected = checkpoint.prior_fraction_rejected
+        self.finished                = checkpoint.num_explored
+        self.mixture                 = checkpoint.mixture
+
+        # Treat the full checkpoint as a single pre-computed batch so that
+        # _build_cosmic_output() can extend it cleanly with refinement batches.
+        self._all_samples      = [checkpoint.samples]
+        self._all_is_hit       = [checkpoint.is_hit]
+        self._all_generation   = [checkpoint.generation]
+        self._all_gaussian_idx = [checkpoint.gaussian_idx]
+        # The COSMIC tables already have globally assigned bin_nums from
+        # when the checkpoint was created; _build_cosmic_output() will add
+        # offset=0 for this "batch", leaving them unchanged.
+        self._all_bpp       = [checkpoint.bpp]
+        self._all_bcm       = [checkpoint.bcm]
+        self._all_initC     = [checkpoint.initC]
+        self._all_kick_info = [checkpoint.kick_info]
+
+    # ------------------------------------------------------------------
+    # Binary-parameter assembly
+    # ------------------------------------------------------------------
+
+    def _binary_params(self, samples_physical):
+        """Assemble the full set of binary parameters for a batch.
+
+        Merges the sampled columns with whatever ``derive_params`` returns,
+        then checks that every member of :attr:`REQUIRED_PARAMS` is present.
+
+        Parameters
+        ----------
+        samples_physical : `numpy.ndarray`
+            (N, D) array of sampled values in physical space.
+
+        Returns
+        -------
+        `dict`
+            Maps parameter name to an (N,) array.  Guaranteed to contain
+            every name in :attr:`REQUIRED_PARAMS`, plus any sampled extras
+            (e.g. natal-kick columns) or additional keys from
+            ``derive_params``.
+
+        Raises
+        ------
+        `ValueError`
+            If a required parameter is neither sampled nor returned by
+            ``derive_params``, or if ``derive_params`` returns an array of
+            the wrong length.
+        """
+        n = len(samples_physical)
+        params = {name: samples_physical[:, i]
+                  for i, name in enumerate(self.param_space.names)}
+
+        derived_keys = []
+        if self.derive_fn is not None:
+            for key, value in self.derive_fn(params).items():
+                value = np.asarray(value, dtype=float)
+                if value.ndim == 0:
+                    value = np.full(n, value)        # broadcast fixed values
+                elif len(value) != n:
+                    raise ValueError(
+                        f"derive_params returned '{key}' with length "
+                        f"{len(value)}, but the batch has {n} binaries."
+                    )
+                params[key] = value
+                derived_keys.append(key)
+
+        missing = [p for p in self.REQUIRED_PARAMS if p not in params]
+        if missing:
+            raise ValueError(
+                f"Each binary must be defined by {list(self.REQUIRED_PARAMS)}, "
+                f"but {missing} were neither sampled nor returned by "
+                f"derive_params.\n"
+                f"  sampled by ParameterSpace : {self.param_space.names}\n"
+                f"  returned by derive_params : {derived_keys}\n"
+                f"Add each missing parameter to the ParameterSpace, or return "
+                f"it from derive_params (a fixed value is fine, "
+                f"e.g. {{'mass_1': 30.0}})."
+            )
+        return params
+
+    def _physical_reject_mask(self, samples_physical):
+        """Boolean mask of physically rejected systems for a set of samples."""
+        if self.reject_fn is None:
+            return np.zeros(len(samples_physical), dtype=bool)
+        return self.reject_fn(self._binary_params(samples_physical))
+
+    def _validate_param_coverage(self):
+        """Fail fast (at construction) if the binary model is under-specified.
+
+        Runs the sampled-plus-derived assembly on a couple of probe draws so
+        that a missing required parameter raises immediately rather than after
+        COSMIC evolution has already begun.
+        """
+        probe, _ = self.param_space.sample(2, rng=np.random.default_rng(0))
+        self._binary_params(self.param_space.to_physical(probe))
+
+    def _filter_tables(self, bpp, bcm, initC, kick_info, hit_bin_nums):
+        """Return COSMIC tables filtered to hit systems when requested.
+
+        When ``only_save_hit_tables`` is False the tables are returned
+        unchanged.  When True, only rows whose ``bin_num`` appears in
+        ``hit_bin_nums`` are kept; all other rows are discarded immediately,
+        reducing peak memory proportional to the miss rate.
+
+        Parameters
+        ----------
+        bpp, bcm, initC, kick_info : `pandas.DataFrame`
+            Raw per-batch COSMIC output with local (0-indexed) bin_nums.
+        hit_bin_nums : `numpy.ndarray`
+            Local bin_num values of the hit systems in this batch.
+
+        Returns
+        -------
+        bpp, bcm, initC, kick_info : `pandas.DataFrame`
+            Possibly filtered DataFrames.
+        """
+        if not self.only_save_hit_tables:
+            return bpp, bcm, initC, kick_info
+        mask = hit_bin_nums  # already local bin_num values
+        return (
+            bpp[bpp['bin_num'].isin(mask)],
+            bcm[bcm['bin_num'].isin(mask)],
+            initC[initC['bin_num'].isin(mask)],
+            kick_info[kick_info['bin_num'].isin(mask)],
+        )
+
+    # ------------------------------------------------------------------
+    # Exploration
+    # ------------------------------------------------------------------
+    def _explore(self):
+        print("Exploration phase started")
+
+        if not self.mc_only:
+            self.prior_fraction_rejected = self._estimate_prior_rejection_rate()
+            print(f"  Prior rejection rate: {self.prior_fraction_rejected:.4f}")
+
+        while self._should_continue_exploring():
+            n_oversample = int(2 * np.ceil(
+                self.batch_size / max(1.0 - self.prior_fraction_rejected, self.min_active_fraction)
+            ))
+
+            # Sample from prior
+            samples, mask = self.param_space.sample(n_oversample, rng=self.rng)
+
+            # Assemble binary parameters (sampled + derived) and reject
+            samples_phys = self.param_space.to_physical(samples)
+            binary_params = self._binary_params(samples_phys)
+            phys_rejected = (self.reject_fn(binary_params) if self.reject_fn is not None
+                             else np.zeros(n_oversample, dtype=bool))
+
+            # Combined mask: in bounds AND not physically rejected
+            valid = mask & ~phys_rejected
+
+            # Select up to batch_size valid samples
+            valid_indices = np.where(valid)[0]
+            self.rng.shuffle(valid_indices)
+            selected = valid_indices[:self.batch_size]
+
+            batch_samples = samples[selected]
+            batch_params = {k: v[selected] for k, v in binary_params.items()}
+
+            # Evolve with COSMIC
+            n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(batch_params)
+
+            # Record which are hits
+            is_hit = np.zeros(len(selected), dtype=bool)
+            is_hit[hit_bin_nums] = True
+
+            # Accumulate samples and COSMIC output
+            bpp, bcm, initC, kick_info = self._filter_tables(
+                bpp, bcm, initC, kick_info, hit_bin_nums
+            )
+            self._all_samples.append(batch_samples)
+            self._all_is_hit.append(is_hit)
+            self._all_generation.append(np.zeros(len(selected), dtype=int))
+            self._all_gaussian_idx.append(np.full(len(selected), -1, dtype=int))
+            self._all_bpp.append(bpp)
+            self._all_bcm.append(bcm)
+            self._all_initC.append(initC)
+            self._all_kick_info.append(kick_info)
+
+            self.num_hits += n_hits
+            self.finished += len(selected)
+            self.num_explored += len(selected)
+            self._update_fraction_explored()
+
+            self._print_progress()
+
+        self.num_hits_exploratory = self.num_hits
+        print(f"\nExploration done: {self.num_hits} hits / {self.num_explored} explored "
+              f"(rate={self.num_hits/max(1, self.num_explored):.6f}, "
+              f"f_expl={self.fraction_explored:.4f})")
+
+    def _estimate_prior_rejection_rate(self, n_test=100000):
+        """Estimate fraction of prior samples that are physically rejected.
+
+        Parameters
+        ----------
+        n_test : `int`, optional
+            Number of samples to use for the estimate, by default 100000
+
+        Returns
+        -------
+        `float`
+            Estimated fraction of samples rejected by bounds and physical
+            criteria combined.
+        """
+        samples, mask = self.param_space.sample(n_test, rng=self.rng)
+        rejected = n_test - np.sum(mask)
+
+        valid_samples = samples[mask]
+        if len(valid_samples) > 0:
+            phys = self.param_space.to_physical(valid_samples)
+            rejected += np.sum(self._physical_reject_mask(phys))
+
+        return rejected / n_test
+
+    def _update_fraction_explored(self):
+        if self.num_hits == 0 or self.num_explored == 0:
+            return
+        u = 1.0 / (self.fraction_explored * self.total_systems)
+        r = self.num_hits / self.num_explored
+        num = r * (np.sqrt(1.0 - r) - np.sqrt(u))
+        den = np.sqrt(1.0 - r) * (np.sqrt(u * (1.0 - r)) + r)
+        if den != 0:
+            self.fraction_explored = 1 - num / den
+
+    def _should_continue_exploring(self):
+        if self.mc_only:
+            return self.num_explored < self.total_systems
+        return self.num_explored / self.total_systems < self.fraction_explored
+
+    # ------------------------------------------------------------------
+    # Adaptation
+    # ------------------------------------------------------------------
+    def _adapt(self):
+        print("Adaptation phase started")
+
+        # Gather all exploration hits in sampling space
+        all_samples = np.vstack(self._all_samples)
+        all_is_hit = np.concatenate(self._all_is_hit)
+        hit_samples = all_samples[all_is_hit]
+
+        average_density_one_dim = 1.0 / np.power(self.num_explored, 1.0 / self.param_space.ndim)
+
+        self.mixture = GaussianMixture.from_hits(
+            hit_samples, self.param_space, average_density_one_dim, kappa=self.kappa,
+            min_active_fraction=self.min_active_fraction,
+            min_entropy_change=self.min_entropy_change
+        )
+
+        print(f"  Created {self.mixture.n_components} Gaussian components")
+        print("Adaptation phase finished")
+
+    # ------------------------------------------------------------------
+    # Refinement
+    # ------------------------------------------------------------------
+    def _refine(self):
+        print("Refinement phase started")
+        entropies = []
+
+        for gen in range(self.n_generations):
+            # Estimate rejection rate for current mixture
+            dist_rejection_rate = self.mixture.compute_rejection_rate(
+                self.param_space, self._physical_reject_mask,
+                n_per_component=10000, rng=self.rng
+            )
+
+            n_per_gen = int((self.total_systems - self.num_explored) / self.n_generations)
+            gen_samples_list = []
+            gen_is_hit_list = []
+            gen_finished = 0
+
+            while gen_finished < n_per_gen and self.finished < self.total_systems:
+                # Sample from mixture
+                samples, mask, gauss_idx = self.mixture.sample(
+                    self.batch_size, self.param_space,
+                    consider_rejection=True, rng=self.rng
+                )
+
+                # Apply bounds and physical rejection
+                valid_samples = samples[mask]
+                valid_gauss_idx = gauss_idx[mask]
+
+                if len(valid_samples) == 0:
+                    continue
+
+                phys = self.param_space.to_physical(valid_samples)
+                binary_params = self._binary_params(phys)
+                phys_rejected = (self.reject_fn(binary_params) if self.reject_fn is not None
+                                 else np.zeros(len(phys), dtype=bool))
+
+                keep = ~phys_rejected
+                valid_samples = valid_samples[keep]
+                valid_gauss_idx = valid_gauss_idx[keep]
+                binary_params = {k: v[keep] for k, v in binary_params.items()}
+
+                # Trim to batch size with randomisation
+                indices = np.arange(len(valid_samples))
+                self.rng.shuffle(indices)
+                n_take = min(len(valid_samples), self.batch_size)
+                batch_samples = valid_samples[indices[:n_take]]
+                batch_gauss_idx = valid_gauss_idx[indices[:n_take]]
+                batch_params = {k: v[indices[:n_take]] for k, v in binary_params.items()}
+
+                # Evolve with COSMIC
+                n_hits, hit_bin_nums, bpp, bcm, initC, kick_info = self._evolve_batch(batch_params)
+
+                is_hit = np.zeros(n_take, dtype=bool)
+                is_hit[hit_bin_nums] = True
+
+                # Accumulate samples and COSMIC output
+                bpp, bcm, initC, kick_info = self._filter_tables(
+                    bpp, bcm, initC, kick_info, hit_bin_nums
+                )
+                self._all_samples.append(batch_samples)
+                self._all_is_hit.append(is_hit)
+                self._all_generation.append(np.full(n_take, gen + 1, dtype=int))
+                self._all_gaussian_idx.append(batch_gauss_idx)
+                self._all_bpp.append(bpp)
+                self._all_bcm.append(bcm)
+                self._all_initC.append(initC)
+                self._all_kick_info.append(kick_info)
+
+                gen_samples_list.append(batch_samples)
+                gen_is_hit_list.append(is_hit)
+
+                self.num_hits += n_hits
+                self.finished += n_take
+                gen_finished += n_take
+                self._print_progress()
+
+            # Expectation-maximization (EM) update: re-fit the mixture to this
+            # generation's hits before the next one (skipped after the final
+            # generation, since there is no subsequent generation to use it).
+            if gen < self.n_generations - 1 and len(gen_samples_list) > 0:
+                gen_samples = np.vstack(gen_samples_list)
+                gen_is_hit = np.concatenate(gen_is_hit_list)
+                gen_priors = self.param_space.compute_prior(gen_samples)
+
+                # Save current state in case we need to revert
+                saved_mixture = GaussianMixture(
+                    means=self.mixture.means.copy(),
+                    covariances=self.mixture.covariances.copy(),
+                    alphas=self.mixture.alphas.copy(),
+                    rejection_rate=self.mixture.rejection_rate,
+                    min_active_fraction=self.mixture.min_active_fraction,
+                    min_entropy_change=self.mixture.min_entropy_change
+                )
+
+                should_revert = self.mixture.update_em(
+                    gen_samples, gen_is_hit, gen_priors,
+                    self.prior_fraction_rejected,
+                    tolerance=1e-10, entropies=entropies
+                )
+
+                if should_revert:
+                    self.mixture = saved_mixture
+                    print("  Expectation-maximization (EM) update reverted "
+                          "(insufficient entropy change)")
+
+        n_refined = self.total_systems - self.num_explored
+        if n_refined > 0:
+            refine_hits = self.num_hits - self.num_hits_exploratory
+            print(f"\nRefinement done: {refine_hits} hits / {n_refined} refined "
+                  f"(rate={refine_hits/max(1, n_refined):.6f})")
+
+    # ------------------------------------------------------------------
+    # Weight calculation
+    # ------------------------------------------------------------------
+    def _compute_weights(self):
+        """Compute importance sampling weights and assemble the final result.
+
+        Uses the formula ``w(x) = π(x) / Q(x)`` where
+        ``Q = f_e·π + (1 − f_e)·q`` is a mixture of the prior and the
+        Gaussian proposal.
+
+        Returns
+        -------
+        `COSMICStroopOutput`
+            All samples, importance weights, COSMIC output tables, and
+            associated metadata.  ``samples[bin_num]`` corresponds to
+            the COSMIC table row(s) with that ``bin_num``.
+        """
+        all_samples = np.vstack(self._all_samples)
+        all_is_hit = np.concatenate(self._all_is_hit)
+        all_generation = np.concatenate(self._all_generation)
+        all_gaussian_idx = np.concatenate(self._all_gaussian_idx)
+        N = len(all_samples)
+
+        # Prior probabilities
+        pi_norm = 1.0 / max(1.0 - self.prior_fraction_rejected, self.min_active_fraction)
+        pi = self.param_space.compute_prior(all_samples) * pi_norm
+
+        # Start with the exploration-phase contribution to denominator
+        fraction_explored = self.num_explored / float(N)
+        den = fraction_explored * pi
+
+        # Add refinement-phase contributions from each generation's mixture
+        if self.mixture is not None and not self.mc_only:
+            q_norm = 1.0 / max(1.0 - self.mixture.rejection_rate, self.min_active_fraction)
+            # Evaluate the mixture PDF incrementally (memory-efficient)
+            for k in range(self.mixture.n_components):
+                xPDF_k = multivariate_normal.pdf(
+                    all_samples, self.mixture.means[k], self.mixture.covariances[k],
+                    allow_singular=True
+                )
+                den += (xPDF_k * self.mixture.alphas[k]
+                        * (1 - fraction_explored) * q_norm) / self.n_generations
+
+        weights = pi / den
+
+        # Concatenate COSMIC output with globally unique bin_nums
+        bpp, bcm, initC, kick_info = self._build_cosmic_output()
+
+        result = COSMICStroopOutput(
+            bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
+            samples=self.param_space.to_physical(all_samples),
+            param_names=self.param_space.names,
+            weights=weights,
+            is_hit=all_is_hit,
+            generation=all_generation,
+            gaussian_idx=all_gaussian_idx,
+            num_explored=self.num_explored,
+            num_hits=self.num_hits,
+            fraction_explored=self.fraction_explored,
+        )
+
+        print(f"\nTotal hits: {self.num_hits}")
+        print(f"Sum of weights: {np.sum(weights):.4f}")
+        print(f"Weighted hit rate: {result.hit_rate:.8f} +/- {result.hit_rate_uncertainty:.8f}")
+
+        return result
+
+    def _build_cosmic_output(self):
+        """Concatenate per-batch COSMIC tables with globally unique bin_nums.
+
+        Batch k receives bin_nums ``offset_k .. offset_k + N_k − 1`` where
+        ``offset_k = N_0 + … + N_{k-1}``.  This ensures
+        ``samples[bin_num]`` and ``is_hit[bin_num]`` directly index the
+        system with that bin_num in the concatenated COSMIC tables.
+
+        Returns
+        -------
+        bpp, bcm, initC, kick_info : `pandas.DataFrame`
+        """
+        offset = 0
+        bpp_list, bcm_list, initC_list, kick_info_list = [], [], [], []
+        for batch_samples, bpp, bcm, initC, kick_info in zip(
+            self._all_samples,
+            self._all_bpp, self._all_bcm, self._all_initC, self._all_kick_info,
+        ):
+            n = len(batch_samples)
+            bpp_list.append(bpp.assign(bin_num=bpp['bin_num'] + offset))
+            bcm_list.append(bcm.assign(bin_num=bcm['bin_num'] + offset))
+            initC_list.append(initC.assign(bin_num=initC['bin_num'] + offset))
+            kick_info_list.append(kick_info.assign(bin_num=kick_info['bin_num'] + offset))
+            offset += n
+        def _concat(frames):
+            # Concatenate and set bin_num as the index (drop=False keeps it
+            # as a column too, so filtering via df['bin_num'].isin(...) still
+            # works).  For bpp/bcm the index is non-unique (multiple timestep
+            # rows per system); for initC/kick_info it is unique.
+            df = pd.concat(frames, ignore_index=True)
+            df.index = df['bin_num'].values
+            return df
+
+        return (
+            _concat(bpp_list),
+            _concat(bcm_list),
+            _concat(initC_list),
+            _concat(kick_info_list),
+        )
+
+    # ------------------------------------------------------------------
+    # COSMIC interface
+    # ------------------------------------------------------------------
+
+    # All natal kick columns that COSMIC accepts as per-binary overrides.
+    # Any subset may appear in the ParameterSpace; columns that are absent
+    # receive ``_KICK_SENTINEL`` (-100), which tells COSMIC to draw that
+    # component from its own prescription (kickflag / sigma in BSEDict).
+    # This lets you sample only the parameters that actually discriminate
+    # hits (e.g. natal_kick_1 for binary survival) while leaving irrelevant
+    # dimensions (angles, secondary kick) out of the parameter space
+    # entirely, avoiding the dimensionality cost they would otherwise impose
+    # on the mixture model.
+    _ALL_KICK_COLUMNS = frozenset([
+        'natal_kick_1', 'phi_1', 'theta_1', 'mean_anomaly_1',
+        'natal_kick_2', 'phi_2', 'theta_2', 'mean_anomaly_2',
+    ])
+    _KICK_SENTINEL = -100.0
+
+    def _evolve_batch(self, binary_params):
+        """Evolve a batch of binaries with COSMIC and identify hits.
+
+        Parameters
+        ----------
+        binary_params : `dict`
+            Assembled binary parameters (see :meth:`_binary_params`).  Must
+            contain :attr:`REQUIRED_PARAMS`; any natal-kick columns present
+            are injected per-binary.  Each value is an (N,) array.
+
+        Returns
+        -------
+        n_hits : `int`
+            Number of systems classified as hits.
+        hit_bin_nums : `numpy.ndarray`
+            Integer array of 0-indexed positions within the batch that
+            are hits.
+        bpp : `pandas.DataFrame`
+            COSMIC binary population parameters output.
+        bcm : `pandas.DataFrame`
+            COSMIC user-timestep output.
+        initC : `pandas.DataFrame`
+            COSMIC initial conditions output.
+        kick_info : `pandas.DataFrame`
+            COSMIC natal kick information output.
+        """
+        n = len(binary_params['mass_1'])
+
+        batch_initial = InitialBinaryTable.InitialBinaries(
+            m1=binary_params['mass_1'],
+            m2=binary_params['mass_2'],
+            porb=binary_params['porb'],
+            ecc=binary_params['ecc'],
+            tphysf=np.full(n, 13700.0),
+            kstar1=np.full(n, 1),
+            kstar2=np.full(n, 1),
+            metallicity=binary_params['metallicity'],
+        )
+
+        # If any natal kick columns are present (sampled or derived), activate
+        # the per-binary injection path.  Each column present gets its value;
+        # every other kick column gets _KICK_SENTINEL (-100) so COSMIC draws
+        # that component from its built-in prescription.  natal_kick_array is
+        # stripped from the BSEDict copy so COSMIC reads the per-binary columns
+        # instead of the global default.
+        present_kick_cols = self._ALL_KICK_COLUMNS & set(binary_params)
+
+        if present_kick_cols:
+            for col in self._ALL_KICK_COLUMNS:
+                batch_initial[col] = (binary_params[col]
+                                      if col in present_kick_cols
+                                      else self._KICK_SENTINEL)
+            batch_initial['randomseed_1'] = 0
+            batch_initial['randomseed_2'] = 0
+            bse_dict_run = {k: v for k, v in self.bse_dict.items()
+                            if k != 'natal_kick_array'}
+        else:
+            bse_dict_run = self.bse_dict
+            if "natal_kick_array" not in bse_dict_run:
+                bse_dict_run['natal_kick_array'] = np.array([[-100, -100, -100, -100, 0],
+                                                             [-100, -100, -100, -100, 0]])
+
+        bpp, bcm, initC, kick_info = Evolve.evolve(
+            initialbinarytable=batch_initial,
+            BSEDict=bse_dict_run,
+            SSEDict=self.sse_dict,
+            nproc=self.nproc,
+        )
+
+        # Apply user's hit identification
+        n_hits, hit_bin_nums = self.is_interesting_fn(bpp)
+
+        return n_hits, hit_bin_nums, bpp, bcm, initC, kick_info
+
+    # ------------------------------------------------------------------
+    # Utilities
+    # ------------------------------------------------------------------
+    def _print_progress(self):
+        pct = 100 * self.finished / self.total_systems
+        bar_len = 20
+        filled = int(bar_len * self.finished // self.total_systems)
+        bar = '|' * filled + '-' * (bar_len - filled)
+        print(f'\r  progress |{bar}| {pct:.1f}% complete '
+              f'({self.finished}/{self.total_systems})', end='\r')

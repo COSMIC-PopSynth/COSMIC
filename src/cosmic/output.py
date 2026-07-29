@@ -1,4 +1,5 @@
 import json
+import dill
 import pandas as pd
 import h5py as h5
 from cosmic.evolve import Evolve
@@ -10,7 +11,8 @@ import numpy as np
 import warnings
 
 
-__all__ = ['COSMICOutput', 'COSMICPopOutput', 'save_initC', 'load_initC']
+__all__ = ['COSMICOutput', 'COSMICPopOutput', 'COSMICStroopOutput',
+           'STROOPWAFELCheckpoint', 'save_initC', 'load_initC']
 
 
 kstar_translator = [
@@ -72,7 +74,7 @@ class COSMICOutput:
             self.bpp = pd.read_hdf(file, key=f'bpp{file_key_suffix}')
             self.bcm = pd.read_hdf(file, key=f'bcm{file_key_suffix}')
             self.initC = load_initC(file, key=f'initC{file_key_suffix}',
-                                    settings_key=f'initC_{file_key_suffix}_settings')
+                                    settings_key=f'initC{file_key_suffix}_settings')
             self.kick_info = pd.read_hdf(file, key=f'kick_info{file_key_suffix}')
             with h5.File(file, 'r') as f:
                 file_version = f.attrs.get('COSMIC_version', 'unknown')
@@ -333,6 +335,436 @@ class COSMICOutput:
             plt.show()
         return fig, ax
     
+
+class COSMICStroopOutput(COSMICOutput):
+    """Results from a STROOPWAFEL adaptive importance-sampling run.
+
+    Extends `COSMICOutput` with the sampled parameters, importance weights,
+    hit flags, and STROOPWAFEL bookkeeping arrays.
+
+    The link between the numpy arrays and the COSMIC tables is ``bin_num``:
+    ``samples[bin_num]``, ``weights[bin_num]``, and ``is_hit[bin_num]`` all
+    correspond to the row(s) in ``bpp``/``bcm``/``initC``/``kick_info`` with
+    that ``bin_num``.  Bin numbers are assigned sequentially (0-indexed)
+    across all batches so they can be used directly as array indices.
+
+    Parameters
+    ----------
+    bpp, bcm, initC, kick_info : `pandas.DataFrame`
+        COSMIC output tables (concatenated across all batches).
+    samples : `numpy.ndarray`
+        (N, D) array of sampled parameters in **physical** space.
+    param_names : `list` of `str`
+        Parameter names corresponding to the columns of ``samples``.
+    weights : `numpy.ndarray`
+        (N,) importance-sampling weights.
+    is_hit : `numpy.ndarray`
+        (N,) boolean array; True where the system satisfied the hit criterion.
+    generation : `numpy.ndarray`
+        (N,) integer array — 0 = exploration phase, 1+ = refinement generation.
+    gaussian_idx : `numpy.ndarray`
+        (N,) integer array — -1 = drawn from prior, k = drawn from Gaussian k.
+    num_explored : `int`
+        Number of systems evolved during the exploration phase.
+    num_hits : `int`
+        Total raw hit count across all phases.
+    fraction_explored : `float`
+        Fraction of total systems used for exploration.
+    label : `str`, optional
+        Human-readable label for the run, by default None
+    """
+
+    def __init__(self, bpp, bcm, initC, kick_info,
+                 samples, param_names, weights, is_hit,
+                 generation, gaussian_idx,
+                 num_explored, num_hits, fraction_explored,
+                 label=None):
+        super().__init__(bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info, label=label)
+        self.samples = np.asarray(samples)
+        self.param_names = list(param_names)
+        self.weights = np.asarray(weights)
+        self.is_hit = np.asarray(is_hit, dtype=bool)
+        self.generation = np.asarray(generation, dtype=int)
+        self.gaussian_idx = np.asarray(gaussian_idx, dtype=int)
+        self.num_explored = int(num_explored)
+        self.num_hits = int(num_hits)
+        self.fraction_explored = float(fraction_explored)
+
+    def __repr__(self):
+        return (
+            f'<COSMICStroopOutput'
+            f'{" - " + self.label if self.label is not None else ""}: '
+            f'{len(self)} systems, {self.num_hits} hits '
+            f'(rate={self.hit_rate:.4e} ± {self.hit_rate_uncertainty:.4e})>'
+        )
+
+    def __getitem__(self, key):
+        """Subset by bin_num, keeping all arrays aligned."""
+        cosmic_subset = super().__getitem__(key)
+        bin_nums = cosmic_subset.initC['bin_num'].values
+        return COSMICStroopOutput(
+            bpp=cosmic_subset.bpp,
+            bcm=cosmic_subset.bcm,
+            initC=cosmic_subset.initC,
+            kick_info=cosmic_subset.kick_info,
+            samples=self.samples[bin_nums],
+            param_names=self.param_names,
+            weights=self.weights[bin_nums],
+            is_hit=self.is_hit[bin_nums],
+            generation=self.generation[bin_nums],
+            gaussian_idx=self.gaussian_idx[bin_nums],
+            num_explored=self.num_explored,
+            num_hits=int(self.is_hit[bin_nums].sum()),
+            fraction_explored=self.fraction_explored,
+            label=self.label,
+        )
+
+    # ------------------------------------------------------------------
+    # Derived statistics
+    # ------------------------------------------------------------------
+
+    @property
+    def hit_rate(self):
+        """Importance-weighted hit rate: sum(w[is_hit]) / N.
+
+        Returns
+        -------
+        `float`
+        """
+        if len(self.weights) == 0:
+            return 0.0
+        return float(np.sum(self.weights[self.is_hit]) / len(self.weights))
+
+    @property
+    def hit_rate_uncertainty(self):
+        """Standard error on the importance-weighted hit rate.
+
+        Returns ``std(w[is_hit], ddof=1) / sqrt(N)``, or 0.0 if fewer
+        than two hits are present.
+
+        Returns
+        -------
+        `float`
+        """
+        w_hits = self.weights[self.is_hit]
+        if len(w_hits) < 2:
+            return 0.0
+        return float(np.std(w_hits, ddof=1) / np.sqrt(len(self.weights)))
+
+    # ------------------------------------------------------------------
+    # I/O
+    # ------------------------------------------------------------------
+
+    def save(self, output_file):
+        """Save to an HDF5 file.
+
+        Writes COSMIC tables via the parent ``save``, then appends
+        STROOPWAFEL arrays to a ``stroopwafel/`` group.
+
+        Parameters
+        ----------
+        output_file : `str`
+            Filename/path to create or overwrite.
+        """
+        super().save(output_file)
+        with h5.File(output_file, 'a') as f:
+            grp = f.require_group('stroopwafel')
+            for name, arr in [
+                ('samples',      self.samples),
+                ('weights',      self.weights),
+                ('is_hit',       self.is_hit),
+                ('generation',   self.generation),
+                ('gaussian_idx', self.gaussian_idx),
+            ]:
+                if name in grp:
+                    del grp[name]
+                grp.create_dataset(name, data=arr)
+            grp.attrs['param_names']       = self.param_names
+            grp.attrs['num_explored']      = self.num_explored
+            grp.attrs['num_hits']          = self.num_hits
+            grp.attrs['fraction_explored'] = self.fraction_explored
+
+    @classmethod
+    def from_file(cls, path, label=None):
+        """Load from an HDF5 file written by :meth:`save`.
+
+        Parameters
+        ----------
+        path : `str`
+            File path to read.
+        label : `str`, optional
+            Override the stored label, by default None
+
+        Returns
+        -------
+        `COSMICStroopOutput`
+        """
+        cosmic = COSMICOutput(file=path, label=label)
+        with h5.File(path, 'r') as f:
+            grp = f['stroopwafel']
+            samples      = grp['samples'][:]
+            weights      = grp['weights'][:]
+            is_hit       = grp['is_hit'][:]
+            generation   = grp['generation'][:]
+            gaussian_idx = grp['gaussian_idx'][:]
+            param_names      = list(grp.attrs['param_names'])
+            num_explored     = int(grp.attrs['num_explored'])
+            num_hits         = int(grp.attrs['num_hits'])
+            fraction_explored = float(grp.attrs['fraction_explored'])
+        return cls(
+            bpp=cosmic.bpp, bcm=cosmic.bcm,
+            initC=cosmic.initC, kick_info=cosmic.kick_info,
+            samples=samples, param_names=param_names,
+            weights=weights, is_hit=is_hit,
+            generation=generation, gaussian_idx=gaussian_idx,
+            num_explored=num_explored, num_hits=num_hits,
+            fraction_explored=fraction_explored,
+            label=cosmic.label if label is None else label,
+        )
+    
+    def draw_representative_sample(self, n_samples, rng=None):
+        """Draw a representative sample of hits from the explored systems.
+
+        Performs a weighted bootstrap: hits are drawn with replacement in
+        proportion to their importance weights, yielding a set of systems
+        distributed according to the true (prior-weighted) population that
+        can be analysed without any further weighting.
+
+        Parameters
+        ----------
+        n_samples : `int`
+            Number of hits to draw.
+        rng : `numpy.random.Generator`, optional
+            Random number generator to use for sampling. If None, a new default generator is created.
+
+        Returns
+        -------
+        representative_sample : `numpy.ndarray`
+            Array of shape (n_samples, D) containing the drawn samples in physical space.
+        bin_nums : `numpy.ndarray`
+            Array of shape (n_samples,) containing the corresponding bin numbers, so the
+            full evolution history of each drawn system can be recovered from the
+            ``bpp``/``bcm``/``initC``/``kick_info`` tables (e.g. ``self.initC.loc[bin_num]``).
+        """
+        # restrict to hits and normalise their weights into probabilities
+        hit_idx = np.where(self.is_hit)[0]
+        probs = self.weights[hit_idx] / self.weights[hit_idx].sum()
+
+        # draw a representative sample with replacement
+        rng = rng or np.random.default_rng()
+        bin_nums = rng.choice(hit_idx, size=n_samples, replace=True, p=probs)
+
+        # `samples` is indexed by bin_num (samples[bin_num] is the system with that
+        # bin_num), so the drawn indices are themselves the bin numbers — use them to
+        # label the systems and to look rows up in the COSMIC tables via `.loc`.
+        representative_sample = self.samples[bin_nums]
+        return representative_sample, bin_nums
+
+
+class STROOPWAFELCheckpoint:
+    """Serialisable snapshot of `AdaptiveSampler` state after exploration.
+
+    Saving this to disk decouples the exploration + adaptation phases from
+    the (typically more expensive) refinement phase, which is the key
+    enabler for multi-job SLURM workflows:
+
+    .. code-block:: bash
+
+        # Job 1 - exploration (embarrassingly parallel within the job)
+        python run_explore.py          # writes  checkpoint.h5
+
+        # Job 2 - refinement (can be a larger allocation)
+        python run_refine.py           # reads checkpoint.h5, writes result.h5
+
+    A checkpoint is **self-contained**: alongside the exploration data it
+    stores everything needed to rebuild the sampler — the parameter space,
+    ``BSEDict``, the ``derive_params``/``reject_systems``/``is_interesting``
+    callables, the remaining scalar settings, and the live RNG state — so
+    :meth:`AdaptiveSampler.from_checkpoint` needs nothing but the file.  The
+    callables and parameter space are serialised with :mod:`dill`.
+
+    Parameters
+    ----------
+    config : `dict`
+        Everything needed to reconstruct the :class:`AdaptiveSampler` for the
+        refinement phase: the constructor keyword arguments (``parameter_space``,
+        ``total_systems``, ``batch_size``, ``BSEDict``, ``SSEDict``,
+        ``is_interesting``, ``derive_params``, ``reject_systems``, ``nproc``,
+        ``kappa``, ``n_generations``, ``only_save_hit_tables``,
+        ``min_active_fraction``, ``min_entropy_change``) plus the live ``rng``.
+    mixture : `GaussianMixture` or None
+        Gaussian mixture fitted to exploration hits.  ``None`` if no hits
+        were found or adaptation has not been run yet.
+    samples : `numpy.ndarray`
+        (N, D) array of explored samples in **sampling space** (the
+        internal transformed space used by the mixture model).  Convert
+        to physical space with ``param_space.to_physical(samples)``.
+    is_hit, generation, gaussian_idx : `numpy.ndarray`
+        Per-sample flags and bookkeeping arrays (shapes (N,)).
+    bpp, bcm, initC, kick_info : `pandas.DataFrame`
+        COSMIC output from exploration, indexed by globally unique
+        ``bin_num`` so that ``samples[bin_num]`` gives the corresponding
+        physical parameters.
+    num_explored : `int`
+        Systems evolved during exploration.
+    num_hits : `int`
+        Raw hit count from exploration.
+    num_hits_exploratory : `int`
+        Same as ``num_hits`` (stored separately for use in ``_refine``).
+    fraction_explored : `float`
+        Adaptive fraction of total budget used for exploration.
+    prior_fraction_rejected : `float`
+        Estimated fraction of prior samples that fail physical rejection.
+    """
+
+    def __init__(self, config, mixture, samples, is_hit, generation, gaussian_idx,
+                 bpp, bcm, initC, kick_info,
+                 num_explored, num_hits, num_hits_exploratory,
+                 fraction_explored, prior_fraction_rejected):
+        self.config             = dict(config)
+        self.mixture            = mixture
+        self.samples            = np.asarray(samples)
+        self.is_hit             = np.asarray(is_hit, dtype=bool)
+        self.generation         = np.asarray(generation, dtype=int)
+        self.gaussian_idx       = np.asarray(gaussian_idx, dtype=int)
+        self.bpp                = bpp
+        self.bcm                = bcm
+        self.initC              = initC
+        self.kick_info          = kick_info
+        self.num_explored       = int(num_explored)
+        self.num_hits           = int(num_hits)
+        self.num_hits_exploratory = int(num_hits_exploratory)
+        self.fraction_explored  = float(fraction_explored)
+        self.prior_fraction_rejected = float(prior_fraction_rejected)
+
+        # Convenience views derived from the stored config.
+        self.param_names   = list(config['parameter_space'].names)
+        self.total_systems = int(config['total_systems'])
+        self.n_generations = int(config['n_generations'])
+
+    def __repr__(self):
+        adapted = self.mixture is not None
+        return (
+            f'<STROOPWAFELCheckpoint: {self.num_explored} explored, '
+            f'{self.num_hits} hits, '
+            f'adapted={adapted}>'
+        )
+
+    # ------------------------------------------------------------------
+    # I/O
+    # ------------------------------------------------------------------
+
+    def save(self, path):
+        """Save to an HDF5 file.
+
+        Parameters
+        ----------
+        path : `str`
+            File path to create or overwrite.
+        """
+        # COSMIC tables — use the same helpers as COSMICOutput so the file
+        # is readable by ordinary COSMIC tooling if needed.
+        self.bpp.reset_index(drop=True).to_hdf(path, key='bpp', mode='w')
+        self.bcm.reset_index(drop=True).to_hdf(path, key='bcm', mode='a')
+        save_initC(path, self.initC.reset_index(drop=True),
+                   key='initC', settings_key='initC_settings')
+        self.kick_info.reset_index(drop=True).to_hdf(path, key='kick_info', mode='a')
+
+        with h5.File(path, 'a') as f:
+            # Sample arrays
+            f.create_dataset('samples',      data=self.samples)
+            f.create_dataset('is_hit',       data=self.is_hit)
+            f.create_dataset('generation',   data=self.generation)
+            f.create_dataset('gaussian_idx', data=self.gaussian_idx)
+
+            # Mixture model (optional)
+            if self.mixture is not None:
+                mg = f.create_group('mixture')
+                mg.create_dataset('means',       data=self.mixture.means)
+                mg.create_dataset('covariances', data=self.mixture.covariances)
+                mg.create_dataset('alphas',      data=self.mixture.alphas)
+                mg.attrs['rejection_rate']       = self.mixture.rejection_rate
+
+            # Full reconstruction config (parameter space, BSEDict, callables,
+            # RNG, scalar settings) serialised with dill so closures/lambdas
+            # survive the round-trip.
+            blob = np.frombuffer(dill.dumps(self.config), dtype=np.uint8)
+            if 'config' in f:
+                del f['config']
+            f.create_dataset('config', data=blob)
+
+            # Progress-state metadata (everything else lives in `config`).
+            meta = f.require_group('meta')
+            meta.attrs['num_explored']           = self.num_explored
+            meta.attrs['num_hits']               = self.num_hits
+            meta.attrs['num_hits_exploratory']   = self.num_hits_exploratory
+            meta.attrs['fraction_explored']      = self.fraction_explored
+            meta.attrs['prior_fraction_rejected'] = self.prior_fraction_rejected
+
+    @classmethod
+    def from_file(cls, path):
+        """Load a checkpoint previously written by :meth:`save`.
+
+        Parameters
+        ----------
+        path : `str`
+            File path to read.
+
+        Returns
+        -------
+        `STROOPWAFELCheckpoint`
+        """
+        # COSMIC tables
+        bpp       = pd.read_hdf(path, key='bpp')
+        bcm       = pd.read_hdf(path, key='bcm')
+        initC     = load_initC(path, key='initC', settings_key='initC_settings')
+        kick_info = pd.read_hdf(path, key='kick_info')
+
+        with h5.File(path, 'r') as f:
+            samples      = f['samples'][:]
+            is_hit       = f['is_hit'][:]
+            generation   = f['generation'][:]
+            gaussian_idx = f['gaussian_idx'][:]
+
+            # Mixture (may be absent)
+            mixture = None
+            if 'mixture' in f:
+                from cosmic.sample.stroopwafel.mixture_model import GaussianMixture
+                mg = f['mixture']
+                mixture = GaussianMixture(
+                    means=mg['means'][:],
+                    covariances=mg['covariances'][:],
+                    alphas=mg['alphas'][:],
+                    rejection_rate=float(mg.attrs['rejection_rate']),
+                )
+
+            config = dill.loads(f['config'][:].tobytes())
+
+            meta = f['meta']
+            num_explored           = int(meta.attrs['num_explored'])
+            num_hits               = int(meta.attrs['num_hits'])
+            num_hits_exploratory   = int(meta.attrs['num_hits_exploratory'])
+            fraction_explored      = float(meta.attrs['fraction_explored'])
+            prior_fraction_rejected = float(meta.attrs['prior_fraction_rejected'])
+
+        # Re-apply the bin_num index so the same invariant holds as
+        # when the checkpoint was created.
+        for df in (bpp, bcm, initC, kick_info):
+            if 'bin_num' in df.columns:
+                df.set_index('bin_num', drop=False, inplace=True)
+
+        return cls(
+            config=config,
+            mixture=mixture,
+            samples=samples, is_hit=is_hit,
+            generation=generation, gaussian_idx=gaussian_idx,
+            bpp=bpp, bcm=bcm, initC=initC, kick_info=kick_info,
+            num_explored=num_explored, num_hits=num_hits,
+            num_hits_exploratory=num_hits_exploratory,
+            fraction_explored=fraction_explored,
+            prior_fraction_rejected=prior_fraction_rejected,
+        )
+
 
 class COSMICPopOutput():
     def __init__(self, file, label=None):
