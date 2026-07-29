@@ -26,7 +26,6 @@ from cosmic.evolve import Evolve
 from cosmic.sample import InitialBinaryTable
 
 sys.path.append("..")
-sys.path.append("/Users/lukewilner/cosmic-code/COSMIC-testing/docs")
 import generate_default_bsedict
 
 try:
