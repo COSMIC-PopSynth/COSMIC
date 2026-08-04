@@ -13,8 +13,8 @@ Welcome to COSMIC!
     <div class="toms-nav-container" style="margin-bottom:50px;">
         <div class="box toms-nav-box-blue" data-href="pages/install.html">Install COSMIC</div>
         <div class="box toms-nav-box-pink" data-href="pages/reference_material.html">Configurations and outputs</div>
-        <div class="box toms-nav-box-blue" data-href="pages/runpop.html">Sampling populations</div>
-        <div class="box toms-nav-box-pink" data-href="pages/examples.html">Evolving binaries</div>
+        <div class="box toms-nav-box-blue" data-href="pages/tutorials/sample.html">Sampling populations</div>
+        <div class="box toms-nav-box-pink" data-href="pages/tutorials/evolve.html">Evolving binaries</div>
     </div>
 
 .. figure:: _static/cosmic-colour.png
