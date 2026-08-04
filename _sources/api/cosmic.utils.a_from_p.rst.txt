@@ -1,0 +1,6 @@
+a_from_p
+========
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: a_from_p

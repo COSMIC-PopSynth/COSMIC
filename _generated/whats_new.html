@@ -1,0 +1,920 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="For Developers" href="../pages/developers.html"><link rel="prev" title="Citing COSMIC" href="../pages/cite.html">
+        <link rel="prefetch" href="../_static/cosmic-colour.png" as="image">
+
+    <link rel="shortcut icon" href="../_static/cosmic-favicon.ico"><!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>What’s New in COSMIC - COSMIC v4.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5349f25f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/cosmic-docs.css?v=e242503f" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-grid.min.css?v=ebdf2caa" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  --color-brand-primary: #3f95e1;
+  --color-brand-content: #3f95e1;
+  --color-brand-visited: #3f95e1;
+  --color-api-name: #3f95e1;
+  --color-api-pre-name: #3f95e1;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #e193ca;
+  --color-brand-content: #e193ca;
+  --color-brand-visited: #e193ca;
+  --color-api-name: #e193ca;
+  --color-api-pre-name: #e193ca;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #e193ca;
+  --color-brand-content: #e193ca;
+  --color-brand-visited: #e193ca;
+  --color-api-name: #e193ca;
+  --color-api-pre-name: #e193ca;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand"><span class='hide-me'>COSMIC </span>v4.2.0</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/cosmic-colour.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text"><span class='hide-me'>COSMIC </span>v4.2.0</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pages/about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/reference_material.html">Configuration and output</a><input aria-label="Toggle navigation of Configuration and output" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pages/config_and_output/inifile.html">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/config_and_output/output_info.html">Understanding COSMIC outputs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../auto_examples/index.html">Impact of settings on evolution</a><input aria-label="Toggle navigation of Impact of settings on evolution" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_neta.html"><code class="docutils literal notranslate"><span class="pre">neta</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_pts.html"><code class="docutils literal notranslate"><span class="pre">pts1</span></code>, <code class="docutils literal notranslate"><span class="pre">pts2</span></code>, and <code class="docutils literal notranslate"><span class="pre">pts3</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_pisn.html"><code class="docutils literal notranslate"><span class="pre">pisn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_LBV_flag.html"><code class="docutils literal notranslate"><span class="pre">LBV_flag</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_hewind.html"><code class="docutils literal notranslate"><span class="pre">hewind</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_kickflag.html">kickflag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../auto_examples/plot_windflag.html"><code class="docutils literal notranslate"><span class="pre">windflag</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/tutorials.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/evolve.html">Evolving binaries</a><input aria-label="Toggle navigation of Evolving binaries" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/single.html">Evolving a single binary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/multiple.html">Evolving multiple binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/grid.html">Evolving a fixed grid of binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/evolve_sample.html">Evolving a Monte-Carlo sampled population</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/sample.html">Sampling initial populations</a><input aria-label="Toggle navigation of Sampling initial populations" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/sample/independent.html">Independent distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/sample/multidim.html">Multidimensional distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/sample/cluster.html">ClusterMonteCarlo Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/rerun.html">Re-running simulations</a><input aria-label="Toggle navigation of Re-running simulations" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/rerun/rerun.html">Re-running binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/rerun/restart.html">Restarting a binary</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/timesteps.html">Timesteps and resolution</a><input aria-label="Toggle navigation of Timesteps and resolution" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/timesteps/resolution.html">Dynamic time resolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/timesteps/modifiers.html">Modifying internal timesteps</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/convergence.html">Converged populations</a><input aria-label="Toggle navigation of Converged populations" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/convergence/cosmic_pop.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/analysis.html">Output analysis</a><input aria-label="Toggle navigation of Output analysis" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/analysis/interface.html">Analysing your simulations</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/adaptive.html">Adaptive importance sampling</a><input aria-label="Toggle navigation of Adaptive importance sampling" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/basics.html">Adaptive importance sampling for rare systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/distributions.html">Distributions and custom priors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/outputs.html">Handling outputs from adaptive sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/checkpoint.html">Saving and loading checkpoints</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/misc.html">Miscellaneous</a><input aria-label="Toggle navigation of Miscellaneous" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/misc/multiprocessing.html">Multiprocessing in COSMIC</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/api.html">Full API Reference</a><input aria-label="Toggle navigation of Full API Reference" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/evolve.html">Evolution (<code class="docutils literal notranslate"><span class="pre">evolve</span></code>)</a><input aria-label="Toggle navigation of Evolution (evolve)" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.evolve.read_tracks_for_METISSE.html">read_tracks_for_METISSE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.evolve.populate_tracks.html">populate_tracks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.evolve.Evolve.html">Evolve</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/sample.html">Sampling (<code class="docutils literal notranslate"><span class="pre">sample</span></code>)</a><input aria-label="Toggle navigation of Sampling (sample)" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.initialbinarytable.InitialBinaryTable.html">InitialBinaryTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.initialcmctable.InitialCMCTable.html">InitialCMCTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.independent.get_independent_sampler.html">get_independent_sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.independent.Sample.html">Sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.multidim.get_multidim_sampler.html">get_multidim_sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.multidim.MultiDim.html">MultiDim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.stroopwafel.AdaptiveSampler.html">AdaptiveSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.stroopwafel.ParameterSpace.html">ParameterSpace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.stroopwafel.Parameter.html">Parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.cmc.get_cmc_sampler.html">get_cmc_sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.cmc.CMCSample.html">CMCSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.M_enclosed.html">M_enclosed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.phi_r.html">phi_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.rho_r.html">rho_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.virial_radius_analytic.html">virial_radius_analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.find_rmax_vir.html">find_rmax_vir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.find_sigma_sqr.html">find_sigma_sqr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_positions.html">get_positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_velocities.html">get_velocities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_velocities_plummer.html">get_velocities_plummer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_velocities_old.html">get_velocities_old</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.scale_pos_and_vel.html">scale_pos_and_vel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.draw_r_vr_vt.html">draw_r_vr_vt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.calc_rho.html">calc_rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.integrate_king_profile.html">integrate_king_profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.virial_radius_numerical.html">virial_radius_numerical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.find_sigma_sqr.html">find_sigma_sqr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.get_positions.html">get_positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.get_velocities.html">get_velocities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.scale_pos_and_vel.html">scale_pos_and_vel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.draw_r_vr_vt.html">draw_r_vr_vt</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/output.html">Output analysis (<code class="docutils literal notranslate"><span class="pre">output</span></code>)</a><input aria-label="Toggle navigation of Output analysis (output)" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.save_initC.html">save_initC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.load_initC.html">load_initC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.COSMICOutput.html">COSMICOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.COSMICPopOutput.html">COSMICPopOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.COSMICStroopOutput.html">COSMICStroopOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.STROOPWAFELCheckpoint.html">STROOPWAFELCheckpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/plotting.html">Plotting binaries (<code class="docutils literal notranslate"><span class="pre">plotting</span></code>)</a><input aria-label="Toggle navigation of Plotting binaries (plotting)" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.evolve_binary.html">evolve_binary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_k_type.html">plot_k_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_radius.html">plot_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_mass.html">plot_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_Teff.html">plot_Teff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_Mdot.html">plot_Mdot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_P_orb.html">plot_P_orb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_ecc.html">plot_ecc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_HR_diagram.html">plot_HR_diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_binary_evol.html">plot_binary_evol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.evolve_and_plot.html">evolve_and_plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/utils.html">Utility functions (<code class="docutils literal notranslate"><span class="pre">utils</span></code>)</a><input aria-label="Toggle navigation of Utility functions (utils)" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.filter_bin_state.html">filter_bin_state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.conv_select.html">conv_select</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.mass_min_max_select.html">mass_min_max_select</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.idl_tabulate.html">idl_tabulate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.rndm.html">rndm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.param_transform.html">param_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.dat_transform.html">dat_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.dat_un_transform.html">dat_un_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.knuth_bw_selector.html">knuth_bw_selector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.error_check.html">error_check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.check_initial_conditions.html">check_initial_conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.convert_kstar_evol_type.html">convert_kstar_evol_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.parse_inifile.html">parse_inifile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.pop_write.html">pop_write</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.a_from_p.html">a_from_p</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.p_from_a.html">p_from_a</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_Z_from_FeH.html">get_Z_from_FeH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_FeH_from_Z.html">get_FeH_from_Z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_binfrac_of_Z.html">get_binfrac_of_Z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_porb_norm.html">get_porb_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_met_dep_binfrac.html">get_met_dep_binfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_METISSE_metallicity_files.html">get_METISSE_metallicity_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_metallicity_file.html">read_metallicity_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_format_file.html">read_format_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_MIST_track.html">read_MIST_track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_other_track.html">read_other_track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_eep_directory.html">read_eep_directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.to_f2py_str_array.html">to_f2py_str_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.explain_setting.html">explain_setting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/cite.html">Citing COSMIC</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">What’s New in COSMIC</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/developers.html">For Developers</a><input aria-label="Toggle navigation of For Developers" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/how-it-works.html">Codebase overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/new-settings.html">Creating new settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/adding-options.html">Adding options to existing settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/debugging-vscode.html">Debugging COSMIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/settings-json-file.html"><code class="docutils literal notranslate"><span class="pre">cosmic-settings.json</span></code> file explained</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/COSMIC-popsynth/COSMIC/blob/develop/docs/_generated/whats_new.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/COSMIC-popsynth/COSMIC/edit/develop/docs/_generated/whats_new.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="what-s-new-in-cosmic">
+<h1>What’s New in COSMIC<a class="headerlink" href="#what-s-new-in-cosmic" title="Link to this heading">¶</a></h1>
+<section id="v4-2-0">
+<h2>v4.2.0<a class="headerlink" href="#v4-2-0" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v4.2.0">GitHub release</a></p>
+<p>This version, among other things, introduces adaptive importance sampling to COSMIC.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes</dt><dd><ul>
+<li><dl class="simple">
+<dt><strong>Adaptive importance sampling via the STROOPWAFEL algorithm</strong> (<a class="reference external" href="https://arxiv.org/abs/1905.00910">Broekgaarden et al. 2019</a>) — a new vectorised module for efficiently sampling rare binary outcomes (e.g. merging double compact objects), where flat Monte Carlo would need millions of evolutions to collect a handful of systems. Lives in <code class="docutils literal notranslate"><span class="pre">cosmic.sample.stroopwafel</span></code>:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">AdaptiveSampler</span></code> runs the three-phase pipeline (exploration → adaptation → refinement) and returns importance-weighted results; pass <code class="docutils literal notranslate"><span class="pre">mc_only=True</span></code> for a plain Monte Carlo baseline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ParameterSpace</span></code> / <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> define the sampled dimensions. Each parameter takes a single composable <code class="docutils literal notranslate"><span class="pre">dist</span></code> (see below), and columns follow the order the parameters are supplied.</p></li>
+<li><p>A binary is defined by <code class="docutils literal notranslate"><span class="pre">{mass_1,</span> <span class="pre">mass_2,</span> <span class="pre">porb,</span> <span class="pre">ecc,</span> <span class="pre">metallicity}</span></code>; each is either sampled or returned by a user <code class="docutils literal notranslate"><span class="pre">derive_params</span></code> callback, validated when the sampler is constructed.</p></li>
+<li><p>Composable distributions (<code class="docutils literal notranslate"><span class="pre">cosmic.sample.stroopwafel.distributions</span></code>): base distributions (<code class="docutils literal notranslate"><span class="pre">Uniform</span></code>, <code class="docutils literal notranslate"><span class="pre">PowerLaw</span></code>, <code class="docutils literal notranslate"><span class="pre">BrokenPowerLaw</span></code>, <code class="docutils literal notranslate"><span class="pre">TruncatedNormal</span></code>) combined with coordinate transforms (<code class="docutils literal notranslate"><span class="pre">Identity</span></code>, <code class="docutils literal notranslate"><span class="pre">Log10</span></code>, <code class="docutils literal notranslate"><span class="pre">Ln</span></code>, <code class="docutils literal notranslate"><span class="pre">Sin</span></code>, <code class="docutils literal notranslate"><span class="pre">CosShift</span></code>). Built-ins include <code class="docutils literal notranslate"><span class="pre">kroupa</span></code> (a continuous broken power law, α=-1.3 below 0.5 Msun and -2.3 above), <code class="docutils literal notranslate"><span class="pre">sana</span></code>, <code class="docutils literal notranslate"><span class="pre">sana_ecc</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_in_log</span></code>, <code class="docutils literal notranslate"><span class="pre">uniform</span></code>, <code class="docutils literal notranslate"><span class="pre">uniform_in_sine</span></code>, <code class="docutils literal notranslate"><span class="pre">uniform_in_cosine</span></code> and <code class="docutils literal notranslate"><span class="pre">disberg</span></code>. Define your own by passing a <code class="docutils literal notranslate"><span class="pre">Distribution</span></code> instance, calling <code class="docutils literal notranslate"><span class="pre">register(...)</span></code>, or subclassing <code class="docutils literal notranslate"><span class="pre">Distribution</span></code>.</p></li>
+<li><p>Physical rejection via <code class="docutils literal notranslate"><span class="pre">default_reject</span></code> (or a custom callback). It is <code class="docutils literal notranslate"><span class="pre">SSEDict</span></code>-aware, so ZAMS radii are computed with the same stellar engine used for evolution.</p></li>
+<li><p>Built-in hit-definition presets <code class="docutils literal notranslate"><span class="pre">any_dco</span></code> and <code class="docutils literal notranslate"><span class="pre">merging_dco</span></code> (<code class="docutils literal notranslate"><span class="pre">cosmic.sample.stroopwafel.presets</span></code>), or supply any <code class="docutils literal notranslate"><span class="pre">(bpp)</span> <span class="pre">-&gt;</span> <span class="pre">(n_hits,</span> <span class="pre">hit_bin_nums)</span></code> function.</p></li>
+<li><p>Results are returned as <code class="docutils literal notranslate"><span class="pre">cosmic.output.COSMICStroopOutput</span></code>, holding the samples, importance weights, hit flags, and full COSMIC tables, with <code class="docutils literal notranslate"><span class="pre">hit_rate</span></code>/<code class="docutils literal notranslate"><span class="pre">hit_rate_uncertainty</span></code> properties, <code class="docutils literal notranslate"><span class="pre">draw_representative_sample(...)</span></code> (weighted bootstrap), and <code class="docutils literal notranslate"><span class="pre">save</span></code>/<code class="docutils literal notranslate"><span class="pre">from_file</span></code>.</p></li>
+<li><p>Self-contained checkpointing: <code class="docutils literal notranslate"><span class="pre">run_exploration()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">STROOPWAFELCheckpoint</span></code> (<code class="docutils literal notranslate"><span class="pre">.save(path)</span></code>), and <code class="docutils literal notranslate"><span class="pre">AdaptiveSampler.from_checkpoint(path)</span></code> rebuilds the sampler — parameter space, settings, callables (serialised with <code class="docutils literal notranslate"><span class="pre">dill</span></code>), and RNG state — for <code class="docutils literal notranslate"><span class="pre">run_refinement()</span></code> with no re-specification. Any setting can be overridden as a keyword.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bhflag</span> <span class="pre">=</span>&#160; <span class="pre">4</span></code> is added as another option, which applies fallback-modulation even when kicks are directly supplied</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Documentation:</dt><dd><ul>
+<li><p>New “Adaptive importance sampling” tutorial series under <code class="docutils literal notranslate"><span class="pre">docs/pages/tutorials/adaptive/</span></code>: getting started (<code class="docutils literal notranslate"><span class="pre">basics</span></code>), defining and customising distributions (<code class="docutils literal notranslate"><span class="pre">distributions</span></code>), interpreting outputs and weights (<code class="docutils literal notranslate"><span class="pre">outputs</span></code>), and saving/resuming runs (<code class="docutils literal notranslate"><span class="pre">checkpoint</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v4-1-1">
+<h2>v4.1.1<a class="headerlink" href="#v4-1-1" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v4.1.1">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes</dt><dd><ul>
+<li><p>Add <cite>kickflag</cite> 7 and 8 from &#64;astroabishek (thank you!)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Code cleanup</dt><dd><ul>
+<li><p>Added a license</p></li>
+<li><p>Added some new example figures</p></li>
+<li><p>Pin versions to more specific values for a more reproducible environment.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Bug fixes</dt><dd><ul>
+<li><p>Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.</p></li>
+<li><p>Fixed Roche radius calculation</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v4-1-0">
+<h2>v4.1.0<a class="headerlink" href="#v4-1-0" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v4.1.0">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes</dt><dd><ul>
+<li><p>kick_info table now includes another column with the time of each supernova</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Code cleanup</dt><dd><ul>
+<li><p>Function signature for kick() and evolv2() in the fortran changed to remove <code class="docutils literal notranslate"><span class="pre">bkick</span></code> entirely</p></li>
+<li><p>Also removed <code class="docutils literal notranslate"><span class="pre">kick_info_out</span></code>. Both of these can be reconstructed from <code class="docutils literal notranslate"><span class="pre">kick_info</span></code></p></li>
+<li><p>[Just for developers] Created <code class="docutils literal notranslate"><span class="pre">consts.py</span></code> which <code class="docutils literal notranslate"><span class="pre">evolve.py</span></code> now draws from, loops over GROUPED_SETTINGS instead of giant chunk of assignments</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Bug fixes:</dt><dd><ul>
+<li><p>corrected mass sign in bjorklund wind routine in SSE_mlwind.f</p></li>
+<li><p>fixed bug in <code class="docutils literal notranslate"><span class="pre">bhspinmag</span></code> assignment in <code class="docutils literal notranslate"><span class="pre">assign_remnant.f</span></code></p></li>
+<li><p>fixed issue added in v3.7.6 where sample fails if you have total_mass as your sampling target and use multiprocessing</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v4-0-1">
+<h2>v4.0.1<a class="headerlink" href="#v4-0-1" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v4.0.1">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes:</dt><dd><ul>
+<li><p>applies Hurley track metallicity limits only for SSE</p></li>
+<li><p>adds ValueError if the masses supplied to initial binary table are outside the supplied track range</p></li>
+<li><p>updated debug makefile work with new METISSE repo org</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v4-0-0">
+<h2>v4.0.0<a class="headerlink" href="#v4-0-0" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v4.0.0">GitHub release</a></p>
+<ul>
+<li><dl>
+<dt>Additions/changes:</dt><dd><ul class="simple">
+<li><p>Adds the METISSE stellar engine where now the stellar engine must be specified as either sse or metisse.</p></li>
+</ul>
+<p>If metisse is used, the tracks must be specified directly.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v3-7-8">
+<h2>v3.7.8<a class="headerlink" href="#v3-7-8" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.8">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes:</dt><dd><ul>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">smt_periastron_check</span></code> setting, which allows the user to toggle whether to check for periastron collision during stable mass transfer. By default, we set this off, which changes the behaviour of previous versions since 3.6.0 (PR #694) which did check for contact at periastron during stable mass transfer. We set this to off as the radial expansion from SSE is likely overestimated, once we connect with COSMIC-METISSE this should likely be set to 1.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v3-7-7">
+<h2>v3.7.7<a class="headerlink" href="#v3-7-7" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.7">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes:</dt><dd><ul>
+<li><p>Split out alpha1 and acc_lim to have parameters specified for each component in the binary</p></li>
+<li><p>added several prescriptions for winds and compact object formation</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v3-7-6">
+<h2>v3.7.6<a class="headerlink" href="#v3-7-6" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.6">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Additions/changes:</dt><dd><ul>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">pool</span></code> and <code class="docutils literal notranslate"><span class="pre">nproc</span></code> parameters to the <code class="docutils literal notranslate"><span class="pre">independent</span></code> sampler. Users can either specify an existing multiprocessing pool or a number of processors to use to create a pool that will be used for the sampling. This offers significant speed-ups for samples larger than 10,000 binaries.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v3-7-5">
+<h2>v3.7.5<a class="headerlink" href="#v3-7-5" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.5">GitHub release</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Fixes:</dt><dd><ul>
+<li><p>Prevent tides calculations based on NS/BHs</p></li>
+<li><p>Track mean_anomaly (save to kick_info) array even when a system is disrupted</p></li>
+<li><p>Throw an error if invalid metallicities are provided for evolution</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v3-7-4">
+<h2>v3.7.4<a class="headerlink" href="#v3-7-4" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.4">GitHub release</a></p>
+<p>This release contains <em>several</em> fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription, windflag and LBV winds flag.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Fixes:</dt><dd><ul>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">mc_co</span></code> and <code class="docutils literal notranslate"><span class="pre">mc_he</span></code> after adjusting <code class="docutils literal notranslate"><span class="pre">mc</span> <span class="pre">=</span> <span class="pre">mcmax</span></code> in <code class="docutils literal notranslate"><span class="pre">hrdiag.f</span></code> for stripped stars. This can be a fairly significant change, up to ~2 Msun. (Used to actually be up to 10 Msun because we added HeMS core mass growth)</p></li>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">evolv2.f</span></code> actually log PISN (they get set to <code class="docutils literal notranslate"><span class="pre">kw</span> <span class="pre">=</span> <span class="pre">15</span></code> so were missed previously)</p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">loop</span> <span class="pre">=</span> <span class="pre">40000</span></code> (up from 20,000), otherwise 70 Msun stars run out of loops with new mass modifier</p></li>
+<li><p>Changed all existing <code class="docutils literal notranslate"><span class="pre">pisn</span></code> prescriptions to use <code class="docutils literal notranslate"><span class="pre">mc_tot</span></code> instead of <code class="docutils literal notranslate"><span class="pre">mcbagb</span></code> for conditions</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">mc</span> <span class="pre">=</span> <span class="pre">mt</span></code> for <strong>ALL</strong> remnants instead of just for certain flags</p></li>
+<li><p>Only apply conversion from baryonic to gravitational mass once. Previous code <strong>APPLIED IT TWICE!!</strong> for core-collapse BHs! Create subroutine <code class="docutils literal notranslate"><span class="pre">baryonic_to_gravitational_mass</span></code>, which is called throughout</p></li>
+<li><p>Ensure stellar type changes during hrdiag are logged to the bpp before SN occurs</p></li>
+<li><p>Add check after CE for whether a SN occurs right at the end</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Additions/changes:</dt><dd><ul>
+<li><p>Linearly grow the core mass of HeMS stars from 0 to the value at the start of HeHG and check for core-collapse for all He stars (not just HeHG and HeGB)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">dt_mass_modifier</span></code> argument to <code class="docutils literal notranslate"><span class="pre">Evolve.evolve()</span></code>. This lets you specify a list of tuples <code class="docutils literal notranslate"><span class="pre">(m_low,</span> <span class="pre">m_high,</span> <span class="pre">mod)</span></code>, which multiplies <code class="docutils literal notranslate"><span class="pre">pts1/pts2/pts3</span></code> by <code class="docutils literal notranslate"><span class="pre">mod</span></code> for stars with primary star (only care about primary, conservative) ZAMS masses between <code class="docutils literal notranslate"><span class="pre">m_low</span> <span class="pre">&lt;=</span> <span class="pre">m_ZAMS</span> <span class="pre">&lt;</span> <span class="pre">m_high</span></code></p></li>
+<li><p>Added a <code class="docutils literal notranslate"><span class="pre">windflag</span> <span class="pre">=</span> <span class="pre">-1</span></code> option to turn off stellar winds entirely</p></li>
+<li><dl class="simple">
+<dt>Added <code class="docutils literal notranslate"><span class="pre">pisn</span> <span class="pre">=</span> <span class="pre">-4</span></code> for Renzo+22/Hendriks+23 prescription for PPISN mass loss</dt><dd><ul>
+<li><p>With options <code class="docutils literal notranslate"><span class="pre">ppi_co_shift</span></code> and <code class="docutils literal notranslate"><span class="pre">ppi_extral_ml</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Add new setting <code class="docutils literal notranslate"><span class="pre">LBV_flag</span></code> which allows one to turn off LBV winds, use Hurley+2000, or use Belcyznski+2008</p></li>
+<li><p>Change the default LBV winds to Hurley</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Code cleanup:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">assign_remnant</span></code> no longer takes <code class="docutils literal notranslate"><span class="pre">mc_tot</span></code> as a parameter, just get it from the common block</p></li>
+<li><p>WD chandrasekhar check use <code class="docutils literal notranslate"><span class="pre">mc_co</span></code> instead of <code class="docutils literal notranslate"><span class="pre">mc</span></code></p></li>
+<li><p>Remnant flags 0-4 inclusive use <code class="docutils literal notranslate"><span class="pre">mc_co</span></code> instead of <code class="docutils literal notranslate"><span class="pre">mc</span></code></p></li>
+<li><p>Got rid of <code class="docutils literal notranslate"><span class="pre">mcx</span></code> in <code class="docutils literal notranslate"><span class="pre">assign_remnant</span></code> in favour of clearer <code class="docutils literal notranslate"><span class="pre">m_proto</span></code> and <code class="docutils literal notranslate"><span class="pre">m_FeNi</span></code> to match the papers</p></li>
+<li><p>[Very minor] Fryer Rapid was using &lt;= instead of &lt; everywhere</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Documentation:</dt><dd><ul>
+<li><p>Start new settings gallery in the documentation</p></li>
+<li><p>Tag settings/options with the version they were added in the docs page and auto link them to release</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="v3-7-2-3-7-3">
+<h2>v3.7.2-3.7.3<a class="headerlink" href="#v3-7-2-3-7-3" title="Link to this heading">¶</a></h2>
+<p>Issues with PyPi, unreleased.</p>
+</section>
+<section id="v3-7-1">
+<h2>v3.7.1<a class="headerlink" href="#v3-7-1" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.1">GitHub release</a></p>
+<ul class="simple">
+<li><p>Bug fix (<a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/issues/729">#729</a>): ensure disruptions are logged with <code class="docutils literal notranslate"><span class="pre">evol_type==11</span></code> when SNe occur during CEs</p></li>
+<li><p>Bug fix (<a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/issues/725">#725</a>): set <code class="docutils literal notranslate"><span class="pre">tb=sep=0</span></code> for cases where AIC caused a WD to explode and leave behind no remnant (<code class="docutils literal notranslate"><span class="pre">evolve_type==9</span></code>)</p></li>
+<li><p>Bug fix (<a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/issues/724">#724</a>): remove bug where <code class="docutils literal notranslate"><span class="pre">kstar=15</span></code> was assigned its previous epoch mass after merging during a CE and the merger product goes SN</p></li>
+</ul>
+</section>
+<section id="v3-7-0">
+<h2>v3.7.0<a class="headerlink" href="#v3-7-0" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.7.0">GitHub release</a></p>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">remnantflag=5</span></code>: The Mandel &amp; Muller 2020 prescription for remnant masses</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">kickflag=6</span></code>: The Mandel &amp; Muller 2020 prescription for natal kicks. This can be tuned with <code class="docutils literal notranslate"><span class="pre">mm_mu_ns</span></code> and <code class="docutils literal notranslate"><span class="pre">mm_mu_bh</span></code></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">remnantflag=6</span></code>: The Maltsev+25 and Willcox+25 prescription for remnant masses. This can be tuned with <code class="docutils literal notranslate"><span class="pre">maltsev_mode</span></code> and <code class="docutils literal notranslate"><span class="pre">maltsev_fallback</span></code></p></li>
+<li><p>(Docs) Any tutorial that uses a plain BSEDict now uses one that is drawn from the cosmic-settings.json file to avoid missing changes and saves us updating each docs page</p></li>
+</ul>
+</section>
+<section id="v3-6-2">
+<h2>v3.6.2<a class="headerlink" href="#v3-6-2" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.6.2">GitHub release</a></p>
+<ul class="simple">
+<li><p>Add functions to <code class="docutils literal notranslate"><span class="pre">cosmic.utils</span></code> for initC IO that’s more efficient (<code class="docutils literal notranslate"><span class="pre">save_initC</span></code>, <code class="docutils literal notranslate"><span class="pre">load_initC</span></code>) by saving identical setting columns separately with only one copy - saves ~1kb per binary</p></li>
+<li><p>Make He and CO core masses available in output</p></li>
+<li><p>Change defaults; <code class="docutils literal notranslate"><span class="pre">qcflag=5</span></code> and <code class="docutils literal notranslate"><span class="pre">eccfac=10</span></code></p></li>
+<li><p>Prevent users from supplying both <code class="docutils literal notranslate"><span class="pre">qmin</span></code> and <code class="docutils literal notranslate"><span class="pre">m2_min</span></code></p></li>
+<li><p>Prevent users from supplying both <code class="docutils literal notranslate"><span class="pre">sep</span></code> and <code class="docutils literal notranslate"><span class="pre">porb</span></code> when sampling, calculate <code class="docutils literal notranslate"><span class="pre">porb</span></code> from <code class="docutils literal notranslate"><span class="pre">sep</span></code> as necessary</p></li>
+<li><p>Define <code class="docutils literal notranslate"><span class="pre">binstate=-1</span></code> as single stars</p></li>
+</ul>
+</section>
+<section id="v3-6-1">
+<h2>v3.6.1<a class="headerlink" href="#v3-6-1" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.6.1">GitHub release</a></p>
+<ul class="simple">
+<li><p>Add support for single stars in both independent and multidim sampling</p></li>
+<li><p>update documentation</p></li>
+</ul>
+</section>
+<section id="v3-6-0">
+<h2>v3.6.0<a class="headerlink" href="#v3-6-0" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.6.0">GitHub release</a></p>
+<ul class="simple">
+<li><p>Overhaul documentation and added debugging environment</p></li>
+<li><p>Feature: Added Disberg+2025 kick prescription as a new choice of <code class="docutils literal notranslate"><span class="pre">kickflag</span></code> (<code class="docutils literal notranslate"><span class="pre">kickflag=5</span></code>). Applies log-normal distribution to regular CCSN, ECSN/USSN still use <code class="docutils literal notranslate"><span class="pre">sigmadiv</span></code> Maxwellian and BH fallback scaling is still applied via <code class="docutils literal notranslate"><span class="pre">bhflag</span></code> and <code class="docutils literal notranslate"><span class="pre">bhsigmafrac</span></code> as with <code class="docutils literal notranslate"><span class="pre">kickflag=1</span></code></p></li>
+</ul>
+</section>
+<section id="v3-5-0">
+<h2>v3.5.0<a class="headerlink" href="#v3-5-0" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.5.0">GitHub release</a></p>
+<ul class="simple">
+<li><p>Feature: Added <code class="docutils literal notranslate"><span class="pre">bpp_columns</span></code> and <code class="docutils literal notranslate"><span class="pre">bcm_columns</span></code> parameters to the <code class="docutils literal notranslate"><span class="pre">evolve()</span></code> function to allow users to specify the columns in the bpp and bcm tables</p></li>
+<li><p>Bug fix: Changed <code class="docutils literal notranslate"><span class="pre">kick.f</span></code> to use the Pfahl+02 kick prescription by default instead of Kiel &amp; Hurley 2009, this fixes ejection velocities of secondaries and also changed kick_info to have an extra column</p></li>
+</ul>
+</section>
+<section id="v3-4-11">
+<h2>v3.4.11<a class="headerlink" href="#v3-4-11" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.11">GitHub release</a></p>
+<ul class="simple">
+<li><p>Added sampling options to <code class="docutils literal notranslate"><span class="pre">independent</span></code> sampler to allow for custom power law distributions for <code class="docutils literal notranslate"><span class="pre">porb</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code></p></li>
+</ul>
+</section>
+<section id="v3-4-10">
+<h2>v3.4.10<a class="headerlink" href="#v3-4-10" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.10">GitHub release</a></p>
+<ul class="simple">
+<li><p>Bug fixes: <code class="docutils literal notranslate"><span class="pre">timestep_conditions</span></code> for <code class="docutils literal notranslate"><span class="pre">bcm</span></code> arrays now raise errors for invalid columns instead of failing silently</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">teff_1</span></code> and <code class="docutils literal notranslate"><span class="pre">teff_2</span></code> as variables that can be used to set <code class="docutils literal notranslate"><span class="pre">timestep_conditions</span></code></p></li>
+<li><p>Add in <code class="docutils literal notranslate"><span class="pre">-1</span></code> option to turn off Magnetic Braking in htmb</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">central_bh</span></code> and <code class="docutils literal notranslate"><span class="pre">scale_with_central_bh</span></code> as options to the CMC sampler, in order to add central massive black holes to CMC initial conditions</p></li>
+</ul>
+</section>
+<section id="v3-4-9">
+<h2>v3.4.9<a class="headerlink" href="#v3-4-9" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.9">GitHub release</a></p>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">sampling_target</span> <span class="pre">==</span> <span class="pre">&quot;total_mass&quot;</span></code> option to independent sampler so you can target a specific total mass instead of number of binaries</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">trim_extra_samples</span></code> parameter to the same function - which trims your samples to get as close as possible to the target total mass</p></li>
+<li><p>Bug fixes: secondaries of single stars are now marked as massless remnants instead of main sequence stars, binfrac=0.0 no longer leads to an infinite loop in sampling</p></li>
+</ul>
+</section>
+<section id="v3-4-8">
+<h2>v3.4.8<a class="headerlink" href="#v3-4-8" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.8">GitHub release</a></p>
+<ul class="simple">
+<li><p>removed zsun_wind so that we can match stock BSE exactly and added extra documentation surrounding the winds</p></li>
+<li><p>added a NaN catch in cosmic-pop that throws a warning of NaNs, saves them to a file, and instructs the user to consider changing pts1 since this is the main driver of NaNs so far</p></li>
+</ul>
+</section>
+<section id="v3-4-7">
+<h2>v3.4.7<a class="headerlink" href="#v3-4-7" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.7">GitHub release</a></p>
+<ul class="simple">
+<li><p>Exchanged any print statements for <code class="docutils literal notranslate"><span class="pre">warnings.warn</span></code> to allow silencing</p></li>
+<li><p>Fixed up docs to catch warnings</p></li>
+</ul>
+</section>
+<section id="v3-4-6">
+<h2>v3.4.6<a class="headerlink" href="#v3-4-6" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.6">GitHub release</a></p>
+<ul class="simple">
+<li><p>added new Eddington limit prescriptions for BH accretion</p></li>
+<li><p>cleaned up versioning</p></li>
+</ul>
+</section>
+<section id="v3-4-1-3-4-5">
+<h2>v3.4.1-3.4.5<a class="headerlink" href="#v3-4-1-3-4-5" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>updated the actions to build properly</p></li>
+</ul>
+</section>
+<section id="v3-4-1">
+<h2>v3.4.1<a class="headerlink" href="#v3-4-1" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases/tag/v3.4.1">GitHub release</a></p>
+<ul class="simple">
+<li><p>fixed sampling issues for renzo19 and sana12 so that they work with CMC</p></li>
+<li><p>update to Docker ubuntu image</p></li>
+<li><p>minor fixes to documentation to stop warnings/errors which break doc website deployment</p></li>
+<li><p>adds in build wheels for Python 3.9 and 3.10</p></li>
+<li><p>add warning for mlwind prescriptions which assume zsun = 0.019</p></li>
+<li><p>modifications to how m2min and qmin are specified in initial conditions sampling</p></li>
+<li><p>fixed sampling issues from Plummer profiles in cmc.py</p></li>
+<li><p>fixed Eddington limits such that wind accretion is limited to eddington and thus limits RLO accretion if the wind accretion is already super-Eddington</p></li>
+<li><p>fixed errors in Marchant+ PISN prescription</p></li>
+</ul>
+</section>
+<section id="v0-0-3-4">
+<h2>v0.0 - 3.4<a class="headerlink" href="#v0-0-3-4" title="Link to this heading">¶</a></h2>
+<p>See the discussed changes in our previous releases <a class="reference external" href="https://github.com/COSMIC-PopSynth/COSMIC/releases">here</a></p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../pages/developers.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">For Developers</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../pages/cite.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Citing COSMIC</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Katie Breivik, Tom Wagg
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-solid fa-github fa-2x" href="https://github.com/COSMIC-PopSynth/COSMIC" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">What’s New in COSMIC</a><ul>
+<li><a class="reference internal" href="#v4-2-0">v4.2.0</a></li>
+<li><a class="reference internal" href="#v4-1-1">v4.1.1</a></li>
+<li><a class="reference internal" href="#v4-1-0">v4.1.0</a></li>
+<li><a class="reference internal" href="#v4-0-1">v4.0.1</a></li>
+<li><a class="reference internal" href="#v4-0-0">v4.0.0</a></li>
+<li><a class="reference internal" href="#v3-7-8">v3.7.8</a></li>
+<li><a class="reference internal" href="#v3-7-7">v3.7.7</a></li>
+<li><a class="reference internal" href="#v3-7-6">v3.7.6</a></li>
+<li><a class="reference internal" href="#v3-7-5">v3.7.5</a></li>
+<li><a class="reference internal" href="#v3-7-4">v3.7.4</a></li>
+<li><a class="reference internal" href="#v3-7-2-3-7-3">v3.7.2-3.7.3</a></li>
+<li><a class="reference internal" href="#v3-7-1">v3.7.1</a></li>
+<li><a class="reference internal" href="#v3-7-0">v3.7.0</a></li>
+<li><a class="reference internal" href="#v3-6-2">v3.6.2</a></li>
+<li><a class="reference internal" href="#v3-6-1">v3.6.1</a></li>
+<li><a class="reference internal" href="#v3-6-0">v3.6.0</a></li>
+<li><a class="reference internal" href="#v3-5-0">v3.5.0</a></li>
+<li><a class="reference internal" href="#v3-4-11">v3.4.11</a></li>
+<li><a class="reference internal" href="#v3-4-10">v3.4.10</a></li>
+<li><a class="reference internal" href="#v3-4-9">v3.4.9</a></li>
+<li><a class="reference internal" href="#v3-4-8">v3.4.8</a></li>
+<li><a class="reference internal" href="#v3-4-7">v3.4.7</a></li>
+<li><a class="reference internal" href="#v3-4-6">v3.4.6</a></li>
+<li><a class="reference internal" href="#v3-4-1-3-4-5">v3.4.1-3.4.5</a></li>
+<li><a class="reference internal" href="#v3-4-1">v3.4.1</a></li>
+<li><a class="reference internal" href="#v0-0-3-4">v0.0 - 3.4</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=d0ae6d56"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=5eb46824"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/custom.js?v=fedf5a9c"></script>
+    </body>
+</html>

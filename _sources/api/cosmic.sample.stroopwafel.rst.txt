@@ -1,0 +1,23 @@
+cosmic.sample.stroopwafel package
+=================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cosmic.sample.stroopwafel.distributions
+   cosmic.sample.stroopwafel.main
+   cosmic.sample.stroopwafel.mixture_model
+   cosmic.sample.stroopwafel.parameter_space
+   cosmic.sample.stroopwafel.presets
+   cosmic.sample.stroopwafel.rejection
+
+Module contents
+---------------
+
+.. automodule:: cosmic.sample.stroopwafel
+   :members:
+   :undoc-members:
+   :show-inheritance:

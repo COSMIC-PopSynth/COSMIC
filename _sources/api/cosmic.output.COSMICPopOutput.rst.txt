@@ -1,0 +1,17 @@
+COSMICPopOutput
+===============
+
+.. currentmodule:: cosmic.output
+
+.. autoclass:: COSMICPopOutput
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~COSMICPopOutput.to_combined_output
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: to_combined_output

@@ -1,0 +1,6 @@
+get_met_dep_binfrac
+===================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: get_met_dep_binfrac

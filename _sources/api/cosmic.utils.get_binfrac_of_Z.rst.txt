@@ -1,0 +1,6 @@
+get_binfrac_of_Z
+================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: get_binfrac_of_Z

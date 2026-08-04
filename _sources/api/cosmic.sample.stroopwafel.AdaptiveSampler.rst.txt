@@ -1,0 +1,33 @@
+AdaptiveSampler
+===============
+
+.. currentmodule:: cosmic.sample.stroopwafel
+
+.. autoclass:: AdaptiveSampler
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~AdaptiveSampler.REQUIRED_PARAMS
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~AdaptiveSampler.from_checkpoint
+      ~AdaptiveSampler.run
+      ~AdaptiveSampler.run_exploration
+      ~AdaptiveSampler.run_refinement
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: REQUIRED_PARAMS
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: from_checkpoint
+   .. automethod:: run
+   .. automethod:: run_exploration
+   .. automethod:: run_refinement

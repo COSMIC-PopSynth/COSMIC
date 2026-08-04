@@ -1,0 +1,6 @@
+M_enclosed
+==========
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: M_enclosed

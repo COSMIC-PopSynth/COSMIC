@@ -1,0 +1,6 @@
+parse_inifile
+=============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: parse_inifile

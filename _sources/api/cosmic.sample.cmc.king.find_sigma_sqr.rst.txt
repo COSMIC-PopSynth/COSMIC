@@ -1,0 +1,6 @@
+find_sigma_sqr
+==============
+
+.. currentmodule:: cosmic.sample.cmc.king
+
+.. autofunction:: find_sigma_sqr

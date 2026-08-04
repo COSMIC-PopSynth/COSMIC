@@ -1,0 +1,6 @@
+evolve_and_plot
+===============
+
+.. currentmodule:: cosmic.plotting
+
+.. autofunction:: evolve_and_plot

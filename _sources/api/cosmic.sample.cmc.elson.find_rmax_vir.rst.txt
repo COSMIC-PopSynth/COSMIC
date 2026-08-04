@@ -1,0 +1,6 @@
+find_rmax_vir
+=============
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: find_rmax_vir

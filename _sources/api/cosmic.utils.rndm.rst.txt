@@ -1,0 +1,6 @@
+rndm
+====
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: rndm

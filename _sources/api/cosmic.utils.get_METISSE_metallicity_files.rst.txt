@@ -1,0 +1,6 @@
+get_METISSE_metallicity_files
+=============================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: get_METISSE_metallicity_files
