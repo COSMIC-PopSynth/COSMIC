@@ -9,7 +9,10 @@ import numpy as np
 import pandas as pd
 from cosmic.sample import InitialBinaryTable
 from cosmic.sample.sampler.independent import Sample
-from cosmic.sample.sampler.multidim import MultiDim
+from cosmic.sample.sampler.multidim import (
+    MultiDim,
+    _rescale_low_mass_binary_cdf,
+)
 from cosmic.sample.sampler.cmc import CMCSample
 from cosmic.sample.cmc import elson
 from cosmic.sample.initialcmctable import InitialCMCTable
@@ -47,11 +50,11 @@ OFFNER_MASS_RANGES = [(0.075,0.15), (0.15,0.30), (0.3,0.6), (0.75,1.00), (0.85,1
 OFFNER_DATA = [0.19, 0.23, 0.30, 0.42, 0.47, 0.50, 0.68, 0.81, 0.89, 0.93, 0.96]
 OFFNER_ERRORS = [0.03, 0.02, 0.02, 0.03, 0.03, 0.04, 0.07, 0.06, 0.05, 0.04, 0.04]
 MULTIDIM_BINFRAC_MAX = 0.6146916774140262
-MULTIDIM_BINFRAC_MIN = 0.13786300908773025
+MULTIDIM_BINFRAC_MIN = 0.2695344754654569
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 946002.8245352195
 KSTAR_SOLAR = 1.0
-MOE_TOTAL_MASS = 20.27926225850954
+MOE_TOTAL_MASS = 19.511403220255016
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
@@ -497,6 +500,19 @@ class TestSample(unittest.TestCase):
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
         self.assertAlmostEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
         self.assertAlmostEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)
+
+    def test_multidim_low_mass_binary_fraction(self):
+        binary_cdf = np.linspace(0.0, 0.4, 10)
+
+        low_mass_cdf = _rescale_low_mass_binary_cdf(binary_cdf, 0.08)
+        midpoint_cdf = _rescale_low_mass_binary_cdf(
+            binary_cdf, np.sqrt(0.08 * 0.8)
+        )
+        reference_cdf = _rescale_low_mass_binary_cdf(binary_cdf, 0.8)
+
+        self.assertAlmostEqual(low_mass_cdf.max(), 0.20)
+        self.assertAlmostEqual(midpoint_cdf.max(), 0.30)
+        np.testing.assert_allclose(reference_cdf, binary_cdf)
 
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
