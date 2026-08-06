@@ -873,12 +873,12 @@
                 "options": [
                     {
                         "name": 0,
-                        "description": "Use the core masses of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 70</a>)"
+                        "description": "Use the core masses of the donor star and companion star to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 70</a>). If the companion star is a main sequence star, the total mass of the companion star is used instead of the core mass.",
+                        "default": true
                     },
                     {
                         "name": 1,
-                        "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)",
-                        "default": true
+                        "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)"
                     }
                 ]
             },
