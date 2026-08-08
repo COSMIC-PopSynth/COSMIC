@@ -1,6 +1,6 @@
 """
-don_lim
-=======
+``don_lim``
+===========
 
 This example tests ``don_lim``, which selects the donor mass-loss-rate
 prescription during Roche-lobe overflow.  The same initial binary is evolved

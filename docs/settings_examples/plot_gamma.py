@@ -1,6 +1,6 @@
 """
-gamma
-=====
+``gamma``
+=========
 
 This example tests ``gamma``, the angular-momentum prescription for material
 lost from the system during super-Eddington Roche-lobe overflow.  The same

@@ -1,6 +1,6 @@
 """
-ceflag and cemergeflag
-======================
+``ceflag`` and ``cemergeflag``
+==============================
 
 This example compares two common-envelope-related COSMIC flags using one
 representative binary per flag. Each panel evolves the same initial binary

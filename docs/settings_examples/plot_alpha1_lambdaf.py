@@ -1,6 +1,6 @@
 """
-alpha1 and lambdaf
-==================
+``alpha1`` and ``lambdaf``
+==========================
 
 This example compares two common-envelope parameters using real COSMIC
 separation histories.  ``alpha1`` changes the efficiency with which orbital

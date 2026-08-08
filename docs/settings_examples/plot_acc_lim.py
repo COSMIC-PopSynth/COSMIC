@@ -1,6 +1,6 @@
 """
-acc_lim
-=======
+``acc_lim``
+===========
 
 This example tests ``acc_lim``, which limits how much mass each star can accrete
 during Roche-lobe overflow.  The same initial binary is evolved for each
