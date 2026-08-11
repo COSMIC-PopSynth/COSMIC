@@ -973,32 +973,19 @@ class Sample(object):
             used to truncate the eccentricitiy distribution
         """
 
-        # First we need to compute where RL overflow starts.  We truncate the lower-bound
-        # of the period distribution there
-        q = mass2 / mass1
-        RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** (1.0 / 3.0))
-        )
+        # First we need to compute where RL overflow starts, using formulas from Eggleton (1983).
+        # We'll set the lower-bound of the period distribution there.
+        (q1, q2) = (mass1/mass2, mass2/mass1)    # Note: For both, q = m_donor / m_accretor.
 
-        q2 = mass1 / mass2
-        RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** (1.0 / 3.0))
-        )
+        RL_fac1 = 0.49 * q1**(2/3) / (0.6 * q1**(2/3) + np.log(1 + q1**(1/3))) # rad1/r_p where star 1 overflows its RL
+        RL_fac2 = 0.49 * q2**(2/3) / (0.6 * q2**(2/3) + np.log(1 + q2**(1/3))) # rad2/r_p where star 2 overflows its RL
 
-        # include the factor for the eccentricity
-        RL_max = 2 * rad1 / RL_fac
-        (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
-        if len(ind_switch) >= 1:
-            RL_max[ind_switch] = 2 * rad2[ind_switch] / RL_fac2[ind_switch]
-
-        # Can either sample the porb first and truncate the eccentricities at RL overflow
-        # or sample the eccentricities first and truncate a(1-e) at RL overflow
-        #
-        # If we haven't sampled the eccentricities, then the minimum semi-major axis is at
-        # RL overflow
-        #
-        # If we have, then the minimum pericenter is set to RL overflow
-        a_min = RL_max 
+        # RL overflow occurs if (rad1/RL_fac1 > r_p) or (rad2/RL_fac2 > r_p), where r_p = a(1-e).
+        # Note: We can either sample porbs first and truncate eccentricities at RL overflow
+        #       or sample eccentricities first and truncate pericenters a(1-e) at RL overflow.
+        #       If we haven't sampled eccentricities yet, then the minimum semi-major axis (a_min) is at RL overflow.
+        #       If we have, then the minimum pericenter a(1-e) is at RL overflow.
+        a_min = 2 * np.maximum(rad1 / RL_fac1, rad2 / RL_fac2) # The coefficient 2 accounts for the eccentricity.
 
         if porb_model == "log_uniform":
             if porb_max is None:
