@@ -35,17 +35,16 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install gfortran swig libhdf5-serial-dev
-        pip install -r requirements.txt
-        pip install meson numpy
-        
-        python -m pip install .
+
+        # install cosmic together with its documentation dependencies
+        python -m pip install .[doc]
 
     - name: Make dependencies
       run: |

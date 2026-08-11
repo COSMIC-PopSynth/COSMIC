@@ -32,6 +32,31 @@ __credits__ = "Scott Coughlin <scott.coughlin@ligo.org>"
 __all__ = ["get_multidim_sampler", "MultiDim"]
 
 
+LOW_MASS_BINARY_FRACTION = 0.20
+LOW_MASS_BINARY_FRACTION_MIN_MASS = 0.08
+LOW_MASS_BINARY_FRACTION_MAX_MASS = 0.8
+
+
+def _rescale_low_mass_binary_cdf(binary_cdf, primary_mass):
+    """Set an absolute 20% binary fraction at 0.08 Msun.
+
+    The target fraction is interpolated in log primary mass to the
+    multidim prediction at 0.8 Msun, where the CDF is left unchanged.
+    """
+    reference_binary_fraction = np.max(binary_cdf)
+    target_binary_fraction = np.interp(
+        np.log10(primary_mass),
+        np.log10(
+            [
+                LOW_MASS_BINARY_FRACTION_MIN_MASS,
+                LOW_MASS_BINARY_FRACTION_MAX_MASS,
+            ]
+        ),
+        [LOW_MASS_BINARY_FRACTION, reference_binary_fraction],
+    )
+    return binary_cdf * target_binary_fraction / reference_binary_fraction
+
+
 def get_multidim_sampler(
     final_kstar1,
     final_kstar2,
@@ -809,7 +834,7 @@ class Worker(object):
             #     ; For M1 = 40 - 150 Msun, adopt binary statistics of M1 = 40 Msun.
             #     ; For M1 = 0.08 - 0.8 Msun, adopt P and e dist of M1 = 0.8Msun,
             #     ; scale and interpolate the companion frequencies so that the
-            #     ; binary star fraction of M1 = 0.08 Msun primaries is zero,
+            #     ; binary star fraction of M1 = 0.08 Msun primaries is 20%,
             #     ; and truncate the q distribution so that q > q_min = 0.08/M1
             indM1 = np.where(abs(myM1 - M1v) == min(abs(myM1 - M1v)))
             indM1 = indM1[0]
@@ -818,7 +843,9 @@ class Worker(object):
             mycumPbindist_flat = (cumPbindist[:, indM1]).flatten()
             # If M1 < 0.8 Msun, rescale to appropriate binary star fraction
             if(myM1 <= 0.8):
-                mycumPbindist_flat = mycumPbindist_flat * np.interp(np.log10(myM1), np.log10([0.08, 0.8]), [0.0, 1.0])
+                mycumPbindist_flat = _rescale_low_mass_binary_cdf(
+                    mycumPbindist_flat, myM1
+                )
 
             # ; Given M1, determine the binary star fraction
             mybinfrac = np.max(mycumPbindist_flat)

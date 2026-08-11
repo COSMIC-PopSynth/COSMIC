@@ -1,6 +1,39 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.2.0
+
+This version, among other things, introduces adaptive importance sampling to COSMIC.
+
+- Additions/changes
+    - **Adaptive importance sampling via the STROOPWAFEL algorithm** ([Broekgaarden et al. 2019](https://arxiv.org/abs/1905.00910)) — a new vectorised module for efficiently sampling rare binary outcomes (e.g. merging double compact objects), where flat Monte Carlo would need millions of evolutions to collect a handful of systems. Lives in ``cosmic.sample.stroopwafel``:
+        - ``AdaptiveSampler`` runs the three-phase pipeline (exploration → adaptation → refinement) and returns importance-weighted results; pass ``mc_only=True`` for a plain Monte Carlo baseline.
+        - ``ParameterSpace`` / ``Parameter`` define the sampled dimensions. Each parameter takes a single composable ``dist`` (see below), and columns follow the order the parameters are supplied.
+        - A binary is defined by ``{mass_1, mass_2, porb, ecc, metallicity}``; each is either sampled or returned by a user ``derive_params`` callback, validated when the sampler is constructed.
+        - Composable distributions (``cosmic.sample.stroopwafel.distributions``): base distributions (``Uniform``, ``PowerLaw``, ``BrokenPowerLaw``, ``TruncatedNormal``) combined with coordinate transforms (``Identity``, ``Log10``, ``Ln``, ``Sin``, ``CosShift``). Built-ins include ``kroupa`` (a continuous broken power law, α=-1.3 below 0.5 Msun and -2.3 above), ``sana``, ``sana_ecc``, ``flat_in_log``, ``uniform``, ``uniform_in_sine``, ``uniform_in_cosine`` and ``disberg``. Define your own by passing a ``Distribution`` instance, calling ``register(...)``, or subclassing ``Distribution``.
+        - Physical rejection via ``default_reject`` (or a custom callback). It is ``SSEDict``-aware, so ZAMS radii are computed with the same stellar engine used for evolution.
+        - Built-in hit-definition presets ``any_dco`` and ``merging_dco`` (``cosmic.sample.stroopwafel.presets``), or supply any ``(bpp) -> (n_hits, hit_bin_nums)`` function.
+        - Results are returned as ``cosmic.output.COSMICStroopOutput``, holding the samples, importance weights, hit flags, and full COSMIC tables, with ``hit_rate``/``hit_rate_uncertainty`` properties, ``draw_representative_sample(...)`` (weighted bootstrap), and ``save``/``from_file``.
+        - Self-contained checkpointing: ``run_exploration()`` returns a ``STROOPWAFELCheckpoint`` (``.save(path)``), and ``AdaptiveSampler.from_checkpoint(path)`` rebuilds the sampler — parameter space, settings, callables (serialised with ``dill``), and RNG state — for ``run_refinement()`` with no re-specification. Any setting can be overridden as a keyword.
+    - ``bhflag =  4`` is added as another option, which applies fallback-modulation even when kicks are directly supplied
+
+- Documentation:
+    - New "Adaptive importance sampling" tutorial series under ``docs/pages/tutorials/adaptive/``: getting started (``basics``), defining and customising distributions (``distributions``), interpreting outputs and weights (``outputs``), and saving/resuming runs (``checkpoint``).
+
+## 4.1.1
+
+- Additions/changes
+    - Add `kickflag` 7 and 8 from @astroabishek (thank you!)
+
+- Code cleanup
+    - Added a license
+    - Added some new example figures
+    - Pin versions to more specific values for a more reproducible environment.
+
+- Bug fixes
+    - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
+    - Fixed Roche radius calculation
+
 ## 4.1.0
 
 - Additions/changes

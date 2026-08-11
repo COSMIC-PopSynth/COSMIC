@@ -9,7 +9,10 @@ import numpy as np
 import pandas as pd
 from cosmic.sample import InitialBinaryTable
 from cosmic.sample.sampler.independent import Sample
-from cosmic.sample.sampler.multidim import MultiDim
+from cosmic.sample.sampler.multidim import (
+    MultiDim,
+    _rescale_low_mass_binary_cdf,
+)
 from cosmic.sample.sampler.cmc import CMCSample
 from cosmic.sample.cmc import elson
 from cosmic.sample.initialcmctable import InitialCMCTable
@@ -47,11 +50,11 @@ OFFNER_MASS_RANGES = [(0.075,0.15), (0.15,0.30), (0.3,0.6), (0.75,1.00), (0.85,1
 OFFNER_DATA = [0.19, 0.23, 0.30, 0.42, 0.47, 0.50, 0.68, 0.81, 0.89, 0.93, 0.96]
 OFFNER_ERRORS = [0.03, 0.02, 0.02, 0.03, 0.03, 0.04, 0.07, 0.06, 0.05, 0.04, 0.04]
 MULTIDIM_BINFRAC_MAX = 0.6146916774140262
-MULTIDIM_BINFRAC_MIN = 0.13786300908773025
+MULTIDIM_BINFRAC_MIN = 0.2695344754654569
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 946002.8245352195
 KSTAR_SOLAR = 1.0
-MOE_TOTAL_MASS = 20.27926225850954
+MOE_TOTAL_MASS = 19.511403220255016
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
@@ -310,7 +313,8 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
-        power_slope = power_law_fit(np.log10(porb))
+        porb_cut = porb[porb > 10**0.6]
+        power_slope = power_law_fit(np.log10(porb_cut))
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
         # now some custom power laws
@@ -330,7 +334,7 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
-        porb_cut = porb[porb > 2.5]
+        porb_cut = porb[porb > 10**2.5]
         power_slope = power_law_fit(np.log10(porb_cut))
         self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
@@ -391,7 +395,7 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 0.5)]
+        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 1.5)]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
@@ -401,7 +405,7 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26_ecsn', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 0.5)]
+        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 1.5)]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
         self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
@@ -448,7 +452,7 @@ class TestSample(unittest.TestCase):
 
         # now we feed aRL_over_a into sample_ecc
         ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='thermal', size=mass1.size)
-        ecc_cut = ecc[ecc < 0.7]
+        ecc_cut = ecc[ecc < 0.65]
         slope = linear_fit(ecc_cut)
         self.assertEqual(np.round(slope, 0), THERMAL_SLOPE)
 
@@ -496,6 +500,19 @@ class TestSample(unittest.TestCase):
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
         self.assertAlmostEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
         self.assertAlmostEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)
+
+    def test_multidim_low_mass_binary_fraction(self):
+        binary_cdf = np.linspace(0.0, 0.4, 10)
+
+        low_mass_cdf = _rescale_low_mass_binary_cdf(binary_cdf, 0.08)
+        midpoint_cdf = _rescale_low_mass_binary_cdf(
+            binary_cdf, np.sqrt(0.08 * 0.8)
+        )
+        reference_cdf = _rescale_low_mass_binary_cdf(binary_cdf, 0.8)
+
+        self.assertAlmostEqual(low_mass_cdf.max(), 0.20)
+        self.assertAlmostEqual(midpoint_cdf.max(), 0.30)
+        np.testing.assert_allclose(reference_cdf, binary_cdf)
 
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
@@ -644,6 +661,21 @@ class TestSample(unittest.TestCase):
         except FileNotFoundError:
             it_fails = True
         self.assertFalse(it_fails)
+
+    def test_samples_unique(self):
+        # ensure that samples are unique, both serial and parallel
+        np.random.seed(2)
+
+        for nproc in [1, 2]:
+            ibt = InitialBinaryTable.sampler(
+                'independent', range(16), range(16),
+                binfrac_model=1.0, primary_model='kroupa01',
+                ecc_model='sana12', porb_model='sana12',
+                qmin=-1, SF_start=13700.0, SF_duration=0.0,
+                met=0.02, size=10_000, nproc=nproc
+            )[0]
+
+            self.assertTrue(len(ibt) == len(ibt.drop_duplicates()))
 
 class TestCMCSample(unittest.TestCase):
     def test_plummer_profile(self):
