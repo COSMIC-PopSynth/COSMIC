@@ -977,12 +977,12 @@ class Sample(object):
         # of the period distribution there
         q = mass2 / mass1
         RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
+            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** (1.0 / 3.0))
         )
 
         q2 = mass1 / mass2
         RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
+            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** (1.0 / 3.0))
         )
 
         # include the factor for the eccentricity
