@@ -1516,6 +1516,10 @@
                         "name": "range [0, 1]",
                         "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
                     },
+		    {
+                        "name": -1,
+                        "description": "Uses the linear relation for fallback fraction as a function of CO core mass from Ugolini+25"
+                    },
                     {
                         "name": 0.5,
                         "description": "Default choice",
