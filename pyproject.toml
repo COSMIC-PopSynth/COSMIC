@@ -47,6 +47,7 @@ doc = [
     "sphinx-design",
     "sphinx-copybutton",
     "sphinx-gallery",
+    "beautifulsoup4",
 ]
 test = [
     "pytest",
@@ -54,8 +55,10 @@ test = [
     "coverage",
     "importlib-metadata < 5.0",
     "wheel",
+    "dill",
 ]
-all = ["cosmic-popsynth[doc, test]"]
+merging_dco = ["legwork"]
+all = ["cosmic-popsynth[doc, test, merging_dco]"]
 
 [build-system]
 build-backend = 'mesonpy'
