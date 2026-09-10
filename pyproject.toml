@@ -74,6 +74,9 @@ requires = [
 
 [tool.cibuildwheel]
 manylinux-x86_64-image = "manylinux2014"
+before-test = "pip install \"numpy >= 2.0, < 2.3; python_version < '3.14'\" \"numpy >= 2.3.2, < 2.6; python_version >= '3.14'\""
+test-environment = { PIP_NO_DEPS = "1" }
+test-command = "python -c \"from cosmic import _evolvebin\""
 
 # cp314 has to build against numpy >= 2.3.2, which ships manylinux_2_28 wheels only.
 # Everything else stays on manylinux2014 (glibc 2.17) so the existing wheels keep
@@ -84,4 +87,3 @@ manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.macos]
 repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
-

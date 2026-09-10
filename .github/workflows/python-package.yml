@@ -7,12 +7,16 @@ on: [pull_request]
 
 jobs:
   build:
-  
+    name: Python ${{ matrix.python-version }} (${{ matrix.dependency-set }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        dependency-set: [highest]
+        include:
+          - python-version: '3.10'
+            dependency-set: lowest
 
     steps:
     - name: Checkout repository with submodules
@@ -34,11 +38,12 @@ jobs:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
         # Look to see if there is a cache hit for the corresponding requirements
-        key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+        key: ${{ runner.os }}-py${{ matrix.python-version }}-pip-${{ matrix.dependency-set }}-${{ hashFiles('pyproject.toml', 'ci/constraints-lowest.txt') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-py${{ matrix.python-version }}-pip-${{ matrix.dependency-set }}-
+          ${{ runner.os }}-py${{ matrix.python-version }}-pip-
           ${{ runner.os }}-
-    - name: Install dependencies and package
+    - name: Install system and build dependencies
       run: |
         # upgrade apt-get and install system dependencies
         sudo apt-get update
@@ -47,8 +52,15 @@ jobs:
         # upgrade pip and install build/lint tooling
         python -m pip install -U pip setuptools wheel packaging flake8
 
-        # install cosmic together with its test dependencies
+    - name: Install package with highest-compatible dependencies
+      if: matrix.dependency-set == 'highest'
+      run: |
         python -m pip install .[test]
+
+    - name: Install package with lowest direct dependencies
+      if: matrix.dependency-set == 'lowest'
+      run: |
+        python -m pip install -c ci/constraints-lowest.txt .[test]
         
     - name: Test with pytest
       run: |
