@@ -29,9 +29,10 @@ dependencies = [
     "matplotlib >= 3.9, < 4.0",
     "tables >= 3.10.1, < 4.0",
     "h5py >= 3.12.1, < 4.0",
-    "schwimmbad >= 0.3.1",
+    "schwimmbad >= 0.4.0",
     "tqdm >= 4.1",
     "configparser",
+    "dill",
 ]
 
 [project.optional-dependencies]
@@ -53,12 +54,10 @@ test = [
     "pytest",
     "pytest-cov",
     "coverage",
-    "importlib-metadata < 5.0",
     "wheel",
-    "dill",
 ]
-merging_dco = ["legwork"]
-all = ["cosmic-popsynth[doc, test, merging_dco]"]
+merging-dco = ["legwork"]
+all = ["cosmic-popsynth[doc, test, merging-dco]"]
 
 [build-system]
 build-backend = 'mesonpy'

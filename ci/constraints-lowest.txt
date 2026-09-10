@@ -7,5 +7,5 @@ astropy==6.1.0
 matplotlib==3.9.0
 tables==3.10.1
 h5py==3.12.1
-schwimmbad==0.3.1
+schwimmbad==0.4.0
 tqdm==4.1
