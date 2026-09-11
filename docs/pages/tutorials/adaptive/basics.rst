@@ -198,7 +198,7 @@ These functions focus on double compact objects (DCOs) and are suitable for grav
 
 .. note::
 
-    The ``merging_dco`` function requires the `LEGWORK python package <https://legwork.readthedocs.io/en/latest/>`_ to compute the merger time.  If you do not have LEGWORK installed, ``merging_dco`` will raise an error.
+    The ``merging_dco`` function requires the `LEGWORK python package <https://legwork.readthedocs.io/en/latest/>`_ to compute the merger time.  If you do not have LEGWORK installed, ``merging_dco`` will raise an error. It can be installed using ``pip install cosmic-popsynth[merging-dco]``
 
 .. code-block:: python
 

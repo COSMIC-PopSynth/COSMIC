@@ -31,7 +31,7 @@ def merging_dco(kstar_1, kstar_2, max_merge_time=13.7):
         from legwork import evol
     except ImportError:
         raise ImportError("The 'merging_dco' preset requires the LEGWORK package. "
-                          "Please install it with 'pip install legwork' to use this preset.")
+                          "Please install it with 'pip install cosmic-popsynth[merging-dco]' to use this preset.")
     import astropy.units as u
 
     k1_set = set(kstar_1)
