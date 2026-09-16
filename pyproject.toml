@@ -21,8 +21,9 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
 ]
+# If dependency floors change, update ci/constraints-lowest.txt.
 dependencies = [
-    "numpy >= 2.0, < 2.6",          # if you change numpy versions, also change it in the build-system section below
+    "numpy >= 2.0, < 2.6",  # if you change numpy versions, also change it in (1) the build-system section below and (2) the .github/workflows/python-package.yml file
     "scipy >= 1.14.1, < 1.19",
     "pandas >= 2.2.3, < 3.1",
     "astropy >= 6.1, < 9.0",
@@ -56,8 +57,8 @@ test = [
     "coverage",
     "wheel",
 ]
-merging-dco = ["legwork"]
-all = ["cosmic-popsynth[doc, test, merging-dco]"]
+extras = ["legwork"]
+all = ["cosmic-popsynth[doc, test, extras]"]
 
 [build-system]
 build-backend = 'mesonpy'

@@ -96,5 +96,5 @@ def test_merging_dco_names_the_optional_dependency_group(monkeypatch):
     # same way it does for a user who never installed the optional extra.
     monkeypatch.setitem(sys.modules, "legwork", None)
 
-    with pytest.raises(ImportError, match=r"pip install cosmic-popsynth\[merging-dco\]"):
+    with pytest.raises(ImportError, match=r"pip install cosmic-popsynth\[extras\]"):
         merging_dco(kstar_1=[14], kstar_2=[14])
