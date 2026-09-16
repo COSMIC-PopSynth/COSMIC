@@ -1,6 +1,16 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.2.1
+
+- Additions/changes
+    - Updated the multidim sampler to set the absolute binary fraction at 0.08 Msun to 20% instead of zero (see https://github.com/COSMIC-PopSynth/COSMIC/pull/820)
+    - We now allow for sigmadiv=0.0, which sets ECSN kicks to be the same as CCSN
+    - Set ceflag=0 to be a new default, documentation clarified
+
+- Bug fixes
+    - Previous versions used 0.69 for the value of sigma in the lognormal distribution for natal kicks, corrected to 0.68 from Disberg+2025
+
 ## 4.2.0
 
 This version, among other things, introduces adaptive importance sampling to COSMIC.

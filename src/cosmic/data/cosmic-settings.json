@@ -1142,6 +1142,10 @@
                         "description": "    sets ECSN kicks to be drawn from a Maxwellian distribution with dispersion given by sigmadiv"
                     },
                     {
+                        "name": 0.0,
+                        "description": "ECSN get the same kicks as CCSN"
+                    },
+                    {
                         "name": -20.0,
                         "description": "Default choice",
                         "default": true
