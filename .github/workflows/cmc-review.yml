@@ -121,7 +121,6 @@ jobs:
               label => label.name === 'needs-cmc-review'
             );
 
-            core.setOutput('should_flag', shouldFlag ? 'true' : 'false');
             core.setOutput('should_notify', shouldFlag && !alreadyFlagged ? 'true' : 'false');
             core.setOutput('reason', reason);
 

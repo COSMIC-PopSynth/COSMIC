@@ -1,9 +1,8 @@
 FROM ubuntu:jammy AS spython-base
-RUN apt-get -y update && apt-get -y install libopenmpi-dev openmpi-bin libhdf5-serial-dev cmake python3-mpi4py python3-pip python3-numpy ninja-build \
+RUN apt-get -y update && apt-get -y install libopenmpi-dev openmpi-bin libhdf5-serial-dev python3-mpi4py python3-pip python3-numpy \
     && rm -rf /var/lib/apt/lists/*
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir meson
 # Build the checked-out tree rather than cloning from GitHub, so the image
 # matches the commit that triggered the build and uses the pinned METISSE
 # submodule. The workflow checks out submodules recursively; see .dockerignore

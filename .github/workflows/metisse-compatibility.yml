@@ -47,8 +47,8 @@ jobs:
       metisse-sha: ${{ needs.resolve-metisse.outputs.metisse-sha }}
 
   notify:
-    name: Track scheduled compatibility failures
-    if: ${{ !cancelled() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == github.event.repository.default_branch && needs.resolve-metisse.result == 'success' && needs.test.result == 'success')) }}
+    name: Track compatibility failures
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == github.event.repository.default_branch)) }}
     needs: [resolve-metisse, test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -72,17 +72,26 @@ jobs:
           const rawSha = process.env.METISSE_SHA || '';
           const metisseSha = /^[0-9a-f]{40}$/.test(rawSha) ? `\`${rawSha}\`` : 'unavailable';
 
-          const issues = await github.paginate(github.rest.issues.listForRepo, {
+          if (context.payload.repository.has_issues === false) {
+            core.warning('Issues are disabled; reporting METISSE compatibility in the workflow summary.');
+            await core.summary.addRaw(`METISSE compatibility: ${failed ? 'failed' : 'passed'}\n\nResolver: ${resolveResult}; tests: ${testResult}; METISSE: ${metisseSha}\n\n${runUrl}\n`).write();
+            return;
+          }
+
+          let issue;
+          for await (const { data } of github.paginate.iterator(github.rest.issues.listForRepo, {
             owner: context.repo.owner,
             repo: context.repo.repo,
             state: 'open',
             per_page: 100,
-          });
-          const issue = issues.find(candidate =>
-            !candidate.pull_request &&
-            candidate.user?.login === 'github-actions[bot]' &&
-            candidate.body?.includes(marker)
-          );
+          })) {
+            issue = data.find(candidate =>
+              !candidate.pull_request &&
+              candidate.user?.login === 'github-actions[bot]' &&
+              candidate.body?.includes(marker)
+            );
+            if (issue) break;
+          }
 
           if (failed) {
             const body = [

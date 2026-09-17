@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+from pathlib import Path
 
 
 _COMMIT_HASH_RE = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z", re.IGNORECASE)
@@ -22,9 +23,15 @@ def get_commit_hash():
     if env_hash:
         return _validate_commit_hash(env_hash)
 
+    source_root = Path(__file__).resolve().parents[2]
+    # Do not mistake a source archive's enclosing repository for COSMIC.
+    if not (source_root / '.git').exists():
+        return ''
+
     try:
         result = subprocess.run(
             ['git', 'rev-parse', 'HEAD'],
+            cwd=source_root,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -38,7 +45,7 @@ def get_commit_hash():
 
 
 def write_commit_hash_to_file(commit_hash):
-    with open('./src/cosmic/_commit_hash.py', 'w') as f:
+    with Path(__file__).resolve().with_name('_commit_hash.py').open('w') as f:
         f.write(f'COMMIT_HASH = {commit_hash!r}\n')
 
 
