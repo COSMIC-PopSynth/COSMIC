@@ -102,6 +102,8 @@ jobs:
               }
             }
 
+            reason = reason.replace(/[`$\\\r\n]/g, ' ').slice(0, 200);
+
             core.setOutput('should_flag', shouldFlag ? 'true' : 'false');
             core.setOutput('reason', reason);
 
@@ -143,9 +145,11 @@ jobs:
       - name: comment to request CMC review
         if: steps.decide.outputs.should_flag == 'true'
         uses: actions/github-script@v7
+        env:
+          REASON: ${{ steps.decide.outputs.reason }}
         with:
           script: |
-            const reason = `${{ toJSON(steps.decide.outputs.reason) }}`.replace(/^"|"$/g, '');
+            const reason = process.env.REASON || 'see workflow logs';
 
             const body = `
             🚨 **CMC review requested**

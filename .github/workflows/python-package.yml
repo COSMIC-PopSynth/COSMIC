@@ -9,6 +9,9 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Python ${{ matrix.python-version }} (${{ matrix.dependency-set }})
@@ -28,6 +31,7 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0  # needed for full submodule history
+        persist-credentials: false
     - name: Switch METISSE submodule to track develop branch
       run: |
         git submodule set-branch --branch develop src/cosmic/src/METISSE
@@ -78,4 +82,8 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
       with:
+        # Codecov rejects tokenless uploads on protected branches, so pushes to
+        # develop need this secret. It is empty for pull requests from forks,
+        # where the action falls back to a tokenless upload.
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false   # don't fail tests from code coverage alone

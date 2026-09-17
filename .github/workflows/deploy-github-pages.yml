@@ -5,10 +5,14 @@ on:
     branches:
       - develop
 
+permissions: {}
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -17,6 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        persist-credentials: false
         submodules: recursive
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5

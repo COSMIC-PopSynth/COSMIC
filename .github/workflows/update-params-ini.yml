@@ -6,9 +6,13 @@ on:
       - develop
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   update-params-ini:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4

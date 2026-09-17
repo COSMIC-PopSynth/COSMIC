@@ -4,15 +4,21 @@ on:
   push:
     branches: [ develop ]
 
+permissions: {}
+
 jobs:
 
   build:
     runs-on: ubuntu-latest
+    environment: dockerhub
+    permissions:
+      contents: read
     steps:
     
       - name: Check Out Repo 
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
 
       - name: Login to Docker Hub
