@@ -66,13 +66,13 @@ jobs:
     - name: Install package with highest-compatible dependencies
       if: matrix.dependency-set == 'highest'
       run: |
-        python -m pip install --no-build-isolation -e .[test]
+        python -m pip install --no-build-isolation -e ".[test]"
 
     - name: Install package with lowest direct dependencies
       if: matrix.dependency-set == 'lowest'
       run: |
         python -m pip install -c ci/constraints-lowest.txt "numpy>=2.0,<2.3"
-        python -m pip install --no-build-isolation -c ci/constraints-lowest.txt -e .[test]
+        python -m pip install --no-build-isolation -c ci/constraints-lowest.txt -e ".[test]"
         
     - name: Test with pytest
       run: |
