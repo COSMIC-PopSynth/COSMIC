@@ -1,0 +1,34 @@
+# Build context for the Dockerfile. The image is built from the checked-out
+# repo (including the METISSE submodule), so keep src/, meson.build and
+# pyproject.toml; exclude only VCS metadata, local build output and caches.
+#
+# Patterns are relative to the context root, so bare names match root-level
+# entries only. Do NOT add src/ or any of its subdirectories: meson.build
+# compiles src/cosmic/src/METISSE/src/*.f90 directly.
+
+# VCS metadata (the submodule's .git file points outside the context)
+.git
+.gitattributes
+.gitignore
+.gitmodules
+**/.git
+.github
+
+# Local build output
+build
+dist
+*.egg-info
+**/__pycache__
+**/*.py[cod]
+**/*.so
+
+# Tooling caches and editor state
+.pytest_cache
+.ruff_cache
+.skylos
+.vscode
+.DS_Store
+
+# Not needed at runtime
+debug
+docs/_build
