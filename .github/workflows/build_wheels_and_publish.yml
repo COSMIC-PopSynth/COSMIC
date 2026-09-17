@@ -7,6 +7,10 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
   CIBW_ARCHS_LINUX: "x86_64"
@@ -55,10 +59,15 @@ jobs:
         compiler: gcc
         version: '13'
         
-    - name: Build source and wheels distribution on Linux
-      run: |
-        python -m build --sdist --outdir dist
-        python -m cibuildwheel --output-dir dist
+    # The sdist is platform independent. Building it on every matrix leg
+    # produces identically named tarballs in separate artifacts, and the
+    # publish job's collect step then silently overwrites one with the other.
+    - name: Build source distribution
+      if: runner.os == 'Linux'
+      run: python -m build --sdist --outdir dist
+
+    - name: Build wheels
+      run: python -m cibuildwheel --output-dir dist
         
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:

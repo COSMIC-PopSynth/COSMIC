@@ -7,6 +7,10 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
 
@@ -50,7 +54,7 @@ jobs:
         sudo apt-get install gfortran swig libhdf5-serial-dev
 
         # install cosmic together with its documentation dependencies
-        python -m pip install .[doc]
+        python -m pip install ".[doc]"
 
     - name: Make dependencies
       run: |
