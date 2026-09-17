@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Checkout repository with submodules
-      uses: actions/checkout@v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         submodules: recursive
         fetch-depth: 0  # needed for full submodule history
@@ -37,11 +37,11 @@ jobs:
         git submodule set-branch --branch develop src/cosmic/src/METISSE
         git submodule update --remote src/cosmic/src/METISSE
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
@@ -80,7 +80,7 @@ jobs:
         pytest --cov=./src/cosmic --cov-report=xml
         
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
       with:
         # Codecov rejects tokenless uploads on protected branches, so pushes to
         # develop need this secret. It is empty for pull requests from forks,
