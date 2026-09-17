@@ -5,21 +5,31 @@ on:
     branches:
       - develop
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.10']
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
+        persist-credentials: false
         submodules: recursive
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Upgrade pip
@@ -29,10 +39,10 @@ jobs:
 
     - name: Get pip cache dir
       id: pip-cache
-      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+      run: echo "dir=$(pip cache dir)" >> "$GITHUB_OUTPUT"
 
     - name: Cache dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.pip-cache.outputs.dir }}
         key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
@@ -44,7 +54,7 @@ jobs:
         sudo apt-get install gfortran swig libhdf5-serial-dev
 
         # install cosmic together with its documentation dependencies
-        python -m pip install .[doc]
+        python -m pip install ".[doc]"
 
     - name: Make dependencies
       run: |
@@ -53,7 +63,7 @@ jobs:
 
     - name: Deploy to GitHub Pages
       if: success()
-      uses: crazy-max/ghaction-github-pages@v4
+      uses: crazy-max/ghaction-github-pages@1d6ee9b181a81033a16bd707a1401afa978daab4 # v5.0.0
       with:
         target_branch: gh-pages
         build_dir: docs/_build/html/
