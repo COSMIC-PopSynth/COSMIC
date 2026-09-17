@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.initialcmctable
+   :members:
+   :undoc-members:
+   :show-inheritance:

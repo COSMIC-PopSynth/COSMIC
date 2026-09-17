@@ -1,0 +1,6 @@
+get_multidim_sampler
+====================
+
+.. currentmodule:: cosmic.sample.sampler.multidim
+
+.. autofunction:: get_multidim_sampler

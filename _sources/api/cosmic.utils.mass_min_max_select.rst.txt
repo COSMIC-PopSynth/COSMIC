@@ -1,0 +1,6 @@
+mass_min_max_select
+===================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: mass_min_max_select

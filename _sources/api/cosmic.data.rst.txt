@@ -1,0 +1,10 @@
+cosmic.data package
+===================
+
+Module contents
+---------------
+
+.. automodule:: cosmic.data
+   :members:
+   :undoc-members:
+   :show-inheritance:

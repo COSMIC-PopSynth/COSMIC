@@ -1,0 +1,6 @@
+idl_tabulate
+============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: idl_tabulate

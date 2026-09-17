@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.stroopwafel.rejection
+   :members:
+   :undoc-members:
+   :show-inheritance:

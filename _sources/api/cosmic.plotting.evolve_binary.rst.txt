@@ -1,0 +1,6 @@
+evolve_binary
+=============
+
+.. currentmodule:: cosmic.plotting
+
+.. autofunction:: evolve_binary

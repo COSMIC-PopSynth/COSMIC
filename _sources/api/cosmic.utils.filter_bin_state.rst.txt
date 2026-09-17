@@ -1,0 +1,6 @@
+filter_bin_state
+================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: filter_bin_state

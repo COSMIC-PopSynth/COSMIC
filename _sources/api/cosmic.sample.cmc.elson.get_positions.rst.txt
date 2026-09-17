@@ -1,0 +1,6 @@
+get_positions
+=============
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: get_positions

@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.stroopwafel.mixture_model
+   :members:
+   :undoc-members:
+   :show-inheritance:

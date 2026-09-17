@@ -1,0 +1,6 @@
+get_independent_sampler
+=======================
+
+.. currentmodule:: cosmic.sample.sampler.independent
+
+.. autofunction:: get_independent_sampler

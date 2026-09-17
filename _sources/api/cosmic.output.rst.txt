@@ -1,0 +1,4 @@
+.. automodule:: cosmic.output
+   :members:
+   :undoc-members:
+   :show-inheritance:

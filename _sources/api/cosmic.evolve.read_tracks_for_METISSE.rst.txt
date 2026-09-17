@@ -1,0 +1,6 @@
+read_tracks_for_METISSE
+=======================
+
+.. currentmodule:: cosmic.evolve
+
+.. autofunction:: read_tracks_for_METISSE
