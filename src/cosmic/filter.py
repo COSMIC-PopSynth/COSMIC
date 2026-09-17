@@ -22,11 +22,9 @@
 import operator
 import token
 import re
+from io import StringIO
 from tokenize import generate_tokens
 from collections import OrderedDict
-
-from six import string_types
-from six.moves import StringIO
 
 __author__ = "Duncan Macleod <duncan.macleod@ligo.org>"
 
@@ -197,10 +195,10 @@ def parse_column_filters(*definitions):
 
 def _flatten(container):
     """Flatten arbitrary nested list of filters into a 1-D list"""
-    if isinstance(container, string_types):
+    if isinstance(container, str):
         container = [container]
     for elem in container:
-        if isinstance(elem, string_types) or is_filter_tuple(elem):
+        if isinstance(elem, str) or is_filter_tuple(elem):
             yield elem
         else:
             for elem2 in _flatten(elem):
@@ -210,5 +208,5 @@ def _flatten(container):
 def is_filter_tuple(tup):
     """Return whether a `tuple` matches the format for a column filter"""
     return isinstance(tup, (tuple, list)) and (
-        len(tup) == 3 and isinstance(tup[0], string_types) and callable(tup[1])
+        len(tup) == 3 and isinstance(tup[0], str) and callable(tup[1])
     )
