@@ -9,13 +9,15 @@ on:
       - 'src/cosmic/data/cosmic-settings.json'
       - 'src/cosmic/src/ran3.f'
 
-permissions:
-  pull-requests: write
-  contents: read
+permissions: {}
 
 jobs:
   flag-cmc-review:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: decide whether to flag PR

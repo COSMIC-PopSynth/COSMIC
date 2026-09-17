@@ -11,6 +11,7 @@ permissions: {}
 jobs:
   update-params-ini:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
 
