@@ -34,10 +34,6 @@ jobs:
         fetch-depth: 0
         persist-credentials: false
         submodules: recursive
-    - name: Switch METISSE submodule to track develop branch
-      run: |
-        git submodule set-branch --branch develop src/cosmic/src/METISSE
-        git submodule update --remote src/cosmic/src/METISSE
     - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       name: Install Python
       with:
@@ -71,6 +67,7 @@ jobs:
         if-no-files-found: error
 
   publish:
+    if: github.event_name == 'release' && github.event.action == 'published'
     needs: [build-wheels-and-dist]
     name: Publish Python 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
