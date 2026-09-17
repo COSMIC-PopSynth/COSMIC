@@ -1,0 +1,125 @@
+name: METISSE develop compatibility
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  # Keep this literal distinct from python-package.yml's github.workflow-based
+  # group. Matching caller and reusable-workflow groups can deadlock the call.
+  group: metisse-develop-compatibility-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  resolve-metisse:
+    name: Resolve METISSE develop
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      metisse-sha: ${{ steps.resolve.outputs.metisse-sha }}
+
+    steps:
+    - name: Resolve the current develop commit
+      id: resolve
+      shell: bash
+      env:
+        METISSE_REPOSITORY: https://github.com/TeamMETISSE/METISSE.git
+      run: |
+        set -euo pipefail
+        metisse_sha=$(git ls-remote --exit-code "$METISSE_REPOSITORY" refs/heads/develop | cut -f1)
+        if [[ ! "$metisse_sha" =~ ^[0-9a-f]{40}$ ]]; then
+          echo "Unexpected METISSE commit: $metisse_sha" >&2
+          exit 1
+        fi
+        echo "metisse-sha=$metisse_sha" >> "$GITHUB_OUTPUT"
+        echo "METISSE develop commit: \`$metisse_sha\`" >> "$GITHUB_STEP_SUMMARY"
+
+  test:
+    name: Test METISSE develop
+    needs: resolve-metisse
+    permissions:
+      contents: read
+    uses: ./.github/workflows/python-package.yml
+    with:
+      metisse-sha: ${{ needs.resolve-metisse.outputs.metisse-sha }}
+
+  notify:
+    name: Track scheduled compatibility failures
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == github.event.repository.default_branch && needs.resolve-metisse.result == 'success' && needs.test.result == 'success')) }}
+    needs: [resolve-metisse, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+    - name: Open, update, or close the tracking issue
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      env:
+        RESOLVE_RESULT: ${{ needs.resolve-metisse.result }}
+        TEST_RESULT: ${{ needs.test.result }}
+        METISSE_SHA: ${{ needs.resolve-metisse.outputs.metisse-sha }}
+      with:
+        script: |
+          const marker = '<!-- metisse-develop-compatibility -->';
+          const title = 'METISSE develop compatibility canary is failing';
+          const resolveResult = process.env.RESOLVE_RESULT;
+          const testResult = process.env.TEST_RESULT;
+          const failed = resolveResult !== 'success' || testResult !== 'success';
+          const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+          const rawSha = process.env.METISSE_SHA || '';
+          const metisseSha = /^[0-9a-f]{40}$/.test(rawSha) ? `\`${rawSha}\`` : 'unavailable';
+
+          const issues = await github.paginate(github.rest.issues.listForRepo, {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            per_page: 100,
+          });
+          const issue = issues.find(candidate =>
+            !candidate.pull_request &&
+            candidate.user?.login === 'github-actions[bot]' &&
+            candidate.body?.includes(marker)
+          );
+
+          if (failed) {
+            const body = [
+              marker,
+              'The weekly METISSE `develop` compatibility canary is failing.',
+              '',
+              `- Resolver: **${resolveResult}**`,
+              `- Test matrix: **${testResult}**`,
+              `- METISSE commit: ${metisseSha}`,
+              `- Latest run: ${runUrl}`,
+              '',
+              'This issue is maintained automatically and will close after the canary recovers.',
+            ].join('\n');
+
+            if (issue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                title,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+              });
+            }
+          } else if (issue) {
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed',
+              state_reason: 'completed',
+              body: `${issue.body}\n\nRecovered in ${runUrl}.`,
+            });
+          }

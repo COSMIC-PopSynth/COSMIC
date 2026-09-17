@@ -8,6 +8,16 @@ on:
   push:
     branches:
       - develop
+  workflow_call:
+    inputs:
+      metisse-sha:
+        description: Optional METISSE commit to test instead of the pinned gitlink
+        required: false
+        type: string
+        default: ''
+    secrets:
+      CODECOV_TOKEN:
+        required: false
 
 permissions:
   contents: read
@@ -37,15 +47,30 @@ jobs:
         submodules: recursive
         fetch-depth: 0  # needed for full submodule history
         persist-credentials: false
-    - name: Switch METISSE submodule to track develop branch
+
+    - name: Check out requested METISSE commit
+      if: inputs.metisse-sha != ''
+      shell: bash
+      env:
+        METISSE_SHA: ${{ inputs.metisse-sha }}
       run: |
-        git submodule set-branch --branch develop src/cosmic/src/METISSE
-        git submodule update --remote src/cosmic/src/METISSE
+        set -euo pipefail
+        if [[ ! "$METISSE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+          echo "Unexpected METISSE commit: $METISSE_SHA" >&2
+          exit 1
+        fi
+        git -C src/cosmic/src/METISSE fetch --depth=1 origin "$METISSE_SHA"
+        git -C src/cosmic/src/METISSE checkout --detach "$METISSE_SHA"
+        git -C src/cosmic/src/METISSE submodule sync --recursive
+        git -C src/cosmic/src/METISSE submodule update --init --recursive
+        echo "Testing METISSE develop commit: \`$METISSE_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
+      if: inputs.metisse-sha == ''
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         # This path is specific to Ubuntu
@@ -85,6 +110,7 @@ jobs:
         pytest --cov=./src/cosmic --cov-report=xml
         
     - name: Upload coverage to Codecov
+      if: inputs.metisse-sha == ''
       uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
       with:
         # Codecov rejects tokenless uploads on protected branches, so pushes to
