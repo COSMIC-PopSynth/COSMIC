@@ -123,6 +123,7 @@
 
       WRITE(*,*)mass0(1),mass0(2),tphysf,tb,kstar(1),kstar(2),z,ecc
       WRITE(*,*)neta,bwind,hewind,alpha1(1),alpha1(2),lambdaf,windflag
+      WRITE(*,*)ce2stageflag
       WRITE(*,*)rtmsflag,ceflag,tflag,ifflag,wdflag,bhflag,remnantflag
       WRITE(*,*)mxns,idum,pts1,pts2,pts3
       WRITE(*,*)sigma,beta,xi,acc2,epsnov,eddfac,gamma
