@@ -18,6 +18,11 @@ py3.install_sources(
   subdir: 'cosmic'
 )
 
+py3.install_sources(
+  'data/__init__.py',
+  subdir: 'cosmic/data',
+)
+
 install_data(
   'data/cosmic-settings.json',
   install_dir: py3.get_install_dir() / 'cosmic' / 'data',

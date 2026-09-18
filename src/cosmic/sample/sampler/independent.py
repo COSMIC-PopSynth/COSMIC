@@ -29,7 +29,7 @@ import os
 from cosmic import utils
 
 from .sampler import register_sampler
-from .. import InitialBinaryTable
+from ..initialbinarytable import InitialBinaryTable
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
