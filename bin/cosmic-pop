@@ -292,13 +292,13 @@ if __name__ == '__main__':
         kstar2_range = args.final_kstar2
         kstar2_range_string = str(int(args.final_kstar2[0]))
 
-    dat_store_fname = 'dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity'])
+    dat_store_fname = f'dat_kstar1_{kstar1_range_string}_kstar2_{kstar2_range_string}_SFstart_{sampling["SF_start"]}_SFduration_{sampling["SF_duration"]}_metallicity_{sampling["metallicity"]}.h5'
     # Open the hdf5 file to store the fixed population data
     try:
         with pd.HDFStore(dat_store_fname,complib=args.complib,complevel=args.complevel) as dat_store:
             # If the file exists, we will read it and continue from where we left off
             conv_save = pd.read_hdf(dat_store, 'conv')
-        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
+        log_file = open(f'log_kstar1_{kstar1_range_string}_kstar2_{kstar2_range_string}_SFstart_{sampling["SF_start"]}_SFduration_{sampling["SF_duration"]}_metallicity_{sampling["metallicity"]}.txt', 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
@@ -356,7 +356,7 @@ if __name__ == '__main__':
                         "determine the secondary masses in the initial sample.")
 
             log_file.write("You have specified both qmin and m2_min.\n")
-            log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
+            log_file.write(f"COSMIC will use qmin={args.qmin} to determine the secondary masses in the initial sample.\n")
 
     if sampling["sampling_method"] == "multidim" and args.Nstep < args.nproc ** 2:
             warnings.warn("`Nstep` is less than the square of `nproc`. You will see repeats with multidim sampling. Consider raising `Nstep`.")
