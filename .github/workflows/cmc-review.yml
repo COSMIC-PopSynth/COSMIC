@@ -2,25 +2,31 @@ name: Flag CMC review for cosmic changes
 
 on:
   pull_request_target:
-    types: [opened]
+    types: [opened, synchronize, reopened]
     paths:
       - 'src/cosmic/evolve.py'
       - 'src/cosmic/consts.py'
       - 'src/cosmic/data/cosmic-settings.json'
       - 'src/cosmic/src/ran3.f'
 
-permissions:
-  pull-requests: write
-  contents: read
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   flag-cmc-review:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: decide whether to flag PR
         id: decide
-        uses: actions/github-script@v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const owner = context.repo.owner;
@@ -28,6 +34,11 @@ jobs:
             const pull_number = context.payload.pull_request.number;
 
             const SETTINGS_PATH = 'src/cosmic/data/cosmic-settings.json';
+            const ALWAYS_FLAG_PATHS = [
+              'src/cosmic/evolve.py',
+              'src/cosmic/consts.py',
+              'src/cosmic/src/ran3.f',
+            ];
 
             // helper: fetch file content at a specific ref (sha/branch)
             async function fetchText(path, ref) {
@@ -39,19 +50,22 @@ jobs:
               return buff.toString('utf8');
             }
 
-            // helper: count keys on the object with category === "bse"
+            // helper: count settings on the object with category === "bse"
             // json is expected to be an array: [{category: "blah", ...}, {category: "bse", ...}]
-            // counts top-level keys excluding "category"
-            function bseKeyCount(jsonVal) {
-              if (!Array.isArray(jsonVal)) return 0;
+            function bseSettingCount(jsonVal) {
+              if (!Array.isArray(jsonVal)) {
+                throw new Error('settings document is not an array');
+              }
 
               const bseObj = jsonVal.find(
                 (x) => x && typeof x === 'object' && !Array.isArray(x) && x.category === 'bse'
               );
 
-              if (!bseObj) return 0;
+              if (!bseObj || !Array.isArray(bseObj.settings)) {
+                throw new Error('bse settings array is missing');
+              }
 
-              return Object.keys(bseObj).filter((k) => k === 'settings').length;
+              return bseObj.settings.length;
             }
 
             // list changed files in the PR
@@ -63,18 +77,18 @@ jobs:
             });
 
             const changed = new Set(files.map(f => f.filename));
-            const changedEvolve = changed.has('src/cosmic/evolve.py');
+            const changedCoreFiles = ALWAYS_FLAG_PATHS.filter(path => changed.has(path));
             const changedSettings = changed.has(SETTINGS_PATH);
 
             let shouldFlag = false;
             let reason = '';
 
-            // if evolve changed, always flag
-            if (changedEvolve) {
+            // changes to core implementation files always need CMC review
+            if (changedCoreFiles.length > 0) {
               shouldFlag = true;
-              reason = 'evolve file changed, probably needs CMC review';
+              reason = `core file changed: ${changedCoreFiles.join(', ')}`;
             } else if (changedSettings) {
-              // only flag if bse key-count changes between base and head
+              // only flag if the number of bse settings changes between base and head
               const baseSha = context.payload.pull_request.base.sha;
               const headSha = context.payload.pull_request.head.sha;
 
@@ -85,29 +99,34 @@ jobs:
                 const baseJson = JSON.parse(baseText);
                 const headJson = JSON.parse(headText);
 
-                const baseCount = bseKeyCount(baseJson);
-                const headCount = bseKeyCount(headJson);
+                const baseCount = bseSettingCount(baseJson);
+                const headCount = bseSettingCount(headJson);
 
                 if (baseCount !== headCount) {
                   shouldFlag = true;
-                  reason = `bse key count changed (${baseCount} -> ${headCount})`;
+                  reason = `bse setting count changed (${baseCount} -> ${headCount})`;
                 } else {
                   shouldFlag = false;
-                  reason = `bse key count unchanged (${baseCount})`;
+                  reason = `bse setting count unchanged (${baseCount})`;
                 }
               } catch (err) {
                 // if parsing/fetching fails, be conservative and flag
                 shouldFlag = true;
-                reason = `could not compare bse key count safely (${err.message}); flagging for review`;
+                reason = `could not compare bse setting count safely (${err.message}); flagging for review`;
               }
             }
 
-            core.setOutput('should_flag', shouldFlag ? 'true' : 'false');
+            reason = reason.replace(/[`$\\\r\n]/g, ' ').slice(0, 200);
+            const alreadyFlagged = context.payload.pull_request.labels.some(
+              label => label.name === 'needs-cmc-review'
+            );
+
+            core.setOutput('should_notify', shouldFlag && !alreadyFlagged ? 'true' : 'false');
             core.setOutput('reason', reason);
 
       - name: add "needs-cmc-review" label
-        if: steps.decide.outputs.should_flag == 'true'
-        uses: actions/github-script@v7
+        if: steps.decide.outputs.should_notify == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const labelName = 'needs-cmc-review';
@@ -141,18 +160,22 @@ jobs:
             });
 
       - name: comment to request CMC review
-        if: steps.decide.outputs.should_flag == 'true'
-        uses: actions/github-script@v7
+        if: steps.decide.outputs.should_notify == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          REASON: ${{ steps.decide.outputs.reason }}
         with:
           script: |
-            const reason = `${{ toJSON(steps.decide.outputs.reason) }}`.replace(/^"|"$/g, '');
+            const reason = process.env.REASON || 'see workflow logs';
 
             const body = `
             🚨 **CMC review requested**
 
             This pull request modifies one or more of:
             - \`src/cosmic/evolve.py\`
-            - \`src/cosmic/data/cosmic-settings.json\` (only flagged when \`category: "bse"\` key-count changes)
+            - \`src/cosmic/consts.py\`
+            - \`src/cosmic/src/ran3.f\`
+            - \`src/cosmic/data/cosmic-settings.json\` (only flagged when the number of \`category: "bse"\` settings changes)
 
             **Trigger:** ${reason}
 

@@ -6,6 +6,7 @@ python_sources = [
   'test_stroopwafel.py',
   'test_utils.py',
   'test_compatibility.py',
+  'test_get_commit_hash.py',
 ]
 
 py3.install_sources(
