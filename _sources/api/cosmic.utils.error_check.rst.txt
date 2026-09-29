@@ -1,0 +1,6 @@
+error_check
+===========
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: error_check

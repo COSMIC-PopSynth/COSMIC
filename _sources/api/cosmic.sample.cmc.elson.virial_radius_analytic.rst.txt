@@ -1,0 +1,6 @@
+virial_radius_analytic
+======================
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: virial_radius_analytic

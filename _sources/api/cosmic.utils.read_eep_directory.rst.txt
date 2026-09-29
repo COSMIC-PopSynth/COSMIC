@@ -1,0 +1,6 @@
+read_eep_directory
+==================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: read_eep_directory
