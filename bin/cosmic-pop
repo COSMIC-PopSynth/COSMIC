@@ -192,6 +192,40 @@ if __name__ == '__main__':
     ###########################################################################
     BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
 
+    # we now overwrite the inifile values with what was specified from the command line
+    # (which could mean not overwriting anything at all because they are populated
+    # by default from the inifile).
+    for argument in vars(args):
+        if argument in filters.keys():
+            if filters[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                                "with {0}={2} from the commandline".format(argument, filters[argument], getattr(args, argument)))
+                filters[argument] = getattr(args, argument)
+
+        if argument in convergence.keys():
+            if convergence[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {0}={1} "
+                                "with {0}={2} from the commandline".format(argument, convergence[argument], getattr(args, argument)))
+                convergence[argument] = getattr(args, argument)
+
+        if argument in sampling.keys():
+            if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
+                for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
+                    if (model not in sampling.keys()) and not (getattr(args, model)):
+                        raise ValueError("You have selected the {sampler} sampler "
+                                            "but not specified a model for {model} "
+                                            "in the inifile or command line".format(sampler=sampling[argument], model=model)) 
+            if sampling[argument] != getattr(args, argument):
+                warnings.warn("You are overriding the inifile value of {arg}={ini} "
+                                "with {arg}={cmd} from the commandline".format(arg=argument, ini=sampling[argument], cmd=getattr(args, argument)))
+                sampling[argument] = getattr(args, argument)
+
+        if argument == 'seed':
+            if getattr(args, argument) != seed_int:
+                warnings.warn("You are overriding the inifile value of {arg}={ini} "
+                                "with {arg}={cmd} from the commandline".format(arg=argument, ini=seed_int, cmd=getattr(args, argument)))
+                seed_int = getattr(args, argument)
+    
     ## Check engine
     # Check arguments
     if (args.path_to_tracks is not None) and (args.path_to_he_tracks is not None):
@@ -209,7 +243,7 @@ if __name__ == '__main__':
         # load in the METISSE files
         metisse_m_min, metisse_m_max = read_tracks_for_METISSE(
              path_to_tracks=SSEDict["path_to_tracks"], 
-             IBT_Z=sampling["metallicity"],
+             IBT_Z=sampling['metallicity'],
              z_accuracy_limit=SSEDict['z_accuracy_limit'],
              is_he=False
         )
@@ -234,40 +268,7 @@ if __name__ == '__main__':
             if args.m2_min > m1_min:
                 args.m2_min = m1_min
 
-    # we now overwrite the inifile values with what was specified from the command line
-    # (which could mean not overwriting anything at all because they are populated
-    # by default from the inifile).
-    for argument in vars(args):
-        if argument in filters.keys():
-            if filters[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, filters[argument], getattr(args, argument)))
-                filters[argument] = getattr(args, argument)
-
-        if argument in convergence.keys():
-            if convergence[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, convergence[argument], getattr(args, argument)))
-                convergence[argument] = getattr(args, argument)
-
-        if argument in sampling.keys():
-            if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
-               for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
-                    if (model not in sampling.keys()) and not (getattr(args, model)):
-                        raise ValueError("You have selected the {sampler} sampler "
-                                         "but not specified a model for {model} "
-                                         "in the inifile or command line".format(sampler=sampling[argument], model=model)) 
-            if sampling[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {arg}={ini} "
-                              "with {arg}={cmd} from the commandline".format(arg=argument, ini=sampling[argument], cmd=getattr(args, argument)))
-                sampling[argument] = getattr(args, argument)
-
-        if argument == 'seed':
-            if getattr(args, argument) != seed_int:
-                warnings.warn("You are overriding the inifile value of {arg}={ini} "
-                              "with {arg}={cmd} from the commandline".format(arg=argument, ini=seed_int, cmd=getattr(args, argument)))
-                seed_int = getattr(args, argument)
-
+    
     # Check that the values in BSEDict, SSEDict, filters, and convergence are valid
     utils.error_check(BSEDict, SSEDict, filters, convergence, sampling)
 
