@@ -198,32 +198,32 @@ if __name__ == '__main__':
     for argument in vars(args):
         if argument in filters.keys():
             if filters[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                                "with {0}={2} from the commandline".format(argument, filters[argument], getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={filters[argument]} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 filters[argument] = getattr(args, argument)
 
         if argument in convergence.keys():
             if convergence[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                                "with {0}={2} from the commandline".format(argument, convergence[argument], getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={convergence[argument]} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 convergence[argument] = getattr(args, argument)
 
         if argument in sampling.keys():
             if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
                 for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
                     if (model not in sampling.keys()) and not (getattr(args, model)):
-                        raise ValueError("You have selected the {sampler} sampler "
-                                            "but not specified a model for {model} "
-                                            "in the inifile or command line".format(sampler=sampling[argument], model=model)) 
+                        warnings.warn(f"You have selected the {sampling[argument]} sampler "
+                                            f"but not specified a model for {model} "
+                                            f"in the inifile or command line")
             if sampling[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {arg}={ini} "
-                                "with {arg}={cmd} from the commandline".format(arg=argument, ini=sampling[argument], cmd=getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={sampling[argument]} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 sampling[argument] = getattr(args, argument)
 
         if argument == 'seed':
             if getattr(args, argument) != seed_int:
-                warnings.warn("You are overriding the inifile value of {arg}={ini} "
-                                "with {arg}={cmd} from the commandline".format(arg=argument, ini=seed_int, cmd=getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={seed_int} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 seed_int = getattr(args, argument)
     
     ## Check engine
@@ -318,7 +318,7 @@ if __name__ == '__main__':
         total_n_binaries = 0
         total_n_stars = 0
         idx = 0
-        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
+        log_file = open(f'log_kstar1_{kstar1_range_string}_kstar2_{kstar2_range_string}_SFstart_{sampling["SF_start"]}_SFduration_{sampling["SF_duration"]}_metallicity_{sampling["metallicity"]}.txt', 'w')
 
     # save configuration settings and COSMIC version to output file
     with h5.File(dat_store_fname, 'a') as f:
