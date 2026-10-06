@@ -229,6 +229,13 @@
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
              call RandomLogNormal(disberg_mean,0.68d0,vk,idum1,twopi)
              vk2 = vk*vk
+          elseif(abskickflag.eq.9.and.
+     &           (kw.eq.13.or.kw.eq.14))then
+* Shariat et al. (2026), arXiv:2610.04005, Table 2 parent NS law.
+* Applying this NS-inferred base law to BHs is an extrapolation.
+             call RandomBimodalKick(vk,idum1)
+             if(kw.eq.14) vk = vk * bhsigmafrac
+             vk2 = vk*vk
           elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
 * if the kickflag is 6 then use the Mandel & Muller 2020 distribution
 * https://ui.adsabs.harvard.edu/abs/2020MNRAS.499.3214M/abstract
@@ -261,7 +268,8 @@
             vk = SQRT(vk2)
           endif
 
-          if(abskickflag.eq.1.or.abskickflag.eq.5)then
+          if(abskickflag.eq.1.or.abskickflag.eq.5.or.
+     &       abskickflag.eq.9)then
 * Limit BH kick with fallback mass fraction.
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
@@ -1655,5 +1663,35 @@
       Z0 = SQRT(-2.0d0 * LOG(u1)) * COS(twopi * u2)
       result = EXP(mean + sigma * Z0)
 
+      RETURN
+      END
+
+      SUBROUTINE RandomBimodalKick(result,idum)
+* Fixed marginal posterior medians of the all-NS parent speed law.
+* Natural logs of speed in km/s; not Maxwellian component dispersions.
+* Select the component before rejection so truncation preserves f_low.
+* This fixed approximation does not propagate joint-posterior uncertainty.
+      IMPLICIT NONE
+      real*8 result,mu,sigma,log_vk
+      real*8 f_low,mu_low,sigma_low,mu_high,sigma_high
+      parameter(f_low=0.126d0,mu_low=1.87d0,sigma_low=0.55d0)
+      parameter(mu_high=5.62d0,sigma_high=0.71d0)
+      integer idum
+      real ran3
+      external ran3
+
+      if(RAN3(idum).lt.f_low)then
+         mu = mu_low
+         sigma = sigma_low
+      else
+         mu = mu_high
+         sigma = sigma_high
+      endif
+      do
+         call RandomNormal(mu,sigma,idum,log_vk)
+         if(log_vk.gt.LOG(0.05d0).and.
+     &      log_vk.lt.LOG(1000.d0))exit
+      enddo
+      result = EXP(log_vk)
       RETURN
       END
