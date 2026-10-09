@@ -48,6 +48,16 @@ def default_reject(binary_params, SSEDict=None, min_secondary_mass=0.08):
     # compute separation from periods and masses
     separation = a_from_p(p=porb, m1=mass_1, m2=mass_2)
 
+    # if using METISSE, the metallicities must be a single value (not an array) to compute ZAMS radii
+    if SSEDict is not None and "stellar_engine" in SSEDict and SSEDict["stellar_engine"] == "metisse":
+        if not isinstance(metallicity, float):
+            if len(set(metallicity)) > 1:
+                raise ValueError(
+                    "METISSE requires a single metallicity value to compute ZAMS radii, "
+                    "but multiple metallicities were provided."
+                )
+            metallicity = metallicity[0]
+
     # get stellar radii at ZAMS (depends on the stellar engine in SSEDict)
     sampler = Sample()
     radius_1 = sampler.set_reff(mass=mass_1, metallicity=metallicity, SSEDict=SSEDict)
