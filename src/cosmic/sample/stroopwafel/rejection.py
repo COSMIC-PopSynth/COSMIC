@@ -4,6 +4,8 @@ Provides fully vectorized numpy operations for ZAMS radius, Roche lobe
 radius, and physical rejection criteria used to discard unphysical binary
 systems prior to evolution.
 """
+import numpy as np
+
 from cosmic.sample.sampler.independent import Sample
 from cosmic.utils import calc_Roche_radius, a_from_p
 
@@ -58,10 +60,12 @@ def default_reject(binary_params, SSEDict=None, min_secondary_mass=0.08):
                 )
             metallicity = metallicity[0]
 
-    # get stellar radii at ZAMS (depends on the stellar engine in SSEDict)
+    # get stellar radii at ZAMS (depends on the stellar engine in SSEDict),
+    # using a single call since each call (re)loads the stellar tracks
     sampler = Sample()
-    radius_1 = sampler.set_reff(mass=mass_1, metallicity=metallicity, SSEDict=SSEDict)
-    radius_2 = sampler.set_reff(mass=mass_2, metallicity=metallicity, SSEDict=SSEDict)
+    radii = sampler.set_reff(mass=np.concatenate([mass_1, mass_2]),
+                             metallicity=metallicity, SSEDict=SSEDict)
+    radius_1, radius_2 = radii[:len(mass_1)], radii[len(mass_1):]
 
     # roche lobe radii at periastron
     peri_sep = separation * (1 - ecc)
