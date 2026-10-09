@@ -21,7 +21,7 @@
 from schwimmbad import MultiPool, MPIPool
 
 from .sampler import register_sampler
-from .. import InitialBinaryTable
+from ..initialbinarytable import InitialBinaryTable
 from ... import utils
 
 import numpy as np

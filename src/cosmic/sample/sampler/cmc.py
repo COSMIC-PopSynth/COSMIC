@@ -23,7 +23,7 @@ import numpy as np
 
 from .sampler import register_sampler
 from .independent import Sample
-from .. import InitialCMCTable, InitialBinaryTable
+from ..initialcmctable import InitialCMCTable
 from ..cmc import elson, king
 from ... import utils
 
@@ -414,5 +414,4 @@ class CMCSample(Sample):
         porb_max = utils.p_from_a(amax, mass1_binary, mass2_binary)
 
         return porb_max ## returns orbital period IN DAYS
-
 

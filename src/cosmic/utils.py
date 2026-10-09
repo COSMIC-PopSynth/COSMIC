@@ -35,11 +35,7 @@ from pathlib import Path
 import h5py as h5
 import re
 
-import sys
-if sys.version_info >= (3, 9):
-    from importlib.resources import files as io_files
-else:
-    from importlib_resources import files as io_files
+from importlib.resources import files as io_files
 
 from configparser import ConfigParser
 from .bse_utils.zcnsts import zcnsts
@@ -1558,10 +1554,11 @@ def parse_inifile(inifile):
             """Different strings receive different evaluation"""
             if isinstance(node, ast.Expression):
                 return _eval(node.body)
-            elif isinstance(node, ast.Str):
-                return node.s
-            elif isinstance(node, ast.Num):
-                return node.n
+            elif isinstance(node, ast.Constant):
+                # strings, numbers and None/True/False all parse to Constant on
+                # Python 3.8+. The ast.Str/ast.Num/ast.NameConstant aliases this
+                # used to match on were removed in Python 3.14.
+                return node.value
             elif isinstance(node, ast.BinOp):
                 return binOps[type(node.op)](_eval(node.left), _eval(node.right))
             elif isinstance(node, ast.List):
@@ -1583,9 +1580,6 @@ def parse_inifile(inifile):
                 else:
                     # return special string like True or False
                     return value
-            elif isinstance(node, ast.NameConstant):
-                # None, True, False are nameconstants in python3, but names in 2
-                return node.value
             else:
                 raise Exception("Unsupported type {}".format(node))
 
@@ -1622,13 +1616,17 @@ def parse_inifile(inifile):
                 raise ValueError("We have detected an error in your inifile. A parameter was read in with the following "
                                  "value: {0}. Likely, you have an unexpected syntax, such as a space before an parameter/option (i.e. "
                                  "the parameter must be flush to the far left of the file".format(opt))
+            # an empty field is treated as unset
+            if opt.strip() == "":
+                dictionary[section][option] = None
+                continue
             try:
                 dictionary[section][option] = arithmetic_eval(opt)
             except Exception:
                 dictionary[section][option] = json.loads(opt)
             finally:
                 if option not in dictionary[section].keys():
-                    raise ValueError("We have detected an error in your inifile. The folloiwng parameter failed to be read correctly: {0}".format(option))
+                    raise ValueError("We have detected an error in your inifile. The following parameter failed to be read correctly: {0}".format(option))
                     
     SSEDict = dictionary["sse"]
     BSEDict = dictionary["bse"]

@@ -227,7 +227,7 @@
 * If the kickflag is 5 then use the log-normal distribution described
 * by Disberg & Mandel 2025
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
-             call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
+             call RandomLogNormal(disberg_mean,0.68d0,vk,idum1,twopi)
              vk2 = vk*vk
           elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
 * if the kickflag is 6 then use the Mandel & Muller 2020 distribution

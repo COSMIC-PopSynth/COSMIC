@@ -1,0 +1,11 @@
+# Lowest supported direct runtime dependencies for the Python 3.10 floor job.
+# Transitive and test dependencies intentionally use their latest compatible versions.
+numpy==2.0.0
+scipy==1.14.1
+pandas==2.2.3
+astropy==6.1.0
+matplotlib==3.9.0
+tables==3.10.1
+h5py==3.12.1
+schwimmbad==0.4.0
+tqdm==4.1

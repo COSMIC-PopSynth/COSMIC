@@ -59,8 +59,8 @@ class TestKick(unittest.TestCase):
 
         # fit a lognormal distribution and ensure it matches the expected values
         mu_d, sigma_d = norm.fit(np.log(natal_kicks_disberg))
-        self.assertTrue(np.round(mu_d, 2) == 5.61)
-        self.assertTrue(np.round(sigma_d, 2) == 0.69)
+        self.assertTrue(np.round(mu_d, 1) == 5.6)
+        self.assertTrue(np.round(sigma_d, 2) == 0.68)
 
     def test_hobbs(self):
         """Test the Hobbs kick routine

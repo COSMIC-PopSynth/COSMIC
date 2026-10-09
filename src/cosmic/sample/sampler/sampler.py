@@ -21,8 +21,6 @@
 
 import re
 
-from six import string_types
-
 from astropy.io.registry import IORegistryError
 from astropy.table import Table
 
@@ -92,7 +90,7 @@ def _update__doc__(data_class):
     sampler = data_class.sampler
 
     # if __doc__ isn't a string, bail-out now
-    if not isinstance(sampler.__doc__, string_types):
+    if not isinstance(sampler.__doc__, str):
         return
 
     # remove the old format list
