@@ -1,0 +1,6 @@
+calc_rho
+========
+
+.. currentmodule:: cosmic.sample.cmc.king
+
+.. autofunction:: calc_rho

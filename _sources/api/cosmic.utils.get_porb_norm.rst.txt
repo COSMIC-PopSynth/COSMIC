@@ -1,0 +1,6 @@
+get_porb_norm
+=============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: get_porb_norm

@@ -1,0 +1,19 @@
+CMCSample
+=========
+
+.. currentmodule:: cosmic.sample.sampler.cmc
+
+.. autoclass:: CMCSample
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~CMCSample.calc_porb_max
+      ~CMCSample.set_r_vr_vt
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: calc_porb_max
+   .. automethod:: set_r_vr_vt

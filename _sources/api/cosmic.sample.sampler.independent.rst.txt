@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.sampler.independent
+   :members:
+   :undoc-members:
+   :show-inheritance:

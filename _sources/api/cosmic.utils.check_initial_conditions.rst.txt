@@ -1,0 +1,6 @@
+check_initial_conditions
+========================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: check_initial_conditions

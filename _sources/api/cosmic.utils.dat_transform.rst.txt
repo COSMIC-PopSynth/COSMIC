@@ -1,0 +1,6 @@
+dat_transform
+=============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: dat_transform

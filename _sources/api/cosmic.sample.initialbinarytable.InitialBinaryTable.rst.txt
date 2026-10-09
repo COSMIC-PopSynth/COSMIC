@@ -1,0 +1,19 @@
+InitialBinaryTable
+==================
+
+.. currentmodule:: cosmic.sample.initialbinarytable
+
+.. autoclass:: InitialBinaryTable
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~InitialBinaryTable.InitialBinaries
+      ~InitialBinaryTable.sampler
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: InitialBinaries
+   .. automethod:: sampler
