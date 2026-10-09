@@ -17,7 +17,7 @@ from cosmic.sample.sampler.cmc import CMCSample
 from cosmic.sample.cmc import elson
 from cosmic.sample.initialcmctable import InitialCMCTable
 from scipy.optimize import curve_fit
-from cosmic.utils import a_from_p, get_porb_norm
+from cosmic.utils import a_from_p, p_from_a
 import tempfile
 
 SAMPLECLASS = Sample()
@@ -33,6 +33,8 @@ KROUPA_01_HI = -2.3
 KROUPA_01_LO = -1.3
 SALPETER_55 = -2.35
 SANA12_PORB_POWER_LAW = -0.55
+# fitted porb slopes scatter by ~0.005 for 2e5 samples, so allow ~3 sigma
+PORB_SLOPE_TOL = 0.015
 FLAT_SLOPE = 0.0
 # Since we integrate up to 0.7 in ecc, the slope is 4.0 rounded at the 0th decimal
 THERMAL_SLOPE = 4.0
@@ -119,6 +121,16 @@ def linear_fit(data):
     slope, intercept = popt[0], popt[1]
 
     return slope
+
+def log10_porb_lower_bound(porb, aRL_over_a, mass1, mass2, floor=-np.inf):
+    """Per-binary lower bound on log10(porb) used by `sample_porb`
+
+    `sample_porb` truncates each binary's period distribution at RLOF, so the
+    sampled population only follows the intended distribution above the
+    largest per-binary bound (or for binaries whose bound is just `floor`)
+    """
+    a_min = aRL_over_a * a_from_p(porb, mass1, mass2)
+    return np.maximum(floor, np.log10(p_from_a(a_min, mass1, mass2)))
 
 class TestSample(unittest.TestCase):
     """`TestCase` for the cosmic Sample class, which generates several
@@ -309,13 +321,14 @@ class TestSample(unittest.TestCase):
         mass2 = SAMPLECLASS.sample_secondary(primary_mass = mass1, qmin=0.1)
         rad1 = SAMPLECLASS.set_reff(mass=mass1, metallicity=0.02)
         rad2 = SAMPLECLASS.set_reff(mass=mass2, metallicity=0.02)
-        print(rad1,rad2)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
-        porb_cut = porb[porb > 10**0.6]
-        power_slope = power_law_fit(np.log10(porb_cut))
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        # only fit binaries whose lower bound wasn't raised by RLOF
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, mass1, mass2, floor=0.15)
+        untruncated = log10_porb_min == 0.15
+        power_slope = power_law_fit(np.log10(porb[untruncated]))
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         # now some custom power laws
         for slope in [-0.5, 0.5, 1]:
@@ -324,19 +337,26 @@ class TestSample(unittest.TestCase):
                     "min": 0.15, "max": 5, "slope": slope
                 }, size=mass1.size
             )
-            power_slope = power_law_fit(np.log10(porb))
+            log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, mass1, mass2, floor=0.15)
+            untruncated = log10_porb_min == 0.15
+            power_slope = power_law_fit(np.log10(porb[untruncated]))
             self.assertEqual(np.round(power_slope, 1), slope)
 
         np.random.seed(5)
-        # next do Renzo+19
-        m1_high = mass1+15
+        # next do Renzo+19, which uses Sana12 for m1 > 15 Msun and log-uniform otherwise.
+        # Shift every primary above 15 Msun so the full sample follows Sana12 (masking the
+        # Kroupa sample to m1 > 15 leaves too few binaries to fit)
+        m1_high = mass1 + 15
         rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
-        porb_cut = porb[porb > 10**2.5]
-        power_slope = power_law_fit(np.log10(porb_cut))
-        self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        # nearly all of these massive binaries have an RLOF-raised lower bound, so only fit
+        # above the largest bound, where the summed distribution is a pure power law
+        log10_porb = np.log10(porb)
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, m1_high, mass2, floor=0.15)
+        power_slope = power_law_fit(log10_porb[log10_porb > log10_porb_min.max()])
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'renzo19', size=mass1.size
@@ -350,9 +370,10 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'log_uniform', size=mass1.size
         )
-        power_slope = linear_fit(np.log10(porb))
         sep = a_from_p(porb, mass1, mass2)
-        sep = sep[sep > 10]
+        # separations are log-uniform above each binary's RLOF bound, so cut above the largest
+        sep_min = aRL_over_a * sep
+        sep = sep[sep > sep_min.max()]
         uniform_slope = linear_fit(np.log10(sep))
         self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
 
@@ -395,9 +416,10 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 1.5)]
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, m1_high, mass2, floor=0.15)
+        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > log10_porb_min.max())]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         # check martinez_26_ecsn for high mass
         m1_high = mass1+ecsn_mass
@@ -405,9 +427,10 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26_ecsn', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 1.5)]
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, m1_high, mass2, floor=0.15)
+        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > log10_porb_min.max())]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         # next check moe19
         from cosmic.utils import get_met_dep_binfrac
