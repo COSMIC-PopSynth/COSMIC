@@ -25,7 +25,7 @@ numpy_include_dir = run_command(py3, ['-c', 'import numpy; print(numpy.get_inclu
 f2py_include_dir = run_command(py3, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'], check: true).stdout().strip()
 inc_np = include_directories(numpy_include_dir, f2py_include_dir)
 
-get_hash = run_command('python', './src/cosmic/get_commit_hash.py', check: true).stdout().strip()
+get_hash = run_command('python', meson.current_source_dir() / 'src/cosmic/get_commit_hash.py', check: true).stdout().strip()
 
 
 lib_source = [

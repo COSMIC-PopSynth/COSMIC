@@ -121,4 +121,5 @@ savefig/
 _generated/
 docs/auto_examples/
 sg_execution_times.rst
-*_commit_hash.py
+# the generated hash module, not test files whose names happen to end in it
+_commit_hash.py
