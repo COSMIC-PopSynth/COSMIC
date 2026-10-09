@@ -27,6 +27,9 @@ gfortran $FFLAGS -c \
     $SRC_DIR/METISSE_utils.f90
 
 # Phase 2: Compile COSMIC and SSE sources + link everything
+# Share these objects between executables so gcov accumulates both runs.
+gfortran $FFLAGS -c "$SRC_DIR/kick.f" "$SRC_DIR/ran3.f"
+
 gfortran $FFLAGS \
     $SRC_DIR/hrdiag_remnant.f \
     $SRC_DIR/assign_remnant.f \
@@ -37,10 +40,8 @@ gfortran $FFLAGS \
     $SRC_DIR/evolv2.f \
     $SRC_DIR/gntage.f \
     $SRC_DIR/instar.f \
-    $SRC_DIR/kick.f \
     $SRC_DIR/mix.f \
     $SRC_DIR/mrenv.f \
-    $SRC_DIR/ran3.f \
     $SRC_DIR/rl.f \
     $SRC_DIR/concatkstars.f \
     $SRC_DIR/comprad.f \
@@ -57,3 +58,8 @@ gfortran $FFLAGS \
 
 # Run the benchmark
 ./benchmarkevolv2.exe
+
+# Exercise and verify kickflag=9 in the instrumented native routine.
+gfortran $FFLAGS ci/test_kickflag9.f kick.o ran3.o \
+    -o test_kickflag9.exe
+./test_kickflag9.exe
