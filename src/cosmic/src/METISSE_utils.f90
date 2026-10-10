@@ -114,6 +114,12 @@
         Mup = undefined
         Mec = undefined
         Mextra = undefined
+
+        ! format controls that are not set by apply_cosmic_format_controls
+        Lum_colname = ''
+        Teff_colname = ''
+        Radius_colname = ''
+        binding_energy_colname = ''
     end subroutine
 
     
