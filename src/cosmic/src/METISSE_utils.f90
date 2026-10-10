@@ -93,4 +93,27 @@
             (trim(path_to_he_tracks)/=trim(METALLICITY_DIR_HE))) load_tracks = .true.
     end function
 
+    subroutine reset_metisse_controls()
+        ! COSMIC reads the METISSE metallicity and format files in python, so
+        ! read_metallicity_file and read_format (which set the defaults) are never
+        ! called. Reset the values that COSMIC doesn't pass before METISSE
+        ! (re)processes the tracks, otherwise they are uninitialised on the first
+        ! call and, for the mass cutoffs, left over from the previous hydrogen
+        ! pass on later calls
+        use track_support, only: undefined, Mhook, Mhef, Mfgb, Mup, Mec, Mextra, &
+                                 Lum_colname, Teff_colname, Radius_colname, &
+                                 binding_energy_colname
+        use z_support, only: Y_files
+        implicit none
+
+        ! metallicity controls: undefined means METISSE determines them from the tracks
+        Y_files = undefined
+        Mhook = undefined
+        Mhef = undefined
+        Mfgb = undefined
+        Mup = undefined
+        Mec = undefined
+        Mextra = undefined
+    end subroutine
+
     
