@@ -90,7 +90,8 @@ f2py_source = custom_target(
     'evolvebin-target',
     input : ['src/cosmic/src/evolv2.f', 'src/cosmic/src/comprad.f', 'src/cosmic/src/METISSE/src/c_m_interface.f90'],
     output : ['_evolvebinmodule.c', '_evolvebin-f2pywrappers.f', '_evolvebin-f2pywrappers2.f90'],
-    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower']
+    command : [py3, '-m', 'numpy.f2py', '@INPUT@', '-m', '_evolvebin', '--lower',
+               '--f2cmap', meson.project_source_root() / '.f2py_f2cmap']
 )
 
 
