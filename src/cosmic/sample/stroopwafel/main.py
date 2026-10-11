@@ -28,6 +28,11 @@ class AdaptiveSampler:
     is_interesting : `callable`
         Function with signature ``(bpp) -> (n_hits, hit_bin_nums)``
         identifying systems of interest from COSMIC output.
+    is_interesting_args : `list`
+        Arguments to pass to the `is_interesting` function. By default, ["bpp"] (just the bpp table). Users
+        can also pass any of {"bpp", "bcm", "kick_info"}. Order is important in this case. A choice of
+        ``is_interesting_args=["kick_info", "bcm"]`` will translate to a masking by calling
+        ``is_interesting(kick_info, bcm)``.
     SSEDict : `dict`, optional
         COSMIC single stellar evolution settings (required by COSMIC v4+;
         e.g. selecting the ``sse`` or ``METISSE`` stellar engine).  Passed to
@@ -55,7 +60,13 @@ class AdaptiveSampler:
     nproc : `int`, optional
         Number of CPU cores for COSMIC, by default 1
     timestep_conditions : `dict`, optional
-        Dictionary of timestep conditions to pass to COSMIC, by default None.
+        Dictionary of timestep conditions to pass to COSMIC, by default [].
+    bpp_columns : list, optional, default: None
+        Columns to save in the bpp table (key evolutionary stage table). Note that if your mask for
+        is_interesting depends on certain columns, they better be in this list!
+    bcm_columns : list, optional, default: None
+        Columns to save in the bcm table (detailed evolution table). Note that if your mask for
+        is_interesting depends on certain columns, they better be in this list!
     kappa : `float`, optional
         Gaussian width scaling factor, by default 1.0
     n_generations : `int`, optional
@@ -91,8 +102,11 @@ class AdaptiveSampler:
     REQUIRED_PARAMS = ('mass_1', 'mass_2', 'porb', 'ecc', 'metallicity')
 
     def __init__(self, parameter_space, total_systems, batch_size, BSEDict,
-                 is_interesting, SSEDict=None, derive_params=None,
-                 reject_systems="default", nproc=1, timestep_conditions=None, kappa=1.0,
+                 is_interesting, is_interesting_args=["bpp"],
+                 SSEDict=None, derive_params=None,
+                 reject_systems="default", nproc=1,
+                 timestep_conditions=[], bpp_columns=None, bcm_columns=None,
+                 kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False,
                  min_active_fraction=0.01, min_entropy_change=0.01):
@@ -113,6 +127,11 @@ class AdaptiveSampler:
         else:
             self.reject_fn = reject_systems
         self.is_interesting_fn = is_interesting
+
+        if not isinstance(is_interesting_args, (np.ndarray, list)) or any(a not in ["bpp", "bcm", "kick_info"] for a in is_interesting_args):
+            raise ValueError("is_interesting_args must be a list of strings. Each of which must be one of {'bpp', 'bcm', 'kick_info'}.")
+        self.is_intersting_args = is_interesting_args
+
         self.nproc = nproc
         self.kappa = kappa
         self.n_generations = n_generations
@@ -121,10 +140,9 @@ class AdaptiveSampler:
         self.rng = np.random.default_rng(seed)
         self.min_active_fraction = min_active_fraction
         self.min_entropy_change = min_entropy_change
-
-        if timestep_conditions is not None:
-            raise NotImplementedError("timestep_conditions cannot yet be used with STROOPWAFEL, "
-                                      "must be None until future version")
+        self.timestep_conditions = timestep_conditions
+        self.bpp_columns = bpp_columns
+        self.bcm_columns = bcm_columns
 
         # State
         self.num_explored = 0
@@ -219,9 +237,10 @@ class AdaptiveSampler:
     #: Constructor arguments that may be overridden in :meth:`from_checkpoint`.
     _OVERRIDABLE = frozenset({
         'parameter_space', 'total_systems', 'batch_size', 'BSEDict', 'SSEDict',
-        'is_interesting', 'derive_params', 'reject_systems',
+        'is_interesting', 'is_interesting_args', 'derive_params', 'reject_systems',
         'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
         'min_active_fraction', 'min_entropy_change',
+        'timestep_conditions', 'bpp_columns', 'bcm_columns'
     })
 
     @classmethod
@@ -303,6 +322,7 @@ class AdaptiveSampler:
             'BSEDict':              self.bse_dict,
             'SSEDict':              self.sse_dict,
             'is_interesting':       self.is_interesting_fn,
+            'is_interesting_args':  self.is_intersting_args,
             'derive_params':        self.derive_fn,
             # store the original spec ('default'/callable/None) so reload can
             # rebind 'default' to the (possibly overridden) SSEDict.
@@ -313,6 +333,9 @@ class AdaptiveSampler:
             'only_save_hit_tables': self.only_save_hit_tables,
             'min_active_fraction':  self.min_active_fraction,
             'min_entropy_change':   self.min_entropy_change,
+            'timestep_conditions':  self.timestep_conditions,
+            'bpp_columns':          self.bpp_columns,
+            'bcm_columns':          self.bcm_columns,
             'rng':                  self.rng,
         }
 
@@ -903,10 +926,21 @@ class AdaptiveSampler:
             BSEDict=bse_dict_run,
             SSEDict=self.sse_dict,
             nproc=self.nproc,
+            timestep_conditions=self.timestep_conditions,
+            bpp_columns=self.bpp_columns,
+            bcm_columns=self.bcm_columns
         )
 
         # Apply user's hit identification
-        n_hits, hit_bin_nums = self.is_interesting_fn(bpp)
+        func_args = []
+        arg_mapper = {
+            "bpp": bpp,
+            "bcm": bcm,
+            "kick_info": kick_info
+        }
+        for arg in self.is_intersting_args:
+            func_args.append(arg_mapper[arg])
+        n_hits, hit_bin_nums = self.is_interesting_fn(*func_args)
 
         return n_hits, hit_bin_nums, bpp, bcm, initC, kick_info
 
