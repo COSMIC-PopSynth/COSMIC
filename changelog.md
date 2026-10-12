@@ -1,6 +1,11 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.2.2
+
+- Bug fixes
+    - An earlier fix for Roche Lobe calculation reveal a second bug which had almost cancelled out the first, both are now fixed, see discussion in https://github.com/COSMIC-PopSynth/COSMIC/pull/823
+
 ## 4.2.1
 
 - Additions/changes
