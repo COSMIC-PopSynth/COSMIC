@@ -1,6 +1,14 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.0
+
+- Bug fixes
+    - A fairly severe one: Correct initialisation of several METISSE variables for COSMIC-METISSE (particularly the initial helium abundance). This ensures binaries with the same seeds are reproducible and initialised correctly.
+
+- Additions/changes
+    - Added caching for METISSE track loading. Now if you load the same track in a given python process it will be cached, making e.g. STROOPWAFEL sampling *way* faster.
+
 ## 4.2.2
 
 - Bug fixes
