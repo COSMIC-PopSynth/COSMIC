@@ -30,6 +30,8 @@ Cf2py intent(in) num
 Cf2py intent(out) rad
 
       if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
+* zero zpars so that zcnsts always sets them up for this z
+      zpars = 0.d0
       CALL zcnsts(z,zpars)
       
       if(using_METISSE.eq.1) call allocate_track(num,mass)
