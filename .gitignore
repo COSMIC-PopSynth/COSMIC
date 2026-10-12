@@ -111,8 +111,12 @@ ENV/
 .mypy_cache/
 
 *.o
+*.mod
 binary.in
 binary.dat
+debug/bpp.dat
+debug/bcm.dat
+debug/metisse_tracks.bin
 *.h5
 fort.99
 savefig/

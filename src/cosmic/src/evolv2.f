@@ -2703,6 +2703,17 @@ component.
      &                 deltam1_bcm,deltam2_bcm,formation(1),
      &                 formation(2),binstate,mergertype,z,'bpp')
 *
+* TW: com tracks whether a binary has only just gone through a CE to help
+* logging. At this point com has served its purpose UNLESS the binary
+* was disrupted during CE. In that case, we want to keep com true to avoid
+* double writes to the bpp. But otherwise we need false or we'll skip
+* some logic in the (very) rare case a star goes SN between evol_type 8 and 4
+* ...and get the dreaded NaNs.
+* (See https://github.com/COSMIC-PopSynth/COSMIC/issues/798)
+* So I'm just saying "if the binary wasn't disrupted during CE, then com is false"
+         if(binstate.ne.2) com = .false.
+
+*
          epoch(j1) = tphys - aj(j1)
          if(coel)then
             com = .true.
