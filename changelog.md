@@ -5,6 +5,7 @@
 
 - Bug fixes
     - An earlier fix for Roche Lobe calculation reveal a second bug which had almost cancelled out the first, both are now fixed, see discussion in https://github.com/COSMIC-PopSynth/COSMIC/pull/823
+    - Supernovae immediately after CEs no longer cause NaNs (see https://github.com/COSMIC-PopSynth/COSMIC/issue/798)
 
 ## 4.2.1
 
