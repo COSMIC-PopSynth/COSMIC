@@ -10,4 +10,5 @@ These tutorials will cover how to use the adaptive importance sampling method in
     adaptive/basics
     adaptive/distributions
     adaptive/outputs
+    adaptive/kwargs
     adaptive/checkpoint
