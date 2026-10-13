@@ -65,6 +65,31 @@ class TestSetCheckstates(unittest.TestCase):
         np.testing.assert_array_equal(conditions[1, KSTAR_1:KSTAR_1 + 3], [-10e30, 6, 10])
         self.assertEqual(exclude[1, KSTAR_1 // 3], 4)
 
+    def test_negative_values(self):
+        epoch_1 = 3 * int(np.flatnonzero(CHECKSTATE_COLUMNS == "epoch_1")[0])
+        bhspin_1 = 3 * int(np.flatnonzero(CHECKSTATE_COLUMNS == "bhspin_1")[0])
+
+        # negative values in every position of a chained comparison, with and without spaces
+        for condition in ["-10<epoch_1<-5", "-10 < epoch_1 < -5", "- 10<epoch_1<- 5"]:
+            set_checkstates([[condition, "dtp=0.5"]])
+            conditions, _, _ = get_arrays()
+            np.testing.assert_array_equal(conditions[0, epoch_1:epoch_1 + 3], [-10, 3, -5])
+
+        # negative values in simple comparisons, including with the value first
+        set_checkstates([["epoch_1>=-10", "-5>epoch_1", "bhspin_1!=-0.5", "dtp=0.5"],
+                         ["bhspin_1=-0.5", "dtp=0.5"]])
+        conditions, exclude, _ = get_arrays()
+        np.testing.assert_array_equal(conditions[0, epoch_1:epoch_1 + 3], [-10, 2, -5])
+        np.testing.assert_array_equal(conditions[0, bhspin_1:bhspin_1 + 3], [-10e30, 4, 10e30])
+        self.assertEqual(exclude[0, bhspin_1 // 3], -0.5)
+        np.testing.assert_array_equal(conditions[1, bhspin_1:bhspin_1 + 3], [-0.5, 0, -0.5])
+
+    def test_value_first(self):
+        set_checkstates([["4=kstar_1", "dtp=0.5"], ["1<kstar_1", "10>=kstar_1", "dtp=0.5"]])
+        conditions, _, _ = get_arrays()
+        np.testing.assert_array_equal(conditions[0, KSTAR_1:KSTAR_1 + 3], [4, 0, 4])
+        np.testing.assert_array_equal(conditions[1, KSTAR_1:KSTAR_1 + 3], [1, 1, 10])
+
     def test_dtp(self):
         set_checkstates([["dtp=10"], ["kstar_1=4", "DTP=None"]])
         conditions, _, dtp_state = get_arrays()
@@ -127,6 +152,12 @@ class TestTimestepConditions(unittest.TestCase):
         self.assertAlmostEqual(np.median(np.diff(ms)), 0.5)
         # core helium burning lasts ~15 Myr so would have ~30 rows at 0.5 Myr
         self.assertLess((bcm.kstar_1 == 4).sum(), 3)
+
+    def test_negative_bounds(self):
+        # bhspin_1 is zero for these stars, so only the first condition applies
+        bcm = evolve_binary([["-1<bhspin_1<1", "dtp=10.0"], ["bhspin_1<-0.5", "dtp=0.5"]])
+        ms = bcm[bcm.kstar_1 == 1].tphys.values
+        self.assertAlmostEqual(np.median(np.diff(ms)), 10.0)
 
     def test_dtp_only_condition(self):
         bcm = evolve_binary([["dtp=10.0"], ["kstar_1=4", "dtp=0.5"]])
