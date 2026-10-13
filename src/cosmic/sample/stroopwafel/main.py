@@ -953,4 +953,4 @@ class AdaptiveSampler:
         filled = int(bar_len * self.finished // self.total_systems)
         bar = '|' * filled + '-' * (bar_len - filled)
         print(f'\r  progress |{bar}| {pct:.1f}% complete '
-              f'({self.finished}/{self.total_systems})', end='\r')
+              f'({self.finished}/{self.total_systems}), {self.num_hits} hits so far', end='\r')
