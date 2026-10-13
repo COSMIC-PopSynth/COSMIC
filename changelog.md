@@ -12,6 +12,7 @@
     - When ``dtp`` changed to a finer resolution, the next output stayed at the time set by the old ``dtp``, which could skip whole short phases (e.g. the giant branch after a coarse main sequence). The new resolution now applies straight away
     - After a phase with ``dtp=0.0``, bcm output stopped until the final state if no condition applied afterwards
     - ``dtp`` in ``timestep_conditions`` is no longer case-sensitive (``DTP=0.5`` was silently ignored)
+    - Conditions with negative values (e.g. ``'epoch_1>-10'`` or ``'-0.5<bhspin_1<0.5'``) could not be parsed and raised a ``ValueError``
 
 ## 4.3.0
 
