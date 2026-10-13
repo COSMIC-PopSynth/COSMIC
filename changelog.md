@@ -13,6 +13,18 @@
     - After a phase with ``dtp=0.0``, bcm output stopped until the final state if no condition applied afterwards
     - ``dtp`` in ``timestep_conditions`` is no longer case-sensitive (``DTP=0.5`` was silently ignored)
 
+## 4.3.0
+
+- Bug fixes
+    - A fairly severe one: Correct initialisation of several METISSE variables for COSMIC-METISSE (particularly the initial helium abundance). This ensures binaries with the same seeds are reproducible and initialised correctly.
+    - Supernovae immediately after CEs no longer cause NaNs (see https://github.com/COSMIC-PopSynth/COSMIC/issue/798)
+
+- Additions/changes
+    - Added caching for METISSE track loading. Now if you load the same track in a given python process it will be cached, making e.g. STROOPWAFEL sampling *way* faster.
+
+- For developers
+    - Debugging setup now works with COSMIC-METISSE
+
 ## 4.2.2
 
 - Bug fixes

@@ -33,8 +33,7 @@ import warnings
 import os
 import sys
 import tqdm
-from functools import partial
-from pathlib import Path
+from functools import partial, lru_cache
 try:
     import multiprocessing
     multiprocessing.set_start_method("fork")
@@ -843,12 +842,48 @@ def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
             o16_col=fmt_dict_keep['o16_mass_frac']
         )
 
-    # Finally, load in the EEPs!
-    track_list = utils.read_eep_directory(
-                met_dict_keep['eep_tracks_dir'],
-                fmt_dict_keep)
+    # Finally, load in the EEPs! (cached, since parsing them dominates the cost most of the time)
+    # we're not passing the fmt_dict_keep directly here because the cache requires something hashable
+    # so a dict isn't going to cut it. It's only a tiny extra cost compared to the file reads anyway
+    # for similar reasons, passing the absolute paths ensure that the cache is keyed on the actual files
+    # being read, not just the relative paths
+    track_list = _read_eep_directory_cached(
+        os.path.abspath(met_dict_keep['eep_tracks_dir']),
+        os.path.abspath(met_dict_keep['format_file'])
+    )
     m_min, m_max = populate_tracks(track_list, is_he)
     return m_min, m_max
+
+
+@lru_cache(maxsize=4)
+def _read_eep_directory_cached(eep_tracks_dir, format_file):
+    """Read and cache the EEP tracks in a directory
+
+    Parsing the EEP files is far more expensive than passing them to the Fortran, so caching them avoids
+    re-reading the same tracks every time they are loaded (e.g. in every call to ``Evolve.evolve``).
+    Use ``_read_eep_directory_cached.cache_clear()`` if the files change on disk during a python process.
+    The cahce will last as long as your python process is running, and I've set it to only hold 4 different
+    calls in memory at once (basically 4 combinations of eep_tracks_dir and format_file).
+
+    This was motivated from my usage of the AdaptiveSampler when using METISSE and finding it way
+    slower with multiple calls to Evolve.evolve. With the cache implemented, switching to METISSE is
+    only a factor ~3x slower than SSE as you'd naively expect :D
+
+    Parameters
+    ----------
+    eep_tracks_dir : str
+        Absolute path to the directory containing the EEP files
+    format_file : str
+        Absolute path to the format file for the EEP files
+
+    Returns
+    -------
+    track_list : list of dict
+        List of track dictionaries, as returned by `utils.read_eep_directory`
+        (treat as read-only since they are shared between calls)
+    """
+    fmt_dict = utils.read_format_file(format_file)
+    return utils.read_eep_directory(eep_tracks_dir, fmt_dict)
 
 
 def populate_tracks(track_list, is_he=False):
