@@ -4,6 +4,7 @@
 ## 4.3.1
 
 - Additions/changes
+    - Support ``timestep_conditions``, ``bpp_columns``, and ``bcm_columns`` in STROOPWAFEL adaptive importance sampler (new tutorial added)
     - ``timestep_conditions`` now support ``!=``, and a sublist with only a ``dtp`` (e.g. ``['dtp=10.0']``) now always applies rather than never applying
     - ``set_checkstates`` now raises a ``ValueError`` for unsupported operators, a bound set twice on the same column, or a sublist without exactly one valid ``dtp``. Previously these were silently ignored
 
