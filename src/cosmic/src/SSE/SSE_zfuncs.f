@@ -858,10 +858,10 @@
       return
       end
 ***
-      real*8 FUNCTION menvmax(kw,m,mc,z)
+      real*8 FUNCTION menvmax(kw,m,m0,mc,z)
       implicit none
       integer kw
-      real*8 m,mc,z
+      real*8 m,m0,mc,z
       real*8 mcagbf,mifmcf
       external mcagbf
 *
@@ -884,16 +884,16 @@
          menvmax = m-mc
       else
          mifmcf = -0.023d0*log10(z)-0.0023d0
-         menvmax = max(m-mcagbf(m)*(1.0d0+mifmcf), 0.0d0)
+         menvmax = max(m-mcagbf(m0)*(1.0d0+mifmcf), 0.0d0)
       endif
 *     
       return
       end
 ***
-      real*8 FUNCTION mconvenv(kw,m,mc,z,teff,tmin,tset,aj,tm,tbgb)
+      real*8 FUNCTION mconvenv(kw,m,m0,mc,z,teff,tmin,tset,aj,tm,tbgb)
       implicit none
       integer kw
-      real*8 m,mc,z,teff,tmin,tset,aj,tm,tbgb
+      real*8 m,m0,mc,z,teff,tmin,tset,aj,tm,tbgb
       real*8 menvmax
       external menvmax
 *
@@ -907,12 +907,12 @@
          if(m.gt.1.25d0)then
             mconvenv = 0.0d0
          else
-            mconvenv = menvmax(kw,m,mc,z)*sqrt(sqrt(1.0d0-aj/tm))
+            mconvenv = menvmax(kw,m,m0,mc,z)*sqrt(sqrt(1.0d0-aj/tm))
          endif
       elseif(kw.eq.2)then
-         mconvenv = menvmax(kw,m,mc,z)*((aj-tm)/(tbgb-tm))
+         mconvenv = menvmax(kw,m,m0,mc,z)*((aj-tm)/(tbgb-tm))
       else
-         mconvenv = menvmax(kw,m,mc,z)/(1.0d0+exp(4.6d0*
+         mconvenv = menvmax(kw,m,m0,mc,z)/(1.0d0+exp(4.6d0*
      &       (tmin+tset-2.0d0*teff)/(tmin-tset)))
       endif
 *
