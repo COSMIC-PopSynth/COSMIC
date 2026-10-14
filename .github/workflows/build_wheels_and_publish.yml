@@ -1,50 +1,43 @@
 name: Build wheel and publish
 
-on: 
+on:
   release:
     types: [published]
   workflow_dispatch:
 
-env:
-  CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
-  CIBW_ARCHS_LINUX: "x86_64"
-  CIBW_SKIP: "*-win32 *musllinux* *t-*"
-  CIBW_ARCHS_MACOS: "x86_64 arm64"
-  CIBW_BUILD_VERBOSITY: "1"
-  CIBW_BEFORE_ALL_LINUX: yum install -y gcc-gfortran
-  CIBW_ENVIRONMENT_LINUX: "FC=gfortran F77=gfortran"
-  CIBW_ENVIRONMENT_MACOS: "FC=gfortran F77=gfortran MACOSX_DEPLOYMENT_TARGET=14.0"
+# all cibuildwheel configuration lives in [tool.cibuildwheel] in pyproject.toml
 
 jobs:
   build-wheels-and-dist:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      # let the other platforms finish so a failure on one is easier to diagnose
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-14]
+        # one macOS runner per architecture, since the wheels are built natively
+        os: [ubuntu-latest, macos-14, macos-15-intel]
 
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         submodules: recursive
+
     - name: Switch METISSE submodule to track develop branch
       run: |
         git submodule set-branch --branch develop src/cosmic/src/METISSE
         git submodule update --remote src/cosmic/src/METISSE
+
     - uses: actions/setup-python@v5
       name: Install Python
       with:
         python-version: "3.12"
-    - name: link gfortran and hdf5
-      if: runner.os == 'macOS'
-      run: |
-        brew install hdf5
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install setuptools wheel build meson-python ninja meson pytest cibuildwheel
+        python -m pip install build cibuildwheel
 
     - name: Set up Fortran (macOS)
       if: runner.os == 'macOS'
@@ -52,12 +45,15 @@ jobs:
       with:
         compiler: gcc
         version: '13'
-        
-    - name: Build source and wheels distribution on Linux
-      run: |
-        python -m build --sdist --outdir dist
-        python -m cibuildwheel --output-dir dist
-        
+
+    - name: Build source distribution
+      # only needs building once; the other jobs would produce an identical file
+      if: matrix.os == 'ubuntu-latest'
+      run: python -m build --sdist --outdir dist
+
+    - name: Build wheels
+      run: python -m cibuildwheel --output-dir dist
+
     - uses: actions/upload-artifact@v4
       with:
         name: dist-${{ matrix.os }}
@@ -65,12 +61,12 @@ jobs:
 
   publish:
     needs: [build-wheels-and-dist]
+    # manual runs build and test the wheels without uploading anything
+    if: github.event_name == 'release'
     name: Publish Python 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-
     - name: Download artifacts
       uses: actions/download-artifact@v4
       with:

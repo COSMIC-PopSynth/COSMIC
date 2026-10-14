@@ -859,6 +859,9 @@
       if(using_cmc.eq.0)then
           if(kick_info(1,1).eq.0) sn=1
           if(kick_info(1,1).gt.0) sn=2
+      else
+          ! FORCE INITIALIZATION FOR CMC
+          sn = snstar
       endif
 
       if(using_cmc.eq.0)then
