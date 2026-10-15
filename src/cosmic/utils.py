@@ -1298,6 +1298,8 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
             )
 
     if "kickflag" in BSEDict.keys():
+        if BSEDict["kickflag"] == -9:
+            raise ValueError("The Shariat et al. (2026) kick prescription requires positive kickflag=9.")
         if BSEDict["kickflag"] in [-1, -2] and ((BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6)):
             warnings.warn("You have chosen a kick flag that assumes compact object formation "
                             "according to Giacobbo & Mapelli 2020, but supplied electron "
@@ -1616,13 +1618,17 @@ def parse_inifile(inifile):
                 raise ValueError("We have detected an error in your inifile. A parameter was read in with the following "
                                  "value: {0}. Likely, you have an unexpected syntax, such as a space before an parameter/option (i.e. "
                                  "the parameter must be flush to the far left of the file".format(opt))
+            # an empty field is treated as unset
+            if opt.strip() == "":
+                dictionary[section][option] = None
+                continue
             try:
                 dictionary[section][option] = arithmetic_eval(opt)
             except Exception:
                 dictionary[section][option] = json.loads(opt)
             finally:
                 if option not in dictionary[section].keys():
-                    raise ValueError("We have detected an error in your inifile. The folloiwng parameter failed to be read correctly: {0}".format(option))
+                    raise ValueError("We have detected an error in your inifile. The following parameter failed to be read correctly: {0}".format(option))
                     
     SSEDict = dictionary["sse"]
     BSEDict = dictionary["bse"]

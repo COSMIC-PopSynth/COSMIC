@@ -23,7 +23,7 @@ classifiers = [
 ]
 # If dependency floors change, update ci/constraints-lowest.txt.
 dependencies = [
-    "numpy >= 2.0, < 2.6",  # if you change numpy versions, also change it in (1) the build-system section below and (2) the .github/workflows/python-package.yml file
+    "numpy >= 2.0, < 2.6",  # if you change numpy versions, also change it in (1) the build-system section below, (2) before-test in [tool.cibuildwheel] and (3) the .github/workflows/python-package.yml file
     "scipy >= 1.14.1, < 1.19",
     "pandas >= 2.2.3, < 3.1",
     "astropy >= 6.1, < 9.0",
@@ -73,10 +73,26 @@ requires = [
 ]
 
 [tool.cibuildwheel]
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
+# no 32-bit windows, no musl, no free-threaded builds
+skip = ["*-win32", "*musllinux*", "*t-*"]
+build-verbosity = 1
 manylinux-x86_64-image = "manylinux2014"
 before-test = "pip install \"numpy >= 2.0, < 2.3; python_version < '3.14'\" \"numpy >= 2.3.2, < 2.6; python_version >= '3.14'\""
 test-environment = { PIP_NO_DEPS = "1" }
 test-command = "python -c \"from cosmic import _evolvebin\""
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+before-all = "yum install -y gcc-gfortran"
+environment = { FC = "gfortran", F77 = "gfortran" }
+
+[tool.cibuildwheel.macos]
+# only ever build for the runner's own architecture: gfortran can't cross-compile
+# between arm64 and x86_64, and a cross-built wheel silently drops all the fortran
+# objects at link time. the CI matrix provides one runner per architecture instead.
+archs = ["native"]
+repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
 
 # cp314 has to build against numpy >= 2.3.2, which ships manylinux_2_28 wheels only.
 # Everything else stays on manylinux2014 (glibc 2.17) so the existing wheels keep
@@ -85,5 +101,13 @@ test-command = "python -c \"from cosmic import _evolvebin\""
 select = "cp314-*"
 manylinux-x86_64-image = "manylinux_2_28"
 
-[tool.cibuildwheel.macos]
-repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+# the deployment target has to be at least the macOS version that homebrew's
+# libgfortran was built for, otherwise delocate refuses to bundle it. the versioned
+# compiler name stops any other homebrew gcc on PATH from being picked up instead.
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_arm64"
+environment = { FC = "gfortran-13", F77 = "gfortran-13", MACOSX_DEPLOYMENT_TARGET = "14.0" }
+
+[[tool.cibuildwheel.overrides]]
+select = "*-macosx_x86_64"
+environment = { FC = "gfortran-13", F77 = "gfortran-13", MACOSX_DEPLOYMENT_TARGET = "15.0" }
