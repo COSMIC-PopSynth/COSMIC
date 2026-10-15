@@ -1,6 +1,11 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.1
+
+- Bug fixes
+    - Small fix to ensure the every ``bcm`` row obeys eddington limits imposed by ``eddfac`` (this was just a reporting issue, evolution is unaffected)
+
 ## 4.3.0
 
 - Bug fixes
