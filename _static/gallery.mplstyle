@@ -1,0 +1,14 @@
+font.family: serif
+text.usetex: False
+figure.figsize: 12, 8
+axes.titlesize: 24
+legend.title_fontsize: 18
+legend.fontsize: 16
+axes.labelsize: 24
+xtick.labelsize: 21
+ytick.labelsize: 21
+axes.linewidth: 1.1
+xtick.major.size: 7
+xtick.minor.size: 4
+ytick.major.size: 7
+ytick.minor.size: 4

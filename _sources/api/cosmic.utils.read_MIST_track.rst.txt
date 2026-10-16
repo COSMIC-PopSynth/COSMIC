@@ -1,0 +1,6 @@
+read_MIST_track
+===============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: read_MIST_track

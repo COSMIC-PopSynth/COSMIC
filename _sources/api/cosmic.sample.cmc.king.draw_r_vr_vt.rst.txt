@@ -1,0 +1,6 @@
+draw_r_vr_vt
+============
+
+.. currentmodule:: cosmic.sample.cmc.king
+
+.. autofunction:: draw_r_vr_vt

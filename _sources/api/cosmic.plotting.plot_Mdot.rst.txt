@@ -1,0 +1,6 @@
+plot_Mdot
+=========
+
+.. currentmodule:: cosmic.plotting
+
+.. autofunction:: plot_Mdot
