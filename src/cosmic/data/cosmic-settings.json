@@ -865,6 +865,23 @@
                     }
                 ]
             }, 
+	    {
+                "name": "ce2stageflag",
+                "description": "Sets whether to use the standard energy formalism or the two-stage CE formalism from Hirai & Mandel 2022",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the standard energy formalism",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the two-stage CE formalism from Hirai & Mandel 2022"
+                    }
+                ]
+            },
             {
                 "name": "ceflag",
                 "description": "Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)",
@@ -990,7 +1007,7 @@
             {
                 "settings-section": "Natal kicks",
                 "name": "kickflag",
-                "description": "Sets the particular natal kick prescription to use. Note that <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code>, and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>, which are described below, are only used when <code class='docutils literal notranslate'><span class='pre'>abs(kickflag)=1</span></code>. Positive values use the Pfahl+2002 prescription for handling natal kicks.",
+                "description": "Sets the particular natal kick prescription to use. Note that <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code>, and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>, depend on the selected prescription, as described below. Positive values use the Pfahl+2002 prescription for handling natal kicks.",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
@@ -1030,8 +1047,12 @@
                         "version_added": "4.1.1"
                     },
                     {
+                        "name": 9,
+                        "description": "Draws NS and BH base natal-kick speeds from the all-NS parent law of <a class='reference external' href='https://arxiv.org/abs/2610.04005'>Shariat et al. (2026)</a>, Table 2: separately normalized lognormal components with low weight 0.126, natural-log (mu, sigma) = (1.87, 0.55) and (5.62, 0.71), each truncated to 0.05--1000 km/s before BH scaling. These fixed marginal posterior medians do not propagate posterior uncertainty. Applies to every NS kick, including ECSN/USSN/AIC when enabled; sigmadiv does not replace the NS law. The paper constrains NSs; using this base law for BHs is an extrapolation. BH base speeds are multiplied by bhsigmafrac, then modified by bhflag (including fallback); scaled BH speeds can lie below 0.05 km/s. Supplied natal_kick_array values override sampling. Directions follow polar_kick_angle (90 degrees for isotropy). Only positive 9 is supported."
+                    },
+                    {
                         "name": "negative values",
-                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                        "description": "Supported negative options listed below use the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     },
                     {
                         "name": -1,
@@ -1112,7 +1133,7 @@
             },
             {
                 "name": "bhsigmafrac",
-                "description": "Sets a fractional modification which scales down sigma for BHs. This works in addition to whatever is chosen for bhflag, and is applied to sigma before the bhflag prescriptions are applied",
+                "description": "Sets a fractional modification which scales down sigma for BHs. This works in addition to whatever is chosen for bhflag, and is applied to sigma before the bhflag prescriptions are applied. For kickflag=9, it multiplies the sampled BH speed before bhflag scaling.",
                 "type": "number",
                 "options-preface": "",
                 "options": [
@@ -1504,6 +1525,10 @@
                     {
                         "name": "range [0, 1]",
                         "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
+                    },
+		    {
+                        "name": -1,
+                        "description": "Uses the linear relation for fallback fraction as a function of CO core mass from Ugolini+25"
                     },
                     {
                         "name": 0.5,

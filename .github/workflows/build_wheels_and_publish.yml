@@ -7,10 +7,19 @@ on:
 
 # all cibuildwheel configuration lives in [tool.cibuildwheel] in pyproject.toml
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build-wheels-and-dist:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    permissions:
+      contents: read
     strategy:
       # let the other platforms finish so a failure on one is easier to diagnose
       fail-fast: false
@@ -19,17 +28,12 @@ jobs:
         os: [ubuntu-latest, macos-14, macos-15-intel]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
         submodules: recursive
-
-    - name: Switch METISSE submodule to track develop branch
-      run: |
-        git submodule set-branch --branch develop src/cosmic/src/METISSE
-        git submodule update --remote src/cosmic/src/METISSE
-
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       name: Install Python
       with:
         python-version: "3.12"
@@ -41,7 +45,7 @@ jobs:
 
     - name: Set up Fortran (macOS)
       if: runner.os == 'macOS'
-      uses: fortran-lang/setup-fortran@v1
+      uses: fortran-lang/setup-fortran@be037f0a45b1160f139d4ccd0b96f9e9bfd6a682 # v1.10.0
       with:
         compiler: gcc
         version: '13'
@@ -53,22 +57,24 @@ jobs:
 
     - name: Build wheels
       run: python -m cibuildwheel --output-dir dist
-
-    - uses: actions/upload-artifact@v4
+        
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: dist-${{ matrix.os }}
         path: ./dist/*
+        if-no-files-found: error
 
   publish:
     needs: [build-wheels-and-dist]
     # manual runs build and test the wheels without uploading anything
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' && github.event.action == 'published'
     name: Publish Python 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         path: artifacts
 
@@ -79,6 +85,7 @@ jobs:
         find artifacts -type f -name '*.tar.gz' -exec cp {} dist/ \;
 
     - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
       with:
         password: ${{ secrets.pypi_password }}
+        attestations: false

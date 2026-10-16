@@ -1298,6 +1298,8 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
             )
 
     if "kickflag" in BSEDict.keys():
+        if BSEDict["kickflag"] == -9:
+            raise ValueError("The Shariat et al. (2026) kick prescription requires positive kickflag=9.")
         if BSEDict["kickflag"] in [-1, -2] and ((BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6)):
             warnings.warn("You have chosen a kick flag that assumes compact object formation "
                             "according to Giacobbo & Mapelli 2020, but supplied electron "

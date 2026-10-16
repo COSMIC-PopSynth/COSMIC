@@ -42,7 +42,7 @@ GROUPED_SETTINGS = {
         "epsnov", "eddfac", "gamma", "LBV_flag",
     ],
     "cevars": ["alpha1", "lambdaf", "qcrit_array"],
-    "ceflags": ["ceflag", "cekickflag", "cemergeflag", "cehestarflag", "ussn"],
+    "ceflags": ["ce2stageflag", "ceflag", "cekickflag", "cemergeflag", "cehestarflag", "ussn"],
     "flags": [
         "tflag", "ifflag", "wdflag", "rtmsflag", "bhflag", "remnantflag",
         "maltsev_mode", "grflag", "bhms_coll_flag", "wd_mass_lim", "aic",
