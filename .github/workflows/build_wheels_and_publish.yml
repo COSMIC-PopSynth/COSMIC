@@ -65,7 +65,6 @@ jobs:
         if-no-files-found: error
 
   publish:
-    if: github.event_name == 'release' && github.event.action == 'published'
     needs: [build-wheels-and-dist]
     # manual runs build and test the wheels without uploading anything
     if: github.event_name == 'release'
