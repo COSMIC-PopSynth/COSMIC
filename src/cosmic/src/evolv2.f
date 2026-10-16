@@ -3967,7 +3967,11 @@ component.
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
           dt = MAX(dtm,1.0d-12)*1.0d+06
-          if(j1.eq.1)then
+* If the timestep is not changing, ensure there's no mass change in the output
+          if(dtm.le.0.d0)then
+              deltam1_bcm = 0.d0
+              deltam2_bcm = 0.d0
+          elseif(j1.eq.1)then
               deltam1_bcm = (-1.0*dm1 - dms(1))/dt
               deltam2_bcm = (dm2 - dms(2))/dt
           else
@@ -4835,7 +4839,11 @@ component.
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
           dt = MAX(dtm,1.0d-12)*1.0d+06
-          if(j1.eq.1)then
+* If the timestep is not changing, ensure there's no mass change in the output
+          if(dtm.le.0.d0)then
+              deltam1_bcm = 0.d0
+              deltam2_bcm = 0.d0
+          elseif(j1.eq.1)then
               deltam1_bcm = (-1.0*dm1 - dms(1))/dt
               deltam2_bcm = (dm2 - dms(2))/dt
           else
