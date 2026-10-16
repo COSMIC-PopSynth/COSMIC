@@ -122,6 +122,10 @@ This page contains of tutorials that show you how to use ``COSMIC`` and become a
 
             .. rst-class:: tutorial-card-link
 
+            :ref:`adaptive_kwargs`
+
+            .. rst-class:: tutorial-card-link
+
             :ref:`adaptive_checkpoint`
 
     .. grid-item-card::

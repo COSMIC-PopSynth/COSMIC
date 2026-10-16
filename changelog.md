@@ -1,6 +1,20 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.1
+
+- Additions/changes
+    - Support ``timestep_conditions``, ``bpp_columns``, and ``bcm_columns`` in STROOPWAFEL adaptive importance sampler (new tutorial added)
+    - ``timestep_conditions`` now support ``!=``, and a sublist with only a ``dtp`` (e.g. ``['dtp=10.0']``) now always applies rather than never applying
+    - ``set_checkstates`` now raises a ``ValueError`` for unsupported operators, a bound set twice on the same column, or a sublist without exactly one valid ``dtp``. Previously these were silently ignored
+
+- Bug fixes
+    - Two-sided ranges in ``timestep_conditions`` (e.g. ``'1<kstar_1<4'``, or ``'kstar_1>1', 'kstar_1<4'``) only applied the upper bound, they now apply both
+    - When ``dtp`` changed to a finer resolution, the next output stayed at the time set by the old ``dtp``, which could skip whole short phases (e.g. the giant branch after a coarse main sequence). The new resolution now applies straight away
+    - After a phase with ``dtp=0.0``, bcm output stopped until the final state if no condition applied afterwards
+    - ``dtp`` in ``timestep_conditions`` is no longer case-sensitive (``DTP=0.5`` was silently ignored)
+    - Conditions with negative values (e.g. ``'epoch_1>-10'`` or ``'-0.5<bhspin_1<0.5'``) could not be parsed and raised a ``ValueError``
+
 ## 4.3.0
 
 - Bug fixes
