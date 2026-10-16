@@ -67,7 +67,7 @@ jobs:
   publish:
     needs: [build-wheels-and-dist]
     # manual runs build and test the wheels without uploading anything
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' && github.event.action == 'published'
     name: Publish Python 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
     timeout-minutes: 15
