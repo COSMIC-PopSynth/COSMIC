@@ -890,12 +890,11 @@
       return
       end
 ***
-      real*8 FUNCTION mconvenv(kw,m,m0,mc,z,teff,tmin,tset,aj,tm,tbgb)
+      real*8 FUNCTION mconvenv(kw,m,menvmax,teff,tmin,tset,aj,tm,tbgb)
       implicit none
       integer kw
-      real*8 m,m0,mc,z,teff,tmin,tset,aj,tm,tbgb
-      real*8 menvmax
-      external menvmax
+      real*8 m,menvmax
+      real*8 teff,tmin,tset,aj,tm,tbgb
 *
 * A function to evaluate the mass of the convective envelope
 * MS and HG stars follow Hurley et al. 2000
@@ -907,12 +906,12 @@
          if(m.gt.1.25d0)then
             mconvenv = 0.0d0
          else
-            mconvenv = menvmax(kw,m,m0,mc,z)*sqrt(sqrt(1.0d0-aj/tm))
+            mconvenv = menvmax*sqrt(sqrt(1.0d0-aj/tm))
          endif
       elseif(kw.eq.2)then
-         mconvenv = menvmax(kw,m,m0,mc,z)*((aj-tm)/(tbgb-tm))
+         mconvenv = menvmax*((aj-tm)/(tbgb-tm))
       else
-         mconvenv = menvmax(kw,m,m0,mc,z)/(1.0d0+exp(4.6d0*
+         mconvenv = menvmax/(1.0d0+exp(4.6d0*
      &       (tmin+tset-2.0d0*teff)/(tmin-tset)))
       endif
 *

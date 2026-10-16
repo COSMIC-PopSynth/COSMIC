@@ -135,15 +135,15 @@
 * Estimate the mass of the convective envelope 
 * from the fits in Picker, Hirai, & Mandel 2024
            met = 10**(LOG10(zpars(14))/0.4)
-           reagb = ragbf(M01,LUMS(7),zpars(2))
+           reagb = ragbf(M1,LUMS(7),zpars(2))
            tmin = 1000.d0*((1130.d0*LUMS(7)/
      &                       (reagb**2.d0))**(1.d0/4.d0))
            tset = tonset(tmin,met)
            teff1 = 1000.d0*((1130.d0*L1/
      &                       (R1**2.d0))**(1.d0/4.d0))
-           MENV = mconvenv(KW,M1,M01,MC1,met,teff1,tmin,tset,
-     &                       AJ1,TM1,TSCLS1(1))
            mconvmax = menvmax(KW,M1,M01,MC1,met)
+           MENV = mconvenv(KW,M1,mconvmax,teff1,tmin,tset,
+     &                       AJ1,TM1,TSCLS1(1))
            LAMB1 = CELAMHE(M1,met,MENV,mconvmax)
          ENDIF
 * if > 8 Msun, the envelope participating in the first stage is only the convective one
@@ -196,15 +196,15 @@
 * Estimate the mass of the convective envelope 
 * from the fits in Picker, Hirai, & Mandel 2024
               met = 10**(LOG10(zpars(14))/0.4)
-              reagb = ragbf(M02,LUMS(7),zpars(2))
+              reagb = ragbf(M2,LUMS(7),zpars(2))
               tmin = 1000.d0*((1130.d0*LUMS(7)/
      &                          (reagb**2.d0))**(1.d0/4.d0))
               tset = tonset(tmin,met)
               teff2 = 1000.d0*((1130.d0*L2/
      &                          (R2**2.d0))**(1.d0/4.d0))
-              MENV = mconvenv(KW,M2,M02,MC2,met,teff2,tmin,tset,
-     &                          AJ2,TM2,TSCLS2(1))
               mconvmax = menvmax(KW,M2,M02,MC2,met)
+              MENV = mconvenv(KW,M2,mconvmax,teff2,tmin,tset,
+     &                          AJ2,TM2,TSCLS2(1))
               LAMB2 = CELAMHE(M2,met,MENV,mconvmax)
             ENDIF
 * if > 8 Msun, the envelope participating in the first stage is only the convective one
