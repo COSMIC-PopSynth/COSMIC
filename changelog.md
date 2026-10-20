@@ -9,6 +9,7 @@
     - ``set_checkstates`` now raises a ``ValueError`` for unsupported operators, a bound set twice on the same column, or a sublist without exactly one valid ``dtp``. Previously these were silently ignored
 
 - Bug fixes
+    - Small fix to ensure the every ``bcm`` row obeys eddington limits imposed by ``eddfac`` (this was just a reporting issue, evolution is unaffected)
     - Two-sided ranges in ``timestep_conditions`` (e.g. ``'1<kstar_1<4'``, or ``'kstar_1>1', 'kstar_1<4'``) only applied the upper bound, they now apply both
     - When ``dtp`` changed to a finer resolution, the next output stayed at the time set by the old ``dtp``, which could skip whole short phases (e.g. the giant branch after a coarse main sequence). The new resolution now applies straight away
     - After a phase with ``dtp=0.0``, bcm output stopped until the final state if no condition applied afterwards
