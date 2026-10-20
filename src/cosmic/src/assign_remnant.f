@@ -697,8 +697,15 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
          fallback = 1.0d0
          mt = mc_tot
       elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.maltsev_pf_prob) then
-         fallback = maltsev_fallback
-         mt = (mc_tot - M_NS) * fallback + M_NS
+* Take linear relation from Ugolini+25
+         if (maltsev_fallback.eq.-1) then
+            fallback = 0.06d0*mc - 0.03d0
+            mt = fallback*mt
+* Fixed fallback fraction for all CCSNe
+         else
+            fallback = maltsev_fallback
+            mt = (mc_tot - M_NS) * fallback + M_NS
+         endif
       else
          fallback = 0.0d0
          mt = M_NS
