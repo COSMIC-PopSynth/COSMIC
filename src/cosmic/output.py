@@ -591,7 +591,8 @@ class STROOPWAFELCheckpoint:
         ``total_systems``, ``batch_size``, ``BSEDict``, ``SSEDict``,
         ``is_interesting``, ``derive_params``, ``reject_systems``, ``nproc``,
         ``kappa``, ``n_generations``, ``only_save_hit_tables``,
-        ``min_active_fraction``, ``min_entropy_change``) plus the live ``rng``.
+        ``min_active_fraction``, ``min_entropy_change``,
+        ``rejection_batch_size``) plus the live ``rng``.
     mixture : `GaussianMixture` or None
         Gaussian mixture fitted to exploration hits.  ``None`` if no hits
         were found or adaptation has not been run yet.

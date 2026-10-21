@@ -94,6 +94,16 @@ class AdaptiveSampler:
     min_entropy_change : `float`, optional
         Minimum change in entropy required for a generation to be considered
         as having made progress.  By default 0.01.
+    rejection_batch_size : `int`, optional
+        Maximum number of samples passed to each call of the physical
+        rejection function when estimating the mixture's rejection rate at
+        the start of each refinement generation (see
+        :meth:`GaussianMixture.compute_rejection_rate`).  The estimate draws
+        10,000 samples per Gaussian component, so with many components this
+        controls the trade-off between memory and the number of rejection
+        calls (each of which may have a large fixed cost, e.g. loading
+        METISSE tracks).  Increase it if you have plenty of memory; decrease
+        it if refinement runs out of memory.  By default 1,000,000.
     """
 
     #: The parameters that fully define a binary for COSMIC.  Each must be
@@ -109,7 +119,8 @@ class AdaptiveSampler:
                  kappa=1.0,
                  n_generations=1, mc_only=False, seed=None,
                  only_save_hit_tables=False,
-                 min_active_fraction=0.01, min_entropy_change=0.01):
+                 min_active_fraction=0.01, min_entropy_change=0.01,
+                 rejection_batch_size=1_000_000):
         self.param_space = parameter_space
         self.total_systems = total_systems
         self.batch_size = batch_size
@@ -140,6 +151,7 @@ class AdaptiveSampler:
         self.rng = np.random.default_rng(seed)
         self.min_active_fraction = min_active_fraction
         self.min_entropy_change = min_entropy_change
+        self.rejection_batch_size = rejection_batch_size
         self.timestep_conditions = timestep_conditions
         self.bpp_columns = bpp_columns
         self.bcm_columns = bcm_columns
@@ -239,7 +251,7 @@ class AdaptiveSampler:
         'parameter_space', 'total_systems', 'batch_size', 'BSEDict', 'SSEDict',
         'is_interesting', 'is_interesting_args', 'derive_params', 'reject_systems',
         'nproc', 'kappa', 'n_generations', 'only_save_hit_tables', 'seed',
-        'min_active_fraction', 'min_entropy_change',
+        'min_active_fraction', 'min_entropy_change', 'rejection_batch_size',
         'timestep_conditions', 'bpp_columns', 'bcm_columns'
     })
 
@@ -274,7 +286,8 @@ class AdaptiveSampler:
             (``parameter_space``, ``total_systems``, ``batch_size``,
             ``BSEDict``, ``is_interesting``, ``derive_params``,
             ``reject_systems``, ``nproc``, ``kappa``,
-            ``n_generations``, ``only_save_hit_tables``, ``seed``).  Passing
+            ``n_generations``, ``only_save_hit_tables``,
+            ``rejection_batch_size``, ``seed``).  Passing
             ``seed`` starts a fresh RNG instead of restoring the stored state.
 
         Returns
@@ -333,6 +346,7 @@ class AdaptiveSampler:
             'only_save_hit_tables': self.only_save_hit_tables,
             'min_active_fraction':  self.min_active_fraction,
             'min_entropy_change':   self.min_entropy_change,
+            'rejection_batch_size': self.rejection_batch_size,
             'timestep_conditions':  self.timestep_conditions,
             'bpp_columns':          self.bpp_columns,
             'bcm_columns':          self.bcm_columns,
@@ -631,7 +645,8 @@ class AdaptiveSampler:
             # Estimate rejection rate for current mixture
             dist_rejection_rate = self.mixture.compute_rejection_rate(
                 self.param_space, self._physical_reject_mask,
-                n_per_component=10000, rng=self.rng
+                n_per_component=10000, rng=self.rng,
+                max_samples_per_call=self.rejection_batch_size
             )
 
             n_per_gen = int((self.total_systems - self.num_explored) / self.n_generations)

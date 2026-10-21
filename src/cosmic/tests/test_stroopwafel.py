@@ -21,7 +21,8 @@ from cosmic.sample.stroopwafel.distributions import (
     Identity, Log10, Ln, Sin, CosShift,
 )
 from cosmic.sample.stroopwafel.mixture_model import GaussianMixture
-from cosmic.sample.stroopwafel.rejection import default_reject
+from cosmic.sample.stroopwafel.rejection import default_reject, zams_radii, _metisse_zams_grid
+from cosmic.sample.sampler.independent import Sample
 from scipy.integrate import cumulative_trapezoid
 from cosmic.output import COSMICStroopOutput
 
@@ -416,6 +417,57 @@ class TestRejection(unittest.TestCase):
         self.assertTrue(default_reject(binary_params)[0])
 
 
+class TestZAMSRadii(unittest.TestCase):
+    """Cached METISSE ZAMS radius grid (tracks mocked, none are needed)."""
+
+    METISSE = {'stellar_engine': 'metisse', 'path_to_tracks': '/fake/h',
+               'path_to_he_tracks': '/fake/he'}
+
+    def setUp(self):
+        from unittest import mock
+        _metisse_zams_grid.cache_clear()
+        self.calls = []
+
+        def fake_set_reff(sampler, mass, metallicity, SSEDict=None, **kwargs):
+            self.calls.append(len(mass))
+            return np.asarray(mass) ** 0.8    # smooth stand-in for R(M)
+
+        patches = [
+            mock.patch.object(Sample, 'set_reff', fake_set_reff),
+            mock.patch('cosmic.evolve.read_tracks_for_METISSE',
+                       return_value=(0.1, 150.0)),
+        ]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+        self.addCleanup(_metisse_zams_grid.cache_clear)
+
+    def test_interpolation_matches_direct(self):
+        m = np.geomspace(0.1, 150.0, 1000)[1:-1]
+        r = zams_radii(m, 0.014, SSEDict=self.METISSE)
+        np.testing.assert_allclose(r, m ** 0.8, rtol=1e-10)
+
+    def test_grid_built_once_and_cached(self):
+        m = np.linspace(1.0, 100.0, 50_000)
+        zams_radii(m, 0.014, SSEDict=self.METISSE, n_grid=500)
+        zams_radii(m, 0.014, SSEDict=self.METISSE, n_grid=500)
+        # one call for the grid, and none for the masses themselves
+        self.assertEqual(self.calls, [500])
+
+    def test_out_of_range_masses_computed_directly(self):
+        m = np.array([0.05, 1.0, 10.0, 300.0])
+        r = zams_radii(m, 0.014, SSEDict=self.METISSE, n_grid=500)
+        self.assertEqual(self.calls, [500, 2])
+        np.testing.assert_allclose(r, m ** 0.8, rtol=1e-6)
+
+    def test_direct_when_disabled_or_sse(self):
+        m = np.array([1.0, 10.0])
+        zams_radii(m, 0.014, SSEDict=self.METISSE, n_grid=None)
+        zams_radii(m, 0.014, SSEDict={'stellar_engine': 'sse'})
+        zams_radii(m, 0.014)
+        self.assertEqual(self.calls, [2, 2, 2])
+
+
 # ==========================================================================
 # Binary-parameter model (sampled + derived coverage)
 # ==========================================================================
@@ -550,6 +602,86 @@ class TestGaussianMixture(unittest.TestCase):
         self.assertEqual(len(mmask), len(msamp))
         self.assertEqual(len(midx), len(msamp))
         self.assertTrue(np.all((midx >= 0) & (midx < 10)))
+
+
+class TestRejectionRate(unittest.TestCase):
+    """Batched ``GaussianMixture.compute_rejection_rate``."""
+
+    def setUp(self):
+        self.ps = ParameterSpace([
+            Parameter('mass_1', 5.0, 150.0, dist='kroupa'),
+            Parameter('porb', 10**(0.15), 10**(5.5), dist='sana'),
+            Parameter('ecc', 0.0, 0.9, dist='uniform'),
+        ])
+        samples, mask = self.ps.sample(5000, rng=np.random.default_rng(3))
+        hits = samples[mask][:50]
+        ad = 1.0 / np.power(5000, 1.0 / self.ps.ndim)
+        self.gm = GaussianMixture.from_hits(hits, self.ps, ad)
+        # reject on a physical coordinate so the mask is deterministic
+        self.reject = lambda phys: phys[:, 0] > 20.0
+
+    @staticmethod
+    def _reference_rate(gm, ps, reject_mask_fn, n, rng):
+        """The original one-call-per-component implementation."""
+        total = 0.0
+        for k in range(gm.n_components):
+            s = rng.multivariate_normal(gm.means[k], gm.covariances[k], size=n)
+            bounds_mask = ps.in_bounds(s)
+            rejected = n - np.sum(bounds_mask)
+            s_valid = s[bounds_mask]
+            if len(s_valid) > 0:
+                rejected += np.sum(reject_mask_fn(ps.to_physical(s_valid)))
+            total += rejected * gm.alphas[k] / n
+        return total
+
+    def test_matches_per_component_reference(self):
+        gm = GaussianMixture(means=self.gm.means[:5],
+                             covariances=self.gm.covariances[:5],
+                             alphas=self.gm.alphas[:5] / self.gm.alphas[:5].sum())
+        ref = self._reference_rate(gm, self.ps, self.reject, 1000,
+                                   np.random.default_rng(7))
+        self.assertGreater(ref, 0.0)
+        self.assertLess(ref, 1.0)
+        for chunk in (10**6, 2000, 1500, 1):
+            rate = gm.compute_rejection_rate(
+                self.ps, self.reject, n_per_component=1000,
+                rng=np.random.default_rng(7), max_samples_per_call=chunk)
+            self.assertAlmostEqual(rate, ref, places=12)
+            self.assertEqual(gm.rejection_rate, rate)
+
+    def test_number_of_reject_calls(self):
+        K, n = self.gm.n_components, 200
+        self.assertEqual(K, 50)
+        calls = []
+
+        def counting_reject(phys):
+            calls.append(len(phys))
+            return self.reject(phys)
+
+        self.gm.compute_rejection_rate(self.ps, counting_reject, n_per_component=n,
+                                       rng=np.random.default_rng(0),
+                                       max_samples_per_call=10**6)
+        self.assertEqual(len(calls), 1)
+
+        calls.clear()
+        chunk = 1000
+        self.gm.compute_rejection_rate(self.ps, counting_reject, n_per_component=n,
+                                       rng=np.random.default_rng(0),
+                                       max_samples_per_call=chunk)
+        self.assertEqual(len(calls), int(np.ceil(K * n / chunk)))
+        self.assertTrue(all(c <= chunk for c in calls))
+
+    def test_all_out_of_bounds(self):
+        means = np.array([[-100.0, -100.0, -100.0], [-200.0, -200.0, -200.0]])
+        covs = np.array([np.eye(3) * 1e-4] * 2)
+        gm = GaussianMixture(means=means, covariances=covs, alphas=np.array([0.3, 0.7]))
+
+        def never_called(phys):
+            raise AssertionError("reject_mask_fn should not be called")
+
+        rate = gm.compute_rejection_rate(self.ps, never_called, n_per_component=100,
+                                         rng=np.random.default_rng(0))
+        self.assertAlmostEqual(rate, 1.0)
 
 
 # ==========================================================================
