@@ -179,11 +179,21 @@ class GaussianMixture:
         return xPDF
 
     def compute_rejection_rate(self, param_space, reject_mask_fn,
-                               n_per_component=10000, rng=None):
+                               n_per_component=10000, rng=None,
+                               max_samples_per_call=1_000_000):
         """Estimate the rejection rate of the mixture.
 
         Samples from each component, transforms to physical space, applies
         rejection criteria, and computes the weighted rejection rate.
+
+        Rather than calling ``reject_mask_fn`` once per component (which is
+        slow when the rejection function has a large fixed cost per call,
+        e.g. loading METISSE tracks in ``set_reff``), components are grouped
+        into chunks of whole components holding at most
+        ``max_samples_per_call`` samples, and ``reject_mask_fn`` is called
+        once per chunk on all of its in-bounds samples.  Draws are made
+        component by component in the same order regardless of chunking, so
+        a fixed ``rng`` gives the same estimate for any chunk size.
 
         Parameters
         ----------
@@ -197,6 +207,14 @@ class GaussianMixture:
             10000
         rng : `numpy.random.Generator`, optional
             Random number generator, by default None
+        max_samples_per_call : `int`, optional
+            Maximum number of samples (before bounds rejection) passed to
+            each ``reject_mask_fn`` call.  Larger values mean fewer calls but
+            more memory (roughly ``max_samples_per_call * D`` floats plus
+            whatever ``reject_mask_fn`` allocates).  Each chunk always holds
+            at least one full component, so if ``n_per_component`` exceeds
+            this value then one call is made per component.  By default
+            1,000,000
 
         Returns
         -------
@@ -205,25 +223,33 @@ class GaussianMixture:
             ``self.rejection_rate``).
         """
         rng = rng or np.random.default_rng()
-        fractional_rejected = 0.0
+        K = self.n_components
+        n = n_per_component
+        n_rejected = np.zeros(K)
 
-        for k in range(self.n_components):
-            n = n_per_component
-            s = rng.multivariate_normal(self.means[k], self.covariances[k], size=n)
+        components_per_chunk = max(1, int(max_samples_per_call) // n)
+        for start in range(0, K, components_per_chunk):
+            ks = np.arange(start, min(start + components_per_chunk, K))
+            s = np.concatenate([
+                rng.multivariate_normal(self.means[k], self.covariances[k], size=n)
+                for k in ks
+            ])
+            idx = np.repeat(np.arange(len(ks)), n)
 
             # Bounds rejection
             bounds_mask = param_space.in_bounds(s)
-            rejected = n - np.sum(bounds_mask)
+            rejected = np.bincount(idx[~bounds_mask], minlength=len(ks))
 
-            # Physical rejection on in-bounds samples
+            # Physical rejection on in-bounds samples (all components at once)
             s_valid = s[bounds_mask]
             if len(s_valid) > 0:
                 s_physical = param_space.to_physical(s_valid)
-                rejected += np.sum(reject_mask_fn(s_physical))
+                phys_mask = np.asarray(reject_mask_fn(s_physical), dtype=bool)
+                rejected += np.bincount(idx[bounds_mask][phys_mask], minlength=len(ks))
 
-            fractional_rejected += rejected * self.alphas[k] / n
+            n_rejected[ks] = rejected
 
-        self.rejection_rate = fractional_rejected
+        self.rejection_rate = float(np.sum(self.alphas * n_rejected / n))
         return self.rejection_rate
 
     def update_em(self, samples, is_hit, prior_probs, prior_fraction_rejected,
