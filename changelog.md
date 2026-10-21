@@ -1,6 +1,17 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.2
+
+- Additions/changes
+    - Speed improvements for STROOPWAFEL rejection rates (mostly when using METISSE)
+        - STROOPWAFEL's mixture rejection rate now calls the rejection function once per chunk of components rather than once per component (chunk size set by the new ``rejection_batch_size`` argument of ``AdaptiveSampler``)
+        - METISSE ZAMS radii in ``default_reject`` are now tabulated once on a mass grid, cached, and interpolated, making rejection orders of magnitude faster (set ``n_radius_grid=None`` to compute every radius directly)
+
+- Bug fixes
+    - ``set_reff`` with METISSE treated each mass as the previous star gaining or losing mass, so a radius could depend on the masses before it in the array. Every star now gets a fresh track.
+    - The initial RLOF check in ``Evolve.evolve`` now only runs for SSE, since it uses SSE radii and gave misleading warnings for METISSE.
+
 ## 4.3.1
 
 - Additions/changes
