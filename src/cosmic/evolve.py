@@ -247,11 +247,6 @@ class Evolve(object):
         # in order to verify that the values in the table
         # are valid
         utils.error_check(BSEDict, SSEDict)
-        
-        # check the initial conditions of the system and warn user if
-        # anything is weird about them, such as the star starts
-        # in Roche Lobe overflow
-        utils.check_initial_conditions(initialbinarytable)
 
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
@@ -278,6 +273,13 @@ class Evolve(object):
                                   f"file or the SSEDict.")
                 kwargs1 = {k: v}
                 initialbinarytable = initialbinarytable.assign(**kwargs1)
+        
+        # check the initial conditions of the system and warn user if
+        # anything is weird about them, such as the star starts
+        # in Roche Lobe overflow
+        # TODO: This only runs for SSE currently, we should implement the same thing with METISSE radii
+        if initialbinarytable['stellar_engine'].iloc[0] == 'sse':
+            utils.check_initial_conditions(initialbinarytable)
 
         # if the user wants to use METISSE then we need to load the necessary tracks
         if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
