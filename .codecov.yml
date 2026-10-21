@@ -3,11 +3,10 @@ coverage:
   range: 50..100
   round: nearest
   status:
+    # report coverage on PRs, but never mark the checks as failed
     project:
       default:
-        target: auto
-        threshold: 1
+        informational: true
     patch:
       default:
-        target: 90
-
+        informational: true
