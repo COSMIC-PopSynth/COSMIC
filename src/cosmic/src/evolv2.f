@@ -911,7 +911,8 @@ component.
 *
                djt = (k2str(k)*(mass(k)-massc(k))*rad(k)*rad(k) +
      &                k3*massc(k)*radc(k)*radc(k))*dspint(k)
-               if(kstar(k).le.6.or.ABS(djt)/jspin(k).gt.0.1d0)then
+               if(kstar(k).le.6.or.ABS(djt)/jspin(k).gt.0.1d0.or.
+     &            ABS(djt)*dt.gt.0.02d0*ABS(jorb))then
                   djtt = djtt + djt
                endif
             endif
