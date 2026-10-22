@@ -389,7 +389,8 @@
      &                      - 2.37814255d-3*mc_tot**6d0
      &                      + 1.50408118d-5*mc_tot**7d0
      &                      - 4.13587235d-8*mc_tot**8d0
-                     mt = polyfit
+* The fit can overshoot the He core mass so limit to total core mass
+                     mt = MIN(polyfit,mc_tot)
                      pisn_track(kidx)=6
 
                      ! convert from baryonic to gravitational mass
@@ -415,7 +416,8 @@
      &                      - 1.63012111d-3*mc_tot**6d0
      &                      + 1.08052344d-5*mc_tot**7d0
      &                      - 3.11019088d-8*mc_tot**8d0
-                     mt = polyfit
+* The fit can overshoot the He core mass; pulses cannot add mass
+                     mt = MIN(polyfit,mc_tot)
                      pisn_track(kidx)=6
 
                      ! convert from baryonic to gravitational mass
