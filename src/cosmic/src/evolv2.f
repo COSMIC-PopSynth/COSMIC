@@ -1774,6 +1774,12 @@ component.
 * Interpolate back until the primary is just filling its Roche lobe.
 *
          if(rad(j1).ge.1.002d0*rol(j1))then
+*
+* If the call starts with the companion inside the donor (e.g. sep was
+* changed by an encounter in CMC), the RLOF onset cannot be interpolated
+* back to, so treat it as a contact system (CE or merger).
+*
+            if(iter.eq.0.and.sep*(1.d0-ecc).lt.(rad(1)+rad(2)))goto 130
             if(intpol.eq.0) tphys00 = tphys
             intpol = intpol + 1
             if(iter.eq.0) goto 7
@@ -1935,21 +1941,24 @@ component.
       oorb = twopi/tb
       jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
      &        sqrt(1.d0-ecc*ecc)*sep*sep*oorb
+      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
+      rol(2) = rl(q(2))*sep
 * Note: this will modify pulsar spin period
+* Use the Roche-limited radius (as radx in the RLOF loop) so a star that
+* enters RLOF far beyond its lobe is not given spin angular momentum that
+* the break-up check then dumps into the orbit.
       if(kstar(1).lt.13)then
          ospin(1) = oorb
-         jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
+         jspin(1) = (k2str(1)*MIN(rad(1),rol(1))**2*(mass(1)-massc(1))+
      &               k3*radc(1)*radc(1)*massc(1))*ospin(1)
       endif
       if(kstar(2).lt.13)then
          ospin(2) = oorb
-         jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
+         jspin(2) = (k2str(2)*MIN(rad(2),rol(2))**2*(mass(2)-massc(2))+
      &               k3*radc(2)*radc(2)*massc(2))*ospin(2)
       endif
       km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
-      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
-      rol(2) = rl(q(2))*sep
       iter = 0
       coel = .false.
       change = .false.
