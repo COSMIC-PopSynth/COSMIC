@@ -205,6 +205,8 @@
       LOGICAL iplot,isave
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
+      REAL*8 mcy,lamtp,mcagbf
+      EXTERNAL mcagbf
 *
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
@@ -425,6 +427,27 @@ component.
          rc = radc(k)
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
      &                                                          dtm,k)
+*
+* On a restart, a TP-AGB star with age < tscls(13) will be put back on
+* the EAGB by hrdiag. Here mc = McBAGB can exceed mt leading to a mass gain.
+* To handle this, we can calculate the age from the input core mass by inverting the TP-AGB core
+* growth law with 3rd dredge-up (following tn in SSE_star).
+* KB: 10/22/26
+*
+         if(using_SSE.eq.1.and.kstar(k).eq.6.and.age.lt.tscls(13))then
+            mcx = mcagbf(mass0(k))
+            if(mcx.ge.0.8d0.and.mcx.lt.2.25d0) mcx = 0.44d0*mcx+0.448d0
+            lamtp = MIN(0.9d0,0.3d0+0.001d0*mass0(k)**5)
+            mcy = MAX(mcx,(mc - lamtp*mcx)/(1.d0 - lamtp))
+            if(mcy.le.GB(7))then
+               age = tscls(10) - (1.d0/((GB(5)-1.d0)*GB(2)*GB(4)))*
+     &                           (mcy**(1.d0-GB(5)))
+            else
+               age = tscls(11) - (1.d0/((GB(6)-1.d0)*GB(2)*GB(3)))*
+     &                           (mcy**(1.d0-GB(6)))
+            endif
+            age = MAX(age,tscls(13)+2.d0*tiny)
+         endif
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
          aj(k) = age
