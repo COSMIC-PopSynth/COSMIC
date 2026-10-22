@@ -34,7 +34,7 @@
 
 * Check if remnant is below Chandrasekhar mass
       if(mc_co(kidx).lt.mch)then
-         if(ifflag.ge.1)then
+         if(ifflag.ge.1.and.kw.le.6)then
 *
 * Invoke WD IFMR from HPE, 1995, MNRAS, 272, 800.
 *
