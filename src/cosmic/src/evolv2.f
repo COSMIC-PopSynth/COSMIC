@@ -205,6 +205,8 @@
       LOGICAL iplot,isave
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
+      REAL*8 mcy,lamtp,mcagbf
+      EXTERNAL mcagbf
 *
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
@@ -425,6 +427,27 @@ component.
          rc = radc(k)
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
      &                                                          dtm,k)
+*
+* On a restart, a TP-AGB star with age < tscls(13) will be put back on
+* the EAGB by hrdiag. Here mc = McBAGB can exceed mt leading to a mass gain.
+* To handle this, we can calculate the age from the input core mass by inverting the TP-AGB core
+* growth law with 3rd dredge-up (following tn in SSE_star).
+* KB: 10/22/26
+*
+         if(using_SSE.eq.1.and.kstar(k).eq.6.and.age.lt.tscls(13))then
+            mcx = mcagbf(mass0(k))
+            if(mcx.ge.0.8d0.and.mcx.lt.2.25d0) mcx = 0.44d0*mcx+0.448d0
+            lamtp = MIN(0.9d0,0.3d0+0.001d0*mass0(k)**5)
+            mcy = MAX(mcx,(mc - lamtp*mcx)/(1.d0 - lamtp))
+            if(mcy.le.GB(7))then
+               age = tscls(10) - (1.d0/((GB(5)-1.d0)*GB(2)*GB(4)))*
+     &                           (mcy**(1.d0-GB(5)))
+            else
+               age = tscls(11) - (1.d0/((GB(6)-1.d0)*GB(2)*GB(3)))*
+     &                           (mcy**(1.d0-GB(6)))
+            endif
+            age = MAX(age,tscls(13)+2.d0*tiny)
+         endif
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
          aj(k) = age
@@ -911,7 +934,8 @@ component.
 *
                djt = (k2str(k)*(mass(k)-massc(k))*rad(k)*rad(k) +
      &                k3*massc(k)*radc(k)*radc(k))*dspint(k)
-               if(kstar(k).le.6.or.ABS(djt)/jspin(k).gt.0.1d0)then
+               if(kstar(k).le.6.or.ABS(djt)/jspin(k).gt.0.1d0.or.
+     &            ABS(djt)*dt.gt.0.02d0*ABS(jorb))then
                   djtt = djtt + djt
                endif
             endif
@@ -1750,6 +1774,12 @@ component.
 * Interpolate back until the primary is just filling its Roche lobe.
 *
          if(rad(j1).ge.1.002d0*rol(j1))then
+*
+* If the call starts with the companion inside the donor (e.g. sep was
+* changed by an encounter in CMC), the RLOF onset cannot be interpolated
+* back to, so treat it as a contact system (CE or merger).
+*
+            if(iter.eq.0.and.sep*(1.d0-ecc).lt.(rad(1)+rad(2)))goto 130
             if(intpol.eq.0) tphys00 = tphys
             intpol = intpol + 1
             if(iter.eq.0) goto 7
@@ -1911,21 +1941,24 @@ component.
       oorb = twopi/tb
       jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
      &        sqrt(1.d0-ecc*ecc)*sep*sep*oorb
+      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
+      rol(2) = rl(q(2))*sep
 * Note: this will modify pulsar spin period
+* Use the Roche-limited radius (as radx in the RLOF loop) so a star that
+* enters RLOF with a radius that significantly exceeds the Roche lobe is not 
+* given spin angular momentum that the break-up check then dumps into the orbit.
       if(kstar(1).lt.13)then
          ospin(1) = oorb
-         jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
+         jspin(1) = (k2str(1)*MIN(rad(1),rol(1))**2*(mass(1)-massc(1))+
      &               k3*radc(1)*radc(1)*massc(1))*ospin(1)
       endif
       if(kstar(2).lt.13)then
          ospin(2) = oorb
-         jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
+         jspin(2) = (k2str(2)*MIN(rad(2),rol(2))**2*(mass(2)-massc(2))+
      &               k3*radc(2)*radc(2)*massc(2))*ospin(2)
       endif
       km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
-      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
-      rol(2) = rl(q(2))*sep
       iter = 0
       coel = .false.
       change = .false.

@@ -1,6 +1,16 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.3
+
+- Bug fixes
+    - Restarting a TPAGB star whose age is slightly lower due to rounding errors could turn it into a more massive naked He star. We now catch this and rebuild the kw=6 core mass as is done in hrdiag
+    - The WD initial–final mass relation (``ifflag``) is no longer applied to naked He stars, which could gain mass on becoming a WD since the HPE fits are not tuned for He stars
+    - Stars entering RLOF far beyond their Roche lobe were given spin angular momentum that was then moved into the orbit; this could increase periods by up to ~10^7 days! We now force corotation at RLOF onset to use the Roche-limited radius
+    - There were cases where a CMC dynamical interaction cause a periastron collision that we weren't catching; we now treat them as a contact system (common envelope or merger) rather than normal RLOF
+    - PPISN remnant masses for ``pisn=-2`` and ``pisn=-3`` are now capped at the He core mass since the fits could extend pasttheir valid range
+    - Large tidal torques on compact stars are now always fed back to the orbit
+
 ## 4.3.2
 
 - Additions/changes
