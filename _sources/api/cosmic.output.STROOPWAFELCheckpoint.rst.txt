@@ -1,0 +1,19 @@
+STROOPWAFELCheckpoint
+=====================
+
+.. currentmodule:: cosmic.output
+
+.. autoclass:: STROOPWAFELCheckpoint
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~STROOPWAFELCheckpoint.from_file
+      ~STROOPWAFELCheckpoint.save
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: from_file
+   .. automethod:: save

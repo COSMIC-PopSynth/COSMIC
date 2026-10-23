@@ -1,0 +1,31 @@
+Sample
+======
+
+.. currentmodule:: cosmic.sample.sampler.independent
+
+.. autoclass:: Sample
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Sample.binary_select
+      ~Sample.sample_SFH
+      ~Sample.sample_ecc
+      ~Sample.sample_porb
+      ~Sample.sample_primary
+      ~Sample.sample_secondary
+      ~Sample.set_kstar
+      ~Sample.set_reff
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: binary_select
+   .. automethod:: sample_SFH
+   .. automethod:: sample_ecc
+   .. automethod:: sample_porb
+   .. automethod:: sample_primary
+   .. automethod:: sample_secondary
+   .. automethod:: set_kstar
+   .. automethod:: set_reff

@@ -1,0 +1,6 @@
+phi_r
+=====
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: phi_r

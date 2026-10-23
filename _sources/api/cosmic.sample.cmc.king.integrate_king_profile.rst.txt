@@ -1,0 +1,6 @@
+integrate_king_profile
+======================
+
+.. currentmodule:: cosmic.sample.cmc.king
+
+.. autofunction:: integrate_king_profile

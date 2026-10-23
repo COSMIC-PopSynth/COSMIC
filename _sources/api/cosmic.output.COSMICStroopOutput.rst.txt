@@ -1,0 +1,33 @@
+COSMICStroopOutput
+==================
+
+.. currentmodule:: cosmic.output
+
+.. autoclass:: COSMICStroopOutput
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~COSMICStroopOutput.hit_rate
+      ~COSMICStroopOutput.hit_rate_uncertainty
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~COSMICStroopOutput.draw_representative_sample
+      ~COSMICStroopOutput.from_file
+      ~COSMICStroopOutput.save
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: hit_rate
+   .. autoattribute:: hit_rate_uncertainty
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: draw_representative_sample
+   .. automethod:: from_file
+   .. automethod:: save

@@ -1,0 +1,6 @@
+get_velocities_plummer
+======================
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: get_velocities_plummer

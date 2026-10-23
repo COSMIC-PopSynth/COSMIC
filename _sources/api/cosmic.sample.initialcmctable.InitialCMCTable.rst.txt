@@ -1,0 +1,51 @@
+InitialCMCTable
+===============
+
+.. currentmodule:: cosmic.sample.initialcmctable
+
+.. autoclass:: InitialCMCTable
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~InitialCMCTable.central_bh
+      ~InitialCMCTable.mass_of_cluster
+      ~InitialCMCTable.metallicity
+      ~InitialCMCTable.scale_with_central_bh
+      ~InitialCMCTable.scaled_to_nbody_units
+      ~InitialCMCTable.tidal_radius
+      ~InitialCMCTable.virial_radius
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~InitialCMCTable.InitialCMCBinaries
+      ~InitialCMCTable.InitialCMCSingles
+      ~InitialCMCTable.ScaleCentralBHMass
+      ~InitialCMCTable.ScaleToNBodyUnits
+      ~InitialCMCTable.read
+      ~InitialCMCTable.sampler
+      ~InitialCMCTable.write
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: central_bh
+   .. autoattribute:: mass_of_cluster
+   .. autoattribute:: metallicity
+   .. autoattribute:: scale_with_central_bh
+   .. autoattribute:: scaled_to_nbody_units
+   .. autoattribute:: tidal_radius
+   .. autoattribute:: virial_radius
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: InitialCMCBinaries
+   .. automethod:: InitialCMCSingles
+   .. automethod:: ScaleCentralBHMass
+   .. automethod:: ScaleToNBodyUnits
+   .. automethod:: read
+   .. automethod:: sampler
+   .. automethod:: write
