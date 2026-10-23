@@ -1945,8 +1945,8 @@ component.
       rol(2) = rl(q(2))*sep
 * Note: this will modify pulsar spin period
 * Use the Roche-limited radius (as radx in the RLOF loop) so a star that
-* enters RLOF far beyond its lobe is not given spin angular momentum that
-* the break-up check then dumps into the orbit.
+* enters RLOF with a radius that significantly exceeds the Roche lobe is not 
+* given spin angular momentum that the break-up check then dumps into the orbit.
       if(kstar(1).lt.13)then
          ospin(1) = oorb
          jspin(1) = (k2str(1)*MIN(rad(1),rol(1))**2*(mass(1)-massc(1))+
