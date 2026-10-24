@@ -42,7 +42,6 @@ jobs:
         with:
           context: ./
           pull: true
-          no-cache: true
           file: ./Dockerfile
           push: true
           # .git is excluded from the build context, so hand the Dockerfile

@@ -40,7 +40,6 @@ jobs:
         with:
           context: .
           pull: true
-          no-cache: true
           push: false
           load: true
           tags: cosmic-pr:test
