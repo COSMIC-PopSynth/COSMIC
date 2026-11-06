@@ -2,8 +2,8 @@
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
      \ dtp,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
-     \ bhspin,tphys,zpars,bkick,kick_info,
-     \ bpp_index_out,bcm_index_out,kick_info_out)
+     \ bhspin,tphys,zpars,kick_info,
+     \ bpp_index_out,bcm_index_out)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       INCLUDE 'checkstate.h'
@@ -167,9 +167,7 @@
       REAL*8 mass1_bpp,mass2_bpp
       REAL*8 rad(2),rol(2),rol0(2),rdot(2),radc(2),renv(2),radx(2)
       REAL*8 lumin(2),k2str(2),q(2),dms(2),dmr(2),dmt(2)
-      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,18)
-      REAL*8 bkick(20)
-      REAL*8 kick_info_out(2,18)
+      REAL*8 dml,vorb2,vwind2,omv2,ivsqm,lacc,kick_info(2,19)
       REAL*8 sep,dr,tb,dme,tdyn,taum,dm1,dm2,dmchk,qc,dt,pd,rlperi
       REAL*8 m1ce,m2ce,mch,tmsnew,dm22,mew
       PARAMETER(mch=1.44d0)
@@ -207,6 +205,8 @@
       LOGICAL iplot,isave
       REAL*8 rl,mlwind,vrotf,corerd,f_fac
       EXTERNAL rl,mlwind,vrotf,corerd
+      REAL*8 mcy,lamtp,mcagbf
+      EXTERNAL mcagbf
 *
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
@@ -214,6 +214,7 @@
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt,force_stable,continue_stable
+      integer err
 
 
 Cf2py intent(in) kstar
@@ -238,18 +239,16 @@ Cf2py intent(in) epoch
 Cf2py intent(in) tms
 Cf2py intent(in) bhspin
 Cf2py intent(in) tphys
-Cf2py intent(in) zpars
-Cf2py intent(in) bkick
-Cf2py intent(in) kick_info
+Cf2py intent(in,out) zpars
+Cf2py intent(in,out) kick_info
 Cf2py intent(out) bpp_index_out
 Cf2py intent(out) bcm_index_out
-Cf2py intent(out) kick_info_out
 
 
       if(using_cmc.eq.0)then
               CALL instar
       endif
-
+    
 *
 * Save the initial state.
 *
@@ -328,7 +327,6 @@ component.
       if(using_cmc.eq.0)then
           bcm_index_out = 0
           bpp_index_out = 0
-          kick_info_out = 0.d0
       endif
 
 
@@ -341,9 +339,21 @@ component.
 *
 * Set the collision matrix.
 *
+      err = 0
       if(using_cmc.eq.0)then
-          CALL zcnsts(z,zpars)
+            if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
+*      for SSE path_to_tracks and path_to_he_tracks are empty ('')
+            CALL zcnsts(z,zpars)
+            if(using_METISSE.eq.1) then
+                call check_error(err)
+                if (err>0) then
+                    bpp_index_out = -1
+                    return
+                endif
+            endif
       endif
+
+      if(using_METISSE.eq.1) call allocate_track(2,mass0)
 
       kmin = 1
       kmax = 2
@@ -418,7 +428,29 @@ component.
          age = tphys - epoch(k)
          mc = massc(k)
          rc = radc(k)
-         CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
+         CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars,
+     &                                                          dtm,k)
+*
+* On a restart, a TP-AGB star with age < tscls(13) will be put back on
+* the EAGB by hrdiag. Here mc = McBAGB can exceed mt leading to a mass gain.
+* To handle this, we can calculate the age from the input core mass by inverting the TP-AGB core
+* growth law with 3rd dredge-up (following tn in SSE_star).
+* KB: 10/22/26
+*
+         if(using_SSE.eq.1.and.kstar(k).eq.6.and.age.lt.tscls(13))then
+            mcx = mcagbf(mass0(k))
+            if(mcx.ge.0.8d0.and.mcx.lt.2.25d0) mcx = 0.44d0*mcx+0.448d0
+            lamtp = MIN(0.9d0,0.3d0+0.001d0*mass0(k)**5)
+            mcy = MAX(mcx,(mc - lamtp*mcx)/(1.d0 - lamtp))
+            if(mcy.le.GB(7))then
+               age = tscls(10) - (1.d0/((GB(5)-1.d0)*GB(2)*GB(4)))*
+     &                           (mcy**(1.d0-GB(5)))
+            else
+               age = tscls(11) - (1.d0/((GB(6)-1.d0)*GB(2)*GB(3)))*
+     &                           (mcy**(1.d0-GB(6)))
+            endif
+            age = MAX(age,tscls(13)+2.d0*tiny)
+         endif
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
          aj(k) = age
@@ -560,7 +592,7 @@ component.
             if(neta.gt.tiny .and. kstar(k)<15)then
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z)
+     &                         massc(k),rlperi,z,k)
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -769,7 +801,6 @@ component.
                dt = MIN(dt,dtj)
                if(output) write(*,*)'mb1:',tphys,dt,djmb,djt
             endif
-*
             if(kstar(k).eq.13.and.pulsar.gt.0)then
 *
 * NS(pulsar) magnetic braking. PK.
@@ -906,7 +937,8 @@ component.
 *
                djt = (k2str(k)*(mass(k)-massc(k))*rad(k)*rad(k) +
      &                k3*massc(k)*radc(k)*radc(k))*dspint(k)
-               if(kstar(k).le.6.or.ABS(djt)/jspin(k).gt.0.1d0)then
+               if(kstar(k).le.6.or.ABS(djt)/jspin(k).gt.0.1d0.or.
+     &            ABS(djt)*dt.gt.0.02d0*ABS(jorb))then
                   djtt = djtt + djt
                endif
             endif
@@ -928,7 +960,7 @@ component.
             if(neta.gt.tiny .and. kstar(k)<15)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
-     &                         massc(k),rlperi,z)
+     &                         massc(k),rlperi,z,k)
             else
                dmr(k) = 0.d0
             endif
@@ -1070,7 +1102,7 @@ component.
       do 504 , k = kmin,kmax
 *
          dms(k) = (dmr(k) - dmt(k))*dt
-         if(kstar(k).lt.10)then
+         if(using_METISSE.eq.0.and.kstar(k).lt.10)then
             dml = mass(k) - massc(k)
             if(dml.lt.dms(k))then
                dml = MAX(dml,2.d0*tiny)
@@ -1145,8 +1177,9 @@ component.
                m0 = mass0(k)
                mass0(k) = mass(k)
                CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,
-     &                   lums,GB,zpars)
+     &                   lums,GB,zpars,dtm,k)
                if(kstar(k).eq.2)then
+                 if (using_SSE.eq.1) then
                   if(GB(9).lt.massc(k).or.m0.gt.zpars(3))then
                      mass0(k) = m0
                   else
@@ -1154,6 +1187,7 @@ component.
      &                               (tbgb(k) - tms(k))
                      epoch(k) = tphys - epoch(k)
                   endif
+                 endif
                else
                   epoch(k) = tphys - aj(k)*tm/tms(k)
                endif
@@ -1225,7 +1259,7 @@ component.
 *            goto 140
          endif
 *
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 *
@@ -1361,7 +1395,7 @@ component.
      &                      formation(2),binstate,mergertype,z,'bpp')
                CALL kick(kw,mass(k),mc_co(k),mt,0.d0,0.d0,-1.d0,0.d0,
      &                   vk,k,0.d0,fallback,sigmahold,kick_info,
-     &                   disrupt,bkick)
+     &                   disrupt,tphys)
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1408,7 +1442,7 @@ component.
 
                CALL kick(kw,mass(k),mc_co(k),mt,mass(3-k),ecc,sep,jorb,
      &                   vk,k,rad(3-k),fallback,sigmahold,kick_info,
-     &                   disrupt,bkick)
+     &                   disrupt,tphys)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -1535,7 +1569,7 @@ component.
 *     Base new time scale for changes in radius & mass on stellar type.
 *
          dt = dtmi(k)
-         CALL deltat(kw,age,tm,tn,tscls,dt,dtr)
+         CALL deltat(kw,age,tm,tn,tscls,dt,dtr,k)
          if(output) write(*,*)'post deltat:',tphys,dt,dtr,kw,
      & age,intpol,iter,k,kmin,kmax
 *
@@ -1735,10 +1769,20 @@ component.
 * Test whether Roche lobe overflow has begun.
 *
       if(rad(j1).gt.rol(j1))then
+         if (using_METISSE.eq.1 .and. (rad(j1).lt.1.05d0*rol(j1))) then
+            if(tphys.ge.tphysf) goto 140
+            goto 7
+         endif
 *
 * Interpolate back until the primary is just filling its Roche lobe.
 *
          if(rad(j1).ge.1.002d0*rol(j1))then
+*
+* If the call starts with the companion inside the donor (e.g. sep was
+* changed by an encounter in CMC), the RLOF onset cannot be interpolated
+* back to, so treat it as a contact system (CE or merger).
+*
+            if(iter.eq.0.and.sep*(1.d0-ecc).lt.(rad(1)+rad(2)))goto 130
             if(intpol.eq.0) tphys00 = tphys
             intpol = intpol + 1
             if(iter.eq.0) goto 7
@@ -1799,6 +1843,8 @@ component.
                prec = .true.
             endif
             tphys0 = tphys
+             if(using_METISSE.eq.1 .and. (dtm.le.1.0d-10))
+     &              dtm = max(ABS(dtm),dtmi(j1))
          endif
       endif
 *
@@ -1898,21 +1944,24 @@ component.
       oorb = twopi/tb
       jorb = (mass(1)*mass(2)/(mass(1)+mass(2)))*
      &        sqrt(1.d0-ecc*ecc)*sep*sep*oorb
+      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
+      rol(2) = rl(q(2))*sep
 * Note: this will modify pulsar spin period
+* Use the Roche-limited radius (as radx in the RLOF loop) so a star that
+* enters RLOF with a radius that significantly exceeds the Roche lobe is not 
+* given spin angular momentum that the break-up check then dumps into the orbit.
       if(kstar(1).lt.13)then
          ospin(1) = oorb
-         jspin(1) = (k2str(1)*rad(1)*rad(1)*(mass(1)-massc(1))+
+         jspin(1) = (k2str(1)*MIN(rad(1),rol(1))**2*(mass(1)-massc(1))+
      &               k3*radc(1)*radc(1)*massc(1))*ospin(1)
       endif
       if(kstar(2).lt.13)then
          ospin(2) = oorb
-         jspin(2) = (k2str(2)*rad(2)*rad(2)*(mass(2)-massc(2))+
+         jspin(2) = (k2str(2)*MIN(rad(2),rol(2))**2*(mass(2)-massc(2))+
      &               k3*radc(2)*radc(2)*massc(2))*ospin(2)
       endif
       km0 = dtm0*1.0d+03/tb
       if(km0.lt.tiny) km0 = 0.5d0
-      rol(1) = rl(q(1))*sep !okay like this 'cos sep is peri. dist.
-      rol(2) = rl(q(2))*sep
       iter = 0
       coel = .false.
       change = .false.
@@ -1998,7 +2047,7 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writetab(ip,tphys,evolve_type,
+         CALL writetab(ip,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),
      &                  sep,tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -2347,7 +2396,7 @@ component.
 *
             mass0(j2) = mass(j2)
             CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,
-     &                tscls,lums,GB,zpars)
+     &                tscls,lums,GB,zpars,dtm,j2)
 * If the star has no convective core then the effective age decreases,
 * otherwise it will become younger still.
             if(mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0)then
@@ -2364,8 +2413,9 @@ component.
             mass(j2) = mass(j2) + dm2
             if(kstar(j2).eq.2)then
                mass0(j2) = mass(j2)
+               if (using_METISSE.eq.1) call set_star_type(j2)
                CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &                   lums,GB,zpars)
+     &                   lums,GB,zpars,dtm,j2)
                aj(j2) = tmsnew + tscls(1)*(aj(j2)-tms(j2))/tbgb(j2)
                epoch(j2) = tphys - aj(j2)
             endif
@@ -2388,10 +2438,11 @@ component.
                kst = kstar(j1)
                mass(j1) = mass(j2) + dm2
                mass(j2) = 0.d0
+               if (using_METISSE.eq.1) call set_star_type(j1)
             else
                mass(j2) = mass(j2) + dm2
                CALL gntage(massc(j2),mass(j2),kst,zpars,
-     &                     mass0(j2),aj(j2))
+     &                     mass0(j2),aj(j2),j2)
                epoch(j2) = tphys - aj(j2)
             endif
             kstar(j2) = kst
@@ -2478,8 +2529,8 @@ component.
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               bpp_ind,tphys,switchedCE,rad,tms,evolve_type,
      &               disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
-     &               deltam1_bcm,deltam2_bcm)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,
+     &               deltam1_bcm,deltam2_bcm,dtm)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -2530,7 +2581,7 @@ component.
          mt = mass(k)
          mc = massc(k)
          kw = kstar(k)
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,aj(k),mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
      
@@ -2618,7 +2669,7 @@ component.
      &                    formation(2),binstate,mergertype,z,'bpp')
             CALL kick(kw,mass(k),mc_co(k),mt,mass(3-k),ecc,sep,jorb,vk,
      &                k,rad(3-k),fallback,sigmahold,kick_info,
-     &                disrupt,bkick)
+     &                disrupt,tphys)
             sigma = sigmahold
 
             ! check if kick caused a merger
@@ -2660,7 +2711,6 @@ component.
 
 *
          evolve_type = 8.0
-
 
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
@@ -2704,8 +2754,18 @@ component.
      &                 deltam1_bcm,deltam2_bcm,formation(1),
      &                 formation(2),binstate,mergertype,z,'bpp')
 *
+* TW: com tracks whether a binary has only just gone through a CE to help
+* logging. At this point com has served its purpose UNLESS the binary
+* was disrupted during CE. In that case, we want to keep com true to avoid
+* double writes to the bpp. But otherwise we need false or we'll skip
+* some logic in the (very) rare case a star goes SN between evol_type 8 and 4
+* ...and get the dreaded NaNs.
+* (See https://github.com/COSMIC-PopSynth/COSMIC/issues/798)
+* So I'm just saying "if the binary wasn't disrupted during CE, then com is false"
+         if(binstate.ne.2) com = .false.
+
+*
          epoch(j1) = tphys - aj(j1)
-         com = .false.
          if(coel)then
             com = .true.
             goto 135
@@ -2770,7 +2830,8 @@ component.
 *
             kst = 9
             if(kstar(j2).eq.10) massc(j2) = dm2
-            CALL gntage(massc(j2),mass(j2),kst,zpars,mass0(j2),aj(j2))
+            CALL gntage(massc(j2),mass(j2),kst,zpars,
+     &                     mass0(j2),aj(j2),j2)
             kstar(j2) = kst
             epoch(j2) = tphys - aj(j2)
          elseif(kstar(j2).le.12)then
@@ -2907,7 +2968,7 @@ component.
                formation(1) = 11
                formation(2) = 11
             endif
-            CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+            CALL mix(mass0,mass,aj,kstar,zpars,bhspin,dtm)
             dm1 = m1ce - mass(j1)
             dm2 = mass(j2) - m2ce
 *
@@ -2972,7 +3033,7 @@ component.
                endif
                rlperi = rol(k)*(1.d0-ecc)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
-     &                         mass(k),massc(k),rlperi,z)
+     &                         mass(k),massc(k),rlperi,z,k)
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
@@ -3088,7 +3149,7 @@ component.
                      mcx = massc(j2)
                   endif
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
-                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2))
+                  CALL gntage(mcx,mt2,kst,zpars,mass0(j2),aj(j2),j2)
                   epoch(j2) = tphys + dtm - aj(j2)
                endif
             endif
@@ -3136,10 +3197,12 @@ component.
                if((kstar(j2).eq.10.and.mass(j2).lt.0.05d0).or.
      &            (kstar(j2).ge.11.and.mass(j2).lt.0.5d0))then
                   kst = kstar(j2)
+                  if (using_METISSE.eq.1) call set_star_type(j2)
                else
                   kst = MIN(6,3*kstar(j2)-27)
                   mt2 = mass(j2) + km*(dm2 - dms(j2))
-                  CALL gntage(massc(j2),mt2,kst,zpars,mass0(j2),aj(j2))
+                  CALL gntage(massc(j2),mt2,kst,zpars,
+     &                     mass0(j2),aj(j2),j2)
                   epoch(j2) = tphys + dtm - aj(j2)
 *
                endif
@@ -3664,7 +3727,7 @@ component.
             m0 = mass0(j1)
             mass0(j1) = mass(j1)
             CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
-     &                lums,GB,zpars)
+     &                lums,GB,zpars,dtm,j1)
             if(GB(9).lt.massc(j1))then
                mass0(j1) = m0
             endif
@@ -3673,7 +3736,7 @@ component.
             m0 = mass0(j2)
             mass0(j2) = mass(j2)
             CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &                lums,GB,zpars)
+     &                lums,GB,zpars,dtm,j2)
             if(GB(9).lt.massc(j2))then
                mass0(j2) = m0
             endif
@@ -3707,10 +3770,10 @@ component.
 *
       if(kstar(j1).le.2.or.kstar(j1).eq.7)then
          CALL star(kstar(j1),mass0(j1),mass(j1),tmsnew,tn,tscls,
-     &             lums,GB,zpars)
+     &             lums,GB,zpars,dtm,j1)
          if(kstar(j1).eq.2)then
-            aj(j1) = tmsnew + (tscls(1) - tmsnew)*(aj(j1)-tms(j1))/
-     &                        (tbgb(j1) - tms(j1))
+            if (using_SSE.eq.1) aj(j1) = tmsnew + (tscls(1) - tmsnew)*
+     &                        (aj(j1)-tms(j1))/(tbgb(j1) - tms(j1))
          else
             aj(j1) = tmsnew/tms(j1)*aj(j1)
          endif
@@ -3719,10 +3782,10 @@ component.
 *
       if(kstar(j2).le.2.or.kstar(j2).eq.7)then
          CALL star(kstar(j2),mass0(j2),mass(j2),tmsnew,tn,tscls,
-     &             lums,GB,zpars)
+     &             lums,GB,zpars,dtm,j2)
          if(kstar(j2).eq.2)then
-            aj(j2) = tmsnew + (tscls(1) - tmsnew)*(aj(j2)-tms(j2))/
-     &                        (tbgb(j2) - tms(j2))
+            if (using_SSE.eq.1) aj(j2) = tmsnew + (tscls(1) - tmsnew)*
+     &                        (aj(j2)-tms(j2))/(tbgb(j2) - tms(j2))
          elseif((mass(j2).lt.0.35d0.or.mass(j2).gt.1.25d0).
      &           and.kstar(j2).ne.7)then
             aj(j2) = tmsnew/tms(j2)*aj(j2)*(mass(j2) - dm22)/mass(j2)
@@ -3750,7 +3813,7 @@ component.
 *            goto 140
          endif
          kw = kstar(k)
-         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
+         CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars,dtm,k)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k)
 
@@ -3847,7 +3910,7 @@ component.
      &                    formation(2),binstate,mergertype,z,'bpp')
             CALL kick(kw,mass(k),mc_co(k),mt,mass(3-k),ecc,sep,jorb,vk,
      &                k,rad(3-k),fallback,sigmahold,kick_info,
-     &                disrupt,bkick)
+     &                disrupt,tphys)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
             if(mass(3-k).lt.0.d0)then
@@ -3888,7 +3951,7 @@ component.
 *     Determine stellar evolution timescale for nuclear burning types.
 *
          if(kw.le.9)then
-            CALL deltat(kw,age,tm,tn,tscls,dt,dtr)
+            CALL deltat(kw,age,tm,tn,tscls,dt,dtr,k)
             dtmi(k) = MIN(dt,dtr)
 *           dtmi(k) = dtr
             dtmi(k) = MAX(1.0d-07,dtmi(k))
@@ -3964,7 +4027,11 @@ component.
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
           dt = MAX(dtm,1.0d-12)*1.0d+06
-          if(j1.eq.1)then
+* If the timestep is not changing, ensure there's no mass change in the output
+          if(dtm.le.0.d0)then
+              deltam1_bcm = 0.d0
+              deltam2_bcm = 0.d0
+          elseif(j1.eq.1)then
               deltam1_bcm = (-1.0*dm1 - dms(1))/dt
               deltam2_bcm = (dm2 - dms(2))/dt
           else
@@ -3974,7 +4041,7 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writetab(ip,tphys,evolve_type,
+         CALL writetab(ip,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),
      &                  sep,tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -4191,8 +4258,8 @@ component.
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               bpp_ind,tphys,switchedCE,rad,tms,evolve_type,
      &               disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
-     &               deltam1_bcm,deltam2_bcm)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,
+     &               deltam1_bcm,deltam2_bcm,dtm)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -4277,8 +4344,8 @@ component.
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               bpp_ind,tphys,switchedCE,rad,tms,evolve_type,
      &               disrupt,
-     &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
-     &               deltam1_bcm,deltam2_bcm)
+     &               lumin,B_0,bacc,tacc,epoch,menv,renv,
+     &               deltam1_bcm,deltam2_bcm,dtm)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.
@@ -4316,7 +4383,7 @@ component.
              tb = -1.d0
          endif
       else
-         CALL mix(mass0,mass,aj,kstar,zpars,bhspin)
+         CALL mix(mass0,mass,aj,kstar,zpars,bhspin,dtm)
       endif
 
       if(com)then
@@ -4582,10 +4649,18 @@ component.
             kmax = 1
             rol(2) = -1.d0*rad(2)
             dtmi(2) = tphysf
+            CALL hrdiag(mass0(2),aj(2),mass(2),tms(2),tn,tscls,lums,GB,
+     &               zpars,rad(2),lumin(2),kstar(2),massc(2),radc(2),
+     &              menv(2),renv(2),k2str(2),bhspin(2),2)
+
+         
          elseif(kstar(1).eq.15)then
             kmin = 2
             rol(1) = -1.d0*rad(1)
             dtmi(1) = tphysf
+            CALL hrdiag(mass0(1),aj(1),mass(1),tms(1),tn,tscls,lums,GB,
+     &               zpars,rad(1),lumin(1),kstar(1),massc(1),radc(1),
+     &              menv(1),renv(1),k2str(1),bhspin(1),1)
          endif
 * Makes sure coalesced NSs are reset. PK.
          if(kstar(1).eq.13.and.ecc.le.1.d0.and.pulsar.gt.0.and.
@@ -4749,6 +4824,10 @@ component.
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
               if(iter.ge.loop) evolve_type = 100.0
+              if (using_METISSE.eq.1) then
+                call check_error(err)
+                if (err>0) evolve_type = 101.0
+              end if
               rrl1 = rad(1)/rol(1)
               rrl2 = rad(2)/rol(2)
               teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4822,7 +4901,11 @@ component.
           rrl1 = rad(1)/rol(1)
           rrl2 = rad(2)/rol(2)
           dt = MAX(dtm,1.0d-12)*1.0d+06
-          if(j1.eq.1)then
+* If the timestep is not changing, ensure there's no mass change in the output
+          if(dtm.le.0.d0)then
+              deltam1_bcm = 0.d0
+              deltam2_bcm = 0.d0
+          elseif(j1.eq.1)then
               deltam1_bcm = (-1.0*dm1 - dms(1))/dt
               deltam2_bcm = (dm2 - dms(2))/dt
           else
@@ -4832,7 +4915,7 @@ component.
 * Check if PISN occurred, and if so overwrite formation
           if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
           if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
-          CALL writetab(ip,tphys,evolve_type,
+         CALL writetab(ip,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),
      &                  sep,tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -4863,6 +4946,8 @@ component.
          evolve_type = 10.0
          goto 135
       endif
+ 150  continue
+ 
       tphysfhold = tphysf
       tphysf = tphys
       if(sgl)then
@@ -4875,9 +4960,10 @@ component.
          WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
 *         STOP
-      elseif(bpp_ind.ge.40)then
-         WRITE(99,*)' EVOLV2 ARRAY WARNING ',mass1i,mass2i,tbi,
-     & ecci,bpp_ind
+      elseif(ip.ge.40)then
+         WRITE(99,*)' EVOLV2 ARRAY WARNING ',mass1i,mass2i,tbi,ecci,ip
+      elseif (IP+1>SIZE(BCM,1)) then
+         WRITE(99,*)'IP>SIZE(BCM)',IP, size(bcm,1)
       endif
       if(iter.ge.loop)then
          WRITE(99,*)'ITER>=LOOP:',bpp_ind,tphys,tphysfhold,dtp,kstar,
@@ -4885,14 +4971,15 @@ component.
 *         CALL exit(0)
 *         STOP
       endif
+      
       bcm(ip+1,1) = -1.0
       bpp(bpp_ind+1,1) = -1.0
 
       if(using_cmc.eq.0)then
           bcm_index_out = ip
           bpp_index_out = bpp_ind
-          kick_info_out = kick_info
       endif
+      if (using_METISSE.eq.1) call dealloc_track()      
 *
 
       END SUBROUTINE evolv2

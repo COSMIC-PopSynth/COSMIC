@@ -15,11 +15,13 @@
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
      &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_mode
-      REAL*8 don_lim,acc_lim(2),Mbh_initial
-      REAL*8 smt_periastron_check,smt_q
+
+      REAL*8 don_lim,acc_lim(2),Mbh_initial,smt_periastron_check,smt_q
       COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial,
      &                smt_periastron_check,smt_q
+      INTEGER ce2stageflag
       INTEGER ceflag,cekickflag,cemergeflag,cehestarflag,ussn
+      COMMON /CEFLAGS/ ce2stageflag
       COMMON /CEFLAGS/ ceflag,cekickflag,cemergeflag,cehestarflag,ussn
       INTEGER pisn_track(2)
       COMMON /TRACKERS/ pisn_track
@@ -70,4 +72,15 @@
       INTEGER n_col_bpp, n_col_bcm, bpp_ind
       INTEGER col_inds_bpp(52), col_inds_bcm(52)
       COMMON /COL/ n_col_bpp,col_inds_bpp,n_col_bcm,col_inds_bcm,bpp_ind
+*
+      INTEGER using_metisse, using_sse
+      COMMON /SE_FLAGS/ using_metisse, using_sse
+      CHARACTER*256 path_to_tracks,path_to_he_tracks
+      real*8 z_match_limit
+      LOGICAL METISSE_verbose
+      COMMON/ METISSEVARS/ path_to_tracks,path_to_he_tracks,
+     &            z_match_limit, METISSE_verbose
+      LOGICAL bcm_err
+      COMMON/ ER_FLAGS/ bcm_err
+      
 *

@@ -1,5 +1,5 @@
 ***
-      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,kidx,mt,kw,bhspin)
+      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -34,7 +34,7 @@
 
 * Check if remnant is below Chandrasekhar mass
       if(mc_co(kidx).lt.mch)then
-         if(ifflag.ge.1)then
+         if(ifflag.ge.1.and.kw.le.6)then
 *
 * Invoke WD IFMR from HPE, 1995, MNRAS, 272, 800.
 *
@@ -389,7 +389,8 @@
      &                      - 2.37814255d-3*mc_tot**6d0
      &                      + 1.50408118d-5*mc_tot**7d0
      &                      - 4.13587235d-8*mc_tot**8d0
-                     mt = polyfit
+* The fit can overshoot the He core mass so limit to total core mass
+                     mt = MIN(polyfit,mc_tot)
                      pisn_track(kidx)=6
 
                      ! convert from baryonic to gravitational mass
@@ -415,7 +416,8 @@
      &                      - 1.63012111d-3*mc_tot**6d0
      &                      + 1.08052344d-5*mc_tot**7d0
      &                      - 3.11019088d-8*mc_tot**8d0
-                     mt = polyfit
+* The fit can overshoot the He core mass; pulses cannot add mass
+                     mt = MIN(polyfit,mc_tot)
                      pisn_track(kidx)=6
 
                      ! convert from baryonic to gravitational mass
@@ -697,8 +699,15 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
          fallback = 1.0d0
          mt = mc_tot
       elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.maltsev_pf_prob) then
-         fallback = maltsev_fallback
-         mt = (mc_tot - M_NS) * fallback + M_NS
+* Take linear relation from Ugolini+25
+         if (maltsev_fallback.eq.-1) then
+            fallback = 0.06d0*mc - 0.03d0
+            mt = fallback*mt
+* Fixed fallback fraction for all CCSNe
+         else
+            fallback = maltsev_fallback
+            mt = (mc_tot - M_NS) * fallback + M_NS
+         endif
       else
          fallback = 0.0d0
          mt = M_NS
@@ -712,8 +721,10 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 
-      real*8 ran3, mc, bhspin
+      real  ran3
       EXTERNAL ran3
+
+      real*8 mc, bhspin
 
 * Set all BH spins equal to bhspinmag
       if(bhspinflag.eq.0)then
@@ -731,7 +742,7 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
             bhspin = 0.0d0
          endif
       endif
-
+      
       end
 
       integer function first_mt_type_as_donor(star)

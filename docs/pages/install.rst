@@ -113,3 +113,22 @@ PLEASE explicitly install both into the COSMIC environment:
             pip install jupyter ipython
 
 
+Installing from source with GitHub
+----------------------------------
+
+If you wish to install COSMIC from source, you can clone the repository from GitHub and install it locally using pip. If you decide to go this route, we recommend `creating your own fork <https://github.com/COSMIC-PopSynth/COSMIC/fork>`_ of the repository to keep your development work separate from the main repository.
+
+Once you have your own fork, you can clone it as:
+
+.. code-block:: bash
+
+    git clone --recurse-submodules /link/to/your/forked/repo
+
+The `--recurse-submodules` flag is important as it ensures that the METISSE submodule is also cloned. Once cloned, navigate to the COSMIC directory and install it using pip:
+
+.. code-block:: bash
+
+    cd COSMIC
+    pip install .
+
+Now that COSMIC is installed, you can simulate binary populations as described in the :ref:`examples` and :ref:`runpop` pages.

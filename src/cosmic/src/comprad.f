@@ -5,7 +5,7 @@
 
 ***
 * In Fortran, we can't dynamically allocate arrays
-* Instead, we declare a stanard array with 10^5 elements
+* Instead, we declare a standard array with 10^5 elements
 * and pass everything from cosmic 10^5 at a time
 *
 * for safety, we'll pass the number of stars, num, and stop the
@@ -17,7 +17,7 @@
       PARAMETER(loop=100000)
       real*8 mass(loop),rad(loop),z
       integer k,kstar,num
-      real*8 mt,tm,tn,mass0,age,lum,mc,rc,me,re
+      real*8 mt,tm,tn,mass0,age,lum,mc,rc,me,re,dtm
       REAL*8 tscls(20),lums(10),GB(10),zpars(20),k2,bhspin
 
 ***
@@ -29,8 +29,14 @@ Cf2py intent(in) z
 Cf2py intent(in) num
 Cf2py intent(out) rad
 
+      if(using_METISSE.eq.1) CALL initialize_front_end('cosmic')
+* zero zpars so that zcnsts always sets them up for this z
+      zpars = 0.d0
       CALL zcnsts(z,zpars)
       
+      if(using_METISSE.eq.1) call allocate_track(1,mass)
+
+
 ***
 * Then just loop through everything 
 ***
@@ -55,11 +61,22 @@ Cf2py intent(out) rad
          kstar = 0
          if(mt.ge.0.7) kstar = 1
          bhspin = 0.d0
-         rc = 0.d0 
-         CALL star(kstar,mass0,mt,tm,tn,tscls,lums,GB,zpars)
+         rc = 0.d0
+         dtm = 0.d0
+* every star needs a fresh METISSE track, otherwise METISSE treats each
+* new mass as the previous star gaining/losing mass and the radius then
+* depends on the masses before it in the array
+         if(using_METISSE.eq.1 .and. k.gt.1) then
+            call dealloc_track()
+            call allocate_track(1,mass)
+         end if
+         CALL star(kstar,mass0,mt,tm,tn,tscls,lums,GB,zpars,dtm,1)
          CALL hrdiag(mass0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rad(k),lum,kstar,mc,rc,me,re,k2,bhspin,1)
-
+         
   10  continue
+  
+        
+        if (using_METISSE.eq.1) call dealloc_track()
 
       END SUBROUTINE compute_r

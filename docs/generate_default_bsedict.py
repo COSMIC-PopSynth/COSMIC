@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from os.path import exists
 
 def get_default_BSE_settings(to_python=False):
     """Get a copy of the default BSE settings from the COSMIC settings JSON file"""
@@ -45,33 +46,43 @@ def generate_rst_bsedict(MAX_LINE_LENGTH=80):
 
     indent_str = " " * 8
 
-    with open("_generated/default_bsedict.rst", "w") as f:
-        lines = [
-            ".. ipython:: python",
-            "",
-            "    BSEDict = {",
-        ]
+    lines = [
+        ".. ipython:: python",
+        "",
+        "    BSEDict = {",
+    ]
 
-        first = True
-        current_line = indent_str
-        for k, v in defaults.items():
-            entry = f'"{k}": {v}'
-            if not first:
-                entry = ", " + entry
-            first = False
+    first = True
+    current_line = indent_str
+    for k, v in defaults.items():
+        entry = f'"{k}": {v}'
+        if not first:
+            entry = ", " + entry
+        first = False
 
-            # check if adding this entry would exceed line length
-            if len(current_line) + len(entry) > MAX_LINE_LENGTH:
-                lines.append(current_line.rstrip() + ",")
-                current_line = indent_str + entry.lstrip(", ")
-            else:
-                current_line += entry
+        # check if adding this entry would exceed line length
+        if len(current_line) + len(entry) > MAX_LINE_LENGTH:
+            lines.append(current_line.rstrip() + ",")
+            current_line = indent_str + entry.lstrip(", ")
+        else:
+            current_line += entry
 
-        if current_line.strip():
-            lines.append(current_line.rstrip())
-        lines.append("    }")
+    if current_line.strip():
+        lines.append(current_line.rstrip())
+    lines.append("    }")
 
-        f.write("\n".join(lines))
+    content = "\n".join(lines)
+    out_path = "_generated/default_bsedict.rst"
+
+    if exists(out_path):
+        with open(out_path) as f:
+            if f.read() == content:
+                print(f"  No changes to {out_path}, skipping write.")
+                return
+
+    with open(out_path, "w") as f:
+        print(f"  Writing default BSE settings to {out_path}...")
+        f.write(content)
 
 if __name__ == "__main__":
     generate_rst_bsedict()

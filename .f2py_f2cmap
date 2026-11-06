@@ -1,0 +1,2 @@
+# map Fortran kinds that f2py can't resolve itself (e.g. real(dp) in c_m_interface.f90)
+dict(real=dict(dp='double'))

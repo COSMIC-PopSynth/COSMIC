@@ -11,11 +11,12 @@ import bs4
 import json
 import pandas as pd
 from cosmic import __version__ as cosmic_version
+from os.path import exists
 
 # how many versions in the past should we show as badges for when options were added?
 VERSION_CUTOFFS = {
-    "major": 0,
-    "minor": 3,
+    "major": 1000,
+    "minor": 1000,
     "patch": 1000
 }
 
@@ -225,6 +226,15 @@ for group in settings:
     # append this group to the soup (guess who's a poet and didn't even know it)
     soup.select_one(".container-fluid").append(new_group)
 
-    # write the soup out to an HTML file for this category
-    with open(f"_generated/config_insert_{group['category']}.html", "w") as f:
-        f.write(str(soup))
+    # write the soup out to an HTML file for this category (only if changed)
+    out_path = f"_generated/config_insert_{group['category']}.html"
+    content = str(soup)
+    if exists(out_path):
+        with open(out_path) as f:
+            if f.read() == content:
+                print(f"  No changes to {out_path}, skipping write.")
+                continue
+
+    print(f"  Writing settings HTML for category '{group['category']}' to {out_path}...")
+    with open(out_path, "w") as f:
+        f.write(content)

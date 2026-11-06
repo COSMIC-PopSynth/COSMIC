@@ -460,6 +460,100 @@
         ]
     },
     {
+        "category": "sse", 
+        "category_label": "Single star evolution",
+        "category_description": "Settings that control the single star evolution in the simulation",
+        "docs-colour": "lightsteelblue",
+        "settings": [
+            {
+                "name": "stellar_engine",
+                "description": "Select which stellar evolution engine to use for single star evolution",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "sse",
+                        "description": "Use SSE for single star evolution which will apply the fitting formulae from <a href='https://ui.adsabs.harvard.edu/abs/2000MNRAS.315..543H/abstract'>Hurley+2000</a> for the single star evolution",
+                        "default": true
+
+                    },
+                    {
+                        "name": "metisse",
+                        "description": "Use METISSE for single star evolution, must supply <code>path_to_tracks</code> and <code>path_to_he_tracks</code>"
+                    }
+                ]
+            }, 
+            {
+                "name": "path_to_tracks",
+                "description": "Path to the METISSE tracks for single star evolution. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "path/to/tracks",
+                        "description": "This specifies the absolute path to the EEP tracks for single star evolution. Leave the string empty if not using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "",
+                        "description": "Default value (not using METISSE for single star evolution)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "path_to_he_tracks",
+                "description": "Path to the METISSE tracks for helium star evolution. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "string",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "path/to/he_tracks",
+                        "description": "This specifies the absolute path to the EEP tracks for helium star evolution. Leave the string empty if not using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "",
+                        "description": "Default value (not using METISSE for single star evolution)",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "z_accuracy_limit",
+                "description": "Sets the maximum allowed relative difference between the supplied metallicity and the tracks used by METISSE. If cosmic throws an error due to metallicity, increasing this slightly may help. Must be supplied if <code>stellar_engine</code> is set to <code>metisse</code>",
+                "type": "number",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "positive values",
+                        "description": "Minimum metallicity"
+                    },
+                    {
+                        "name": 0.01,
+                        "description": "Recommended value",
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "metisse_verbose",
+                "description": "Whether to print verbose output from METISSE when using METISSE for single star evolution.",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": "True",
+                        "description": "Print verbose output from METISSE when using METISSE for single star evolution."
+                    },
+                    {
+                        "name": "False",
+                        "description": "Do not print verbose output from METISSE when using METISSE for single star evolution.",
+                        "default": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "category": "bse",
         "category_label": "Binary physics",
         "category_description": "Settings that control the binary physics in the simulation",
@@ -737,7 +831,7 @@
                 "name": "alpha1",
                 "description": "Common-envelope efficiency parameter which scales the efficiency of transferring orbital energy to the envelope. See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
                 "type": "string",
-                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>.",
+                "options-preface": "This value is equivalent to \\(\\alpha\\) in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 71</a>. A list is supplied such that the primary and secondary can be assigned different values for \\(\\alpha\\).",
                 "options": [
                     {
                         "name": "positive values",
@@ -753,7 +847,7 @@
             {
                 "name": "lambdaf",
                 "description": "Binding energy factor for common envelope evolution. The initial binding energy of the stellar envelope is proportional to \\(1 / \\lambda\\). See <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002, Eq. 69</a>.",
-                "type": "number",
+                "type": "string",
                 "options-preface": "",
                 "options": [
                     {
@@ -771,6 +865,23 @@
                     }
                 ]
             }, 
+	    {
+                "name": "ce2stageflag",
+                "description": "Sets whether to use the standard energy formalism or the two-stage CE formalism from Hirai & Mandel 2022",
+                "type": "dropdown",
+                "options-preface": "",
+                "options": [
+                    {
+                        "name": 0,
+                        "description": "Use the standard energy formalism",
+                        "default": true
+                    },
+                    {
+                        "name": 1,
+                        "description": "Use the two-stage CE formalism from Hirai & Mandel 2022"
+                    }
+                ]
+            },
             {
                 "name": "ceflag",
                 "description": "Selects the model to set the initial orbital energy (choose whether to use total mass of the stars instead of the core masses)",
@@ -779,12 +890,12 @@
                 "options": [
                     {
                         "name": 0,
-                        "description": "Use the core masses of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 70</a>)"
+                        "description": "Use the core masses of the donor star and companion star to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/2002MNRAS.329..897H/abstract'>Hurley+2002 Eq. 70</a>). If the companion star is a main sequence star, the total mass of the companion star is used instead of the core mass.",
+                        "default": true
                     },
                     {
                         "name": 1,
-                        "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)",
-                        "default": true
+                        "description": "Use the total mass of the stars to set the initial orbital energy (as in <a href='https://ui.adsabs.harvard.edu/abs/1990ApJ...358..189D/abstract'>de Kool 1990</a>)"
                     }
                 ]
             },
@@ -896,7 +1007,7 @@
             {
                 "settings-section": "Natal kicks",
                 "name": "kickflag",
-                "description": "Sets the particular natal kick prescription to use. Note that <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code>, and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>, which are described below, are only used when <code class='docutils literal notranslate'><span class='pre'>abs(kickflag)=1</span></code>. Positive values use the Pfahl+2002 prescription for handling natal kicks.",
+                "description": "Sets the particular natal kick prescription to use. Note that <code class='docutils literal notranslate'><span class='pre'>sigmadiv</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhflag</span></code>, <code class='docutils literal notranslate'><span class='pre'>bhsigmafrac</span></code>, <code class='docutils literal notranslate'><span class='pre'>aic</span></code>, and <code class='docutils literal notranslate'><span class='pre'>ussn</span></code>, depend on the selected prescription, as described below. Positive values use the Pfahl+2002 prescription for handling natal kicks.",
                 "type": "dropdown",
                 "options-preface": "",
                 "options": [
@@ -926,8 +1037,22 @@
                         "description": "Follows <a class='reference external' href='https://scixplorer.org/abs/2020MNRAS.499.3214M/abstract'>Mandel &amp; Mueller 2020</a>, where the kick velocity is drawn based on the mass of the formed NS or BH, with scaling parameters that are set with 'mm_mu_ns' and 'mm_mu_bh'."
                     },
                     {
+                        "name": 7,
+                        "description": "Draws natal kick magnitudes following the gravitational tug-boat mechanism in asymmetric core-collapse explosions from <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2017ApJ...837...84J/abstract'>Janka (2017)</a>, with the exact form as in Eq. 2 of <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2026ApJ...997...52C/abstract'>Chattaraj et al. (2026)</a>, which is observationally 'calibrated' to the Galactic (field) double neutron star population.",
+                        "version_added": "4.1.1"
+                    },
+                    {
+                        "name": 8,
+                        "description": "Follows <a class='reference external' href='https://ui.adsabs.harvard.edu/abs/2023MNRAS.522.3972R/abstract'>Richards et al. (2023)</a> Eq. 1, which constrains the natal kicks on neutron stars from a combination of observations and the double neutron star merger rate. Similar to kickflag==4, but with different parameters.",
+                        "version_added": "4.1.1"
+                    },
+                    {
+                        "name": 9,
+                        "description": "Draws NS and BH base natal-kick speeds from the all-NS parent law of <a class='reference external' href='https://arxiv.org/abs/2610.04005'>Shariat et al. (2026)</a>, Table 2: separately normalized lognormal components with low weight 0.126, natural-log (mu, sigma) = (1.87, 0.55) and (5.62, 0.71), each truncated to 0.05--1000 km/s before BH scaling. These fixed marginal posterior medians do not propagate posterior uncertainty. Applies to every NS kick, including ECSN/USSN/AIC when enabled; sigmadiv does not replace the NS law. The paper constrains NSs; using this base law for BHs is an extrapolation. BH base speeds are multiplied by bhsigmafrac, then modified by bhflag (including fallback); scaled BH speeds can lie below 0.05 km/s. Supplied natal_kick_array values override sampling. Directions follow polar_kick_angle (90 degrees for isotropy). Only positive 9 is supported."
+                    },
+                    {
                         "name": "negative values",
-                        "description": "Same as above settings but using the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
+                        "description": "Supported negative options listed below use the old Kiel & Hurley 2009 prescription for changing the orbital configuration of the binary, available for reproducibility purposes but not recommended for new work"
                     },
                     {
                         "name": -1,
@@ -998,12 +1123,17 @@
                     {
                         "name": 3,
                         "description": "BH natal kicks are not decreased compared to NS kicks and are drawn from the same Maxwellian distribution with dispersion = <code>sigma</code> set above"
+                    },
+                    {
+                        "name": 4,
+                        "description": "Same as 1, but is also applied if the kick is provided directly in natal_kick_array (motivated by adaptive importance sampling)",
+                        "version_added": "4.2.0"
                     }
                 ]
             },
             {
                 "name": "bhsigmafrac",
-                "description": "Sets a fractional modification which scales down sigma for BHs. This works in addition to whatever is chosen for bhflag, and is applied to sigma before the bhflag prescriptions are applied",
+                "description": "Sets a fractional modification which scales down sigma for BHs. This works in addition to whatever is chosen for bhflag, and is applied to sigma before the bhflag prescriptions are applied. For kickflag=9, it multiplies the sampled BH speed before bhflag scaling.",
                 "type": "number",
                 "options-preface": "",
                 "options": [
@@ -1031,6 +1161,10 @@
                     {
                         "name": "negative values",
                         "description": "    sets ECSN kicks to be drawn from a Maxwellian distribution with dispersion given by sigmadiv"
+                    },
+                    {
+                        "name": 0.0,
+                        "description": "ECSN get the same kicks as CCSN"
                     },
                     {
                         "name": -20.0,
@@ -1392,6 +1526,10 @@
                         "name": "range [0, 1]",
                         "description": "Sets the fallback fraction for partial fallback in the Maltsev remnant mass prescription"
                     },
+		    {
+                        "name": -1,
+                        "description": "Uses the linear relation for fallback fraction as a function of CO core mass from Ugolini+25"
+                    },
                     {
                         "name": 0.5,
                         "description": "Default choice",
@@ -1632,19 +1770,19 @@
                 "options-preface": "Note that this is overwritten by the smt_q setting for systems that meet the smt_q condition (set to 0.0, see below).",
                 "options": [
                     {
-                        "name": -1,
+                        "name": "-1",
                         "description": "limited to 10x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
-                        "name": -2,
+                        "name": "-2",
                         "description": "limited to 1x the thermal rate of the accretor for MS/HG/CHeB and unlimited for GB/EAGB/AGB stars"
                     },
                     {
-                        "name": -3,
+                        "name": "-3",
                         "description": "limited to 10x the thermal rate of the accretor for all stars"   
                     },
                     {
-                        "name": -4,
+                        "name": "-4",
                         "description": "limited to 1x the thermal rate of the accretor for all stars"
                     },
                     {

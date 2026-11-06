@@ -1,88 +1,160 @@
-# COSMIC Changelog
+# COSMIC Changelog 
+## Prepend only please!
 
-## 0.0 - 3.4
-See the discussed changes in our previous releases here: https://github.com/COSMIC-PopSynth/COSMIC/releases
+## 4.3.4
 
-## 3.4.1
- - fixed sampling issues for renzo19 and sana12 so that they work with CMC
- - update to Docker ubuntu image
- - minor fixes to documentation to stop warnings/errors which break doc website deployment
- - adds in build wheels for Python 3.9 and 3.10
- - add warning for mlwind prescriptions which assume zsun = 0.019
- - modifications to how m2min and qmin are specified in initial conditions sampling
- - fixed sampling issues from Plummer profiles in cmc.py
- - fixed Eddington limits such that wind accretion is limited to eddington and thus limits RLO accretion if the wind accretion is already super-Eddington
- - fixed errors in Marchant+ PISN prescription
+- Additions/changes
+    - Added `smt_q` flag. This is a mass ratio limit to enforce stable mass transfer following <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251110728O/abstract'>Olejak+25</a>. Systems with Mdon/Macc >= smt_q meet the criteria. This paper argues that extreme mass ratios can lead to stable, non-conservative mass transfer. When this condition is met, mass transfer is assumed to be always stable, fully non-conservative, and that the mass carries away the specific angular momentum of the donor.
 
-## 3.4.1-3.4.5
- - updated the actions to build properly
+## 4.3.3
 
-## 3.4.6
- - added new Eddington limit prescriptions for BH accretion
- - cleaned up versioning
+- Bug fixes
+    - Restarting a TPAGB star whose age is slightly lower due to rounding errors could turn it into a more massive naked He star. We now catch this and rebuild the kw=6 core mass as is done in hrdiag
+    - The WD initial–final mass relation (``ifflag``) is no longer applied to naked He stars, which could gain mass on becoming a WD since the HPE fits are not tuned for He stars
+    - Stars entering RLOF far beyond their Roche lobe were given spin angular momentum that was then moved into the orbit; this could increase periods by up to ~10^7 days! We now force corotation at RLOF onset to use the Roche-limited radius
+    - There were cases where a CMC dynamical interaction cause a periastron collision that we weren't catching; we now treat them as a contact system (common envelope or merger) rather than normal RLOF
+    - PPISN remnant masses for ``pisn=-2`` and ``pisn=-3`` are now capped at the He core mass since the fits could extend pasttheir valid range
+    - Large tidal torques on compact stars are now always fed back to the orbit
 
-## 3.4.7
- - Exchanged any print statements for `warnings.warn` to allow silencing
- - Fixed up docs to catch warnings
+## 4.3.2
 
-## 3.4.8
- - removed zsun_wind so that we can match stock BSE exactly and added extra documentation surrounding the winds
- - added a NaN catch in cosmic-pop that throws a warning of NaNs, saves them to a file, and instructs the user to consider changing pts1 since this is the main driver of NaNs so far
+- Additions/changes
+    - Speed improvements for STROOPWAFEL rejection rates (mostly when using METISSE)
+        - STROOPWAFEL's mixture rejection rate now calls the rejection function once per chunk of components rather than once per component (chunk size set by the new ``rejection_batch_size`` argument of ``AdaptiveSampler``)
+        - METISSE ZAMS radii in ``default_reject`` are now tabulated once on a mass grid, cached, and interpolated, making rejection orders of magnitude faster (set ``n_radius_grid=None`` to compute every radius directly)
 
-## 3.4.9
- - Added `sampling_target == "total_mass"` option to independent sampler so you can target a specific total mass instead of number of binaries
- - Added `trim_extra_samples` parameter to the same function - which trims your samples to get as close as possible to the target total mass
- - Bug fixes: secondaries of single stars are now marked as massless remnants instead of main sequence stars, binfrac=0.0 no longer leads to an infinite loop in sampling
+- Bug fixes
+    - ``set_reff`` with METISSE treated each mass as the previous star gaining or losing mass, so a radius could depend on the masses before it in the array. Every star now gets a fresh track.
+    - The initial RLOF check in ``Evolve.evolve`` now only runs for SSE, since it uses SSE radii and gave misleading warnings for METISSE.
 
-## 3.4.10
- - Bug fixes: `timestep_conditions` for `bcm` arrays now raise errors for invalid columns instead of failing silently
- - Add `teff_1` and `teff_2` as variables that can be used to set `timestep_conditions`
- - Add in `-1` option to turn off Magnetic Braking in htmb 
- - Added `central_bh` and `scale_with_central_bh` as options to the CMC sampler, in order to add central massive black holes to CMC initial conditions
+## 4.3.1
 
+- Additions/changes
+    - Support ``timestep_conditions``, ``bpp_columns``, and ``bcm_columns`` in STROOPWAFEL adaptive importance sampler (new tutorial added)
+    - ``timestep_conditions`` now support ``!=``, and a sublist with only a ``dtp`` (e.g. ``['dtp=10.0']``) now always applies rather than never applying
+    - ``set_checkstates`` now raises a ``ValueError`` for unsupported operators, a bound set twice on the same column, or a sublist without exactly one valid ``dtp``. Previously these were silently ignored
 
-## 3.4.11
- - Added sampling options to ``independent`` sampler to allow for custom power law distributions for ``porb`` and ``q``
+- Bug fixes
+    - Small fix to ensure the every ``bcm`` row obeys eddington limits imposed by ``eddfac`` (this was just a reporting issue, evolution is unaffected)
+    - Two-sided ranges in ``timestep_conditions`` (e.g. ``'1<kstar_1<4'``, or ``'kstar_1>1', 'kstar_1<4'``) only applied the upper bound, they now apply both
+    - When ``dtp`` changed to a finer resolution, the next output stayed at the time set by the old ``dtp``, which could skip whole short phases (e.g. the giant branch after a coarse main sequence). The new resolution now applies straight away
+    - After a phase with ``dtp=0.0``, bcm output stopped until the final state if no condition applied afterwards
+    - ``dtp`` in ``timestep_conditions`` is no longer case-sensitive (``DTP=0.5`` was silently ignored)
+    - Conditions with negative values (e.g. ``'epoch_1>-10'`` or ``'-0.5<bhspin_1<0.5'``) could not be parsed and raised a ``ValueError``
 
-## 3.5.0
- - Feature: Added `bpp_columns` and `bcm_columns` parameters to the `evolve()` function to allow users to specify the columns in the bpp and bcm tables
- - Bug fix: Changed `kick.f` to use the Pfahl+02 kick prescription by default instead of Kiel & Hurley 2009, this fixes ejection velocities of secondaries and also changed kick_info to have an extra column
+## 4.3.0
 
-## 3.6.0
- - Overhaul documentation and added debugging environment
- - Feature: Added Disberg+2025 kick prescription as a new choice of `kickflag` (`kickflag=5`). Applies log-normal distribution to regular CCSN, ECSN/USSN still use `sigmadiv` Maxwellian and BH fallback scaling is still applied via `bhflag` and `bhsigmafrac` as with `kickflag=1`
+- Bug fixes
+    - A fairly severe one: Correct initialisation of several METISSE variables for COSMIC-METISSE (particularly the initial helium abundance). This ensures binaries with the same seeds are reproducible and initialised correctly.
+    - Supernovae immediately after CEs no longer cause NaNs (see https://github.com/COSMIC-PopSynth/COSMIC/issue/798)
 
-## 3.6.1
- - Add support for single stars in both independent and multidim sampling
- - update documentation
+- Additions/changes
+    - Added caching for METISSE track loading. Now if you load the same track in a given python process it will be cached, making e.g. STROOPWAFEL sampling *way* faster.
 
-## 3.6.2
- - Add functions to `cosmic.utils` for initC IO that's more efficient (`save_initC`, `load_initC`) by saving
- identical setting columns separately with only one copy - saves ~1kb per binary
- - Make He and CO core masses available in output
- - Change defaults; `qcflag=5` and `eccfac=10`
- - Prevent users from supplying both `qmin` and `m2_min`
- - Prevent users from supplying both `sep` and `porb` when sampling, calculate `porb` from `sep` as necessary
- - Define `binstate=-1` as single stars
+- For developers
+    - Debugging setup now works with COSMIC-METISSE
 
-## 3.7.0
- - Add `remnantflag=5`: The Mandel & Muller 2020 prescription for remnant masses
- - Add `kickflag=6`: The Mandel & Muller 2020 prescription for natal kicks. This can be tuned with `mm_mu_ns` and `mm_mu_bh`
- - Add `remnantflag=6`: The Maltsev+25 and Willcox+25 prescription for remnant masses. This can be tuned with `maltsev_mode` and `maltsev_fallback`
- - (Docs) Any tutorial that uses a plain BSEDict now uses one that is drawn from the cosmic-settings.json file to avoid missing changes and saves us updating each docs page
+## 4.2.2
 
+- Bug fixes
+    - An earlier fix for Roche Lobe calculation reveal a second bug which had almost cancelled out the first, both are now fixed, see discussion in https://github.com/COSMIC-PopSynth/COSMIC/pull/823
 
-## 3.7.1
- - Bug fix [[#729](https://github.com/COSMIC-PopSynth/COSMIC/issues/729)]: ensure disruptions are logged with ``evol_type==11`` when SNe occur during CEs
- - Bug fix [[#725](https://github.com/COSMIC-PopSynth/COSMIC/issues/725)]: set ``tb=sep=0`` for cases where AIC caused a WD to explode and leave behind no remnant (``evolve_type==9``)
- - Bug fix [[#724](https://github.com/COSMIC-PopSynth/COSMIC/issues/724)]: remove bug where ``kstar=15`` was assigned its previous epoch mass after merging during a CE and the merger product goes SN
+## 4.2.1
 
-## 3.7.2-3.7.3
+- Additions/changes
+    - Updated the multidim sampler to set the absolute binary fraction at 0.08 Msun to 20% instead of zero (see https://github.com/COSMIC-PopSynth/COSMIC/pull/820)
+    - We now allow for sigmadiv=0.0, which sets ECSN kicks to be the same as CCSN
+    - Set ceflag=0 to be a new default, documentation clarified
 
-Issues with PyPi, unreleased.
+- Bug fixes
+    - Previous versions used 0.69 for the value of sigma in the lognormal distribution for natal kicks, corrected to 0.68 from Disberg+2025
+
+## 4.2.0
+
+This version, among other things, introduces adaptive importance sampling to COSMIC.
+
+- Additions/changes
+    - **Adaptive importance sampling via the STROOPWAFEL algorithm** ([Broekgaarden et al. 2019](https://arxiv.org/abs/1905.00910)) — a new vectorised module for efficiently sampling rare binary outcomes (e.g. merging double compact objects), where flat Monte Carlo would need millions of evolutions to collect a handful of systems. Lives in ``cosmic.sample.stroopwafel``:
+        - ``AdaptiveSampler`` runs the three-phase pipeline (exploration → adaptation → refinement) and returns importance-weighted results; pass ``mc_only=True`` for a plain Monte Carlo baseline.
+        - ``ParameterSpace`` / ``Parameter`` define the sampled dimensions. Each parameter takes a single composable ``dist`` (see below), and columns follow the order the parameters are supplied.
+        - A binary is defined by ``{mass_1, mass_2, porb, ecc, metallicity}``; each is either sampled or returned by a user ``derive_params`` callback, validated when the sampler is constructed.
+        - Composable distributions (``cosmic.sample.stroopwafel.distributions``): base distributions (``Uniform``, ``PowerLaw``, ``BrokenPowerLaw``, ``TruncatedNormal``) combined with coordinate transforms (``Identity``, ``Log10``, ``Ln``, ``Sin``, ``CosShift``). Built-ins include ``kroupa`` (a continuous broken power law, α=-1.3 below 0.5 Msun and -2.3 above), ``sana``, ``sana_ecc``, ``flat_in_log``, ``uniform``, ``uniform_in_sine``, ``uniform_in_cosine`` and ``disberg``. Define your own by passing a ``Distribution`` instance, calling ``register(...)``, or subclassing ``Distribution``.
+        - Physical rejection via ``default_reject`` (or a custom callback). It is ``SSEDict``-aware, so ZAMS radii are computed with the same stellar engine used for evolution.
+        - Built-in hit-definition presets ``any_dco`` and ``merging_dco`` (``cosmic.sample.stroopwafel.presets``), or supply any ``(bpp) -> (n_hits, hit_bin_nums)`` function.
+        - Results are returned as ``cosmic.output.COSMICStroopOutput``, holding the samples, importance weights, hit flags, and full COSMIC tables, with ``hit_rate``/``hit_rate_uncertainty`` properties, ``draw_representative_sample(...)`` (weighted bootstrap), and ``save``/``from_file``.
+        - Self-contained checkpointing: ``run_exploration()`` returns a ``STROOPWAFELCheckpoint`` (``.save(path)``), and ``AdaptiveSampler.from_checkpoint(path)`` rebuilds the sampler — parameter space, settings, callables (serialised with ``dill``), and RNG state — for ``run_refinement()`` with no re-specification. Any setting can be overridden as a keyword.
+    - ``bhflag =  4`` is added as another option, which applies fallback-modulation even when kicks are directly supplied
+
+- Documentation:
+    - New "Adaptive importance sampling" tutorial series under ``docs/pages/tutorials/adaptive/``: getting started (``basics``), defining and customising distributions (``distributions``), interpreting outputs and weights (``outputs``), and saving/resuming runs (``checkpoint``).
+
+## 4.1.1
+
+- Additions/changes
+    - Add `kickflag` 7 and 8 from @astroabishek (thank you!)
+
+- Code cleanup
+    - Added a license
+    - Added some new example figures
+    - Pin versions to more specific values for a more reproducible environment.
+
+- Bug fixes
+    - Fixed issue from v3.7.6 where multiprocessing re-used random seeds across workers. This results in non-unique samples proportional to the number of cores that you used.
+    - Fixed Roche radius calculation
+
+## 4.1.0
+
+- Additions/changes
+    - kick_info table now includes another column with the time of each supernova
+
+- Code cleanup
+    - Function signature for kick() and evolv2() in the fortran changed to remove ``bkick`` entirely
+    - Also removed ``kick_info_out``. Both of these can be reconstructed from ``kick_info``
+    - [Just for developers] Created ``consts.py`` which ``evolve.py`` now draws from, loops over GROUPED_SETTINGS instead of giant chunk of assignments
+
+- Bug fixes:
+    - corrected mass sign in bjorklund wind routine in SSE_mlwind.f
+    - fixed bug in ``bhspinmag`` assignment in ``assign_remnant.f``
+    - fixed issue added in v3.7.6 where sample fails if you have total_mass as your sampling target and use multiprocessing
+
+## 4.0.1
+
+- Additions/changes:
+    - applies Hurley track metallicity limits only for SSE
+    - adds ValueError if the masses supplied to initial binary table are outside the supplied track range
+    - updated debug makefile work with new METISSE repo org
+
+## 4.0.0
+
+- Additions/changes:
+    - Adds the METISSE stellar engine where now the stellar engine must be specified as either sse or metisse. 
+    If metisse is used, the tracks must be specified directly. 
+
+## 3.7.8
+
+- Additions/changes:
+    - Added ``smt_periastron_check`` setting, which allows the user to toggle whether to check for periastron collision during stable mass transfer. By default, we set this off, which changes the behaviour of previous versions since 3.6.0 (PR #694) which did check for contact at periastron during stable mass transfer. We set this to off as the radial expansion from SSE is likely overestimated, once we connect with COSMIC-METISSE this should likely be set to 1.
+
+## 3.7.7
+
+- Additions/changes:
+    - Split out alpha1 and acc_lim to have parameters specified for each component in the binary
+    - added several prescriptions for winds and compact object formation
+
+## 3.7.6
+
+- Additions/changes:
+    - Added ``pool`` and ``nproc`` parameters to the ``independent`` sampler. Users can either specify an existing multiprocessing pool or a number of processors to use to create a pool that will be used for the sampling. This offers significant speed-ups for samples larger than 10,000 binaries.
+
+## 3.7.5
+
+- Fixes:
+    - Prevent tides calculations based on NS/BHs
+    - Track mean_anomaly (save to kick_info) array even when a system is disrupted
+    - Throw an error if invalid metallicities are provided for evolution
 
 ## 3.7.4
-This release contains _several_ fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription, windflag and LBV winds flag.
+This release contains *several* fixes to how CO core masses/remnant masses are handled. It also adds a new PISN prescription, windflag and LBV winds flag.
 
 - Fixes:
     - Update ``mc_co`` and ``mc_he`` after adjusting ``mc = mcmax`` in ``hrdiag.f`` for stripped stars. This can be a fairly significant change, up to ~2 Msun. (Used to actually be up to 10 Msun because we added HeMS core mass growth)
@@ -114,26 +186,96 @@ This release contains _several_ fixes to how CO core masses/remnant masses are h
     - Start new settings gallery in the documentation
     - Tag settings/options with the version they were added in the docs page and auto link them to release
 
-## 3.7.5
+## 3.7.2-3.7.3
+Issues with PyPi, unreleased.
 
-- Fixes:
-    - Prevent tides calculations based on NS/BHs
-    - Track mean_anomaly (save to kick_info) array even when a system is disrupted
-    - Throw an error if invalid metallicities are provided for evolution
 
-## 3.7.6
+## 3.7.1
 
-- Additions/changes:
-    - Added `pool` and `nproc` parameters to the `independent` sampler. Users can either specify an existing multiprocessing pool or a number of processors to use to create a pool that will be used for the sampling. This offers significant speed-ups for samples larger than 10,000 binaries.
+- Bug fix ([#729](https://github.com/COSMIC-PopSynth/COSMIC/issues/729)): ensure disruptions are logged with ``evol_type==11`` when SNe occur during CEs
+- Bug fix ([#725](https://github.com/COSMIC-PopSynth/COSMIC/issues/725)): set ``tb=sep=0`` for cases where AIC caused a WD to explode and leave behind no remnant (``evolve_type==9``)
+- Bug fix ([#724](https://github.com/COSMIC-PopSynth/COSMIC/issues/724)): remove bug where ``kstar=15`` was assigned its previous epoch mass after merging during a CE and the merger product goes SN
 
-## 3.7.8
+## 3.7.0
 
-- Additions/changes:
-    - Added `smt_q` flag. This is a mass ratio limit to enforce stable mass transfer following <a class='reference external' href='https://scixplorer.org/abs/2025arXiv251110728O/abstract'>Olejak+25</a>. Systems with Mdon/Macc >= smt_q meet the criteria. This paper argues that extreme mass ratios can lead to stable, non-conservative mass transfer. When this condition is met, mass transfer is assumed to be always stable, fully non-conservative, and that the mass carries away the specific angular momentum of the donor.
-    - https://github.com/COSMIC-PopSynth/COSMIC/pull/776
-    - https://github.com/COSMIC-PopSynth/COSMIC/pull/770
+- Add ``remnantflag=5``: The Mandel & Muller 2020 prescription for remnant masses
+- Add ``kickflag=6``: The Mandel & Muller 2020 prescription for natal kicks. This can be tuned with ``mm_mu_ns`` and ``mm_mu_bh``
+- Add ``remnantflag=6``: The Maltsev+25 and Willcox+25 prescription for remnant masses. This can be tuned with ``maltsev_mode`` and ``maltsev_fallback``
+- (Docs) Any tutorial that uses a plain BSEDict now uses one that is drawn from the cosmic-settings.json file to avoid missing changes and saves us updating each docs page
 
-## 3.7.9
+## 3.6.2
 
-- Additions/changes
-    - Added `smt_periastron_check` setting, which allows the user to toggle whether to check for periastron collision during stable mass transfer. By default, we set this off, which changes the behaviour of previous versions since 3.6.0 (PR #694) which did check for contact at periastron during stable mass transfer. We set this to off as the radial expansion from SSE is likely overestimated, once we connect with COSMIC-METISSE this should likely be set to 1.
+- Add functions to ``cosmic.utils`` for initC IO that's more efficient (``save_initC``, ``load_initC``) by saving identical setting columns separately with only one copy - saves ~1kb per binary
+- Make He and CO core masses available in output
+- Change defaults; ``qcflag=5`` and ``eccfac=10``
+- Prevent users from supplying both ``qmin`` and ``m2_min``
+- Prevent users from supplying both ``sep`` and ``porb`` when sampling, calculate ``porb`` from ``sep`` as necessary
+- Define ``binstate=-1`` as single stars
+
+## 3.6.1
+ 
+- Add support for single stars in both independent and multidim sampling
+- update documentation
+
+## 3.6.0
+
+- Overhaul documentation and added debugging environment
+- Feature: Added Disberg+2025 kick prescription as a new choice of ``kickflag`` (``kickflag=5``). Applies log-normal distribution to regular CCSN, ECSN/USSN still use ``sigmadiv`` Maxwellian and BH fallback scaling is still applied via ``bhflag`` and ``bhsigmafrac`` as with ``kickflag=1``
+
+## 3.5.0
+
+- Feature: Added ``bpp_columns`` and ``bcm_columns`` parameters to the ``evolve()`` function to allow users to specify the columns in the bpp and bcm tables
+- Bug fix: Changed ``kick.f`` to use the Pfahl+02 kick prescription by default instead of Kiel & Hurley 2009, this fixes ejection velocities of secondaries and also changed kick_info to have an extra column
+
+## 3.4.11
+
+- Added sampling options to ``independent`` sampler to allow for custom power law distributions for ``porb`` and ``q``
+
+## 3.4.10
+
+- Bug fixes: ``timestep_conditions`` for ``bcm`` arrays now raise errors for invalid columns instead of failing silently
+- Add ``teff_1`` and ``teff_2`` as variables that can be used to set ``timestep_conditions``
+- Add in ``-1`` option to turn off Magnetic Braking in htmb 
+- Added ``central_bh`` and ``scale_with_central_bh`` as options to the CMC sampler, in order to add central massive black holes to CMC initial conditions
+
+## 3.4.9
+
+- Added ``sampling_target == "total_mass"`` option to independent sampler so you can target a specific total mass instead of number of binaries
+- Added ``trim_extra_samples`` parameter to the same function - which trims your samples to get as close as possible to the target total mass
+- Bug fixes: secondaries of single stars are now marked as massless remnants instead of main sequence stars, binfrac=0.0 no longer leads to an infinite loop in sampling
+
+## 3.4.8
+
+- removed zsun_wind so that we can match stock BSE exactly and added extra documentation surrounding the winds
+- added a NaN catch in cosmic-pop that throws a warning of NaNs, saves them to a file, and instructs the user to consider changing pts1 since this is the main driver of NaNs so far
+
+## 3.4.7
+
+- Exchanged any print statements for ``warnings.warn`` to allow silencing
+- Fixed up docs to catch warnings
+
+## 3.4.6
+
+- added new Eddington limit prescriptions for BH accretion
+- cleaned up versioning
+
+## 3.4.1-3.4.5
+
+- updated the actions to build properly
+
+## 3.4.1
+
+- fixed sampling issues for renzo19 and sana12 so that they work with CMC
+- update to Docker ubuntu image
+- minor fixes to documentation to stop warnings/errors which break doc website deployment
+- adds in build wheels for Python 3.9 and 3.10
+- add warning for mlwind prescriptions which assume zsun = 0.019
+- modifications to how m2min and qmin are specified in initial conditions sampling
+- fixed sampling issues from Plummer profiles in cmc.py
+- fixed Eddington limits such that wind accretion is limited to eddington and thus limits RLO accretion if the wind accretion is already super-Eddington
+- fixed errors in Marchant+ PISN prescription
+
+## 0.0 - 3.4
+
+See the discussed changes in our previous releases [here](https://github.com/COSMIC-PopSynth/COSMIC/releases)
+

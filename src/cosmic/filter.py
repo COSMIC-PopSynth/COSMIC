@@ -22,11 +22,9 @@
 import operator
 import token
 import re
+from io import StringIO
 from tokenize import generate_tokens
 from collections import OrderedDict
-
-from six import string_types
-from six.moves import StringIO
 
 __author__ = "Duncan Macleod <duncan.macleod@ligo.org>"
 
@@ -48,6 +46,9 @@ OPERATORS_INV = OrderedDict(
         ("<", operator.gt),
         (">", operator.lt),
         (">=", operator.le),
+        ("=", operator.eq),
+        ("==", operator.eq),
+        ("!=", operator.ne),
     ]
 )
 
@@ -56,6 +57,39 @@ DELIM_REGEX = re.compile(r"(and|&+)", re.I)
 
 
 # -- filter parsing -----------------------------------------------------------
+
+
+def _join_signs(parts):
+    """Join unary signs onto the number that follows them
+
+    The tokenizer splits a negative number into two tokens (e.g. ``-0.5`` becomes
+    ``-`` and ``0.5``), so this merges them back so that negative values give the
+    same number of parts as positive ones. A sign is only treated as unary if it
+    is at the start of the definition or directly follows another operator.
+
+    Parameters
+    ----------
+    parts : `list` of `tokenize.TokenInfo`
+        the tokens of a column filter definition
+
+    Returns
+    -------
+    joined : `list` of `tuple`
+        a `list` of ``(type, string)`` tuples for each token
+    """
+    joined = []
+    for tok in parts:
+        if (
+            tok[0] == token.NUMBER
+            and joined
+            and joined[-1][1] in ("-", "+")
+            and (len(joined) == 1 or joined[-2][0] == token.OP)
+        ):
+            sign = joined.pop()[1]
+            joined.append((token.NUMBER, sign + tok[1]))
+        else:
+            joined.append((tok[0], tok[1]))
+    return joined
 
 
 def _float_or_str(value):
@@ -104,9 +138,11 @@ def parse_column_filter(definition):
     Parameters
     ----------
     definition : `str`
-        a column filter definition of the form ``<name><operator><threshold>``
-        or ``<threshold><operator><name><operator><threshold>``, e.g.
-        ``frequency >= 10``, or ``50 < snr < 100``
+        a column filter definition of the form ``<name><operator><threshold>``,
+        ``<threshold><operator><name>`` or
+        ``<threshold><operator><name><operator><threshold>``, e.g.
+        ``frequency >= 10``, ``10 <= frequency`` or ``50 < snr < 100``.
+        Thresholds may be negative, e.g. ``epoch > -10``
 
     Returns
     -------
@@ -141,6 +177,8 @@ def parse_column_filter(definition):
     [('frequency', <function operator.gt>, 10.)]
     >>> parse_column_filter("50 < snr < 100")
     [('snr', <function operator.gt>, 50.), ('snr', <function operator.lt>, 100.)]
+    >>> parse_column_filter("-10 < epoch < -5")
+    [('epoch', <function operator.gt>, -10.), ('epoch', <function operator.lt>, -5.)]
     >>> parse_column_filter("channel = "H1:TEST")
     [('channel', <function operator.eq>, 'H1:TEST')]
     """  # noqa
@@ -148,6 +186,7 @@ def parse_column_filter(definition):
     parts = list(generate_tokens(StringIO(definition.strip()).readline))
     while parts[-1][0] in (token.ENDMARKER, token.NEWLINE):
         parts = parts[:-1]
+    parts = _join_signs(parts)
 
     # parse simple definition: e.g: snr > 5
     if len(parts) == 3:
@@ -157,8 +196,8 @@ def parse_column_filter(definition):
             oprtr = OPERATORS[b[1]]
             value = _float_or_str(c[1])
             return [(name, oprtr, value)]
-        elif b[0] in [token.NAME, token.STRING]:
-            name = QUOTE_REGEX.sub("", b[1])
+        elif c[0] in [token.NAME, token.STRING]:  # e.g. 5 < snr
+            name = QUOTE_REGEX.sub("", c[1])
             oprtr = OPERATORS_INV[b[1]]
             value = _float_or_str(a[1])
             return [(name, oprtr, value)]
@@ -197,10 +236,10 @@ def parse_column_filters(*definitions):
 
 def _flatten(container):
     """Flatten arbitrary nested list of filters into a 1-D list"""
-    if isinstance(container, string_types):
+    if isinstance(container, str):
         container = [container]
     for elem in container:
-        if isinstance(elem, string_types) or is_filter_tuple(elem):
+        if isinstance(elem, str) or is_filter_tuple(elem):
             yield elem
         else:
             for elem2 in _flatten(elem):
@@ -210,5 +249,5 @@ def _flatten(container):
 def is_filter_tuple(tup):
     """Return whether a `tuple` matches the format for a column filter"""
     return isinstance(tup, (tuple, list)) and (
-        len(tup) == 3 and isinstance(tup[0], string_types) and callable(tup[1])
+        len(tup) == 3 and isinstance(tup[0], str) and callable(tup[1])
     )

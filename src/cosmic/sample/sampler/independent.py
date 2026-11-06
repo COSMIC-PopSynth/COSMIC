@@ -22,12 +22,14 @@
 import numpy as np
 import warnings
 import pandas as pd
+import warnings
 from multiprocessing import Pool
+import os
 
 from cosmic import utils
 
 from .sampler import register_sampler
-from .. import InitialBinaryTable
+from ..initialbinarytable import InitialBinaryTable
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
@@ -46,6 +48,7 @@ def get_independent_sampler(
     SF_duration,
     binfrac_model,
     met,
+    SSEDict=None,
     size=None,
     total_mass=np.inf,
     sampling_target="size",
@@ -130,6 +133,9 @@ def get_independent_sampler(
     met : `float`
         Sets the metallicity of the binary population where solar metallicity is zsun
 
+    SSEDict: `Dict`
+        Sets the engine to use for individual stellar evolution
+
     size : `int`
         Size of the population to sample
 
@@ -179,6 +185,16 @@ def get_independent_sampler(
     n_binaries : `int`
         Number of binaries needed to generate a population
     """
+    if SSEDict is not None:
+        stellar_engine = SSEDict.get("stellar_engine", "sse")
+    else:
+        stellar_engine = "sse"
+    
+    if stellar_engine == "sse" and\
+        (met < 1e-4 or met > 3e-2):
+            warnings.warn("You supplied a metallicity outside of SSE's parameter space [1e-4 <= Z <= 3e-2].\
+                Z will be truncated to this limit.")
+    
     if sampling_target == "total_mass" and (total_mass is None or total_mass == np.inf):
         raise ValueError("If `sampling_target == 'total mass'` then `total_mass` must be supplied")
     if size is None and (total_mass is None or total_mass == np.inf):
@@ -203,13 +219,13 @@ def get_independent_sampler(
 
     # if no pool was passed in, but nproc > 1, create a pool
     if not pool_existed_already and nproc > 1:
-        pool = Pool(nproc)
+        pool = Pool(nproc, initializer=_init_worker)
 
     # if there's no pool, simply pass the arguments to the worker
     if pool is None:
         return _independent_sampler_worker(
             final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-            binfrac_model, met, size=size, total_mass=total_mass, sampling_target=sampling_target,
+            binfrac_model, met, SSEDict=SSEDict, size=size, total_mass=total_mass, sampling_target=sampling_target,
             trim_extra_samples=trim_extra_samples, q_power_law=q_power_law, kwargs=kwargs
         )
 
@@ -233,7 +249,7 @@ def get_independent_sampler(
         # set up the arguments for each chunk
         chunk_args = [(
             final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-            binfrac_model, met, chunk if sampling_target == "size" else None,
+            binfrac_model, met, SSEDict, chunk if sampling_target == "size" else size // n_chunks,
             chunk if sampling_target == "total_mass" else np.inf, sampling_target, trim_extra_samples,
             q_power_law, kwargs
         ) for chunk in chunk_sizes]
@@ -259,17 +275,26 @@ def get_independent_sampler(
 
 def _independent_sampler_worker(
     final_kstar1, final_kstar2, primary_model, ecc_model, porb_model, SF_start, SF_duration,
-    binfrac_model, met, size=None, total_mass=np.inf, sampling_target="size",
+    binfrac_model, met, SSEDict=None, size=None, total_mass=np.inf, sampling_target="size",
     trim_extra_samples=False, q_power_law=0, kwargs={}
 ):
     """Worker function for the independent sampler. This is where the actual sampling happens, and is
     called either directly by `get_independent_sampler` or in parallel across a multiprocessing pool."""
+    if SSEDict is not None:
+        stellar_engine = SSEDict.get("stellar_engine", "sse")
+    else:
+        stellar_engine = "sse"
+
     primary_min, primary_max, secondary_min, secondary_max = utils.mass_min_max_select(
         final_kstar1, final_kstar2, **kwargs)
     initconditions = Sample()
 
     # set up multiplier if the mass sampling is inefficient
     multiplier = 1
+
+    # if size is passed as None, default to assuming a mean mass of 0.5 Msun (Kroupa IMF between 0.08, 150)
+    if size is None:
+        size = int(total_mass / 0.5)
 
     # track samples to actually return (after masks)
     mass1_singles = []
@@ -376,8 +401,8 @@ def _independent_sampler_worker(
 
     zsun = kwargs.pop("zsun", 0.02)
 
-    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun)
-    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun)
+    rad1 = initconditions.set_reff(mass1_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
+    rad2 = initconditions.set_reff(mass2_binary, metallicity=met, zsun=zsun, SSEDict=SSEDict)
 
     # sample periods and eccentricities
     # if the porb_model is moe19, the metallicity needs to be supplied
@@ -394,8 +419,11 @@ def _independent_sampler_worker(
     tphysf, metallicity = initconditions.sample_SFH(
         SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_binary.size
     )
-    metallicity[metallicity < 1e-4] = 1e-4
-    metallicity[metallicity > 0.03] = 0.03
+    
+    if stellar_engine == "sse":
+        metallicity[metallicity < 1e-4] = 1e-4
+        metallicity[metallicity > 0.03] = 0.03
+        
     kstar1 = initconditions.set_kstar(mass1_binary)
     kstar2 = initconditions.set_kstar(mass2_binary)
 
@@ -414,8 +442,11 @@ def _independent_sampler_worker(
         tphysf_singles, metallicity_singles = initconditions.sample_SFH(
             SF_start=SF_start, SF_duration=SF_duration, met=met, size=mass1_singles.size
         )
-        metallicity_singles[metallicity_singles < 1e-4] = 1e-4
-        metallicity_singles[metallicity_singles > 0.03] = 0.03
+        
+        if stellar_engine == "sse":
+            metallicity_singles[metallicity_singles < 1e-4] = 1e-4
+            metallicity_singles[metallicity_singles > 0.03] = 0.03
+            
         kstar1_singles = initconditions.set_kstar(mass1_singles)
         singles_table = InitialBinaryTable.InitialBinaries(
             mass1_singles,                          # mass1
@@ -448,6 +479,11 @@ def _independent_sampler_worker(
         n_singles,
         n_binaries
     )
+
+def _init_worker():
+    """Ensure that each worker process has a different random seed."""
+    np.random.seed(np.random.get_state()[1][0] + os.getpid())
+
 
 
 register_sampler(
@@ -937,32 +973,19 @@ class Sample(object):
             used to truncate the eccentricitiy distribution
         """
 
-        # First we need to compute where RL overflow starts.  We truncate the lower-bound
-        # of the period distribution there
-        q = mass2 / mass1
-        RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
-        )
+        # First we need to compute where RL overflow starts, using formulas from Eggleton (1983).
+        # We'll set the lower-bound of the period distribution there.
+        (q1, q2) = (mass1/mass2, mass2/mass1)    # Note: For both, q = m_donor / m_accretor.
 
-        q2 = mass1 / mass2
-        RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
-        )
+        RL_fac1 = 0.49 * q1**(2/3) / (0.6 * q1**(2/3) + np.log(1 + q1**(1/3))) # rad1/r_p where star 1 overflows its RL
+        RL_fac2 = 0.49 * q2**(2/3) / (0.6 * q2**(2/3) + np.log(1 + q2**(1/3))) # rad2/r_p where star 2 overflows its RL
 
-        # include the factor for the eccentricity
-        RL_max = 2 * rad1 / RL_fac
-        (ind_switch,) = np.where(RL_max < 2 * rad2 / RL_fac2)
-        if len(ind_switch) >= 1:
-            RL_max[ind_switch] = 2 * rad2[ind_switch] / RL_fac2[ind_switch]
-
-        # Can either sample the porb first and truncate the eccentricities at RL overflow
-        # or sample the eccentricities first and truncate a(1-e) at RL overflow
-        #
-        # If we haven't sampled the eccentricities, then the minimum semi-major axis is at
-        # RL overflow
-        #
-        # If we have, then the minimum pericenter is set to RL overflow
-        a_min = RL_max 
+        # RL overflow occurs if (rad1/RL_fac1 > r_p) or (rad2/RL_fac2 > r_p), where r_p = a(1-e).
+        # Note: We can either sample porbs first and truncate eccentricities at RL overflow
+        #       or sample eccentricities first and truncate pericenters a(1-e) at RL overflow.
+        #       If we haven't sampled eccentricities yet, then the minimum semi-major axis (a_min) is at RL overflow.
+        #       If we have, then the minimum pericenter a(1-e) is at RL overflow.
+        a_min = 2 * np.maximum(rad1 / RL_fac1, rad2 / RL_fac2) # The coefficient 2 accounts for the eccentricity.
 
         if porb_model == "log_uniform":
             if porb_max is None:
@@ -1073,7 +1096,6 @@ class Sample(object):
             from scipy.interpolate import interp1d
             from scipy.stats import norm
             from scipy.integrate import trapezoid
-
             try:
                 met = kwargs.pop('met')
             except:
@@ -1358,7 +1380,7 @@ class Sample(object):
 
         return kstar
 
-    def set_reff(self, mass, metallicity, zsun=0.02):
+    def set_reff(self ,mass, metallicity, zsun=0.02, SSEDict=None, **kwargs):
         """
         Better way to set the radii from BSE, by calling it directly
 
@@ -1369,6 +1391,7 @@ class Sample(object):
         need to divide it into chunks
         """
         from cosmic import _evolvebin
+        from cosmic.evolve import read_tracks_for_METISSE
 
         max_array_size = 100000
         total_length = len(mass)
@@ -1376,6 +1399,39 @@ class Sample(object):
 
         _evolvebin.metvars.zsun = zsun
 
+        if (SSEDict == None) or (SSEDict["stellar_engine"] == "sse"):
+            _evolvebin.se_flags.using_sse = True
+            _evolvebin.se_flags.using_metisse = False
+            _evolvebin.metissevars.path_to_tracks = ""
+            _evolvebin.metissevars.path_to_he_tracks = ""
+            _evolvebin.metissevars.z_match_limit = 1e-2
+            _evolvebin.metissevars.METISSE_verbose = False
+        elif SSEDict["stellar_engine"] == "metisse":
+            z_accuracy_limit = SSEDict.get("z_accuracy_limit", 1e-2)
+            METISSE_verbose = SSEDict.get("metisse_verbose", False)
+            _evolvebin.se_flags.using_metisse = True
+            _evolvebin.se_flags.using_sse = False
+            _evolvebin.metissevars.path_to_tracks = SSEDict["path_to_tracks"]
+            _evolvebin.metissevars.path_to_he_tracks = SSEDict["path_to_he_tracks"]
+            _evolvebin.metissevars.z_match_limit = z_accuracy_limit
+            _evolvebin.metissevars.METISSE_verbose = METISSE_verbose
+            
+            _ = read_tracks_for_METISSE(
+                path_to_tracks=SSEDict['path_to_tracks'], 
+                IBT_Z=metallicity,
+                z_accuracy_limit=z_accuracy_limit,
+                is_he=False
+                )
+            if (SSEDict['path_to_he_tracks'] != ''):
+                _ = read_tracks_for_METISSE(
+                    path_to_tracks=SSEDict['path_to_he_tracks'], 
+                    IBT_Z=metallicity,
+                    z_accuracy_limit=z_accuracy_limit,
+                    is_he=True
+                    )
+        else:
+            raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
+            
         idx = 0
         while total_length > max_array_size:
             ## cycle through the masses max_array_size number at a time

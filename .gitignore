@@ -111,8 +111,12 @@ ENV/
 .mypy_cache/
 
 *.o
+*.mod
 binary.in
 binary.dat
+debug/bpp.dat
+debug/bcm.dat
+debug/metisse_tracks.bin
 *.h5
 fort.99
 savefig/
@@ -121,3 +125,5 @@ savefig/
 _generated/
 docs/auto_examples/
 sg_execution_times.rst
+# the generated hash module, not test files whose names happen to end in it
+_commit_hash.py

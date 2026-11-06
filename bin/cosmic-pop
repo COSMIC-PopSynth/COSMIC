@@ -26,7 +26,7 @@ import h5py as h5
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable
 from cosmic import Match, utils
-from cosmic.evolve import Evolve
+from cosmic.evolve import Evolve, read_tracks_for_METISSE
 from cosmic._version import __version__
 
 from schwimmbad import MPIPool
@@ -72,7 +72,7 @@ def parse_commandline():
 
     defaults = {}
     if not (args.inifile is None and (('-h' in remaining_argv) or ('--help' in remaining_argv))):
-        BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+        BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
         defaults.update(sampling)
         defaults.update(filters)
         defaults.update(convergence)
@@ -129,6 +129,14 @@ def parse_commandline():
         help="HDFStore compression library")
     parser.add_argument("--complevel",type=int,default=0,
         help="HDFStore compression level")
+    parser.add_argument("--m1_min", default=0.08,type=float,
+        help="Minimum mass")
+    parser.add_argument("--m2_min", default=None,type=float,
+        help="Minimum mass")
+    parser.add_argument("--path-to-tracks", default=None, type=str,
+        help="Path to Hydrogen Metisse tracks")
+    parser.add_argument("--path-to-he-tracks", default=None, type=str,
+        help="Path to Helium Metisse tracks")
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-n", "--nproc",
@@ -169,8 +177,9 @@ if __name__ == '__main__':
     pool = schwimmbad.choose_pool(mpi=args.mpi, processes=args.nproc)
     if isinstance(pool, MPIPool):
         if not pool.is_master():
+            from sys import exit
             pool.wait()
-            sys.exit(0)
+            exit(0)
         nproc = len(pool.workers)
     else:
         nproc = args.nproc
@@ -181,7 +190,7 @@ if __name__ == '__main__':
 
     # READ AND PARSE INIFILE
     ###########################################################################
-    BSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
+    BSEDict, SSEDict, seed_int, filters, convergence, sampling = utils.parse_inifile(args.inifile)
 
     # we now overwrite the inifile values with what was specified from the command line
     # (which could mean not overwriting anything at all because they are populated
@@ -189,36 +198,79 @@ if __name__ == '__main__':
     for argument in vars(args):
         if argument in filters.keys():
             if filters[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, filters[argument], getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={filters[argument]} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 filters[argument] = getattr(args, argument)
 
         if argument in convergence.keys():
             if convergence[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, convergence[argument], getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={convergence[argument]} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 convergence[argument] = getattr(args, argument)
 
         if argument in sampling.keys():
             if (sampling[argument] == "independent") or (getattr(args, argument) == "independent"):
-               for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
+                for model in ["primary_model", "porb_model", "ecc_model", "binfrac_model"]:
                     if (model not in sampling.keys()) and not (getattr(args, model)):
-                        raise ValueError("You have selected the {0} sampler "
-                                         "but not specified a model for {1} "
-                                         "in the inifile or command line".format(sampling[argument], model)) 
+                        warnings.warn(f"You have selected the {sampling[argument]} sampler "
+                                            f"but not specified a model for {model} "
+                                            f"in the inifile or command line")
             if sampling[argument] != getattr(args, argument):
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, sampling[argument], getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={sampling[argument]} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 sampling[argument] = getattr(args, argument)
 
         if argument == 'seed':
             if getattr(args, argument) != seed_int:
-                warnings.warn("You are overriding the inifile value of {0}={1} "
-                              "with {0}={2} from the commandline".format(argument, seed_int, getattr(args, argument)))
+                warnings.warn(f"You are overriding the inifile value of {argument}={seed_int} "
+                                f"with {argument}={getattr(args, argument)} from the commandline")
                 seed_int = getattr(args, argument)
+    
+    ## Check engine
+    # Check arguments
+    if (args.path_to_tracks is not None) and (args.path_to_he_tracks is not None):
+        warnings.warn("path_to_tracks and path_to_he_tracks specified; overwriting stellar_engine with metisse")
+        SSEDict["stellar_engine"] = "metisse"
+        SSEDict["path_to_tracks"] = args.path_to_tracks
+        SSEDict["path_to_he_tracks"] = args.path_to_he_tracks
+    elif args.path_to_tracks is not None:
+        SSEDict["path_to_tracks"] = args.path_to_tracks
+    elif args.path_to_he_tracks is not None:
+        SSEDict["path_to_he_tracks"] = args.path_to_he_tracks
 
-    # Check that the values in BSEDict, filters, and convergence are valid
-    utils.error_check(BSEDict, filters, convergence, sampling)
+    # Check masses
+    if SSEDict["stellar_engine"] == "metisse":
+        # load in the METISSE files
+        metisse_m_min, metisse_m_max = read_tracks_for_METISSE(
+             path_to_tracks=SSEDict["path_to_tracks"], 
+             IBT_Z=sampling['metallicity'],
+             z_accuracy_limit=SSEDict['z_accuracy_limit'],
+             is_he=False
+        )
+        # Check m1_min
+        if args.m1_min < metisse_m_min:
+            m1_min = metisse_m_min
+        else:
+            m1_min = args.m1_min
+        # Check m2_min
+        if hasattr(args, "m2_min") and (args.m2_min is not None):
+            if args.m2_min < metisse_m_min:
+                args.m2_min = metisse_m_min
+        elif "m2_min" in sampling:
+            if sampling["m2_min"] is not None:
+                args.m2_min = sampling["m2_min"]
+                if args.m2_min > m1_min:
+                    args.m2_min = m1_min
+    else:
+        # Check m1_min
+        m1_min = args.m1_min
+        if hasattr(args, "m2_min") and (args.m2_min is not None):
+            if args.m2_min > m1_min:
+                args.m2_min = m1_min
+
+    
+    # Check that the values in BSEDict, SSEDict, filters, and convergence are valid
+    utils.error_check(BSEDict, SSEDict, filters, convergence, sampling)
 
     if seed_int != 0:
         np.random.seed(seed_int)
@@ -240,13 +292,13 @@ if __name__ == '__main__':
         kstar2_range = args.final_kstar2
         kstar2_range_string = str(int(args.final_kstar2[0]))
 
-    dat_store_fname = 'dat_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.h5'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity'])
+    dat_store_fname = f'dat_kstar1_{kstar1_range_string}_kstar2_{kstar2_range_string}_SFstart_{sampling["SF_start"]}_SFduration_{sampling["SF_duration"]}_metallicity_{sampling["metallicity"]}.h5'
     # Open the hdf5 file to store the fixed population data
     try:
         with pd.HDFStore(dat_store_fname,complib=args.complib,complevel=args.complevel) as dat_store:
             # If the file exists, we will read it and continue from where we left off
             conv_save = pd.read_hdf(dat_store, 'conv')
-        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'a')
+        log_file = open(f'log_kstar1_{kstar1_range_string}_kstar2_{kstar2_range_string}_SFstart_{sampling["SF_start"]}_SFduration_{sampling["SF_duration"]}_metallicity_{sampling["metallicity"]}.txt', 'a')
         log_file.write('There are already: '+str(conv_save.shape[0])+' '+kstar1_range_string+'_'+kstar2_range_string+' binaries evolved\n')
         log_file.write('\n')
         total_mass_singles = np.max(pd.read_hdf(dat_store, 'mass_singles'))[0]
@@ -266,15 +318,15 @@ if __name__ == '__main__':
         total_n_binaries = 0
         total_n_stars = 0
         idx = 0
-        log_file = open('log_kstar1_{0}_kstar2_{1}_SFstart_{2}_SFduration_{3}_metallicity_{4}.txt'.format(kstar1_range_string, kstar2_range_string, sampling['SF_start'], sampling['SF_duration'], sampling['metallicity']), 'w')
+        log_file = open(f'log_kstar1_{kstar1_range_string}_kstar2_{kstar2_range_string}_SFstart_{sampling["SF_start"]}_SFduration_{sampling["SF_duration"]}_metallicity_{sampling["metallicity"]}.txt', 'w')
 
     # save configuration settings and COSMIC version to output file
     with h5.File(dat_store_fname, 'a') as f:
         # if config already exists, we need to overwrite it
         if "config" in f:
             del f["config"]
-        f["config"] = json.dumps({'BSEDict' : BSEDict, 'filters' : filters, 'convergence' : convergence,
-                                  'sampling' : sampling, 'rand_seed': seed_int})
+        f["config"] = json.dumps({'BSEDict' : BSEDict, 'SSEDict': SSEDict, 'filters' : filters, 
+                                  'convergence' : convergence, 'sampling' : sampling, 'rand_seed': seed_int})
         f.attrs['COSMIC_version'] = __version__
 
     # Initialize the step counter and convergence array/list
@@ -284,9 +336,18 @@ if __name__ == '__main__':
     # Simulate the fixed population
     # This process is illustrated in Fig 1 of Breivik & Larson (2018)
     steps = 0
-    bcm_filter_match = []
-    bpp_filter_match = []
-    initC_filter_match = []
+    bcm_filter_match = pd.DataFrame()
+    bpp_filter_match = pd.DataFrame()
+    initC_filter_match = pd.DataFrame()
+    conv_filter_match = pd.DataFrame()
+    kick_info_filter_match = pd.DataFrame()
+    
+    if (args.keep_singles == True):
+        conv_singles_filter_match = pd.DataFrame()
+        bpp_singles_filter_match = pd.DataFrame()
+        bcm_singles_filter_match = pd.DataFrame()
+        initC_filter_singles_match = pd.DataFrame()
+        kick_info_singles_filter_match = pd.DataFrame()
 
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
@@ -295,7 +356,10 @@ if __name__ == '__main__':
                         "determine the secondary masses in the initial sample.")
 
             log_file.write("You have specified both qmin and m2_min.\n")
-            log_file.write("COSMIC will use qmin={} to determine the secondary masses in the initial sample.\n".format(args.qmin))
+            log_file.write(f"COSMIC will use qmin={args.qmin} to determine the secondary masses in the initial sample.\n")
+
+    if sampling["sampling_method"] == "multidim" and args.Nstep < args.nproc ** 2:
+            warnings.warn("`Nstep` is less than the square of `nproc`. You will see repeats with multidim sampling. Consider raising `Nstep`.")
 
     while (Nstep < args.Niter) & (np.max(match) > convergence['match']) & ((time.time() - start_time) < args.max_wall_time):
         # Set random seed such that each iteration gets a unique, determinable seed
@@ -305,10 +369,10 @@ if __name__ == '__main__':
         # Select the initial binary sample method from user input
         if sampling['sampling_method'] == 'independent':
             if hasattr(args,'qmin') and hasattr(args,'m2_min'):
-                if args.qmin != 0.0 and args.m2_min is not None:
+                if not (args.qmin == 0.0 or args.qmin is None) and args.m2_min is not None:
                     raise ValueError("You cannot specify both qmin and m2_min in the inifile if you are using the independent sampler. Please choose one or the other.")
             # If qmin is specified, use it to sample the initial binary table
-            if hasattr(args,'qmin'):
+            if hasattr(args,'qmin') and args.qmin != 0.:
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
                                                             final_kstar2 = kstar2_range,
@@ -322,8 +386,9 @@ if __name__ == '__main__':
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
                                                             qmin = args.qmin,
-                                                            params = args.inifile)
-            # if m2_min is specified, use it to sample the initial binary table
+                                                            params = args.inifile,
+                                                            m1_min = m1_min,
+                                                            SSEDict = SSEDict)
             elif hasattr(args,'m2_min'):
                 init_samp_list = InitialBinaryTable.sampler(format_ = sampling['sampling_method'],
                                                             final_kstar1 = kstar1_range,
@@ -337,8 +402,10 @@ if __name__ == '__main__':
                                                             SF_duration = sampling['SF_duration'],
                                                             met = sampling['metallicity'],
                                                             size = args.Nstep,
+                                                            m1_min = m1_min,
                                                             m2_min = args.m2_min,
-                                                            params = args.inifile)
+                                                            params = args.inifile,
+                                                            SSEDict = SSEDict)
             else:
                 raise ValueError("You must specify either qmin or m2_min in the",
                                  " inifile if you are using the independent sampler")
@@ -385,13 +452,25 @@ if __name__ == '__main__':
                 pass
             filters['timestep_conditions'] = []
 
-        # Create a pool
-        bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
-                                                      pool=pool,
-                                                      BSEDict=BSEDict,
-                                                      idx=idx,
-                                                      dtp=dtp,
-                                                      timestep_conditions=filters['timestep_conditions'])
+        # For MPI, pass the pool directly; for local multiprocessing, pass nproc so
+        # Evolve.evolve creates a fresh pool whose workers fork after Fortran globals
+        # (checkstate, dtp_state) have been initialized, avoiding a deadlock.
+        if isinstance(pool, MPIPool):
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          pool=pool,
+                                                          BSEDict=BSEDict,
+                                                          SSEDict=SSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'])
+        else:
+            bpp, bcm, initCond, kick_info = Evolve.evolve(initialbinarytable=IBT,
+                                                          nproc=nproc,
+                                                          BSEDict=BSEDict,
+                                                          SSEDict=SSEDict,
+                                                          idx=idx,
+                                                          dtp=dtp,
+                                                          timestep_conditions=filters['timestep_conditions'])
 
         # extract single stars
 
@@ -477,17 +556,17 @@ if __name__ == '__main__':
         conv_filter = conv_filter.loc[conv_filter.bin_num.isin(conv_lims_bin_num)]
 
         # Filter the bcm and bpp arrays according to user specified filters
-        bcm_filter_match = bcm_filter.copy()
-        bpp_filter_match = bpp_filter.copy()
-        initC_filter_match = initC_filter.copy()
-        conv_filter_match = conv_filter.copy()
-        kick_info_filter_match = kick_info_filter.copy()
+        bcm_filter_match = pd.concat([bcm_filter_match, bcm_filter])
+        bpp_filter_match = pd.concat([bpp_filter_match, bpp_filter])
+        initC_filter_match = pd.concat([initC_filter_match, initC_filter])
+        conv_filter_match = pd.concat([conv_filter_match, conv_filter])
+        kick_info_filter_match = pd.concat([kick_info_filter_match, kick_info_filter])
         if (args.keep_singles==True):
-            conv_singles_filter_match = conv_singles_filter.copy()
-            bpp_singles_filter_match = bpp_singles_filter.copy()
-            bcm_singles_filter_match = bcm_singles_filter.copy()
-            initC_filter_singles_match = initC_singles_filter.copy()
-            kick_info_singles_filter_match = kick_info_singles_filter.copy()          
+            conv_singles_filter_match = pd.concat([conv_singles_filter_match, conv_singles_filter])
+            bpp_singles_filter_match = pd.concat([bpp_singles_filter_match, bpp_singles_filter])
+            bcm_singles_filter_match = pd.concat([bcm_singles_filter_match, bcm_singles_filter])
+            initC_filter_singles_match = pd.concat([initC_filter_singles_match, initC_singles_filter])
+            kick_info_singles_filter_match = pd.concat([kick_info_singles_filter_match, kick_info_singles_filter])          
 
         if len(conv_filter_match) >= np.min([50, args.Niter]):
             conv_save = pd.concat([conv_save, pd.DataFrame(conv_filter_match)], ignore_index=True)
@@ -525,21 +604,32 @@ if __name__ == '__main__':
                                 bin_state_nums, match_save, idx)
 
             # reset the bcm_filter DataFrame
-            bcm_filter_match = []
-            bpp_filter_match = [] 
-            initC_filter_match = []
-            conv_filter_match = []
-            kick_info_filter_match = []
+            bcm_filter_match = pd.DataFrame()
+            bpp_filter_match = pd.DataFrame()
+            initC_filter_match = pd.DataFrame()
+            conv_filter_match = pd.DataFrame()
+            kick_info_filter_match = pd.DataFrame()
             if (args.keep_singles==True):
-                conv_singles_filter_match = []
-                bpp_singles_filter_match = []
-                bcm_singles_filter_match = []
-                initC_filter_singles_match = []
-                kick_info_singles_filter_match = []
+                conv_singles_filter_match = pd.DataFrame()
+                bpp_singles_filter_match = pd.DataFrame()
+                bcm_singles_filter_match = pd.DataFrame()
+                initC_filter_singles_match = pd.DataFrame()
+                kick_info_singles_filter_match = pd.DataFrame()
             log_file.write('\n')
         Nstep += args.Nstep
         log_file.flush()
-    
+
+# Print the reason the while loop ended. 
+# This is not really necessary because you could just check the match value in the log file
+    if (Nstep >= args.Niter):
+        log_file.write('Reason for termination: Niter reached. An additional run is recommended.')
+        log_file.write('\n')
+    if (np.max(match) <= convergence['match']):
+        log_file.write('Reason for termination: converged to given match')
+        log_file.write('\n')
+    if ((time.time() - start_time) >= args.max_wall_time):
+        log_file.write('Reason for termination: max wall time reached. An additional run is recommended.')
+        log_file.write('\n')
     # close the log file and print the final message
     log_file.write('All done friend!')
     log_file.close()

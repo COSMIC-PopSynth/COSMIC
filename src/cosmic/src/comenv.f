@@ -6,7 +6,7 @@
      &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &                  lumin,B_0,bacc,tacc,epoch,menv_bpp,renv_bpp,
-     &                  bkick,deltam_1,deltam_2)
+     &                  deltam_1,deltam_2,dtm)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -51,9 +51,8 @@
       REAL*8 RC1,RC2,Q1,Q2,RL1,RL2,LAMB1,LAMB2
       REAL*8 MENV,RENV,MENVD,RZAMS,vk
       REAL*8 Porbi,Porbf,Mcf,Menvf,qi,qf,G
-      REAL*8 kick_info(2,18),fallback,M1i,M2i
-      REAL*8 bkick(20)
-      REAL*8 bhspin1,bhspin2
+      REAL*8 kick_info(2,19),fallback,M1i,M2i
+      REAL*8 bhspin1,bhspin2,dtm
       REAL*8 deltam_1,deltam_2
       common /fall/fallback
       INTEGER formation1,formation2
@@ -76,6 +75,13 @@
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
       REAL*8 ALPHA_CE
+
+      REAL*8 met,reagb,tmin,tset,mconvmax
+      REAL*8 ragbf,menvmax,mconvenv,CELAMHE,tonset
+      EXTERNAL ragbf,menvmax,mconvenv,CELAMHE,tonset
+      REAL*8 mcgbtf,lmcgbf
+      EXTERNAL mcgbtf,lmcgbf
+      REAL*8 m1endstage1,m2endstage1
 *
 * Initialize
 *
@@ -105,37 +111,122 @@
 * Obtain the core masses and radii.
 *
       KW = KW1
-      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
       CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &            bhspin1,star1)
       OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
       MENVD = MENV/(M1-MC1)
-      RZAMS = RZAMSF(M01)
 *
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      IF (using_METISSE.eq.1) THEN
+        CALL comenv_lambda(KW,M01,L1,R1,MENVD,LAMBDAF,STAR1,LAMB1)
+      ELSEIF (using_SSE.eq.1) THEN
+        RZAMS = RZAMSF(M01)
+        LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+      ENDIF
+*
+* Two-stage formalism
+*
+      IF(CE2STAGEFLAG.EQ.1)THEN
+         IF (using_SSE.eq.1) THEN
+* Estimate the mass of the convective envelope 
+* from the fits in Picker, Hirai, & Mandel 2024
+           met = 10**(LOG10(zpars(14))/0.4)
+           reagb = ragbf(M1,LUMS(7),zpars(2))
+           tmin = 1000.d0*((1130.d0*LUMS(7)/
+     &                       (reagb**2.d0))**(1.d0/4.d0))
+           tset = tonset(tmin,met)
+           teff1 = 1000.d0*((1130.d0*L1/
+     &                       (R1**2.d0))**(1.d0/4.d0))
+           mconvmax = menvmax(KW,M1,M01,MC1,met)
+           MENV = mconvenv(KW,M1,mconvmax,teff1,tmin,tset,
+     &                       AJ1,TM1,TSCLS1(1))
+           LAMB1 = CELAMHE(M1,met,MENV,mconvmax)
+         ENDIF
+* if > 8 Msun, the envelope participating in the first stage is only the convective one
+* if < 2 Msun, the entire envelope participates in the first stage
+* linear interpolation in between
+         IF(M1.GE.8.0d0)THEN
+            m1endstage1 = M1-MENV
+         ELSEIF(M1.LT.2.0d0)THEN
+            m1endstage1 = MC1
+         ELSE
+            m1endstage1 = MC1 + (M1-MC1 - MENV) * (M1-2.0d0) /6.0d0
+         ENDIF
+         m2endstage1 = M2
+*
+* Calculate the binding energy of the convective envelope.
+*
+         EBINDI = M1*(M1-m1endstage1)/(LAMB1*R1)
+*
+* Standard energy formalism
+*
+      ELSE
+*
+* Calculate the binding energy of the giant envelope (multiplied by lambda).
+*
+         EBINDI = M1*(M1-MC1)/(LAMB1*R1)
+      ENDIF
       KW = KW2
-      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
       CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &            bhspin2,star2)
       OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
-*
-* Calculate the binding energy of the giant envelope (multiplied by lambda).
-*
-      EBINDI = M1*(M1-MC1)/(LAMB1*R1)
 *
 * If the secondary star is also giant-like add its envelopes energy.
 * Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
-         RZAMS = RZAMSF(M02)
-         LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
-         EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
+         IF (using_METISSE.eq.1) THEN
+            CALL comenv_lambda(KW,M02,L2,R2,MENVD,LAMBDAF,STAR2,LAMB2)
+         ELSEIF (using_SSE.eq.1) THEN
+            RZAMS = RZAMSF(M02)
+            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+         ENDIF
+*
+* Two-stage formalism
+*
+         IF(CE2STAGEFLAG.EQ.1)THEN
+            IF (using_SSE.eq.1) THEN
+* Estimate the mass of the convective envelope 
+* from the fits in Picker, Hirai, & Mandel 2024
+              met = 10**(LOG10(zpars(14))/0.4)
+              reagb = ragbf(M2,LUMS(7),zpars(2))
+              tmin = 1000.d0*((1130.d0*LUMS(7)/
+     &                          (reagb**2.d0))**(1.d0/4.d0))
+              tset = tonset(tmin,met)
+              teff2 = 1000.d0*((1130.d0*L2/
+     &                          (R2**2.d0))**(1.d0/4.d0))
+              mconvmax = menvmax(KW,M2,M02,MC2,met)
+              MENV = mconvenv(KW,M2,mconvmax,teff2,tmin,tset,
+     &                          AJ2,TM2,TSCLS2(1))
+              LAMB2 = CELAMHE(M2,met,MENV,mconvmax)
+            ENDIF
+* if > 8 Msun, the envelope participating in the first stage is only the convective one
+* if < 2 Msun, the entire envelope participates in the first stage
+* linear interpolation in between
+            IF(M2.GE.8.0d0)THEN
+               m2endstage1 = M2-MENV
+            ELSEIF(M2.LT.2.0d0)THEN
+               m2endstage1 = MC2
+            ELSE
+               m2endstage1 = MC2 + (M2-MC2 - MENV) * (M2-2.0d0) /6.0d0
+            ENDIF
+*
+* Calculate the binding energy of the convective envelope (multiplied by lambda).
+*
+            EBINDI = EBINDI + M2*(M2-m2endstage1)/(LAMB2*R2)
+         ELSE
+*
+* Calculate the binding energy of the giant envelope (multiplied by lambda).
+*
+            EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
+         ENDIF
 *
 * Calculate the initial orbital energy
 *
@@ -160,14 +251,127 @@
       ENDIF
       EORBF = EORBI + EBINDI/ALPHA_CE
 *
-* If the secondary is on the main sequence see if it fills its Roche lobe.
+* Two-stage formalism
 *
-      IF(KW2.LE.1.OR.KW2.EQ.7)THEN
-         SEPF = MC1*M2/(2.D0*EORBF)
-         Q1 = MC1/M2
+      IF(CE2STAGEFLAG.EQ.1)THEN
+         SEPF = m1endstage1*m2endstage1/(2.D0*EORBF)
+* Log end of the first stage with evolve_type=3
+* Check if M1 and M2 were switched on pass to comenv
+         evolve_type = 3.d0
+         if(switchedCE)then
+             mass1_bpp = m2endstage1
+             mass2_bpp = m1endstage1
+             massc1_bpp = MC2
+             massc2_bpp = MC1
+
+             kstar1_bpp = KW2i
+             kstar2_bpp = KW1i
+             q1_bpp = mass1_bpp/mass2_bpp
+             q2_bpp = 1.d0/q1_bpp
+             rrl1_bpp = R2/(RL(q1_bpp)*SEPF)
+             rrl2_bpp = RC1/(RL(q2_bpp)*SEPF)
+             aj1_bpp = AJ2
+             aj2_bpp = AJ1
+         else
+             mass1_bpp = m1endstage1
+             mass2_bpp = m2endstage1
+             massc1_bpp = MC1
+             massc2_bpp = MC2
+
+             kstar1_bpp = KW1i
+             kstar2_bpp = KW2i
+             q1_bpp = mass1_bpp/mass2_bpp
+             q2_bpp = 1.d0/q1_bpp
+             rrl1_bpp = RC1/(RL(q1_bpp)*SEPF)
+             rrl2_bpp = R2/(RL(q2_bpp)*SEPF)
+             aj1_bpp = AJ1
+             aj2_bpp = AJ2
+         endif
+         TB = (SEPF/AURSUN)*
+     &        SQRT(SEPF/(AURSUN*(m1endstage1+m2endstage1)))
+         if(using_cmc.eq.0)then
+            teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &            (rad1_bpp**2.d0))**(1.d0/4.d0))
+            teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &            (rad2_bpp**2.d0))**(1.d0/4.d0))
+            if(switchedCE)then
+               CALL writetab(jp,tphys,evolve_type,
+     &              mass1_bpp,mass2_bpp,kstar1_bpp,
+     &              kstar2_bpp,SEPF,TB,ECC,
+     &              rrl1_bpp,rrl2_bpp,
+     &              aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
+     &              mc_he(1),mc_he(2),mc_co(1),mc_co(2),
+     &              rad1_bpp,rad2_bpp,
+     &              M02,M01,lumin(1),lumin(2),
+     &              teff1,teff2,
+     &              RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &              renv_bpp(1),
+     &              renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &              epoch(2),bhspin2,bhspin1,
+     &              deltam_2,deltam_1,formation2,formation1,
+     &              binstate,mergertype,zpars(14)**2.d5,'bpp')
+            else
+               CALL writetab(jp,tphys,evolve_type,
+     &              mass1_bpp,mass2_bpp,kstar1_bpp,
+     &              kstar2_bpp,SEPF,TB,ECC,
+     &              rrl1_bpp,rrl2_bpp,
+     &              aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
+     &              mc_he(1),mc_he(2),mc_co(1),mc_co(2),
+     &              rad1_bpp,rad2_bpp,
+     &              M01,M02,lumin(1),lumin(2),
+     &              teff1,teff2,
+     &              RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &              renv_bpp(1),
+     &              renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
+     &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &              epoch(2),bhspin1,bhspin2,
+     &              deltam_1,deltam_2,formation1,formation2,
+     &              binstate,mergertype,zpars(14)**2.d5,'bpp')
+            endif
+         endif
+*
+* Second stage: stable mass transfer of the radiative intershell
+* Binary hardening formula from Picker, Hirai & Mandel 2024
+*
+         IF(m1endstage1.GT.MC1)THEN
+            SEPF = SEPF*((m1endstage1+m2endstage1)/(MC1+m2endstage1))
+     &          *(m1endstage1/MC1)**2
+     &          *EXP(-2*(m1endstage1-MC1)/m2endstage1)
+            EORBF = MC1*m2endstage1/(2.D0*SEPF)
+         ENDIF
+         Q1 = MC1/m2endstage1
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
+*
+* Standard energy formalism
+*
+      ELSE
+*
+* If the secondary is on the main sequence.
+*
+         IF(KW2.LE.1.OR.KW2.EQ.7)THEN
+            SEPF = MC1*M2/(2.D0*EORBF)
+            Q1 = MC1/M2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+*
+* If degenerate or giant secondary.
+*
+         ELSE
+            SEPF = MC1*MC2/(2.D0*EORBF)
+            Q1 = MC1/MC2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+         ENDIF
+      ENDIF
+*
+* If the secondary is on the main sequence see if it fills its Roche lobe.
+*
+      IF(KW2.LE.1.OR.KW2.EQ.7)THEN
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE
@@ -240,7 +444,7 @@
                M_postCE=MC1
             ENDIF
 
-            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &                  bhspin1,star1)
@@ -366,7 +570,7 @@
                endif
                CALL kick(KW1,M_postCE,mc_co(1),M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,sigmahold,
-     &                   kick_info,disrupt,bkick)
+     &                   kick_info,disrupt,tphys)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -385,16 +589,11 @@
                IF(ECC.GT.1.D0) GOTO 30
             ENDIF
          ENDIF
-      ELSE
 *
 * Degenerate or giant secondary. Check if the least massive core fills its
 * Roche lobe.
 *
-         SEPF = MC1*MC2/(2.D0*EORBF)
-         Q1 = MC1/MC2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
+      ELSE
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE
@@ -557,7 +756,7 @@
                 endif
             ENDIF
 
-            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &                  bhspin1,star1)
@@ -693,7 +892,7 @@
                endif
                CALL kick(KW1,M_postCE,mc_co(1),M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,sigmahold,
-     &                   kick_info,disrupt,bkick)
+     &                   kick_info,disrupt,tphys)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -730,7 +929,7 @@
                M_postCE=MC2
             ENDIF
 
-            CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+            CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &                  bhspin2,star2)
@@ -857,7 +1056,7 @@
                endif
                CALL kick(KW2,M_postCE,mc_co(2),M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,sigmahold,
-     &                   kick_info,disrupt,bkick)
+     &                   kick_info,disrupt,tphys)
 * Returning variable state to original naming convention
                MF = M_postCE
                SEPF = SEP_postCE
@@ -946,17 +1145,20 @@
          if(output) write(*,*)'coel 2 1:',KW,KW1,KW2,M1,M2,MF,MC22,
      & TB,OORB
          IF(KW.EQ.2)THEN
-            CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+            if (using_METISSE.eq.1) call set_star_type(star1)
+            CALL star(KW,M1,M1,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star1)
             IF(GB(9).GE.MC1)THEN
                M01 = M1
                AJ1 = TM2 + (TSCLS2(1) - TM2)*(AJ1-TM1)/(TSCLS1(1) - TM1)
-               CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+               CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+     &          dtm,star1)
             ENDIF
             if(output) write(*,*)'coel 2 2:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
          ELSEIF(KW.EQ.7)THEN
             M01 = M1
-            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            if (using_METISSE.eq.1) call set_star_type(star1)
+            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             AJ1 = TM1*(FAGE1*MC1 + FAGE2*MC22)/(MC1 + MC22)
             if(output) write(*,*)'coel 2 3:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
@@ -967,8 +1169,8 @@
 *
 * Obtain a new age for the giant.
 *
-            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1)
-            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+            CALL gntage(MC1,M1,KW,ZPARS,M01,AJ1,star1)
+            CALL star(KW,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,dtm,star1)
             if(output) write(*,*)'coel 2 4:',KW,KW1,KW2,M1,M01,MC22,
      & TB,OORB
          ENDIF
@@ -982,7 +1184,7 @@
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
-            if(KW.eq.13.and.ecsn.gt.0.d0)then
+            if(KW1.eq.13.and.ecsn.gt.0.d0)then
                if(KW1i.le.6)then
                   if(M1i.le.zpars(5))then
                      if(sigma.gt.0.d0.and.sigmadiv.gt.0.d0)then
@@ -1094,7 +1296,7 @@
                    endif
             endif
             CALL kick(KW,MF,mc_co(1),M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
-     &                0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                0.d0,fallback,sigmahold,kick_info,disrupt,tphys)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
          JSPIN1 = OORB*(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)

@@ -3,6 +3,7 @@ python_sources = [
   '_commit_hash.py',
   '_version.py',
   'checkstate.py',
+  'consts.py',
   'evolve.py',
   'filter.py',
   'get_commit_hash.py',
@@ -15,6 +16,11 @@ python_sources = [
 py3.install_sources(
   python_sources,
   subdir: 'cosmic'
+)
+
+py3.install_sources(
+  'data/__init__.py',
+  subdir: 'cosmic/data',
 )
 
 install_data(

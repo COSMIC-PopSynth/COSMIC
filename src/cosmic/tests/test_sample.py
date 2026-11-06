@@ -9,12 +9,16 @@ import numpy as np
 import pandas as pd
 from cosmic.sample import InitialBinaryTable
 from cosmic.sample.sampler.independent import Sample
-from cosmic.sample.sampler.multidim import MultiDim
+from cosmic.sample.sampler.multidim import (
+    MultiDim,
+    _rescale_low_mass_binary_cdf,
+)
 from cosmic.sample.sampler.cmc import CMCSample
 from cosmic.sample.cmc import elson
 from cosmic.sample.initialcmctable import InitialCMCTable
 from scipy.optimize import curve_fit
-from cosmic.utils import a_from_p, get_porb_norm
+from cosmic.utils import a_from_p, p_from_a
+import tempfile
 
 SAMPLECLASS = Sample()
 MULTIDIMSAMPLECLASS = MultiDim()
@@ -29,6 +33,8 @@ KROUPA_01_HI = -2.3
 KROUPA_01_LO = -1.3
 SALPETER_55 = -2.35
 SANA12_PORB_POWER_LAW = -0.55
+# fitted porb slopes scatter by ~0.005 for 2e5 samples, so allow ~3 sigma
+PORB_SLOPE_TOL = 0.015
 FLAT_SLOPE = 0.0
 # Since we integrate up to 0.7 in ecc, the slope is 4.0 rounded at the 0th decimal
 THERMAL_SLOPE = 4.0
@@ -46,11 +52,11 @@ OFFNER_MASS_RANGES = [(0.075,0.15), (0.15,0.30), (0.3,0.6), (0.75,1.00), (0.85,1
 OFFNER_DATA = [0.19, 0.23, 0.30, 0.42, 0.47, 0.50, 0.68, 0.81, 0.89, 0.93, 0.96]
 OFFNER_ERRORS = [0.03, 0.02, 0.02, 0.03, 0.03, 0.04, 0.07, 0.06, 0.05, 0.04, 0.04]
 MULTIDIM_BINFRAC_MAX = 0.6146916774140262
-MULTIDIM_BINFRAC_MIN = 0.13786300908773025
+MULTIDIM_BINFRAC_MIN = 0.2695344754654569
 CONST_SFR_SUM = 460028.2453521937
 BURST_SFR_SUM = 946002.8245352195
 KSTAR_SOLAR = 1.0
-MOE_TOTAL_MASS = 20.27926225850954
+MOE_TOTAL_MASS = 19.511403220255016
 METALLICITY_1000 = 0.02
 METALLICITY_13000 = 0.02*0.15
 
@@ -72,6 +78,8 @@ REFF_TEST_ARRAY = np.array([3.94190562, 5.99895482])
 
 SINGLES_CMC_FITS, BINARIES_CMC_FITS = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.fits"))
 SINGLES_CMC_HDF5, BINARIES_CMC_HDF5 = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.hdf5"))
+
+SSEDict = {'stellar_engine': 'sse'}
 
 def power_law_fit(data, n_bins=100, return_intercept=False):
     def line(x, a, b):
@@ -113,6 +121,16 @@ def linear_fit(data):
     slope, intercept = popt[0], popt[1]
 
     return slope
+
+def log10_porb_lower_bound(porb, aRL_over_a, mass1, mass2, floor=-np.inf):
+    """Per-binary lower bound on log10(porb) used by `sample_porb`
+
+    `sample_porb` truncates each binary's period distribution at RLOF, so the
+    sampled population only follows the intended distribution above the
+    largest per-binary bound (or for binaries whose bound is just `floor`)
+    """
+    a_min = aRL_over_a * a_from_p(porb, mass1, mass2)
+    return np.maximum(floor, np.log10(p_from_a(a_min, mass1, mass2)))
 
 class TestSample(unittest.TestCase):
     """`TestCase` for the cosmic Sample class, which generates several
@@ -206,6 +224,16 @@ class TestSample(unittest.TestCase):
             fit_slope = power_law_fit(q)
             self.assertEqual(np.round(fit_slope, 1), slope)
 
+    def test_sample_q(self):
+        """Test you can sample different mass ratio distributions"""
+        np.random.seed(2)
+        mass1, total_mass = SAMPLECLASS.sample_primary(primary_model='kroupa01', size=10000000)
+        for slope in [0, 1, 2]:
+            mass2 = SAMPLECLASS.sample_secondary(primary_mass=mass1, q_power_law=slope, qmin=0.0)
+            q = mass2 / mass1
+            fit_slope = power_law_fit(q)
+            self.assertEqual(np.round(fit_slope, 1), slope)
+
     def test_binary_select(self):
         np.random.seed(2)
         # Check that the binary select function chooses binarity properly
@@ -224,6 +252,34 @@ class TestSample(unittest.TestCase):
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=np.arange(1,100), binfrac_model='vanHaaften')
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
+        test_fracs = []
+        test_errs = []
+        primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
+        for i in range(len(OFFNER_MASS_RANGES)):
+            low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
+            offner_value = OFFNER_DATA[i]
+            offner_error = OFFNER_ERRORS[i]
+            bins_count = len(m1_b[(m1_b >= low) & (m1_b <= high)])
+            singles_count = len(m1_s[(m1_s >= low) & (m1_s <= high)])
+            bin_frac = bins_count / (bins_count + singles_count)
+            error = abs(offner_value - bin_frac)
+            self.assertLess(error, offner_error)
+        
+
+        test_fracs = []
+        test_errs = []
+        primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
+        for i in range(len(OFFNER_MASS_RANGES)):
+            low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
+            offner_value = OFFNER_DATA[i]
+            offner_error = OFFNER_ERRORS[i]
+            bins_count = len(m1_b[(m1_b >= low) & (m1_b <= high)])
+            singles_count = len(m1_s[(m1_s >= low) & (m1_s <= high)])
+            bin_frac = bins_count / (bins_count + singles_count)
+            error = abs(offner_value - bin_frac)
+            self.assertLess(error, offner_error)
 
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
         m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
@@ -268,8 +324,11 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'sana12', size=mass1.size
         )
-        power_slope = power_law_fit(np.log10(porb))
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        # only fit binaries whose lower bound wasn't raised by RLOF
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, mass1, mass2, floor=0.15)
+        untruncated = log10_porb_min == 0.15
+        power_slope = power_law_fit(np.log10(porb[untruncated]))
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         # now some custom power laws
         for slope in [-0.5, 0.5, 1]:
@@ -278,19 +337,26 @@ class TestSample(unittest.TestCase):
                     "min": 0.15, "max": 5, "slope": slope
                 }, size=mass1.size
             )
-            power_slope = power_law_fit(np.log10(porb))
+            log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, mass1, mass2, floor=0.15)
+            untruncated = log10_porb_min == 0.15
+            power_slope = power_law_fit(np.log10(porb[untruncated]))
             self.assertEqual(np.round(power_slope, 1), slope)
 
         np.random.seed(5)
-        # next do Renzo+19
-        m1_high = mass1+15
+        # next do Renzo+19, which uses Sana12 for m1 > 15 Msun and log-uniform otherwise.
+        # Shift every primary above 15 Msun so the full sample follows Sana12 (masking the
+        # Kroupa sample to m1 > 15 leaves too few binaries to fit)
+        m1_high = mass1 + 15
         rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'renzo19', size=m1_high.size
         )
-        porb_cut = porb[porb > 2.5]
-        power_slope = power_law_fit(np.log10(porb_cut))
-        self.assertAlmostEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        # nearly all of these massive binaries have an RLOF-raised lower bound, so only fit
+        # above the largest bound, where the summed distribution is a pure power law
+        log10_porb = np.log10(porb)
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, m1_high, mass2, floor=0.15)
+        power_slope = power_law_fit(log10_porb[log10_porb > log10_porb_min.max()])
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'renzo19', size=mass1.size
@@ -304,9 +370,10 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             mass1, mass2, rad1, rad2, 'log_uniform', size=mass1.size
         )
-        power_slope = linear_fit(np.log10(porb))
         sep = a_from_p(porb, mass1, mass2)
-        sep = sep[sep > 10]
+        # separations are log-uniform above each binary's RLOF bound, so cut above the largest
+        sep_min = aRL_over_a * sep
+        sep = sep[sep > sep_min.max()]
         uniform_slope = linear_fit(np.log10(sep))
         self.assertEqual(np.round(uniform_slope, 1), FLAT_SLOPE)
 
@@ -349,9 +416,10 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > 0.5)]
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, m1_high, mass2, floor=0.15)
+        porb_high_mass = porb[(m1_high >= feccsn_mass) & (np.log10(porb) > log10_porb_min.max())]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         # check martinez_26_ecsn for high mass
         m1_high = mass1+ecsn_mass
@@ -359,9 +427,10 @@ class TestSample(unittest.TestCase):
         porb,aRL_over_a = SAMPLECLASS.sample_porb(
             m1_high, mass2, rad1_high, rad2, 'martinez26_ecsn', size=m1_high.size, met=met
         )
-        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > 0.5)]
+        log10_porb_min = log10_porb_lower_bound(porb, aRL_over_a, m1_high, mass2, floor=0.15)
+        porb_high_mass = porb[(m1_high >= ecsn_mass) & (np.log10(porb) > log10_porb_min.max())]
         power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
-        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
+        self.assertAlmostEqual(power_slope, SANA12_PORB_POWER_LAW, delta=PORB_SLOPE_TOL)
 
         # next check moe19
         from cosmic.utils import get_met_dep_binfrac
@@ -406,7 +475,7 @@ class TestSample(unittest.TestCase):
 
         # now we feed aRL_over_a into sample_ecc
         ecc = SAMPLECLASS.sample_ecc(aRL_over_a, ecc_model='thermal', size=mass1.size)
-        ecc_cut = ecc[ecc < 0.7]
+        ecc_cut = ecc[ecc < 0.65]
         slope = linear_fit(ecc_cut)
         self.assertEqual(np.round(slope, 0), THERMAL_SLOPE)
 
@@ -454,6 +523,19 @@ class TestSample(unittest.TestCase):
         self.assertEqual(np.sum(mass_singles), MOE_TOTAL_MASS)
         self.assertAlmostEqual(binfrac.max(), MULTIDIM_BINFRAC_MAX)
         self.assertAlmostEqual(binfrac.min(), MULTIDIM_BINFRAC_MIN)
+
+    def test_multidim_low_mass_binary_fraction(self):
+        binary_cdf = np.linspace(0.0, 0.4, 10)
+
+        low_mass_cdf = _rescale_low_mass_binary_cdf(binary_cdf, 0.08)
+        midpoint_cdf = _rescale_low_mass_binary_cdf(
+            binary_cdf, np.sqrt(0.08 * 0.8)
+        )
+        reference_cdf = _rescale_low_mass_binary_cdf(binary_cdf, 0.8)
+
+        self.assertAlmostEqual(low_mass_cdf.max(), 0.20)
+        self.assertAlmostEqual(midpoint_cdf.max(), 0.30)
+        np.testing.assert_allclose(reference_cdf, binary_cdf)
 
     def test_sample_MultiDim_SFH(self):
         np.random.seed(2)
@@ -603,6 +685,21 @@ class TestSample(unittest.TestCase):
             it_fails = True
         self.assertFalse(it_fails)
 
+    def test_samples_unique(self):
+        # ensure that samples are unique, both serial and parallel
+        np.random.seed(2)
+
+        for nproc in [1, 2]:
+            ibt = InitialBinaryTable.sampler(
+                'independent', range(16), range(16),
+                binfrac_model=1.0, primary_model='kroupa01',
+                ecc_model='sana12', porb_model='sana12',
+                qmin=-1, SF_start=13700.0, SF_duration=0.0,
+                met=0.02, size=10_000, nproc=nproc
+            )[0]
+
+            self.assertTrue(len(ibt) == len(ibt.drop_duplicates()))
+
 class TestCMCSample(unittest.TestCase):
     def test_plummer_profile(self):
         np.random.seed(2)
@@ -630,15 +727,16 @@ class TestCMCSample(unittest.TestCase):
         np.testing.assert_allclose(REFF_TEST_ARRAY, reff)
 
     def test_cmc_sampler(self):
-        np.random.seed(2)
-        # Test generating CMC initial conditions and test saving the output to files
-        Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
-        InitialCMCTable.write(Singles, Binaries, filename="input.hdf5")
-        InitialCMCTable.write(Singles, Binaries, filename="input.fits")
-        Singles, Binaries = InitialCMCTable.read(filename="input.fits")
-        # read the test files and compare to the static unit tests files
-        pd.testing.assert_frame_equal(Singles, SINGLES_CMC_FITS)
-        pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_FITS)
-        Singles, Binaries = InitialCMCTable.read(filename="input.hdf5")
-        pd.testing.assert_frame_equal(Singles, SINGLES_CMC_HDF5)
-        pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_HDF5)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            np.random.seed(2)
+            # Test generating CMC initial conditions and test saving the output to files
+            Singles, Binaries = InitialCMCTable.sampler('cmc', binfrac_model=0.2, primary_model='kroupa01', ecc_model='sana12', porb_model='sana12', cluster_profile='plummer', met=0.014, size=20, params=os.path.join(TEST_DATA_DIR,'Params.ini'), gamma=4, r_max=100, qmin=0.1)
+            InitialCMCTable.write(Singles, Binaries, filename=f"{tmpdirname}/input.hdf5")
+            InitialCMCTable.write(Singles, Binaries, filename=f"{tmpdirname}/input.fits")
+            Singles, Binaries = InitialCMCTable.read(filename=f"{tmpdirname}/input.fits")
+            # read the test files and compare to the static unit tests files
+            pd.testing.assert_frame_equal(Singles, SINGLES_CMC_FITS)
+            pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_FITS)
+            Singles, Binaries = InitialCMCTable.read(filename=f"{tmpdirname}/input.hdf5")
+            pd.testing.assert_frame_equal(Singles, SINGLES_CMC_HDF5)
+            pd.testing.assert_frame_equal(Binaries, BINARIES_CMC_HDF5)

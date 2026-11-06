@@ -21,6 +21,7 @@
 
 from cosmic import _evolvebin
 from . import utils
+from .consts import ALL_COLUMNS, INTEGER_COLUMNS, BPP_COLUMNS, BCM_COLUMNS, KICK_COLUMNS, GROUPED_SETTINGS
 from .sample import initialbinarytable
 from .checkstate import set_checkstates
 
@@ -31,6 +32,8 @@ import pandas as pd
 import warnings
 import os
 import sys
+import tqdm
+from functools import partial, lru_cache
 try:
     import multiprocessing
     multiprocessing.set_start_method("fork")
@@ -43,45 +46,7 @@ __credits__ = ['Katelyn Breivik <katie.breivik@gmail.com>',
                'Michael Zevin <zevin@northwestern.edu>',
                'digman.12@osu.edu',
                'Tom Wagg <tomjwagg@gmail.com>']
-__all__ = ['Evolve']
-
-
-# Make this match the ordering of all_cols in bpp_array.f
-ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
-               'ecc', 'RRLO_1', 'RRLO_2', 'evol_type', 'aj_1', 'aj_2', 'tms_1',
-               'tms_2', 'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2',
-               'rad_1', 'rad_2', 'mass0_1',
-               'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2', 'radc_1',
-               'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
-               'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2', 'tacc_1',
-               'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2',
-               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type', 'metallicity']
-
-INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2", "evol_type"]
-
-
-BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
-               'sep', 'porb', 'ecc', 'RRLO_1', 'RRLO_2', 'evol_type',
-               'aj_1', 'aj_2', 'tms_1', 'tms_2',
-               'massc_he_layer_1', 'massc_he_layer_2', 'massc_co_layer_1', 'massc_co_layer_2', 'rad_1', 'rad_2',
-               'mass0_1', 'mass0_2', 'lum_1', 'lum_2', 'teff_1', 'teff_2',
-               'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
-               'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
-               'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
-               'bhspin_1', 'bhspin_2']
-
-BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
-               'teff_1', 'massc_he_layer_1', 'massc_co_layer_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',
-               'omega_spin_1', 'deltam_1', 'RRLO_1', 'kstar_2', 'mass0_2', 'mass_2',
-               'lum_2', 'rad_2', 'teff_2', 'massc_he_layer_2', 'massc_co_layer_2', 'radc_2', 'menv_2',
-               'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
-               'porb', 'sep', 'ecc', 'B_1', 'B_2',
-               'SN_1', 'SN_2', 'bin_state', 'merger_type']
-
-KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
-                'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
-                'delta_vsysx_2', 'delta_vsysy_2', 'delta_vsysz_2', 'vsys_2_total',
-                'theta_euler', 'phi_euler', 'psi_euler', 'randomseed', 'bin_num']
+__all__ = ['Evolve', 'read_tracks_for_METISSE', 'populate_tracks']
 
 # We use the list of column in the initialbinarytable function to initialize
 # the list of columns that we will send to the fortran evolv2 function.
@@ -92,32 +57,17 @@ if sys.version_info.major == 2 and sys.version_info.minor == 7:
 else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
-INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
-                                  'ceflag', 'tflag', 'ifflag', 'wdflag',
-                                  'pisn', 'ppi_co_shift', 'ppi_extra_ml',
-                                  'rtmsflag',
-                                  'bhflag', 'remnantflag', 'fryer_mass_limit',
-                                  'maltsev_mode', 'maltsev_fallback', 'maltsev_pf_prob',
-                                  'grflag', 'bhms_coll_flag', 'wd_mass_lim',
-                                  'cekickflag', 'cemergeflag', 'cehestarflag',
-                                  'mxns', 'pts1', 'pts2', 'pts3',
-                                  "fryer_fmix", "fryer_mcrit_nsbh",
-                                  'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
-                                  'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
-                                  'natal_kick_array', 'qcrit_array',
-                                  'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 'smt_q', 'smt_periastron_check',
-                                  'bdecayfac', 'bconst', 'ck',
-                                  'windflag', 'qcflag', 'eddlimflag', 'LBV_flag',
-                                  'fprimc_array', 'dtp', 'randomseed',
-                                  'bhspinflag', 'bhspinmag', 'rejuv_fac', 'rejuvflag', 'htpmb',
-                                  'ST_cr', 'ST_tide', 'rembar_massloss', 'zsun', 'kickflag']
+# construct BSE columns from flattened GROUPED_SETTINGS
+INITIAL_CONDITIONS_BSE_COLUMNS = [col for group in GROUPED_SETTINGS.values() for col in group]
 
-INITIAL_CONDITIONS_MISC_COLUMN = ['bin_num']
+INITIAL_CONDITIONS_MISC_COLUMNS = ['bin_num', 'dtp']
+
+INITIAL_CONDITIONS_SSE_COLUMNS = ['stellar_engine', 'path_to_tracks', 'path_to_he_tracks', 'z_accuracy_limit']
 
 # Add the BSE COLUMSN and MISC COLUMN to the PASS_COLUMNS list
 INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_BSE_COLUMNS)
-INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMN)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_MISC_COLUMNS)
+INITIAL_CONDITIONS_PASS_COLUMNS.extend(INITIAL_CONDITIONS_SSE_COLUMNS)
 
 if sys.version_info.major == 2 and sys.version_info.minor == 7:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS[:]
@@ -127,11 +77,7 @@ else:
 for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array', 'alpha1', 'acc_lim']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
-NATAL_KICK_COLUMNS = ['natal_kick',
-                      'phi',
-                      'theta',
-                      'mean_anomaly',
-                      'randomseed']
+NATAL_KICK_COLUMNS = ['natal_kick', 'phi', 'theta', 'mean_anomaly', 'randomseed']
 
 FLATTENED_NATAL_KICK_COLUMNS = []
 for sn_idx in range(2):
@@ -213,6 +159,8 @@ class Evolve(object):
 
                 params
 
+            You can also add a progress bar by setting: progress=True
+
         randomseed : `int`, optional, default let numpy choose for you
             If you would like the random seed that the underlying fortran code
             uses to be the same for all of the initial conditions you passed
@@ -251,6 +199,7 @@ class Evolve(object):
         idx = kwargs.pop('idx', 0)
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
         n_per_block = kwargs.pop('n_per_block', -1)
+        progress = kwargs.pop('progress', False)
 
         if bpp_columns is None:
             bpp_columns = BPP_COLUMNS
@@ -265,6 +214,8 @@ class Evolve(object):
 
         # NUMBER 1: PASS A DICTIONARY OF FLAGS
         BSEDict = kwargs.pop('BSEDict', {})
+        SSEDict = kwargs.pop('SSEDict', {})
+
 
         # NUMBER 2: PASS A PANDAS DATA FRAME WITH PARAMS DEFINED AS COLUMNS
 
@@ -284,19 +235,18 @@ class Evolve(object):
             if not os.path.isfile(params):
                 raise ValueError("File does not exist, probably supplied incorrect "
                                  "path to the inifile.")
-            BSEDict, _, _, _, _ = utils.parse_inifile(params)
+            BSEDict, SSEDict, _, _, _, _ = utils.parse_inifile(params)
+
+        # default to SSE when no SSEDict is provided
+        if BSEDict and not SSEDict:
+            SSEDict = {'stellar_engine': 'sse'}
 
         # error check the parameters you are trying to pass to BSE
         # if we sent in a table with the parameter names
         # then we will temporarily create a dictionary
         # in order to verify that the values in the table
         # are valid
-        utils.error_check(BSEDict)
-
-        # check the initial conditions of the system and warn user if
-        # anything is weird about them, such as the star starts
-        # in Roche Lobe overflow
-        utils.check_initial_conditions(initialbinarytable)
+        utils.error_check(BSEDict, SSEDict)
 
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
@@ -308,6 +258,65 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
+        # ensure SSEDict keys are unique in the initial binary table and warn otherwise
+        for col in INITIAL_CONDITIONS_SSE_COLUMNS:
+            if col in initialbinarytable.columns and initialbinarytable[col].nunique() > 1:
+                raise ValueError(f"The value for {col} in the initial binary table is not unique. "
+                                 f"Please make sure that the value for {col} is the same for all rows in the initial binary table.")
+
+        # if user passed an SSEDict, we may need to update the initial binary table
+        if SSEDict:
+            for k, v in SSEDict.items():
+                if k in initialbinarytable.keys():
+                    warnings.warn(f"The value for {k} in initial binary table is being "
+                                  f"overwritten by the value of {k} from either the params "
+                                  f"file or the SSEDict.")
+                kwargs1 = {k: v}
+                initialbinarytable = initialbinarytable.assign(**kwargs1)
+        
+        # check the initial conditions of the system and warn user if
+        # anything is weird about them, such as the star starts
+        # in Roche Lobe overflow
+        # TODO: This only runs for SSE currently, we should implement the same thing with METISSE radii
+        if initialbinarytable['stellar_engine'].iloc[0] == 'sse':
+            utils.check_initial_conditions(initialbinarytable)
+
+        # if the user wants to use METISSE then we need to load the necessary tracks
+        if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
+            _evolvebin.se_flags.using_metisse = 1
+            _evolvebin.se_flags.using_sse = 0
+
+            # make sure all of the SSE columns are there
+            if not set(['path_to_tracks', 'path_to_he_tracks', 'z_accuracy_limit']).issubset(initialbinarytable.columns):
+                raise ValueError("If you want to use the METISSE stellar engine, you must provide the following in the SSEDict, initial binary table, or params file: path_to_tracks, path_to_he_tracks, z_accuracy_limit.")
+
+            #check if the metallicity for the initialbinarytable changes
+            # raise an error if all the metallicities are not the same
+            if initialbinarytable['metallicity'].nunique() > 1:
+                raise ValueError("All the metallicities in the initial binary table "
+                                 "must be the same if you are using the METISSE stellar engine. ")
+            
+            # load in the METISSE files
+            m_min, m_max = read_tracks_for_METISSE(
+                path_to_tracks=initialbinarytable['path_to_tracks'].iloc[0], 
+                IBT_Z=initialbinarytable['metallicity'].iloc[0],
+                z_accuracy_limit=initialbinarytable['z_accuracy_limit'].iloc[0],
+                is_he=False
+            )
+
+            if (initialbinarytable['path_to_he_tracks'].iloc[0] != ''):
+                read_tracks_for_METISSE(
+                    path_to_tracks=initialbinarytable['path_to_he_tracks'].iloc[0],
+                    IBT_Z=initialbinarytable['metallicity'].iloc[0], 
+                    z_accuracy_limit=initialbinarytable['z_accuracy_limit'].iloc[0],
+                    is_he=True
+                )
+
+        else:
+            # default to SSE if stellar engine is SSE or no stellar engine is specified
+            _evolvebin.se_flags.using_sse = 1
+            _evolvebin.se_flags.using_metisse = 0
+           
         # go through each item in the BSEDict and update the initialbinarytable
         new_cols = {}
         n = len(initialbinarytable)
@@ -383,7 +392,7 @@ class Evolve(object):
         # and either a dictionary or an inifile was not provided
         # then we need to raise an ValueError and tell the user to provide
         # either a dictionary or an inifile or add more columns
-        if not BSEDict:
+        if BSEDict and SSEDict is None:
             if ((not set(INITIAL_BINARY_TABLE_SAVE_COLUMNS).issubset(initialbinarytable.columns)) and
                (not set(INITIAL_CONDITIONS_PASS_COLUMNS).issubset(initialbinarytable.columns))):
                 raise ValueError("You are passing BSE parameters as columns in the "
@@ -391,6 +400,11 @@ class Evolve(object):
                                  "Please pass a BSEDict or a params file or make sure "
                                  "you have all BSE parameters as columns {0} or {1}.".format(
                                   INITIAL_BINARY_TABLE_SAVE_COLUMNS, INITIAL_CONDITIONS_PASS_COLUMNS))
+            
+        if (BSEDict and not SSEDict) or (SSEDict and not BSEDict):
+            raise ValueError("If you are passing BSE parameters as columns in the "
+                             "initial binary table you must also pass SSE parameters "
+                             "in the initial binary table.")
 
         # If you did not supply the natal kick or qcrit_array or fprimc_array in the BSEdict then we construct
         # it from the initial conditions table
@@ -440,19 +454,52 @@ class Evolve(object):
                 for col in mass_modifier_cols:
                     initialbinarytable.loc[mask, col] *= mod
 
-        # need to ensure that the order of parameters that we pass to BSE
-        # is correct
+        # if stellar engine is METISSE then check all of the SSE columns are present and if not raise an error
+        if initialbinarytable['stellar_engine'].iloc[0] == 'metisse':
+            if not set(INITIAL_CONDITIONS_SSE_COLUMNS).issubset(initialbinarytable.columns):
+                raise ValueError("If you want to use the METISSE stellar engine, you must provide the following in the SSEDict, initial binary table, or params file: path_to_tracks, path_to_he_tracks, z_accuracy_limit.")
+        else:
+            # if not using METISSE, set default values for the SSE columns if they are not present in the initial binary table
+            if 'stellar_engine' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(stellar_engine='sse')
+            if 'path_to_tracks' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(path_to_tracks='')
+            if 'path_to_he_tracks' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(path_to_he_tracks='')
+            if 'z_accuracy_limit' not in initialbinarytable.columns:
+                initialbinarytable = initialbinarytable.assign(z_accuracy_limit=1e-2)
+
+        # need to ensure that the order of parameters that we pass to BSE is correct
         initial_conditions = initialbinarytable[INITIAL_CONDITIONS_PASS_COLUMNS].to_dict('records')
 
         # ensure that metallicity is in the valid range (Z in [1e-4, 0.03])
         low_met_mask = (initialbinarytable["metallicity"] < 1e-4)
         high_met_mask = (initialbinarytable["metallicity"] > 0.03)
-        if any(low_met_mask | high_met_mask):
+        if any(low_met_mask | high_met_mask) and not initialbinarytable["stellar_engine"].values[0]:
             raise ValueError(
-                f"COSMIC only supports metallicities in the range [1e-4, 0.03]. You have {sum(low_met_mask)} "
+                f"COSMIC-SSE only supports metallicities in the range [1e-4, 0.03]. You have {sum(low_met_mask)} "
                 f"systems with metallicity below 1e-4 and {sum(high_met_mask)} systems with metallicity "
                 "above 0.03. Some examples of problematic binaries have the following bin_nums: "
                 f"{initialbinarytable['bin_num'][low_met_mask | high_met_mask].values[:5]}."
+            )
+        
+        # ensure that the initial masses are in the valid range for the loaded tracks
+        if initialbinarytable["stellar_engine"].values[0] == "metisse":
+            low_mass_mask_1 = (initialbinarytable["mass_1"] < m_min)
+            high_mass_mask_1 = (initialbinarytable["mass_1"] > m_max)
+            low_mass_mask_2 = (initialbinarytable["mass_2"] < m_min)
+            high_mass_mask_2 = (initialbinarytable["mass_2"] > m_max)
+            massless_mask_1 = initialbinarytable["mass_1"] == 0e0
+            massless_mask_2 = initialbinarytable["mass_2"] == 0e0
+            if any(
+                ((low_mass_mask_1 & ~massless_mask_1) | high_mass_mask_1) | \
+                  ((low_mass_mask_2 & ~massless_mask_2) | high_mass_mask_2)):
+                raise ValueError(
+                    f"COSMIC-METISSE only supports initial masses in the range specified by the loaded tracks [{m_min}, {m_max}].\
+                    You have {sum(low_mass_mask_1 | low_mass_mask_2)} "
+                    f"systems with mass below {m_min} and {sum(high_mass_mask_1 | high_mass_mask_2)} systems with mass above {m_max}. "
+                "Some examples of problematic binaries have the following bin_nums: "
+                f"{initialbinarytable['bin_num'][(low_mass_mask_1 | low_mass_mask_2) | (high_mass_mask_1 | high_mass_mask_2)].values[:5]}."
             )
 
         # we use different columns to save the BSE parameters because some
@@ -480,6 +527,15 @@ class Evolve(object):
             initial_conditions[i]["n_col_bcm"] = len(bcm_columns)
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
 
+        # evolve one system to get zpars
+        _, _, _, _, _, zpars = _evolve_single_system(initial_conditions[0], None)
+
+        # helper to collect results with an optional tqdm progress bar
+        def _collect(pool, func, items, total=None):
+            if progress:
+                return list(tqdm.tqdm(pool.imap(func, items), total=total, desc='Evolving', unit='sys'))
+            return list(pool.map(func, items))
+
         # check if a pool was passed
         if pool is None:
             with MultiPool(processes=nproc) as pool:
@@ -493,9 +549,12 @@ class Evolve(object):
                         itr_next = np.min([n_tot, itr_block+n_per_block])
                         initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                         itr_block = itr_next
-                    output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+                    output = _collect(pool, _evolve_multi_system, initial_conditions_blocked,
+                                      total=len(initial_conditions_blocked))
                 else:
-                    output = list(pool.map(_evolve_single_system, initial_conditions))
+                    evolve_args = partial(_evolve_single_system, zpars=zpars)
+                    output = _collect(pool, evolve_args, initial_conditions,
+                                      total=len(initial_conditions))
         else:
             # evolve systems
             if n_per_block > 0:
@@ -507,9 +566,12 @@ class Evolve(object):
                     itr_next = np.min([n_tot, itr_block+n_per_block])
                     initial_conditions_blocked.append(initial_conditions[itr_block:itr_next])
                     itr_block = itr_next
-                output = list(pool.map(_evolve_multi_system, initial_conditions_blocked))
+                output = _collect(pool, _evolve_multi_system, initial_conditions_blocked,
+                                  total=len(initial_conditions_blocked))
             else:
-                output = list(pool.map(_evolve_single_system, initial_conditions))
+                evolve_args = partial(_evolve_single_system, zpars=zpars)
+                output = _collect(pool, evolve_args, initial_conditions,
+                                  total=len(initial_conditions))
 
         output = np.array(output, dtype=object)
         bpp_arrays = np.vstack(output[:, 1])
@@ -560,93 +622,50 @@ class Evolve(object):
         return bpp, bcm, initialbinarytable, kick_info
 
 
-def _evolve_single_system(f):
+def _evolve_single_system(f, zpars=None):
+    if zpars is None:
+        zpars = np.zeros(20, dtype=float)
     try:
         f["kick_info"] = np.zeros((2, len(KICK_COLUMNS)-1))
         # determine if we already have a compact object, if yes than one SN has already occured
         if (f["kstar_1"] in range(10, 15)) or (f["kstar_2"] in range(10, 15)):
             f["kick_info"][0, 0] = 1
-        # kstar, mass, orbital period (days), eccentricity, metaliccity, evolution time (millions of years)
-        _evolvebin.windvars.neta = f["neta"]
-        _evolvebin.windvars.bwind = f["bwind"]
-        _evolvebin.windvars.hewind = f["hewind"]
-        _evolvebin.cevars.alpha1 = f["alpha1"]
-        _evolvebin.cevars.lambdaf = f["lambdaf"]
-        _evolvebin.ceflags.ceflag = f["ceflag"]
-        _evolvebin.flags.tflag = f["tflag"]
-        _evolvebin.flags.ifflag = f["ifflag"]
-        _evolvebin.flags.wdflag = f["wdflag"]
-        _evolvebin.flags.rtmsflag = f["rtmsflag"]
-        _evolvebin.snvars.pisn = f["pisn"]
-        _evolvebin.snvars.ppi_co_shift = f["ppi_co_shift"]
-        _evolvebin.snvars.ppi_extra_ml = f["ppi_extra_ml"]
-        _evolvebin.flags.bhflag = f["bhflag"]
-        _evolvebin.flags.remnantflag = f["remnantflag"]
-        _evolvebin.flags.maltsev_mode = f["maltsev_mode"]
-        _evolvebin.snvars.maltsev_fallback = f["maltsev_fallback"]
-        _evolvebin.snvars.maltsev_pf_prob = f["maltsev_pf_prob"]
-        _evolvebin.snvars.fryer_mass_limit = f["fryer_mass_limit"]
-        _evolvebin.ceflags.cekickflag = f["cekickflag"]
-        _evolvebin.ceflags.cemergeflag = f["cemergeflag"]
-        _evolvebin.ceflags.cehestarflag = f["cehestarflag"]
-        _evolvebin.flags.grflag = f["grflag"]
-        _evolvebin.flags.bhms_coll_flag = f["bhms_coll_flag"]
-        _evolvebin.flags.wd_mass_lim = f["wd_mass_lim"]
-        _evolvebin.snvars.mxns = f["mxns"]
-        _evolvebin.points.pts1 = f["pts1"]
-        _evolvebin.points.pts2 = f["pts2"]
-        _evolvebin.points.pts3 = f["pts3"]
-        _evolvebin.snvars.fryer_fmix = f["fryer_fmix"]
-        _evolvebin.snvars.fryer_mcrit_nsbh = f["fryer_mcrit_nsbh"]
-        _evolvebin.snvars.ecsn = f["ecsn"]
-        _evolvebin.snvars.ecsn_mlow = f["ecsn_mlow"]
-        _evolvebin.flags.aic = f["aic"]
-        _evolvebin.ceflags.ussn = f["ussn"]
-        _evolvebin.snvars.sigma = f["sigma"]
-        _evolvebin.snvars.sigmadiv = f["sigmadiv"]
-        _evolvebin.snvars.bhsigmafrac = f["bhsigmafrac"]
-        _evolvebin.snvars.polar_kick_angle = f["polar_kick_angle"]
-        _evolvebin.snvars.natal_kick_array = f["natal_kick_array"]
-        _evolvebin.cevars.qcrit_array = f["qcrit_array"]
-        _evolvebin.mtvars.don_lim = f["don_lim"]
-        _evolvebin.mtvars.acc_lim = f["acc_lim"]
-        _evolvebin.mtvars.smt_q = f["smt_q"]
-        _evolvebin.mtvars.smt_periastron_check = f["smt_periastron_check"]
-        _evolvebin.windvars.beta = f["beta"]
-        _evolvebin.windvars.xi = f["xi"]
-        _evolvebin.windvars.acc2 = f["acc2"]
-        _evolvebin.windvars.epsnov = f["epsnov"]
-        _evolvebin.windvars.eddfac = f["eddfac"]
-        _evolvebin.windvars.gamma = f["gamma"]
-        _evolvebin.windvars.lbv_flag = f["LBV_flag"]
-        _evolvebin.flags.bdecayfac = f["bdecayfac"]
-        _evolvebin.magvars.bconst = f["bconst"]
-        _evolvebin.magvars.ck = f["ck"]
-        _evolvebin.flags.windflag = f["windflag"]
-        _evolvebin.flags.qcflag = f["qcflag"]
-        _evolvebin.flags.eddlimflag = f["eddlimflag"]
-        _evolvebin.tidalvars.fprimc_array = f["fprimc_array"]
-        _evolvebin.rand1.idum1 = f["randomseed"]
-        _evolvebin.flags.bhspinflag = f["bhspinflag"]
-        _evolvebin.snvars.bhspinmag = f["bhspinmag"]
-        _evolvebin.mixvars.rejuv_fac = f["rejuv_fac"]
-        _evolvebin.flags.rejuvflag = f["rejuvflag"]
-        _evolvebin.flags.htpmb = f["htpmb"]
-        _evolvebin.flags.st_cr = f["ST_cr"]
-        _evolvebin.flags.st_tide = f["ST_tide"]
-        _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
-        _evolvebin.metvars.zsun = f["zsun"]
-        _evolvebin.snvars.kickflag = f["kickflag"]
-        _evolvebin.snvars.mm_mu_ns = f["mm_mu_ns"]
-        _evolvebin.snvars.mm_mu_bh = f["mm_mu_bh"]
+
+        # you can GROUPED_SETTINGS find this in consts.py
+        for group, settings in GROUPED_SETTINGS.items():
+            for setting in settings:
+                # special case: we call randomseed idum1 in the fortran (because why make it simple?)
+                if setting == "randomseed":
+                    _evolvebin.rand1.idum1 = f["randomseed"]
+
+                # otherwise just set the value in the fortran module
+                else:
+                    setattr(getattr(_evolvebin, group), setting.lower(), f[setting])
         _evolvebin.cmcpass.using_cmc = 0
+        
+        if f["stellar_engine"] == "sse":
+            _evolvebin.se_flags.using_sse = 1
+            _evolvebin.se_flags.using_metisse = 0
+            _evolvebin.metissevars.path_to_tracks = ""
+            _evolvebin.metissevars.path_to_he_tracks = ""
+            _evolvebin.metissevars.z_match_limit = f["z_accuracy_limit"]
+            _evolvebin.metissevars.METISSE_verbose = False
+        elif f["stellar_engine"] == "metisse":
+            _evolvebin.se_flags.using_metisse = 1
+            _evolvebin.se_flags.using_sse = 0
+            _evolvebin.metissevars.path_to_tracks = f["path_to_tracks"]
+            _evolvebin.metissevars.path_to_he_tracks = f["path_to_he_tracks"]
+            _evolvebin.metissevars.z_match_limit = f["z_accuracy_limit"]
+            _evolvebin.metissevars.METISSE_verbose = False
+        else:
+            raise ValueError("Use either 'sse' or 'metisse' as stellar engine")
 
         _evolvebin.col.n_col_bpp = f["n_col_bpp"]
         _evolvebin.col.col_inds_bpp = f["col_inds_bpp"]
         _evolvebin.col.n_col_bcm = f["n_col_bcm"]
         _evolvebin.col.col_inds_bcm = f["col_inds_bcm"]
 
-        [bpp_index, bcm_index, kick_info] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
+        [zpars, kick_info, bpp_index, bcm_index] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 
                                                               f["tphysf"], f["dtp"],
@@ -665,19 +684,21 @@ def _evolve_single_system(f):
                                                               [f["tms_1"], f["tms_2"]],
                                                               [f["bhspin_1"], f["bhspin_2"]],
                                                               f["tphys"],
-                                                              np.zeros(20),
-                                                              np.zeros(20),
+                                                              zpars,
                                                               f["kick_info"])
-        bpp = _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]].copy()
-        _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]] = np.zeros(bpp.shape)
-        bcm = _evolvebin.binary.bcm[:bcm_index, :f["n_col_bcm"]].copy()
-        _evolvebin.binary.bcm[:bcm_index, :f["n_col_bcm"]] = np.zeros(bcm.shape)
+        if bpp_index<0:
+            raise ValueError("Failed in METISSE_zcnsts")
+        else:
+            bpp = _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]].copy()
+            _evolvebin.binary.bpp[:bpp_index, :f["n_col_bpp"]] = np.zeros(bpp.shape)
+            bcm = _evolvebin.binary.bcm[:bcm_index, :f["n_col_bcm"]].copy()
+            _evolvebin.binary.bcm[:bcm_index, :f["n_col_bcm"]] = np.zeros(bcm.shape)
 
-        bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
-        bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
-        kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
+            bpp = np.hstack((bpp, np.ones((bpp.shape[0], 1))*f["bin_num"]))
+            bcm = np.hstack((bcm, np.ones((bcm.shape[0], 1))*f["bin_num"]))
+            kick_info = np.hstack((kick_info, np.ones((kick_info.shape[0], 1))*f["bin_num"]))
 
-        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy()
+        return f, bpp, bcm, kick_info, _evolvebin.snvars.natal_kick_array.copy(), zpars
 
     except Exception as e:
         print(e)
@@ -686,6 +707,7 @@ def _evolve_single_system(f):
 
 def _evolve_multi_system(f):
     try:
+        zpars = np.zeros(20, dtype=float)
         res_bcm = np.zeros(f.shape[0], dtype=object)
         res_bpp = np.zeros(f.shape[0], dtype=object)
         res_kick_info = np.zeros(f.shape[0], dtype=object)
@@ -693,7 +715,7 @@ def _evolve_multi_system(f):
         for i in range(0, f.shape[0]):
 
             # call evolve single system
-            _, bpp, bcm, kick_info, _ = _evolve_single_system(f[i])
+            _, bpp, bcm, kick_info, _, zpars = _evolve_single_system(f[i], zpars=zpars)
 
             # add results to pre-allocated list
             res_bpp[i] = bpp
@@ -706,3 +728,250 @@ def _evolve_multi_system(f):
     except Exception as e:
         print(e)
         raise
+
+def read_tracks_for_METISSE(path_to_tracks,IBT_Z,z_accuracy_limit,is_he):
+
+    """load in the metallicity, format, and eep files
+    
+    Parameters
+    ----------
+    path_to_tracks : str
+        Direct path to where all single star data and metallicty/format files are stored
+        for hydrogen-rich stars
+    IBT_Z : float
+        Metallicity from the initialbinarytable
+    z_accuracy_limit : float
+        Tolerance for match in metallicity value
+    is_he : bool, default=False
+        Indicates whether the tracks are helium-enriched.
+    Returns
+    -------
+    m_min : float
+        Minimum mass in the tracks that were loaded in
+    m_max : float
+        Maximum mass in the tracks that were loaded in
+    
+    """
+
+    # load in the METISSE files
+    met_files = utils.get_METISSE_metallicity_files(path_to_tracks)
+
+    # loop over the hydrogen metallicity files to find the one that is the closest
+    # to the metallicity in the initial binary table
+    met_dict_keep = None
+    fmt_dict_keep = None
+    mets = []
+    for i, m in enumerate(met_files):
+        met_dict = utils.read_metallicity_file(m)
+        mets.append(met_dict['z_files'])
+        if abs(met_dict['z_files'] - IBT_Z)/min(met_dict['z_files'], IBT_Z) <= z_accuracy_limit:
+            met_dict_keep = met_dict
+            fmt_dict_keep = utils.read_format_file(met_dict['format_file'])
+            Z_idx = i
+    if met_dict_keep is None: 
+        raise ValueError("No metallicity file found that matches the metallicity "
+                         "in the initial binary table. Please check the metallicity "
+                         "and supply one that is in this list: {0}".format(mets))
+
+    assert fmt_dict_keep is not None 
+
+
+    if is_he:
+        # Pass the format dictionaries for helium tracks:
+        _evolvebin.c_m_interface.set_format_controls_he(
+            read_eep=fmt_dict_keep['read_eep_files'],
+            bgb=fmt_dict_keep['bgb_eep'],
+            cheburn=fmt_dict_keep['cheburn_eep'],
+            ta_cheb=fmt_dict_keep['ta_cheb_eep'],
+            tpagb=fmt_dict_keep['tpagb_eep'],
+            ccburn=fmt_dict_keep['ccburn_eep'],
+            postagb=fmt_dict_keep['post_agb_eep'],
+            initeep=fmt_dict_keep['initial_eep'],
+            finaleep=fmt_dict_keep['final_eep'],
+            fixtrack=fmt_dict_keep['fix_track'],
+            loweep=fmt_dict_keep['low_mass_final_eep'],
+            higheep=fmt_dict_keep['high_mass_final_eep'],
+            age_col=fmt_dict_keep['age_colname'],
+            mass_col=fmt_dict_keep['mass_colname'],
+            logl_col=fmt_dict_keep['log_l_colname'],
+            logt_col=fmt_dict_keep['log_t_colname'],
+            logr_col=fmt_dict_keep['log_r_colname'],
+            he_mass_col=fmt_dict_keep['he_core_mass'],
+            co_mass_col=fmt_dict_keep['co_core_mass'],
+            he_radius_col=fmt_dict_keep['he_core_radius'],
+            co_radius_col=fmt_dict_keep['co_core_radius'],
+            mass_env_col=fmt_dict_keep['mass_conv_envelope'],
+            radius_env_col=fmt_dict_keep['radius_conv_envelope'],
+            logtc_col=fmt_dict_keep['log_tc'],
+            he4_col=fmt_dict_keep['he4_mass_frac'],
+            c12_col=fmt_dict_keep['c12_mass_frac'],
+            o16_col=fmt_dict_keep['o16_mass_frac']
+        )
+    else:
+        # Pass the format dictionaries:
+        _evolvebin.c_m_interface.set_format_controls_h(
+            read_eep=fmt_dict_keep['read_eep_files'],
+            prems=fmt_dict_keep['prems_eep'],
+            zams=fmt_dict_keep['zams_eep'],
+            iams=fmt_dict_keep['iams_eep'],
+            tams=fmt_dict_keep['tams_eep'],
+            bgb=fmt_dict_keep['bgb_eep'],
+            cheign=fmt_dict_keep['cheignition_eep'],
+            cheburn=fmt_dict_keep['cheburn_eep'],
+            ta_cheb=fmt_dict_keep['ta_cheb_eep'],
+            tpagb=fmt_dict_keep['tpagb_eep'],
+            ccburn=fmt_dict_keep['ccburn_eep'],
+            postagb=fmt_dict_keep['post_agb_eep'],
+            initeep=fmt_dict_keep['initial_eep'],
+            finaleep=fmt_dict_keep['final_eep'],
+            fixtrack=fmt_dict_keep['fix_track'],
+            loweep=fmt_dict_keep['low_mass_final_eep'],
+            higheep=fmt_dict_keep['high_mass_final_eep'],
+            age_col=fmt_dict_keep['age_colname'],
+            mass_col=fmt_dict_keep['mass_colname'],
+            logl_col=fmt_dict_keep['log_l_colname'],
+            logt_col=fmt_dict_keep['log_t_colname'],
+            logr_col=fmt_dict_keep['log_r_colname'],
+            he_mass_col=fmt_dict_keep['he_core_mass'],
+            co_mass_col=fmt_dict_keep['co_core_mass'],
+            he_radius_col=fmt_dict_keep['he_core_radius'],
+            co_radius_col=fmt_dict_keep['co_core_radius'],
+            mass_env_col=fmt_dict_keep['mass_conv_envelope'],
+            radius_env_col=fmt_dict_keep['radius_conv_envelope'],
+            logtc_col=fmt_dict_keep['log_tc'],
+            he4_col=fmt_dict_keep['he4_mass_frac'],
+            c12_col=fmt_dict_keep['c12_mass_frac'],
+            o16_col=fmt_dict_keep['o16_mass_frac']
+        )
+
+    # Finally, load in the EEPs! (cached, since parsing them dominates the cost most of the time)
+    # we're not passing the fmt_dict_keep directly here because the cache requires something hashable
+    # so a dict isn't going to cut it. It's only a tiny extra cost compared to the file reads anyway
+    # for similar reasons, passing the absolute paths ensure that the cache is keyed on the actual files
+    # being read, not just the relative paths
+    track_list = _read_eep_directory_cached(
+        os.path.abspath(met_dict_keep['eep_tracks_dir']),
+        os.path.abspath(met_dict_keep['format_file'])
+    )
+    m_min, m_max = populate_tracks(track_list, is_he)
+    return m_min, m_max
+
+
+@lru_cache(maxsize=4)
+def _read_eep_directory_cached(eep_tracks_dir, format_file):
+    """Read and cache the EEP tracks in a directory
+
+    Parsing the EEP files is far more expensive than passing them to the Fortran, so caching them avoids
+    re-reading the same tracks every time they are loaded (e.g. in every call to ``Evolve.evolve``).
+    Use ``_read_eep_directory_cached.cache_clear()`` if the files change on disk during a python process.
+    The cahce will last as long as your python process is running, and I've set it to only hold 4 different
+    calls in memory at once (basically 4 combinations of eep_tracks_dir and format_file).
+
+    This was motivated from my usage of the AdaptiveSampler when using METISSE and finding it way
+    slower with multiple calls to Evolve.evolve. With the cache implemented, switching to METISSE is
+    only a factor ~3x slower than SSE as you'd naively expect :D
+
+    Parameters
+    ----------
+    eep_tracks_dir : str
+        Absolute path to the directory containing the EEP files
+    format_file : str
+        Absolute path to the format file for the EEP files
+
+    Returns
+    -------
+    track_list : list of dict
+        List of track dictionaries, as returned by `utils.read_eep_directory`
+        (treat as read-only since they are shared between calls)
+    """
+    fmt_dict = utils.read_format_file(format_file)
+    return utils.read_eep_directory(eep_tracks_dir, fmt_dict)
+
+
+def populate_tracks(track_list, is_he=False):
+    """
+    Populate Fortran track data structures from a list of Python track dictionaries
+    and pass them to the COSMIC Fortran backend.
+
+    Parameters
+    ----------
+    track_list : list of dict
+        Each dictionary must contain the following keys:
+            - 'filename' : str
+            - 'initial_mass' : float
+            - 'initial_Y' : float
+            - 'initial_Z' : float
+            - 'Fe_div_H' : float
+            - 'alpha_div_Fe' : float
+            - 'v_div_vcrit' : float
+            - 'ntrack' : int
+            - 'neep' : int
+            - 'ncol' : int
+            - 'eep' : array-like of shape (neep,)
+            - 'tr' : array-like of shape (ncol, ntrack)
+            - 'cols' : list of str of length ncol
+
+    is_he : bool, default=False
+        Indicates whether the tracks are helium-enriched.
+
+    Returns
+    -------
+    tuple of float
+        The minimum and maximum initial masses from the track list.
+
+        The function calls the Fortran subroutine `_evolvebin.c_m_interface.set_tracks_from_python`
+        and populates the Fortran-side track arrays. The Python-side arrays are used only
+        as temporary buffers for the call.
+    """
+    ntracks = len(track_list)
+    col_width = 32  # must match Fortran CHARACTER(len=32)
+
+    # Allocate arrays
+    filenames = np.array([t['filename'].encode('ascii') for t in track_list], dtype='S256')
+    initial_mass = np.array([t['initial_mass'] for t in track_list], dtype=np.float64)
+    initial_Y = np.array([t['initial_Y'] for t in track_list], dtype=np.float64)
+    initial_Z = np.array([t['initial_Z'] for t in track_list], dtype=np.float64)
+    Fe_div_H = np.array([t['Fe_div_H'] for t in track_list], dtype=np.float64)
+    alpha_div_Fe = np.array([t['alpha_div_Fe'] for t in track_list], dtype=np.float64)
+    v_div_vcrit = np.array([t['v_div_vcrit'] for t in track_list], dtype=np.float64)
+    ntrack_arr = np.array([t['ntrack'] for t in track_list], dtype=np.int32)
+    neep_arr = np.array([t['neep'] for t in track_list], dtype=np.int32)
+    ncol_arr = np.array([t['ncol'] for t in track_list], dtype=np.int32)
+
+    # Determine max sizes
+    max_neep = max(neep_arr)
+    max_ncol = max(ncol_arr)
+    max_ntrack = sum(ntrack_arr)
+
+    # Prepare 2D arrays
+
+    if max_neep<0:
+        max_neep = 0
+    eep_data = np.zeros((max_neep, ntracks), dtype=np.int32, order='F')
+    tr_data = np.zeros((max_ncol, max_ntrack), dtype=np.float64, order='F')
+    col_names = np.full((max_ncol, ntracks), b' ' * col_width, dtype=f'S{col_width}', order='F')
+
+    # Fill arrays
+    offset = 0
+    for i, t in enumerate(track_list):
+        if max_neep>0:
+            eep_data[:t['neep'], i] = t['eep']
+        tr_data[:t['ncol'], offset:offset+t['ntrack']] = t['tr']
+
+        for j, col in enumerate(t['cols']):
+            s = col.encode('ascii')[:col_width]      # truncate if too long
+            col_names[j, i] = s.ljust(col_width, b' ')  # pad with spaces
+        offset += t['ntrack']
+
+    _evolvebin.c_m_interface.set_tracks_from_python(
+        filenames, initial_mass, initial_Y, initial_Z,
+        Fe_div_H, alpha_div_Fe, v_div_vcrit,
+        ntrack_arr, neep_arr, ncol_arr, 
+        eep_data, tr_data, col_names, is_he
+    )
+
+    return np.min(initial_mass), np.max(initial_mass) 
+
+
+    
+    

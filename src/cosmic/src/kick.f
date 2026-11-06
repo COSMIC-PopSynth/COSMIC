@@ -1,5 +1,5 @@
       SUBROUTINE kick(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                r2,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                r2,fallback,sigmahold,kick_info,disrupt,tphys)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -29,8 +29,6 @@
 *    Original sigma value for the kick
 * kick_info: real*8
 *    Array with information about the supernova kicks (details below)
-* bkick: real*8
-*    Array with information about the kicks for CMC (details below)
 * jorb: real*8, output
 *    Total orbital angular momentum of the binary
 * vk: real*8, output
@@ -40,25 +38,28 @@
 
       integer kw,sn
       real*8 m1,m2,m1c,m1n,ecc,sep,jorb,vk,r2,fallback,sigmahold
-      real*8 kick_info(2,18), bkick(20)
+      real*8 kick_info(2,19),tphys
       logical disrupt
 
 * Use one of the two kick prescriptions based on the kickflag
       if(kickflag.lt.0)then
 * Original Kiel & Hurley 2009 prescription
          call kick_kiel(kw,m1,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                  r2,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                  r2,fallback,sigmahold,kick_info,disrupt)
       else
 * New Pfahl et al. 2002 prescription
          call kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,
-     &                   r2,fallback,sigmahold,kick_info,disrupt,bkick)
+     &                   r2,fallback,sigmahold,kick_info,disrupt)
       end if
+
+      kick_info(sn,19) = tphys
+
       RETURN
       END
 
 
       SUBROUTINE kick_pfahl(kw,m1,m1c,m1n,m2,ecc,sep,jorb,vk,sn,r2,
-     &                      fallback,sigmahold,kick_info,disrupt,bkick)
+     &                      fallback,sigmahold,kick_info,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -106,7 +107,7 @@
       real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
-      real*8 bkick(20),r2,jorb
+      real*8 r2,jorb
       real*8 ecc_prev,a_prev,mtot,mtot_prev
       real*8 natal_kick(3), sep_vec(3), v_rel(3), v_rel_prev(3)
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
@@ -121,12 +122,13 @@
       real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
       real*8 mu_mm
+      real*8 epsilon_5, f_kin, beta_nu, alpha_ej
       integer i
       logical ECSN_or_USSN
 * Output
       logical output,disrupt,collide
 *
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19)
       real ran3,xx
       external ran3
       external RandomTruncatedNormal
@@ -154,9 +156,6 @@
 * Set values for mean NS mass and mean ejecta as in Giacobbo & Mapelli 2020
       mean_mns = 1.2d0
       mean_mej = 9.0d0
-* Set values for alpha and beta as in Bray & Eldridge 2016
-      alphakick = 70.0d0
-      betakick = 120.0d0
 
       if(using_cmc.eq.0)then
 * check if we have supplied a randomseed for this SN from kick_info
@@ -211,6 +210,12 @@
 * was passed.
       if(natal_kick_array(sn,1).ge.0.d0)then
           vk = natal_kick_array(sn,1)
+
+          if(kw.eq.14.and.bhflag.eq.4)then
+            fallback = MIN(fallback,1.d0)
+            vk = MAX((1.d0-fallback)*vk,0.d0)
+          endif
+
           vk2 = vk*vk
 * per supplied kick value we mimic a call to random number generator
           xx = RAN3(idum1)
@@ -222,7 +227,14 @@
 * If the kickflag is 5 then use the log-normal distribution described
 * by Disberg & Mandel 2025
           if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
-             call RandomLogNormal(disberg_mean,0.69d0,vk,idum1,twopi)
+             call RandomLogNormal(disberg_mean,0.68d0,vk,idum1,twopi)
+             vk2 = vk*vk
+          elseif(abskickflag.eq.9.and.
+     &           (kw.eq.13.or.kw.eq.14))then
+* Shariat et al. (2026), arXiv:2610.04005, Table 2 parent NS law.
+* Applying this NS-inferred base law to BHs is an extrapolation.
+             call RandomBimodalKick(vk,idum1)
+             if(kw.eq.14) vk = vk * bhsigmafrac
              vk2 = vk*vk
           elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
 * if the kickflag is 6 then use the Mandel & Muller 2020 distribution
@@ -256,12 +268,13 @@
             vk = SQRT(vk2)
           endif
 
-          if(abskickflag.eq.1.or.abskickflag.eq.5)then
+          if(abskickflag.eq.1.or.abskickflag.eq.5.or.
+     &       abskickflag.eq.9)then
 * Limit BH kick with fallback mass fraction.
              if(kw.eq.14.and.bhflag.eq.0)then
                 vk2 = 0.d0
                 vk = 0.d0
-             elseif(kw.eq.14.and.bhflag.eq.1)then
+             elseif(kw.eq.14.and.(bhflag.eq.1.or.bhflag.eq.4))then
                  fallback = MIN(fallback,1.d0)
                  vk = MAX((1.d0-fallback)*vk,0.d0)
                  vk2 = vk*vk
@@ -279,7 +292,30 @@
              vk2 = vk*vk
           elseif(abskickflag.eq.4)then
 * Use kick scaling from Bray & Eldridge 2016, Eq. 1
+             alphakick = 70.0d0
+             betakick = 120.0d0
              vk = alphakick * ((m1-m1n)/m1n) + betakick
+             vk2 = vk*vk
+          elseif(abskickflag.eq.7)then
+* Asymmetric ejecta / neutrino-driven kick prescription
+* Gravitational remnant mass = m1n
+* Star mass pre-collapse = m1
+* Ejecta mass = m1 - m1n --> update this maybe?
+* Baseline values assumed: epsilon_5 = 1.0, f_kin = 0.1, beta_nu = 0.1
+             epsilon_5 = 1.0d0
+             f_kin = 0.1d0
+             beta_nu = 0.1d0
+             alpha_ej = 0.01d0
+             vk = 21.d0 * SQRT(epsilon_5 * f_kin * beta_nu) *
+     &            (alpha_ej / 0.01d0) * ((m1 - m1n) / 0.1d0) *
+     &            (1.5d0 / m1n)
+             vk2 = vk*vk
+          elseif(abskickflag.eq.8)then
+* From Richards+2023, Eq 1 (improvement upon Bray & Eldridge 2016)
+* Calibrated against single pulsars, double neutron stars, low kick velocities of ultra stripped supernova
+             alphakick = 115.0d0
+             betakick = 15.0d0
+             vk = alphakick * ((m1-m1n)/m1n) + betakick * (1.4d0/m1n)
              vk2 = vk*vk
           endif
 
@@ -536,15 +572,6 @@
             kick_info(sn,11) = v_comp_rot(1)
             kick_info(sn,12) = v_comp_rot(2)
             kick_info(sn,13) = v_comp_rot(3)
-
-            bkick(1) = float(sn)
-            bkick(2) = kick_info(sn,7)
-            bkick(3) = kick_info(sn,8)
-            bkick(4) = kick_info(sn,9)
-            bkick(5) = float(sn)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
 *
          elseif(sn.eq.2)then
             kick_info(sn,11) = v_sn_rot(1)
@@ -553,15 +580,6 @@
             kick_info(sn,7) = v_comp_rot(1)
             kick_info(sn,8) = v_comp_rot(2)
             kick_info(sn,9) = v_comp_rot(3)
-
-            bkick(5) = float(sn)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-            bkick(9) = float(sn)
-            bkick(10) = kick_info(sn,7)
-            bkick(11) = kick_info(sn,8)
-            bkick(12) = kick_info(sn,9)
          endif
 
 * lastly, check if this supernova results in a collision between stars
@@ -575,12 +593,6 @@
             kick_info(sn,11) = 0.d0
             kick_info(sn,12) = 0.d0
             kick_info(sn,13) = 0.d0
-            bkick(6) = v_sn_rot(1)
-            bkick(7) = v_sn_rot(2)
-            bkick(8) = v_sn_rot(3)
-            bkick(10) = 0.d0
-            bkick(11) = 0.d0
-            bkick(12) = 0.d0
             m2 = -1.d0*m2
          endif
 
@@ -611,26 +623,6 @@
          kick_info(sn,12) = 0
          kick_info(sn,13) = 0
 
-* 1st time with kick.
-         if(bkick(1).le.0.d0)then
-            bkick(1) = float(sn)
-            bkick(2) = v_cm_rot(1)
-            bkick(3) = v_cm_rot(2)
-            bkick(4) = v_cm_rot(3)
-* 2nd time with kick.
-         elseif(bkick(5).le.0.d0)then
-            bkick(5) = float(sn)
-            bkick(6) = v_cm_rot(1)
-            bkick(7) = v_cm_rot(2)
-            bkick(8) = v_cm_rot(3)
-* 2nd time with kick if already disrupted.
-* MJZ - would this if statement ever be hit?
-         elseif(bkick(5).gt.0.d0)then
-            bkick(9) = float(sn)
-            bkick(10) = v_cm_rot(1)
-            bkick(11) = v_cm_rot(2)
-            bkick(12) = v_cm_rot(3)
-         endif
 * In the impossible chance that the system is exactly parabolic...
          if(ecc.eq.1.d0.and.sn.eq.1)then
             kick_info(sn,7) = v_cm_rot(1)
@@ -639,14 +631,6 @@
             kick_info(sn,11) = -v_cm_rot(1)
             kick_info(sn,12) = -v_cm_rot(2)
             kick_info(sn,13) = -v_cm_rot(3)
-            bkick(1) = float(sn)
-            bkick(2) = v_cm_rot(1)
-            bkick(3) = v_cm_rot(2)
-            bkick(4) = v_cm_rot(3)
-            bkick(5) = float(sn)
-            bkick(6) = -v_cm_rot(1)
-            bkick(7) = -v_cm_rot(2)
-            bkick(8) = -v_cm_rot(3)
          elseif(ecc.eq.1.d0.and.sn.eq.2)then
             kick_info(sn,7) = -v_cm_rot(1)
             kick_info(sn,8) = -v_cm_rot(2)
@@ -654,14 +638,6 @@
             kick_info(sn,11) = v_cm_rot(1)
             kick_info(sn,12) = v_cm_rot(2)
             kick_info(sn,13) = v_cm_rot(3)
-            bkick(5) = float(sn)
-            bkick(6) = v_cm_rot(1)
-            bkick(7) = v_cm_rot(2)
-            bkick(8) = v_cm_rot(3)
-            bkick(9) = float(sn)
-            bkick(10) = -v_cm_rot(1)
-            bkick(11) = -v_cm_rot(2)
-            bkick(12) = -v_cm_rot(3)
          endif
 
 * Update the Euler angles for the orbital plane rotation
@@ -774,7 +750,7 @@
 * ======================================================================
 ***
       SUBROUTINE kick_kiel(kw,m1,m1n,m2,ecc,sep,jorb,vk,snstar,r2,
-     &                     fallback,sigmahold,kick_info,disrupt,bkick)
+     &                     fallback,sigmahold,kick_info,disrupt)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -856,11 +832,10 @@
       real*8 semilatrec,cangleofdeath,angleofdeath,energy
       real*8 fallback,sigmahold,bound
       real*8 mean_mns,mean_mej,alphakick,betakick
-      real*8 bkick(20)
 * Output
       logical output,disrupt
 *
-      real*8 kick_info(2,18)
+      real*8 kick_info(2,19)
       real ran3,xx
       external ran3
 *
@@ -893,8 +868,8 @@
           if(kick_info(1,1).eq.0) sn=1
           if(kick_info(1,1).gt.0) sn=2
       else
-          if(bkick(1).eq.0) sn=1
-          if(bkick(1).gt.0) sn=2
+          ! FORCE INITIALIZATION FOR CMC
+          sn = snstar
       endif
 
       if(using_cmc.eq.0)then
@@ -1300,15 +1275,6 @@
 *
             kick_info(sn,13) = (m1n/mbf)*vk*sphi
 
-            bkick(1) = float(snstar)
-            bkick(2) = kick_info(sn,7)
-            bkick(3) = kick_info(sn,8)
-            bkick(4) = kick_info(sn,9)
-            bkick(5) = float(snstar)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
                   kick_info(sn,7) = vs(1)
@@ -1317,12 +1283,6 @@
                   kick_info(sn,11) = 0.d0
                   kick_info(sn,12) = 0.d0
                   kick_info(sn,13) = 0.d0
-                  bkick(2) = vs(1)
-                  bkick(3) = vs(2)
-                  bkick(4) = vs(3)
-                  bkick(6) = 0.d0
-                  bkick(7) = 0.d0
-                  bkick(8) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -1348,15 +1308,6 @@
 *
             kick_info(sn,9) = (m1n/mbf)*vk*sphi
 
-            bkick(5) = float(snstar)
-            bkick(6) = kick_info(sn,11)
-            bkick(7) = kick_info(sn,12)
-            bkick(8) = kick_info(sn,13)
-            bkick(9) = float(snstar)
-            bkick(10) = kick_info(sn,7)
-            bkick(11) = kick_info(sn,8)
-            bkick(12) = kick_info(sn,9)
-
             if(psins.lt.0.d0)then
                if(r2.gt.sepn*(ecc - 1.d0))then
                   kick_info(sn,7) = vs(1)
@@ -1365,12 +1316,6 @@
                   kick_info(sn,11) = 0.d0
                   kick_info(sn,12) = 0.d0
                   kick_info(sn,13) = 0.d0
-                  bkick(6) = vs(1)
-                  bkick(7) = vs(2)
-                  bkick(8) = vs(3)
-                  bkick(10) = 0.d0
-                  bkick(11) = 0.d0
-                  bkick(12) = 0.d0
                   m2 = -1.d0*m2
                endif
             endif
@@ -1390,30 +1335,6 @@
          kick_info(sn,13) = 0
       endif
 
-      if(ecc.lt.1.d0)then
-*         if(ecc.eq.1.d0.or.ecc.lt.0.d0) m2 = -1.d0 * m2
-* 1st time with kick.
-         if(bkick(1).le.0.d0)then
-            bkick(1) = float(snstar)
-            bkick(2) = vs(1)
-            bkick(3) = vs(2)
-            bkick(4) = vs(3)
-* 2nd time with kick.
-         elseif(bkick(5).le.0.d0)then
-            bkick(5) = float(snstar)
-            bkick(6) = vs(1)
-            bkick(7) = vs(2)
-            bkick(8) = vs(3)
-* 2nd time with kick if already disrupted.
-* MJZ - would this if statement ever be hit?
-         elseif(bkick(5).gt.0.d0)then
-            bkick(9) = float(snstar)
-            bkick(10) = vs(1)
-            bkick(11) = vs(2)
-            bkick(12) = vs(3)
-         endif
-      endif
-
 * In the impossible chance that the system is exactly parabolic...
       if(ecc.eq.1.d0.and.snstar.eq.1)then
          kick_info(sn,7) = vs(1)
@@ -1422,14 +1343,6 @@
          kick_info(sn,11) = -vs(1)
          kick_info(sn,12) = -vs(2)
          kick_info(sn,13) = -vs(3)
-         bkick(1) = float(snstar)
-         bkick(2) = vs(1)
-         bkick(3) = vs(2)
-         bkick(4) = vs(3)
-         bkick(5) = float(snstar)
-         bkick(6) = -vs(1)
-         bkick(7) = -vs(2)
-         bkick(8) = -vs(3)
       elseif(ecc.eq.1.d0.and.snstar.eq.2)then
          kick_info(sn,7) = -vs(1)
          kick_info(sn,8) = -vs(2)
@@ -1437,14 +1350,6 @@
          kick_info(sn,11) = vs(1)
          kick_info(sn,12) = vs(2)
          kick_info(sn,13) = vs(3)
-         bkick(5) = float(snstar)
-         bkick(6) = vs(1)
-         bkick(7) = vs(2)
-         bkick(8) = vs(3)
-         bkick(9) = float(snstar)
-         bkick(10) = -vs(1)
-         bkick(11) = -vs(2)
-         bkick(12) = -vs(3)
       endif
 
 * Uncomment to randomly rotate system velocities
@@ -1761,5 +1666,35 @@
       Z0 = SQRT(-2.0d0 * LOG(u1)) * COS(twopi * u2)
       result = EXP(mean + sigma * Z0)
 
+      RETURN
+      END
+
+      SUBROUTINE RandomBimodalKick(result,idum)
+* Fixed marginal posterior medians of the all-NS parent speed law.
+* Natural logs of speed in km/s; not Maxwellian component dispersions.
+* Select the component before rejection so truncation preserves f_low.
+* This fixed approximation does not propagate joint-posterior uncertainty.
+      IMPLICIT NONE
+      real*8 result,mu,sigma,log_vk
+      real*8 f_low,mu_low,sigma_low,mu_high,sigma_high
+      parameter(f_low=0.126d0,mu_low=1.87d0,sigma_low=0.55d0)
+      parameter(mu_high=5.62d0,sigma_high=0.71d0)
+      integer idum
+      real ran3
+      external ran3
+
+      if(RAN3(idum).lt.f_low)then
+         mu = mu_low
+         sigma = sigma_low
+      else
+         mu = mu_high
+         sigma = sigma_high
+      endif
+      do
+         call RandomNormal(mu,sigma,idum,log_vk)
+         if(log_vk.gt.LOG(0.05d0).and.
+     &      log_vk.lt.LOG(1000.d0))exit
+      enddo
+      result = EXP(log_vk)
       RETURN
       END

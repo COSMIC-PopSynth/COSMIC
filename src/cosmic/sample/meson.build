@@ -11,3 +11,4 @@ py3.install_sources(
 
 subdir('cmc')
 subdir('sampler')
+subdir('stroopwafel')

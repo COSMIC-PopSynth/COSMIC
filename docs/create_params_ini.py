@@ -83,6 +83,8 @@ def construct_ini_from_json(config, include_comments=True):
                 if "default" in option and option["default"]:
                     if setting["type"] == "checkbox":
                         default.append(str(option["name"]))
+                    elif option["name"] == "":
+                        default = '""'
                     else:
                         default = str(option["name"])
 
