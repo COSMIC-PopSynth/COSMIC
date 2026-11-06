@@ -57,7 +57,7 @@ GROUPED_SETTINGS = {
         "rembar_massloss", "kickflag", "mm_mu_ns", "mm_mu_bh",
     ],
     "points": ["pts1", "pts2", "pts3"],
-    "mtvars": ["don_lim", "acc_lim", "smt_periastron_check"],
+    "mtvars": ["don_lim", "acc_lim", "smt_periastron_check", "smt_q"],
     "magvars": ["bconst", "ck"],
     "tidalvars": ["fprimc_array"],
     "mixvars": ["rejuv_fac"],
