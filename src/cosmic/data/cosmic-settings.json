@@ -869,6 +869,7 @@
                 "name": "ce2stageflag",
                 "description": "Sets whether to use the standard energy formalism or the two-stage CE formalism from Hirai & Mandel 2022",
                 "type": "dropdown",
+                "version_added": "4.3.1",
                 "options-preface": "",
                 "options": [
                     {
@@ -1048,7 +1049,8 @@
                     },
                     {
                         "name": 9,
-                        "description": "Draws NS and BH base natal-kick speeds from the all-NS parent law of <a class='reference external' href='https://arxiv.org/abs/2610.04005'>Shariat et al. (2026)</a>, Table 2: separately normalized lognormal components with low weight 0.126, natural-log (mu, sigma) = (1.87, 0.55) and (5.62, 0.71), each truncated to 0.05--1000 km/s before BH scaling. These fixed marginal posterior medians do not propagate posterior uncertainty. Applies to every NS kick, including ECSN/USSN/AIC when enabled; sigmadiv does not replace the NS law. The paper constrains NSs; using this base law for BHs is an extrapolation. BH base speeds are multiplied by bhsigmafrac, then modified by bhflag (including fallback); scaled BH speeds can lie below 0.05 km/s. Supplied natal_kick_array values override sampling. Directions follow polar_kick_angle (90 degrees for isotropy). Only positive 9 is supported."
+                        "description": "Draws NS and BH base natal-kick speeds from the all-NS parent law of <a class='reference external' href='https://arxiv.org/abs/2610.04005'>Shariat et al. (2026)</a>, Table 2: separately normalized lognormal components with low weight 0.126, natural-log (mu, sigma) = (1.87, 0.55) and (5.62, 0.71), each truncated to 0.05--1000 km/s before BH scaling. These fixed marginal posterior medians do not propagate posterior uncertainty. Applies to every NS kick, including ECSN/USSN/AIC when enabled; sigmadiv does not replace the NS law. The paper constrains NSs; using this base law for BHs is an extrapolation. BH base speeds are multiplied by bhsigmafrac, then modified by bhflag (including fallback); scaled BH speeds can lie below 0.05 km/s. Supplied natal_kick_array values override sampling. Directions follow polar_kick_angle (90 degrees for isotropy). Only positive 9 is supported.",
+                        "version_added": "4.3.1"
                     },
                     {
                         "name": "negative values",
