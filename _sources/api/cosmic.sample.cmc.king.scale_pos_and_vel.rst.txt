@@ -1,0 +1,6 @@
+scale_pos_and_vel
+=================
+
+.. currentmodule:: cosmic.sample.cmc.king
+
+.. autofunction:: scale_pos_and_vel

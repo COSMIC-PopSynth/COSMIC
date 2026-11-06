@@ -1,0 +1,6 @@
+conv_select
+===========
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: conv_select

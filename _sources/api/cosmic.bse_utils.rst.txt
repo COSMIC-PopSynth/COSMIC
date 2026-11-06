@@ -1,0 +1,19 @@
+cosmic.bse\_utils package
+=========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cosmic.bse_utils.zcnsts
+   cosmic.bse_utils.zdata
+
+Module contents
+---------------
+
+.. automodule:: cosmic.bse_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

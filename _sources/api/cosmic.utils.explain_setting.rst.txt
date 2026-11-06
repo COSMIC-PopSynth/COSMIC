@@ -1,0 +1,6 @@
+explain_setting
+===============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: explain_setting

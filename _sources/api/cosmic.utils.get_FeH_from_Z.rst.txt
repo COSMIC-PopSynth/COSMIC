@@ -1,0 +1,6 @@
+get_FeH_from_Z
+==============
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: get_FeH_from_Z

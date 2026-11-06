@@ -1,0 +1,6 @@
+to_f2py_str_array
+=================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: to_f2py_str_array

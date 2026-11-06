@@ -1,0 +1,6 @@
+load_initC
+==========
+
+.. currentmodule:: cosmic.output
+
+.. autofunction:: load_initC

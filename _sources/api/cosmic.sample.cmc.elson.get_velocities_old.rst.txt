@@ -1,0 +1,6 @@
+get_velocities_old
+==================
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: get_velocities_old

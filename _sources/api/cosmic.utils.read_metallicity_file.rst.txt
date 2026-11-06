@@ -1,0 +1,6 @@
+read_metallicity_file
+=====================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: read_metallicity_file

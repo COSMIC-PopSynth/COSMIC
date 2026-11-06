@@ -1,0 +1,21 @@
+MultiDim
+========
+
+.. currentmodule:: cosmic.sample.sampler.multidim
+
+.. autoclass:: MultiDim
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~MultiDim.initial_sample
+      ~MultiDim.sample_SFH
+      ~MultiDim.set_kstar
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: initial_sample
+   .. automethod:: sample_SFH
+   .. automethod:: set_kstar

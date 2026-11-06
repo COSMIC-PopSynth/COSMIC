@@ -1,0 +1,6 @@
+get_cmc_sampler
+===============
+
+.. currentmodule:: cosmic.sample.sampler.cmc
+
+.. autofunction:: get_cmc_sampler

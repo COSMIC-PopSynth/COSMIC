@@ -1,0 +1,6 @@
+knuth_bw_selector
+=================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: knuth_bw_selector

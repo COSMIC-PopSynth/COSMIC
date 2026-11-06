@@ -1,0 +1,6 @@
+read_format_file
+================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: read_format_file

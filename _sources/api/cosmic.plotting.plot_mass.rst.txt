@@ -1,0 +1,6 @@
+plot_mass
+=========
+
+.. currentmodule:: cosmic.plotting
+
+.. autofunction:: plot_mass
