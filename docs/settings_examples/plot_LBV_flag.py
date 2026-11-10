@@ -48,8 +48,9 @@ grid = InitialBinaryTable.InitialBinaries(
 )
 
 # loop over different flag choices
-for LBV_flag, label in zip([0, 1, 2], ["No LBV mass loss", "LBV mass loss following Hurley+2000",
-                                       "LBV mass loss following Belczynski+2008"]):
+for LBV_flag, label in zip([0, 1, 2, 3], ["No LBV mass loss", "LBV mass loss following Hurley+2000",
+                                          "LBV mass loss following Belczynski+2008",
+                                          "LBV mass loss following Belczynski+2008, replacing other winds"]):
     # evolve with updated BSEDict
     BSEDict["LBV_flag"] = LBV_flag
     bpp, bcm, initC, kick_info = Evolve.evolve(
