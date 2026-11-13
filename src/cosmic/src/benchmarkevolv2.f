@@ -6,6 +6,8 @@
         REAL*8 z,ecc,tb,tphysf
         REAL*8 mass(2)
         REAL*8 dtptmp
+        INTEGER n_dtp
+        REAL*8 dtp_array(1)
         REAL*8 bhspin(2)
         REAL*8 mass0(2),massc(2),menv(2)
         REAL*8 rad(2),epoch(2)
@@ -29,6 +31,8 @@
         ecc = 0.0; z = 0.014; tphysf = 13700.0
         mass0(1) = mass(1)
         mass0(2) = mass(2)
+        n_dtp = 0
+        dtp_array(1) = 0.0
 
         rad = 0.0; lumin = 0.0; massc = 0.0
         radc = 0.0; menv = 0.0; renv = 0.0
@@ -99,10 +103,12 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
+
+        print *, "First compile good"
 
     
         kstar(1) = 0.0; kstar(2) = 0.0
@@ -182,11 +188,12 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
 
+        print *, "Second compile good"
     
         kstar(1) = 0.0; kstar(2) = 0.0
         mass(1) = 0.5
@@ -265,7 +272,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -348,7 +355,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -431,7 +438,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -514,7 +521,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -597,7 +604,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -680,7 +687,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -763,7 +770,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -846,7 +853,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -929,7 +936,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1012,7 +1019,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1095,7 +1102,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1178,7 +1185,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1261,7 +1268,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1344,7 +1351,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1427,7 +1434,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1510,7 +1517,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1593,7 +1600,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1676,7 +1683,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1759,7 +1766,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1842,7 +1849,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -1925,7 +1932,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2008,7 +2015,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2091,7 +2098,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2174,7 +2181,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2257,7 +2264,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2340,7 +2347,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2423,7 +2430,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2506,7 +2513,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2589,7 +2596,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2672,7 +2679,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2755,7 +2762,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2838,7 +2845,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -2921,7 +2928,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3004,7 +3011,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3087,7 +3094,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3170,7 +3177,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3253,7 +3260,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3336,7 +3343,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3419,7 +3426,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3502,7 +3509,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3585,7 +3592,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3668,7 +3675,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3751,7 +3758,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3834,7 +3841,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -3917,7 +3924,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4000,7 +4007,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4083,7 +4090,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4166,7 +4173,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4249,7 +4256,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4332,7 +4339,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4415,7 +4422,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4498,7 +4505,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4581,7 +4588,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4664,7 +4671,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4747,7 +4754,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4830,7 +4837,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4913,7 +4920,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -4996,7 +5003,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5079,7 +5086,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5162,7 +5169,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5245,7 +5252,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5328,7 +5335,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5411,7 +5418,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5494,7 +5501,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5577,7 +5584,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5660,7 +5667,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5743,7 +5750,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5826,7 +5833,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5909,7 +5916,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -5992,7 +5999,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6075,7 +6082,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6158,7 +6165,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6241,7 +6248,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6324,7 +6331,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6407,7 +6414,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6490,7 +6497,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6573,7 +6580,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6656,7 +6663,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6739,7 +6746,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6822,7 +6829,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6905,7 +6912,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -6988,7 +6995,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7071,7 +7078,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7154,7 +7161,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7237,7 +7244,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7320,7 +7327,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7403,7 +7410,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7486,7 +7493,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7569,7 +7576,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7652,7 +7659,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7735,7 +7742,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7818,7 +7825,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7901,7 +7908,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -7984,7 +7991,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8067,7 +8074,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8150,7 +8157,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8233,7 +8240,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8316,7 +8323,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8399,7 +8406,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8482,7 +8489,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8565,7 +8572,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8648,7 +8655,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8731,7 +8738,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8814,7 +8821,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8897,7 +8904,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -8980,7 +8987,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9063,7 +9070,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9146,7 +9153,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9229,7 +9236,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9312,7 +9319,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9395,7 +9402,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9478,7 +9485,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9561,7 +9568,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9644,7 +9651,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9727,7 +9734,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9810,7 +9817,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9893,7 +9900,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -9976,7 +9983,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10059,7 +10066,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10142,7 +10149,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10225,7 +10232,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10308,7 +10315,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10391,7 +10398,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10474,7 +10481,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10557,7 +10564,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10640,7 +10647,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10723,7 +10730,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10806,7 +10813,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10889,7 +10896,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -10972,7 +10979,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11055,7 +11062,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11138,7 +11145,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11221,7 +11228,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11304,7 +11311,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11387,7 +11394,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11470,7 +11477,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11553,7 +11560,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11636,7 +11643,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11719,7 +11726,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11802,7 +11809,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11885,7 +11892,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -11968,7 +11975,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12051,7 +12058,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12134,7 +12141,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12217,7 +12224,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12300,7 +12307,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12383,7 +12390,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12466,7 +12473,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12549,7 +12556,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12632,7 +12639,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12715,7 +12722,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12798,7 +12805,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12881,7 +12888,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -12964,7 +12971,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13047,7 +13054,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13130,7 +13137,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13213,7 +13220,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13296,7 +13303,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13379,7 +13386,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13462,7 +13469,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13545,7 +13552,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13628,7 +13635,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13711,7 +13718,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13794,7 +13801,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13877,7 +13884,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -13960,7 +13967,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14043,7 +14050,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14126,7 +14133,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14209,7 +14216,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14292,7 +14299,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14375,7 +14382,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14458,7 +14465,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14541,7 +14548,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14624,7 +14631,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14707,7 +14714,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14790,7 +14797,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14873,7 +14880,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -14956,7 +14963,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15039,7 +15046,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15122,7 +15129,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15205,7 +15212,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15288,7 +15295,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15371,7 +15378,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15454,7 +15461,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15537,7 +15544,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15620,7 +15627,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15703,7 +15710,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15786,7 +15793,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15869,7 +15876,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -15952,7 +15959,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16035,7 +16042,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16118,7 +16125,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16201,7 +16208,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16284,7 +16291,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16367,7 +16374,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16450,7 +16457,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16533,7 +16540,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16616,7 +16623,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16699,7 +16706,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16782,7 +16789,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16865,7 +16872,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -16948,7 +16955,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17031,7 +17038,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17114,7 +17121,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17197,7 +17204,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17280,7 +17287,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17363,7 +17370,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17446,7 +17453,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17529,7 +17536,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17612,7 +17619,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17695,7 +17702,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17778,7 +17785,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17861,7 +17868,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -17944,7 +17951,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18027,7 +18034,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18110,7 +18117,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18193,7 +18200,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18276,7 +18283,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18359,7 +18366,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18442,7 +18449,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18525,7 +18532,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18608,7 +18615,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18691,7 +18698,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18774,7 +18781,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18857,7 +18864,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -18940,7 +18947,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19023,7 +19030,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19106,7 +19113,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19189,7 +19196,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19272,7 +19279,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19355,7 +19362,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19438,7 +19445,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19521,7 +19528,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19604,7 +19611,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19687,7 +19694,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19770,7 +19777,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19853,7 +19860,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -19936,7 +19943,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -20019,7 +20026,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -20102,7 +20109,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -20185,7 +20192,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
@@ -20268,7 +20275,7 @@
         rtmsflag = 0
 
         CALL evolv2(kstar,mass,tb,ecc,z,tphysf,
-     & dtptmp,mass0,rad,lumin,massc,radc,
+     & dtptmp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      & menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      & bhspin,tphys,zpars,kick_info,
      & bpp_index_out,bcm_index_out)
