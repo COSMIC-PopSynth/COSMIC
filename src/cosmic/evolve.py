@@ -60,7 +60,7 @@ else:
 # construct BSE columns from flattened GROUPED_SETTINGS
 INITIAL_CONDITIONS_BSE_COLUMNS = [col for group in GROUPED_SETTINGS.values() for col in group]
 
-INITIAL_CONDITIONS_MISC_COLUMNS = ['bin_num', 'dtp']
+INITIAL_CONDITIONS_MISC_COLUMNS = ['bin_num', 'dtp', 'dtp_array']
 
 INITIAL_CONDITIONS_SSE_COLUMNS = ['stellar_engine', 'path_to_tracks', 'path_to_he_tracks', 'z_accuracy_limit']
 
@@ -180,6 +180,10 @@ class Evolve(object):
             timestep size in Myr for bcm output where tphysf
             is total evolution time in Myr
 
+        dtp_array : `array_like`, optional: default: []
+            Strictly increasing array of times in Myr for
+            bcm output. Overwrites timestep_conditions and dtp.
+
         n_per_block : `int`, optional, default: -1
             number of systems to evolve in a block with
             _evolve_multi_system, to allow larger multiprocessing
@@ -252,11 +256,24 @@ class Evolve(object):
         # can be overwritten by the params or BSEDict
         if 'dtp' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(dtp=kwargs.pop('dtp', initialbinarytable['tphysf']))
+        if 'dtp_array' not in initialbinarytable.keys():
+            dtp_array = kwargs.pop('dtp_array', [])
+            initialbinarytable['dtp_array'] = [dtp_array for _ in range(len(initialbinarytable))]
         if 'randomseed' not in initialbinarytable.keys():
             seed = np.random.randint(np.iinfo(np.int32).min, np.iinfo(np.int32).max, size=len(initialbinarytable))
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed', seed))
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
+
+        # if dtp_arr is set, ensure it is strictly increasing, and write over dtp and timestep_conditions
+        dtp_arr = np.array(initialbinarytable.dtp_array.iloc[0])
+        if dtp_arr.size > 0:
+            if not np.all(dtp_arr[:-1] < dtp_arr[1:]):
+                raise ValueError("The elements in dtp_array must be strictly increasing")
+            if dtp_arr[(dtp_arr < 0.0) | (dtp_arr > initialbinarytable['tphysf'].values[0])].size > 0:
+                raise ValueError("All elements in dtp_array must be between 0 and tphysf")
+            initialbinarytable = initialbinarytable.assign(dtp=initialbinarytable['tphysf'])
+            kwargs['timestep_conditions'] = []
 
         # ensure SSEDict keys are unique in the initial binary table and warn otherwise
         for col in INITIAL_CONDITIONS_SSE_COLUMNS:
@@ -668,7 +685,7 @@ def _evolve_single_system(f, zpars=None):
         [zpars, kick_info, bpp_index, bcm_index] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 
-                                                              f["tphysf"], f["dtp"],
+                                                              f["tphysf"], f["dtp"], f["dtp_array"],
                                                               [f["mass0_1"], f["mass0_2"]],
                                                               [f["rad_1"], f["rad_2"]],
                                                               [f["lum_1"], f["lum_2"]],

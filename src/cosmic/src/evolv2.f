@@ -1,6 +1,6 @@
 ***
       SUBROUTINE evolv2(kstar,mass,tb,ecc,z,tphysf,
-     \ dtp,mass0,rad,lumin,massc,radc,
+     \ dtp,n_dtp,dtp_array,mass0,rad,lumin,massc,radc,
      \ menv,renv,ospin,B_0,bacc,tacc,epoch,tms,
      \ bhspin,tphys,zpars,kick_info,
      \ bpp_index_out,bcm_index_out)
@@ -211,6 +211,8 @@
       REAL*8 kw3,wsun,wx
       PARAMETER(kw3=619.2d0,wsun=9.46d+07,wx=9.46d+08)
       LOGICAL output
+      INTEGER n_dtp, i_dtp
+      REAL*8 dtp_array(n_dtp)
 *
       REAL*8 qc_fixed
       LOGICAL switchedCE,disrupt,force_stable,continue_stable
@@ -224,6 +226,8 @@ Cf2py intent(in) ecc
 Cf2py intent(in) z
 Cf2py intent(in) tphysf
 Cf2py intent(in) dtp
+Cf2py intent(in) dtp_array
+Cf2py integer intent(hide),depend(dtp_array) :: n_dtp = len(dtp_array)
 Cf2py intent(in) mass0
 Cf2py intent(in) rad
 Cf2py intent(in) lumin
@@ -527,6 +531,12 @@ component.
          isave = .false.
          tsave = tphysf
       endif
+
+      if(n_dtp.gt.0.and.isave)then
+         tsave = dtp_array(1)
+         i_dtp = 2
+      endif
+
       if(tphys.ge.tphysf) goto 140
 
  4    iter = 0
@@ -1735,8 +1745,20 @@ component.
      &                    epoch(2),bhspin(1),bhspin(2),
      &                    deltam1_bcm,deltam2_bcm,formation(1),
      &                    formation(2),binstate,mergertype,z,'bcm')
-            if(isave) tsave = tsave + dtp
-            if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
+            
+            if(isave.AND.n_dtp.gt.0)then
+               if(i_dtp.le.n_dtp)then
+                  tsave = dtp_array(i_dtp)
+                  i_dtp = i_dtp + 1
+               else
+                  tsave = tphysf
+                  isave = .false.
+               endif
+            else if(isave)then
+                tsave = tsave + dtp
+            endif
+            
+               if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
          endif
@@ -4055,7 +4077,14 @@ component.
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
      &                  formation(2),binstate,mergertype,z,'bcm')
-         if(isave) tsave = tsave + dtp
+         
+            if(isave.AND.n_dtp.gt.0.AND.i_dtp.le.n_dtp)then
+                tsave = dtp_array(i_dtp)
+                i_dtp = i_dtp + 1
+            else if(isave)then
+                tsave = tsave + dtp
+            endif
+
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
@@ -4933,7 +4962,14 @@ component.
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1),
-         if(isave) tsave = tsave + dtp
+         
+         if(isave.AND.n_dtp.gt.0.AND.i_dtp.le.n_dtp)then
+               tsave = dtp_array(i_dtp)
+               i_dtp = i_dtp + 1
+         else if(isave)then
+               tsave = tsave + dtp
+         endif
+
          if(tphysf.le.0.d0)then
             ip = ip + 1
             do 145 , k = 1,38
