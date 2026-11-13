@@ -1758,7 +1758,7 @@ component.
                 tsave = tsave + dtp
             endif
             
-               if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
+            if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
          endif
