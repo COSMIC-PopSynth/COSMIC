@@ -106,7 +106,7 @@ manylinux-x86_64-image = "manylinux_2_28"
 # compiler name stops any other homebrew gcc on PATH from being picked up instead.
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"
-environment = { FC = "gfortran-13", F77 = "gfortran-13", MACOSX_DEPLOYMENT_TARGET = "14.0" }
+environment = { FC = "gfortran-13", F77 = "gfortran-13", MACOSX_DEPLOYMENT_TARGET = "15.0" }
 
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_x86_64"
