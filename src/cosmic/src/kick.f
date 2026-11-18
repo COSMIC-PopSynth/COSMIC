@@ -80,7 +80,7 @@
 * kick_info[i,2]: disrupted (0=no, 1=yes)
 * kick_info[i,3]: magnitude of the natal kick
 * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-* kick_info[i,6]: eccentric anamoly
+* kick_info[i,6]: mean anomaly
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of sn=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
@@ -793,7 +793,7 @@
 * kick_info[i,2]: disrupted (0=no, 1=yes)
 * kick_info[i,3]: magnitude of the natal kick
 * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-* kick_info[i,6]: eccentric anamoly
+* kick_info[i,6]: mean anomaly
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of snstar=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
