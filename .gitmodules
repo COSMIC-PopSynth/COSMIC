@@ -1,4 +1,4 @@
 [submodule "src/cosmic/src/METISSE"]
 	path = src/cosmic/src/METISSE
-	url = https://github.com/katiebreivik/METISSE.git
+	url = https://github.com/TeamMETISSE/METISSE.git
 	branch = develop
