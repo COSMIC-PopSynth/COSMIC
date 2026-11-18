@@ -87,3 +87,62 @@ class TestKick(unittest.TestCase):
         # fit a maxwellian to the hobbs natal kicks and ensure it matches the expected values
         _, s_hobbs = maxwell.fit(natal_kicks, floc=0.0)
         self.assertTrue(np.round(s_hobbs) - 265 < 5)
+
+    def test_kick_collision(self):
+        """Test that a natal kick aimed at the companion destroys it
+
+        A He star + MS binary goes through a SN from a circular orbit. We read
+        the pre-SN state from the bpp, then re-evolve with a natal kick chosen
+        so that the post-SN relative velocity points almost straight at the
+        companion: the stars are approaching and the pericentre of the
+        (unbound) post-SN orbit is ~0.5 Rsun, well inside the companion's
+        ~4 Rsun radius, so this must end in a collision. The mirrored kick,
+        which sends the remnant directly away from the companion, must instead
+        disrupt the binary and leave the companion intact.
+        """
+        G = 1.3271244e11  # km^3 / (Msun s^2), as in kick.f
+        rsunkm = 6.96e5
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=6.0, m2=10.0, porb=5.0, ecc=0.0, tphysf=2.0,
+            kstar1=7, kstar2=1, metallicity=0.02
+        )
+        bse = dict(BSEDict, kickflag=1)
+
+        # first pass: get the state of the binary right before the SN
+        bpp, _, _, _ = Evolve.evolve(initialbinarytable=binary, BSEDict=bse,
+                                     SSEDict=SSEDict, nproc=1, randomseed=42)
+        pre_sn = bpp[bpp["evol_type"] == 15].iloc[0]
+        self.assertEqual(pre_sn["kstar_2"], 1)
+        self.assertGreater(pre_sn["sep"], 0.0)
+        self.assertEqual(pre_sn["ecc"], 0.0)
+
+        # with a mean anomaly of 0, the exploding star sits at (a, 0, 0)
+        # relative to its companion and moves with velocity (0, v_orb, 0)
+        a = pre_sn["sep"] * rsunkm
+        v_orb = np.sqrt(G * (pre_sn["mass_1"] + pre_sn["mass_2"]) / a)
+
+        # target post-SN relative velocities (in-plane, km/s)
+        for v_rel, expect_collision in [((-1500.0, 50.0), True),
+                                        ((1500.0, 50.0), False)]:
+            with self.subTest(v_rel=v_rel):
+                kick = np.array([v_rel[0], v_rel[1] - v_orb])
+                natal_kick_array = [
+                    [np.linalg.norm(kick), 0.0,
+                     np.degrees(np.arctan2(kick[1], kick[0])) % 360.0, 0.0, 0.0],
+                    [-100.0, -100.0, -100.0, -100.0, 0.0]
+                ]
+                bpp, _, _, kick_info = Evolve.evolve(
+                    initialbinarytable=binary,
+                    BSEDict=dict(bse, natal_kick_array=natal_kick_array),
+                    SSEDict=SSEDict, nproc=1, randomseed=42
+                )
+                post_sn = bpp.iloc[bpp["evol_type"].tolist().index(15) + 1]
+                self.assertEqual(kick_info["disrupted"].iloc[0], 1)
+                if expect_collision:
+                    # coalescence, companion destroyed
+                    self.assertEqual(post_sn["evol_type"], 6)
+                    self.assertEqual(post_sn["kstar_2"], 15)
+                else:
+                    # disrupted, companion survives
+                    self.assertEqual(post_sn["evol_type"], 11)
+                    self.assertEqual(post_sn["kstar_2"], 1)
