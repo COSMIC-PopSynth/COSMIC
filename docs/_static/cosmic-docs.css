@@ -597,3 +597,8 @@ select.form-control {
         padding: 0 1em;
     }
 }
+/* centre-align the first column of tables with this class */
+table.center-first-col td:first-child,
+table.center-first-col th:first-child {
+    text-align: center;
+}

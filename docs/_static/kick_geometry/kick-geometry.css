@@ -1,0 +1,184 @@
+/*
+    kick-geometry.css
+
+    Styling for the interactive kick-geometry figures on the output page
+    (kick_info). Everything is scoped to .kick-geometry, and the neutral
+    colours and fonts come from Furo's CSS variables so the figures follow the
+    rest of the docs, including light/dark mode. Only the three accent colours
+    (orbital velocity, kick and post-SN orbit) are defined here.
+*/
+
+.kick-geometry {
+    --kg-paper: var(--color-background-secondary);
+    --kg-panel: var(--color-background-primary);
+    --kg-ink: var(--color-foreground-primary);
+    --kg-muted: var(--color-foreground-muted);
+    --kg-rule: var(--color-background-border);
+    --kg-vel: #0a7680;
+    --kg-kick: #be1857;
+    --kg-post: #b8b8b8;
+    --kg-cone: rgba(190, 24, 87, 0.11);
+    --kg-plane-pre: rgba(23, 33, 44, 0.06);
+    --kg-plane-post: rgba(168, 95, 0, 0.10);
+
+    container-type: inline-size;
+    display: grid;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-stack);
+    color: var(--kg-ink);
+}
+
+/* dark mode: Furo sets body[data-theme] to light, dark or auto (follow OS) */
+body[data-theme="dark"] .kick-geometry {
+    --kg-vel: #3cc0cb;
+    --kg-kick: #ff5d98;
+    --kg-post: #ffffff;
+    --kg-cone: rgba(255, 93, 152, 0.14);
+    --kg-plane-pre: rgba(226, 232, 239, 0.07);
+    --kg-plane-post: rgba(243, 241, 240, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) .kick-geometry {
+        --kg-vel: #3cc0cb;
+        --kg-kick: #ff5d98;
+        --kg-post: #ffffff;
+        --kg-cone: rgba(255, 93, 152, 0.14);
+        --kg-plane-pre: rgba(226, 232, 239, 0.07);
+        --kg-plane-post: rgba(244, 243, 241, 0.12);
+    }
+}
+
+.kick-geometry *, .kick-geometry *::before, .kick-geometry *::after { box-sizing: border-box; }
+.kick-geometry [hidden] { display: none !important; }
+
+/* ---- layout -------------------------------------------------------------- */
+
+/* the explorer: top view, controls, 3D view, then readouts. (The docs content
+   column is narrow and Furo's .content scrolls horizontally, which rules out
+   sticky controls, so the sliders sit between the two figures.) */
+.kick-geometry .kg-explorer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    background: var(--kg-panel);
+    border: 1px solid var(--kg-rule);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+.kick-geometry .kg-sliders { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.7rem 1.25rem; }
+.kick-geometry .kg-readouts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem 1.5rem; }
+@container (min-width: 480px) {
+    .kick-geometry .kg-sliders { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kick-geometry .kg-readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kick-geometry .kg-readouts .kg-note { grid-column: 1 / -1; }
+}
+@container (min-width: 600px) {
+    /* three rows of three: orbit, kick, masses */
+    .kick-geometry .kg-sliders { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.kick-geometry .kg-card {
+    background: var(--kg-panel);
+    border: 1px solid var(--kg-rule);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: grid;
+    gap: 0.75rem;
+}
+.kick-geometry .kg-card-title {
+    font-family: var(--font-stack--headings);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+/* ---- figures ------------------------------------------------------------- */
+
+.kick-geometry figure { margin: 0; display: grid; gap: 0.5rem; min-width: 0; }
+.kick-geometry figcaption { font-size: var(--font-size--small); color: var(--kg-muted); line-height: 1.5; }
+.kick-geometry .kg-fig-title { font-weight: 600; font-size: 0.95rem; color: var(--kg-ink); }
+.kick-geometry svg { display: block; width: 100%; height: auto; max-width: 100%; }
+.kick-geometry svg text { font-family: var(--font-stack); font-size: 13px; fill: var(--kg-ink); }
+.kick-geometry svg text.small { font-size: 11.5px; fill: var(--kg-muted); }
+.kick-geometry svg text.kick { fill: var(--kg-kick); font-weight: 600; }
+.kick-geometry svg text.vel { fill: var(--kg-vel); font-weight: 600; }
+.kick-geometry svg text.post { fill: var(--kg-post); font-weight: 600; }
+.kick-geometry svg text.angle { font-weight: 600; }
+
+/* the 3D view can be dragged to rotate it */
+.kick-geometry .kg-3d { cursor: grab; touch-action: none; border-radius: 0.375rem; }
+.kick-geometry .kg-3d:active { cursor: grabbing; }
+.kick-geometry .kg-3d:focus-visible { outline: 2px solid var(--kg-kick); outline-offset: 2px; }
+
+/* ---- controls ------------------------------------------------------------ */
+
+.kick-geometry .kg-controls {
+    display: grid;
+    gap: 0.8rem;
+    min-width: 0;
+    border-block: 1px solid var(--kg-rule);
+    padding-block: 0.9rem;
+}
+.kick-geometry .kg-ctl { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: baseline; }
+.kick-geometry .kg-ctl label { font-size: var(--font-size--small); line-height: 1.3; }
+.kick-geometry .kg-ctl output {
+    font-family: var(--font-stack--monospace);
+    font-size: var(--font-size--small);
+    font-variant-numeric: tabular-nums;
+    color: var(--kg-muted);
+}
+.kick-geometry .kg-ctl input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--kg-kick); margin: 0; }
+.kick-geometry .kg-check { display: flex; gap: 0.5rem; align-items: center; font-size: var(--font-size--small); }
+.kick-geometry .kg-check input { accent-color: var(--kg-kick); margin: 0; }
+.kick-geometry input:focus-visible, .kick-geometry button:focus-visible { outline: 2px solid var(--kg-kick); outline-offset: 2px; }
+
+.kick-geometry .kg-readout-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kg-muted);
+    font-weight: 600;
+}
+.kick-geometry .kg-buttons { display: flex; flex-wrap: wrap; gap: 0.4rem 0.6rem; align-items: center; }
+.kick-geometry button {
+    font: inherit;
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--kg-rule);
+    background: var(--kg-paper);
+    color: var(--kg-ink);
+    cursor: pointer;
+}
+.kick-geometry button:hover { border-color: var(--kg-kick); }
+
+/* ---- readouts ------------------------------------------------------------ */
+
+.kick-geometry .kg-readout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 0.8rem;
+    margin: 0;
+    font-size: var(--font-size--small);
+}
+.kick-geometry .kg-readout dt { color: var(--kg-muted); }
+.kick-geometry .kg-readout dd {
+    margin: 0;
+    font-family: var(--font-stack--monospace);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+.kick-geometry .kg-readout .kg-span { grid-column: 1 / -1; }
+.kick-geometry .kg-readout .kg-group {
+    border-top: 1px solid var(--kg-rule);
+    padding-top: 0.5rem;
+    margin-top: 0.25rem;
+}
+.kick-geometry .kg-state { font-weight: 600; }
+.kick-geometry .kg-state.unbound { color: var(--kg-kick); }
+.kick-geometry .kg-note { font-size: var(--font-size--small); color: var(--kg-muted); line-height: 1.45; margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    .kick-geometry * { transition: none !important; }
+}
