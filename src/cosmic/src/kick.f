@@ -244,7 +244,7 @@
              else
                 mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
              endif
-             call RandomTruncatedNormal(0, 0.3d0, idum1,
+             call RandomTruncatedNormal(0.d0, 0.3d0, idum1,
      &                                  -1.d0, 10000.d0, vk)
              vk = mu_mm * (1 + vk)
              vk2 = vk * vk
