@@ -29,10 +29,8 @@ import operator
 import json
 import itertools
 import os.path
-import glob
 import re
 from pathlib import Path
-import h5py as h5
 import re
 
 from importlib.resources import files as io_files
