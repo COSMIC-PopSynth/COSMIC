@@ -7,10 +7,11 @@
 ! calls so the fortran ends up in the same state as when run through python.
 !
 ! File layout (native endian, see write_metisse_tracks in debug/create_binary_in.py):
-!   char(8) 'METTRK01', int32 has_he
+!   char(8) 'METTRK02', int32 has_he
 !   then a block for the hydrogen tracks and (if has_he) one for the helium tracks:
 !     int32 n_int, int32 format_ints(n_int)    (logicals stored as 0/1)
 !     char(256) format_strings(15)
+!     real64 lookup index
 !     int32 ntracks, max_ncol, max_neep, max_points
 !     char(256) filenames(ntracks)
 !     real64 initial_mass, initial_Y, initial_Z, Fe_div_H, alpha_div_Fe, v_div_vcrit (each ntracks)
@@ -37,7 +38,7 @@ subroutine load_metisse_tracks(filename)
     endif
 
     read(u) tag
-    if (tag /= 'METTRK01') then
+    if (tag /= 'METTRK02') then
         print*, 'load_metisse_tracks: ', trim(filename), ' is not a track file (or is an old format)'
         stop 1
     endif
@@ -62,6 +63,7 @@ contains
         integer, allocatable :: eep_data(:,:)
         real(dp), allocatable :: tr_data(:,:)
         character(len=col_width), allocatable :: col_names(:,:)
+        real(dp) :: lookup
 
         ! format controls, in the same order as the set_format_controls_* arguments
         read(u) n_int
@@ -79,13 +81,15 @@ contains
                                         strs(11), strs(12), strs(13), strs(14), strs(15))
         else
             if (n_int /= 17) stop 'load_metisse_tracks: unexpected number of H format controls'
+            read(u) lookup
             call set_format_controls_H(ints(1) /= 0, ints(2), ints(3), ints(4), ints(5), &
                                        ints(6), ints(7), ints(8), ints(9), ints(10), &
                                        ints(11), ints(12), ints(13), ints(14), ints(15) /= 0, &
                                        ints(16), ints(17), &
                                        strs(1), strs(2), strs(3), strs(4), strs(5), &
                                        strs(6), strs(7), strs(8), strs(9), strs(10), &
-                                       strs(11), strs(12), strs(13), strs(14), strs(15))
+                                       strs(11), strs(12), strs(13), strs(14), strs(15), &
+                                       lookup)
         endif
 
         ! the tracks themselves

@@ -111,8 +111,56 @@ class TestEvolve(unittest.TestCase):
         pd.testing.assert_frame_equal(EvolvedBinaryBPP, BPP_DF, check_dtype=False, check_exact=False)
         pd.testing.assert_frame_equal(EvolvedBinaryBCM, BCM_DF, check_dtype=False, check_exact=False)
 
+    def test_fill_in_defaults(self):
+        from cosmic.utils import get_default_BSE_settings
+        defaults = get_default_BSE_settings()
+        missing = ['pts1', 'windflag', 'qcrit_array', 'natal_kick_array', 'alpha1', 'acc_lim']
+
+        # reference: explicitly use the defaults for the missing settings
+        full_dict = defaults.copy()
+        bpp_ref, bcm_ref, initC_ref, _ = Evolve.evolve(
+            initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(), BSEDict=full_dict,
+            SSEDict=SSEDict, randomseed=523574)
+
+        # a partial dict should fail without filling in defaults
+        partial_dict = {k: v for k, v in full_dict.items() if k not in missing}
+        with self.assertRaises(Exception):
+            Evolve.evolve(initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(), BSEDict=partial_dict,
+                          SSEDict=SSEDict, randomseed=523574)
+
+        # but should match the reference when filling them in
+        bpp, bcm, initC, _ = Evolve.evolve(
+            initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(), BSEDict=partial_dict,
+            SSEDict=SSEDict, randomseed=523574, fill_in_defaults=True)
+        print(bpp, bpp_ref)
+        pd.testing.assert_frame_equal(bpp, bpp_ref)
+        pd.testing.assert_frame_equal(bcm, bcm_ref)
+        pd.testing.assert_frame_equal(initC, initC_ref)
+
+        # with no BSEDict at all, every setting should be filled in from the defaults
+        _, _, initC, _ = Evolve.evolve(initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(),
+                                       randomseed=523574, fill_in_defaults=True)
+        _, _, initC_ref, _ = Evolve.evolve(initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(),
+                                           BSEDict=defaults, randomseed=523574)
+        pd.testing.assert_frame_equal(initC, initC_ref)
+
+    def test_mixed_array_and_flattened_settings(self):
+        # the test BSEDict contains both array settings (e.g. alpha1) and their
+        # flattened versions (e.g. alpha1_0), which shouldn't lead to duplicate columns
+        assert 'alpha1' in BSEDict and 'alpha1_0' in BSEDict
+        _, _, initC, _ = Evolve.evolve(initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(),
+                                       BSEDict=BSEDict, SSEDict=SSEDict, randomseed=523574)
+        self.assertFalse(initC.columns.duplicated().any())
+
+        # conflicting values use the array value
+        mixed = {**BSEDict, 'alpha1': [2.0, 3.0], 'alpha1_0': 1.0}
+        _, _, initC, _ = Evolve.evolve(initialbinarytable=INIT_CONDITIONS_NO_BSE_COLUMNS.copy(),
+                                        BSEDict=mixed, SSEDict=SSEDict, randomseed=523574)
+        self.assertFalse(initC.columns.duplicated().any())
+        self.assertEqual(initC['alpha1_0'].iloc[0], 2.0)
+        self.assertEqual(initC['alpha1_1'].iloc[0], 3.0)
+
     def test_ejection_velocity_pfahl(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=KICK_INITC)
-        print(kick_info['vsys_2_total'])
         self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 15.813456, places=5)        
