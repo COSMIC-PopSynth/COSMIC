@@ -169,11 +169,14 @@ kick_info is a (2,19) array that tracks information about supernova
 kicks. This allows us to track the total change to the systemic
 velocity and the total change in the orbital plane tilt after both
 supernovae, as well as reproduce systems.
-The first row contains information about the first supernova that
-occurs, the second row the second supernova.
-Note that some values the second row will take into account the
-effect of the first SN (e.g., kick_info[2,10] is the total systemic
-velocity after both supernovae).
+Each row contains information about the supernova of one star: the
+first row is for the primary (star 1) and the second row for the
+secondary (star 2), whichever of them explodes first (as for
+``natal_kick_array``).
+Some values in the row of the *second* supernova take into account
+the effect of the first (e.g., ``vsys_1_total`` is then the total
+systemic velocity after both supernovae), and its velocities are given
+in the frame of the first supernova.
 
 ==========================================  ==================  ========================================================================================================================================
 Index                                       Name                Description

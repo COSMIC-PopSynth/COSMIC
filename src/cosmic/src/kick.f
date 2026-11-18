@@ -115,7 +115,10 @@
       real*8 h_prev(3),h(3), h_hat(3), h_mag
       real*8 LRL(3), e_hat(3)
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
-      real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3), v_star2_prev(3)
+      real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
+      real*8 v_prev_1(3), v_prev_2(3)
+      integer sn_prev
+      logical second_sn
       real*8 h_cross_e_hat(3)
       real*8 thetaE, phiE, psiE
       real*8 orbital_pivot_axis(3)
@@ -185,8 +188,16 @@
 * set the sn of the exploding object in the kick_info array
       kick_info(sn,1) = sn
 
+* Rows of kick_info (and natal_kick_array) are indexed by star (sn is
+* the index of the exploding star), not by the order of the SNe: either
+* star can explode first. This is the second SN if the other star has
+* already gone SN in this evolution, which we know because the kick
+* wrapper stores the time of each SN in column 19 after the call.
+      sn_prev = 3 - sn
+      second_sn = kick_info(sn_prev,19).gt.0.d0
+
 * if the system was disrupted from the first supernova, marked as disrupted
-      if(kick_info(1,2).eq.1) kick_info(2,2)=1
+      if(second_sn.and.kick_info(sn_prev,2).eq.1) kick_info(sn,2) = 1
 
 * sigma is negative for ECSN
       if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5
@@ -413,7 +424,7 @@
 * ----------------------------------------------------------------------
 
 * Check if the system is already not a bound binary
-      if((sn.eq.2.and.kick_info(1,2).eq.1)
+      if((second_sn.and.kick_info(sn_prev,2).eq.1)
      &   .or.sep.le.0.or.ecc.lt.0
      &   .or.sep.ne.sep.or.ecc.ne.ecc)then
 * if so, only apply kick to the current star
@@ -508,14 +519,21 @@
 * Get the Euler angles from previous kick for the rotation matrix
 * (only used for the second SN). Each SN's frame is built from the
 * separation r_explode - r_companion, so its x-axis is the periapsis
-* direction of that relative orbit. At the first SN this was r_1 - r_2,
-* and psiE was stored for that x-axis, but at the second SN it is
-* r_2 - r_1, whose periapsis points the opposite way (with the same
-* orbital angular momentum). So this frame is a half-turn about z
-* from the one the stored angles describe, and we add pi to psiE.
-      thetaE = kick_info(1,15) * pi / 180.d0
-      phiE = kick_info(1,16) * pi / 180.d0
-      psiE = kick_info(1,17) * pi / 180.d0 + pi
+* direction of that relative orbit. At the first SN the other star
+* exploded, and psiE was stored for that x-axis, but at the second SN
+* the separation is reversed, so its periapsis points the opposite way
+* (with the same orbital angular momentum). So this frame is a
+* half-turn about z from the one the stored angles describe, and we
+* add pi to psiE.
+      if(second_sn)then
+         thetaE = kick_info(sn_prev,15) * pi / 180.d0
+         phiE = kick_info(sn_prev,16) * pi / 180.d0
+         psiE = kick_info(sn_prev,17) * pi / 180.d0 + pi
+      else
+         thetaE = 0.d0
+         phiE = 0.d0
+         psiE = 0.d0
+      endif
 
 * Get the new eccentricity
       call VectorMagnitude(LRL, ecc)
@@ -562,7 +580,7 @@
          end do
 
 * if second supernova, need to change basis to the original orbital plane
-         if(sn.eq.2)then
+         if(second_sn)then
             call ChangeBasis(v_sn, thetaE, phiE, psiE, v_sn_rot)
             call ChangeBasis(v_comp, thetaE, phiE, psiE, v_comp_rot)
          else
@@ -624,7 +642,7 @@
 * Update the total orbital angular momentum (in Msun Rsun^2/yr)
          jorb = m1n * m2 / mtot * h_mag / rsunkm / rsunkm * yearsc
 
-         if (sn.eq.2) then
+         if(second_sn)then
             call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
          else
             v_cm_rot = v_cm
@@ -729,46 +747,39 @@
 * For systems that were distrupted in the first SN, skip to here
  78   continue
 *
-* Set systemic velocity magnitudes in the kick_info array
-* For first SN, this should be identical to the magnitude
-* of the three component vectors. For the second SN, this
-* will be the systemic velocity relative to the initial frame.
-      if(sn.eq.1)then
-         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) +
-     &              kick_info(sn,8)*kick_info(sn,8) +
-     &              kick_info(sn,9)*kick_info(sn,9))
-         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) +
-     &              kick_info(sn,12)*kick_info(sn,12) +
-     &              kick_info(sn,13)*kick_info(sn,13))
-      elseif(sn.eq.2)then
-         kick_info(sn,10) = SQRT(
-     &      (kick_info(1,7)+kick_info(2,7))*
-     &      (kick_info(1,7)+kick_info(2,7)) +
-     &      (kick_info(1,8)+kick_info(2,8))*
-     &      (kick_info(1,8)+kick_info(2,8)) +
-     &      (kick_info(1,9)+kick_info(2,9))*
-     &      (kick_info(1,9)+kick_info(2,9)))
-* Star 2's velocity before this SN: its own velocity (columns 11-13)
-* if the first SN disrupted the binary, or the binary's systemic
-* velocity (columns 7-9) if the binary survived it
-         if(kick_info(1,2).eq.0.and.kick_info(2,2).eq.1)then
-            do i = 1, 3
-               v_star2_prev(i) = kick_info(1,6+i)
-            end do
-         else
-            do i = 1, 3
-               v_star2_prev(i) = kick_info(1,10+i)
-            end do
-         endif
-         kick_info(sn,14) = SQRT(
-     &      (v_star2_prev(1)+kick_info(2,11))*
-     &      (v_star2_prev(1)+kick_info(2,11)) +
-     &      (v_star2_prev(2)+kick_info(2,12))*
-     &      (v_star2_prev(2)+kick_info(2,12)) +
-     &      (v_star2_prev(3)+kick_info(2,13))*
-     &      (v_star2_prev(3)+kick_info(2,13)))
+* Set systemic velocity magnitudes in the kick_info array. Columns 7-9
+* are the velocity of the binary if bound, or of star 1 if disrupted,
+* and 11-13 are the velocity of star 2 if disrupted. For the first SN,
+* these are the magnitudes of this SN's velocities. For the second SN,
+* they are the totals (relative to the original frame) after both SNe,
+* adding the velocities from the first SN (row sn_prev).
+      if(.not.second_sn)then
+         do i = 1, 3
+            v_prev_1(i) = 0.d0
+            v_prev_2(i) = 0.d0
+         end do
+      else
+* Star 1 (or the binary) had the velocity in columns 7-9 of the first
+* SN. Star 2 had the velocity in columns 11-13 if the first SN
+* disrupted the binary, or the binary's velocity (columns 7-9) if it
+* survived (in which case 11-13 are zero, and stay so unless this SN
+* disrupts it)
+         do i = 1, 3
+            v_prev_1(i) = kick_info(sn_prev,6+i)
+            if(kick_info(sn_prev,2).eq.0.and.kick_info(sn,2).eq.1)then
+               v_prev_2(i) = kick_info(sn_prev,6+i)
+            else
+               v_prev_2(i) = kick_info(sn_prev,10+i)
+            endif
+         end do
       endif
-      
+      kick_info(sn,10) = SQRT((v_prev_1(1) + kick_info(sn,7))**2 +
+     &                        (v_prev_1(2) + kick_info(sn,8))**2 +
+     &                        (v_prev_1(3) + kick_info(sn,9))**2)
+      kick_info(sn,14) = SQRT((v_prev_2(1) + kick_info(sn,11))**2 +
+     &                        (v_prev_2(2) + kick_info(sn,12))**2 +
+     &                        (v_prev_2(3) + kick_info(sn,13))**2)
+
       RETURN
       END
 
