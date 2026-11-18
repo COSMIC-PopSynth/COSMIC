@@ -87,9 +87,13 @@ class TestKick(unittest.TestCase):
         natal_kicks_disberg = kick_info['natal_kick'][kick_info['natal_kick'] != 0.0]
 
         # fit a lognormal distribution and ensure it matches the expected values
+        # (mu = 5.60, sigma = 0.68) to within 5 standard errors of the fit:
+        # SE(mu) = sigma / sqrt(n) and SE(sigma) ~ sigma / sqrt(2n)
         mu_d, sigma_d = norm.fit(np.log(natal_kicks_disberg))
-        self.assertTrue(np.round(mu_d, 1) == 5.6)
-        self.assertTrue(np.round(sigma_d, 2) == 0.68)
+        n = len(natal_kicks_disberg)
+        self.assertGreater(n, 0.9 * N)
+        self.assertAlmostEqual(mu_d, 5.60, delta=5 * 0.68 / np.sqrt(n))
+        self.assertAlmostEqual(sigma_d, 0.68, delta=5 * 0.68 / np.sqrt(2 * n))
 
     def test_hobbs(self):
         """Test the Hobbs kick routine
@@ -113,9 +117,13 @@ class TestKick(unittest.TestCase):
         _, _, _, kick_info = Evolve.evolve(initialbinarytable=ibt, BSEDict=BSEDict, SSEDict=SSEDict, nproc=1)
         natal_kicks = kick_info['natal_kick'][kick_info['natal_kick'] != 0.0]
 
-        # fit a maxwellian to the hobbs natal kicks and ensure it matches the expected values
+        # fit a maxwellian to the hobbs natal kicks and ensure it matches the
+        # expected dispersion (sigma = 265 km/s) to within 5 standard errors of
+        # the fit: SE(sigma) = sigma / sqrt(6n)
         _, s_hobbs = maxwell.fit(natal_kicks, floc=0.0)
-        self.assertTrue(np.round(s_hobbs) - 265 < 5)
+        n = len(natal_kicks)
+        self.assertGreater(n, 0.9 * N)
+        self.assertAlmostEqual(s_hobbs, 265.0, delta=5 * 265.0 / np.sqrt(6 * n))
 
     def test_kick_collision(self):
         """Test that a natal kick aimed at the companion destroys it
