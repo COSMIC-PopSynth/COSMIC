@@ -132,6 +132,13 @@
       real ran3,xx
       external ran3
       external RandomTruncatedNormal
+* Number of candidates for the rejection sampling of truncated kick
+* distributions (kickflag 6 and 9). Each always uses the same number of
+* random draws, so the random number stream doesn't depend on how many
+* were rejected; 12 makes running out of candidates vanishingly rare
+* (probability < 1e-17 per kick).
+      integer n_try_kick, n_draws
+      parameter(n_try_kick=12)
 *
       output = .false. !useful for debugging...
       collide = .false.
@@ -217,11 +224,21 @@
           endif
 
           vk2 = vk*vk
-* per supplied kick value we mimic a call to random number generator
-          xx = RAN3(idum1)
-          xx = RAN3(idum1)
-          xx = RAN3(idum1)
-          xx = RAN3(idum1)
+* per supplied kick value we mimic the calls to the random number
+* generator that drawing the kick would have made (the conditions
+* match those below)
+          if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
+             n_draws = 2
+          elseif(abskickflag.eq.9.and.(kw.eq.13.or.kw.eq.14))then
+             n_draws = 1 + 2 * n_try_kick
+          elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
+             n_draws = 2 * n_try_kick
+          else
+             n_draws = 4
+          endif
+          do i = 1, n_draws
+             xx = RAN3(idum1)
+          end do
       else
 * If no pre-supplied kick magnitude, we draw a kick from a distribution
 * If the kickflag is 5 then use the log-normal distribution described
@@ -233,7 +250,7 @@
      &           (kw.eq.13.or.kw.eq.14))then
 * Shariat et al. (2026), arXiv:2610.04005, Table 2 parent NS law.
 * Applying this NS-inferred base law to BHs is an extrapolation.
-             call RandomBimodalKick(vk,idum1)
+             call RandomBimodalKick(vk,idum1,n_try_kick)
              if(kw.eq.14) vk = vk * bhsigmafrac
              vk2 = vk*vk
           elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
@@ -245,7 +262,7 @@
                 mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
              endif
              call RandomTruncatedNormal(0.d0, 0.3d0, idum1,
-     &                                  -1.d0, 10000.d0, vk)
+     &                             -1.d0, 10000.d0, n_try_kick, vk)
              vk = mu_mm * (1 + vk)
              vk2 = vk * vk
           else
@@ -1784,17 +1801,19 @@
       RETURN
       END
 
-      SUBROUTINE RandomBimodalKick(result,idum)
+      SUBROUTINE RandomBimodalKick(result,idum,n_try)
 * Fixed marginal posterior medians of the all-NS parent speed law.
 * Natural logs of speed in km/s; not Maxwellian component dispersions.
 * Select the component before rejection so truncation preserves f_low.
 * This fixed approximation does not propagate joint-posterior uncertainty.
+* Always makes 1 + 2 * n_try calls to RAN3 (see
+* RandomTruncatedNormal in ran3.f).
       IMPLICIT NONE
       real*8 result,mu,sigma,log_vk
       real*8 f_low,mu_low,sigma_low,mu_high,sigma_high
       parameter(f_low=0.126d0,mu_low=1.87d0,sigma_low=0.55d0)
       parameter(mu_high=5.62d0,sigma_high=0.71d0)
-      integer idum
+      integer idum,n_try
       real ran3
       external ran3
 
@@ -1805,11 +1824,8 @@
          mu = mu_high
          sigma = sigma_high
       endif
-      do
-         call RandomNormal(mu,sigma,idum,log_vk)
-         if(log_vk.gt.LOG(0.05d0).and.
-     &      log_vk.lt.LOG(1000.d0))exit
-      enddo
+      call RandomTruncatedNormal(mu, sigma, idum, LOG(0.05d0),
+     &                           LOG(1000.d0), n_try, log_vk)
       result = EXP(log_vk)
       RETURN
       END
