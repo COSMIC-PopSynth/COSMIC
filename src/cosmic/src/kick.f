@@ -196,7 +196,7 @@
       if(abskickflag.eq.1.or.abskickflag.eq.5)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
-            disberg_mean = disberg_mean * bhsigmafrac
+            disberg_mean = disberg_mean + LOG(bhsigmafrac)
          endif
       endif
 
