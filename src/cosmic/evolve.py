@@ -84,16 +84,25 @@ for sn_idx in range(2):
     for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
         FLATTENED_NATAL_KICK_COLUMNS.append(column_name + '_{0}'.format(sn_idx + 1))
 
-QCRIT_COLUMNS = ['qcrit_{0}'.format(kstar) for kstar in range(0, 16)]
-FPRIMC_COLUMNS = ['fprimc_{0}'.format(kstar) for kstar in range(0, 16)]
-ALPHA_COLUMNS = ['alpha1_{0}'.format(star) for star in range(0, 2)]
-ACCLIM_COLUMNS = ['acc_lim_{0}'.format(star) for star in range(0, 2)]
+# each of the flags in the following list are arrays with n elements which are flattened in the initC table
+FLATTENED_BSE_COLUMNS = {
+    bse_flag: [f'{initC_flag}_{i}' for i in range(n)] for bse_flag, initC_flag, n in [
+        ('qcrit_array', 'qcrit', 16), ('fprimc_array', 'fprimc', 16),
+        ('alpha1', 'alpha1', 2), ('acc_lim', 'acc_lim', 2)
+    ]
+}
+
+
+def _get_nested(arr, inds):
+    """Get the value of a (possibly nested) array at the given tuple of indices"""
+    for i in inds:
+        arr = arr[i]
+    return arr
+
 
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_NATAL_KICK_COLUMNS)
-INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(QCRIT_COLUMNS)
-INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FPRIMC_COLUMNS)
-INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(ALPHA_COLUMNS)
-INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(ACCLIM_COLUMNS)
+for flag in FLATTENED_BSE_COLUMNS:
+    INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_BSE_COLUMNS[flag])
 
 # BSE doesn't need the binary fraction, so just add to columns for saving
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.insert(7, 'binfrac')
@@ -107,7 +116,7 @@ class Evolve(object):
 
     @classmethod
     def evolve(self, initialbinarytable, pool=None, bpp_columns=None, bcm_columns=None,
-               dt_mass_modifiers=[(40, 70, 0.3), (70, np.inf, 0.1)], **kwargs):
+               dt_mass_modifiers=[(40, 70, 0.3), (70, np.inf, 0.1)], fill_in_defaults=False, **kwargs):
         """After setting a number of initial conditions we evolve the system.
 
         Parameters
@@ -137,6 +146,19 @@ class Evolve(object):
             in multiple modifiers being applied in the overlap region.
             NOTE: these modifiers are only applied to columns which aren't present in the initialbinarytable
             that is passed in (i.e. they only modify values provided by a BSEDict or params.ini file)
+
+        fill_in_defaults : bool, optional, default: False
+            If True, any BSE settings that are not specified in either the BSEDict/params file or
+            as columns in the initialbinarytable are filled in using the COSMIC default values (as
+            given in ``cosmic/data/cosmic-settings.json``, see
+            :func:`cosmic.utils.get_default_BSE_settings`). Similarly, ``stellar_engine`` defaults
+            to 'sse' if it is not otherwise specified. This avoids errors when settings are added in
+            newer versions of COSMIC. Settings that are filled in are treated in the same way as
+            those from a BSEDict (e.g. they are subject to ``dt_mass_modifiers``).
+
+            We caution that all users must carefully consider the setting to use in their binary population
+            synthesis and fully understand the choices they have made in their simulations. Users are
+            responsible for their choices in how to use `COSMIC` to simulate binaries.
 
         **kwargs:
             There are three ways to tell evolve and thus the fortran
@@ -248,6 +270,10 @@ class Evolve(object):
         # are valid
         utils.error_check(BSEDict, SSEDict)
 
+        # fill in any settings that weren't provided anywhere with the COSMIC defaults
+        if fill_in_defaults:
+            initialbinarytable = _fill_in_default_settings(initialbinarytable, BSEDict, SSEDict)
+
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
         if 'dtp' not in initialbinarytable.keys():
@@ -358,21 +384,21 @@ class Evolve(object):
                     else:
                         new_cols[col] = BSEDict['fprimc_array'][kstar]
             elif k == 'alpha1':
-                columns_values = [BSEDict['alpha1']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(alpha1=columns_values)
-                for kstar in range(0,2):
-                    columns_values = pd.Series([BSEDict['alpha1'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='alpha1_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'alpha1_{0}'.format(kstar)] = columns_values
+                initialbinarytable = initialbinarytable.assign(alpha1=[BSEDict['alpha1']] * n)
+                for kstar in range(2):
+                    col = f"alpha1_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['alpha1'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['alpha1'][kstar]
             elif k == 'acc_lim':
-                columns_values = [BSEDict['acc_lim']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(acc_lim=columns_values)
-                for kstar in range(0,2):
-                    columns_values = pd.Series([BSEDict['acc_lim'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='acc_lim_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'acc_lim_{0}'.format(kstar)] = columns_values
+                initialbinarytable = initialbinarytable.assign(acc_lim=[BSEDict['acc_lim']] * n)
+                for kstar in range(2):
+                    col = f"acc_lim_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['acc_lim'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['acc_lim'][kstar]
             else:
                 # base case: if it's present, overwrite, if not, add to a list of new columns (see below)
                 if k in initialbinarytable.columns:
@@ -406,7 +432,7 @@ class Evolve(object):
                              "initial binary table you must also pass SSE parameters "
                              "in the initial binary table.")
 
-        # If you did not supply the natal kick or qcrit_array or fprimc_array in the BSEdict then we construct
+        # If you did not supply the natal kick in the BSEdict then we construct
         # it from the initial conditions table
         if ((pd.Series(FLATTENED_NATAL_KICK_COLUMNS).isin(initialbinarytable.keys()).all()) and
            ('natal_kick_array' not in BSEDict)):
@@ -415,17 +441,10 @@ class Evolve(object):
                                                                                             len(NATAL_KICK_COLUMNS)).tolist()
             initialbinarytable = initialbinarytable.assign(natal_kick_array=column_values)
 
-        if (pd.Series(QCRIT_COLUMNS).isin(initialbinarytable.keys()).all()) and ('qcrit_array' not in BSEDict):
-            initialbinarytable = initialbinarytable.assign(qcrit_array=initialbinarytable[QCRIT_COLUMNS].values.tolist())
-
-        if (pd.Series(FPRIMC_COLUMNS).isin(initialbinarytable.keys()).all()) and ('fprimc_array' not in BSEDict):
-            initialbinarytable = initialbinarytable.assign(fprimc_array=initialbinarytable[FPRIMC_COLUMNS].values.tolist())
-
-        if (pd.Series(ALPHA_COLUMNS).isin(initialbinarytable.keys()).all()) and ('alpha1' not in BSEDict):
-            initialbinarytable = initialbinarytable.assign(alpha1=initialbinarytable[ALPHA_COLUMNS].values.tolist())
-        
-        if (pd.Series(ACCLIM_COLUMNS).isin(initialbinarytable.keys()).all()) and ('acc_lim' not in BSEDict):
-            initialbinarytable = initialbinarytable.assign(acc_lim=initialbinarytable[ACCLIM_COLUMNS].values.tolist())
+        # as above for each of the flattened BSE array columns
+        for flag in FLATTENED_BSE_COLUMNS:
+            if pd.Series(FLATTENED_BSE_COLUMNS[flag].isin(initialbinarytable.keys()).all()) and (flag not in BSEDict):
+                initialbinarytable = initialbinarytable.assign(**{flag: initialbinarytable[FLATTENED_BSE_COLUMNS[flag]].values.tolist()})
 
         # update timesteps based on mass modifier
         mass_modifier_cols = set(['pts1', 'pts2', 'pts3']).difference(columns_in_passed_initC)
@@ -620,6 +639,66 @@ class Evolve(object):
             bcm.merger_type = bcm.merger_type.astype(int).astype(str).apply(lambda x: x.zfill(4))
 
         return bpp, bcm, initialbinarytable, kick_info
+
+
+def _fill_in_default_settings(initialbinarytable, BSEDict, SSEDict):
+    """Add columns to the initial binary table for any settings missing from both the
+    table and the BSEDict/SSEDict, using the COSMIC defaults
+
+    Array settings (e.g. ``qcrit_array``) are added in their flattened form (e.g. ``qcrit_0``, ...,
+    ``qcrit_15``), from which the array columns are later reconstructed by `Evolve.evolve`.
+
+    Parameters
+    ----------
+    initialbinarytable : `pandas.DataFrame`
+        Initial conditions table
+    BSEDict : `dict`
+        BSE settings passed by the user (or read from a params file)
+    SSEDict : `dict`
+        SSE settings passed by the user (or read from a params file)
+
+    Returns
+    -------
+    initialbinarytable : `pandas.DataFrame`
+        Copy of the initial conditions table with missing settings added as columns
+    """
+    defaults = utils.get_default_BSE_settings()
+    existing = set(initialbinarytable.columns)
+
+    new_cols = {}
+    for k, v in defaults.items():
+        # anything given in the BSEDict/params file or already in the table takes priority
+        if k in BSEDict or k in existing:
+            continue
+
+        # if it's missing and it's an array setting then we need to add a column for each index
+        if k in FLATTENED_BSE_COLUMNS:
+            for ind, col in enumerate(FLATTENED_BSE_COLUMNS[k]):
+                if col not in existing and col not in BSEDict:
+                    new_cols[col] = defaults[k][ind]
+
+        # similar for natal kick columns but a little more hardcoded
+        elif k in NATAL_KICK_COLUMNS:
+            kick_ind = NATAL_KICK_COLUMNS.index(k)
+            for star_ind in range(2):
+                col = f"{k}_{int(star_ind)}"
+                if col not in existing and col not in BSEDict:
+                    new_cols[col] = defaults["natal_kick_array"][kick_ind, star_ind]
+
+        # otherwise just paste it in
+        else:
+            new_cols[k] = v
+
+    # default to the SSE stellar engine if not specified anywhere (the remaining SSE
+    # columns are filled in later if needed by the main code)
+    if 'stellar_engine' not in SSEDict and 'stellar_engine' not in existing:
+        new_cols['stellar_engine'] = 'sse'
+
+    # if we actually set any new columns then concatenate them with the main table and return it
+    if new_cols:
+        new_df = pd.DataFrame(new_cols, index=initialbinarytable.index)
+        initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
+    return initialbinarytable
 
 
 def _evolve_single_system(f, zpars=None):
