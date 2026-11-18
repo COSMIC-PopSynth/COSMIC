@@ -1711,8 +1711,10 @@
       call VectorMagnitude(A, magA)
       call VectorMagnitude(B, magB)
 
-* Calculate the angle between the two vectors
-      angle = ACOS(dot / (magA * magB))
+* Calculate the angle between the two vectors (clamping the cosine to
+* [-1, 1], which rounding can push it just outside for (anti)parallel
+* vectors)
+      angle = ACOS(MAX(-1.d0, MIN(1.d0, dot / (magA * magB))))
 
       RETURN
       END
