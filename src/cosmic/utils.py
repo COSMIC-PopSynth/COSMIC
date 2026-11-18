@@ -76,6 +76,8 @@ __all__ = [
     "read_eep_directory",
     "to_f2py_str_array",
     "explain_setting",
+    "get_default_BSE_settings",
+    "fill_BSEDict_with_defaults",
 ]
 
 
@@ -2050,6 +2052,49 @@ def explain_setting(setting):
                 return
             
     raise ValueError(f"Unknown setting '{setting}'")
+
+
+def get_default_BSE_settings():
+    """Get a copy of the default BSE settings based on the data in the COSMIC settings JSON file
+
+    Returns
+    -------
+    defaults : `dict`
+        Dictionary of default BSE settings, with array settings (``qcrit_array``,
+        ``natal_kick_array``, ``fprimc_array``, ``alpha1``, ``acc_lim``) converted to lists
+    """
+    settings_path = io_files("cosmic.data").joinpath('cosmic-settings.json')
+    cosmic_settings = json.loads(settings_path.read_text(encoding='utf-8'))
+    defaults = {}
+    # loop through settings to find bse
+    for cat in cosmic_settings:
+        if cat["category"] != "bse":
+            continue
+
+        # go through each setting, finding the default option
+        for setting in cat["settings"]:
+            for option in setting["options"]:
+                if option.get("default", False):
+                    defaults[setting["name"]] = option["name"]
+
+    # ensure array settings are converted from strings to lists
+    for setting in ["qcrit_array", "natal_kick_array", "fprimc_array", "alpha1", "acc_lim"]:
+        # this one requires special handling because of the fractions
+        if setting == "fprimc_array":
+            parts = defaults[setting].strip("[]").split(",")
+            defaults[setting] = [float(p.split("/")[0]) / float(p.split("/")[1]) for p in parts]
+        else:
+            defaults[setting] = json.loads(defaults[setting])
+    return defaults
+
+
+def fill_BSEDict_with_defaults(BSEDict):
+    """Fill an incomplete BSEDict with the default settings"""
+    defaults = get_default_BSE_settings()
+    for k in defaults:
+        if k not in BSEDict:
+            BSEDict[k] = defaults[k]
+    return BSEDict
 
 
 class VariableKey(object):
