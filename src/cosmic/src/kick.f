@@ -102,7 +102,7 @@
       real*8 ecc,ecc_2,sep
       real*8 pi,twopi,yearsc,rsunkm,G_const
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
-      real*8 mean_anom,ecc_anom,dif,der,del
+      real*8 mean_anom,ecc_anom
       real*8 u1,u2,vk,vk2,v(4),s,sigmah
       real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 fallback,sigmahold,bound
@@ -430,18 +430,7 @@
       endif
 * Solve Kepler's equation for the eccentric anomaly from mean anomaly
 * https://en.wikipedia.org/wiki/Eccentric_anomaly
-      ecc_anom = mean_anom
-
-      if(mean_anom.eq.0.d0) goto 8
-
-  9   dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
-      if(ABS(dif / mean_anom).le.1.0d-04) goto 8
-      der = 1.d0 - ecc * COS(ecc_anom)
-      del = dif/der
-      ecc_anom = ecc_anom - del
-      goto 9
-
- 8    continue
+      call SolveKepler(mean_anom, ecc, ecc_anom)
 
 * ----------------------------------------------------------------------
 * ------ Calculate whether system disrupts and CM velocity change ------
@@ -1467,6 +1456,132 @@
 * ======================================================================
 * ================== Vector helper functions follow ====================
 * ======================================================================
+
+      SUBROUTINE SolveKepler(mean_anom, ecc, ecc_anom)
+* Solve Kepler's equation, M = E - e sin(E), for the eccentric anomaly E
+* given a mean anomaly M in [0, 2pi] and an eccentricity 0 <= e < 1.
+*
+* This follows the ENRKE method of Tommasini & Olivieri (2022, A&A 658,
+* A196; https://doi.org/10.1051/0004-6361/202141423), with an added
+* bracket to guarantee convergence:
+*
+* 1. M is reduced to [0, pi] using E(2pi - M) = 2pi - E(M).
+* 2. In the "critical region" (e > 0.99 and M within 0.0045 rad of
+*    periapsis) we use bisection. Any method that uses the derivative
+*    1 / (1 - e cos E), such as Newton-Raphson, has a limiting accuracy
+*    of ~ eps / sqrt(2 (1 - e)) here (Tommasini & Olivieri 2021, MNRAS
+*    506, 1889), and Newton-Raphson can also cycle indefinitely. The
+*    bisection tolerance is relative, (1e-7 + E / 0.3) * tol, and the
+*    bracket [2.7 M, 0.301] is from Serafin (1986, Celest. Mech. 38, 111).
+* 3. Elsewhere we start from their rational first guess (their Eq. 19),
+*    take one fourth-order step of Odell & Gooding's (1986, Celest.
+*    Mech. 38, 307) delta_131 iterator (their Eq. 6), then use
+*    Newton-Raphson until their stopping condition (their Eq. 9) shows
+*    that the next step is smaller than tol.
+*
+* In addition to ENRKE, we keep a bracket [lo, hi] around the root
+* (f(E) = E - e sin(E) - M is monotonic, and E - M = e sin E lies in
+* [0, e] for M in [0, pi]) and bisect whenever a step would leave it,
+* with a cap on the number of iterations. This guarantees convergence.
+* In practice it only triggers just outside the critical region for e
+* very close to 1, where the first step can overshoot far past the root.
+*
+* Variables
+* ---------
+* mean_anom is the mean anomaly (in radians, in [0, 2pi])
+* ecc is the eccentricity (in [0, 1))
+* ecc_anom is the eccentric anomaly (in radians, output)
+      IMPLICIT NONE
+      real*8 mean_anom, ecc, ecc_anom
+      real*8 pi, M, E, E_new, lo, hi, f, fp, esinE, ecosE, delta
+      real*8 fp3, ffpfpp, f2fppp, tol, tol2s, bis_abs, bis_rel
+      logical reflect
+      integer iter, max_iter
+      parameter(tol=3.0d-15, max_iter=100)
+
+      pi = ACOS(-1.d0)
+
+* reduce M to [0, pi]
+      reflect = mean_anom.gt.pi
+      if(reflect)then
+         M = 2.d0 * pi - mean_anom
+      else
+         M = mean_anom
+      endif
+
+      if(ecc.gt.0.99d0.and.M.lt.0.0045d0)then
+* critical region: bisection with a relative tolerance
+         bis_abs = tol / 1.d7
+         bis_rel = tol / 0.3d0
+         lo = 2.7d0 * M
+         hi = 0.301d0
+         E = 0.5d0 * (lo + hi)
+         do iter = 1, 4 * max_iter
+            if(hi - lo.le.bis_abs + bis_rel * E) exit
+            if(E - ecc * SIN(E) - M.gt.0.d0)then
+               hi = E
+            else
+               lo = E
+            endif
+            E = 0.5d0 * (lo + hi)
+         end do
+      else
+* rational first guess (Tommasini & Olivieri 2022, Eq. 19)
+         lo = M
+         hi = MIN(M + ecc, pi)
+         E = M + 0.999999d0 * M * (pi - M) /
+     &       (2.d0 * M + ecc - pi + 0.25d0 * pi * pi / (ecc + 2.2d-16))
+         E = MIN(MAX(E, lo), hi)
+
+* one step of Odell & Gooding's delta_131 iterator
+         esinE = ecc * SIN(E)
+         ecosE = ecc * COS(E)
+         fp = 1.d0 - ecosE
+         f = E - esinE - M
+         if(f.lt.0.d0)then
+            lo = E
+         elseif(f.gt.0.d0)then
+            hi = E
+         endif
+         fp3 = fp * fp * fp
+         ffpfpp = f * fp * esinE
+         f2fppp = f * f * ecosE
+         delta = -f / fp * (fp3 - 0.5d0 * ffpfpp + f2fppp / 3.d0) /
+     &           (fp3 - ffpfpp + 0.5d0 * f2fppp)
+
+* then Newton-Raphson, stopping once the step after this one would be
+* below tol (Tommasini & Olivieri 2022, Eq. 9)
+         tol2s = 2.d0 * tol / (ecc + 2.2d-16)
+         do iter = 1, max_iter
+            if(delta * delta.le.fp * tol2s) exit
+            E_new = E + delta
+* bisect if the step leaves the bracket (written so NaN also bisects)
+            if(.not.(E_new.gt.lo.and.E_new.lt.hi))then
+               E_new = 0.5d0 * (lo + hi)
+            endif
+            E = E_new
+            fp = 1.d0 - ecc * COS(E)
+            f = E - ecc * SIN(E) - M
+            if(f.lt.0.d0)then
+               lo = E
+            elseif(f.gt.0.d0)then
+               hi = E
+            endif
+            delta = -f / fp
+         end do
+         E_new = E + delta
+         if(E_new.ge.lo.and.E_new.le.hi) E = E_new
+      endif
+
+      if(reflect)then
+         ecc_anom = 2.d0 * pi - E
+      else
+         ecc_anom = E
+      endif
+
+      RETURN
+      END
+
 
       SUBROUTINE ChangeBasis(Vector, ThetaE, PhiE, PsiE, Result)
 * Redefine a vector from one coordinate basis to another using Euler Angles

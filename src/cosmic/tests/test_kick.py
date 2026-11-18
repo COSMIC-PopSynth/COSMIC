@@ -10,7 +10,7 @@ from scipy.stats import maxwell, norm
 import pandas as pd
 
 from cosmic.sample.initialbinarytable import InitialBinaryTable, INITIAL_CONDITIONS_COLUMNS_ALL
-from cosmic.evolve import Evolve, INITIAL_BINARY_TABLE_SAVE_COLUMNS
+from cosmic.evolve import Evolve, INITIAL_BINARY_TABLE_SAVE_COLUMNS, FLATTENED_NATAL_KICK_COLUMNS
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -29,6 +29,35 @@ BSEDict['fprimc_array'] = [2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,2.0/21.0,
 
 # avoid using the same randomseed
 del BSEDict["bin_num"], BSEDict["randomseed"]
+
+
+def evolve_with_first_sn_kicks(binary, natal_kick, phi, theta, mean_anomaly, tphysf):
+    """Evolve copies of a binary, each with its own supplied first-SN kick
+
+    Each argument (other than ``binary`` and ``tphysf``) is an array with one
+    entry per copy, in the units of ``natal_kick_array``. All copies use the
+    same random seed, so they reach the SN in an identical state.
+    """
+    n = len(mean_anomaly)
+    binaries = binary.loc[binary.index.repeat(n)].reset_index(drop=True)
+    binaries["tphysf"] = tphysf
+    for col, value in [("natal_kick", natal_kick), ("phi", phi), ("theta", theta),
+                       ("mean_anomaly", mean_anomaly), ("randomseed", 0.0)]:
+        binaries[col + "_1"] = value
+        binaries[col + "_2"] = 0.0 if col == "randomseed" else -100.0
+    # without natal_kick_array (or its flattened columns) in the BSEDict, the
+    # per-binary columns are used
+    bse = {k: v for k, v in BSEDict.items()
+           if k != "natal_kick_array" and k not in FLATTENED_NATAL_KICK_COLUMNS}
+    bse["kickflag"] = 1
+    bpp, _, _, kick_info = Evolve.evolve(initialbinarytable=binaries, BSEDict=bse,
+                                         SSEDict=SSEDict, nproc=1, randomseed=42)
+    return bpp, kick_info[kick_info["star"] == 1]
+
+
+def wrap_degrees(angle):
+    """Wrap an angle (in degrees) to [-180, 180)"""
+    return (np.asarray(angle) + 180.0) % 360.0 - 180.0
 
 
 class TestKick(unittest.TestCase):
@@ -146,3 +175,113 @@ class TestKick(unittest.TestCase):
                     # disrupted, companion survives
                     self.assertEqual(post_sn["evol_type"], 11)
                     self.assertEqual(post_sn["kstar_2"], 1)
+
+    def test_kepler_high_eccentricity(self):
+        """Test the eccentric anomaly solve for highly eccentric orbits
+
+        Plain Newton-Raphson on Kepler's equation (starting from E = M) can
+        cycle forever for eccentricities close to 1. Here a He star + MS
+        binary goes SN with e ~ 0.9999 and *no* natal kick, at a range of
+        supplied mean anomalies. These include a few where the old iteration
+        never converged for this eccentricity (at least with gfortran on
+        arm64 macOS; exactly which mean anomalies cycle depends on rounding),
+        and some either side of the edge of the "critical region" near
+        periapsis (M < 0.0045 rad ~ 0.258 deg from it), inside which the
+        solver switches to bisection.
+
+        With no natal kick, the change in systemic velocity is purely the
+        mass-loss term, v_cm ∝ -v_rel ∝ (sin E, -sqrt(1 - e^2) cos E, 0), so
+        we can recover the eccentric anomaly E from kick_info and check that
+        it satisfies Kepler's equation for the supplied mean anomaly.
+        """
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=6.0, m2=10.0, porb=4.8e6, ecc=0.9999, tphysf=2.0,
+            kstar1=7, kstar2=1, metallicity=0.02
+        )
+        critical = np.array([1e-4, 0.01, 0.1, 0.25, 0.26, 0.3, 1.0])
+        mean_anomalies = np.concatenate([np.arange(0.0, 360.1, 5.0),
+                                         [11.74, 18.87, 20.24, 332.91, 341.18],
+                                         critical, 360.0 - critical])
+        n = len(mean_anomalies)
+        bpp, kick_info = evolve_with_first_sn_kicks(
+            binary, natal_kick=np.zeros(n), phi=np.zeros(n), theta=np.zeros(n),
+            mean_anomaly=mean_anomalies, tphysf=1.2
+        )
+
+        eccs, ecc_anoms = [], []
+        for bin_num, ki in kick_info.iterrows():
+            this_bpp = bpp.loc[[bin_num]].reset_index(drop=True)
+            sn_row = this_bpp["evol_type"].tolist().index(15)
+            ecc = this_bpp.loc[sn_row, "ecc"]
+            self.assertGreater(ecc, 0.9998)
+            eccs.append(ecc)
+
+            v_1 = ki[["delta_vsysx_1", "delta_vsysy_1", "delta_vsysz_1"]].values
+            if ki["disrupted"] == 1:
+                # each star's velocity is given, combine to get the CoM velocity
+                m_1 = this_bpp.loc[sn_row + 1, "mass_1"]
+                m_2 = this_bpp.loc[sn_row, "mass_2"]
+                v_2 = ki[["delta_vsysx_2", "delta_vsysy_2", "delta_vsysz_2"]].values
+                v_cm = (m_1 * v_1 + m_2 * v_2) / (m_1 + m_2)
+            else:
+                v_cm = v_1
+            ecc_anoms.append(np.arctan2(v_cm[0], -v_cm[1] / np.sqrt(1 - ecc**2)))
+            self.assertAlmostEqual(v_cm[2], 0.0, places=8)
+
+        eccs, ecc_anoms = np.array(eccs), np.array(ecc_anoms)
+        mean_anom_check = np.degrees(ecc_anoms - eccs * np.sin(ecc_anoms))
+        # (the solver itself is accurate to ~1e-13 deg, reconstructing E from
+        # the velocities limits this check to ~1e-11 deg)
+        np.testing.assert_allclose(wrap_degrees(mean_anom_check - kick_info["mean_anomaly"]),
+                                   0.0, atol=1e-9)
+        np.testing.assert_allclose(kick_info["mean_anomaly"], mean_anomalies)
+
+    def test_euler_angles_circular(self):
+        """Test the orbital-plane Euler angles after a SN in a circular orbit
+
+        In a circular pre-SN orbit, the separation at mean anomaly M is
+        r = a (cos M, sin M, 0) in the frame used for the kick_info
+        velocities. A kick with an out-of-plane component tilts the orbit
+        about r, so the line of nodes (z x h) points along +r for an upward
+        kick and -r for a downward one: phi_euler = M or M - 180 deg. The tilt
+        is the angle between h = r x v_rel and the z-axis.
+
+        These angles are needed to combine velocities from the two SNe, and
+        previously phi_euler was drawn at random for any circular orbit.
+        """
+        G = 1.3271244e11  # km^3 / (Msun s^2), as in kick.f
+        rsunkm = 6.96e5
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=6.0, m2=10.0, porb=5.0, ecc=0.0, tphysf=2.0,
+            kstar1=7, kstar2=1, metallicity=0.02
+        )
+        mean_anomalies = np.array([0.0, 37.0, 60.0, 135.0, 200.0, 290.0, 330.0])
+        kick_phis = np.array([30.0, -30.0, 60.0, -10.0, 45.0, 80.0, -75.0])
+        kick_thetas = np.array([0.0, 90.0, 200.0, 45.0, 300.0, 120.0, 10.0])
+        n = len(mean_anomalies)
+        bpp, kick_info = evolve_with_first_sn_kicks(
+            binary, natal_kick=np.full(n, 50.0), phi=kick_phis, theta=kick_thetas,
+            mean_anomaly=mean_anomalies, tphysf=1.2
+        )
+        # all should survive the SN, otherwise the Euler angles are random
+        self.assertTrue((kick_info["disrupted"] == 0).all())
+
+        pre_sn = bpp[bpp["evol_type"] == 15]
+        self.assertTrue((pre_sn["ecc"] == 0.0).all())
+        a = pre_sn["sep"].values * rsunkm
+        v_orb = np.sqrt(G * (pre_sn["mass_1"].values + pre_sn["mass_2"].values) / a)
+
+        M = np.radians(mean_anomalies)
+        k_phi, k_theta = np.radians(kick_phis), np.radians(kick_thetas)
+        r = a[:, None] * np.stack([np.cos(M), np.sin(M), np.zeros(n)], axis=1)
+        v_rel = (v_orb[:, None] * np.stack([-np.sin(M), np.cos(M), np.zeros(n)], axis=1)
+                 + 50.0 * np.stack([np.cos(k_phi) * np.cos(k_theta),
+                                     np.cos(k_phi) * np.sin(k_theta),
+                                     np.sin(k_phi)], axis=1))
+        h = np.cross(r, v_rel)
+        expected_theta = np.degrees(np.arccos(h[:, 2] / np.linalg.norm(h, axis=1)))
+        expected_phi = np.where(kick_phis > 0, mean_anomalies, mean_anomalies - 180.0)
+
+        np.testing.assert_allclose(kick_info["theta_euler"], expected_theta, atol=1e-6)
+        np.testing.assert_allclose(wrap_degrees(kick_info["phi_euler"] - expected_phi),
+                                   0.0, atol=1e-6)
