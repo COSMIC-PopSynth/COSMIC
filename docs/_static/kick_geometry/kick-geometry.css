@@ -155,6 +155,19 @@ body[data-theme="dark"] .kick-geometry {
 
 /* ---- readouts ------------------------------------------------------------ */
 
+.kick-geometry .kg-readouts-wrap > summary {
+    cursor: pointer;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kg-muted);
+    font-weight: 600;
+    user-select: none;
+}
+.kick-geometry .kg-readouts-wrap > summary:hover { color: var(--kg-ink); }
+.kick-geometry .kg-readouts-wrap > summary:focus-visible { outline: 2px solid var(--kg-kick); outline-offset: 2px; }
+.kick-geometry .kg-readouts-wrap[open] > summary { margin-bottom: 0.75rem; }
+
 .kick-geometry .kg-readout {
     display: grid;
     grid-template-columns: auto 1fr;

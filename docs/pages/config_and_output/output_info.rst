@@ -208,13 +208,11 @@ What do these kick angles mean?
 
 Understanding the reference frame and angles of supernova kicks can be rather confusing (priv. comm. Wagg). Keep reading to gain a better understanding of the geometry of supernova kicks and how they are stored in COSMIC's ``kick_info`` array.
 
-.. create a dropdown using sphinx design
-
 .. dropdown:: More detailed explanation of euler angles and geometry
 
-    The result of a kick not only depends on the kick magnitude and mass loss, but also the orbital phase (:math:`M` (``mean_anomaly``)) and kick direction (:math:`\theta` (``theta``), :math:`\phi` (``phi``)). A kick in the direction of motion at periapsis is more likely to disrupt the binary than a kick of the same magnitude at apoapsis, and a kick out of the orbital plane can tilt the orbit without disrupting it. At the same time, it's important to account for the fact that the second supernova's kick is applied in a frame that has already been tilted by the first supernova. The Euler angles describe how the orbit is reoriented by each supernova, and are used to rotate the velocity changes from the second supernova into the frame of the first. ``theta_euler`` is the tilt of the orbit, the angle between the orbital angular momentum before (:math:`\hat{z}`) and after (:math:`\hat{h}`) the supernova. ``phi_euler`` is the angle, in the pre-SN orbital plane, from the :math:`x`-axis to the line of nodes :math:`\hat{z} \times \hat{h}` (where the old and new orbital planes intersect, and the axis about which the orbit tilts). ``psi_euler`` (:math:`\psi_E`) is the angle, in the post-SN orbital plane, from the line of nodes to the new periapsis of the exploding star's orbit relative to its companion.
+    The result of a supernova kick of course depends on the kick magnitude and mass loss, but it's also important to know the orbital phase (:math:`M` (``mean_anomaly``)) and kick direction (:math:`\theta` (``theta``), :math:`\phi` (``phi``)). A kick in the direction of motion at periapsis is more likely to disrupt the binary than a kick of the same magnitude at apoapsis, and a kick out of the orbital plane can tilt the orbit without disrupting it. At the same time, it's important to account for the fact that the second supernova's kick is applied in a frame that has already been tilted by the first supernova. The Euler angles describe how the orbit is reoriented by each supernova, and are used to rotate the velocity changes from the second supernova into the frame of the first. ``theta_euler`` is the tilt of the orbit, the angle between the orbital angular momentum before (:math:`\hat{z}`) and after (:math:`\hat{h}`) the supernova. ``phi_euler`` is the angle, in the pre-SN orbital plane, from the :math:`x`-axis to the line of nodes :math:`\hat{z} \times \hat{h}` (where the old and new orbital planes intersect, and the axis about which the orbit tilts). ``psi_euler`` (:math:`\psi_E`) is the angle, in the post-SN orbital plane, from the line of nodes to the new periapsis of the exploding star's orbit relative to its companion.
 
-    The exploding star of mass :math:`m_1` loses the ejecta :math:`\Delta m` and leaves a remnant of mass :math:`m_1 - \Delta m`. Without a kick, the binary is disrupted if it loses more than :math:`r/2a` of its total mass :math:`M_i = m_1 + m_2`, where :math:`r` is the separation at the supernova (this is a Blaauw kick). For a circular orbit that is half of the total mass; an eccentric orbit is easier to disrupt near periapsis, where the stars move fastest, and harder near apoapsis. The two masses separately set the centre-of-mass velocity after the supernova and, if the binary is disrupted, how fast each star runs away.
+    It's also worth mentioning that beyond the natal kick, the Blaauw kick resulting from symmetric mass loss can also significantly affect the binary's evolution. The exploding star of mass :math:`m_1` loses the ejecta :math:`\Delta m` and leaves a remnant of mass :math:`m_1 - \Delta m`. Without a natal kick, the binary is disrupted if it loses more than :math:`r/2a` of its total mass :math:`M_i = m_1 + m_2`, where :math:`r` is the separation at the supernova. For a circular orbit that is half of the total mass; an eccentric orbit is easier to disrupt near periapsis, where the stars move fastest, and harder near apoapsis.
 
 If, like me, you find it hard to understand these concepts from wordy explanations, the interactive plots below are designed to help out! You can interactively explore how the kick angles and magnitudes affect the post-supernova orbit and the Euler angles that describe how the orbit is reoriented. The top view shows where the kick points relative to the orbit and what it does to the orbit's shape, and the 3D view shows how the orbit is reoriented and the Euler angles that COSMIC would store in ``kick_info``.
 
@@ -225,7 +223,8 @@ If, like me, you find it hard to understand these concepts from wordy explanatio
     <div class="kick-geometry">
       <div class="kg-explorer" data-kg-explorer>
         <figure>
-          <div class="kg-fig-title">Top view of the orbit</div>
+          <div class="kg-fig-title">Interactive kick explorer</div>
+          <p>The plot shows you a top-down view of the orbit of the binary. You can use the sliders below to adjust the pre-supernova system or change the natal kick and see how it changes the results (below).</p>
           <svg data-kg-svg="top" viewBox="0 0 560 410" role="img" aria-label="Top view of the pre-supernova orbit with the companion at the focus, the exploding star placed by the mean anomaly, its orbital velocity, the in-plane part of the kick at azimuth theta, and the orbit after the kick.">
             <defs>
               <marker id="kg-ah-kick" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--kg-kick)"/></marker>
@@ -259,34 +258,25 @@ If, like me, you find it hard to understand these concepts from wordy explanatio
             <button type="button" data-kg-set="in">θ = in (toward companion)</button>
           </div>
 
+        <details class="kg-readouts-wrap" open>
+        <summary>Results</summary>
         <div class="kg-readouts">
           <dl class="kg-readout">
-            <dt class="kg-readout-title kg-span">At the supernova</dt>
-            <dt>Circular speed V<sub>c</sub></dt><dd data-kg-out="r-vc"></dd>
-            <dt>Orbital speed</dt><dd data-kg-out="r-v"></dd>
-            <dt>Time since periapsis</dt><dd data-kg-out="r-t"></dd>
+            <dt class="kg-readout-title kg-span">Immediately prior to supernova</dt>
+            <dt>Companion orbital speed</dt><dd data-kg-out="r-v2"></dd>
             <dt>Eccentric anomaly E</dt><dd data-kg-out="r-E"></dd>
             <dt>True anomaly ν</dt><dd data-kg-out="r-nu"></dd>
-            <dt>θ − M</dt><dd data-kg-out="r-thM"></dd>
-            <dt>Kick from separation, θ − ν</dt><dd data-kg-out="r-thnu"></dd>
-            <dt>Kick from motion</dt><dd data-kg-out="r-thv"></dd>
-            <dt>Unbinds with no kick if Δm/M<sub>i</sub> &gt;</dt><dd data-kg-out="r-dmcrit"></dd>
           </dl>
           <dl class="kg-readout">
             <dt class="kg-readout-title">After the supernova</dt><dd class="kg-state" data-kg-out="r-state"></dd>
-            <dt>a<sub>f</sub> / a<sub>i</sub></dt><dd data-kg-out="r-a"></dd>
-            <dt>e<sub>f</sub></dt><dd data-kg-out="r-e"></dd>
-            <dt>|h<sub>f</sub>| / |h<sub>i</sub>|</dt><dd data-kg-out="r-h"></dd>
+            <dt>Ratio of semi-major axes, a<sub>f</sub> / a<sub>i</sub></dt><dd data-kg-out="r-a"></dd>
+            <dt>Eccentricity, e<sub>f</sub></dt><dd data-kg-out="r-e"></dd>
             <dt>Centre-of-mass speed</dt><dd data-kg-out="r-vcm"></dd>
             <dt>Remnant runaway speed</dt><dd data-kg-out="r-vsn"></dd>
             <dt>Companion runaway speed</dt><dd data-kg-out="r-vcomp"></dd>
-            <dt class="kg-readout-title kg-span kg-group">Euler angles in kick_info</dt>
-            <dt>theta_euler, θ<sub>E</sub></dt><dd data-kg-out="r-thetaE"></dd>
-            <dt>phi_euler, φ<sub>E</sub></dt><dd data-kg-out="r-phiE"></dd>
-            <dt>psi_euler, ψ<sub>E</sub></dt><dd data-kg-out="r-psiE"></dd>
           </dl>
-          <p class="kg-note" data-kg-out="r-euler-note"></p>
         </div>
+        </details>
 
         <figure>
           <div class="kg-fig-title">How the orbit is reoriented: Euler angles</div>
@@ -301,37 +291,22 @@ If, like me, you find it hard to understand these concepts from wordy explanatio
           </div>
           <figcaption>Drag to rotate. The faint disc is the orbital plane before the supernova, with the original x, y and z axes, and the whiter disc is the plane after it. The companion sits at the origin and the open circle marks the exploding star at the moment of the supernova.</figcaption>
         </figure>
-        </div>
-      </div>
 
-      <div class="kg-card">
-        <div class="kg-card-title">Restricted polar kicks with polar_kick_angle</div>
-        <figure>
-          <svg viewBox="0 0 460 300" role="img" aria-label="Edge-on view of the orbital plane. The kick rises at latitude phi above the plane, with component v_k cos phi in the plane and v_k sin phi along the orbit normal. Shaded cones within polar_kick_angle of the orbit normal show where kicks fall for a restricted opening angle.">
-            <defs>
-              <marker id="kg-ah3-kick" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--kg-kick)"/></marker>
-              <marker id="kg-ah3-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--kg-muted)"/></marker>
-            </defs>
-            <path d="M230,170 L152.9,78.1 A120,120 0 0 1 307.1,78.1 Z" style="fill: var(--kg-cone)"/>
-            <path d="M230,170 L152.9,261.9 A120,120 0 0 0 307.1,261.9 Z" style="fill: var(--kg-cone)"/>
-            <line x1="30" y1="170" x2="430" y2="170" style="stroke: var(--kg-ink)" stroke-width="1.6"/>
-            <text x="30" y="190" class="small">orbital plane, edge-on</text>
-            <line x1="230" y1="170" x2="230" y2="34" style="stroke: var(--kg-muted)" stroke-width="1.2" marker-end="url(#kg-ah3-ink)"/>
-            <text x="238" y="40" class="small">+z, orbit normal</text>
-            <text x="16" y="236" class="small">polar_kick_angle = 40°:</text>
-            <text x="16" y="252" class="small">kicks fall in shaded caps</text>
-            <line x1="230" y1="170" x2="290" y2="170" style="stroke: var(--kg-kick)" stroke-width="1.3" stroke-dasharray="4 3"/>
-            <line x1="290" y1="170" x2="290" y2="66" style="stroke: var(--kg-kick)" stroke-width="1.3" stroke-dasharray="4 3"/>
-            <line x1="230" y1="170" x2="288" y2="70" style="stroke: var(--kg-kick)" stroke-width="2.4" marker-end="url(#kg-ah3-kick)"/>
-            <path d="M 270 170 A 40 40 0 0 0 250 135.4" fill="none" style="stroke: var(--kg-ink)" stroke-width="1.1"/>
-            <text x="272" y="150" class="kick">φ</text>
-            <text x="296" y="64" class="kick">kick</text>
-            <text x="236" y="210" class="small">v<tspan dy="3" style="font-size: 9px">k</tspan><tspan dy="-3"> cos φ</tspan></text>
-            <text x="298" y="124" class="small">v<tspan dy="3" style="font-size: 9px">k</tspan><tspan dy="-3"> sin φ</tspan></text>
-            <circle cx="230" cy="170" r="6" style="fill: var(--kg-panel); stroke: var(--kg-ink)" stroke-width="2"/>
-          </svg>
-          <figcaption>The COSMIC settings polar_kick_angle controls the distribution of kicks in the direction perpendicular to the orbital plane. Setting a value smaller than 90° will restrict the range of possible kick directions (but default behavior is isotropic).</figcaption>
-        </figure>
+
+
+        <details class="kg-readouts-wrap" open>
+        <summary>Euler angles</summary>
+        <div class="kg-readouts">
+          <dl class="kg-readout">
+            <dt>theta_euler, θ<sub>E</sub></dt><dd data-kg-out="r-thetaE"></dd>
+            <dt>phi_euler, φ<sub>E</sub></dt><dd data-kg-out="r-phiE"></dd>
+            <dt>psi_euler, ψ<sub>E</sub></dt><dd data-kg-out="r-psiE"></dd>
+          </dl>
+          <p class="kg-note" data-kg-out="r-euler-note"></p>
+        </div>
+        </details>
+
+        </div>
       </div>
     </div>
 

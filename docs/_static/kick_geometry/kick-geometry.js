@@ -308,7 +308,9 @@
             set("dm", `${s.dm.toFixed(1)} M☉ (${(100 * s.dm / s.Mi).toFixed(0)}%)`);
 
             set("r-vc", `${s.vc.toFixed(0)} km/s`);
-            set("r-v", `${(Math.hypot(pre.v[0], pre.v[1]) * s.vc).toFixed(0)} km/s`);
+            // companion's speed about the pre-SN centre of mass (same frame as
+            // the runaway speeds below): m1 / Mi of the relative orbital speed
+            set("r-v2", `${(s.m1 / s.Mi * Math.hypot(pre.v[0], pre.v[1]) * s.vc).toFixed(0)} km/s`);
             set("r-t", `${(s.M / (2 * Math.PI)).toFixed(3)} P`);
             set("r-E", fmtAng(wrap360(pre.E / D)));
             set("r-nu", fmtAng(wrap360(pre.nu / D)));
