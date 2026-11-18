@@ -113,13 +113,13 @@
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
       real*8 sqrt_1m_ecc_prev_2, sep_prev, prefactor, omega
       real*8 h_prev(3),h(3), h_hat(3), h_mag
-      real*8 LRL_prev(3), LRL(3), e_hat(3)
+      real*8 LRL(3), e_hat(3)
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
       real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
       real*8 h_cross_e_hat(3)
       real*8 thetaE, phiE, psiE
-      real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
-      real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
+      real*8 orbital_pivot_axis(3)
+      real*8 LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
       real*8 mu_mm
       real*8 epsilon_5, f_kin, beta_nu, alpha_ej
@@ -477,13 +477,6 @@
 * Specific angular momentum vector pre-SN (in km^2/s)
       call CrossProduct(sep_vec, v_rel_prev, h_prev)
 
-* Laplace-Runge-Lenz vector pre-SN (unitless)
-      call CrossProduct(v_rel_prev, h_prev, LRL_prev)
-      do i = 1, 3
-         LRL_prev(i) = LRL_prev(i) / (G_const * mtot_prev)
-     &               - sep_vec(i) / sep_prev
-      end do
-
 * Calculate the new systemic velocity of the center of mass (in km/s)
       do i = 1, 3
          v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
@@ -652,29 +645,36 @@
          endif
 
 * Update the Euler angles for the orbital plane rotation
+* (z-x-z convention, matching ChangeBasis).
+*
+* All vectors here are in the pre-SN frame: the orbit lies in the x-y
+* plane with h_prev along +z, and the x-axis is the reference direction
+* of the frame (periapsis, or E=0 for a circular orbit). This is the
+* frame that kick_info(sn,7:13) are given in, so the angles below are
+* measured from this x-axis, which is well-defined even if ecc_prev = 0.
          call AngleBetweenVectors(h, h_prev, thetaE)
 
 * first two special cases for orbital A.M. remaining unchanged in angle
-* since the cross product is not well defined in this case
+* since the line of nodes is not defined in this case. Only the
+* combination phiE + psiE (thetaE = 0) or phiE - psiE (thetaE = pi)
+* matters: it is the signed angle from the x-axis to the new periapsis.
          if(thetaE.eq.0.d0)then
             xx = ran3(idum1)
             phiE = twopi * xx
             xx = ran3(idum1)
-* we can only calculate the angle if the eccentricity is nonzero
-            if (ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
-               call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
-               psiE = psiPlusPhi - phiE
+* the new periapsis is only defined if the eccentricity is nonzero
+            if (ecc.gt.0.d0)then
+               psiE = ATAN2(LRL(2), LRL(1)) - phiE
             else
                psiE = twopi * xx
-            end if            
+            end if
          else if(thetaE.eq.pi)then
             xx = ran3(idum1)
             phiE = twopi * xx
             xx = ran3(idum1)
-* we can only calculate the angle if the eccentricity is nonzero
-            if (ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
-               call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
-               psiE = phiE + psiPlusPhi
+* the new periapsis is only defined if the eccentricity is nonzero
+            if (ecc.gt.0.d0)then
+               psiE = phiE - ATAN2(LRL(2), LRL(1))
             else
                psiE = twopi * xx
             end if
@@ -682,23 +682,14 @@
          else
             call CrossProduct(h_prev, h, orbital_pivot_axis)
 
-* first handled phiE, need to check ecc_prev is nonzero
-* since otherwise LRL_prev is not well-defined
+* phiE is the angle from the x-axis to the line of nodes, about +z.
+* The line of nodes is h_prev x h, which is parallel to (-h_y, h_x, 0)
+* (keep the random draw so the random number sequence is unchanged)
             xx = ran3(idum1)
-            if(ecc_prev.eq.0.d0)then
-               phiE = twopi * xx
-            else
-               call DotProduct(LRL_prev, h, LRL_prev_dot_h)
-               call AngleBetweenVectors(LRL_prev, orbital_pivot_axis,
-     &                                  unsigned_phi)
-               if (LRL_prev_dot_h.ge.0.d0) then
-                  phiE = unsigned_phi
-               else
-                  phiE = -unsigned_phi
-               endif
-            endif
+            phiE = ATAN2(h(1), -h(2))
 
-* repeat for psi, now focusing on ecc instead of ecc_prev
+* psiE is the angle from the line of nodes to the new periapsis, about
+* h, which is only defined if the new eccentricity is nonzero
             xx = ran3(idum1)
             if(ecc.eq.0.d0)then
                psiE = twopi * xx
