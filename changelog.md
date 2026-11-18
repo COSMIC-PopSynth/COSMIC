@@ -1,6 +1,11 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.5
+
+- Additions/changes
+    - Added `fill_in_defaults` to `Evolve.evolve()`, which allows users to under-specify their BSE settings and fill the rest with default settings. We caution that all users must carefully consider the setting to use in their binary population synthesis and fully understand the choices they have made in their simulations. Users are responsible for their choices in how to use `COSMIC` to simulate binaries.
+
 ## 4.3.4
 
 - Additions/changes
