@@ -678,12 +678,12 @@ def _fill_in_default_settings(initialbinarytable, BSEDict, SSEDict):
                     new_cols[col] = defaults[k][ind]
 
         # similar for natal kick columns but a little more hardcoded
-        elif k in NATAL_KICK_COLUMNS:
-            kick_ind = NATAL_KICK_COLUMNS.index(k)
-            for star_ind in range(2):
-                col = f"{k}_{int(star_ind)}"
-                if col not in existing and col not in BSEDict:
-                    new_cols[col] = defaults["natal_kick_array"][kick_ind, star_ind]
+        elif k == "natal_kick_array":
+            for star_ind in [1, 2]:
+                for kick_ind in range(5):
+                    col = f"{NATAL_KICK_COLUMNS[kick_ind]}_{star_ind}"
+                    if col not in existing and col not in BSEDict:
+                        new_cols[col] = defaults["natal_kick_array"][star_ind - 1][kick_ind]
 
         # otherwise just paste it in
         else:
