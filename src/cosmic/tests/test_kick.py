@@ -415,3 +415,177 @@ class TestKick(unittest.TestCase):
         np.testing.assert_allclose(cosmic_total, V_total, atol=1e-6)
         self.assertAlmostEqual(kick_info.loc[2, "vsys_1_total"], np.linalg.norm(V_total),
                                delta=1e-6)
+
+    def test_two_sn_disrupted_runaway_velocities(self):
+        """Test the stars' total velocities when the second SN disrupts the binary
+
+        The binary survives the first SN (with a small kick) and is disrupted
+        by the second (with a large one). Each star's final velocity, relative
+        to the original centre of mass and in the first SN's frame, is then
+        the systemic velocity from the first SN plus the change in centre of
+        mass velocity from the second, plus its share of the relative velocity
+        at infinity of the hyperbolic post-SN orbit, which we find
+        independently in its perifocal frame.
+
+        Previously vsys_2_total (the total speed of star 2, which explodes
+        second) left out the systemic velocity from the first SN.
+        """
+        G = 1.3271244e11  # km^3 / (Msun s^2), as in kick.f
+        rsunkm = 6.96e5
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=6.0, m2=5.5, porb=30.0, ecc=0.0, tphysf=3.0,
+            kstar1=7, kstar2=7, metallicity=0.02
+        )
+        # [natal kick (km/s), phi (deg), theta (deg), mean anomaly (deg), seed]
+        natal_kick_array = [[60.0, 40.0, 30.0, 100.0, 0.0],
+                            [700.0, -25.0, 200.0, 250.0, 0.0]]
+        bse = dict(BSEDict, kickflag=1, natal_kick_array=natal_kick_array)
+        bpp, _, _, kick_info = Evolve.evolve(initialbinarytable=binary, BSEDict=bse,
+                                             SSEDict=SSEDict, nproc=1, randomseed=42)
+        bpp = bpp.reset_index(drop=True)
+        kick_info = kick_info.set_index("star")
+        self.assertEqual(kick_info.loc[1, "disrupted"], 0)
+        self.assertEqual(kick_info.loc[2, "disrupted"], 1)
+
+        def kick_vector(vk, phi, theta, x, y, z):
+            phi, theta = np.radians(phi), np.radians(theta)
+            return vk * (np.cos(phi) * np.cos(theta) * x + np.cos(phi) * np.sin(theta) * y
+                         + np.sin(phi) * z)
+
+        def com_velocity_change(m_sn, m_rem, m_comp, w, kick):
+            m_tot = m_sn + m_comp
+            v_sn, v_comp = m_comp / m_tot * w, -m_sn / m_tot * w
+            return (m_rem * (v_sn + kick) + m_comp * v_comp) / (m_rem + m_comp)
+
+        # ---- SN1 (star 1), which leaves the binary bound
+        sn1 = bpp["evol_type"].tolist().index(15)
+        m1, m2, a0, e0 = bpp.loc[sn1, ["mass_1", "mass_2", "sep", "ecc"]]
+        m1_rem = bpp.loc[sn1 + 1, "mass_1"]
+        s, w = kepler_state(a0 * rsunkm, e0, np.radians(natal_kick_array[0][3]), G * (m1 + m2))
+        x, y, z = np.eye(3)
+        k1 = kick_vector(*natal_kick_array[0][:3], x, y, z)
+        V1 = com_velocity_change(m1, m1_rem, m2, w, k1)
+        w1 = w + k1
+        h1 = np.cross(s, w1)
+        e1 = np.cross(w1, h1) / (G * (m1_rem + m2)) - s / np.linalg.norm(s)
+        h1_hat, e1_hat = h1 / np.linalg.norm(h1), e1 / np.linalg.norm(e1)
+        q1_hat = np.cross(h1_hat, e1_hat)
+
+        # ---- SN2 (star 2), which disrupts it
+        sn2 = bpp["evol_type"].tolist().index(16)
+        m1b, m2b, a2, e2 = bpp.loc[sn2, ["mass_1", "mass_2", "sep", "ecc"]]
+        m2_rem = bpp.loc[sn2 + 1, "mass_2"]
+        s_in, w_in = kepler_state(a2 * rsunkm, e2, np.radians(natal_kick_array[1][3]),
+                                  G * (m1b + m2b))
+        # separation r_1 - r_2 and its rate of change, in the SN1 frame
+        s2 = s_in[0] * e1_hat + s_in[1] * q1_hat
+        w2 = w_in[0] * e1_hat + w_in[1] * q1_hat
+        x2, z2 = -e1_hat, h1_hat
+        k2 = kick_vector(*natal_kick_array[1][:3], x2, np.cross(z2, x2), z2)
+        V2 = com_velocity_change(m2b, m2_rem, m1b, -w2, k2)
+
+        # hyperbolic orbit of r_2 - r_1 after SN2
+        gm = G * (m2_rem + m1b)
+        r_rel, v_rel = -s2, -w2 + k2
+        h = np.cross(r_rel, v_rel)
+        e_vec = np.cross(v_rel, h) / gm - r_rel / np.linalg.norm(r_rel)
+        ecc = np.linalg.norm(e_vec)
+        self.assertGreater(ecc, 1.0)
+        # speed at infinity from energy, direction from the outgoing asymptote
+        # (true anomaly arccos(-1/e)), where the perifocal velocity is
+        # proportional to (-sin nu, e + cos nu)
+        v_inf = np.sqrt(v_rel @ v_rel - 2 * gm / np.linalg.norm(r_rel))
+        nu_inf = np.arccos(-1 / ecc)
+        p_hat = e_vec / ecc
+        q_hat = np.cross(h / np.linalg.norm(h), p_hat)
+        u = -np.sin(nu_inf) * p_hat + (ecc + np.cos(nu_inf)) * q_hat
+        v_inf_vec = v_inf * u / np.linalg.norm(u)
+
+        v_star2 = V1 + V2 + m1b / (m2_rem + m1b) * v_inf_vec
+        v_star1 = V1 + V2 - m2_rem / (m2_rem + m1b) * v_inf_vec
+
+        sn1_vsys = kick_info.loc[1, ["delta_vsysx_1", "delta_vsysy_1", "delta_vsysz_1"]].values
+        np.testing.assert_allclose(sn1_vsys, V1, atol=1e-6)
+        np.testing.assert_allclose(
+            sn1_vsys + kick_info.loc[2, ["delta_vsysx_1", "delta_vsysy_1",
+                                         "delta_vsysz_1"]].values, v_star1, atol=1e-6)
+        np.testing.assert_allclose(
+            sn1_vsys + kick_info.loc[2, ["delta_vsysx_2", "delta_vsysy_2",
+                                         "delta_vsysz_2"]].values, v_star2, atol=1e-6)
+        self.assertAlmostEqual(kick_info.loc[2, "vsys_1_total"], np.linalg.norm(v_star1),
+                               delta=1e-6)
+        self.assertAlmostEqual(kick_info.loc[2, "vsys_2_total"], np.linalg.norm(v_star2),
+                               delta=1e-6)
+
+    def test_psi_euler_periapsis_on_line_of_nodes(self):
+        """Test psi_euler when the new periapsis lies on the line of nodes
+
+        The line of nodes always passes through the stars' separation at the
+        SN, so if the kick leaves no radial velocity the star is at the new
+        periapsis (or apoapsis), on the line of nodes, and psi_euler is 0 (or
+        180 deg). In a circular orbit that happens for a kick at
+        theta = M + 90 deg. The cosine of psi can then round to just above 1,
+        and arccos used to return NaN (about 1 time in 5).
+        """
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=6.0, m2=10.0, porb=5.0, ecc=0.0, tphysf=2.0,
+            kstar1=7, kstar2=1, metallicity=0.02
+        )
+        mean_anomalies = np.arange(0.0, 360.0, 10.0)
+        n = len(mean_anomalies)
+        bpp, kick_info = evolve_with_first_sn_kicks(
+            binary, natal_kick=np.full(n, 50.0), phi=np.full(n, 40.0),
+            theta=(mean_anomalies + 90.0) % 360.0, mean_anomaly=mean_anomalies, tphysf=1.2
+        )
+        self.assertTrue((bpp[bpp["evol_type"] == 15]["ecc"] == 0.0).all())
+        self.assertTrue((kick_info["disrupted"] == 0).all())
+        psi = kick_info["psi_euler"].values
+        self.assertTrue(np.isfinite(psi).all())
+        np.testing.assert_allclose(np.sin(np.radians(psi)), 0.0, atol=1e-6)
+
+    def test_supplied_kick_magnitude_random_stream(self):
+        """Test that supplying a kick speed doesn't change the later random draws
+
+        When a natal kick speed is supplied, COSMIC calls the random number
+        generator as many times as drawing the speed would have, so that the
+        kick direction (and anything else drawn later) is the same as if the
+        speed had been drawn. Previously this was only right for the Maxwellian
+        kicks, and the truncated distributions (kickflag 6 and 9) used a
+        varying number of draws.
+
+        Here single stars that form NSs and BHs are evolved once drawing their
+        kick speeds, then again (with the same seeds) supplying those speeds.
+        """
+        n = 40
+        stars = pd.concat([InitialBinaryTable.InitialBinaries(
+            m1=m1, m2=0.0, porb=0.0, ecc=-1.0, tphysf=100.0,
+            kstar1=1, kstar2=15, metallicity=0.02
+        ) for m1 in [20.005, 30.0]])
+        stars = stars.loc[stars.index.repeat(n)].reset_index(drop=True)
+        stars["randomseed"] = -(np.arange(len(stars)) + 1234)
+        bse = {k: v for k, v in BSEDict.items()
+               if k != "natal_kick_array" and k not in FLATTENED_NATAL_KICK_COLUMNS}
+        bse.update(ecsn=0.0, ecsn_mlow=0.0, bhflag=1)
+        for kickflag in [1, 5, 6, 9]:
+            with self.subTest(kickflag=kickflag):
+                bse["kickflag"] = kickflag
+                tables = []
+                for supplied in [None, "previous"]:
+                    table = stars.copy()
+                    for col in ["natal_kick", "phi", "theta", "mean_anomaly"]:
+                        table[col + "_1"] = -100.0
+                        table[col + "_2"] = -100.0
+                    table["randomseed_1"] = 0.0
+                    table["randomseed_2"] = 0.0
+                    if supplied is not None:
+                        table["natal_kick_1"] = tables[0]["natal_kick"].values
+                    _, _, _, kick_info = Evolve.evolve(initialbinarytable=table,
+                                                       BSEDict=bse, SSEDict=SSEDict,
+                                                       nproc=1)
+                    tables.append(kick_info[kick_info["star"] == 1]
+                                  .sort_index()[["natal_kick", "phi", "theta"]])
+                drawn, supplied = tables
+                self.assertEqual(len(drawn), len(stars))
+                # (BH kicks can be zero after fallback)
+                self.assertTrue((drawn["natal_kick"] > 0).any())
+                pd.testing.assert_frame_equal(drawn, supplied)
