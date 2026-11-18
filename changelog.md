@@ -1,6 +1,11 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.5
+
+- Additions/changes
+    - Added ``LBV_flag = 3``: LBV mass loss following <a class='reference external' href='https://scixplorer.org/abs/2010ApJ...714.1217B/abstract'>Belczynski+2010</a> (as for ``LBV_flag = 2``), but the LBV rate *replaces* the other wind mass loss rather than being added to it. With ``windflag = 2`` or ``3``, this reproduces the LBV behaviour of versions prior to v3.7.2 (for ``windflag = 0, 1, 4``, the pre-v3.7.2 behaviour is ``LBV_flag = 1``)
+
 ## 4.3.4
 
 - Additions/changes
