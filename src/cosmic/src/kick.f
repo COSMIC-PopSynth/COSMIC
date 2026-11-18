@@ -489,9 +489,16 @@
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
+* (only used for the second SN). Each SN's frame is built from the
+* separation r_explode - r_companion, so its x-axis is the periapsis
+* direction of that relative orbit. At the first SN this was r_1 - r_2,
+* and psiE was stored for that x-axis, but at the second SN it is
+* r_2 - r_1, whose periapsis points the opposite way (with the same
+* orbital angular momentum). So this frame is a half-turn about z
+* from the one the stored angles describe, and we add pi to psiE.
       thetaE = kick_info(1,15) * pi / 180.d0
       phiE = kick_info(1,16) * pi / 180.d0
-      psiE = kick_info(1,17) * pi / 180.d0
+      psiE = kick_info(1,17) * pi / 180.d0 + pi
 
 * Get the new eccentricity
       call VectorMagnitude(LRL, ecc)
