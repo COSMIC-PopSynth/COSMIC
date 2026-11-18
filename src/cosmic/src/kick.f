@@ -115,7 +115,7 @@
       real*8 h_prev(3),h(3), h_hat(3), h_mag
       real*8 LRL(3), e_hat(3)
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
-      real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
+      real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3), v_star2_prev(3)
       real*8 h_cross_e_hat(3)
       real*8 thetaE, phiE, psiE
       real*8 orbital_pivot_axis(3)
@@ -748,13 +748,25 @@
      &      (kick_info(1,8)+kick_info(2,8)) +
      &      (kick_info(1,9)+kick_info(2,9))*
      &      (kick_info(1,9)+kick_info(2,9)))
+* Star 2's velocity before this SN: its own velocity (columns 11-13)
+* if the first SN disrupted the binary, or the binary's systemic
+* velocity (columns 7-9) if the binary survived it
+         if(kick_info(1,2).eq.0.and.kick_info(2,2).eq.1)then
+            do i = 1, 3
+               v_star2_prev(i) = kick_info(1,6+i)
+            end do
+         else
+            do i = 1, 3
+               v_star2_prev(i) = kick_info(1,10+i)
+            end do
+         endif
          kick_info(sn,14) = SQRT(
-     &      (kick_info(1,11)+kick_info(2,11))*
-     &      (kick_info(1,11)+kick_info(2,11)) +
-     &      (kick_info(1,12)+kick_info(2,12))*
-     &      (kick_info(1,12)+kick_info(2,12)) +
-     &      (kick_info(1,13)+kick_info(2,13))*
-     &      (kick_info(1,13)+kick_info(2,13)))
+     &      (v_star2_prev(1)+kick_info(2,11))*
+     &      (v_star2_prev(1)+kick_info(2,11)) +
+     &      (v_star2_prev(2)+kick_info(2,12))*
+     &      (v_star2_prev(2)+kick_info(2,12)) +
+     &      (v_star2_prev(3)+kick_info(2,13))*
+     &      (v_star2_prev(3)+kick_info(2,13)))
       endif
       
       RETURN
