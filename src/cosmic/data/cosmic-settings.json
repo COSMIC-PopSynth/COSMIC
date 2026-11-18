@@ -826,7 +826,7 @@
                     {
                         "name": 3,
                         "description": "LBV mass loss following <a href='https://scixplorer.org/abs/2010ApJ...714.1217B/abstract'>Belczynski+2010</a>, which <i>replaces</i> (rather than adds to) the other wind mass loss. With <code>windflag</code> = 2 or 3, this option reproduces the LBV behaviour of versions prior to v3.7.2 (for <code>windflag</code> = 0, 1 or 4, use <code>LBV_flag</code> = 1 to reproduce it)",
-                        "version_added": "4.3.5"
+                        "version_added": "4.3.6"
                     }
                 ]
             },

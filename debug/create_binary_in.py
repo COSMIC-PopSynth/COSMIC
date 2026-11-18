@@ -216,19 +216,23 @@ def write_metisse_tracks(recorder, path):
     """Write the recorded METISSE inputs to a stream file for test_metisse_tracks.f90"""
     has_he = True in recorder.tracks
     with open(path, 'wb') as f:
-        f.write(b'METTRK01')
+        f.write(b'METTRK02')
         f.write(np.int32(has_he).tobytes())
         for is_he in ([False, True] if has_he else [False]):
             # format controls (logicals are written as 0/1)
             fmt = recorder.format_controls[is_he]
             int_keys = HE_FORMAT_INTS if is_he else H_FORMAT_INTS
-            if set(fmt) != set(int_keys) | set(FORMAT_STRS):
+            # lookup_index is only passed for hydrogen tracks (METISSE applies it to both)
+            expected = set(int_keys) | set(FORMAT_STRS) | (set() if is_he else {'lookup'})
+            if set(fmt) != expected:
                 raise ValueError("The arguments passed to set_format_controls_h/he have changed, "
                                  "update create_binary_in.py and test_metisse_tracks.f90 to match")
             f.write(np.int32(len(int_keys)).tobytes())
             f.write(np.array([int(fmt[k]) for k in int_keys], dtype=np.int32).tobytes())
             f.write(b''.join(str(fmt[k]).encode('ascii')[:F2PY_STRLEN].ljust(F2PY_STRLEN)
                              for k in FORMAT_STRS))
+            if not is_he:
+                f.write(np.float64(fmt['lookup']).tobytes())
 
             # tracks, exactly as they would be passed to set_tracks_from_python
             (filenames, initial_mass, initial_Y, initial_Z, Fe_div_H, alpha_div_Fe, v_div_vcrit,
