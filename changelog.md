@@ -4,6 +4,7 @@
 ## 4.3.5
 
 - Additions/changes
+    - Added ``LBV_flag = 3``: LBV mass loss following <a class='reference external' href='https://scixplorer.org/abs/2010ApJ...714.1217B/abstract'>Belczynski+2010</a> (as for ``LBV_flag = 2``), but the LBV rate *replaces* the other wind mass loss rather than being added to it. With ``windflag = 2`` or ``3``, this reproduces the LBV behaviour of versions prior to v3.7.2 (for ``windflag = 0, 1, 4``, the pre-v3.7.2 behaviour is ``LBV_flag = 1``)
     - Added `fill_in_defaults` to `Evolve.evolve()`, which allows users to under-specify their BSE settings and fill the rest with default settings. We caution that all users must carefully consider the setting to use in their binary population synthesis and fully understand the choices they have made in their simulations. Users are responsible for their choices in how to use `COSMIC` to simulate binaries.
 
 ## 4.3.4

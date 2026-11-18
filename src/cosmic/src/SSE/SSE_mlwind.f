@@ -57,7 +57,13 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               dms = dms + LBV_winds(lum,r,mt,kw,z)
+* LBV_flag=3: StarTrack LBV rate replaces the other winds
+               dml = LBV_winds(lum,r,mt,kw,z)
+               if(LBV_flag.eq.3)then
+                  if(dml.gt.0.d0) dms = dml
+               else
+                  dms = dms + dml
+               endif
             endif
          endif
 *
@@ -112,7 +118,13 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               dms = dms + LBV_winds(lum,r,mt,kw,z)
+* LBV_flag=3: StarTrack LBV rate replaces the other winds
+               dml = LBV_winds(lum,r,mt,kw,z)
+               if(LBV_flag.eq.3)then
+                  if(dml.gt.0.d0) dms = dml
+               else
+                  dms = dms + dml
+               endif
             endif
          endif
 *
@@ -209,8 +221,14 @@
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
 * Optional flag (windflag=3) to use for every non-degenerate star
 * past the limit, rather than just for giant, evolved stars
-* TW: This previously overwrote the other mass loss, changed it to a sum
-            dms = dms + LBV_winds(lum,r,mt,kw,z)
+* TW: This previously overwrote the other mass loss, changed it to a sum (LBV_flag < 3)
+* LBV_flag=3: StarTrack LBV rate replaces the other winds
+            dml = LBV_winds(lum,r,mt,kw,z)
+            if(LBV_flag.eq.3)then
+               if(dml.gt.0.d0) dms = dml
+            else
+               dms = dms + dml
+            endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
 * 10 (Yoon & Langer 2005), with Vink & de Koter (2005) metallicity dependence
@@ -246,7 +264,13 @@
                   dms = MAX(dml,dms)
                endif
 * LBV-like mass loss beyond the Humphreys-Davidson limit.
-               dms = dms + LBV_winds(lum,r,mt,kw,z)
+* LBV_flag=3: StarTrack LBV rate replaces the other winds
+               dml = LBV_winds(lum,r,mt,kw,z)
+               if(LBV_flag.eq.3)then
+                  if(dml.gt.0.d0) dms = dml
+               else
+                  dms = dms + dml
+               endif
             endif
          endif
 *
@@ -275,7 +299,7 @@
          if(LBV_flag.eq.1)then
             ! use Hurley+2000 LBV-like mass loss (Section 7.1, equation is unnumbered oof)
             LBV_winds = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
-         elseif(LBV_flag.eq.2)then
+         elseif(LBV_flag.eq.2.or.LBV_flag.eq.3)then
             ! use StarTrack (Belczynski+08) LBV-like mass loss
             ! adjust metallicity dependence near eddington limit if eddlimflag is set
             if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
@@ -284,7 +308,7 @@
             LBV_winds = 1.5d0*1.0d-04*((z/zsun)**alpha)
          else
             ! this should never happen, throw error
-            write(*,*) "Error: LBV_flag must be 0, 1, or 2. Exiting."
+            write(*,*) "Error: LBV_flag must be 0, 1, 2 or 3. Exiting."
             stop
          endif
       else
