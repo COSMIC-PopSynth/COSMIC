@@ -443,7 +443,7 @@ class Evolve(object):
 
         # as above for each of the flattened BSE array columns
         for flag in FLATTENED_BSE_COLUMNS:
-            if pd.Series(FLATTENED_BSE_COLUMNS[flag].isin(initialbinarytable.keys()).all()) and (flag not in BSEDict):
+            if pd.Series(FLATTENED_BSE_COLUMNS[flag]).isin(initialbinarytable.keys()).all() and (flag not in BSEDict):
                 initialbinarytable = initialbinarytable.assign(**{flag: initialbinarytable[FLATTENED_BSE_COLUMNS[flag]].values.tolist()})
 
         # update timesteps based on mass modifier
