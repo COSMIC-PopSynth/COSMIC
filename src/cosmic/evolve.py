@@ -93,13 +93,6 @@ FLATTENED_BSE_COLUMNS = {
 }
 
 
-def _get_nested(arr, inds):
-    """Get the value of a (possibly nested) array at the given tuple of indices"""
-    for i in inds:
-        arr = arr[i]
-    return arr
-
-
 INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_NATAL_KICK_COLUMNS)
 for flag in FLATTENED_BSE_COLUMNS:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.extend(FLATTENED_BSE_COLUMNS[flag])
