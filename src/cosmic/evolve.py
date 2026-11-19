@@ -258,7 +258,8 @@ class Evolve(object):
             initialbinarytable = initialbinarytable.assign(dtp=kwargs.pop('dtp', initialbinarytable['tphysf']))
         if 'dtp_array' not in initialbinarytable.keys():
             dtp_array = kwargs.pop('dtp_array', [])
-            initialbinarytable['dtp_array'] = [dtp_array for _ in range(len(initialbinarytable))]
+            columns_values = [dtp_array] * len(initialbinarytable)
+            initialbinarytable = initialbinarytable.assign(dtp_array=columns_values)
         if 'randomseed' not in initialbinarytable.keys():
             seed = np.random.randint(np.iinfo(np.int32).min, np.iinfo(np.int32).max, size=len(initialbinarytable))
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed', seed))
@@ -375,21 +376,24 @@ class Evolve(object):
                     else:
                         new_cols[col] = BSEDict['fprimc_array'][kstar]
             elif k == 'alpha1':
-                columns_values = [BSEDict['alpha1']] * len(initialbinarytable)
+                columns_values = [BSEDict['alpha1']] * n
                 initialbinarytable = initialbinarytable.assign(alpha1=columns_values)
                 for kstar in range(0,2):
-                    columns_values = pd.Series([BSEDict['alpha1'][kstar]] * len(initialbinarytable),
+                    columns_values = pd.Series([BSEDict['alpha1'][kstar]] * n,
                                                index=initialbinarytable.index,
                                                name='alpha1_{0}'.format(kstar))
                     initialbinarytable.loc[:, 'alpha1_{0}'.format(kstar)] = columns_values
             elif k == 'acc_lim':
-                columns_values = [BSEDict['acc_lim']] * len(initialbinarytable)
+                columns_values = [BSEDict['acc_lim']] * n
                 initialbinarytable = initialbinarytable.assign(acc_lim=columns_values)
                 for kstar in range(0,2):
-                    columns_values = pd.Series([BSEDict['acc_lim'][kstar]] * len(initialbinarytable),
+                    columns_values = pd.Series([BSEDict['acc_lim'][kstar]] * n,
                                                index=initialbinarytable.index,
                                                name='acc_lim_{0}'.format(kstar))
                     initialbinarytable.loc[:, 'acc_lim_{0}'.format(kstar)] = columns_values
+            elif k == 'dtp_array':
+                columns_values = [BSEDict['dtp_array']] * n
+                initialbinarytable = initialbinarytable.assign(dtp_array=columns_values)
             else:
                 # base case: if it's present, overwrite, if not, add to a list of new columns (see below)
                 if k in initialbinarytable.columns:
