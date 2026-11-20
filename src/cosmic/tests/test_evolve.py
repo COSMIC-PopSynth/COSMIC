@@ -164,3 +164,57 @@ class TestEvolve(unittest.TestCase):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=KICK_INITC)
         self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 15.813456, places=5)        
+
+    def test_vink_wind_metallicity_scaling(self):
+        """Vink+2001 OB winds scale as Mdot ~ (Z/zsun)^0.85 on both sides of the bi-stability jump
+        but a previous bug in the code had an incorrect scaling. This test checks this is correct always.
+        Evolve single stars across their main sequence at a range
+        # of metallicities, strip out the L, M and Teff terms of the Vink formula and
+        # check that what is left scales with metallicity with a 0.85 exponent"""
+        metallicities = np.logspace(-3.5, np.log10(0.03), 10)
+        masses = {"cool": 6.0, "hot": 40.0}  # MS Teff below/above the 25 kK boundary
+
+        n_Z = len(metallicities)
+        m1 = np.repeat(list(masses.values()), n_Z)
+        n_stars = len(m1)
+        ibt = InitialBinaryTable.InitialBinaries(
+            m1=m1, m2=np.zeros(n_stars), porb=np.zeros(n_stars), ecc=np.zeros(n_stars),
+            tphysf=np.full(n_stars, 200.0), kstar1=np.ones(n_stars), kstar2=np.zeros(n_stars),
+            metallicity=np.tile(metallicities, len(masses)))
+
+        # Vink winds without LBV winds, no Eddington-dependent exponent, every (short) timestep in bcm
+        # (drop bin_num from the shared test dict so that each star keeps its own)
+        wind_dict = {k: v for k, v in BSEDict.items() if k != 'bin_num'}
+        wind_dict.update(windflag=2, eddlimflag=0, dtp=0.0, pts1=0.001)
+        zsun = wind_dict['zsun']
+        _, bcm, _, _ = Evolve.evolve(initialbinarytable=ibt, BSEDict=wind_dict, SSEDict=SSEDict)
+
+        ms = bcm[(bcm['kstar_1'] <= 1) & (bcm['deltam_1'] < 0)]
+        L, M = ms['lum_1'], ms['mass_1']
+        teff = 1000.0 * (1130.0 * L / ms['rad_1']**2)**0.25
+
+        # Vink+2001 log10(Mdot) without the metallicity term (see SSE_mlwind.f)
+        x = np.log10(teff / 4.0e4)
+        log_mdot_noZ = np.where(
+            teff > 25000,
+            -6.697 + 2.194 * np.log10(L / 1e5) - 1.313 * np.log10(M / 30.0)
+            - 1.226 * np.log10(2.6 / 2.0) + 0.933 * x - 10.92 * x**2,
+            -6.688 + 2.210 * np.log10(L / 1e5) - 1.339 * np.log10(M / 30.0)
+            - 1.601 * np.log10(1.3 / 2.0) + 1.07 * np.log10(teff / 2.0e4))
+        residual = np.log10(-ms['deltam_1']) - log_mdot_noZ
+
+        for i, (side, mass) in enumerate(masses.items()):
+            in_regime = (teff > 25000) if side == "hot" else ((teff >= 12500) & (teff <= 25000))
+            mean_residual = np.zeros(n_Z)
+            for j in range(n_Z):
+                this_star = ms['bin_num'] == i * n_Z + j
+                use = this_star & in_regime
+                # the star should spend (most of) its main sequence on the intended side
+                self.assertGreater(use.sum(), 0.5 * this_star.sum(),
+                                   msg=f"{mass} Msun star at Z={metallicities[j]:.4g} is not mostly {side}")
+                mean_residual[j] = residual[use].mean()
+
+            slope, intercept = np.polyfit(np.log10(metallicities / zsun), mean_residual, 1)
+            self.assertAlmostEqual(slope, 0.85, delta=0.01,
+                                   msg=f"Vink metallicity exponent on the {side} side is {slope:.3f}")
+            self.assertAlmostEqual(intercept, 0.0, delta=0.01)
