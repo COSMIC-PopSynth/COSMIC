@@ -271,4 +271,13 @@ class TestTimestepConditions(unittest.TestCase):
         
         self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 1].tphys.values, dtp_first)))
         self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 2].tphys.values, dtp_second)))
-        
+
+    def test_no_dtp_returns_first_last_timestep(self):
+            binary = InitialBinaryTable.InitialBinaries(
+                m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
+            )
+            _, bcm, _, _ = Evolve.evolve(initialbinarytable=binary, BSEDict=BSEDict,
+                                            SSEDict=SSEDict)
+            self.assertEqual(len(bcm.tphys.values), 2)
+            self.assertEqual(bcm.tphys.values[0], 0.0)
+            self.assertEqual(bcm.tphys.values[-1], binary['tphysf'].values[0])

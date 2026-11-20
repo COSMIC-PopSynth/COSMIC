@@ -256,9 +256,12 @@ class Evolve(object):
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
         if 'dtp' not in initialbinarytable.keys():
-            dtp = kwargs.pop('dtp', initialbinarytable['tphysf'])
+            dtp = kwargs.pop('dtp', None)
             if isinstance(dtp, (int, float)):
                 dtp_arr = []
+            elif dtp is None:
+                dtp_arr = []
+                dtp = initialbinarytable['tphysf']
             else:
                 dtp_arr = sorted(set(dtp))
                 dtp = initialbinarytable['tphysf']
@@ -546,7 +549,6 @@ class Evolve(object):
         # of the parameters are list/arrays which we instead save as
         # individual values because it makes saving to HDF5 easier/more efficient.
         # we expanded dtp_array for the evolve call, collapse it back now for the user
-        print(f"Here 1 dtp_array is in the columns: {'dtp_array' in initialbinarytable.columns}")
         initialbinarytable["dtp"] = initialbinarytable["dtp"].astype(object)
         mask = initialbinarytable["dtp_array"].map(len) > 0
         initialbinarytable.loc[mask, "dtp"] = initialbinarytable.loc[mask, "dtp_array"]
@@ -569,7 +571,6 @@ class Evolve(object):
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
 
         # evolve one system to get zpars
-        print(f"Here 2 dtp_array is in the columns: {'dtp_array' in initialbinarytable.columns}")
         _, _, _, _, _, zpars = _evolve_single_system(initial_conditions[0], None)
 
         # helper to collect results with an optional tqdm progress bar
@@ -707,8 +708,6 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.col.n_col_bcm = f["n_col_bcm"]
         _evolvebin.col.col_inds_bcm = f["col_inds_bcm"]
 
-        print(f"Here 3 dtp_array is in the columns: {'dtp_array' in f}")
-        print(f"dtp_array: {f['dtp_array']}")
         [zpars, kick_info, bpp_index, bcm_index] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 
