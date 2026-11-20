@@ -1,0 +1,17 @@
+Evolve
+======
+
+.. currentmodule:: cosmic.evolve
+
+.. autoclass:: Evolve
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Evolve.evolve
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: evolve

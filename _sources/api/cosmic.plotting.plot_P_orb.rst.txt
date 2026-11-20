@@ -1,0 +1,6 @@
+plot_P_orb
+==========
+
+.. currentmodule:: cosmic.plotting
+
+.. autofunction:: plot_P_orb

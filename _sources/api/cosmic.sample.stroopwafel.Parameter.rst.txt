@@ -1,0 +1,23 @@
+Parameter
+=========
+
+.. currentmodule:: cosmic.sample.stroopwafel
+
+.. autoclass:: Parameter
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~Parameter.dist
+      ~Parameter.max_value
+      ~Parameter.min_value
+      ~Parameter.name
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: dist
+   .. autoattribute:: max_value
+   .. autoattribute:: min_value
+   .. autoattribute:: name

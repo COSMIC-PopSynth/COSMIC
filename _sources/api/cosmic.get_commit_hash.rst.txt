@@ -1,0 +1,4 @@
+.. automodule:: cosmic.get_commit_hash
+   :members:
+   :undoc-members:
+   :show-inheritance:

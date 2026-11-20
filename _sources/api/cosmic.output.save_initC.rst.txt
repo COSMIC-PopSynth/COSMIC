@@ -1,0 +1,6 @@
+save_initC
+==========
+
+.. currentmodule:: cosmic.output
+
+.. autofunction:: save_initC

@@ -1,0 +1,6 @@
+get_velocities
+==============
+
+.. currentmodule:: cosmic.sample.cmc.king
+
+.. autofunction:: get_velocities

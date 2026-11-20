@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.stroopwafel.presets
+   :members:
+   :undoc-members:
+   :show-inheritance:

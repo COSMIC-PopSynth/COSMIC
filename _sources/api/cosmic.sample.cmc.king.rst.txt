@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.cmc.king
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+pop_write
+=========
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: pop_write

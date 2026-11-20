@@ -1,0 +1,6 @@
+fill_BSEDict_with_defaults
+==========================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: fill_BSEDict_with_defaults

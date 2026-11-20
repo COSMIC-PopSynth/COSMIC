@@ -1,0 +1,6 @@
+plot_ecc
+========
+
+.. currentmodule:: cosmic.plotting
+
+.. autofunction:: plot_ecc

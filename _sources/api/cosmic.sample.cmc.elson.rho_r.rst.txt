@@ -1,0 +1,6 @@
+rho_r
+=====
+
+.. currentmodule:: cosmic.sample.cmc.elson
+
+.. autofunction:: rho_r
