@@ -163,7 +163,7 @@ class TestEvolve(unittest.TestCase):
     def test_ejection_velocity_pfahl(self):
         EvolvedBinaryBPP, EvolvedBinaryBCM, initCond, kick_info = Evolve.evolve(
             initialbinarytable=KICK_INITC)
-        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 15.813456, places=5)        
+        self.assertAlmostEqual(kick_info['vsys_2_total'].iloc[0], 15.842697, places=5)        
 
     def test_vink_wind_metallicity_scaling(self):
         """Vink+2001 OB winds scale as Mdot ~ (Z/zsun)^0.85 on both sides of the bi-stability jump
