@@ -273,7 +273,9 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
         if 'dtp_array' not in initialbinarytable.keys():
-            initialbinarytable = initialbinarytable.assign(dtp_array=[[]]*len(initialbinarytable))
+            initialbinarytable["dtp_array"] = initialbinarytable["dtp"].apply(lambda x: x if not isinstance(x, (int, float)) else [])
+            mask = initialbinarytable["dtp"].apply(lambda x: not isinstance(x, (int, float)))
+            initialbinarytable.loc[mask, "dtp"] = initialbinarytable.loc[mask, "tphysf"]
 
         # Check uniqueness
         if initialbinarytable["dtp_array"].map(lambda x: len(x) == len(set(x))).eq(False).any():
@@ -422,8 +424,6 @@ class Evolve(object):
         if new_cols:
             new_df = pd.DataFrame(new_cols, index=idx)
             initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
-
-
 
         # Here we perform two checks
         # First, if the BSE parameters are not in the initial binary table

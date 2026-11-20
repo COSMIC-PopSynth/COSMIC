@@ -16,6 +16,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 KSTAR_1 = 3 * int(np.flatnonzero(CHECKSTATE_COLUMNS == "kstar_1")[0])
+BSEDict.pop("bin_num", None)
+BSEDict.pop("dtp", None)
 
 
 def get_arrays():
@@ -206,6 +208,13 @@ class TestTimestepConditions(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = evolve_binary([], dtp=[-1.0, 67.0])
 
+    def test_dtp_array_out_of_bounds_unique_sorted_kwarg(self):
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
+        )
+        with self.assertRaises(ValueError):
+            _ = Evolve.evolve(initialbinarytable=binary, BSEDict=BSEDict, SSEDict=SSEDict, dtp=[-1.0, 100.0])
+
     def test_dtp_array_on_bounds(self):
         # if the timesteps are exactly on the bounds, this should work!
         timesteps_on_bounds = [0.0, 13700.0]
@@ -260,17 +269,36 @@ class TestTimestepConditions(unittest.TestCase):
         binary = InitialBinaryTable.InitialBinaries(
             m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
         )
-        binaries = pd.concat([binary, binary])
-        binaries['bin_num'] = [1, 2]
+        binaries = pd.concat([binary, binary], ignore_index=True)
+        binaries['bin_num'] = pd.Series([2, 3])
         dtp_first = [1.0, 10.0]
         dtp_second = [50.0, 500.0]
         binaries['dtp'] = [dtp_first, dtp_second]
+        _, bcm, initcond, _ = Evolve.evolve(initialbinarytable=binaries, BSEDict=BSEDict,
+                                            SSEDict={'stellar_engine': 'sse'})
+        self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 2].tphys.values, dtp_first)))
+        self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 3].tphys.values, dtp_second)))
+        self.assertEqual(initcond[initcond.bin_num == 2].dtp.values[0], dtp_first)
+        self.assertEqual(initcond[initcond.bin_num == 3].dtp.values[0], dtp_second)
 
-        _, bcm, _, _ = Evolve.evolve(initialbinarytable=binaries, BSEDict=BSEDict,
-                                        SSEDict=SSEDict)
-        
-        self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 1].tphys.values, dtp_first)))
-        self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 2].tphys.values, dtp_second)))
+    def test_mixed_dtp_dtp_array_as_initcond_column(self):
+            binary = InitialBinaryTable.InitialBinaries(
+                m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
+            )
+            binaries = pd.concat([binary, binary])
+            binaries['bin_num'] = [1, 2]
+            dtp_first = [1.0, 10.0]
+            dtp_second = 10000.0
+            timesteps_second = [0.0, dtp_second]
+            binaries['dtp'] = [dtp_first, dtp_second]
+    
+            _, bcm, initcond, _ = Evolve.evolve(initialbinarytable=binaries, BSEDict=BSEDict,
+                                            SSEDict=SSEDict)
+            
+            self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 1].tphys.values, dtp_first)))
+            self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 2].tphys.values, timesteps_second)))
+            self.assertEqual(initcond[initcond.bin_num == 1].dtp.values[0], dtp_first)
+            self.assertEqual(initcond[initcond.bin_num == 2].dtp.values[0], dtp_second)
 
     def test_no_dtp_returns_first_last_timestep(self):
             binary = InitialBinaryTable.InitialBinaries(
