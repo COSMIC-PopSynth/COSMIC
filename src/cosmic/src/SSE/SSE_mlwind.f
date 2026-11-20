@@ -175,9 +175,9 @@
 * Apply Vink, de Koter & Lamers (2001) OB star winds.
 * Next check if hot massive H-rich O/B star in appropriate temperature ranges.
          if (windflag.eq.2.or.windflag.eq.3.or.windflag.eq.5) then
+            if(eddlimflag.eq.0) alpha = 0.85d0
+            if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
             if(teff.ge.12500.and.teff.le.25000)then
-               if(eddlimflag.eq.0) alpha = 0.85d0
-               if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
                dms = -6.688d0 + 2.210d0*LOG10(lum/1.0d+05) -
      &               1.339d0*LOG10(mt/30.d0) - 
      &               1.601d0*LOG10(1.3d0/2.d0) +
