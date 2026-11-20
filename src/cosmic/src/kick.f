@@ -80,7 +80,7 @@
 * kick_info[i,2]: disrupted (0=no, 1=yes)
 * kick_info[i,3]: magnitude of the natal kick
 * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-* kick_info[i,6]: eccentric anamoly
+* kick_info[i,6]: mean anomaly
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of sn=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
@@ -102,7 +102,7 @@
       real*8 ecc,ecc_2,sep
       real*8 pi,twopi,yearsc,rsunkm,G_const
       parameter(yearsc=3.1557d+07,rsunkm=6.96d+05)
-      real*8 mean_anom,ecc_anom,dif,der,del
+      real*8 mean_anom,ecc_anom
       real*8 u1,u2,vk,vk2,v(4),s,sigmah
       real*8 theta,phi,sin_phi,cos_phi,sin_theta,cos_theta
       real*8 fallback,sigmahold,bound
@@ -113,13 +113,16 @@
       real*8 a_prev_2, a_prev_3, cos_ecc_anom, sin_ecc_anom
       real*8 sqrt_1m_ecc_prev_2, sep_prev, prefactor, omega
       real*8 h_prev(3),h(3), h_hat(3), h_mag
-      real*8 LRL_prev(3), LRL(3), e_hat(3)
+      real*8 LRL(3), e_hat(3)
       real*8 v_cm(3), v_sn(3), v_comp(3), v_inf_vec(3), v_inf
       real*8 v_sn_rot(3), v_comp_rot(3), v_cm_rot(3)
+      real*8 v_prev_1(3), v_prev_2(3)
+      integer sn_prev
+      logical second_sn
       real*8 h_cross_e_hat(3)
       real*8 thetaE, phiE, psiE
-      real*8 psiplusphi, orbital_pivot_axis(3), unsigned_phi
-      real*8 LRL_prev_dot_h, LRL_dot_h_prev, unsigned_psi
+      real*8 orbital_pivot_axis(3)
+      real*8 LRL_dot_h_prev, unsigned_psi
       real*8 disberg_mean
       real*8 mu_mm
       real*8 epsilon_5, f_kin, beta_nu, alpha_ej
@@ -132,6 +135,13 @@
       real ran3,xx
       external ran3
       external RandomTruncatedNormal
+* Number of candidates for the rejection sampling of truncated kick
+* distributions (kickflag 6 and 9). Each always uses the same number of
+* random draws, so the random number stream doesn't depend on how many
+* were rejected; 12 makes running out of candidates vanishingly rare
+* (probability < 1e-17 per kick).
+      integer n_try_kick, n_draws
+      parameter(n_try_kick=12)
 *
       output = .false. !useful for debugging...
       collide = .false.
@@ -178,8 +188,16 @@
 * set the sn of the exploding object in the kick_info array
       kick_info(sn,1) = sn
 
+* Rows of kick_info (and natal_kick_array) are indexed by star (sn is
+* the index of the exploding star), not by the order of the SNe: either
+* star can explode first. This is the second SN if the other star has
+* already gone SN in this evolution, which we know because the kick
+* wrapper stores the time of each SN in column 19 after the call.
+      sn_prev = 3 - sn
+      second_sn = kick_info(sn_prev,19).gt.0.d0
+
 * if the system was disrupted from the first supernova, marked as disrupted
-      if(kick_info(1,2).eq.1) kick_info(2,2)=1
+      if(second_sn.and.kick_info(sn_prev,2).eq.1) kick_info(sn,2) = 1
 
 * sigma is negative for ECSN
       if((sigma.lt.0.d0).and.(abskickflag.eq.1.or.abskickflag.eq.5
@@ -196,7 +214,7 @@
       if(abskickflag.eq.1.or.abskickflag.eq.5)then
          if(kw.eq.14.or.(kw.eq.13.and.(m1n.ge.mxns)))then
             sigma = sigmah*bhsigmafrac
-            disberg_mean = disberg_mean * bhsigmafrac
+            disberg_mean = disberg_mean + LOG(bhsigmafrac)
          endif
       endif
 
@@ -217,11 +235,21 @@
           endif
 
           vk2 = vk*vk
-* per supplied kick value we mimic a call to random number generator
-          xx = RAN3(idum1)
-          xx = RAN3(idum1)
-          xx = RAN3(idum1)
-          xx = RAN3(idum1)
+* per supplied kick value we mimic the calls to the random number
+* generator that drawing the kick would have made (the conditions
+* match those below)
+          if(abskickflag.eq.5.and..not.ECSN_or_USSN)then
+             n_draws = 2
+          elseif(abskickflag.eq.9.and.(kw.eq.13.or.kw.eq.14))then
+             n_draws = 1 + 2 * n_try_kick
+          elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
+             n_draws = 2 * n_try_kick
+          else
+             n_draws = 4
+          endif
+          do i = 1, n_draws
+             xx = RAN3(idum1)
+          end do
       else
 * If no pre-supplied kick magnitude, we draw a kick from a distribution
 * If the kickflag is 5 then use the log-normal distribution described
@@ -233,7 +261,7 @@
      &           (kw.eq.13.or.kw.eq.14))then
 * Shariat et al. (2026), arXiv:2610.04005, Table 2 parent NS law.
 * Applying this NS-inferred base law to BHs is an extrapolation.
-             call RandomBimodalKick(vk,idum1)
+             call RandomBimodalKick(vk,idum1,n_try_kick)
              if(kw.eq.14) vk = vk * bhsigmafrac
              vk2 = vk*vk
           elseif(abskickflag.eq.6.and..not.ECSN_or_USSN)then
@@ -244,8 +272,8 @@
              else
                 mu_mm = mm_mu_ns * max(m1c - m1n, 0.0d0) / m1n
              endif
-             call RandomTruncatedNormal(0, 0.3d0, idum1,
-     &                                  -1.d0, 10000.d0, vk)
+             call RandomTruncatedNormal(0.d0, 0.3d0, idum1,
+     &                             -1.d0, 10000.d0, n_try_kick, vk)
              vk = mu_mm * (1 + vk)
              vk2 = vk * vk
           else
@@ -396,7 +424,7 @@
 * ----------------------------------------------------------------------
 
 * Check if the system is already not a bound binary
-      if((sn.eq.2.and.kick_info(1,2).eq.1)
+      if((second_sn.and.kick_info(sn_prev,2).eq.1)
      &   .or.sep.le.0.or.ecc.lt.0
      &   .or.sep.ne.sep.or.ecc.ne.ecc)then
 * if so, only apply kick to the current star
@@ -430,18 +458,7 @@
       endif
 * Solve Kepler's equation for the eccentric anomaly from mean anomaly
 * https://en.wikipedia.org/wiki/Eccentric_anomaly
-      ecc_anom = mean_anom
-
-      if(mean_anom.eq.0.d0) goto 8
-
-  9   dif = ecc_anom - ecc * SIN(ecc_anom) - mean_anom
-      if(ABS(dif / mean_anom).le.1.0d-04) goto 8
-      der = 1.d0 - ecc * COS(ecc_anom)
-      del = dif/der
-      ecc_anom = ecc_anom - del
-      goto 9
-
- 8    continue
+      call SolveKepler(mean_anom, ecc, ecc_anom)
 
 * ----------------------------------------------------------------------
 * ------ Calculate whether system disrupts and CM velocity change ------
@@ -477,13 +494,6 @@
 * Specific angular momentum vector pre-SN (in km^2/s)
       call CrossProduct(sep_vec, v_rel_prev, h_prev)
 
-* Laplace-Runge-Lenz vector pre-SN (unitless)
-      call CrossProduct(v_rel_prev, h_prev, LRL_prev)
-      do i = 1, 3
-         LRL_prev(i) = LRL_prev(i) / (G_const * mtot_prev)
-     &               - sep_vec(i) / sep_prev
-      end do
-
 * Calculate the new systemic velocity of the center of mass (in km/s)
       do i = 1, 3
          v_cm(i) = (-m2 * (m1 - m1n) / mtot_prev / mtot)
@@ -507,9 +517,23 @@
       END DO
 
 * Get the Euler angles from previous kick for the rotation matrix
-      thetaE = kick_info(1,15) * pi / 180.d0
-      phiE = kick_info(1,16) * pi / 180.d0
-      psiE = kick_info(1,17) * pi / 180.d0
+* (only used for the second SN). Each SN's frame is built from the
+* separation r_explode - r_companion, so its x-axis is the periapsis
+* direction of that relative orbit. At the first SN the other star
+* exploded, and psiE was stored for that x-axis, but at the second SN
+* the separation is reversed, so its periapsis points the opposite way
+* (with the same orbital angular momentum). So this frame is a
+* half-turn about z from the one the stored angles describe, and we
+* add pi to psiE.
+      if(second_sn)then
+         thetaE = kick_info(sn_prev,15) * pi / 180.d0
+         phiE = kick_info(sn_prev,16) * pi / 180.d0
+         psiE = kick_info(sn_prev,17) * pi / 180.d0 + pi
+      else
+         thetaE = 0.d0
+         phiE = 0.d0
+         psiE = 0.d0
+      endif
 
 * Get the new eccentricity
       call VectorMagnitude(LRL, ecc)
@@ -556,7 +580,7 @@
          end do
 
 * if second supernova, need to change basis to the original orbital plane
-         if(sn.eq.2)then
+         if(second_sn)then
             call ChangeBasis(v_sn, thetaE, phiE, psiE, v_sn_rot)
             call ChangeBasis(v_comp, thetaE, phiE, psiE, v_comp_rot)
          else
@@ -583,16 +607,27 @@
          endif
 
 * lastly, check if this supernova results in a collision between stars
-         call CollisionCheck(sep_vec, v_sn_rot, v_comp_rot, r2, collide)
+* (done in the current orbital frame, before any rotation)
+         call CollisionCheck(sep_vec, v_rel, h_mag, ecc,
+     &                       G_const * mtot, r2, collide)
 * if it does, assume the supernova star plows right through the
-* companion and obliterates it
+* companion and obliterates it (bad day to be star 2...)
          if(collide)then
-            kick_info(sn,7) = v_sn_rot(1)
-            kick_info(sn,8) = v_sn_rot(2)
-            kick_info(sn,9) = v_sn_rot(3)
-            kick_info(sn,11) = 0.d0
-            kick_info(sn,12) = 0.d0
-            kick_info(sn,13) = 0.d0
+            if(sn.eq.1)then
+               kick_info(sn,7) = v_sn_rot(1)
+               kick_info(sn,8) = v_sn_rot(2)
+               kick_info(sn,9) = v_sn_rot(3)
+               kick_info(sn,11) = 0.d0
+               kick_info(sn,12) = 0.d0
+               kick_info(sn,13) = 0.d0
+            elseif(sn.eq.2)then
+               kick_info(sn,11) = v_sn_rot(1)
+               kick_info(sn,12) = v_sn_rot(2)
+               kick_info(sn,13) = v_sn_rot(3)
+               kick_info(sn,7) = 0.d0
+               kick_info(sn,8) = 0.d0
+               kick_info(sn,9) = 0.d0
+            endif
             m2 = -1.d0*m2
          endif
 
@@ -607,7 +642,7 @@
 * Update the total orbital angular momentum (in Msun Rsun^2/yr)
          jorb = m1n * m2 / mtot * h_mag / rsunkm / rsunkm * yearsc
 
-         if (sn.eq.2) then
+         if(second_sn)then
             call ChangeBasis(v_cm, thetaE, phiE, psiE, v_cm_rot)
          else
             v_cm_rot = v_cm
@@ -641,29 +676,36 @@
          endif
 
 * Update the Euler angles for the orbital plane rotation
+* (z-x-z convention, matching ChangeBasis).
+*
+* All vectors here are in the pre-SN frame: the orbit lies in the x-y
+* plane with h_prev along +z, and the x-axis is the reference direction
+* of the frame (periapsis, or E=0 for a circular orbit). This is the
+* frame that kick_info(sn,7:13) are given in, so the angles below are
+* measured from this x-axis, which is well-defined even if ecc_prev = 0.
          call AngleBetweenVectors(h, h_prev, thetaE)
 
 * first two special cases for orbital A.M. remaining unchanged in angle
-* since the cross product is not well defined in this case
+* since the line of nodes is not defined in this case. Only the
+* combination phiE + psiE (thetaE = 0) or phiE - psiE (thetaE = pi)
+* matters: it is the signed angle from the x-axis to the new periapsis.
          if(thetaE.eq.0.d0)then
             xx = ran3(idum1)
             phiE = twopi * xx
             xx = ran3(idum1)
-* we can only calculate the angle if the eccentricity is nonzero
-            if (ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
-               call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
-               psiE = psiPlusPhi - phiE
+* the new periapsis is only defined if the eccentricity is nonzero
+            if (ecc.gt.0.d0)then
+               psiE = ATAN2(LRL(2), LRL(1)) - phiE
             else
                psiE = twopi * xx
-            end if            
+            end if
          else if(thetaE.eq.pi)then
             xx = ran3(idum1)
             phiE = twopi * xx
             xx = ran3(idum1)
-* we can only calculate the angle if the eccentricity is nonzero
-            if (ecc_prev.gt.0.d0.and.ecc.gt.0.d0)then
-               call AngleBetweenVectors(LRL, LRL_prev, psiPlusPhi)
-               psiE = phiE + psiPlusPhi
+* the new periapsis is only defined if the eccentricity is nonzero
+            if (ecc.gt.0.d0)then
+               psiE = phiE - ATAN2(LRL(2), LRL(1))
             else
                psiE = twopi * xx
             end if
@@ -671,23 +713,14 @@
          else
             call CrossProduct(h_prev, h, orbital_pivot_axis)
 
-* first handled phiE, need to check ecc_prev is nonzero
-* since otherwise LRL_prev is not well-defined
+* phiE is the angle from the x-axis to the line of nodes, about +z.
+* The line of nodes is h_prev x h, which is parallel to (-h_y, h_x, 0)
+* (keep the random draw so the random number sequence is unchanged)
             xx = ran3(idum1)
-            if(ecc_prev.eq.0.d0)then
-               phiE = twopi * xx
-            else
-               call DotProduct(LRL_prev, h, LRL_prev_dot_h)
-               call AngleBetweenVectors(LRL_prev, orbital_pivot_axis,
-     &                                  unsigned_phi)
-               if (LRL_prev_dot_h.ge.0.d0) then
-                  phiE = unsigned_phi
-               else
-                  phiE = -unsigned_phi
-               endif
-            endif
+            phiE = ATAN2(h(1), -h(2))
 
-* repeat for psi, now focusing on ecc instead of ecc_prev
+* psiE is the angle from the line of nodes to the new periapsis, about
+* h, which is only defined if the new eccentricity is nonzero
             xx = ran3(idum1)
             if(ecc.eq.0.d0)then
                psiE = twopi * xx
@@ -714,34 +747,39 @@
 * For systems that were distrupted in the first SN, skip to here
  78   continue
 *
-* Set systemic velocity magnitudes in the kick_info array
-* For first SN, this should be identical to the magnitude
-* of the three component vectors. For the second SN, this
-* will be the systemic velocity relative to the initial frame.
-      if(sn.eq.1)then
-         kick_info(sn,10) = SQRT(kick_info(sn,7)*kick_info(sn,7) +
-     &              kick_info(sn,8)*kick_info(sn,8) +
-     &              kick_info(sn,9)*kick_info(sn,9))
-         kick_info(sn,14) = SQRT(kick_info(sn,11)*kick_info(sn,11) +
-     &              kick_info(sn,12)*kick_info(sn,12) +
-     &              kick_info(sn,13)*kick_info(sn,13))
-      elseif(sn.eq.2)then
-         kick_info(sn,10) = SQRT(
-     &      (kick_info(1,7)+kick_info(2,7))*
-     &      (kick_info(1,7)+kick_info(2,7)) +
-     &      (kick_info(1,8)+kick_info(2,8))*
-     &      (kick_info(1,8)+kick_info(2,8)) +
-     &      (kick_info(1,9)+kick_info(2,9))*
-     &      (kick_info(1,9)+kick_info(2,9)))
-         kick_info(sn,14) = SQRT(
-     &      (kick_info(1,11)+kick_info(2,11))*
-     &      (kick_info(1,11)+kick_info(2,11)) +
-     &      (kick_info(1,12)+kick_info(2,12))*
-     &      (kick_info(1,12)+kick_info(2,12)) +
-     &      (kick_info(1,13)+kick_info(2,13))*
-     &      (kick_info(1,13)+kick_info(2,13)))
+* Set systemic velocity magnitudes in the kick_info array. Columns 7-9
+* are the velocity of the binary if bound, or of star 1 if disrupted,
+* and 11-13 are the velocity of star 2 if disrupted. For the first SN,
+* these are the magnitudes of this SN's velocities. For the second SN,
+* they are the totals (relative to the original frame) after both SNe,
+* adding the velocities from the first SN (row sn_prev).
+      if(.not.second_sn)then
+         do i = 1, 3
+            v_prev_1(i) = 0.d0
+            v_prev_2(i) = 0.d0
+         end do
+      else
+* Star 1 (or the binary) had the velocity in columns 7-9 of the first
+* SN. Star 2 had the velocity in columns 11-13 if the first SN
+* disrupted the binary, or the binary's velocity (columns 7-9) if it
+* survived (in which case 11-13 are zero, and stay so unless this SN
+* disrupts it)
+         do i = 1, 3
+            v_prev_1(i) = kick_info(sn_prev,6+i)
+            if(kick_info(sn_prev,2).eq.0.and.kick_info(sn,2).eq.1)then
+               v_prev_2(i) = kick_info(sn_prev,6+i)
+            else
+               v_prev_2(i) = kick_info(sn_prev,10+i)
+            endif
+         end do
       endif
-      
+      kick_info(sn,10) = SQRT((v_prev_1(1) + kick_info(sn,7))**2 +
+     &                        (v_prev_1(2) + kick_info(sn,8))**2 +
+     &                        (v_prev_1(3) + kick_info(sn,9))**2)
+      kick_info(sn,14) = SQRT((v_prev_2(1) + kick_info(sn,11))**2 +
+     &                        (v_prev_2(2) + kick_info(sn,12))**2 +
+     &                        (v_prev_2(3) + kick_info(sn,13))**2)
+
       RETURN
       END
 
@@ -795,7 +833,7 @@
 * kick_info[i,2]: disrupted (0=no, 1=yes)
 * kick_info[i,3]: magnitude of the natal kick
 * kick_info[i,4-5]: phi and theta (in the frame of the exploding star)
-* kick_info[i,6]: eccentric anamoly
+* kick_info[i,6]: mean anomaly
 * kick_info[i,7-9]: change in 3D systemic velocity of the binary, or the
 *       change in 3D velocity of snstar=1 if the system is disrupted
 * kick_info[i,10]: magnitude of systemic velocity of the binary if bound
@@ -1466,6 +1504,132 @@
 * ================== Vector helper functions follow ====================
 * ======================================================================
 
+      SUBROUTINE SolveKepler(mean_anom, ecc, ecc_anom)
+* Solve Kepler's equation, M = E - e sin(E), for the eccentric anomaly E
+* given a mean anomaly M in [0, 2pi] and an eccentricity 0 <= e < 1.
+*
+* This follows the ENRKE method of Tommasini & Olivieri (2022, A&A 658,
+* A196; https://doi.org/10.1051/0004-6361/202141423), with an added
+* bracket to guarantee convergence:
+*
+* 1. M is reduced to [0, pi] using E(2pi - M) = 2pi - E(M).
+* 2. In the "critical region" (e > 0.99 and M within 0.0045 rad of
+*    periapsis) we use bisection. Any method that uses the derivative
+*    1 / (1 - e cos E), such as Newton-Raphson, has a limiting accuracy
+*    of ~ eps / sqrt(2 (1 - e)) here (Tommasini & Olivieri 2021, MNRAS
+*    506, 1889), and Newton-Raphson can also cycle indefinitely. The
+*    bisection tolerance is relative, (1e-7 + E / 0.3) * tol, and the
+*    bracket [2.7 M, 0.301] is from Serafin (1986, Celest. Mech. 38, 111).
+* 3. Elsewhere we start from their rational first guess (their Eq. 19),
+*    take one fourth-order step of Odell & Gooding's (1986, Celest.
+*    Mech. 38, 307) delta_131 iterator (their Eq. 6), then use
+*    Newton-Raphson until their stopping condition (their Eq. 9) shows
+*    that the next step is smaller than tol.
+*
+* In addition to ENRKE, we keep a bracket [lo, hi] around the root
+* (f(E) = E - e sin(E) - M is monotonic, and E - M = e sin E lies in
+* [0, e] for M in [0, pi]) and bisect whenever a step would leave it,
+* with a cap on the number of iterations. This guarantees convergence.
+* In practice it only triggers just outside the critical region for e
+* very close to 1, where the first step can overshoot far past the root.
+*
+* Variables
+* ---------
+* mean_anom is the mean anomaly (in radians, in [0, 2pi])
+* ecc is the eccentricity (in [0, 1))
+* ecc_anom is the eccentric anomaly (in radians, output)
+      IMPLICIT NONE
+      real*8 mean_anom, ecc, ecc_anom
+      real*8 pi, M, E, E_new, lo, hi, f, fp, esinE, ecosE, delta
+      real*8 fp3, ffpfpp, f2fppp, tol, tol2s, bis_abs, bis_rel
+      logical reflect
+      integer iter, max_iter
+      parameter(tol=3.0d-15, max_iter=100)
+
+      pi = ACOS(-1.d0)
+
+* reduce M to [0, pi]
+      reflect = mean_anom.gt.pi
+      if(reflect)then
+         M = 2.d0 * pi - mean_anom
+      else
+         M = mean_anom
+      endif
+
+      if(ecc.gt.0.99d0.and.M.lt.0.0045d0)then
+* critical region: bisection with a relative tolerance
+         bis_abs = tol / 1.d7
+         bis_rel = tol / 0.3d0
+         lo = 2.7d0 * M
+         hi = 0.301d0
+         E = 0.5d0 * (lo + hi)
+         do iter = 1, 4 * max_iter
+            if(hi - lo.le.bis_abs + bis_rel * E) exit
+            if(E - ecc * SIN(E) - M.gt.0.d0)then
+               hi = E
+            else
+               lo = E
+            endif
+            E = 0.5d0 * (lo + hi)
+         end do
+      else
+* rational first guess (Tommasini & Olivieri 2022, Eq. 19)
+         lo = M
+         hi = MIN(M + ecc, pi)
+         E = M + 0.999999d0 * M * (pi - M) /
+     &       (2.d0 * M + ecc - pi + 0.25d0 * pi * pi / (ecc + 2.2d-16))
+         E = MIN(MAX(E, lo), hi)
+
+* one step of Odell & Gooding's delta_131 iterator
+         esinE = ecc * SIN(E)
+         ecosE = ecc * COS(E)
+         fp = 1.d0 - ecosE
+         f = E - esinE - M
+         if(f.lt.0.d0)then
+            lo = E
+         elseif(f.gt.0.d0)then
+            hi = E
+         endif
+         fp3 = fp * fp * fp
+         ffpfpp = f * fp * esinE
+         f2fppp = f * f * ecosE
+         delta = -f / fp * (fp3 - 0.5d0 * ffpfpp + f2fppp / 3.d0) /
+     &           (fp3 - ffpfpp + 0.5d0 * f2fppp)
+
+* then Newton-Raphson, stopping once the step after this one would be
+* below tol (Tommasini & Olivieri 2022, Eq. 9)
+         tol2s = 2.d0 * tol / (ecc + 2.2d-16)
+         do iter = 1, max_iter
+            if(delta * delta.le.fp * tol2s) exit
+            E_new = E + delta
+* bisect if the step leaves the bracket (written so NaN also bisects)
+            if(.not.(E_new.gt.lo.and.E_new.lt.hi))then
+               E_new = 0.5d0 * (lo + hi)
+            endif
+            E = E_new
+            fp = 1.d0 - ecc * COS(E)
+            f = E - ecc * SIN(E) - M
+            if(f.lt.0.d0)then
+               lo = E
+            elseif(f.gt.0.d0)then
+               hi = E
+            endif
+            delta = -f / fp
+         end do
+         E_new = E + delta
+         if(E_new.ge.lo.and.E_new.le.hi) E = E_new
+      endif
+
+      if(reflect)then
+         ecc_anom = 2.d0 * pi - E
+      else
+         ecc_anom = E
+      endif
+
+      RETURN
+      END
+
+
       SUBROUTINE ChangeBasis(Vector, ThetaE, PhiE, PsiE, Result)
 * Redefine a vector from one coordinate basis to another using Euler Angles
 * Vector is the input vector in the new basis (X', Y', Z')
@@ -1587,65 +1751,56 @@
       call VectorMagnitude(A, magA)
       call VectorMagnitude(B, magB)
 
-* Calculate the angle between the two vectors
-      angle = ACOS(dot / (magA * magB))
+* Calculate the angle between the two vectors (clamping the cosine to
+* [-1, 1], which rounding can push it just outside for (anti)parallel
+* vectors)
+      angle = ACOS(MAX(-1.d0, MIN(1.d0, dot / (magA * magB))))
 
       RETURN
       END
 
 
-      SUBROUTINE CollisionCheck(sep_vec, v1, v2, r2, collide)
-* This function checks if two stars collide
-* It assumes that the compact object is a point mass, that the
-* velocities are constant and the secondary star is a sphere, radius r2
+      SUBROUTINE CollisionCheck(sep_vec, v_rel, h_mag, ecc, gm, r2,
+     &                          collide)
+* This function checks if the exploding star collides with its companion
+* after the supernova. It treats the compact remnant as a point mass and
+* the companion as a sphere of radius r2, and follows their relative
+* Keplerian orbit.
 *
 * Method
 * ------
-* This result comes from constructing two vectors:
-*    r1 = v1 * t, the position of the primary star
-*    r2 = sep_vec + v2 * t, the position of the secondary star
-* The difference between these vectors is
-*    d = sep_vec + (v2 - v1) * t
-* If the magnitude of d is less than r2, the stars collide.
-* So to find the time of collision, we solve for t when minimising d^2
-* (squared because then we can use the quadratic formula) and just plug
-* it in.
+* The closest the two stars can ever get is the pericentre of their
+* post-SN relative orbit, q = h^2 / (G M (1 + e)), which works for both
+* bound and unbound orbits. They only reach it in the future if
+* they are currently approaching one another (sep_vec . v_rel < 0);
+* otherwise they are already past pericentre and are moving apart.
+* So the stars collide if they are approaching AND q < r2.
+* Credit to Eric Agol, who taught me this is a more robust method during
+* his 'particle in a box' homework at University of Washington.
 *
 * Variables
 * ---------
-* sep_vec is the separation vector between the two stars (in km)
-* v1 is the velocity of the primary star (in km/s)
-* v2 is the velocity of the secondary star (in km/s)
-* r2 is the radius of the secondary star (in rsun)
-* collide is whether the stars collide (logical)
-
-      real*8 sep_vec(3), v1(3), v2(3), v_dif(3), r2, r2km
-      real*8 r_dot_v_dif, v_dif_dot, t_min, d_min, d_min_vec(3)
+* sep_vec is the post-SN separation vector, exploding star minus
+*    companion (in km)
+* v_rel is the post-SN relative velocity, exploding star minus
+*    companion, in the same frame as sep_vec (in km/s)
+* h_mag is the magnitude of the post-SN specific orbital angular
+*    momentum, |sep_vec x v_rel| (in km^2/s)
+* ecc is the post-SN eccentricity
+* gm is G times the post-SN total mass (in km^3/s^2)
+* r2 is the radius of the companion star (in rsun)
+* collide is whether the stars collide (logical, output)
+      IMPLICIT NONE
+      real*8 sep_vec(3), v_rel(3), h_mag, ecc, gm, r2
       logical collide
-      integer i
+      real*8 rsunkm
+      parameter(rsunkm=6.96d+05)
+      real*8 r_dot_v, q_peri
 
-      do i = 1, 3
-         v_dif(i) = v2(i) - v1(i)
-      end do
+      call DotProduct(sep_vec, v_rel, r_dot_v)
+      q_peri = h_mag * h_mag / (gm * (1.d0 + ecc))
 
-      call DotProduct(sep_vec, v_dif, r_dot_v_dif)
-      call DotProduct(v_dif, v_dif, v_dif_dot)
-      t_min = -r_dot_v_dif / v_dif_dot
-
-      if (t_min.lt.0) then
-         collide = .false.
-      else
-         do i = 1, 3
-            d_min_vec(i) = sep_vec(i) + v_dif(i) * t_min
-         end do
-         call VectorMagnitude(d_min_vec, d_min)
-         r2km = r2 * rsunkm
-         if (d_min.lt.r2km) then
-            collide = .true.
-         else
-            collide = .false.
-         end if
-      end if 
+      collide = (r_dot_v.lt.0.d0).and.(q_peri.lt.r2 * rsunkm)
 
       RETURN
       END
@@ -1669,17 +1824,19 @@
       RETURN
       END
 
-      SUBROUTINE RandomBimodalKick(result,idum)
+      SUBROUTINE RandomBimodalKick(result,idum,n_try)
 * Fixed marginal posterior medians of the all-NS parent speed law.
 * Natural logs of speed in km/s; not Maxwellian component dispersions.
 * Select the component before rejection so truncation preserves f_low.
 * This fixed approximation does not propagate joint-posterior uncertainty.
+* Always makes 1 + 2 * n_try calls to RAN3 (see
+* RandomTruncatedNormal in ran3.f).
       IMPLICIT NONE
       real*8 result,mu,sigma,log_vk
       real*8 f_low,mu_low,sigma_low,mu_high,sigma_high
       parameter(f_low=0.126d0,mu_low=1.87d0,sigma_low=0.55d0)
       parameter(mu_high=5.62d0,sigma_high=0.71d0)
-      integer idum
+      integer idum,n_try
       real ran3
       external ran3
 
@@ -1690,11 +1847,8 @@
          mu = mu_high
          sigma = sigma_high
       endif
-      do
-         call RandomNormal(mu,sigma,idum,log_vk)
-         if(log_vk.gt.LOG(0.05d0).and.
-     &      log_vk.lt.LOG(1000.d0))exit
-      enddo
+      call RandomTruncatedNormal(mu, sigma, idum, LOG(0.05d0),
+     &                           LOG(1000.d0), n_try, log_vk)
       result = EXP(log_vk)
       RETURN
       END

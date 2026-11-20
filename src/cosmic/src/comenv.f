@@ -310,7 +310,7 @@
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin2,bhspin1,
      &              deltam_2,deltam_1,formation2,formation1,
-     &              binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &              binstate,mergertype,zpars(14)**2.5d0,'bpp')
             else
                CALL writetab(jp,tphys,evolve_type,
      &              mass1_bpp,mass2_bpp,kstar1_bpp,
@@ -327,7 +327,7 @@
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin1,bhspin2,
      &              deltam_1,deltam_2,formation1,formation2,
-     &              binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &              binstate,mergertype,zpars(14)**2.5d0,'bpp')
             endif
          endif
 *
@@ -544,7 +544,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
      &                       deltam_2,deltam_1,formation2,formation1,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    else
                        teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
@@ -565,7 +565,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
      &                       deltam_1,deltam_2,formation1,formation2,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    endif
                endif
                CALL kick(KW1,M_postCE,mc_co(1),M1,M2,ECC,SEP_postCE,
@@ -855,7 +855,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
      &                       deltam_2,deltam_1,formation2,formation1,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    else
                        teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
@@ -876,7 +876,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
      &                       deltam_1,deltam_2,formation1,formation2,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    endif
                endif
 * USSN: if ussn flag is set, have reduced kicks for stripped He stars (SN=8)
@@ -1030,7 +1030,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
      &                       deltam_2,deltam_1,formation2,formation1,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    else
                        teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
@@ -1051,7 +1051,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
      &                       deltam_1,deltam_2,formation1,formation2,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    endif
                endif
                CALL kick(KW2,M_postCE,mc_co(2),M2,M1,ECC,SEP_postCE,
@@ -1271,7 +1271,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin2,bhspin1,
      &                       deltam_2,deltam_1,formation2,formation1,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    else
                        teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
@@ -1292,7 +1292,7 @@
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin1,bhspin2,
      &                       deltam_1,deltam_2,formation1,formation2,
-     &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
+     &                       binstate,mergertype,zpars(14)**2.5d0,'bpp')
                    endif
             endif
             CALL kick(KW,MF,mc_co(1),M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
@@ -1344,7 +1344,7 @@
      &      OSPIN1,OSPIN2,B_0(1),B_0(2),bacc(1),bacc(2),
      &      tacc(1),tacc(2),epoch(1),epoch(2),bhspin1,bhspin2,
      &      deltam_1,deltam_2,formation1,formation2,2,-1,
-     &      zpars(14)**2.d5,'bpp')
+     &      zpars(14)**2.5d0,'bpp')
       endif
 
       if(output) write(*,*)'end of CE1:',KW1,M1,M01,R1,MENV,RENV

@@ -62,27 +62,59 @@
       END
 
 
-      SUBROUTINE RandomTruncatedNormal(mu, sigma, idum, lower, upper, x)
-* Generate a random number from a truncated normal distribution
-* with mean mu, standard deviation sigma, truncated to [lower, upper]
+      SUBROUTINE RandomTruncatedNormal(mu, sigma, idum, lower, upper,
+     &                                 n_try, x)
+* Draw from a normal distribution with mean mu and standard deviation
+* sigma truncated to [lower, upper], by rejection sampling.
+*
+* If n_try > 0, this always makes exactly 2 * n_try calls to RAN3 (2 per
+* candidate, with the calls for any candidates left after one is
+* accepted still made). This keeps the random number stream the same
+* whatever the outcome, so that later draws don't depend on how many
+* candidates were needed. In the (vanishingly unlikely) case that all
+* n_try candidates fall outside [lower, upper], the last one is
+* clamped to the range.
+*
+* If n_try <= 0, candidates are drawn until one is accepted (so the
+* number of calls to RAN3 varies), up to a maximum of 1000, after which
+* the midpoint of the range is used.
       IMPLICIT NONE
-      REAL*8 mu, sigma, lower, upper, x
-      INTEGER idum, max_attempts, attempt
+      REAL*8 mu, sigma, lower, upper, x, y
+      INTEGER idum, n_try, attempt, max_attempts
+      PARAMETER(max_attempts=1000)
+      LOGICAL found
+      REAL ran3, pad
+      EXTERNAL ran3
 
-      attempt = 0
-      max_attempts = 1000
-
-      do
-          attempt = attempt + 1
-          call RandomNormal(mu, sigma, idum, x)  ! for debugging
-          if (x .GE. lower .AND. x .LE. upper)then
-             exit
-          elseif (attempt.ge.max_attempts) then
-            ! use the midpoint if we exceed max attempts
-            x = 0.5d0 * (lower + upper)
-            exit
-          endif
-      end do
+      if(n_try.gt.0)then
+         found = .false.
+         y = mu
+         do attempt = 1, n_try
+            if(found)then
+               pad = ran3(idum)
+               pad = ran3(idum)
+            else
+               call RandomNormal(mu, sigma, idum, y)
+               if(y.ge.lower.and.y.le.upper)then
+                  x = y
+                  found = .true.
+               endif
+            endif
+         end do
+         if(.not.found) x = MIN(MAX(y, lower), upper)
+      else
+         attempt = 0
+         do
+            attempt = attempt + 1
+            call RandomNormal(mu, sigma, idum, x)
+            if(x.ge.lower.and.x.le.upper)then
+               exit
+            elseif(attempt.ge.max_attempts)then
+               x = 0.5d0 * (lower + upper)
+               exit
+            endif
+         end do
+      endif
 
       RETURN
       END
