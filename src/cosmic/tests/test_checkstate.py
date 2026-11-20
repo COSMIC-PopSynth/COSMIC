@@ -3,6 +3,7 @@
 
 import unittest
 import numpy as np
+import pandas as pd
 
 from cosmic import _evolvebin
 from cosmic.checkstate import set_checkstates, CHECKSTATE_COLUMNS, DEFAULT_CONDITIONS
@@ -24,15 +25,15 @@ def get_arrays():
             _evolvebin.checkstate_params.dtp_state.copy())
 
 
-def evolve_binary(timestep_conditions, dtp=100.0):
+def evolve_binary(timestep_conditions, dtp=100.0, save_initcond=False):
     """Evolve a wide 5 + 0.5 Msun binary, which is effectively a single 5 Msun star"""
     binary = InitialBinaryTable.InitialBinaries(
         m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
     )
     # the test BSEDict includes a dtp, which takes priority over the table
-    _, bcm, _, _ = Evolve.evolve(initialbinarytable=binary, BSEDict={**BSEDict, "dtp": dtp},
+    _, bcm, initcond, _ = Evolve.evolve(initialbinarytable=binary, BSEDict={**BSEDict, "dtp": dtp},
                                  SSEDict=SSEDict, timestep_conditions=timestep_conditions)
-    return bcm
+    return bcm if not save_initcond else (bcm, initcond)
 
 
 class TestSetCheckstates(unittest.TestCase):
@@ -179,3 +180,95 @@ class TestTimestepConditions(unittest.TestCase):
         wd = bcm[bcm.kstar_1 == 11].tphys.values
         self.assertGreater(len(wd), 100)
         self.assertAlmostEqual(np.median(np.diff(wd)), 10.0)
+
+    def test_dtp_array_in_bounds(self):
+        # if all the dtp_array values are between 0 and tphysf, the bcm
+        # should have exactly those rows
+        timesteps = [1.0, 10.3, 67.0, 813.95, 12516.0]
+        bcm = evolve_binary([], dtp=timesteps)
+        tphys = bcm.tphys.values
+        self.assertEqual(len(tphys), len(timesteps))
+        for t_in, t_out in zip(timesteps, tphys, strict=True):
+            self.assertAlmostEqual(t_in, t_out)
+
+    def test_dtp_array_in_bounds_jumbled(self):
+        # if the timesteps are unsorted and not unique, this should remove duplicates and sort
+        timesteps_jumbled = [813.95, 67.0, 67.0,  1.0, 67.0]
+        bcm = evolve_binary([], dtp=timesteps_jumbled)
+        timesteps_unjumbled = sorted(set(timesteps_jumbled))
+        tphys = bcm.tphys.values
+        self.assertEqual(len(tphys), len(timesteps_unjumbled))
+        for t_in, t_out in zip(timesteps_unjumbled, tphys, strict=True):
+            self.assertAlmostEqual(t_in, t_out)
+
+    def test_dtp_array_out_of_bounds(self):
+        # if any of the dtp_array values are less than 0, a ValueError should be raised
+        with self.assertRaises(ValueError):
+            _ = evolve_binary([], dtp=[-1.0, 67.0])
+
+    def test_dtp_array_on_bounds(self):
+        # if the timesteps are exactly on the bounds, this should work!
+        timesteps_on_bounds = [0.0, 13700.0]
+        bcm = evolve_binary([], dtp=timesteps_on_bounds)
+        tphys = bcm.tphys.values
+        self.assertEqual(len(tphys), len(timesteps_on_bounds))
+        for t_in, t_out in zip(timesteps_on_bounds, tphys, strict=True):
+            self.assertAlmostEqual(t_in, t_out)
+ 
+    def test_dtp_array_overwrites_other_parameters(self):
+        # if dtp_array is provided, it should take precedence over timestep_conditions
+        timesteps = [1.0, 100.0, 1000.0]
+        bcm = evolve_binary([["kstar_1=4", "dtp=0.0"]], dtp=timesteps)
+        tphys = bcm.tphys.values
+        self.assertEqual(len(tphys), len(timesteps))
+        for t_in, t_out in zip(timesteps, tphys, strict=True):
+            self.assertAlmostEqual(t_in, t_out)
+
+        bcm = evolve_binary([], dtp=timesteps)
+        tphys = bcm.tphys.values
+        self.assertEqual(len(tphys), len(timesteps))
+        for t_in, t_out in zip(timesteps, tphys, strict=True):
+            self.assertAlmostEqual(t_in, t_out)
+
+    def test_proper_initcond_return(self):
+        # if all the dtp_array values are between 0 and tphysf, the bcm
+        # should have exactly those rows
+        timesteps = [1.0, 10.3, 67.0, 813.95, 12516.0]
+        _, initcond = evolve_binary([], dtp=timesteps, save_initcond=True)
+        self.assertNotIn('dtp_array', initcond.keys())
+        self.assertTrue(all(dtp == timesteps for dtp in initcond["dtp"]))
+
+        _, initcond = evolve_binary([], dtp=100.0, save_initcond=True)
+        self.assertNotIn('dtp_array', initcond.keys())
+        self.assertTrue(all(dtp == 100.0 for dtp in initcond["dtp"]))
+
+    def test_dtp_array_as_kwarg(self):
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
+        )
+        timesteps = [1.0, 10.0, 100.0]
+
+        _, bcm, _, _ = Evolve.evolve(initialbinarytable=binary, BSEDict={**BSEDict, "dtp": timesteps},
+                                        SSEDict=SSEDict)
+        tphys = bcm.tphys.values
+        self.assertEqual(len(tphys), len(timesteps))
+        self.assertEqual(len(tphys), len(timesteps))
+        for t_in, t_out in zip(timesteps, tphys, strict=True):
+            self.assertAlmostEqual(t_in, t_out)
+
+    def test_unique_dtp_array_as_initcond_column(self):
+        binary = InitialBinaryTable.InitialBinaries(
+            m1=5.0, m2=0.5, porb=1e5, ecc=0.0, tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014
+        )
+        binaries = pd.concat([binary, binary])
+        binaries['bin_num'] = [1, 2]
+        dtp_first = [1.0, 10.0]
+        dtp_second = [50.0, 500.0]
+        binaries['dtp'] = [dtp_first, dtp_second]
+
+        _, bcm, _, _ = Evolve.evolve(initialbinarytable=binaries, BSEDict=BSEDict,
+                                        SSEDict=SSEDict)
+        
+        self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 1].tphys.values, dtp_first)))
+        self.assertTrue(all(t_bcm == t_dtp for (t_bcm, t_dtp) in zip(bcm[bcm.bin_num == 2].tphys.values, dtp_second)))
+        

@@ -27,6 +27,7 @@ from .checkstate import set_checkstates
 
 from schwimmbad import MultiPool
 
+from itertools import pairwise
 import numpy as np
 import pandas as pd
 import warnings
@@ -74,7 +75,7 @@ if sys.version_info.major == 2 and sys.version_info.minor == 7:
 else:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS = INITIAL_CONDITIONS_PASS_COLUMNS.copy()
 
-for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array', 'alpha1', 'acc_lim']:
+for col in ['natal_kick_array', 'qcrit_array', 'fprimc_array', 'alpha1', 'acc_lim', 'dtp_array']:
     INITIAL_BINARY_TABLE_SAVE_COLUMNS.remove(col)
 
 NATAL_KICK_COLUMNS = ['natal_kick', 'phi', 'theta', 'mean_anomaly', 'randomseed']
@@ -176,13 +177,12 @@ class Evolve(object):
         idx : `int`, optional, default: 0
             initial index of the bcm/bpp arrays
 
-        dtp : `float`, optional: default: tphysf
-            timestep size in Myr for bcm output where tphysf
-            is total evolution time in Myr
-
-        dtp_array : `array_like`, optional: default: []
-            Strictly increasing array of times in Myr for
-            bcm output. Overwrites timestep_conditions and dtp.
+        dtp : `float` or `array_like`, optional, default: tphysf
+            Controls the timesteps at which bcm output is written.
+            - If a `float`, the timestep size in Myr between bcm output rows,
+            where tphysf is the total evolution time in Myr.
+            - If `array_like`, the elements are the times in Myr at which bcm
+            output is written.
 
         n_per_block : `int`, optional, default: -1
             number of systems to evolve in a block with
@@ -204,6 +204,7 @@ class Evolve(object):
         nproc = min(kwargs.pop('nproc', 1), len(initialbinarytable))
         n_per_block = kwargs.pop('n_per_block', -1)
         progress = kwargs.pop('progress', False)
+        n = len(initialbinarytable)
 
         if bpp_columns is None:
             bpp_columns = BPP_COLUMNS
@@ -255,26 +256,34 @@ class Evolve(object):
         # assign some columns based on keyword arguments but that
         # can be overwritten by the params or BSEDict
         if 'dtp' not in initialbinarytable.keys():
-            initialbinarytable = initialbinarytable.assign(dtp=kwargs.pop('dtp', initialbinarytable['tphysf']))
-        if 'dtp_array' not in initialbinarytable.keys():
-            dtp_array = kwargs.pop('dtp_array', [])
-            columns_values = [dtp_array] * len(initialbinarytable)
-            initialbinarytable = initialbinarytable.assign(dtp_array=columns_values)
+            dtp = kwargs.pop('dtp', initialbinarytable['tphysf'])
+            if isinstance(dtp, (int, float)):
+                dtp_arr = []
+            else:
+                dtp_arr = sorted(set(dtp))
+                dtp = initialbinarytable['tphysf']
+            initialbinarytable = initialbinarytable.assign(dtp=dtp)
+            initialbinarytable = initialbinarytable.assign(dtp_array=[dtp_arr]*n)
         if 'randomseed' not in initialbinarytable.keys():
             seed = np.random.randint(np.iinfo(np.int32).min, np.iinfo(np.int32).max, size=len(initialbinarytable))
             initialbinarytable = initialbinarytable.assign(randomseed=kwargs.pop('randomseed', seed))
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
+        if 'dtp_array' not in initialbinarytable.keys():
+            initialbinarytable = initialbinarytable.assign(dtp_array=[[]]*len(initialbinarytable))
 
-        # if dtp_arr is set, ensure it is strictly increasing, and write over dtp and timestep_conditions
-        dtp_arr = np.array(initialbinarytable.dtp_array.iloc[0])
-        if dtp_arr.size > 0:
-            if not np.all(dtp_arr[:-1] < dtp_arr[1:]):
-                raise ValueError("The elements in dtp_array must be strictly increasing")
-            if dtp_arr[(dtp_arr < 0.0) | (dtp_arr > initialbinarytable['tphysf'].values[0])].size > 0:
-                raise ValueError("All elements in dtp_array must be between 0 and tphysf")
-            initialbinarytable = initialbinarytable.assign(dtp=initialbinarytable['tphysf'])
-            kwargs['timestep_conditions'] = []
+        # Check uniqueness
+        if initialbinarytable["dtp_array"].map(lambda x: len(x) == len(set(x))).eq(False).any():
+            raise ValueError("The elements in dtp_array must be unique")
+
+        # Check strictly increasing
+        if initialbinarytable["dtp_array"].map(lambda x: all(a < b for a, b in pairwise(x))).eq(False).any():
+            raise ValueError("The elements in dtp_array must be strictly increasing")
+
+        # Check bounds
+        dtp_exploded = initialbinarytable[["dtp_array", "tphysf"]].explode("dtp_array").dropna(subset=["dtp_array"])
+        if ((dtp_exploded["dtp_array"] < 0.0) | (dtp_exploded["dtp_array"] > dtp_exploded["tphysf"])).any():
+            raise ValueError("All elements in dtp_array must be between 0 and tphysf")
 
         # ensure SSEDict keys are unique in the initial binary table and warn otherwise
         for col in INITIAL_CONDITIONS_SSE_COLUMNS:
@@ -337,7 +346,6 @@ class Evolve(object):
            
         # go through each item in the BSEDict and update the initialbinarytable
         new_cols = {}
-        n = len(initialbinarytable)
         idx = initialbinarytable.index
         for k, v in list(BSEDict.items()):
             # warn the user if they are overwriting a value
@@ -391,9 +399,15 @@ class Evolve(object):
                                                index=initialbinarytable.index,
                                                name='acc_lim_{0}'.format(kstar))
                     initialbinarytable.loc[:, 'acc_lim_{0}'.format(kstar)] = columns_values
-            elif k == 'dtp_array':
-                columns_values = [BSEDict['dtp_array']] * n
-                initialbinarytable = initialbinarytable.assign(dtp_array=columns_values)
+            elif k == 'dtp':
+                dtp = BSEDict['dtp']
+                if isinstance(dtp, (int, float)):
+                    dtp_arr = []
+                else:
+                    dtp_arr = sorted(set(dtp))
+                    dtp = initialbinarytable['tphysf']
+                initialbinarytable = initialbinarytable.assign(dtp=dtp)
+                initialbinarytable = initialbinarytable.assign(dtp_array=[dtp_arr]*n)
             else:
                 # base case: if it's present, overwrite, if not, add to a list of new columns (see below)
                 if k in initialbinarytable.columns:
@@ -523,14 +537,20 @@ class Evolve(object):
                 f"{initialbinarytable['bin_num'][(low_mass_mask_1 | low_mass_mask_2) | (high_mass_mask_1 | high_mass_mask_2)].values[:5]}."
             )
 
+        # Allow a user to specify a custom time step sampling for certain parts of the evolution
+        if not initialbinarytable["dtp_array"].map(len).gt(0).any():
+            timestep_conditions = kwargs.pop('timestep_conditions', [])
+            set_checkstates(timestep_conditions=timestep_conditions)
+
         # we use different columns to save the BSE parameters because some
         # of the parameters are list/arrays which we instead save as
         # individual values because it makes saving to HDF5 easier/more efficient.
+        # we expanded dtp_array for the evolve call, collapse it back now for the user
+        print(f"Here 1 dtp_array is in the columns: {'dtp_array' in initialbinarytable.columns}")
+        initialbinarytable["dtp"] = initialbinarytable["dtp"].astype(object)
+        mask = initialbinarytable["dtp_array"].map(len) > 0
+        initialbinarytable.loc[mask, "dtp"] = initialbinarytable.loc[mask, "dtp_array"]
         initialbinarytable = initialbinarytable[INITIAL_BINARY_TABLE_SAVE_COLUMNS]
-
-        # Allow a user to specify a custom time step sampling for certain parts of the evolution
-        timestep_conditions = kwargs.pop('timestep_conditions', [])
-        set_checkstates(timestep_conditions=timestep_conditions)
 
         # set the indices of the columns to include in bpp table (+1 because fortran is 1-indexed)
         col_inds_bpp = np.zeros(len(ALL_COLUMNS), dtype=int)
@@ -549,6 +569,7 @@ class Evolve(object):
             initial_conditions[i]["col_inds_bcm"] = col_inds_bcm
 
         # evolve one system to get zpars
+        print(f"Here 2 dtp_array is in the columns: {'dtp_array' in initialbinarytable.columns}")
         _, _, _, _, _, zpars = _evolve_single_system(initial_conditions[0], None)
 
         # helper to collect results with an optional tqdm progress bar
@@ -686,6 +707,8 @@ def _evolve_single_system(f, zpars=None):
         _evolvebin.col.n_col_bcm = f["n_col_bcm"]
         _evolvebin.col.col_inds_bcm = f["col_inds_bcm"]
 
+        print(f"Here 3 dtp_array is in the columns: {'dtp_array' in f}")
+        print(f"dtp_array: {f['dtp_array']}")
         [zpars, kick_info, bpp_index, bcm_index] = _evolvebin.evolv2([f["kstar_1"], f["kstar_2"]],
                                                               [f["mass_1"], f["mass_2"]],
                                                               f["porb"], f["ecc"], f["metallicity"], 

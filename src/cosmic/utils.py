@@ -1292,10 +1292,15 @@ def error_check(BSEDict, SSEDict, filters=None, convergence=None, sampling=None)
                     )
 
     if "dtp" in BSEDict.keys():
-        if BSEDict["dtp"] < 0:
-            raise ValueError(
-                f"dtp needs to be greater than or equal to 0 (you set it to '{BSEDict['dtp']:0.2f}')"
-            )
+        if isinstance(BSEDict["dtp"], (int, float)):
+            if BSEDict["dtp"] < 0:
+                raise ValueError(
+                    f"dtp needs to be greater than or equal to 0 (you set it to '{BSEDict['dtp']:0.2f}')"
+                )
+        else:
+            dtp_arr = np.array(BSEDict["dtp"])
+            if dtp_arr.size > 0 and dtp_arr[(dtp_arr < 0.0)].size > 0:
+                    raise ValueError("All elements in dtp_array must be greater than or equal to 0")
 
     if "kickflag" in BSEDict.keys():
         if BSEDict["kickflag"] == -9:
