@@ -1,0 +1,4 @@
+.. automodule:: cosmic.sample.stroopwafel.distributions
+   :members:
+   :undoc-members:
+   :show-inheritance:

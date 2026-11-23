@@ -1,0 +1,33 @@
+COSMICOutput
+============
+
+.. currentmodule:: cosmic.output
+
+.. autoclass:: COSMICOutput
+   :show-inheritance:
+
+   .. rubric:: Attributes Summary
+
+   .. autosummary::
+
+      ~COSMICOutput.final_bpp
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~COSMICOutput.plot_detailed_evolution
+      ~COSMICOutput.plot_distribution
+      ~COSMICOutput.rerun_with_settings
+      ~COSMICOutput.save
+
+   .. rubric:: Attributes Documentation
+
+   .. autoattribute:: final_bpp
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: plot_detailed_evolution
+   .. automethod:: plot_distribution
+   .. automethod:: rerun_with_settings
+   .. automethod:: save

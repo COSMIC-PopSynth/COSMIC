@@ -1,0 +1,6 @@
+read_other_track
+================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: read_other_track

@@ -1,0 +1,21 @@
+cosmic.sample.sampler package
+=============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cosmic.sample.sampler.cmc
+   cosmic.sample.sampler.independent
+   cosmic.sample.sampler.multidim
+   cosmic.sample.sampler.sampler
+
+Module contents
+---------------
+
+.. automodule:: cosmic.sample.sampler
+   :members:
+   :undoc-members:
+   :show-inheritance:

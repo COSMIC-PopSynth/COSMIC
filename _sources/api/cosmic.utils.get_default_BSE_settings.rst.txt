@@ -1,0 +1,6 @@
+get_default_BSE_settings
+========================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: get_default_BSE_settings

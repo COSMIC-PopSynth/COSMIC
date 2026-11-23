@@ -1,0 +1,29 @@
+ParameterSpace
+==============
+
+.. currentmodule:: cosmic.sample.stroopwafel
+
+.. autoclass:: ParameterSpace
+   :show-inheritance:
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~ParameterSpace.compute_prior
+      ~ParameterSpace.compute_sigma
+      ~ParameterSpace.idx
+      ~ParameterSpace.in_bounds
+      ~ParameterSpace.sample
+      ~ParameterSpace.to_physical
+      ~ParameterSpace.to_sampling
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: compute_prior
+   .. automethod:: compute_sigma
+   .. automethod:: idx
+   .. automethod:: in_bounds
+   .. automethod:: sample
+   .. automethod:: to_physical
+   .. automethod:: to_sampling

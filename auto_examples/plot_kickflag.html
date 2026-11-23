@@ -1,0 +1,1586 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="windflag" href="plot_windflag.html"><link rel="prev" title="LBV_flag" href="plot_LBV_flag.html">
+        <link rel="prefetch" href="../_static/cosmic-colour.png" as="image">
+
+    <link rel="shortcut icon" href="../_static/cosmic-favicon.ico"><!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>kickflag - COSMIC v4.3.6</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=0fc419ee" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/cosmic-docs.css?v=00314a51" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-grid.min.css?v=ebdf2caa" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  --color-brand-primary: #3f95e1;
+  --color-brand-content: #3f95e1;
+  --color-brand-visited: #3f95e1;
+  --color-api-name: #3f95e1;
+  --color-api-pre-name: #3f95e1;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #e193ca;
+  --color-brand-content: #e193ca;
+  --color-brand-visited: #e193ca;
+  --color-api-name: #e193ca;
+  --color-api-pre-name: #e193ca;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #e193ca;
+  --color-brand-content: #e193ca;
+  --color-brand-visited: #e193ca;
+  --color-api-name: #e193ca;
+  --color-api-pre-name: #e193ca;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand"><span class='hide-me'>COSMIC </span>v4.3.6</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/cosmic-colour.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text"><span class='hide-me'>COSMIC </span>v4.3.6</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pages/about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/install.html">Installation</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../pages/reference_material.html">Configuration and output</a><input aria-label="Toggle navigation of Configuration and output" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../pages/config_and_output/inifile.html">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/config_and_output/output_info.html">Understanding COSMIC outputs</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Impact of settings on evolution</a><input aria-label="Toggle navigation of Impact of settings on evolution" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="plot_neta.html"><code class="docutils literal notranslate"><span class="pre">neta</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_pts.html"><code class="docutils literal notranslate"><span class="pre">pts1</span></code>, <code class="docutils literal notranslate"><span class="pre">pts2</span></code>, and <code class="docutils literal notranslate"><span class="pre">pts3</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_pisn.html"><code class="docutils literal notranslate"><span class="pre">pisn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_hewind.html"><code class="docutils literal notranslate"><span class="pre">hewind</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_LBV_flag.html"><code class="docutils literal notranslate"><span class="pre">LBV_flag</span></code></a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">kickflag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plot_windflag.html"><code class="docutils literal notranslate"><span class="pre">windflag</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/tutorials.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/evolve.html">Evolving binaries</a><input aria-label="Toggle navigation of Evolving binaries" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/single.html">Evolving a single binary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/multiple.html">Evolving multiple binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/grid.html">Evolving a fixed grid of binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/evolve/evolve_sample.html">Evolving a Monte-Carlo sampled population</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/sample.html">Sampling initial populations</a><input aria-label="Toggle navigation of Sampling initial populations" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/sample/independent.html">Independent distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/sample/multidim.html">Multidimensional distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/sample/cluster.html">ClusterMonteCarlo Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/rerun.html">Re-running simulations</a><input aria-label="Toggle navigation of Re-running simulations" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/rerun/rerun.html">Re-running binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/rerun/restart.html">Restarting a binary</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/timesteps.html">Timesteps and resolution</a><input aria-label="Toggle navigation of Timesteps and resolution" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/timesteps/resolution.html">Dynamic time resolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/timesteps/modifiers.html">Modifying internal timesteps</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/convergence.html">Converged populations</a><input aria-label="Toggle navigation of Converged populations" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/convergence/cosmic_pop.html">Generate a population the <cite>COSMIC</cite> way</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/analysis.html">Output analysis</a><input aria-label="Toggle navigation of Output analysis" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/analysis/interface.html">Analysing your simulations</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/adaptive.html">Adaptive importance sampling</a><input aria-label="Toggle navigation of Adaptive importance sampling" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/basics.html">Adaptive importance sampling for rare systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/distributions.html">Distributions and custom priors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/outputs.html">Handling outputs from adaptive sampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/kwargs.html">Apply timestep conditions and change evolution columns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/adaptive/checkpoint.html">Saving and loading checkpoints</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../pages/tutorials/misc.html">Miscellaneous</a><input aria-label="Toggle navigation of Miscellaneous" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pages/tutorials/misc/multiprocessing.html">Multiprocessing in COSMIC</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/api.html">Full API Reference</a><input aria-label="Toggle navigation of Full API Reference" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/evolve.html">Evolution (<code class="docutils literal notranslate"><span class="pre">evolve</span></code>)</a><input aria-label="Toggle navigation of Evolution (evolve)" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.evolve.read_tracks_for_METISSE.html">read_tracks_for_METISSE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.evolve.populate_tracks.html">populate_tracks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.evolve.Evolve.html">Evolve</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/sample.html">Sampling (<code class="docutils literal notranslate"><span class="pre">sample</span></code>)</a><input aria-label="Toggle navigation of Sampling (sample)" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.initialbinarytable.InitialBinaryTable.html">InitialBinaryTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.initialcmctable.InitialCMCTable.html">InitialCMCTable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.independent.get_independent_sampler.html">get_independent_sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.independent.Sample.html">Sample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.multidim.get_multidim_sampler.html">get_multidim_sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.multidim.MultiDim.html">MultiDim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.stroopwafel.AdaptiveSampler.html">AdaptiveSampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.stroopwafel.ParameterSpace.html">ParameterSpace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.stroopwafel.Parameter.html">Parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.cmc.get_cmc_sampler.html">get_cmc_sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.sampler.cmc.CMCSample.html">CMCSample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.M_enclosed.html">M_enclosed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.phi_r.html">phi_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.rho_r.html">rho_r</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.virial_radius_analytic.html">virial_radius_analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.find_rmax_vir.html">find_rmax_vir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.find_sigma_sqr.html">find_sigma_sqr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_positions.html">get_positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_velocities.html">get_velocities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_velocities_plummer.html">get_velocities_plummer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.get_velocities_old.html">get_velocities_old</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.scale_pos_and_vel.html">scale_pos_and_vel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.elson.draw_r_vr_vt.html">draw_r_vr_vt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.calc_rho.html">calc_rho</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.integrate_king_profile.html">integrate_king_profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.virial_radius_numerical.html">virial_radius_numerical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.find_sigma_sqr.html">find_sigma_sqr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.get_positions.html">get_positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.get_velocities.html">get_velocities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.scale_pos_and_vel.html">scale_pos_and_vel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.sample.cmc.king.draw_r_vr_vt.html">draw_r_vr_vt</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/output.html">Output analysis (<code class="docutils literal notranslate"><span class="pre">output</span></code>)</a><input aria-label="Toggle navigation of Output analysis (output)" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.save_initC.html">save_initC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.load_initC.html">load_initC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.COSMICOutput.html">COSMICOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.COSMICPopOutput.html">COSMICPopOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.COSMICStroopOutput.html">COSMICStroopOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.output.STROOPWAFELCheckpoint.html">STROOPWAFELCheckpoint</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/plotting.html">Plotting binaries (<code class="docutils literal notranslate"><span class="pre">plotting</span></code>)</a><input aria-label="Toggle navigation of Plotting binaries (plotting)" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.evolve_binary.html">evolve_binary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_k_type.html">plot_k_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_radius.html">plot_radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_mass.html">plot_mass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_Teff.html">plot_Teff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_Mdot.html">plot_Mdot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_P_orb.html">plot_P_orb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_ecc.html">plot_ecc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_HR_diagram.html">plot_HR_diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.plot_binary_evol.html">plot_binary_evol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.plotting.evolve_and_plot.html">evolve_and_plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../modules/utils.html">Utility functions (<code class="docutils literal notranslate"><span class="pre">utils</span></code>)</a><input aria-label="Toggle navigation of Utility functions (utils)" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.filter_bin_state.html">filter_bin_state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.conv_select.html">conv_select</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.mass_min_max_select.html">mass_min_max_select</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.idl_tabulate.html">idl_tabulate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.rndm.html">rndm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.param_transform.html">param_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.dat_transform.html">dat_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.dat_un_transform.html">dat_un_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.knuth_bw_selector.html">knuth_bw_selector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.error_check.html">error_check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.check_initial_conditions.html">check_initial_conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.convert_kstar_evol_type.html">convert_kstar_evol_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.parse_inifile.html">parse_inifile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.pop_write.html">pop_write</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.a_from_p.html">a_from_p</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.p_from_a.html">p_from_a</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_Z_from_FeH.html">get_Z_from_FeH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_FeH_from_Z.html">get_FeH_from_Z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_binfrac_of_Z.html">get_binfrac_of_Z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_porb_norm.html">get_porb_norm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_met_dep_binfrac.html">get_met_dep_binfrac</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_METISSE_metallicity_files.html">get_METISSE_metallicity_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_metallicity_file.html">read_metallicity_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_format_file.html">read_format_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_MIST_track.html">read_MIST_track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_other_track.html">read_other_track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.read_eep_directory.html">read_eep_directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.to_f2py_str_array.html">to_f2py_str_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.explain_setting.html">explain_setting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.get_default_BSE_settings.html">get_default_BSE_settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cosmic.utils.fill_BSEDict_with_defaults.html">fill_BSEDict_with_defaults</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/cite.html">Citing COSMIC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_generated/whats_new.html">What’s New in COSMIC</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pages/developers.html">For Developers</a><input aria-label="Toggle navigation of For Developers" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/how-it-works.html">Codebase overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/new-settings.html">Creating new settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/adding-options.html">Adding options to existing settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/debugging-vscode.html">Debugging COSMIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/develop/settings-json-file.html"><code class="docutils literal notranslate"><span class="pre">cosmic-settings.json</span></code> file explained</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/COSMIC-popsynth/COSMIC/blob/develop/docs/auto_examples/plot_kickflag.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/COSMIC-popsynth/COSMIC/edit/develop/docs/auto_examples/plot_kickflag.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-kickflag-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="kickflag">
+<span id="sphx-glr-auto-examples-plot-kickflag-py"></span><h1>kickflag<a class="headerlink" href="#kickflag" title="Link to this heading">¶</a></h1>
+<p>This example demonstrates how changing the <cite>kickflag</cite> parameter can affect the natal kick velocity distributions of compact objects.
+We separate this into neutron stars and black holes.</p>
+<ul class="sphx-glr-horizontal">
+<li><img src="../_images/sphx_glr_plot_kickflag_001.png" srcset="../_images/sphx_glr_plot_kickflag_001.png" alt="Neutron star kicks (kickflags 1-4)" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_kickflag_002.png" srcset="../_images/sphx_glr_plot_kickflag_002.png" alt="Neutron star kicks (kickflags 5-8)" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_kickflag_003.png" srcset="../_images/sphx_glr_plot_kickflag_003.png" alt="Black hole kicks (kickflags 1-4)" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_kickflag_004.png" srcset="../_images/sphx_glr_plot_kickflag_004.png" alt="Black hole kicks (kickflags 5-8)" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Evolving population with kickflag = 1...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   1%|          | 19/2039 [00:00&lt;00:11, 171.62sys/s]
+Evolving:   2%|▏         | 37/2039 [00:00&lt;00:12, 164.91sys/s]
+Evolving:   3%|▎         | 54/2039 [00:00&lt;00:12, 153.62sys/s]
+Evolving:   3%|▎         | 70/2039 [00:00&lt;00:17, 113.02sys/s]
+Evolving:   5%|▍         | 93/2039 [00:00&lt;00:13, 142.31sys/s]
+Evolving:   5%|▌         | 110/2039 [00:00&lt;00:14, 137.78sys/s]
+Evolving:   6%|▌         | 125/2039 [00:00&lt;00:14, 129.41sys/s]
+Evolving:   7%|▋         | 139/2039 [00:01&lt;00:18, 104.51sys/s]
+Evolving:   8%|▊         | 164/2039 [00:01&lt;00:13, 136.49sys/s]
+Evolving:   9%|▉         | 182/2039 [00:01&lt;00:12, 144.95sys/s]
+Evolving:  10%|▉         | 200/2039 [00:01&lt;00:12, 149.69sys/s]
+Evolving:  11%|█         | 217/2039 [00:01&lt;00:12, 149.14sys/s]
+Evolving:  11%|█▏        | 233/2039 [00:01&lt;00:12, 140.08sys/s]
+Evolving:  12%|█▏        | 250/2039 [00:01&lt;00:12, 147.53sys/s]
+Evolving:  13%|█▎        | 267/2039 [00:01&lt;00:11, 153.24sys/s]
+Evolving:  14%|█▍        | 283/2039 [00:02&lt;00:11, 148.83sys/s]
+Evolving:  15%|█▍        | 301/2039 [00:02&lt;00:16, 106.22sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:14, 117.53sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:14, 117.75sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:02&lt;00:13, 124.48sys/s]
+Evolving:  20%|██        | 409/2039 [00:03&lt;00:11, 144.66sys/s]
+Evolving:  21%|██        | 430/2039 [00:03&lt;00:10, 152.07sys/s]
+Evolving:  22%|██▏       | 447/2039 [00:03&lt;00:10, 149.14sys/s]
+Evolving:  23%|██▎       | 464/2039 [00:03&lt;00:10, 152.54sys/s]
+Evolving:  24%|██▎       | 480/2039 [00:03&lt;00:12, 124.55sys/s]
+Evolving:  24%|██▍       | 498/2039 [00:03&lt;00:11, 136.66sys/s]
+Evolving:  25%|██▌       | 513/2039 [00:03&lt;00:12, 119.28sys/s]
+Evolving:  26%|██▌       | 526/2039 [00:03&lt;00:12, 118.75sys/s]
+Evolving:  26%|██▋       | 539/2039 [00:04&lt;00:13, 115.11sys/s]
+Evolving:  27%|██▋       | 555/2039 [00:04&lt;00:11, 124.87sys/s]
+Evolving:  28%|██▊       | 577/2039 [00:04&lt;00:10, 139.98sys/s]
+Evolving:  29%|██▉       | 592/2039 [00:04&lt;00:11, 125.21sys/s]
+Evolving:  30%|███       | 614/2039 [00:04&lt;00:12, 111.02sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:04&lt;00:10, 132.15sys/s]
+Evolving:  33%|███▎      | 665/2039 [00:04&lt;00:09, 149.22sys/s]
+Evolving:  33%|███▎      | 683/2039 [00:05&lt;00:08, 155.53sys/s]
+Evolving:  34%|███▍      | 700/2039 [00:05&lt;00:10, 131.40sys/s]
+Evolving:  35%|███▌      | 720/2039 [00:05&lt;00:09, 138.40sys/s]
+Evolving:  36%|███▋      | 742/2039 [00:05&lt;00:08, 155.88sys/s]
+Evolving:  37%|███▋      | 759/2039 [00:05&lt;00:08, 149.05sys/s]
+Evolving:  38%|███▊      | 775/2039 [00:05&lt;00:08, 151.40sys/s]
+Evolving:  39%|███▉      | 794/2039 [00:05&lt;00:08, 152.33sys/s]
+Evolving:  40%|███▉      | 810/2039 [00:05&lt;00:08, 147.06sys/s]
+Evolving:  41%|████      | 826/2039 [00:06&lt;00:08, 148.29sys/s]
+Evolving:  41%|████▏     | 843/2039 [00:06&lt;00:08, 144.98sys/s]
+Evolving:  42%|████▏     | 858/2039 [00:06&lt;00:08, 138.92sys/s]
+Evolving:  43%|████▎     | 874/2039 [00:06&lt;00:12, 94.60sys/s]
+Evolving:  45%|████▍     | 911/2039 [00:06&lt;00:07, 143.36sys/s]
+Evolving:  46%|████▌     | 929/2039 [00:06&lt;00:07, 148.03sys/s]
+Evolving:  46%|████▋     | 946/2039 [00:07&lt;00:09, 115.81sys/s]
+Evolving:  47%|████▋     | 960/2039 [00:07&lt;00:09, 116.54sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:09, 106.19sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:07&lt;00:08, 122.23sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:07&lt;00:08, 118.79sys/s]
+Evolving:  51%|█████▏    | 1048/2039 [00:07&lt;00:07, 132.46sys/s]
+Evolving:  52%|█████▏    | 1063/2039 [00:08&lt;00:08, 119.30sys/s]
+Evolving:  53%|█████▎    | 1076/2039 [00:08&lt;00:08, 110.34sys/s]
+Evolving:  54%|█████▎    | 1093/2039 [00:08&lt;00:07, 121.21sys/s]
+Evolving:  54%|█████▍    | 1111/2039 [00:08&lt;00:07, 126.54sys/s]
+Evolving:  55%|█████▌    | 1126/2039 [00:08&lt;00:06, 130.87sys/s]
+Evolving:  56%|█████▌    | 1140/2039 [00:08&lt;00:07, 118.02sys/s]
+Evolving:  57%|█████▋    | 1162/2039 [00:08&lt;00:06, 138.97sys/s]
+Evolving:  58%|█████▊    | 1180/2039 [00:08&lt;00:05, 147.19sys/s]
+Evolving:  59%|█████▊    | 1196/2039 [00:09&lt;00:07, 118.50sys/s]
+Evolving:  59%|█████▉    | 1210/2039 [00:09&lt;00:07, 106.24sys/s]
+Evolving:  60%|█████▉    | 1222/2039 [00:09&lt;00:07, 108.07sys/s]
+Evolving:  61%|██████    | 1248/2039 [00:09&lt;00:05, 137.13sys/s]
+Evolving:  62%|██████▏   | 1265/2039 [00:09&lt;00:05, 141.00sys/s]
+Evolving:  63%|██████▎   | 1282/2039 [00:09&lt;00:05, 144.59sys/s]
+Evolving:  64%|██████▎   | 1297/2039 [00:09&lt;00:05, 143.84sys/s]
+Evolving:  64%|██████▍   | 1315/2039 [00:09&lt;00:05, 132.26sys/s]
+Evolving:  66%|██████▌   | 1336/2039 [00:10&lt;00:04, 151.17sys/s]
+Evolving:  66%|██████▋   | 1352/2039 [00:10&lt;00:05, 118.74sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 132.80sys/s]
+Evolving:  68%|██████▊   | 1389/2039 [00:10&lt;00:05, 124.41sys/s]
+Evolving:  69%|██████▉   | 1409/2039 [00:10&lt;00:04, 139.62sys/s]
+Evolving:  70%|██████▉   | 1424/2039 [00:10&lt;00:05, 114.08sys/s]
+Evolving:  70%|███████   | 1437/2039 [00:10&lt;00:05, 112.46sys/s]
+Evolving:  71%|███████   | 1450/2039 [00:11&lt;00:05, 98.74sys/s]
+Evolving:  73%|███████▎  | 1481/2039 [00:11&lt;00:04, 130.65sys/s]
+Evolving:  74%|███████▎  | 1503/2039 [00:11&lt;00:03, 149.17sys/s]
+Evolving:  74%|███████▍  | 1519/2039 [00:11&lt;00:03, 149.69sys/s]
+Evolving:  75%|███████▌  | 1538/2039 [00:11&lt;00:03, 148.18sys/s]
+Evolving:  76%|███████▌  | 1554/2039 [00:11&lt;00:03, 149.40sys/s]
+Evolving:  77%|███████▋  | 1572/2039 [00:11&lt;00:03, 150.70sys/s]
+Evolving:  78%|███████▊  | 1588/2039 [00:12&lt;00:03, 145.30sys/s]
+Evolving:  79%|███████▉  | 1609/2039 [00:12&lt;00:02, 158.36sys/s]
+Evolving:  80%|███████▉  | 1626/2039 [00:12&lt;00:03, 110.53sys/s]
+Evolving:  81%|████████  | 1656/2039 [00:12&lt;00:02, 147.02sys/s]
+Evolving:  82%|████████▏ | 1674/2039 [00:12&lt;00:02, 126.59sys/s]
+Evolving:  83%|████████▎ | 1700/2039 [00:12&lt;00:02, 151.29sys/s]
+Evolving:  84%|████████▍ | 1718/2039 [00:12&lt;00:02, 151.29sys/s]
+Evolving:  85%|████████▌ | 1735/2039 [00:13&lt;00:02, 147.68sys/s]
+Evolving:  86%|████████▌ | 1751/2039 [00:13&lt;00:01, 148.78sys/s]
+Evolving:  87%|████████▋ | 1767/2039 [00:13&lt;00:01, 150.96sys/s]
+Evolving:  87%|████████▋ | 1783/2039 [00:13&lt;00:01, 143.06sys/s]
+Evolving:  88%|████████▊ | 1800/2039 [00:13&lt;00:01, 148.45sys/s]
+Evolving:  89%|████████▉ | 1816/2039 [00:13&lt;00:01, 150.10sys/s]
+Evolving:  90%|████████▉ | 1832/2039 [00:13&lt;00:01, 147.53sys/s]
+Evolving:  91%|█████████ | 1847/2039 [00:13&lt;00:01, 109.30sys/s]
+Evolving:  92%|█████████▏| 1875/2039 [00:14&lt;00:01, 143.87sys/s]
+Evolving:  93%|█████████▎| 1892/2039 [00:14&lt;00:01, 106.55sys/s]
+Evolving:  94%|█████████▍| 1920/2039 [00:14&lt;00:00, 140.15sys/s]
+Evolving:  95%|█████████▌| 1938/2039 [00:14&lt;00:00, 112.59sys/s]
+Evolving:  97%|█████████▋| 1968/2039 [00:14&lt;00:00, 145.76sys/s]
+Evolving:  97%|█████████▋| 1987/2039 [00:14&lt;00:00, 143.55sys/s]
+Evolving:  98%|█████████▊| 2005/2039 [00:15&lt;00:00, 146.73sys/s]
+Evolving:  99%|█████████▉| 2022/2039 [00:15&lt;00:00, 131.94sys/s]
+Evolving: 100%|█████████▉| 2037/2039 [00:15&lt;00:00, 135.12sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 133.33sys/s]
+   [Time taken: 15.5606 seconds]
+Evolving population with kickflag = 2...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   0%|          | 10/2039 [00:00&lt;00:21, 94.54sys/s]
+Evolving:   1%|          | 24/2039 [00:00&lt;00:25, 80.25sys/s]
+Evolving:   3%|▎         | 53/2039 [00:00&lt;00:13, 151.74sys/s]
+Evolving:   3%|▎         | 71/2039 [00:00&lt;00:17, 114.43sys/s]
+Evolving:   5%|▍         | 94/2039 [00:00&lt;00:13, 143.47sys/s]
+Evolving:   5%|▌         | 111/2039 [00:00&lt;00:14, 134.80sys/s]
+Evolving:   6%|▌         | 127/2039 [00:00&lt;00:13, 140.20sys/s]
+Evolving:   7%|▋         | 143/2039 [00:01&lt;00:16, 115.47sys/s]
+Evolving:   8%|▊         | 164/2039 [00:01&lt;00:14, 133.79sys/s]
+Evolving:   9%|▉         | 179/2039 [00:01&lt;00:13, 137.23sys/s]
+Evolving:  10%|▉         | 196/2039 [00:01&lt;00:12, 143.14sys/s]
+Evolving:  10%|█         | 213/2039 [00:01&lt;00:12, 148.53sys/s]
+Evolving:  11%|█         | 229/2039 [00:01&lt;00:13, 137.77sys/s]
+Evolving:  12%|█▏        | 246/2039 [00:01&lt;00:12, 145.43sys/s]
+Evolving:  13%|█▎        | 262/2039 [00:01&lt;00:11, 149.37sys/s]
+Evolving:  14%|█▎        | 279/2039 [00:02&lt;00:11, 151.33sys/s]
+Evolving:  14%|█▍        | 295/2039 [00:02&lt;00:11, 149.96sys/s]
+Evolving:  15%|█▌        | 311/2039 [00:02&lt;00:14, 119.31sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:15, 109.77sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:14, 118.45sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:02&lt;00:13, 118.44sys/s]
+Evolving:  20%|██        | 410/2039 [00:03&lt;00:10, 150.35sys/s]
+Evolving:  21%|██        | 427/2039 [00:03&lt;00:10, 151.33sys/s]
+Evolving:  22%|██▏       | 444/2039 [00:03&lt;00:11, 142.54sys/s]
+Evolving:  23%|██▎       | 460/2039 [00:03&lt;00:10, 145.15sys/s]
+Evolving:  23%|██▎       | 476/2039 [00:03&lt;00:14, 111.12sys/s]
+Evolving:  25%|██▍       | 500/2039 [00:03&lt;00:11, 137.48sys/s]
+Evolving:  25%|██▌       | 516/2039 [00:03&lt;00:12, 124.15sys/s]
+Evolving:  26%|██▌       | 531/2039 [00:04&lt;00:11, 129.59sys/s]
+Evolving:  27%|██▋       | 546/2039 [00:04&lt;00:11, 131.96sys/s]
+Evolving:  28%|██▊       | 561/2039 [00:04&lt;00:11, 125.22sys/s]
+Evolving:  28%|██▊       | 578/2039 [00:04&lt;00:10, 135.59sys/s]
+Evolving:  29%|██▉       | 593/2039 [00:04&lt;00:12, 114.56sys/s]
+Evolving:  30%|███       | 614/2039 [00:04&lt;00:12, 111.45sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:04&lt;00:10, 133.29sys/s]
+Evolving:  32%|███▏      | 660/2039 [00:05&lt;00:09, 137.90sys/s]
+Evolving:  33%|███▎      | 681/2039 [00:05&lt;00:09, 146.41sys/s]
+Evolving:  34%|███▍      | 697/2039 [00:05&lt;00:09, 134.38sys/s]
+Evolving:  35%|███▍      | 712/2039 [00:05&lt;00:10, 130.35sys/s]
+Evolving:  36%|███▌      | 732/2039 [00:05&lt;00:09, 143.94sys/s]
+Evolving:  37%|███▋      | 747/2039 [00:05&lt;00:08, 144.37sys/s]
+Evolving:  37%|███▋      | 762/2039 [00:05&lt;00:08, 142.86sys/s]
+Evolving:  38%|███▊      | 777/2039 [00:05&lt;00:09, 139.27sys/s]
+Evolving:  39%|███▉      | 796/2039 [00:05&lt;00:08, 152.72sys/s]
+Evolving:  40%|███▉      | 812/2039 [00:06&lt;00:08, 152.73sys/s]
+Evolving:  41%|████      | 828/2039 [00:06&lt;00:08, 144.23sys/s]
+Evolving:  41%|████▏     | 843/2039 [00:06&lt;00:08, 143.07sys/s]
+Evolving:  42%|████▏     | 858/2039 [00:06&lt;00:08, 141.85sys/s]
+Evolving:  43%|████▎     | 873/2039 [00:06&lt;00:08, 141.37sys/s]
+Evolving:  44%|████▎     | 888/2039 [00:06&lt;00:10, 111.52sys/s]
+Evolving:  45%|████▍     | 910/2039 [00:06&lt;00:08, 129.80sys/s]
+Evolving:  46%|████▌     | 929/2039 [00:06&lt;00:07, 143.81sys/s]
+Evolving:  46%|████▋     | 945/2039 [00:07&lt;00:09, 114.89sys/s]
+Evolving:  47%|████▋     | 958/2039 [00:07&lt;00:10, 104.39sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:11, 94.01sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:07&lt;00:08, 116.21sys/s]
+Evolving:  51%|█████▏    | 1048/2039 [00:07&lt;00:07, 130.27sys/s]
+Evolving:  52%|█████▏    | 1063/2039 [00:08&lt;00:08, 119.83sys/s]
+Evolving:  53%|█████▎    | 1076/2039 [00:08&lt;00:08, 109.04sys/s]
+Evolving:  54%|█████▍    | 1097/2039 [00:08&lt;00:07, 126.11sys/s]
+Evolving:  55%|█████▍    | 1115/2039 [00:08&lt;00:06, 135.69sys/s]
+Evolving:  55%|█████▌    | 1130/2039 [00:08&lt;00:07, 126.90sys/s]
+Evolving:  56%|█████▌    | 1144/2039 [00:08&lt;00:07, 121.81sys/s]
+Evolving:  57%|█████▋    | 1161/2039 [00:08&lt;00:06, 131.91sys/s]
+Evolving:  58%|█████▊    | 1180/2039 [00:09&lt;00:06, 140.17sys/s]
+Evolving:  59%|█████▊    | 1195/2039 [00:09&lt;00:07, 116.23sys/s]
+Evolving:  59%|█████▉    | 1208/2039 [00:09&lt;00:08, 98.96sys/s]
+Evolving:  60%|██████    | 1231/2039 [00:09&lt;00:06, 125.61sys/s]
+Evolving:  61%|██████    | 1248/2039 [00:09&lt;00:05, 134.85sys/s]
+Evolving:  62%|██████▏   | 1263/2039 [00:09&lt;00:05, 137.03sys/s]
+Evolving:  63%|██████▎   | 1278/2039 [00:09&lt;00:05, 130.40sys/s]
+Evolving:  63%|██████▎   | 1293/2039 [00:10&lt;00:06, 119.14sys/s]
+Evolving:  64%|██████▍   | 1315/2039 [00:10&lt;00:05, 134.51sys/s]
+Evolving:  66%|██████▌   | 1337/2039 [00:10&lt;00:04, 152.80sys/s]
+Evolving:  66%|██████▋   | 1353/2039 [00:10&lt;00:05, 116.98sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 131.68sys/s]
+Evolving:  68%|██████▊   | 1389/2039 [00:10&lt;00:04, 135.26sys/s]
+Evolving:  69%|██████▉   | 1404/2039 [00:10&lt;00:04, 135.88sys/s]
+Evolving:  70%|██████▉   | 1419/2039 [00:11&lt;00:05, 105.70sys/s]
+Evolving:  70%|███████   | 1432/2039 [00:11&lt;00:06, 97.45sys/s]
+Evolving:  71%|███████   | 1445/2039 [00:11&lt;00:05, 102.87sys/s]
+Evolving:  72%|███████▏  | 1477/2039 [00:11&lt;00:03, 150.67sys/s]
+Evolving:  73%|███████▎  | 1494/2039 [00:11&lt;00:03, 145.09sys/s]
+Evolving:  74%|███████▍  | 1513/2039 [00:11&lt;00:03, 151.31sys/s]
+Evolving:  75%|███████▌  | 1530/2039 [00:11&lt;00:03, 144.00sys/s]
+Evolving:  76%|███████▌  | 1548/2039 [00:11&lt;00:03, 150.38sys/s]
+Evolving:  77%|███████▋  | 1567/2039 [00:11&lt;00:02, 159.45sys/s]
+Evolving:  78%|███████▊  | 1584/2039 [00:12&lt;00:03, 138.40sys/s]
+Evolving:  79%|███████▊  | 1603/2039 [00:12&lt;00:02, 150.43sys/s]
+Evolving:  79%|███████▉  | 1619/2039 [00:12&lt;00:03, 114.90sys/s]
+Evolving:  81%|████████  | 1647/2039 [00:12&lt;00:02, 148.73sys/s]
+Evolving:  82%|████████▏ | 1665/2039 [00:12&lt;00:03, 112.41sys/s]
+Evolving:  83%|████████▎ | 1699/2039 [00:12&lt;00:02, 150.65sys/s]
+Evolving:  84%|████████▍ | 1719/2039 [00:13&lt;00:02, 157.74sys/s]
+Evolving:  85%|████████▌ | 1738/2039 [00:13&lt;00:02, 150.35sys/s]
+Evolving:  86%|████████▌ | 1755/2039 [00:13&lt;00:01, 150.71sys/s]
+Evolving:  87%|████████▋ | 1773/2039 [00:13&lt;00:01, 150.52sys/s]
+Evolving:  88%|████████▊ | 1791/2039 [00:13&lt;00:01, 156.27sys/s]
+Evolving:  89%|████████▊ | 1808/2039 [00:13&lt;00:01, 152.32sys/s]
+Evolving:  90%|████████▉ | 1825/2039 [00:13&lt;00:01, 139.79sys/s]
+Evolving:  90%|█████████ | 1840/2039 [00:14&lt;00:01, 101.76sys/s]
+Evolving:  92%|█████████▏| 1876/2039 [00:14&lt;00:01, 149.90sys/s]
+Evolving:  93%|█████████▎| 1894/2039 [00:14&lt;00:01, 118.95sys/s]
+Evolving:  94%|█████████▍| 1923/2039 [00:14&lt;00:00, 148.04sys/s]
+Evolving:  95%|█████████▌| 1941/2039 [00:14&lt;00:00, 116.80sys/s]
+Evolving:  97%|█████████▋| 1969/2039 [00:14&lt;00:00, 136.00sys/s]
+Evolving:  98%|█████████▊| 1989/2039 [00:15&lt;00:00, 148.31sys/s]
+Evolving:  98%|█████████▊| 2007/2039 [00:15&lt;00:00, 150.96sys/s]
+Evolving:  99%|█████████▉| 2024/2039 [00:15&lt;00:00, 139.58sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 131.99sys/s]
+   [Time taken: 15.6630 seconds]
+Evolving population with kickflag = 3...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   1%|          | 11/2039 [00:00&lt;00:21, 93.70sys/s]
+Evolving:   1%|          | 24/2039 [00:00&lt;00:24, 81.75sys/s]
+Evolving:   3%|▎         | 51/2039 [00:00&lt;00:13, 143.46sys/s]
+Evolving:   3%|▎         | 67/2039 [00:00&lt;00:18, 103.95sys/s]
+Evolving:   5%|▍         | 94/2039 [00:00&lt;00:13, 144.59sys/s]
+Evolving:   5%|▌         | 112/2039 [00:00&lt;00:13, 147.95sys/s]
+Evolving:   6%|▋         | 129/2039 [00:00&lt;00:13, 144.45sys/s]
+Evolving:   7%|▋         | 145/2039 [00:01&lt;00:15, 119.98sys/s]
+Evolving:   8%|▊         | 161/2039 [00:01&lt;00:14, 129.18sys/s]
+Evolving:   9%|▉         | 179/2039 [00:01&lt;00:13, 134.55sys/s]
+Evolving:  10%|▉         | 196/2039 [00:01&lt;00:13, 138.25sys/s]
+Evolving:  11%|█         | 216/2039 [00:01&lt;00:12, 149.22sys/s]
+Evolving:  11%|█▏        | 232/2039 [00:01&lt;00:12, 142.21sys/s]
+Evolving:  12%|█▏        | 249/2039 [00:01&lt;00:12, 139.36sys/s]
+Evolving:  13%|█▎        | 268/2039 [00:01&lt;00:11, 149.08sys/s]
+Evolving:  14%|█▍        | 285/2039 [00:02&lt;00:11, 152.06sys/s]
+Evolving:  15%|█▍        | 301/2039 [00:02&lt;00:16, 106.25sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:14, 113.87sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:13, 127.86sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:02&lt;00:13, 123.50sys/s]
+Evolving:  20%|█▉        | 404/2039 [00:03&lt;00:11, 143.33sys/s]
+Evolving:  21%|██        | 424/2039 [00:03&lt;00:10, 153.72sys/s]
+Evolving:  22%|██▏       | 441/2039 [00:03&lt;00:10, 153.58sys/s]
+Evolving:  22%|██▏       | 458/2039 [00:03&lt;00:10, 144.17sys/s]
+Evolving:  23%|██▎       | 474/2039 [00:03&lt;00:14, 109.23sys/s]
+Evolving:  24%|██▍       | 497/2039 [00:03&lt;00:11, 130.71sys/s]
+Evolving:  25%|██▌       | 513/2039 [00:03&lt;00:12, 124.21sys/s]
+Evolving:  26%|██▌       | 527/2039 [00:04&lt;00:12, 125.76sys/s]
+Evolving:  27%|██▋       | 541/2039 [00:04&lt;00:12, 124.70sys/s]
+Evolving:  27%|██▋       | 555/2039 [00:04&lt;00:11, 123.89sys/s]
+Evolving:  28%|██▊       | 576/2039 [00:04&lt;00:10, 144.33sys/s]
+Evolving:  29%|██▉       | 592/2039 [00:04&lt;00:12, 119.91sys/s]
+Evolving:  30%|███       | 614/2039 [00:04&lt;00:12, 111.51sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:04&lt;00:10, 139.24sys/s]
+Evolving:  32%|███▏      | 660/2039 [00:05&lt;00:09, 138.59sys/s]
+Evolving:  33%|███▎      | 683/2039 [00:05&lt;00:09, 149.19sys/s]
+Evolving:  34%|███▍      | 699/2039 [00:05&lt;00:08, 148.93sys/s]
+Evolving:  35%|███▌      | 715/2039 [00:05&lt;00:09, 140.58sys/s]
+Evolving:  36%|███▌      | 734/2039 [00:05&lt;00:08, 147.30sys/s]
+Evolving:  37%|███▋      | 750/2039 [00:05&lt;00:09, 130.96sys/s]
+Evolving:  38%|███▊      | 773/2039 [00:05&lt;00:08, 150.70sys/s]
+Evolving:  39%|███▉      | 791/2039 [00:05&lt;00:08, 149.78sys/s]
+Evolving:  40%|███▉      | 811/2039 [00:06&lt;00:07, 162.08sys/s]
+Evolving:  41%|████      | 828/2039 [00:06&lt;00:08, 150.04sys/s]
+Evolving:  41%|████▏     | 844/2039 [00:06&lt;00:07, 151.65sys/s]
+Evolving:  42%|████▏     | 860/2039 [00:06&lt;00:08, 144.49sys/s]
+Evolving:  43%|████▎     | 875/2039 [00:06&lt;00:11, 99.36sys/s]
+Evolving:  45%|████▍     | 910/2039 [00:06&lt;00:07, 149.42sys/s]
+Evolving:  46%|████▌     | 929/2039 [00:06&lt;00:07, 143.60sys/s]
+Evolving:  46%|████▋     | 946/2039 [00:07&lt;00:09, 115.08sys/s]
+Evolving:  47%|████▋     | 960/2039 [00:07&lt;00:09, 114.79sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:09, 106.55sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:07&lt;00:08, 122.75sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:07&lt;00:08, 118.29sys/s]
+Evolving:  51%|█████▏    | 1048/2039 [00:07&lt;00:07, 138.69sys/s]
+Evolving:  52%|█████▏    | 1064/2039 [00:08&lt;00:09, 99.98sys/s]
+Evolving:  54%|█████▎    | 1091/2039 [00:08&lt;00:07, 126.17sys/s]
+Evolving:  54%|█████▍    | 1107/2039 [00:08&lt;00:07, 130.20sys/s]
+Evolving:  55%|█████▌    | 1123/2039 [00:08&lt;00:06, 132.09sys/s]
+Evolving:  56%|█████▌    | 1138/2039 [00:08&lt;00:07, 122.35sys/s]
+Evolving:  57%|█████▋    | 1155/2039 [00:08&lt;00:06, 132.66sys/s]
+Evolving:  57%|█████▋    | 1172/2039 [00:08&lt;00:06, 141.50sys/s]
+Evolving:  58%|█████▊    | 1188/2039 [00:09&lt;00:07, 106.91sys/s]
+Evolving:  59%|█████▉    | 1204/2039 [00:09&lt;00:08, 99.73sys/s]
+Evolving:  60%|██████    | 1233/2039 [00:09&lt;00:06, 131.12sys/s]
+Evolving:  61%|██████▏   | 1251/2039 [00:09&lt;00:05, 139.88sys/s]
+Evolving:  62%|██████▏   | 1268/2039 [00:09&lt;00:05, 140.99sys/s]
+Evolving:  63%|██████▎   | 1285/2039 [00:09&lt;00:05, 146.61sys/s]
+Evolving:  64%|██████▍   | 1301/2039 [00:09&lt;00:05, 146.29sys/s]
+Evolving:  65%|██████▍   | 1317/2039 [00:10&lt;00:05, 138.60sys/s]
+Evolving:  66%|██████▌   | 1339/2039 [00:10&lt;00:04, 159.16sys/s]
+Evolving:  67%|██████▋   | 1356/2039 [00:10&lt;00:05, 125.89sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 124.34sys/s]
+Evolving:  68%|██████▊   | 1388/2039 [00:10&lt;00:05, 122.60sys/s]
+Evolving:  69%|██████▉   | 1408/2039 [00:10&lt;00:04, 140.30sys/s]
+Evolving:  70%|██████▉   | 1423/2039 [00:10&lt;00:05, 112.85sys/s]
+Evolving:  70%|███████   | 1436/2039 [00:11&lt;00:05, 106.23sys/s]
+Evolving:  71%|███████   | 1448/2039 [00:11&lt;00:05, 108.40sys/s]
+Evolving:  72%|███████▏  | 1477/2039 [00:11&lt;00:03, 151.06sys/s]
+Evolving:  73%|███████▎  | 1494/2039 [00:11&lt;00:03, 139.54sys/s]
+Evolving:  74%|███████▍  | 1512/2039 [00:11&lt;00:03, 148.03sys/s]
+Evolving:  75%|███████▍  | 1528/2039 [00:11&lt;00:03, 147.68sys/s]
+Evolving:  76%|███████▌  | 1545/2039 [00:11&lt;00:03, 150.41sys/s]
+Evolving:  77%|███████▋  | 1561/2039 [00:11&lt;00:03, 151.35sys/s]
+Evolving:  77%|███████▋  | 1578/2039 [00:11&lt;00:02, 155.90sys/s]
+Evolving:  78%|███████▊  | 1594/2039 [00:12&lt;00:02, 152.10sys/s]
+Evolving:  79%|███████▉  | 1610/2039 [00:12&lt;00:02, 154.15sys/s]
+Evolving:  80%|███████▉  | 1626/2039 [00:12&lt;00:03, 118.62sys/s]
+Evolving:  81%|████████  | 1650/2039 [00:12&lt;00:02, 142.86sys/s]
+Evolving:  82%|████████▏ | 1666/2039 [00:12&lt;00:03, 106.43sys/s]
+Evolving:  83%|████████▎ | 1698/2039 [00:12&lt;00:02, 147.21sys/s]
+Evolving:  84%|████████▍ | 1716/2039 [00:12&lt;00:02, 150.81sys/s]
+Evolving:  85%|████████▌ | 1734/2039 [00:13&lt;00:02, 151.37sys/s]
+Evolving:  86%|████████▌ | 1751/2039 [00:13&lt;00:02, 137.28sys/s]
+Evolving:  87%|████████▋ | 1766/2039 [00:13&lt;00:02, 122.71sys/s]
+Evolving:  87%|████████▋ | 1780/2039 [00:13&lt;00:02, 115.37sys/s]
+Evolving:  88%|████████▊ | 1797/2039 [00:13&lt;00:02, 118.88sys/s]
+Evolving:  89%|████████▉ | 1815/2039 [00:13&lt;00:01, 126.23sys/s]
+Evolving:  90%|████████▉ | 1829/2039 [00:13&lt;00:01, 127.69sys/s]
+Evolving:  90%|█████████ | 1843/2039 [00:14&lt;00:02, 90.43sys/s]
+Evolving:  92%|█████████▏| 1871/2039 [00:14&lt;00:01, 127.88sys/s]
+Evolving:  93%|█████████▎| 1887/2039 [00:14&lt;00:01, 133.68sys/s]
+Evolving:  93%|█████████▎| 1903/2039 [00:14&lt;00:01, 98.45sys/s]
+Evolving:  95%|█████████▍| 1931/2039 [00:14&lt;00:00, 127.15sys/s]
+Evolving:  95%|█████████▌| 1947/2039 [00:15&lt;00:00, 103.32sys/s]
+Evolving:  96%|█████████▋| 1967/2039 [00:15&lt;00:00, 117.52sys/s]
+Evolving:  97%|█████████▋| 1982/2039 [00:15&lt;00:00, 120.45sys/s]
+Evolving:  98%|█████████▊| 1996/2039 [00:15&lt;00:00, 111.28sys/s]
+Evolving:  99%|█████████▊| 2009/2039 [00:15&lt;00:00, 106.89sys/s]
+Evolving:  99%|█████████▉| 2022/2039 [00:15&lt;00:00, 94.01sys/s]
+Evolving: 100%|█████████▉| 2033/2039 [00:15&lt;00:00, 91.08sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 128.62sys/s]
+   [Time taken: 16.0764 seconds]
+Evolving population with kickflag = 4...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   0%|          | 4/2039 [00:00&lt;00:52, 38.67sys/s]
+Evolving:   1%|          | 19/2039 [00:00&lt;00:29, 69.32sys/s]
+Evolving:   2%|▏         | 36/2039 [00:00&lt;00:19, 102.85sys/s]
+Evolving:   2%|▏         | 48/2039 [00:00&lt;00:20, 95.48sys/s]
+Evolving:   3%|▎         | 59/2039 [00:00&lt;00:20, 95.94sys/s]
+Evolving:   3%|▎         | 69/2039 [00:00&lt;00:23, 83.56sys/s]
+Evolving:   4%|▍         | 80/2039 [00:00&lt;00:23, 84.21sys/s]
+Evolving:   5%|▍         | 93/2039 [00:01&lt;00:20, 93.88sys/s]
+Evolving:   5%|▌         | 109/2039 [00:01&lt;00:18, 105.85sys/s]
+Evolving:   6%|▌         | 124/2039 [00:01&lt;00:18, 102.10sys/s]
+Evolving:   7%|▋         | 137/2039 [00:01&lt;00:21, 89.32sys/s]
+Evolving:   8%|▊         | 157/2039 [00:01&lt;00:17, 108.88sys/s]
+Evolving:   9%|▊         | 174/2039 [00:01&lt;00:15, 120.91sys/s]
+Evolving:   9%|▉         | 187/2039 [00:01&lt;00:16, 111.08sys/s]
+Evolving:  10%|█         | 205/2039 [00:01&lt;00:14, 125.41sys/s]
+Evolving:  11%|█         | 219/2039 [00:02&lt;00:15, 118.75sys/s]
+Evolving:  12%|█▏        | 235/2039 [00:02&lt;00:14, 128.09sys/s]
+Evolving:  12%|█▏        | 249/2039 [00:02&lt;00:14, 122.09sys/s]
+Evolving:  13%|█▎        | 265/2039 [00:02&lt;00:13, 128.54sys/s]
+Evolving:  14%|█▎        | 280/2039 [00:02&lt;00:13, 131.09sys/s]
+Evolving:  15%|█▍        | 297/2039 [00:02&lt;00:13, 130.74sys/s]
+Evolving:  15%|█▌        | 311/2039 [00:02&lt;00:17, 96.70sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:03&lt;00:17, 96.20sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:03&lt;00:15, 107.29sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:03&lt;00:15, 108.35sys/s]
+Evolving:  20%|██        | 409/2039 [00:03&lt;00:11, 138.09sys/s]
+Evolving:  21%|██        | 427/2039 [00:03&lt;00:11, 139.99sys/s]
+Evolving:  22%|██▏       | 443/2039 [00:03&lt;00:11, 136.69sys/s]
+Evolving:  22%|██▏       | 458/2039 [00:04&lt;00:11, 132.33sys/s]
+Evolving:  23%|██▎       | 472/2039 [00:04&lt;00:15, 100.36sys/s]
+Evolving:  25%|██▍       | 503/2039 [00:04&lt;00:11, 137.28sys/s]
+Evolving:  25%|██▌       | 519/2039 [00:04&lt;00:11, 134.14sys/s]
+Evolving:  26%|██▌       | 534/2039 [00:04&lt;00:11, 129.81sys/s]
+Evolving:  27%|██▋       | 548/2039 [00:04&lt;00:11, 126.02sys/s]
+Evolving:  28%|██▊       | 562/2039 [00:04&lt;00:11, 128.14sys/s]
+Evolving:  28%|██▊       | 580/2039 [00:05&lt;00:10, 137.50sys/s]
+Evolving:  29%|██▉       | 595/2039 [00:05&lt;00:11, 125.95sys/s]
+Evolving:  30%|███       | 614/2039 [00:05&lt;00:13, 107.91sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:05&lt;00:10, 128.47sys/s]
+Evolving:  32%|███▏      | 660/2039 [00:05&lt;00:10, 136.23sys/s]
+Evolving:  33%|███▎      | 675/2039 [00:05&lt;00:10, 135.80sys/s]
+Evolving:  34%|███▍      | 690/2039 [00:05&lt;00:09, 136.27sys/s]
+Evolving:  35%|███▍      | 704/2039 [00:05&lt;00:09, 136.58sys/s]
+Evolving:  35%|███▌      | 722/2039 [00:06&lt;00:09, 146.00sys/s]
+Evolving:  36%|███▌      | 738/2039 [00:06&lt;00:08, 146.70sys/s]
+Evolving:  37%|███▋      | 753/2039 [00:06&lt;00:09, 130.69sys/s]
+Evolving:  38%|███▊      | 773/2039 [00:06&lt;00:08, 143.41sys/s]
+Evolving:  39%|███▊      | 788/2039 [00:06&lt;00:08, 142.26sys/s]
+Evolving:  40%|███▉      | 808/2039 [00:06&lt;00:07, 157.15sys/s]
+Evolving:  40%|████      | 825/2039 [00:06&lt;00:07, 152.37sys/s]
+Evolving:  41%|████      | 841/2039 [00:06&lt;00:07, 151.56sys/s]
+Evolving:  42%|████▏     | 857/2039 [00:07&lt;00:08, 144.22sys/s]
+Evolving:  43%|████▎     | 872/2039 [00:07&lt;00:08, 145.10sys/s]
+Evolving:  44%|████▎     | 887/2039 [00:07&lt;00:10, 114.14sys/s]
+Evolving:  45%|████▍     | 908/2039 [00:07&lt;00:08, 135.18sys/s]
+Evolving:  45%|████▌     | 924/2039 [00:07&lt;00:08, 135.62sys/s]
+Evolving:  46%|████▌     | 939/2039 [00:07&lt;00:11, 97.38sys/s]
+Evolving:  47%|████▋     | 957/2039 [00:07&lt;00:09, 109.83sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:08&lt;00:09, 109.01sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:08&lt;00:08, 124.13sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:08&lt;00:09, 107.51sys/s]
+Evolving:  51%|█████▏    | 1049/2039 [00:08&lt;00:08, 112.73sys/s]
+Evolving:  52%|█████▏    | 1064/2039 [00:08&lt;00:09, 101.39sys/s]
+Evolving:  54%|█████▎    | 1091/2039 [00:09&lt;00:07, 131.76sys/s]
+Evolving:  54%|█████▍    | 1107/2039 [00:09&lt;00:06, 135.93sys/s]
+Evolving:  55%|█████▌    | 1123/2039 [00:09&lt;00:07, 124.20sys/s]
+Evolving:  56%|█████▌    | 1138/2039 [00:09&lt;00:07, 124.16sys/s]
+Evolving:  57%|█████▋    | 1159/2039 [00:09&lt;00:06, 140.82sys/s]
+Evolving:  58%|█████▊    | 1175/2039 [00:09&lt;00:05, 144.80sys/s]
+Evolving:  58%|█████▊    | 1191/2039 [00:09&lt;00:07, 107.01sys/s]
+Evolving:  59%|█████▉    | 1204/2039 [00:10&lt;00:08, 98.60sys/s]
+Evolving:  60%|██████    | 1230/2039 [00:10&lt;00:06, 130.15sys/s]
+Evolving:  61%|██████    | 1246/2039 [00:10&lt;00:05, 136.56sys/s]
+Evolving:  62%|██████▏   | 1262/2039 [00:10&lt;00:05, 139.29sys/s]
+Evolving:  63%|██████▎   | 1278/2039 [00:10&lt;00:05, 141.80sys/s]
+Evolving:  63%|██████▎   | 1294/2039 [00:10&lt;00:05, 137.76sys/s]
+Evolving:  64%|██████▍   | 1313/2039 [00:10&lt;00:04, 146.21sys/s]
+Evolving:  65%|██████▌   | 1329/2039 [00:10&lt;00:04, 143.09sys/s]
+Evolving:  66%|██████▌   | 1344/2039 [00:10&lt;00:05, 131.80sys/s]
+Evolving:  67%|██████▋   | 1358/2039 [00:11&lt;00:05, 124.33sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:11&lt;00:05, 122.23sys/s]
+Evolving:  68%|██████▊   | 1387/2039 [00:11&lt;00:05, 121.73sys/s]
+Evolving:  69%|██████▉   | 1407/2039 [00:11&lt;00:04, 128.67sys/s]
+Evolving:  70%|██████▉   | 1420/2039 [00:11&lt;00:05, 108.34sys/s]
+Evolving:  70%|███████   | 1432/2039 [00:11&lt;00:06, 95.37sys/s]
+Evolving:  71%|███████   | 1445/2039 [00:11&lt;00:06, 95.82sys/s]
+Evolving:  73%|███████▎  | 1480/2039 [00:12&lt;00:03, 148.82sys/s]
+Evolving:  73%|███████▎  | 1497/2039 [00:12&lt;00:03, 150.18sys/s]
+Evolving:  74%|███████▍  | 1513/2039 [00:12&lt;00:03, 139.81sys/s]
+Evolving:  75%|███████▌  | 1533/2039 [00:12&lt;00:03, 153.02sys/s]
+Evolving:  76%|███████▌  | 1550/2039 [00:12&lt;00:03, 153.16sys/s]
+Evolving:  77%|███████▋  | 1566/2039 [00:12&lt;00:03, 153.45sys/s]
+Evolving:  78%|███████▊  | 1582/2039 [00:12&lt;00:03, 149.07sys/s]
+Evolving:  78%|███████▊  | 1598/2039 [00:12&lt;00:02, 149.60sys/s]
+Evolving:  79%|███████▉  | 1614/2039 [00:13&lt;00:03, 112.22sys/s]
+Evolving:  80%|████████  | 1640/2039 [00:13&lt;00:02, 139.46sys/s]
+Evolving:  81%|████████▏ | 1661/2039 [00:13&lt;00:02, 153.09sys/s]
+Evolving:  82%|████████▏ | 1678/2039 [00:13&lt;00:02, 133.80sys/s]
+Evolving:  83%|████████▎ | 1697/2039 [00:13&lt;00:02, 144.82sys/s]
+Evolving:  84%|████████▍ | 1714/2039 [00:13&lt;00:02, 151.02sys/s]
+Evolving:  85%|████████▍ | 1731/2039 [00:13&lt;00:02, 147.15sys/s]
+Evolving:  86%|████████▌ | 1747/2039 [00:13&lt;00:02, 145.94sys/s]
+Evolving:  87%|████████▋ | 1765/2039 [00:14&lt;00:01, 138.80sys/s]
+Evolving:  87%|████████▋ | 1784/2039 [00:14&lt;00:01, 149.11sys/s]
+Evolving:  88%|████████▊ | 1800/2039 [00:14&lt;00:01, 145.85sys/s]
+Evolving:  89%|████████▉ | 1817/2039 [00:14&lt;00:01, 151.43sys/s]
+Evolving:  90%|████████▉ | 1833/2039 [00:14&lt;00:01, 140.36sys/s]
+Evolving:  91%|█████████ | 1848/2039 [00:14&lt;00:01, 109.52sys/s]
+Evolving:  92%|█████████▏| 1879/2039 [00:14&lt;00:01, 149.03sys/s]
+Evolving:  93%|█████████▎| 1896/2039 [00:15&lt;00:01, 114.66sys/s]
+Evolving:  94%|█████████▍| 1925/2039 [00:15&lt;00:00, 146.53sys/s]
+Evolving:  95%|█████████▌| 1943/2039 [00:15&lt;00:00, 108.93sys/s]
+Evolving:  97%|█████████▋| 1971/2039 [00:15&lt;00:00, 135.51sys/s]
+Evolving:  97%|█████████▋| 1988/2039 [00:15&lt;00:00, 141.29sys/s]
+Evolving:  98%|█████████▊| 2005/2039 [00:15&lt;00:00, 143.40sys/s]
+Evolving:  99%|█████████▉| 2022/2039 [00:16&lt;00:00, 131.54sys/s]
+Evolving: 100%|█████████▉| 2037/2039 [00:16&lt;00:00, 130.01sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:16&lt;00:00, 126.49sys/s]
+   [Time taken: 16.3390 seconds]
+Evolving population with kickflag = 5...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   0%|          | 8/2039 [00:00&lt;00:25, 79.86sys/s]
+Evolving:   1%|          | 24/2039 [00:00&lt;00:23, 85.22sys/s]
+Evolving:   2%|▏         | 49/2039 [00:00&lt;00:14, 141.56sys/s]
+Evolving:   3%|▎         | 65/2039 [00:00&lt;00:20, 98.10sys/s]
+Evolving:   5%|▍         | 96/2039 [00:00&lt;00:14, 136.98sys/s]
+Evolving:   6%|▌         | 116/2039 [00:00&lt;00:12, 149.62sys/s]
+Evolving:   7%|▋         | 133/2039 [00:01&lt;00:13, 144.88sys/s]
+Evolving:   7%|▋         | 149/2039 [00:01&lt;00:14, 126.27sys/s]
+Evolving:   8%|▊         | 164/2039 [00:01&lt;00:14, 130.73sys/s]
+Evolving:   9%|▉         | 179/2039 [00:01&lt;00:13, 133.86sys/s]
+Evolving:  10%|▉         | 195/2039 [00:01&lt;00:13, 140.20sys/s]
+Evolving:  10%|█         | 210/2039 [00:01&lt;00:12, 141.80sys/s]
+Evolving:  11%|█         | 225/2039 [00:01&lt;00:13, 131.97sys/s]
+Evolving:  12%|█▏        | 244/2039 [00:01&lt;00:13, 130.96sys/s]
+Evolving:  13%|█▎        | 264/2039 [00:01&lt;00:12, 146.77sys/s]
+Evolving:  14%|█▎        | 280/2039 [00:02&lt;00:12, 141.22sys/s]
+Evolving:  15%|█▍        | 301/2039 [00:02&lt;00:15, 109.67sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:14, 117.76sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:13, 123.82sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:03&lt;00:14, 117.00sys/s]
+Evolving:  20%|██        | 412/2039 [00:03&lt;00:11, 145.40sys/s]
+Evolving:  21%|██        | 429/2039 [00:03&lt;00:11, 141.61sys/s]
+Evolving:  22%|██▏       | 446/2039 [00:03&lt;00:16, 98.84sys/s]
+Evolving:  23%|██▎       | 469/2039 [00:03&lt;00:16, 95.25sys/s]
+Evolving:  24%|██▍       | 496/2039 [00:03&lt;00:12, 121.74sys/s]
+Evolving:  25%|██▌       | 512/2039 [00:04&lt;00:12, 125.89sys/s]
+Evolving:  26%|██▌       | 528/2039 [00:04&lt;00:12, 116.50sys/s]
+Evolving:  27%|██▋       | 542/2039 [00:04&lt;00:13, 109.31sys/s]
+Evolving:  28%|██▊       | 562/2039 [00:04&lt;00:11, 123.29sys/s]
+Evolving:  28%|██▊       | 580/2039 [00:04&lt;00:10, 134.68sys/s]
+Evolving:  29%|██▉       | 595/2039 [00:04&lt;00:11, 120.48sys/s]
+Evolving:  30%|███       | 614/2039 [00:05&lt;00:13, 106.73sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:05&lt;00:10, 129.66sys/s]
+Evolving:  32%|███▏      | 660/2039 [00:05&lt;00:10, 137.18sys/s]
+Evolving:  33%|███▎      | 680/2039 [00:05&lt;00:08, 151.43sys/s]
+Evolving:  34%|███▍      | 697/2039 [00:05&lt;00:09, 145.01sys/s]
+Evolving:  35%|███▍      | 713/2039 [00:05&lt;00:09, 144.30sys/s]
+Evolving:  36%|███▌      | 729/2039 [00:05&lt;00:09, 145.49sys/s]
+Evolving:  37%|███▋      | 745/2039 [00:05&lt;00:09, 143.28sys/s]
+Evolving:  37%|███▋      | 760/2039 [00:05&lt;00:08, 144.08sys/s]
+Evolving:  38%|███▊      | 775/2039 [00:06&lt;00:08, 140.54sys/s]
+Evolving:  39%|███▉      | 796/2039 [00:06&lt;00:07, 156.02sys/s]
+Evolving:  40%|███▉      | 812/2039 [00:06&lt;00:07, 154.13sys/s]
+Evolving:  41%|████      | 828/2039 [00:06&lt;00:08, 146.33sys/s]
+Evolving:  41%|████▏     | 843/2039 [00:06&lt;00:08, 144.71sys/s]
+Evolving:  42%|████▏     | 858/2039 [00:06&lt;00:08, 141.10sys/s]
+Evolving:  43%|████▎     | 874/2039 [00:06&lt;00:12, 95.75sys/s]
+Evolving:  44%|████▍     | 906/2039 [00:07&lt;00:08, 141.26sys/s]
+Evolving:  45%|████▌     | 924/2039 [00:07&lt;00:07, 149.34sys/s]
+Evolving:  46%|████▌     | 942/2039 [00:07&lt;00:09, 114.27sys/s]
+Evolving:  47%|████▋     | 957/2039 [00:07&lt;00:10, 102.79sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:09, 106.97sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:07&lt;00:08, 121.12sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:08&lt;00:08, 114.83sys/s]
+Evolving:  51%|█████▏    | 1048/2039 [00:08&lt;00:07, 130.39sys/s]
+Evolving:  52%|█████▏    | 1063/2039 [00:08&lt;00:08, 118.96sys/s]
+Evolving:  53%|█████▎    | 1076/2039 [00:08&lt;00:09, 104.42sys/s]
+Evolving:  54%|█████▍    | 1098/2039 [00:08&lt;00:07, 127.34sys/s]
+Evolving:  55%|█████▍    | 1114/2039 [00:08&lt;00:06, 133.81sys/s]
+Evolving:  55%|█████▌    | 1129/2039 [00:08&lt;00:06, 131.30sys/s]
+Evolving:  56%|█████▌    | 1143/2039 [00:09&lt;00:07, 123.13sys/s]
+Evolving:  57%|█████▋    | 1161/2039 [00:09&lt;00:06, 136.25sys/s]
+Evolving:  58%|█████▊    | 1179/2039 [00:09&lt;00:06, 141.76sys/s]
+Evolving:  59%|█████▊    | 1194/2039 [00:09&lt;00:07, 112.73sys/s]
+Evolving:  59%|█████▉    | 1207/2039 [00:09&lt;00:08, 102.43sys/s]
+Evolving:  60%|█████▉    | 1219/2039 [00:09&lt;00:07, 105.16sys/s]
+Evolving:  61%|██████    | 1244/2039 [00:09&lt;00:05, 134.01sys/s]
+Evolving:  62%|██████▏   | 1259/2039 [00:09&lt;00:05, 134.95sys/s]
+Evolving:  63%|██████▎   | 1277/2039 [00:10&lt;00:05, 144.28sys/s]
+Evolving:  63%|██████▎   | 1293/2039 [00:10&lt;00:05, 141.95sys/s]
+Evolving:  64%|██████▍   | 1310/2039 [00:10&lt;00:04, 148.72sys/s]
+Evolving:  65%|██████▌   | 1326/2039 [00:10&lt;00:04, 148.55sys/s]
+Evolving:  66%|██████▌   | 1342/2039 [00:10&lt;00:04, 145.28sys/s]
+Evolving:  67%|██████▋   | 1357/2039 [00:10&lt;00:05, 118.81sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 117.66sys/s]
+Evolving:  68%|██████▊   | 1387/2039 [00:10&lt;00:05, 115.81sys/s]
+Evolving:  69%|██████▉   | 1407/2039 [00:11&lt;00:04, 135.43sys/s]
+Evolving:  70%|██████▉   | 1422/2039 [00:11&lt;00:05, 107.01sys/s]
+Evolving:  70%|███████   | 1435/2039 [00:11&lt;00:05, 102.92sys/s]
+Evolving:  71%|███████   | 1447/2039 [00:11&lt;00:05, 102.61sys/s]
+Evolving:  72%|███████▏  | 1478/2039 [00:11&lt;00:03, 147.31sys/s]
+Evolving:  73%|███████▎  | 1494/2039 [00:11&lt;00:03, 140.07sys/s]
+Evolving:  74%|███████▍  | 1512/2039 [00:11&lt;00:03, 144.47sys/s]
+Evolving:  75%|███████▍  | 1528/2039 [00:11&lt;00:03, 147.13sys/s]
+Evolving:  76%|███████▌  | 1544/2039 [00:12&lt;00:03, 149.47sys/s]
+Evolving:  77%|███████▋  | 1560/2039 [00:12&lt;00:03, 149.90sys/s]
+Evolving:  77%|███████▋  | 1577/2039 [00:12&lt;00:03, 152.69sys/s]
+Evolving:  78%|███████▊  | 1594/2039 [00:12&lt;00:02, 151.19sys/s]
+Evolving:  79%|███████▉  | 1610/2039 [00:12&lt;00:02, 150.71sys/s]
+Evolving:  80%|███████▉  | 1626/2039 [00:12&lt;00:03, 122.87sys/s]
+Evolving:  81%|████████  | 1649/2039 [00:12&lt;00:02, 147.27sys/s]
+Evolving:  82%|████████▏ | 1665/2039 [00:13&lt;00:03, 103.29sys/s]
+Evolving:  83%|████████▎ | 1700/2039 [00:13&lt;00:02, 143.77sys/s]
+Evolving:  84%|████████▍ | 1718/2039 [00:13&lt;00:02, 150.50sys/s]
+Evolving:  85%|████████▌ | 1736/2039 [00:13&lt;00:02, 149.87sys/s]
+Evolving:  86%|████████▌ | 1753/2039 [00:13&lt;00:01, 153.53sys/s]
+Evolving:  87%|████████▋ | 1770/2039 [00:13&lt;00:01, 146.03sys/s]
+Evolving:  88%|████████▊ | 1788/2039 [00:13&lt;00:01, 152.27sys/s]
+Evolving:  88%|████████▊ | 1804/2039 [00:13&lt;00:01, 153.97sys/s]
+Evolving:  89%|████████▉ | 1820/2039 [00:14&lt;00:01, 133.19sys/s]
+Evolving:  90%|█████████ | 1837/2039 [00:14&lt;00:02, 95.98sys/s]
+Evolving:  92%|█████████▏| 1876/2039 [00:14&lt;00:01, 146.91sys/s]
+Evolving:  93%|█████████▎| 1894/2039 [00:14&lt;00:01, 116.27sys/s]
+Evolving:  95%|█████████▍| 1927/2039 [00:14&lt;00:00, 154.62sys/s]
+Evolving:  95%|█████████▌| 1947/2039 [00:15&lt;00:00, 127.09sys/s]
+Evolving:  96%|█████████▋| 1967/2039 [00:15&lt;00:00, 133.01sys/s]
+Evolving:  97%|█████████▋| 1987/2039 [00:15&lt;00:00, 145.06sys/s]
+Evolving:  98%|█████████▊| 2004/2039 [00:15&lt;00:00, 139.17sys/s]
+Evolving:  99%|█████████▉| 2022/2039 [00:15&lt;00:00, 135.52sys/s]
+Evolving: 100%|█████████▉| 2037/2039 [00:15&lt;00:00, 134.73sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 129.85sys/s]
+   [Time taken: 15.9202 seconds]
+Evolving population with kickflag = 6...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   1%|          | 11/2039 [00:00&lt;00:19, 103.14sys/s]
+Evolving:   1%|          | 24/2039 [00:00&lt;00:23, 87.37sys/s]
+Evolving:   2%|▏         | 49/2039 [00:00&lt;00:13, 146.49sys/s]
+Evolving:   3%|▎         | 65/2039 [00:00&lt;00:20, 96.88sys/s]
+Evolving:   5%|▍         | 96/2039 [00:00&lt;00:13, 141.64sys/s]
+Evolving:   6%|▌         | 116/2039 [00:00&lt;00:12, 152.98sys/s]
+Evolving:   7%|▋         | 134/2039 [00:00&lt;00:12, 146.78sys/s]
+Evolving:   7%|▋         | 151/2039 [00:01&lt;00:15, 121.89sys/s]
+Evolving:   8%|▊         | 165/2039 [00:01&lt;00:15, 123.19sys/s]
+Evolving:   9%|▉         | 185/2039 [00:01&lt;00:14, 129.17sys/s]
+Evolving:  10%|█         | 204/2039 [00:01&lt;00:13, 137.40sys/s]
+Evolving:  11%|█         | 219/2039 [00:01&lt;00:13, 133.62sys/s]
+Evolving:  12%|█▏        | 236/2039 [00:01&lt;00:13, 129.54sys/s]
+Evolving:  13%|█▎        | 258/2039 [00:01&lt;00:12, 147.58sys/s]
+Evolving:  13%|█▎        | 275/2039 [00:02&lt;00:11, 149.91sys/s]
+Evolving:  14%|█▍        | 293/2039 [00:02&lt;00:11, 156.82sys/s]
+Evolving:  15%|█▌        | 310/2039 [00:02&lt;00:14, 122.59sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:15, 111.90sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:14, 118.99sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:02&lt;00:13, 119.56sys/s]
+Evolving:  20%|██        | 409/2039 [00:03&lt;00:11, 144.72sys/s]
+Evolving:  21%|██        | 428/2039 [00:03&lt;00:10, 148.88sys/s]
+Evolving:  22%|██▏       | 444/2039 [00:03&lt;00:10, 148.38sys/s]
+Evolving:  23%|██▎       | 462/2039 [00:03&lt;00:10, 153.00sys/s]
+Evolving:  23%|██▎       | 478/2039 [00:03&lt;00:13, 119.92sys/s]
+Evolving:  24%|██▍       | 495/2039 [00:03&lt;00:11, 130.10sys/s]
+Evolving:  25%|██▌       | 511/2039 [00:03&lt;00:11, 136.91sys/s]
+Evolving:  26%|██▌       | 526/2039 [00:04&lt;00:12, 117.25sys/s]
+Evolving:  26%|██▋       | 539/2039 [00:04&lt;00:12, 116.10sys/s]
+Evolving:  27%|██▋       | 555/2039 [00:04&lt;00:12, 120.85sys/s]
+Evolving:  28%|██▊       | 575/2039 [00:04&lt;00:10, 139.55sys/s]
+Evolving:  29%|██▉       | 590/2039 [00:04&lt;00:12, 119.04sys/s]
+Evolving:  30%|███       | 614/2039 [00:04&lt;00:12, 116.07sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:04&lt;00:10, 134.54sys/s]
+Evolving:  33%|███▎      | 667/2039 [00:05&lt;00:08, 153.96sys/s]
+Evolving:  34%|███▎      | 684/2039 [00:05&lt;00:09, 137.12sys/s]
+Evolving:  34%|███▍      | 700/2039 [00:05&lt;00:09, 136.16sys/s]
+Evolving:  35%|███▌      | 720/2039 [00:05&lt;00:09, 140.53sys/s]
+Evolving:  36%|███▋      | 740/2039 [00:05&lt;00:08, 153.45sys/s]
+Evolving:  37%|███▋      | 756/2039 [00:05&lt;00:08, 145.26sys/s]
+Evolving:  38%|███▊      | 774/2039 [00:05&lt;00:08, 148.76sys/s]
+Evolving:  39%|███▉      | 791/2039 [00:05&lt;00:08, 149.23sys/s]
+Evolving:  40%|███▉      | 810/2039 [00:06&lt;00:07, 155.45sys/s]
+Evolving:  41%|████      | 826/2039 [00:06&lt;00:07, 154.19sys/s]
+Evolving:  41%|████▏     | 842/2039 [00:06&lt;00:07, 151.40sys/s]
+Evolving:  42%|████▏     | 858/2039 [00:06&lt;00:08, 146.36sys/s]
+Evolving:  43%|████▎     | 874/2039 [00:06&lt;00:11, 97.88sys/s]
+Evolving:  45%|████▍     | 909/2039 [00:06&lt;00:07, 148.33sys/s]
+Evolving:  46%|████▌     | 928/2039 [00:06&lt;00:07, 142.02sys/s]
+Evolving:  46%|████▋     | 945/2039 [00:07&lt;00:08, 122.31sys/s]
+Evolving:  47%|████▋     | 960/2039 [00:07&lt;00:09, 113.85sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:10, 103.91sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:07&lt;00:08, 124.21sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:07&lt;00:08, 118.26sys/s]
+Evolving:  51%|█████▏    | 1048/2039 [00:07&lt;00:07, 136.13sys/s]
+Evolving:  52%|█████▏    | 1064/2039 [00:08&lt;00:09, 100.59sys/s]
+Evolving:  53%|█████▎    | 1090/2039 [00:08&lt;00:07, 127.31sys/s]
+Evolving:  54%|█████▍    | 1106/2039 [00:08&lt;00:07, 131.49sys/s]
+Evolving:  55%|█████▌    | 1122/2039 [00:08&lt;00:07, 126.90sys/s]
+Evolving:  56%|█████▌    | 1138/2039 [00:08&lt;00:07, 122.23sys/s]
+Evolving:  57%|█████▋    | 1155/2039 [00:08&lt;00:06, 130.99sys/s]
+Evolving:  58%|█████▊    | 1175/2039 [00:08&lt;00:06, 141.79sys/s]
+Evolving:  58%|█████▊    | 1190/2039 [00:09&lt;00:07, 110.87sys/s]
+Evolving:  59%|█████▉    | 1204/2039 [00:09&lt;00:08, 101.33sys/s]
+Evolving:  60%|██████    | 1230/2039 [00:09&lt;00:06, 134.40sys/s]
+Evolving:  61%|██████    | 1246/2039 [00:09&lt;00:05, 139.97sys/s]
+Evolving:  62%|██████▏   | 1262/2039 [00:09&lt;00:05, 141.09sys/s]
+Evolving:  63%|██████▎   | 1279/2039 [00:09&lt;00:05, 147.73sys/s]
+Evolving:  64%|██████▎   | 1295/2039 [00:09&lt;00:05, 147.33sys/s]
+Evolving:  64%|██████▍   | 1311/2039 [00:09&lt;00:04, 147.31sys/s]
+Evolving:  65%|██████▌   | 1327/2039 [00:10&lt;00:04, 145.22sys/s]
+Evolving:  66%|██████▌   | 1344/2039 [00:10&lt;00:05, 132.73sys/s]
+Evolving:  67%|██████▋   | 1358/2039 [00:10&lt;00:05, 125.92sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 129.32sys/s]
+Evolving:  68%|██████▊   | 1388/2039 [00:10&lt;00:05, 124.97sys/s]
+Evolving:  69%|██████▊   | 1401/2039 [00:10&lt;00:05, 122.47sys/s]
+Evolving:  69%|██████▉   | 1416/2039 [00:10&lt;00:06, 101.64sys/s]
+Evolving:  70%|███████   | 1432/2039 [00:11&lt;00:05, 104.40sys/s]
+Evolving:  71%|███████   | 1445/2039 [00:11&lt;00:05, 107.55sys/s]
+Evolving:  72%|███████▏  | 1476/2039 [00:11&lt;00:03, 153.83sys/s]
+Evolving:  73%|███████▎  | 1493/2039 [00:11&lt;00:03, 153.50sys/s]
+Evolving:  74%|███████▍  | 1511/2039 [00:11&lt;00:03, 156.88sys/s]
+Evolving:  75%|███████▍  | 1528/2039 [00:11&lt;00:03, 157.03sys/s]
+Evolving:  76%|███████▌  | 1545/2039 [00:11&lt;00:03, 158.40sys/s]
+Evolving:  77%|███████▋  | 1562/2039 [00:11&lt;00:03, 156.00sys/s]
+Evolving:  77%|███████▋  | 1578/2039 [00:11&lt;00:03, 145.82sys/s]
+Evolving:  78%|███████▊  | 1597/2039 [00:12&lt;00:02, 153.15sys/s]
+Evolving:  79%|███████▉  | 1613/2039 [00:12&lt;00:04, 101.75sys/s]
+Evolving:  81%|████████  | 1650/2039 [00:12&lt;00:02, 151.53sys/s]
+Evolving:  82%|████████▏ | 1669/2039 [00:12&lt;00:02, 125.97sys/s]
+Evolving:  83%|████████▎ | 1697/2039 [00:12&lt;00:02, 155.24sys/s]
+Evolving:  84%|████████▍ | 1716/2039 [00:12&lt;00:02, 154.72sys/s]
+Evolving:  85%|████████▌ | 1734/2039 [00:13&lt;00:02, 152.08sys/s]
+Evolving:  86%|████████▌ | 1751/2039 [00:13&lt;00:01, 149.26sys/s]
+Evolving:  87%|████████▋ | 1768/2039 [00:13&lt;00:01, 151.43sys/s]
+Evolving:  87%|████████▋ | 1784/2039 [00:13&lt;00:01, 148.69sys/s]
+Evolving:  88%|████████▊ | 1800/2039 [00:13&lt;00:01, 150.86sys/s]
+Evolving:  89%|████████▉ | 1816/2039 [00:13&lt;00:01, 150.85sys/s]
+Evolving:  90%|████████▉ | 1832/2039 [00:13&lt;00:01, 149.29sys/s]
+Evolving:  91%|█████████ | 1848/2039 [00:13&lt;00:01, 109.86sys/s]
+Evolving:  92%|█████████▏| 1876/2039 [00:14&lt;00:01, 146.78sys/s]
+Evolving:  93%|█████████▎| 1894/2039 [00:14&lt;00:01, 110.12sys/s]
+Evolving:  94%|█████████▍| 1924/2039 [00:14&lt;00:00, 145.91sys/s]
+Evolving:  95%|█████████▌| 1943/2039 [00:14&lt;00:00, 112.32sys/s]
+Evolving:  97%|█████████▋| 1974/2039 [00:14&lt;00:00, 145.05sys/s]
+Evolving:  98%|█████████▊| 1993/2039 [00:14&lt;00:00, 149.16sys/s]
+Evolving:  99%|█████████▊| 2011/2039 [00:15&lt;00:00, 145.43sys/s]
+Evolving:  99%|█████████▉| 2028/2039 [00:15&lt;00:00, 116.29sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 133.42sys/s]
+   [Time taken: 15.4851 seconds]
+Evolving population with kickflag = 7...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   1%|          | 11/2039 [00:00&lt;00:19, 103.07sys/s]
+Evolving:   1%|          | 24/2039 [00:00&lt;00:22, 89.79sys/s]
+Evolving:   3%|▎         | 51/2039 [00:00&lt;00:13, 151.95sys/s]
+Evolving:   3%|▎         | 68/2039 [00:00&lt;00:18, 106.25sys/s]
+Evolving:   5%|▍         | 96/2039 [00:00&lt;00:14, 137.23sys/s]
+Evolving:   6%|▌         | 114/2039 [00:00&lt;00:13, 147.14sys/s]
+Evolving:   6%|▋         | 131/2039 [00:00&lt;00:13, 142.17sys/s]
+Evolving:   7%|▋         | 147/2039 [00:01&lt;00:15, 123.26sys/s]
+Evolving:   8%|▊         | 161/2039 [00:01&lt;00:14, 126.44sys/s]
+Evolving:   9%|▊         | 177/2039 [00:01&lt;00:13, 133.17sys/s]
+Evolving:  10%|▉         | 196/2039 [00:01&lt;00:12, 143.42sys/s]
+Evolving:  10%|█         | 212/2039 [00:01&lt;00:12, 145.21sys/s]
+Evolving:  11%|█         | 227/2039 [00:01&lt;00:12, 141.15sys/s]
+Evolving:  12%|█▏        | 244/2039 [00:01&lt;00:13, 137.41sys/s]
+Evolving:  13%|█▎        | 262/2039 [00:01&lt;00:12, 141.91sys/s]
+Evolving:  14%|█▍        | 281/2039 [00:02&lt;00:11, 154.57sys/s]
+Evolving:  15%|█▍        | 297/2039 [00:02&lt;00:11, 152.36sys/s]
+Evolving:  15%|█▌        | 313/2039 [00:02&lt;00:13, 125.38sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:15, 107.49sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:14, 118.50sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:02&lt;00:14, 118.33sys/s]
+Evolving:  20%|██        | 408/2039 [00:03&lt;00:11, 147.97sys/s]
+Evolving:  21%|██        | 425/2039 [00:03&lt;00:10, 149.89sys/s]
+Evolving:  22%|██▏       | 442/2039 [00:03&lt;00:11, 139.55sys/s]
+Evolving:  23%|██▎       | 460/2039 [00:03&lt;00:10, 148.73sys/s]
+Evolving:  23%|██▎       | 476/2039 [00:03&lt;00:13, 113.87sys/s]
+Evolving:  24%|██▍       | 497/2039 [00:03&lt;00:11, 132.99sys/s]
+Evolving:  25%|██▌       | 513/2039 [00:03&lt;00:12, 121.36sys/s]
+Evolving:  26%|██▌       | 530/2039 [00:04&lt;00:11, 130.45sys/s]
+Evolving:  27%|██▋       | 545/2039 [00:04&lt;00:11, 129.25sys/s]
+Evolving:  27%|██▋       | 559/2039 [00:04&lt;00:11, 127.85sys/s]
+Evolving:  28%|██▊       | 575/2039 [00:04&lt;00:10, 135.29sys/s]
+Evolving:  29%|██▉       | 590/2039 [00:04&lt;00:13, 108.19sys/s]
+Evolving:  30%|███       | 614/2039 [00:04&lt;00:12, 111.74sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:04&lt;00:10, 136.10sys/s]
+Evolving:  33%|███▎      | 667/2039 [00:05&lt;00:08, 157.71sys/s]
+Evolving:  34%|███▎      | 685/2039 [00:05&lt;00:08, 151.52sys/s]
+Evolving:  34%|███▍      | 702/2039 [00:05&lt;00:09, 136.23sys/s]
+Evolving:  35%|███▌      | 719/2039 [00:05&lt;00:09, 139.48sys/s]
+Evolving:  36%|███▌      | 738/2039 [00:05&lt;00:08, 150.88sys/s]
+Evolving:  37%|███▋      | 754/2039 [00:05&lt;00:09, 142.67sys/s]
+Evolving:  38%|███▊      | 771/2039 [00:05&lt;00:08, 143.01sys/s]
+Evolving:  39%|███▉      | 792/2039 [00:05&lt;00:08, 152.45sys/s]
+Evolving:  40%|███▉      | 809/2039 [00:05&lt;00:07, 154.99sys/s]
+Evolving:  41%|████      | 826/2039 [00:06&lt;00:07, 154.06sys/s]
+Evolving:  41%|████▏     | 842/2039 [00:06&lt;00:08, 134.13sys/s]
+Evolving:  42%|████▏     | 859/2039 [00:06&lt;00:08, 138.40sys/s]
+Evolving:  43%|████▎     | 874/2039 [00:06&lt;00:11, 97.59sys/s]
+Evolving:  45%|████▍     | 910/2039 [00:06&lt;00:07, 146.41sys/s]
+Evolving:  46%|████▌     | 928/2039 [00:06&lt;00:07, 148.88sys/s]
+Evolving:  46%|████▋     | 946/2039 [00:07&lt;00:08, 123.63sys/s]
+Evolving:  47%|████▋     | 961/2039 [00:07&lt;00:09, 111.64sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:10, 103.97sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:07&lt;00:08, 120.73sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:07&lt;00:09, 112.45sys/s]
+Evolving:  51%|█████▏    | 1049/2039 [00:08&lt;00:08, 113.58sys/s]
+Evolving:  52%|█████▏    | 1064/2039 [00:08&lt;00:09, 104.00sys/s]
+Evolving:  53%|█████▎    | 1088/2039 [00:08&lt;00:07, 128.16sys/s]
+Evolving:  54%|█████▍    | 1103/2039 [00:08&lt;00:07, 131.92sys/s]
+Evolving:  55%|█████▍    | 1118/2039 [00:08&lt;00:08, 114.95sys/s]
+Evolving:  56%|█████▌    | 1138/2039 [00:08&lt;00:07, 128.39sys/s]
+Evolving:  57%|█████▋    | 1158/2039 [00:08&lt;00:06, 141.28sys/s]
+Evolving:  58%|█████▊    | 1176/2039 [00:08&lt;00:05, 146.00sys/s]
+Evolving:  58%|█████▊    | 1192/2039 [00:09&lt;00:07, 114.66sys/s]
+Evolving:  59%|█████▉    | 1205/2039 [00:09&lt;00:08, 104.07sys/s]
+Evolving:  60%|█████▉    | 1217/2039 [00:09&lt;00:07, 107.25sys/s]
+Evolving:  61%|██████    | 1242/2039 [00:09&lt;00:05, 134.93sys/s]
+Evolving:  62%|██████▏   | 1257/2039 [00:09&lt;00:05, 131.87sys/s]
+Evolving:  63%|██████▎   | 1276/2039 [00:09&lt;00:05, 143.44sys/s]
+Evolving:  63%|██████▎   | 1293/2039 [00:09&lt;00:05, 147.62sys/s]
+Evolving:  64%|██████▍   | 1310/2039 [00:09&lt;00:04, 151.56sys/s]
+Evolving:  65%|██████▌   | 1326/2039 [00:10&lt;00:04, 151.51sys/s]
+Evolving:  66%|██████▌   | 1343/2039 [00:10&lt;00:04, 151.88sys/s]
+Evolving:  67%|██████▋   | 1359/2039 [00:10&lt;00:05, 125.69sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 131.17sys/s]
+Evolving:  68%|██████▊   | 1388/2039 [00:10&lt;00:05, 122.00sys/s]
+Evolving:  69%|██████▊   | 1401/2039 [00:10&lt;00:05, 123.20sys/s]
+Evolving:  69%|██████▉   | 1416/2039 [00:10&lt;00:06, 97.13sys/s]
+Evolving:  70%|███████   | 1432/2039 [00:11&lt;00:05, 102.28sys/s]
+Evolving:  71%|███████   | 1445/2039 [00:11&lt;00:05, 102.95sys/s]
+Evolving:  73%|███████▎  | 1479/2039 [00:11&lt;00:03, 156.46sys/s]
+Evolving:  73%|███████▎  | 1497/2039 [00:11&lt;00:03, 145.92sys/s]
+Evolving:  74%|███████▍  | 1515/2039 [00:11&lt;00:03, 153.91sys/s]
+Evolving:  75%|███████▌  | 1532/2039 [00:11&lt;00:03, 153.94sys/s]
+Evolving:  76%|███████▌  | 1549/2039 [00:11&lt;00:03, 142.11sys/s]
+Evolving:  77%|███████▋  | 1566/2039 [00:11&lt;00:03, 147.65sys/s]
+Evolving:  78%|███████▊  | 1582/2039 [00:12&lt;00:03, 145.89sys/s]
+Evolving:  78%|███████▊  | 1599/2039 [00:12&lt;00:02, 150.74sys/s]
+Evolving:  79%|███████▉  | 1615/2039 [00:12&lt;00:04, 104.22sys/s]
+Evolving:  81%|████████  | 1648/2039 [00:12&lt;00:02, 149.75sys/s]
+Evolving:  82%|████████▏ | 1667/2039 [00:12&lt;00:03, 116.39sys/s]
+Evolving:  83%|████████▎ | 1698/2039 [00:12&lt;00:02, 143.92sys/s]
+Evolving:  84%|████████▍ | 1716/2039 [00:13&lt;00:02, 149.67sys/s]
+Evolving:  85%|████████▌ | 1734/2039 [00:13&lt;00:02, 152.32sys/s]
+Evolving:  86%|████████▌ | 1751/2039 [00:13&lt;00:01, 151.81sys/s]
+Evolving:  87%|████████▋ | 1768/2039 [00:13&lt;00:01, 154.73sys/s]
+Evolving:  88%|████████▊ | 1785/2039 [00:13&lt;00:01, 137.63sys/s]
+Evolving:  88%|████████▊ | 1801/2039 [00:13&lt;00:01, 141.39sys/s]
+Evolving:  89%|████████▉ | 1816/2039 [00:13&lt;00:01, 133.04sys/s]
+Evolving:  90%|████████▉ | 1830/2039 [00:13&lt;00:01, 133.79sys/s]
+Evolving:  90%|█████████ | 1844/2039 [00:14&lt;00:02, 83.04sys/s]
+Evolving:  92%|█████████▏| 1870/2039 [00:14&lt;00:01, 113.50sys/s]
+Evolving:  93%|█████████▎| 1889/2039 [00:14&lt;00:01, 93.07sys/s]
+Evolving:  94%|█████████▍| 1920/2039 [00:14&lt;00:00, 126.27sys/s]
+Evolving:  95%|█████████▍| 1937/2039 [00:15&lt;00:01, 80.01sys/s]
+Evolving:  97%|█████████▋| 1977/2039 [00:15&lt;00:00, 123.93sys/s]
+Evolving:  98%|█████████▊| 1997/2039 [00:15&lt;00:00, 123.44sys/s]
+Evolving:  99%|█████████▉| 2015/2039 [00:15&lt;00:00, 123.00sys/s]
+Evolving: 100%|█████████▉| 2031/2039 [00:15&lt;00:00, 108.89sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 129.10sys/s]
+   [Time taken: 15.9954 seconds]
+Evolving population with kickflag = 8...
+
+Evolving:   0%|          | 0/2039 [00:00&lt;?, ?sys/s]
+Evolving:   0%|          | 8/2039 [00:00&lt;00:30, 65.66sys/s]
+Evolving:   1%|          | 24/2039 [00:00&lt;00:23, 86.44sys/s]
+Evolving:   3%|▎         | 51/2039 [00:00&lt;00:13, 143.05sys/s]
+Evolving:   3%|▎         | 66/2039 [00:00&lt;00:19, 101.13sys/s]
+Evolving:   5%|▍         | 96/2039 [00:00&lt;00:14, 135.58sys/s]
+Evolving:   6%|▌         | 117/2039 [00:00&lt;00:12, 149.30sys/s]
+Evolving:   7%|▋         | 134/2039 [00:01&lt;00:12, 148.18sys/s]
+Evolving:   7%|▋         | 150/2039 [00:01&lt;00:14, 131.67sys/s]
+Evolving:   8%|▊         | 164/2039 [00:01&lt;00:14, 129.93sys/s]
+Evolving:   9%|▉         | 180/2039 [00:01&lt;00:13, 135.10sys/s]
+Evolving:  10%|▉         | 197/2039 [00:01&lt;00:13, 139.47sys/s]
+Evolving:  11%|█         | 216/2039 [00:01&lt;00:12, 149.42sys/s]
+Evolving:  11%|█▏        | 232/2039 [00:01&lt;00:12, 142.53sys/s]
+Evolving:  12%|█▏        | 247/2039 [00:01&lt;00:12, 142.98sys/s]
+Evolving:  13%|█▎        | 263/2039 [00:01&lt;00:12, 142.58sys/s]
+Evolving:  14%|█▍        | 282/2039 [00:02&lt;00:11, 153.45sys/s]
+Evolving:  15%|█▍        | 299/2039 [00:02&lt;00:11, 157.25sys/s]
+Evolving:  15%|█▌        | 315/2039 [00:02&lt;00:14, 121.41sys/s]
+Evolving:  16%|█▌        | 331/2039 [00:02&lt;00:16, 105.96sys/s]
+Evolving:  18%|█▊        | 359/2039 [00:02&lt;00:14, 115.21sys/s]
+Evolving:  19%|█▊        | 381/2039 [00:02&lt;00:14, 118.18sys/s]
+Evolving:  20%|██        | 409/2039 [00:03&lt;00:10, 148.98sys/s]
+Evolving:  21%|██        | 426/2039 [00:03&lt;00:10, 151.25sys/s]
+Evolving:  22%|██▏       | 443/2039 [00:03&lt;00:11, 135.25sys/s]
+Evolving:  23%|██▎       | 462/2039 [00:03&lt;00:10, 147.42sys/s]
+Evolving:  23%|██▎       | 478/2039 [00:03&lt;00:13, 116.15sys/s]
+Evolving:  24%|██▍       | 495/2039 [00:03&lt;00:12, 127.03sys/s]
+Evolving:  25%|██▌       | 512/2039 [00:03&lt;00:11, 135.64sys/s]
+Evolving:  26%|██▌       | 527/2039 [00:04&lt;00:12, 118.12sys/s]
+Evolving:  27%|██▋       | 541/2039 [00:04&lt;00:12, 121.25sys/s]
+Evolving:  27%|██▋       | 555/2039 [00:04&lt;00:12, 117.98sys/s]
+Evolving:  28%|██▊       | 578/2039 [00:04&lt;00:10, 141.30sys/s]
+Evolving:  29%|██▉       | 593/2039 [00:04&lt;00:11, 124.40sys/s]
+Evolving:  30%|███       | 614/2039 [00:04&lt;00:12, 111.77sys/s]
+Evolving:  32%|███▏      | 643/2039 [00:04&lt;00:10, 130.72sys/s]
+Evolving:  32%|███▏      | 660/2039 [00:05&lt;00:10, 136.05sys/s]
+Evolving:  33%|███▎      | 682/2039 [00:05&lt;00:09, 149.24sys/s]
+Evolving:  34%|███▍      | 698/2039 [00:05&lt;00:08, 151.78sys/s]
+Evolving:  35%|███▌      | 714/2039 [00:05&lt;00:09, 143.59sys/s]
+Evolving:  36%|███▌      | 729/2039 [00:05&lt;00:09, 143.52sys/s]
+Evolving:  37%|███▋      | 745/2039 [00:05&lt;00:08, 144.01sys/s]
+Evolving:  37%|███▋      | 760/2039 [00:05&lt;00:08, 143.82sys/s]
+Evolving:  38%|███▊      | 775/2039 [00:05&lt;00:08, 145.43sys/s]
+Evolving:  39%|███▊      | 790/2039 [00:05&lt;00:08, 142.93sys/s]
+Evolving:  40%|███▉      | 809/2039 [00:06&lt;00:08, 150.02sys/s]
+Evolving:  41%|████      | 826/2039 [00:06&lt;00:08, 149.75sys/s]
+Evolving:  41%|████      | 841/2039 [00:06&lt;00:08, 148.58sys/s]
+Evolving:  42%|████▏     | 856/2039 [00:06&lt;00:08, 143.72sys/s]
+Evolving:  43%|████▎     | 871/2039 [00:06&lt;00:08, 135.61sys/s]
+Evolving:  43%|████▎     | 885/2039 [00:06&lt;00:10, 110.67sys/s]
+Evolving:  44%|████▍     | 907/2039 [00:06&lt;00:08, 135.81sys/s]
+Evolving:  45%|████▌     | 925/2039 [00:06&lt;00:07, 141.61sys/s]
+Evolving:  46%|████▌     | 940/2039 [00:07&lt;00:09, 109.98sys/s]
+Evolving:  47%|████▋     | 957/2039 [00:07&lt;00:10, 107.57sys/s]
+Evolving:  48%|████▊     | 987/2039 [00:07&lt;00:09, 108.22sys/s]
+Evolving:  49%|████▉     | 1009/2039 [00:07&lt;00:08, 123.24sys/s]
+Evolving:  50%|█████     | 1024/2039 [00:07&lt;00:08, 120.18sys/s]
+Evolving:  51%|█████▏    | 1048/2039 [00:07&lt;00:07, 136.51sys/s]
+Evolving:  52%|█████▏    | 1063/2039 [00:08&lt;00:08, 118.05sys/s]
+Evolving:  53%|█████▎    | 1076/2039 [00:08&lt;00:08, 110.65sys/s]
+Evolving:  54%|█████▍    | 1097/2039 [00:08&lt;00:07, 122.93sys/s]
+Evolving:  55%|█████▍    | 1117/2039 [00:08&lt;00:06, 138.78sys/s]
+Evolving:  56%|█████▌    | 1132/2039 [00:08&lt;00:06, 134.02sys/s]
+Evolving:  56%|█████▌    | 1146/2039 [00:08&lt;00:06, 128.30sys/s]
+Evolving:  57%|█████▋    | 1164/2039 [00:08&lt;00:06, 138.42sys/s]
+Evolving:  58%|█████▊    | 1181/2039 [00:09&lt;00:06, 124.12sys/s]
+Evolving:  59%|█████▊    | 1194/2039 [00:09&lt;00:07, 119.26sys/s]
+Evolving:  59%|█████▉    | 1207/2039 [00:09&lt;00:08, 100.72sys/s]
+Evolving:  60%|██████    | 1232/2039 [00:09&lt;00:06, 129.12sys/s]
+Evolving:  61%|██████    | 1248/2039 [00:09&lt;00:05, 136.19sys/s]
+Evolving:  62%|██████▏   | 1263/2039 [00:09&lt;00:05, 138.85sys/s]
+Evolving:  63%|██████▎   | 1278/2039 [00:09&lt;00:05, 140.22sys/s]
+Evolving:  63%|██████▎   | 1293/2039 [00:09&lt;00:05, 140.80sys/s]
+Evolving:  64%|██████▍   | 1310/2039 [00:09&lt;00:05, 144.48sys/s]
+Evolving:  65%|██████▌   | 1328/2039 [00:10&lt;00:04, 150.90sys/s]
+Evolving:  66%|██████▌   | 1344/2039 [00:10&lt;00:05, 137.75sys/s]
+Evolving:  67%|██████▋   | 1359/2039 [00:10&lt;00:05, 126.57sys/s]
+Evolving:  67%|██████▋   | 1374/2039 [00:10&lt;00:05, 125.58sys/s]
+Evolving:  68%|██████▊   | 1387/2039 [00:10&lt;00:05, 114.97sys/s]
+Evolving:  69%|██████▉   | 1410/2039 [00:10&lt;00:04, 141.84sys/s]
+Evolving:  70%|██████▉   | 1425/2039 [00:10&lt;00:05, 114.42sys/s]
+Evolving:  71%|███████   | 1438/2039 [00:11&lt;00:05, 105.55sys/s]
+Evolving:  71%|███████   | 1450/2039 [00:11&lt;00:05, 106.17sys/s]
+Evolving:  73%|███████▎  | 1480/2039 [00:11&lt;00:03, 151.07sys/s]
+Evolving:  73%|███████▎  | 1497/2039 [00:11&lt;00:03, 140.58sys/s]
+Evolving:  74%|███████▍  | 1515/2039 [00:11&lt;00:03, 148.56sys/s]
+Evolving:  75%|███████▌  | 1532/2039 [00:11&lt;00:03, 152.39sys/s]
+Evolving:  76%|███████▌  | 1548/2039 [00:11&lt;00:03, 142.96sys/s]
+Evolving:  77%|███████▋  | 1564/2039 [00:11&lt;00:03, 145.52sys/s]
+Evolving:  78%|███████▊  | 1583/2039 [00:11&lt;00:02, 154.17sys/s]
+Evolving:  78%|███████▊  | 1599/2039 [00:12&lt;00:02, 155.76sys/s]
+Evolving:  79%|███████▉  | 1615/2039 [00:12&lt;00:04, 102.72sys/s]
+Evolving:  81%|████████  | 1650/2039 [00:12&lt;00:02, 147.28sys/s]
+Evolving:  82%|████████▏ | 1668/2039 [00:12&lt;00:03, 122.61sys/s]
+Evolving:  83%|████████▎ | 1695/2039 [00:12&lt;00:02, 149.35sys/s]
+Evolving:  84%|████████▍ | 1713/2039 [00:12&lt;00:02, 147.88sys/s]
+Evolving:  85%|████████▍ | 1730/2039 [00:13&lt;00:02, 146.80sys/s]
+Evolving:  86%|████████▌ | 1747/2039 [00:13&lt;00:01, 148.10sys/s]
+Evolving:  86%|████████▋ | 1763/2039 [00:13&lt;00:01, 148.48sys/s]
+Evolving:  87%|████████▋ | 1781/2039 [00:13&lt;00:01, 153.81sys/s]
+Evolving:  88%|████████▊ | 1797/2039 [00:13&lt;00:01, 141.52sys/s]
+Evolving:  89%|████████▉ | 1816/2039 [00:13&lt;00:01, 147.21sys/s]
+Evolving:  90%|████████▉ | 1834/2039 [00:13&lt;00:01, 151.79sys/s]
+Evolving:  91%|█████████ | 1850/2039 [00:13&lt;00:01, 117.43sys/s]
+Evolving:  92%|█████████▏| 1874/2039 [00:14&lt;00:01, 144.00sys/s]
+Evolving:  93%|█████████▎| 1891/2039 [00:14&lt;00:01, 100.98sys/s]
+Evolving:  94%|█████████▍| 1923/2039 [00:14&lt;00:00, 140.90sys/s]
+Evolving:  95%|█████████▌| 1942/2039 [00:14&lt;00:00, 118.43sys/s]
+Evolving:  97%|█████████▋| 1968/2039 [00:14&lt;00:00, 141.27sys/s]
+Evolving:  97%|█████████▋| 1986/2039 [00:14&lt;00:00, 146.24sys/s]
+Evolving:  98%|█████████▊| 2004/2039 [00:15&lt;00:00, 147.92sys/s]
+Evolving:  99%|█████████▉| 2021/2039 [00:15&lt;00:00, 151.38sys/s]
+Evolving: 100%|█████████▉| 2038/2039 [00:15&lt;00:00, 125.26sys/s]
+Evolving: 100%|██████████| 2039/2039 [00:15&lt;00:00, 132.65sys/s]
+   [Time taken: 15.5876 seconds]
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cosmic</span><span class="nn">.</span><span class="nn">sample</span><span class="nn">.</span><span class="nn">initialbinarytable</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialBinaryTable</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cosmic</span><span class="nn">.</span><span class="nn">evolve</span><span class="w"> </span><span class="kn">import</span> <span class="n">Evolve</span><span class="w">
+</span><span class="kn">from</span><span class="w"> </span><span class="nn">cosmic</span><span class="nn">.</span><span class="nn">output</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-cosmic-output sphx-glr-backref-type-py-class reference internal" href="../api/cosmic.output.COSMICOutput.html#cosmic.output.COSMICOutput" title="cosmic.output.COSMICOutput"><span class="n">COSMICOutput</span></a><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span><span class="c1">#----------------------------------------------------------------------------------</span><span class="w">
+</span><span class="c1">#----------------------------------------------------------------------------------</span><span class="w">
+</span><span class="c1">## You'll want to edit this part locally to use your own BSEDict and style sheet!</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="w">
+</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">..</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">generate_default_bsedict</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">BSEDict</span></a> <span class="o">=</span> <span class="n">generate_default_bsedict</span><span class="o">.</span><span class="n">get_default_BSE_settings</span><span class="p">(</span><span class="n">to_python</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="nn">.</span><span class="nn">pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span><span class="w">
+</span><span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;</span><span class="s2">../_static/gallery.mplstyle</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="c1">#----------------------------------------------------------------------------------</span><span class="w">
+</span><span class="c1">#----------------------------------------------------------------------------------</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">flag_labels</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>    <span class="mi">1</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=1: Hobbs+2005 (Maxwellian, $</span><span class="s2">\</span><span class="s2">sigma=265</span><span class="s2">\</span><span class="s2"> </span><span class="s2">\</span><span class="s2">rm km</span><span class="s2">\</span><span class="s2"> s^</span><span class="s2">{</span><span class="s2">-1}$)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">2</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=2: Giacobbo &amp; Mapelli (2020) Eq. 1</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">3</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=3: Giacobbo &amp; Mapelli (2020) Eq. 2</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">4</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=4: Bray &amp; Eldridge (2016)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">5</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=5: Disberg &amp; Mandel (2025)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">6</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=6: Mandel &amp; Müller (2020)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">7</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=7: Janka (2017) (Eq. 2 in Chattaraj+2026)</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="mi">8</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="s2">kickflag=8: Richards+2023</span><span class="s2">&quot;</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">BINS</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># sample a population of neutron stars and black holes</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">ibt</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cosmic-sample sphx-glr-backref-type-py-method reference internal" href="../api/cosmic.sample.initialbinarytable.InitialBinaryTable.html#cosmic.sample.initialbinarytable.InitialBinaryTable.sampler" title="cosmic.sample.InitialBinaryTable.sampler"><span class="n">InitialBinaryTable</span><span class="o">.</span><span class="n">sampler</span></a><span class="p">(</span><span class="w">
+</span>    <span class="s1">'</span><span class="s1">independent</span><span class="s1">'</span><span class="p">,</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span><span class="p">,</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">binfrac_model</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">primary_model</span><span class="o">=</span><span class="s1">'</span><span class="s1">kroupa01</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="n">ecc_model</span><span class="o">=</span><span class="s1">'</span><span class="s1">sana12</span><span class="s1">'</span><span class="p">,</span> <span class="n">porb_model</span><span class="o">=</span><span class="s1">'</span><span class="s1">sana12</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="n">qmin</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">SF_start</span><span class="o">=</span><span class="mf">13700.0</span><span class="p">,</span> <span class="n">SF_duration</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+</span>    <span class="n">met</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2000</span><span class="w">
+</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">ns_kick_results</span></a> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">bh_kick_results</span></a> <span class="o">=</span> <span class="p">{</span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># go through each kickflag</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">flag_labels</span></a><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">start_time</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.perf_counter" title="time.perf_counter"><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">Evolving population with kickflag = </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="si">}</span><span class="s2">...</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># update BSEDict with new kickflag</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">BSEDict</span></a><span class="p">[</span><span class="s1">'</span><span class="s1">kickflag</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># evolve a population and store output in results</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">bpp</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">bcm</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">initC</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">kick_info</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cosmic-evolve sphx-glr-backref-type-py-method reference internal" href="../api/cosmic.evolve.Evolve.html#cosmic.evolve.Evolve.evolve" title="cosmic.evolve.Evolve.evolve"><span class="n">Evolve</span><span class="o">.</span><span class="n">evolve</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">initialbinarytable</span><span class="o">=</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">ibt</span></a><span class="p">,</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">BSEDict</span></a><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">BSEDict</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>        <span class="n">nproc</span><span class="o">=</span><span class="mi">4</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-cosmic-output sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../api/cosmic.output.COSMICOutput.html#cosmic.output.COSMICOutput" title="cosmic.output.COSMICOutput"><span class="n">results</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-cosmic-output sphx-glr-backref-type-py-class reference internal" href="../api/cosmic.output.COSMICOutput.html#cosmic.output.COSMICOutput" title="cosmic.output.COSMICOutput"><span class="n">COSMICOutput</span></a><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">bpp</span></a><span class="o">=</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">bpp</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">bcm</span></a><span class="o">=</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">bcm</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">initC</span></a><span class="o">=</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">initC</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">kick_info</span></a><span class="o">=</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">kick_info</span></a><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># assign each row in the bpp a unique row_num</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">row_num</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">)</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># find the rows that produce the first and second SNe</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">first_pre_SN_rows</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">evol_type</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">15</span><span class="p">]</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">second_pre_SN_rows</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">evol_type</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">16</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># convert them to the post SN rows by increasing row_num by one to get the remnant type</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_SN_type</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">row_num</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">first_pre_SN_rows</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">row_num</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">kstar_1</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">second_SN_type</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">bpp</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">row_num</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">second_pre_SN_rows</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">row_num</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">kstar_2</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># split kicks by the first and second</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_kick</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">kick_info</span></a><span class="p">[</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">kick_info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">star</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">natal_kick</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">second_kick</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">kick_info</span></a><span class="p">[</span><a class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame"><span class="n">results</span><span class="o">.</span><span class="n">kick_info</span></a><span class="p">[</span><span class="s2">&quot;</span><span class="s2">star</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">natal_kick</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># use information on remnant type to separate into NSs and BHs</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">ns_kick_results</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_kick</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_SN_type</span></a> <span class="o">==</span> <span class="mi">13</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">second_kick</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">second_SN_type</span></a> <span class="o">==</span> <span class="mi">13</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">bh_kick_results</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="p">]</span> <span class="o">=</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="numpy.concatenate"><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span></a><span class="p">(</span><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_kick</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">first_SN_type</span></a> <span class="o">==</span> <span class="mi">14</span><span class="p">]</span><span class="p">,</span> <a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">second_kick</span></a><span class="p">[</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">second_SN_type</span></a> <span class="o">==</span> <span class="mi">14</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">end_time</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-time sphx-glr-backref-type-py-function reference external" href="https://docs.python.org/3/library/time.html#time.perf_counter" title="time.perf_counter"><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span></a><span class="p">(</span><span class="p">)</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">elapsed_time</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">end_time</span></a> <span class="o">-</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">start_time</span></a><span class="w">
+</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">   [Time taken: </span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="float"><span class="n">elapsed_time</span></a><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> seconds]</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># plot the results for NSs and BHs separately</span><span class="w">
+</span><span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">kick_results</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">title</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">ns_kick_results</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">bh_kick_results</span></a><span class="p">]</span><span class="p">,</span><span class="w">
+</span>                               <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Neutron star kicks</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Black hole kicks</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># separate into four flags at a time to clean up the plot</span><span class="w">
+</span>    <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">flags_to_plot</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">subtitle</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="p">[</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>                                       <span class="p">[</span><span class="s2">&quot;</span><span class="s2">kickflags 1-4</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">kickflags 5-8</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="k">for</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a> <span class="ow">in</span> <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="list"><span class="n">flags_to_plot</span></a><span class="p">:</span><span class="w">
+</span>            <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">kick_results</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="p">]</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><a class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray"><span class="n">BINS</span></a><span class="p">,</span> <span class="n">label</span><span class="o">=</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">flag_labels</span></a><span class="p">[</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="p">]</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w">
+</span>                    <span class="n">histtype</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">step</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="s2">C</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="int"><span class="n">flag</span></a><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="w">
+</span>            <span class="n">xlabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;</span><span class="s2">Natal kick, $v_</span><span class="s2">{</span><span class="s2">\</span><span class="s2">rm kick}$ [$</span><span class="s2">\</span><span class="s2">rm km</span><span class="s2">\</span><span class="s2"> s^</span><span class="s2">{</span><span class="s2">-1}$]</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">ylabel</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;</span><span class="s2">Probability density</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">title</span></a><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">title</span></a><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="str"><span class="n">subtitle</span></a><span class="si">}</span><span class="s2">)</span><span class="s2">&quot;</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">:</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">gray</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="w">
+</span>            <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">upper right</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">fontsize</span><span class="o">=</span><span class="mf">8.5</span><span class="p">,</span><span class="w">
+</span>            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'</span><span class="s1">white</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">'</span><span class="s1">none</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 7.512 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-kickflag-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/6594c8cb44fb6c5dfe5f1e91673f32ec/plot_kickflag.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_kickflag.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/6e6747173fa189089a898118f4dcd74e/plot_kickflag.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_kickflag.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/4b93fbaa6b3098c247894f014487166f/plot_kickflag.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">plot_kickflag.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="plot_windflag.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">windflag</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="plot_LBV_flag.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">LBV_flag</span></code></div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2019-2026, Katie Breivik, Tom Wagg
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-solid fa-github fa-2x" href="https://github.com/COSMIC-PopSynth/COSMIC" aria-label="GitHub"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=ce8a33db"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=5eb46824"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/custom.js?v=fedf5a9c"></script>
+    </body>
+</html>

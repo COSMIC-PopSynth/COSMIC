@@ -1,0 +1,6 @@
+convert_kstar_evol_type
+=======================
+
+.. currentmodule:: cosmic.utils
+
+.. autofunction:: convert_kstar_evol_type
