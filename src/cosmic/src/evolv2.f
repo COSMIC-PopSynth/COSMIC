@@ -449,7 +449,7 @@ component.
                age = tscls(11) - (1.d0/((GB(6)-1.d0)*GB(2)*GB(3)))*
      &                           (mcy**(1.d0-GB(6)))
             endif
-            age = MAX(age,tscls(13)+2.d0*tiny)
+            age = MAX(age,tscls(13)*(1.d0 + 1.d-10))
          endif
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k)
