@@ -1,6 +1,20 @@
 # COSMIC Changelog 
 ## Prepend only please!
 
+## 4.3.6
+
+This release is centred around several (relatively small) fixes to the supernova kick routine.
+
+- Bug fixes (approximately in order of importance)
+    - Fixed the Euler angles (`theta_euler`, `phi_euler`, `psi_euler` in `kick_info`) used to rotate the velocity changes from the second SN into the frame of the first. Previously `phi_euler` was drawn at random whenever the pre-SN orbit was circular, the special cases where the orbital plane does not tilt (or flips) used an unsigned angle, and `psi_euler` was applied with a half-turn error at the second SN (whose frame is built from the opposite relative separation). Together these could make the systemic velocity after two SNe wrong by ~tens of km/s for systems that remained bound. The angles are now described in detail in the `kick_info` docs on the output page.
+    - Rows of `kick_info` (and `natal_kick_array`) are indexed by star, but the kick routine assumed the first row was always the first SN. When the secondary exploded first (e.g. after mass transfer reversed the evolutionary order), its velocities were rotated by empty Euler angles, and the primary's later SN was neither rotated into the first SN's frame nor combined with it in `vsys_1_total`/`vsys_2_total`. The second SN is now identified by whether the other star has already exploded properly.
+    - An inside baseball one: The random number draws in `kick.f` need to happen the same number of times in different branches of if statements otherwise your rng sequence gets messed up. Supplying a natal kick speed is meant to leave the later random draws (kick direction, mean anomaly, etc.) unchanged, but this only worked for certain kick prescriptions in previous versions (basically just not the new ones). The truncated distributions (Mandel Mueller and Shariat+) now always use a fixed number of random draws, and supplied speeds use the matching number for every kickflag. Long story short: this ensures kicks are reproducible.
+    - Checks for a collision immediately after a supernova (in which the exploding star impacts the companion star) previously failed to find any. Ensured that rsun_km is initialised and used vector conditions to make the condition work properly.
+    - `vsys_2_total` left out the systemic velocity from the first SN when the binary survived the first SN but was disrupted by the second.
+    - Update the solving of Kepler's equation during the kick routine to avoid hangs (fixed number of iterations and bracketing roots helps here, see kick.f)
+    - `bhsigmafrac` was applied in log space without being transformed for the Disberg kicks (kickflag=5), this is now fixed.
+
+
 ## 4.3.5
 
 - Additions/changes

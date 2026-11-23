@@ -563,7 +563,7 @@
 * Partial fallback occurred, remnant mass drawn from Normal,
 * but truncated to always be between max NS mass and CO core mass
             call RandomTruncatedNormal(0.8d0 * mc, 0.5d0 * 0.5d0,
-     &                                 idum1, mxns, mc, mt)
+     &                                 idum1, mxns, mc, 0, mt)
          endif
       else
 * NS formed, determine mu and sigma for random normal draw
@@ -579,7 +579,7 @@
              ns_sigma = 0.05d0
          endif
          call RandomTruncatedNormal(ns_mu, ns_sigma, idum1, min_ns_mass,
-     &                              mxns, mt)
+     &                              mxns, 0, mt)
       endif
 
       end
